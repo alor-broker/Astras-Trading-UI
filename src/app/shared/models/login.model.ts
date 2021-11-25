@@ -1,4 +1,7 @@
 export interface Login {
-  username?: string;
-  password?: string;
+  credentials: {
+    username?: string
+    password?: string
+  },
+  requiredServices: string[]
 }

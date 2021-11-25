@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { User } from '../models/user.model';
 import { map } from 'rxjs/operators';
 import { Login } from '../models/login.model';
+import { RefreshToken } from '../models/refresh-token.model';
 import { Router } from '@angular/router';
 
 export enum AuthenticationResultStatus {
@@ -22,7 +23,7 @@ export interface IAuthenticationResult {
   providedIn: 'root'
 })
 export class AccountService {
-  private accountUrl = environment.apiUrl + 'account';
+  private accountUrl = environment.clientDataUrl + '/auth/actions';
   private currentUser = new BehaviorSubject<User>({  });
 
   currentUser$ = this.currentUser.asObservable();
@@ -39,6 +40,16 @@ export class AccountService {
   }
 
   public login(request: Login) {
+    return this.http.post<User>(`${this.accountUrl}/login`, request).pipe(
+      map((user: User) => {
+        if (user) {
+          localStorage.setItem('user', JSON.stringify(user));
+          this.setCurrentUser(user);
+        }
+      }));
+  }
+
+  public refresh(request: Login) {
     return this.http.post<User>(`${this.accountUrl}/login`, request).pipe(
       map((user: User) => {
         if (user) {
