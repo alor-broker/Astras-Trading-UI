@@ -2,66 +2,89 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { User } from '../models/user.model';
+import { User } from '../models/user/user.model';
 import { map } from 'rxjs/operators';
-import { Login } from '../models/login.model';
-import { RefreshToken } from '../models/refresh-token.model';
+import { Login } from '../models/user/login.model';
+import { RefreshToken } from '../models/user/refresh-token.model';
 import { Router } from '@angular/router';
+import { Credentials } from '../models/user/credentials-model';
+import { RefreshTokenResponse } from '../models/user/refresh-token-response.model';
 
-export enum AuthenticationResultStatus {
-  Success,
-  Redirect,
-  Fail
-}
-
-export interface IAuthenticationResult {
-  status: AuthenticationResultStatus.Success;
-  state: any;
-}
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AccountService {
   private accountUrl = environment.clientDataUrl + '/auth/actions';
-  private currentUser = new BehaviorSubject<User>({  });
+  private currentUser = new BehaviorSubject<User>({
+    login: '',
+    token: '',
+    refreshToken: ''
+  });
+  private requiredServices = [
+    'client',
+    'Warp',
+    'subscriptionsApi',
+    'ServicesApi',
+    'WarpATConnector',
+    'CommandApi',
+  ];
 
   currentUser$ = this.currentUser.asObservable();
   isAuthorised$ = this.currentUser$.pipe(
-    map(user => {
+    map((user) => {
       return this.isAuthorised(user);
     })
-  )
+  );
 
-  constructor(private http: HttpClient, private router: Router)
-  {
+  constructor(private http: HttpClient, private router: Router) {
     const user: User = JSON.parse(localStorage.getItem('user')!);
     this.setCurrentUser(user);
   }
 
-  public login(request: Login) {
+  public login(credentials: Credentials) {
+    const request : Login = {
+      credentials: credentials,
+      requiredServices: this.requiredServices,
+    };
+
     return this.http.post<User>(`${this.accountUrl}/login`, request).pipe(
       map((user: User) => {
         if (user) {
+          user.login = credentials.username;
           localStorage.setItem('user', JSON.stringify(user));
           this.setCurrentUser(user);
         }
-      }));
+      })
+    );
   }
 
-  public refresh(request: Login) {
-    return this.http.post<User>(`${this.accountUrl}/login`, request).pipe(
-      map((user: User) => {
-        if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
-          this.setCurrentUser(user);
-        }
-      }));
+  public refresh() {
+    const user = this.currentUser.getValue();
+    if (!user) {
+      throw Error('User is empty, can\'t refresh token');
+    }
+    const refreshModel : RefreshToken = {
+      oldJwt: user.token,
+      refreshToken: user.refreshToken,
+    }
+    return this.http
+      .post<RefreshTokenResponse>(`${this.accountUrl}/refresh`, refreshModel)
+      .pipe(
+        map((res: RefreshTokenResponse) => {
+          if (res) {
+            user.token = res.jwt;
+            localStorage.setItem('user', JSON.stringify(user));
+            this.setCurrentUser(user);
+          }
+        })
+      );
   }
 
   public logout() {
     localStorage.removeItem('user');
-    this.currentUser.next({});
+    this.currentUser.next({
+      login: '',
+      token: '',
+      refreshToken: ''
+    });
   }
 
   public isAuthorised(user?: User): boolean {
@@ -75,7 +98,7 @@ export class AccountService {
   }
 
   public getAccessToken(): string | undefined {
-    return this.currentUser.getValue()?.token;
+    return this.currentUser.getValue().token;
   }
 
   private checkTokenTime(token: string | undefined): boolean {
@@ -83,7 +106,7 @@ export class AccountService {
       const mainPart = token.split('.')[1];
       const decodedString = atob(mainPart);
       const expirationTime = JSON.parse(decodedString)['exp'] * 1000;
-      const now = Date.now();
+      const now = Date.now() + 1000;
       return now < expirationTime;
     }
     return false;

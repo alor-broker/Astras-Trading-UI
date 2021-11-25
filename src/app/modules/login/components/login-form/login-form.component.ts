@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Login } from '../../../../shared/models/login.model';
+import { Credentials } from 'src/app/shared/models/user/credentials-model';
+import { Login } from '../../../../shared/models/user/login.model';
 import { AccountService } from '../../../../shared/services/account.service';
 
 @Component({
@@ -14,7 +15,7 @@ export class LoginFormComponent implements OnInit {
     private authorizeService: AccountService,
     private router: Router) { }
 
-    model: Login = {
+    model: Credentials = {
       username: '',
       password: ''
     };
@@ -25,10 +26,7 @@ export class LoginFormComponent implements OnInit {
     this.submitted = true;
 
     // Validation on empty strings is done in html
-    this.authorizeService.login({
-      username: this.model.username!,
-      password: this.model.password!
-    }).subscribe();
+    this.authorizeService.login(this.model).subscribe();
   }
 
   ngOnInit(): void {
