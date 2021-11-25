@@ -1,0 +1,46 @@
+<form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="container mt-4">
+  <div class="row justify-content-center">
+    <h1 class="offset-md-9">Login</h1>
+    <div class="col-md-3">
+      <label for="username" class="form-label">Email or login</label>
+      <div>
+        <input type="text"
+               class="form-control gradient-border"
+               id="username"
+               [(ngModel)]="model.username"
+               name="username"
+               #username="ngModel"
+               required>
+        <div [hidden]="username.valid || username.pristine"
+             class="alert alert-danger m-1">
+          Username is required
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-3">
+      <label for="password" class="form-label">Password</label>
+      <div>
+        <input type="password"
+               class="form-control gradient-border"
+               id="password"
+               [(ngModel)]="model.password"
+               name="password"
+               #password="ngModel"
+               required>
+        <div [hidden]="password.valid || password.pristine"
+             class="alert alert-danger m-1">
+          Password is required
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3 justify-content-center">
+    <button class="col-md-2 col-7 btn btn-success" type="submit" [disabled]="!loginForm.form.valid">Log in</button>
+    <span class="col-md-12 text-center">
+      Don't have an account?&nbsp;<a href="/register">Register</a>
+    </span>
+  </div>
+</form>
