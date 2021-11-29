@@ -11,19 +11,21 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private authorize: AccountService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    let headers = req.headers;
-    return this.authorize.currentUser$
+    if (this.authorize.isAuthRequest(req.url)) {
+      return next.handle(req);
+    }
+    return this.authorize.accessToken$
       .pipe(
         mergeMap(
-          user => {
-            if (!user.token) {
-              throw new Error('Cannot send request to registered endpoint if the user is not authenticated.');
+          token => {
+            if (!this.authorize.isAuthorised()) {
+              throw new Error('Token is empty');
             }
             else {
-              headers = headers.append('Authorization', `Bearer ${user.token}`);
+              // return processRequestWithToken(token, req, next);
               return next.handle(req.clone({
                 setHeaders: {
-                  Authorization: `Bearer ${user.token}`
+                  Authorization: `Bearer ${token}`
                 }
                }));
             }

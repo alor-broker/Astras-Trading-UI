@@ -1,21 +1,23 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
-import { map } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { Login } from '../models/user/login.model';
 import { RefreshToken } from '../models/user/refresh-token.model';
 import { Router } from '@angular/router';
 import { Credentials } from '../models/user/credentials-model';
 import { RefreshTokenResponse } from '../models/user/refresh-token-response.model';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AccountService {
   private accountUrl = environment.clientDataUrl + '/auth/actions';
   private currentUser = new BehaviorSubject<User>({
     login: '',
-    token: '',
+    jwt: '',
     refreshToken: ''
   });
   private requiredServices = [
@@ -33,6 +35,7 @@ export class AccountService {
       return this.isAuthorised(user);
     })
   );
+  accessToken$ = this.getAccessToken();
 
   constructor(private http: HttpClient, private router: Router) {
     const user: User = JSON.parse(localStorage.getItem('user')!);
@@ -48,7 +51,7 @@ export class AccountService {
     return this.http.post<User>(`${this.accountUrl}/login`, request).pipe(
       map((user: User) => {
         if (user) {
-          user.login = credentials.username;
+          user.login = credentials.login;
           localStorage.setItem('user', JSON.stringify(user));
           this.setCurrentUser(user);
         }
@@ -56,33 +59,11 @@ export class AccountService {
     );
   }
 
-  public refresh() {
-    const user = this.currentUser.getValue();
-    if (!user) {
-      throw Error('User is empty, can\'t refresh token');
-    }
-    const refreshModel : RefreshToken = {
-      oldJwt: user.token,
-      refreshToken: user.refreshToken,
-    }
-    return this.http
-      .post<RefreshTokenResponse>(`${this.accountUrl}/refresh`, refreshModel)
-      .pipe(
-        map((res: RefreshTokenResponse) => {
-          if (res) {
-            user.token = res.jwt;
-            localStorage.setItem('user', JSON.stringify(user));
-            this.setCurrentUser(user);
-          }
-        })
-      );
-  }
-
   public logout() {
     localStorage.removeItem('user');
     this.currentUser.next({
       login: '',
-      token: '',
+      jwt: '',
       refreshToken: ''
     });
   }
@@ -91,14 +72,53 @@ export class AccountService {
     if (!user) {
       user = this.currentUser.getValue();
     }
-    if (user && user.token) {
-      return this.checkTokenTime(user.token);
+    if (user && user.jwt) {
+      return this.checkTokenTime(user.jwt);
     }
     return false;
   }
 
-  public getAccessToken(): string | undefined {
-    return this.currentUser.getValue().token;
+  public isAuthRequest(url: string) {
+    return url == `${this.accountUrl}/login` || url == `${this.accountUrl}/refresh`;
+  }
+
+  private refresh() {
+    const user = this.currentUser.getValue();
+    if (!user) {
+      throw Error('User is empty, can\'t refresh token');
+    }
+    const refreshModel : RefreshToken = {
+      oldJwt: user.jwt,
+      refreshToken: user.refreshToken,
+    }
+    return this.http
+      .post<RefreshTokenResponse>(`${this.accountUrl}/refresh`, refreshModel)
+      .pipe(
+        map((res: RefreshTokenResponse) => {
+          if (res) {
+            user.jwt = res.jwt;
+            localStorage.setItem('user', JSON.stringify(user));
+            this.setCurrentUser(user);
+            return user.jwt;
+          }
+          throw Error('Can\'t refresh token');
+        })
+      );
+  }
+
+  private getAccessToken(): Observable<string> {
+    return this.currentUser$.pipe(
+      mergeMap(user => {
+        if (this.isAuthorised(user)) {
+          return user.jwt
+        }
+        else {
+          return this.refresh().pipe(
+            map(t => t)
+          )
+        }
+      })
+    )
   }
 
   private checkTokenTime(token: string | undefined): boolean {

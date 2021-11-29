@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'https://api.alor.ru',
-  clientDataUrl: 'https://lk-api.alorbroker.ru'
+  clientDataUrl: 'https://lk-api-dev.alorbroker.ru'
 };
 
 /*

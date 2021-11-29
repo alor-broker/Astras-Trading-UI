@@ -1,0 +1,6 @@
+<p>portfolio works!</p>
+<ul *ngIf="portfolio$ | async as portfolio">
+  <li *ngFor='let longPos in portfolio.longPositions'>
+    {{longPos.ticker}}
+  </li>
+</ul>

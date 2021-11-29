@@ -12,11 +12,11 @@ export class HandleErrorService {
     let errorMessage: string;
     if (err.error instanceof ErrorEvent) {
       // Other errors go here
-      errorMessage = `An error occurred ${err.error.message}`;
+      errorMessage = `An error occurred ${err?.message}`;
     }
     else {
       // Backend error goes here
-      errorMessage = `${err.error.message ??
+      errorMessage = `${err.message ??
         Object.values(err.error.errors) // Asp.net validation errors have wierd structure
         .flatMap(v => v)
         .reduce((k, j) => `${k}\n${j}`)

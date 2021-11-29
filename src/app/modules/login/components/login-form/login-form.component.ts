@@ -16,7 +16,7 @@ export class LoginFormComponent implements OnInit {
     private router: Router) { }
 
     model: Credentials = {
-      username: '',
+      login: '',
       password: ''
     };
 
