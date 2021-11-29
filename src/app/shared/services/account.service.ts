@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
-import { map, mergeMap } from 'rxjs/operators';
+import { catchError, first, map, mergeMap } from 'rxjs/operators';
 import { Login } from '../models/user/login.model';
 import { RefreshToken } from '../models/user/refresh-token.model';
 import { Router } from '@angular/router';
@@ -110,11 +110,15 @@ export class AccountService {
     return this.currentUser$.pipe(
       mergeMap(user => {
         if (this.isAuthorised(user)) {
-          return user.jwt
+          return of(user.jwt)
         }
         else {
           return this.refresh().pipe(
-            map(t => t)
+            map(t => t),
+            catchError(e => {
+               this.router.navigate(['login']);
+               throw e;
+            })
           )
         }
       })

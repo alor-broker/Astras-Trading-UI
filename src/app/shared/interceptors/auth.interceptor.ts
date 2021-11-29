@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { mergeMap, map, tap } from 'rxjs/operators'
+import { switchMap, distinct } from 'rxjs/operators'
 import { AccountService } from '../services/account.service';
 
 @Injectable({
@@ -16,10 +16,11 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     return this.authorize.accessToken$
       .pipe(
-        mergeMap(
+        distinct(),
+        switchMap(
           token => {
             if (!this.authorize.isAuthorised()) {
-              throw new Error('Token is empty');
+              throw new Error('Token is somehow empty');
             }
             else {
               // return processRequestWithToken(token, req, next);

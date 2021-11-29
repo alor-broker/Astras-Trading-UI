@@ -11,9 +11,7 @@ import { Position } from '@angular/compiler';
 })
 export class PortfolioComponent implements OnInit {
 
-  constructor(
-    private service: PortfolioService
-    ) {
+  constructor(private service: PortfolioService) {
     this.portfolio$ = new Observable();
   }
 

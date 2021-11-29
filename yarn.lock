@@ -1464,6 +1464,13 @@ alphanum-sort@^1.0.2:
   resolved "https://registry.npmjs.org/alphanum-sort/-/alphanum-sort-1.0.2.tgz"
   integrity sha1-l6ERlkmyEa0zaR2fn0hqjsn74KM=
 
+angular-gridster2@^13.0.0:
+  version "13.0.0"
+  resolved "https://registry.yarnpkg.com/angular-gridster2/-/angular-gridster2-13.0.0.tgz#05910222383cced72de3e48d8225a4a283a3be7d"
+  integrity sha512-TEgm0byQWgDxZmvKfmspHSMP+nwXkwd+7pmF5UvwdKkSJfC/dXo61iGM1hohKwXW71Kg1DkxD4H3f1HuKD9lgg==
+  dependencies:
+    tslib "^2.3.0"
+
 ansi-colors@4.1.1:
   version "4.1.1"
   resolved "https://registry.npmjs.org/ansi-colors/-/ansi-colors-4.1.1.tgz"

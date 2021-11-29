@@ -1,4 +1,7 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { PortfolioService } from '../../services/portfolio.service';
 
 import { PortfolioComponent } from './portfolio.component';
 
@@ -8,7 +11,9 @@ describe('PortfolioComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PortfolioComponent ]
+      declarations: [ PortfolioComponent ],
+      imports: [ HttpClientTestingModule, SharedModule ],
+      providers: [ PortfolioService ]
     })
     .compileComponents();
   });
