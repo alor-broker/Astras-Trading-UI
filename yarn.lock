@@ -1133,6 +1133,13 @@
   dependencies:
     enhanced-resolve "5.7.0"
 
+"@ngx-pwa/local-storage@13":
+  version "13.0.2"
+  resolved "http://repo.alor.ru:4874/@ngx-pwa%2flocal-storage/-/local-storage-13.0.2.tgz#dc5aeb0a354b08ed772b2b891f0136dde8365e2f"
+  integrity sha512-2gEbIGXK9Ph/pVZUWSTrgE6cFjvxvuVW4C9ow7WGA9+HL52RE9nE7nCXQsSSodnE+EPJeN4hgZZXnz+Cn57vPA==
+  dependencies:
+    tslib "^2.3.0"
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz"
@@ -1466,7 +1473,7 @@ alphanum-sort@^1.0.2:
 
 angular-gridster2@^13.0.0:
   version "13.0.0"
-  resolved "https://registry.yarnpkg.com/angular-gridster2/-/angular-gridster2-13.0.0.tgz#05910222383cced72de3e48d8225a4a283a3be7d"
+  resolved "http://repo.alor.ru:4874/angular-gridster2/-/angular-gridster2-13.0.0.tgz#05910222383cced72de3e48d8225a4a283a3be7d"
   integrity sha512-TEgm0byQWgDxZmvKfmspHSMP+nwXkwd+7pmF5UvwdKkSJfC/dXo61iGM1hohKwXW71Kg1DkxD4H3f1HuKD9lgg==
   dependencies:
     tslib "^2.3.0"

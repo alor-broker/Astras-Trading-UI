@@ -7,21 +7,47 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../shared/interceptors/auth.interceptor';
 import { HandleErrorService } from '../shared/services/handle-error.service';
 import { HandleErrorsInterceptor } from '../shared/interceptors/handle-errors.interceptor';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { LayoutModule } from '@angular/cdk/layout';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    NavbarComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
     ToastrModule.forRoot(),
+    // Angular material
+    MatToolbarModule,
+    MatIconModule,
+    LayoutModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatListModule
   ],
   exports: [
+    // Angular material
+    MatToolbarModule,
+    MatIconModule,
+    LayoutModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatListModule,
+    // modules
     CommonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    // components
+    NavbarComponent
   ],
   providers: [
     HandleErrorService,
