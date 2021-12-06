@@ -9,6 +9,9 @@ import {
   PushDirections,
   Resizable,
 } from 'angular-gridster2';
+import { Observable } from 'rxjs';
+import { DashboardItem } from '../../models/dashboard-item.model';
+import { DashboardService } from '../../services/dashboard.service';
 
 interface Safe extends GridsterConfig {
   draggable: Draggable;
@@ -23,9 +26,9 @@ interface Safe extends GridsterConfig {
 })
 export class DashboardComponent implements OnInit {
   options!: Safe;
-  dashboard!: Array<GridsterItem>;
+  dashboard$!: Observable<DashboardItem[]>;
 
-  constructor() {}
+  constructor(private service: DashboardService) {}
 
   ngOnInit(): void {
     this.options = {
@@ -83,7 +86,22 @@ export class DashboardComponent implements OnInit {
       scrollToNewItems: false,
     };
 
-    this.dashboard = [
+    this.dashboard$ = this.service.dashboard$;
+  }
+
+  changedOptions(): void {
+    if (this.options.api && this.options.api.optionsChanged) {
+      this.options.api.optionsChanged();
+    }
+  }
+
+  removeItem($event: MouseEvent | TouchEvent, item : any): void {
+    $event.preventDefault();
+    $event.stopPropagation();
+    this.service.removeWidget(item);
+  }
+}
+
       // { cols: 2, rows: 1, y: 0, x: 0 },
       // { cols: 2, rows: 2, y: 0, x: 2, hasContent: true },
       // { cols: 1, rows: 1, y: 0, x: 4 },
@@ -127,22 +145,3 @@ export class DashboardComponent implements OnInit {
       //   label: 'Drag&Resize Disabled',
       // },
       // { cols: 1, rows: 1, y: 2, x: 6 },
-    ];
-  }
-
-  changedOptions(): void {
-    if (this.options.api && this.options.api.optionsChanged) {
-      this.options.api.optionsChanged();
-    }
-  }
-
-  removeItem($event: MouseEvent | TouchEvent, item : any): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-    this.dashboard.splice(this.dashboard.indexOf(item), 1);
-  }
-
-  addItem(): void {
-    this.dashboard.push({ x: 0, y: 0, cols: 1, rows: 1 });
-  }
-}

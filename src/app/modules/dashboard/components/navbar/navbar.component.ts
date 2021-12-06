@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
+import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
   selector: 'ats-navbar',
@@ -16,6 +17,9 @@ export class NavbarComponent {
       shareReplay()
     );
 
-  constructor(private breakpointObserver: BreakpointObserver) {}
+  constructor(private breakpointObserver: BreakpointObserver, private service: DashboardService) {}
 
+  addItem(): void {
+    this.service.addWidget({ x: 0, y: 0, cols: 1, rows: 1, widget: '' })
+  }
 }

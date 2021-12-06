@@ -1,7 +1,4 @@
-<button mat-mini-fab (click)="addItem()" class="add-button cols-2">
-  <mat-icon>add</mat-icon>
-</button>
-<gridster [options]="options">
+<gridster [options]="options" *ngIf="dashboard$ | async as dashboard">
   <gridster-item [item]="item" *ngFor="let item of dashboard">
     <div class="button-holder">
       <div class="gridster-item-content" *ngIf="item.hasContent">

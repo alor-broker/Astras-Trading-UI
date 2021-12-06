@@ -7,7 +7,6 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../shared/interceptors/auth.interceptor';
 import { HandleErrorService } from '../shared/services/handle-error.service';
 import { HandleErrorsInterceptor } from '../shared/interceptors/handle-errors.interceptor';
-import { NavbarComponent } from './components/navbar/navbar.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -18,7 +17,7 @@ import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
-    NavbarComponent
+
   ],
   imports: [
     CommonModule,
@@ -47,7 +46,6 @@ import { MatListModule } from '@angular/material/list';
     FormsModule,
     ReactiveFormsModule,
     // components
-    NavbarComponent
   ],
   providers: [
     HandleErrorService,

@@ -5,17 +5,20 @@ import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.co
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { GridsterModule } from 'angular-gridster2';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 @NgModule({
   declarations: [
     DashboardPageComponent,
-    DashboardComponent
+    DashboardComponent,
+    NavbarComponent
   ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
     SharedModule,
     GridsterModule,
+    // components
   ]
 })
 export class DashboardModule { }
