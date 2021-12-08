@@ -3,6 +3,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { PortfolioService } from '../../services/portfolio.service';
 import { Portfolio } from '../../models/portfolio.model'
 import { Position } from '@angular/compiler';
+import { OrderbookRow } from 'src/app/modules/dashboard/models/orderbook-row.model';
+import { ColDef } from 'ag-grid-community';
 
 @Component({
   selector: 'ats-portfolio',
@@ -14,6 +16,16 @@ export class PortfolioComponent implements OnInit {
   constructor(private service: PortfolioService) {
     this.portfolio$ = new Observable();
   }
+
+  columnDefs: ColDef[] = [
+    { field: 'volume' },
+    { field: 'price' },
+  ];
+
+  rowData : OrderbookRow[] = [
+    { volume: 10, price: 100 },
+    { volume: 20, price: 150 },
+  ] ;
 
   portfolio$: Observable<Portfolio>
 

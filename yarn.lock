@@ -1407,6 +1407,18 @@ adjust-sourcemap-loader@^4.0.0:
     loader-utils "^2.0.0"
     regex-parser "^2.2.11"
 
+ag-grid-angular@^26.2.0:
+  version "26.2.0"
+  resolved "https://registry.yarnpkg.com/ag-grid-angular/-/ag-grid-angular-26.2.0.tgz#02c1b6aa7d46deb6956df29205284b1b647381ae"
+  integrity sha512-IJYNniJkQXQhEMdsZ50MFMY80K3PQGsh4Jh1Nu7G1Det5Pq2QNPgZ/FwNucsxYDPn32VICVVlUEQTwtEl63FZQ==
+  dependencies:
+    tslib "^1.10.0"
+
+ag-grid-community@^26.2.0:
+  version "26.2.0"
+  resolved "https://registry.yarnpkg.com/ag-grid-community/-/ag-grid-community-26.2.0.tgz#f561d5b6d9ca9510275961079c74cfa0f6e1069c"
+  integrity sha512-YkNQUJ7EsmXbwfSrT4sIBYp1MbFku+ebEiqKc4+YFVZ5+nniHFzvSomHzFqbbkOtEfb42Gmo8cMNvBz9aPnZsQ==
+
 agent-base@6:
   version "6.0.2"
   resolved "https://registry.npmjs.org/agent-base/-/agent-base-6.0.2.tgz"
@@ -4433,6 +4445,13 @@ neo-async@^2.6.2:
   version "2.6.2"
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
+
+ng-dynamic-component@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/ng-dynamic-component/-/ng-dynamic-component-10.0.0.tgz#9ceba84f0ce0b5f230f41976cb44cbe2bcdfae14"
+  integrity sha512-Q3PayVEZGbuab9GmlNJP69LkUg3sCPjyjTQfEo1gxmge5tpaGVXGbwJdOPZouLrYTVezMnNfiy1FjKf1GNoTzg==
+  dependencies:
+    tslib "^2.0.0"
 
 ngx-toastr@^14.2.1:
   version "14.2.1"

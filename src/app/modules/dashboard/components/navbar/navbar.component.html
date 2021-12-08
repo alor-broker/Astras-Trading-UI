@@ -2,8 +2,11 @@
   <mat-sidenav-content>
     <mat-toolbar color="primary">
       <span>Astras</span>
-      <button mat-mini-fab (click)="addItem()" class="add-button cols-2">
-        <mat-icon>add</mat-icon>
+      <button mat-mini-fab (click)="addItem('order-book')" class="add-button cols-2">
+        <mat-icon>list</mat-icon>
+      </button>
+      <button mat-mini-fab (click)="addItem('trading-chart')" class="add-button cols-2">
+        <mat-icon>bar_chart</mat-icon>
       </button>
     </mat-toolbar>
   </mat-sidenav-content>

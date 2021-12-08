@@ -13,6 +13,8 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { GridsterModule } from 'angular-gridster2';
+import { AgGridModule } from 'ag-grid-angular';
 
 
 @NgModule({
@@ -25,6 +27,8 @@ import { MatListModule } from '@angular/material/list';
     ReactiveFormsModule,
     HttpClientModule,
     ToastrModule.forRoot(),
+    GridsterModule,
+    AgGridModule,
     // Angular material
     MatToolbarModule,
     MatIconModule,
@@ -45,6 +49,8 @@ import { MatListModule } from '@angular/material/list';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    GridsterModule,
+    AgGridModule,
     // components
   ],
   providers: [

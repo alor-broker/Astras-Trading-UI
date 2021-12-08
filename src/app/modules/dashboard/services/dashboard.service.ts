@@ -4,15 +4,13 @@ import {
   Observable,
   Subject,
 } from 'rxjs';
-import { DashboardItem } from '../models/dashboard-item.model';
+import { DashboardItem } from '../../../shared/models/dashboard-item.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DashboardService {
   private dashboardsStorage = 'dashboards';
-  private newWidgetsSource = new Subject<DashboardItem[]>();
-  removeWidgetsSource = new Subject<DashboardItem[]>();
 
   private dashboardSource: BehaviorSubject<DashboardItem[]>;
   readonly dashboard$ : Observable<DashboardItem[]>;
@@ -23,7 +21,6 @@ export class DashboardService {
     if (existingDashboardJson) {
       existingDashboard = JSON.parse(existingDashboardJson);
     }
-
     this.dashboardSource = new BehaviorSubject<DashboardItem[]>(existingDashboard);
     this.dashboard$ = this.dashboardSource.asObservable();
   }

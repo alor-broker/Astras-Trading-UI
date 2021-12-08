@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit } from '@angular/core';
 import {
   CompactType,
   DisplayGrid,
@@ -10,7 +10,7 @@ import {
   Resizable,
 } from 'angular-gridster2';
 import { Observable } from 'rxjs';
-import { DashboardItem } from '../../models/dashboard-item.model';
+import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { DashboardService } from '../../services/dashboard.service';
 
 interface Safe extends GridsterConfig {
@@ -28,6 +28,7 @@ export class DashboardComponent implements OnInit {
   options!: Safe;
   dashboard$!: Observable<DashboardItem[]>;
 
+  resize: EventEmitter<DashboardItem> = new EventEmitter<DashboardItem>();
   constructor(private service: DashboardService) {}
 
   ngOnInit(): void {
@@ -84,6 +85,11 @@ export class DashboardComponent implements OnInit {
       disableWindowResize: false,
       disableWarnings: false,
       scrollToNewItems: false,
+      itemResizeCallback: (item, e) => {
+        // update DB with new size
+        // send the update to widgets
+        this.resize.emit({ ...item, height: e.height, width: e.width });
+      },
     };
 
     this.dashboard$ = this.service.dashboard$;
@@ -101,47 +107,3 @@ export class DashboardComponent implements OnInit {
     this.service.removeWidget(item);
   }
 }
-
-      // { cols: 2, rows: 1, y: 0, x: 0 },
-      // { cols: 2, rows: 2, y: 0, x: 2, hasContent: true },
-      // { cols: 1, rows: 1, y: 0, x: 4 },
-      // { cols: 1, rows: 1, y: 2, x: 5 },
-      // { cols: 1, rows: 1, y: 1, x: 0 },
-      // { cols: 1, rows: 1, y: 1, x: 0 },
-      // {
-      //   cols: 2,
-      //   rows: 2,
-      //   y: 3,
-      //   x: 5,
-      //   minItemRows: 2,
-      //   minItemCols: 2,
-      //   label: 'Min rows & cols = 2',
-      // },
-      // {
-      //   cols: 2,
-      //   rows: 2,
-      //   y: 2,
-      //   x: 0,
-      //   maxItemRows: 2,
-      //   maxItemCols: 2,
-      //   label: 'Max rows & cols = 2',
-      // },
-      // {
-      //   cols: 2,
-      //   rows: 1,
-      //   y: 2,
-      //   x: 2,
-      //   dragEnabled: true,
-      //   resizeEnabled: true,
-      //   label: 'Drag&Resize Enabled',
-      // },
-      // {
-      //   cols: 1,
-      //   rows: 1,
-      //   y: 2,
-      //   x: 4,
-      //   dragEnabled: false,
-      //   resizeEnabled: false,
-      //   label: 'Drag&Resize Disabled',
-      // },
-      // { cols: 1, rows: 1, y: 2, x: 6 },

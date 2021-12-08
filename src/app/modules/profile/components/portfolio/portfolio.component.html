@@ -1,6 +1,14 @@
 <p>portfolio works!</p>
-<ul *ngIf="portfolio$ | async as portfolio">
+<!-- <ul *ngIf="portfolio$ | async as portfolio">
   <li *ngFor='let longPos in portfolio.longPositions'>
     {{longPos.ticker}}
   </li>
-</ul>
+</ul> -->
+<ag-grid-angular
+    #agGrid
+    style="width: 500px; height: 500px;"
+    class="ag-theme-alpine"
+    [rowData]="rowData"
+    [columnDefs]="columnDefs"
+>
+</ag-grid-angular>
