@@ -24,11 +24,13 @@ export class NavbarComponent {
 
   addItem(name: string): void {
     this.service.addWidget({
-      x: 0,
-      y: 0,
-      cols: 1,
-      rows: 1,
-      type: name
+      item: {
+        x: 0,
+        y: 0,
+        cols: 1,
+        rows: 1,
+        type: name
+      },
     });
   }
 }

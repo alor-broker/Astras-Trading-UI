@@ -8,7 +8,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { ColDef } from 'ag-grid-community';
 
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
@@ -17,6 +17,11 @@ import { OrderbookRow } from '../../models/orderbook-row.model';
 import { AgGridAngular } from 'ag-grid-angular';
 
 type Widget = OnInit & DashboardItem;
+
+interface Size {
+  width: string,
+  height: string
+}
 
 @Component({
   selector: 'ats-order-book[widget][resize]',
@@ -32,16 +37,17 @@ export class OrderBookComponent implements OnInit {
   resize!: EventEmitter<DashboardItem>;
   @ViewChild('agGrid') agGrid!: AgGridAngular;
 
-
-  resizeSub!: Subscription;
-
   columnDefs: ColDef[] = [
     { field: 'volume' },
     { field: 'price' },
   ];
 
+  resizeSub!: Subscription;
+
   rowData : OrderbookRow[] = [ ] ;
   bids$: Observable<OrderbookRow[]>;
+
+  sizes: BehaviorSubject<Size> = new BehaviorSubject<Size>({width: '100%', height: '100%'});
 
   constructor(private service: OrderbookService) {
     this.bids$ = service.bids$;
@@ -49,10 +55,15 @@ export class OrderBookComponent implements OnInit {
 
   ngOnInit(): void {
     this.resizeSub = this.resize.subscribe((widget) => {
-      if (widget === this.widget) {
+      if (widget.item === this.widget.item) {
         // or check id , type or whatever you have there
         // resize your widget, chart, map , etc.
-        console.log(widget);
+        this.sizes.next({
+          // width: (widget.width ?? 0) + 'px',
+          width: '100%',
+          height: (widget.height ?? 0) + 'px'
+        })
+        // console.log(widget);
       }
     });
   }

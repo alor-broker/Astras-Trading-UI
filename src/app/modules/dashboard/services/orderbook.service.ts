@@ -10,8 +10,7 @@ import { OrderBook } from '../models/orderbook.model';
 export class OrderbookService {
 
   orderBook$: Observable<OrderBook> = interval(1000).pipe(
-    map(_ => this.generateOrderBook()),
-    tap(p => console.log(p))
+    map(_ => this.generateOrderBook())
   );
 
   bids$ = this.orderBook$.pipe(

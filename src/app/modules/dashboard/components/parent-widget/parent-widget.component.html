@@ -1,2 +1,2 @@
-<ats-order-book [widget]="widget" [resize]="resize" *ngIf="widget.type === 'order-book'"></ats-order-book>
-<ats-trading-chart [widget]="widget" [resize]="resize" *ngIf="widget.type === 'trading-chart'"></ats-trading-chart>
+<ats-order-book [widget]="widget" [resize]="resize" *ngIf="widget.item.type === 'order-book'"></ats-order-book>
+<ats-trading-chart [widget]="widget" [resize]="resize" *ngIf="widget.item.type === 'trading-chart'"></ats-trading-chart>

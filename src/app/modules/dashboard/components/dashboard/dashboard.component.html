@@ -1,11 +1,11 @@
 <gridster [options]="options" *ngIf="dashboard$ | async as dashboard">
-  <gridster-item [item]="item" *ngFor="let item of dashboard">
+  <gridster-item [item]="widget.item" *ngFor="let widget of dashboard">
     <div class="button-holder">
-      <button mat-mini-fab *ngIf="!item.hasContent" (mousedown)="removeItem($event, item)"
-              (touchstart)="removeItem($event, item)">
+      <button mat-mini-fab *ngIf="!widget.item.hasContent" (mousedown)="removeItem($event, widget)"
+              (touchstart)="removeItem($event, widget)">
         <mat-icon>delete</mat-icon>
       </button>
-      <ats-parent-widget [widget]="item" [resize]="resize"></ats-parent-widget>
+      <ats-parent-widget [widget]="widget" [resize]="resize"></ats-parent-widget>
       <!-- <ndc-dynamic class="no-drag" [ndcDynamicComponent]="item.component" [ndcDynamicInputs]="item.input"></ndc-dynamic> -->
       <!-- <div class="gridster-item-content" *ngIf="item.hasContent">
         <div class="stuff">
@@ -22,7 +22,7 @@
           <mat-icon>delete</mat-icon>
         </button>
       </div> -->
-      <label *ngIf="!item.hasContent">{{item.label}}</label>
+      <label *ngIf="!widget.item.hasContent">{{widget.item.label}}</label>
     </div>
   </gridster-item>
 </gridster>

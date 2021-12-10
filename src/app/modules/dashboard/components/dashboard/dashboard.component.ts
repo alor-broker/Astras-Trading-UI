@@ -88,7 +88,7 @@ export class DashboardComponent implements OnInit {
       itemResizeCallback: (item, e) => {
         // update DB with new size
         // send the update to widgets
-        this.resize.emit({ ...item, height: e.height, width: e.width });
+        this.resize.emit({ item: item, height: e.height, width: e.width });
       },
     };
 
