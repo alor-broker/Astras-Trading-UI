@@ -8,6 +8,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { OrderBookComponent } from './components/order-book/order-book.component';
 import { ParentWidgetComponent } from './components/parent-widget/parent-widget.component';
 import { TradingChartComponent } from './components/trading-chart/trading-chart.component';
+import { WidgetHeaderComponent } from './components/widget-header/widget-header.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { TradingChartComponent } from './components/trading-chart/trading-chart.
     NavbarComponent,
     OrderBookComponent,
     ParentWidgetComponent,
-    TradingChartComponent
+    TradingChartComponent,
+    WidgetHeaderComponent
   ],
   imports: [
     CommonModule,

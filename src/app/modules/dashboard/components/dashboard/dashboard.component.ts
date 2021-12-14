@@ -100,10 +100,4 @@ export class DashboardComponent implements OnInit {
       this.options.api.optionsChanged();
     }
   }
-
-  removeItem($event: MouseEvent | TouchEvent, item : any): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-    this.service.removeWidget(item);
-  }
 }

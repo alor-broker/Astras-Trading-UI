@@ -1,0 +1,4 @@
+<button mat-mini-fab *ngIf="!widget.item.hasContent" (mousedown)="removeItem($event, widget)"
+  (touchstart)="removeItem($event, widget)">
+  <mat-icon>delete</mat-icon>
+</button>
