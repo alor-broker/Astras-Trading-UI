@@ -119,7 +119,7 @@
   dependencies:
     tslib "^2.1.0"
 
-"@angular/cdk@^12.2.13":
+"@angular/cdk@^12.1.0", "@angular/cdk@^12.2.13":
   version "12.2.13"
   resolved "https://registry.npmjs.org/@angular/cdk/-/cdk-12.2.13.tgz"
   integrity sha512-zSKRhECyFqhingIeyRInIyTvYErt4gWo+x5DQr0b7YLUbU8DZSwWnG4w76Ke2s4U8T7ry1jpJBHoX/e8YBpGMg==
@@ -176,13 +176,6 @@
   dependencies:
     tslib "^2.1.0"
 
-"@angular/material@^12.2.13":
-  version "12.2.13"
-  resolved "https://registry.npmjs.org/@angular/material/-/material-12.2.13.tgz"
-  integrity sha512-6g2GyN4qp2D+DqY2AwrQuPB3cd9gybvQVXvNRbTPXEulHr+LgGei00ySdFHFp6RvdGSMZ4i3LM1Fq3VkFxhCfQ==
-  dependencies:
-    tslib "^2.2.0"
-
 "@angular/platform-browser-dynamic@~12.0.3":
   version "12.0.5"
   resolved "https://registry.npmjs.org/@angular/platform-browser-dynamic/-/platform-browser-dynamic-12.0.5.tgz"
@@ -203,6 +196,21 @@
   integrity sha512-2jiaT+OxCmJbeJ0MTPmIHBsTFLysenvPZteozYsjcmUo9mOzJHAjqHLJvTC+Ri+E9xvnplh+8BPETRleV1pAFw==
   dependencies:
     tslib "^2.1.0"
+
+"@ant-design/colors@^5.0.0":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@ant-design/colors/-/colors-5.1.1.tgz#800b2186b1e27e66432e67d03ed96af3e21d8940"
+  integrity sha512-Txy4KpHrp3q4XZdfgOBqLl+lkQIc3tEvHXOimRN1giX1AEC7mGtyrO9p8iRGJ3FLuVMGa2gNEzQyghVymLttKQ==
+  dependencies:
+    "@ctrl/tinycolor" "^3.3.1"
+
+"@ant-design/icons-angular@^12.0.3":
+  version "12.0.3"
+  resolved "https://registry.yarnpkg.com/@ant-design/icons-angular/-/icons-angular-12.0.3.tgz#3e99aa99ceebb978384a2926d06da19c043fc4bd"
+  integrity sha512-Jl/O7fQiFGsFHuesOp7Oo/TKTPSlWAqMa2DBQdgQbNzv2c3v1ijQWd54ymDC6ftIHMsKD30nJ6bekCiqdbfZuA==
+  dependencies:
+    "@ant-design/colors" "^5.0.0"
+    tslib "^2.0.0"
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.16.0":
   version "7.16.0"
@@ -1105,6 +1113,11 @@
   resolved "https://registry.npmjs.org/@csstools/convert-colors/-/convert-colors-1.4.0.tgz"
   integrity sha512-5a6wqoJV/xEdbRNKVo6I4hO3VjyDq//8q2f9I6PBAvMesJHFauXDorcNCsr9RzvsZnaWi5NYCcfyqP1QeFHFbw==
 
+"@ctrl/tinycolor@^3.3.1":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
+  integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
+
 "@discoveryjs/json-ext@0.5.2":
   version "0.5.2"
   resolved "https://registry.npmjs.org/@discoveryjs/json-ext/-/json-ext-0.5.2.tgz"
@@ -1406,18 +1419,6 @@ adjust-sourcemap-loader@^4.0.0:
   dependencies:
     loader-utils "^2.0.0"
     regex-parser "^2.2.11"
-
-ag-grid-angular@^26.2.0:
-  version "26.2.0"
-  resolved "https://registry.yarnpkg.com/ag-grid-angular/-/ag-grid-angular-26.2.0.tgz#02c1b6aa7d46deb6956df29205284b1b647381ae"
-  integrity sha512-IJYNniJkQXQhEMdsZ50MFMY80K3PQGsh4Jh1Nu7G1Det5Pq2QNPgZ/FwNucsxYDPn32VICVVlUEQTwtEl63FZQ==
-  dependencies:
-    tslib "^1.10.0"
-
-ag-grid-community@^26.2.0:
-  version "26.2.0"
-  resolved "https://registry.yarnpkg.com/ag-grid-community/-/ag-grid-community-26.2.0.tgz#f561d5b6d9ca9510275961079c74cfa0f6e1069c"
-  integrity sha512-YkNQUJ7EsmXbwfSrT4sIBYp1MbFku+ebEiqKc4+YFVZ5+nniHFzvSomHzFqbbkOtEfb42Gmo8cMNvBz9aPnZsQ==
 
 agent-base@6:
   version "6.0.2"
@@ -2476,6 +2477,11 @@ custom-event@~1.0.0:
   version "1.0.1"
   resolved "https://registry.npmjs.org/custom-event/-/custom-event-1.0.1.tgz"
   integrity sha1-XQKkaFCt8bSjF5RqOSj8y1v9BCU=
+
+date-fns@^2.10.0:
+  version "2.27.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.27.0.tgz#e1ff3c3ddbbab8a2eaadbb6106be2929a5a2d92b"
+  integrity sha512-sj+J0Mo2p2X1e306MHq282WS4/A8Pz/95GIFcsPNMPMZVI3EUrAdSv90al1k+p74WGLCruMXk23bfEDZa71X9Q==
 
 date-format@^2.1.0:
   version "2.1.0"
@@ -4452,6 +4458,16 @@ ng-dynamic-component@^10.0.0:
   integrity sha512-Q3PayVEZGbuab9GmlNJP69LkUg3sCPjyjTQfEo1gxmge5tpaGVXGbwJdOPZouLrYTVezMnNfiy1FjKf1GNoTzg==
   dependencies:
     tslib "^2.0.0"
+
+ng-zorro-antd@^12.1.0:
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/ng-zorro-antd/-/ng-zorro-antd-12.1.0.tgz#64dd19e4da6d80215a1b3a76fad1257b670b40ff"
+  integrity sha512-tsL57G4RmnB+lfGsC0onxYIdZ32L1CbrZUW35I3lwn8pB37qU2W87u1AYDulZHlQbz7CMHhjEnnucYPWu3Ak3g==
+  dependencies:
+    "@angular/cdk" "^12.1.0"
+    "@ant-design/icons-angular" "^12.0.3"
+    date-fns "^2.10.0"
+    tslib "^2.2.0"
 
 ngx-toastr@^14.2.1:
   version "14.2.1"

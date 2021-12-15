@@ -5,17 +5,16 @@ import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.co
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { NavbarComponent } from './components/navbar/navbar.component';
-import { OrderBookComponent } from './components/order-book/order-book.component';
 import { ParentWidgetComponent } from './components/parent-widget/parent-widget.component';
 import { TradingChartComponent } from './components/trading-chart/trading-chart.component';
 import { WidgetHeaderComponent } from './components/widget-header/widget-header.component';
+import { OrderbookModule } from '../orderbook/orderbook.module';
 
 @NgModule({
   declarations: [
     DashboardPageComponent,
     DashboardComponent,
     NavbarComponent,
-    OrderBookComponent,
     ParentWidgetComponent,
     TradingChartComponent,
     WidgetHeaderComponent
@@ -24,6 +23,7 @@ import { WidgetHeaderComponent } from './components/widget-header/widget-header.
     CommonModule,
     DashboardRoutingModule,
     SharedModule,
+    OrderbookModule,
     // components
   ]
 })

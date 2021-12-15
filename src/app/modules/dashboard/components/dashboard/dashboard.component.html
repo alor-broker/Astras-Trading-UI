@@ -1,24 +1,10 @@
-<gridster [options]="options" *ngIf="dashboard$ | async as dashboard">
-  <gridster-item [item]="widget.item" *ngFor="let widget of dashboard">
-    <div class="button-holder">
-      <ats-parent-widget [widget]="widget" [resize]="resize"></ats-parent-widget>
-      <!-- <ndc-dynamic class="no-drag" [ndcDynamicComponent]="item.component" [ndcDynamicInputs]="item.input"></ndc-dynamic> -->
-      <!-- <div class="gridster-item-content" *ngIf="item.hasContent">
-        <div class="stuff">
-          <span>Some content to select and click without dragging the widget</span>
-          <a href="https://www.google.com" target="_blank">Link to Google</a>
-        </div>
+<div class='inner-content'>
+  <gridster [options]="options" *ngIf="dashboard$ | async as dashboard">
+    <gridster-item [item]="widget.item" *ngFor="let widget of dashboard">
+      <div class="button-holder">
+        <ats-parent-widget [widget]="widget" [resize]="resize"></ats-parent-widget>
+        <label *ngIf="!widget.item.hasContent">{{widget.item.label}}</label>
       </div>
-      <div class="item-buttons" *ngIf="item.hasContent">
-        <button mat-icon-button mat-raised-button class="drag-handler">
-          <mat-icon>open_with</mat-icon>
-        </button>
-        <button mat-icon-button mat-raised-button class="remove-button" (mousedown)="removeItem($event, item)"
-                (touchstart)="removeItem($event, item)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div> -->
-      <label *ngIf="!widget.item.hasContent">{{widget.item.label}}</label>
-    </div>
-  </gridster-item>
-</gridster>
+    </gridster-item>
+  </gridster>
+</div>

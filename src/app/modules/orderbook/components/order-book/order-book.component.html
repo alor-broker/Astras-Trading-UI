@@ -1,0 +1,22 @@
+<div *ngIf="!shouldShowSettings && (ob$ | async) as ob " [ngStyle]="sizes | async" >
+<nz-table #basicTable [nzData]="ob.rows" nzSize="small" [nzFrontPagination]="false">
+  <thead>
+    <tr>
+      <th>Vol</th>
+      <th>Bid</th>
+      <th>Ask</th>
+      <th>Vol</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor='let row of basicTable.data'>
+      <td class='row-cell' >{{row.bidVolume}}</td>
+      <td class='row-cell--bid' [ngStyle]='getBidStyle(row.bidVolume ?? 0)'>{{row.bid}}</td>
+      <td class='row-cell--ask' [ngStyle]='getAskStyle(row.askVolume ?? 0)'>{{row.ask}}</td>
+      <td class='row-cell'  nzAlign='right'>{{row.askVolume}}</td>
+    </tr>
+  </tbody>
+</nz-table>
+
+</div>
+<ats-orderbook-settings *ngIf="shouldShowSettings"></ats-orderbook-settings>

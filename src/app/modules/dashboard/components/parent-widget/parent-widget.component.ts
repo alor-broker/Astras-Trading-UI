@@ -6,6 +6,7 @@ import {
   ViewEncapsulation,
   OnInit,
 } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 
 @Component({
@@ -16,12 +17,19 @@ import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
   encapsulation: ViewEncapsulation.None
 })
 export class ParentWidgetComponent implements OnInit {
+
   @Input()
   widget!: DashboardItem;
   @Input()
   resize! : EventEmitter<DashboardItem>;
 
+  shouldShowSettings: boolean = false;
+
   constructor() {}
 
   ngOnInit(): void {}
+
+  onSwitchSettings(value: boolean) {
+    this.shouldShowSettings = value;
+  }
 }

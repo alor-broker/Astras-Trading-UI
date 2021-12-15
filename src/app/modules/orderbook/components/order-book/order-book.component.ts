@@ -3,18 +3,15 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { ColDef } from 'ag-grid-community';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
-import { OrderbookRow } from '../../models/orderbook-row.model';
-import { AgGridAngular } from 'ag-grid-angular';
+import { OrderBook } from '../../models/orderbook.model';
 
 type Widget = OnInit & DashboardItem;
 
@@ -24,7 +21,7 @@ interface Size {
 }
 
 @Component({
-  selector: 'ats-order-book[widget][resize]',
+  selector: 'ats-order-book[widget][resize][shouldShowSettings]',
   templateUrl: './order-book.component.html',
   styleUrls: ['./order-book.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,25 +29,21 @@ interface Size {
 })
 export class OrderBookComponent implements OnInit {
   @Input()
+  shouldShowSettings!: boolean;
+  @Input()
   widget!: DashboardItem;
   @Input()
   resize!: EventEmitter<DashboardItem>;
-  @ViewChild('agGrid') agGrid!: AgGridAngular;
-
-  columnDefs: ColDef[] = [
-    { field: 'volume' },
-    { field: 'price' },
-  ];
 
   resizeSub!: Subscription;
-
-  rowData : OrderbookRow[] = [ ] ;
-  bids$: Observable<OrderbookRow[]>;
+  ob$: Observable<OrderBook | null> = of(null);
+  maxVolume: number = 1;
 
   sizes: BehaviorSubject<Size> = new BehaviorSubject<Size>({width: '100%', height: '100%'});
 
   constructor(private service: OrderbookService) {
-    this.bids$ = service.bids$;
+    this.ob$ = this.service.orderBook$;
+    this.ob$.subscribe(ob => this.maxVolume = ob?.maxVolume ?? 1);
   }
 
   ngOnInit(): void {
@@ -60,7 +53,7 @@ export class OrderBookComponent implements OnInit {
         // resize your widget, chart, map , etc.
         this.sizes.next({
           // width: (widget.width ?? 0) + 'px',
-          width: '100%',
+          width: (widget.width ?? 0) + 'px',
           height: (widget.height ?? 0) + 'px'
         })
         // console.log(widget);
@@ -70,5 +63,14 @@ export class OrderBookComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.resizeSub.unsubscribe();
+  }
+
+  getBidStyle(value: number) {
+    const size = 100 * (value / this.maxVolume);
+    return { background: `linear-gradient(90deg, white ${size}%, green ${1 - size}%)`};
+  }
+  getAskStyle(value: number) {
+    const size = 100 * (value / this.maxVolume);
+    return { background: `linear-gradient(90deg, red ${size}%, white ${1 - size}%)`};
   }
 }

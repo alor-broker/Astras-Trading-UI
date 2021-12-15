@@ -7,14 +7,12 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../shared/interceptors/auth.interceptor';
 import { HandleErrorService } from '../shared/services/handle-error.service';
 import { HandleErrorsInterceptor } from '../shared/interceptors/handle-errors.interceptor';
-import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { LayoutModule } from '@angular/cdk/layout';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { GridsterModule } from 'angular-gridster2';
-import { AgGridModule } from 'ag-grid-angular';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 
 
 @NgModule({
@@ -28,29 +26,25 @@ import { AgGridModule } from 'ag-grid-angular';
     HttpClientModule,
     ToastrModule.forRoot(),
     GridsterModule,
-    AgGridModule,
-    // Angular material
-    MatToolbarModule,
-    MatIconModule,
-    LayoutModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatListModule
+    // Ng zorro
+    NzTableModule,
+    NzButtonModule,
+    NzIconModule,
+    NzLayoutModule,
+    NzMenuModule,
   ],
   exports: [
-    // Angular material
-    MatToolbarModule,
-    MatIconModule,
-    LayoutModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatListModule,
+    // Ng zorro
+    NzTableModule,
+    NzButtonModule,
+    NzIconModule,
+    NzLayoutModule,
     // modules
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     GridsterModule,
-    AgGridModule,
+    NzMenuModule,
     // components
   ],
   providers: [

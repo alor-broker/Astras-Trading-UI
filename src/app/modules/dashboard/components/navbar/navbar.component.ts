@@ -29,7 +29,8 @@ export class NavbarComponent {
         y: 0,
         cols: 1,
         rows: 1,
-        type: name
+        type: name,
+        label: name
       },
     });
   }

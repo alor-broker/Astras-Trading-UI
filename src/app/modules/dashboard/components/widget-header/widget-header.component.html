@@ -1,4 +1,12 @@
-<button mat-mini-fab *ngIf="!widget.item.hasContent" (mousedown)="removeItem($event, widget)"
-  (touchstart)="removeItem($event, widget)">
-  <mat-icon>delete</mat-icon>
-</button>
+<div class='panel'>
+  <button nz-button class='btn-panel' *ngIf="!widget.item.hasContent" (click)="switchSettings($event)">
+    <i nz-icon [nzType]="'setting'" [nzTheme]="'fill'"></i>
+  </button>
+  <label>{{widget.item.label}}</label>
+  <span>
+    <button nz-buttonclass='btn-panel' *ngIf="!widget.item.hasContent" (mousedown)="removeItem($event, widget)"
+      (touchstart)="removeItem($event, widget)">
+      <i nz-icon nzType="close-circle" nzTheme="outline"></i>
+    </button>
+  </span>
+</div>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { DashboardService } from '../../services/dashboard.service';
 
@@ -8,14 +8,23 @@ import { DashboardService } from '../../services/dashboard.service';
   styleUrls: ['./widget-header.component.sass']
 })
 export class WidgetHeaderComponent implements OnInit {
-  @Input()
-  widget!: DashboardItem;
+  private shouldShowSettings = false;
+
+  @Input() widget!: DashboardItem;
+
+  @Output() switchSettingsEvent = new EventEmitter<boolean>();
 
   constructor(private service: DashboardService) { }
 
   ngOnInit() {
   }
 
+  switchSettings($event: MouseEvent) {
+    $event.preventDefault();
+    $event.stopPropagation();
+    this.shouldShowSettings = !this.shouldShowSettings;
+    this.switchSettingsEvent.emit(this.shouldShowSettings)
+  }
 
   removeItem($event: MouseEvent | TouchEvent, item : any): void {
     $event.preventDefault();
