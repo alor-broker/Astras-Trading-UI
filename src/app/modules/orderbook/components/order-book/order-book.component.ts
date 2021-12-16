@@ -26,6 +26,7 @@ interface Size {
   styleUrls: ['./order-book.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  providers: [OrderbookService]
 })
 export class OrderBookComponent implements OnInit {
   @Input()

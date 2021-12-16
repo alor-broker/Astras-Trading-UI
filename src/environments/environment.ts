@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://api.alor.ru',
+  apiUrl: 'https://apidev.alor.ru',
+  wsUrl: 'wss://apidev.alor.ru/ws',
   clientDataUrl: 'https://lk-api-dev.alorbroker.ru'
 };
 
