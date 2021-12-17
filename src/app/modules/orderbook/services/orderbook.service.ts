@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { interval, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { BaseRequest } from 'src/app/shared/models/ws/base-request.model';
 import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
@@ -14,31 +15,33 @@ import { OrderBook } from '../models/orderbook.model';
   providedIn: 'root'
 })
 export class OrderbookService {
+  private orderbook$: Observable<OrderBook | null> = new Observable();
+  private subGuid: string | null = null
 
-  // orderBook$: Observable<OrderBook> = interval(1000).pipe(
-  //   map(_ => this.generateOrderBook())
-  // );
+  constructor(private ws: WebsocketService) {  }
 
-  orderBook$: Observable<OrderBook>;
-
-  constructor(private ws: WebsocketService) {
+  getOrderbook(symbol: string, exchange: string) {
     this.ws.connect({
-      reconnect: false,
+      reconnect: true,
       reconnectTimeout: 2000
     })
 
-    const request : OrderbookRequest = {
-      opcode:"OrderBookGetAndSubscribe",
-      code:"SBER",
-      exchange:"MOEX",
-      depth: 10,
-      format:"TV",
-      guid: GuidGenerator.newGuid(),
+    if (this.subGuid) {
+      this.ws.unsubscribe(this.subGuid);
     }
 
+    this.subGuid = GuidGenerator.newGuid();
+    const request : OrderbookRequest = {
+      opcode:"OrderBookGetAndSubscribe",
+      code: symbol,
+      exchange: exchange,
+      depth: 10,
+      format:"TV",
+      guid: this.subGuid,
+    }
     this.ws.sendMessage(request)
 
-    this.orderBook$ = this.ws.messages$.pipe(
+    this.orderbook$ = this.ws.messages$.pipe(
       map(r => {
         const br = r as BaseResponse<OrderbookData>;
         const rows = br.data.asks.map((a, i) => {
@@ -58,23 +61,6 @@ export class OrderbookService {
         return ob;
       })
     )
+    return this.orderbook$;
   }
-
-  private generateOrderBook() : OrderBook {
-    const getRandom = () : OrderBookViewRow => {
-      return {
-        bidVolume: Math.floor(Math.random() * 100),
-        bid: Math.floor(Math.random() * 10),
-        ask: Math.floor(Math.random() * 100),
-        askVolume: Math.floor(Math.random() * 10),
-      }
-    }
-    const randomRows = Array.from(Array(5)).map(_ => getRandom());
-    const volumes = [...randomRows.map(p => p?.askVolume ?? 0), ...randomRows.map(p => p?.bidVolume ?? 0)]
-    return {
-      rows: randomRows,
-      maxVolume: Math.max(...volumes)
-    }
-  }
-
 }

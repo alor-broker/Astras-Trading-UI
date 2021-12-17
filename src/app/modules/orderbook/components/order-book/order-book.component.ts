@@ -4,6 +4,7 @@ import {
   EventEmitter,
   Input,
   OnInit,
+  Output,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -12,6 +13,8 @@ import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import { OrderBook } from '../../models/orderbook.model';
+import { OrderbookSettings } from '../../models/orderbook-settings.model';
+import { concatMap, exhaustMap, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 
 type Widget = OnInit & DashboardItem;
 
@@ -31,6 +34,8 @@ interface Size {
 export class OrderBookComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
+  @Output()
+  shouldShowSettingsChange = new EventEmitter<boolean>()
   @Input()
   widget!: DashboardItem;
   @Input()
@@ -39,15 +44,22 @@ export class OrderBookComponent implements OnInit {
   resizeSub!: Subscription;
   ob$: Observable<OrderBook | null> = of(null);
   maxVolume: number = 1;
+  settings: BehaviorSubject<OrderbookSettings> = new BehaviorSubject<OrderbookSettings>({
+    symbol: 'SBER',
+    exchange: 'MOEX'
+  })
 
   sizes: BehaviorSubject<Size> = new BehaviorSubject<Size>({width: '100%', height: '100%'});
 
   constructor(private service: OrderbookService) {
-    this.ob$ = this.service.orderBook$;
-    this.ob$.subscribe(ob => this.maxVolume = ob?.maxVolume ?? 1);
+
   }
 
   ngOnInit(): void {
+    this.ob$ = this.settings.pipe(
+      switchMap(s => this.service.getOrderbook(s.symbol, s.exchange)),
+      tap(ob => this.maxVolume = ob?.maxVolume ?? 1)
+    )
     this.resizeSub = this.resize.subscribe((widget) => {
       if (widget.item === this.widget.item) {
         // or check id , type or whatever you have there
@@ -68,10 +80,16 @@ export class OrderBookComponent implements OnInit {
 
   getBidStyle(value: number) {
     const size = 100 * (value / this.maxVolume);
-    return { background: `linear-gradient(90deg, white ${size}%, green ${1 - size}%)`};
+    return { background: `linear-gradient(90deg, white ${size}%, lightgreen ${1 - size}%)`};
   }
+
   getAskStyle(value: number) {
     const size = 100 * (value / this.maxVolume);
-    return { background: `linear-gradient(90deg, red ${size}%, white ${1 - size}%)`};
+    return { background: `linear-gradient(90deg, pink ${size}%, white ${1 - size}%)`};
+  }
+
+  onSettingsChange(settings: OrderbookSettings) {
+    this.settings.next(settings);
+    this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
   }
 }

@@ -6,7 +6,7 @@ import {
   ViewEncapsulation,
   OnInit,
 } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { OrderbookSettings } from 'src/app/modules/orderbook/models/orderbook-settings.model';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 
 @Component({
@@ -25,7 +25,7 @@ export class ParentWidgetComponent implements OnInit {
 
   shouldShowSettings: boolean = false;
 
-  constructor() {}
+  constructor() {  }
 
   ngOnInit(): void {}
 

@@ -2,5 +2,5 @@
 <ats-order-book *ngIf="widget.item.type === 'order-book'"
   [widget]="widget"
   [resize]="resize"
-  [shouldShowSettings]="shouldShowSettings"></ats-order-book>
+  [(shouldShowSettings)]="shouldShowSettings"></ats-order-book>
 <ats-trading-chart [widget]="widget" [resize]="resize" *ngIf="widget.item.type === 'trading-chart'"></ats-trading-chart>

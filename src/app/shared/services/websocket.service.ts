@@ -68,6 +68,17 @@ export class WebsocketService {
     }
   }
 
+  unsubscribe(guid: string) {
+    const msg : BaseRequest = {
+      guid: guid,
+      token: this.token.getValue(),
+      opcode: "unsubscribe",
+      format: '',
+      exchange: ''
+    }
+    this.socket$.next(msg);
+  }
+
   sendMessage(msg: BaseRequest) {
     this.socket$.next(msg);
   }
