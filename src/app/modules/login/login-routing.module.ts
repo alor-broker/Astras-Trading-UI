@@ -1,8 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { SsoCallbackComponent } from './components/sso-callback/sso-callback.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 
-const routes: Routes = [{ path: '', component: LoginPageComponent }];
+const routes: Routes = [{
+  path: 'login',
+  component: LoginPageComponent
+},  {
+  path: 'callbacksso',
+  component: SsoCallbackComponent
+}];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

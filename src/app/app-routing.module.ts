@@ -6,7 +6,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 const routes: Routes = [
   {
-    path: 'login',
+    path: 'auth',
     loadChildren: () => import('./modules/login/login.module').then(m => m.LoginModule)
   },  {
     path: 'profile',

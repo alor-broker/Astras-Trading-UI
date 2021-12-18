@@ -15,6 +15,7 @@ import { RefreshTokenResponse } from '../models/user/refresh-token-response.mode
 })
 export class AccountService {
   private accountUrl = environment.clientDataUrl + '/auth/actions';
+  private ssoUrl = environment.ssoUrl;
   private currentUser = new BehaviorSubject<User>({
     login: '',
     jwt: '',
@@ -42,6 +43,11 @@ export class AccountService {
     this.setCurrentUser(user);
   }
 
+  public setUser(user: User) {
+    localStorage.setItem('user', JSON.stringify(user));
+    this.setCurrentUser(user);
+  }
+
   public login(credentials: Credentials) {
     const request : Login = {
       credentials: credentials,
@@ -52,8 +58,7 @@ export class AccountService {
       map((user: User) => {
         if (user) {
           user.login = credentials.login;
-          localStorage.setItem('user', JSON.stringify(user));
-          this.setCurrentUser(user);
+          this.setUser(user);
         }
       })
     );
@@ -85,6 +90,7 @@ export class AccountService {
   private refresh() {
     const user = this.currentUser.getValue();
     if (!user) {
+      this.redirectToSso();
       throw Error('User is empty, can\'t refresh token');
     }
     const refreshModel : RefreshToken = {
@@ -116,13 +122,18 @@ export class AccountService {
           return this.refresh().pipe(
             map(t => t),
             catchError(e => {
-               this.router.navigate(['login']);
-               throw e;
+              console.log(e);
+              this.redirectToSso();
+              throw e;
             })
           )
         }
       })
     )
+  }
+
+  private redirectToSso() {
+    window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
   }
 
   private checkTokenTime(token: string | undefined): boolean {

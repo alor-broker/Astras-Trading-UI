@@ -23,7 +23,6 @@ export class AuthInterceptor implements HttpInterceptor {
               throw new Error('Token is somehow empty');
             }
             else {
-              // return processRequestWithToken(token, req, next);
               return next.handle(req.clone({
                 setHeaders: {
                   Authorization: `Bearer ${token}`
@@ -33,17 +32,5 @@ export class AuthInterceptor implements HttpInterceptor {
           }
         ),
       );
-  }
-
-  private processRequestWithToken(token: string | undefined, req: HttpRequest<any>, next: HttpHandler) {
-    if (!!token) {
-      req = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-    }
-
-    return next.handle(req);
   }
 }
