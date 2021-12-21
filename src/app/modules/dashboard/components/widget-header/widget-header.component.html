@@ -1,5 +1,5 @@
 <div class='panel'>
-  <button nz-button class='btn-panel' *ngIf="!widget.item.hasContent" (click)="switchSettings($event)">
+  <button nz-button class='btn-panel' *ngIf="!widget.item.hasContent" (mousedown)="switchSettings($event)">
     <i nz-icon [nzType]="'setting'" [nzTheme]="'fill'"></i>
   </button>
   <label>{{widget.item.label}}</label>

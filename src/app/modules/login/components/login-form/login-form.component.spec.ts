@@ -1,7 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AccountService } from 'src/app/shared/services/account.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 
 import { LoginFormComponent } from './login-form.component';
@@ -14,7 +14,7 @@ describe('LoginFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule, SharedModule],
       declarations: [ LoginFormComponent ],
-      providers: [ AccountService ]
+      providers: [ AuthService ]
     })
     .compileComponents();
   });

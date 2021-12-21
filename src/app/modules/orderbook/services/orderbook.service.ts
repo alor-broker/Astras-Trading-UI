@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { interval, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { BaseRequest } from 'src/app/shared/models/ws/base-request.model';
 import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -21,10 +21,7 @@ export class OrderbookService {
   constructor(private ws: WebsocketService) {  }
 
   getOrderbook(symbol: string, exchange: string) {
-    this.ws.connect({
-      reconnect: true,
-      reconnectTimeout: 2000
-    })
+    this.ws.connect()
 
     if (this.subGuid) {
       this.ws.unsubscribe(this.subGuid);
@@ -39,9 +36,10 @@ export class OrderbookService {
       format:"TV",
       guid: this.subGuid,
     }
-    this.ws.sendMessage(request)
+    this.ws.subscribe(request)
 
     this.orderbook$ = this.ws.messages$.pipe(
+      filter(m => m.guid == this.subGuid),
       map(r => {
         const br = r as BaseResponse<OrderbookData>;
         const rows = br.data.asks.map((a, i) => {

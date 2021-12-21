@@ -7,19 +7,22 @@ import { catchError, map, mergeMap } from 'rxjs/operators';
 import { Login } from '../models/user/login.model';
 import { RefreshToken } from '../models/user/refresh-token.model';
 import { Router } from '@angular/router';
-import { Credentials } from '../models/user/credentials-model';
+import { Credentials } from '../models/user/credentials.model';
 import { RefreshTokenResponse } from '../models/user/refresh-token-response.model';
+import { JwtBody } from '../models/user/jwt.model';
+import { BaseUser } from '../models/user/base-user.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AccountService {
+export class AuthService {
   private accountUrl = environment.clientDataUrl + '/auth/actions';
   private ssoUrl = environment.ssoUrl;
   private currentUser = new BehaviorSubject<User>({
     login: '',
     jwt: '',
-    refreshToken: ''
+    refreshToken: '',
+    portfolios: []
   });
   private requiredServices = [
     'client',
@@ -43,7 +46,12 @@ export class AccountService {
     this.setCurrentUser(user);
   }
 
-  public setUser(user: User) {
+  public setUser(baseUser: BaseUser) {
+    const portfolios = this.exctractPortfolios(baseUser.jwt);
+    const user : User = {
+      ...baseUser,
+      portfolios
+    };
     localStorage.setItem('user', JSON.stringify(user));
     this.setCurrentUser(user);
   }
@@ -58,6 +66,7 @@ export class AccountService {
       map((user: User) => {
         if (user) {
           user.login = credentials.login;
+          user.portfolios = this.exctractPortfolios(user?.jwt);
           this.setUser(user);
         }
       })
@@ -69,7 +78,8 @@ export class AccountService {
     this.currentUser.next({
       login: '',
       jwt: '',
-      refreshToken: ''
+      refreshToken: '',
+      portfolios: []
     });
   }
 
@@ -103,8 +113,7 @@ export class AccountService {
         map((res: RefreshTokenResponse) => {
           if (res) {
             user.jwt = res.jwt;
-            localStorage.setItem('user', JSON.stringify(user));
-            this.setCurrentUser(user);
+            this.setUser(user);
             return user.jwt;
           }
           throw Error('Can\'t refresh token');
@@ -136,11 +145,22 @@ export class AccountService {
     window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
   }
 
+  private exctractPortfolios(jwt: string) : string[] {
+    if (jwt) {
+      return this.decodeJwtBody(jwt).portfolios.split(' ');
+    }
+    return [];
+  }
+
+  private decodeJwtBody(jwt: string) : JwtBody {
+    const mainPart = jwt.split('.')[1];
+    const decodedString = atob(mainPart);
+    return JSON.parse(decodedString);
+  }
+
   private checkTokenTime(token: string | undefined): boolean {
     if (token) {
-      const mainPart = token.split('.')[1];
-      const decodedString = atob(mainPart);
-      const expirationTime = JSON.parse(decodedString)['exp'] * 1000;
+      const expirationTime = this.decodeJwtBody(token).exp * 1000;
       const now = Date.now() + 1000;
       return now < expirationTime;
     }

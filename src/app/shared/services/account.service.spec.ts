@@ -8,10 +8,10 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LoginFormComponent } from 'src/app/modules/login/components/login-form/login-form.component';
 import { SharedModule } from '../shared.module';
-import { AccountService } from './account.service';
+import { AuthService } from './auth.service';
 
 describe('AccountService', () => {
-  let service: AccountService;
+  let service: AuthService;
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -20,7 +20,7 @@ describe('AccountService', () => {
         RouterTestingModule.withRoutes([{ path: 'login', pathMatch: 'full', component: LoginFormComponent },])],
       providers: [RouterTestingModule]
     });
-    service = TestBed.inject(AccountService);
+    service = TestBed.inject(AuthService);
   });
 
   it('should inject', () => {

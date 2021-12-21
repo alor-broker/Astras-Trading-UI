@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Credentials } from 'src/app/shared/models/user/credentials-model';
+import { Credentials } from 'src/app/shared/models/user/credentials.model';
 import { Login } from '../../../../shared/models/user/login.model';
-import { AccountService } from '../../../../shared/services/account.service';
+import { AuthService } from '../../../../shared/services/auth.service';
 
 @Component({
   selector: 'ats-login-form',
@@ -12,7 +12,7 @@ import { AccountService } from '../../../../shared/services/account.service';
 export class LoginFormComponent implements OnInit {
 
   constructor(
-    private authorizeService: AccountService,
+    private authorizeService: AuthService,
     private router: Router) { }
 
     model: Credentials = {

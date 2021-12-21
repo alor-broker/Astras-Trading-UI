@@ -3,14 +3,14 @@
   <nz-form-item>
     <nz-form-control nzErrorTip="Инструмент">
       <nz-input-group nzPrefixIcon="user">
-        <input formControlName="symbol" nz-input placeholder="Symbol" />
+        <input formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Symbol" />
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
     <nz-form-control nzErrorTip="Биржа">
       <nz-input-group nzPrefixIcon="lock">
-        <input formControlName="exchange" placeholder="Exchange" />
+        <input formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Exchange" />
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>

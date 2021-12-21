@@ -1,4 +1,5 @@
 export interface WsOptions {
   reconnect: boolean,
-  reconnectTimeout?: number
+  reconnectTimeout?: number,
+  reconnectAttempts: number
 }

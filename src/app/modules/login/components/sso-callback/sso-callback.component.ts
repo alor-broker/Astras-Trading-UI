@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccountService } from 'src/app/shared/services/account.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 @Component({
   selector: 'ats-sso-callback',
@@ -9,7 +9,7 @@ import { AccountService } from 'src/app/shared/services/account.service';
 })
 export class SsoCallbackComponent implements OnInit {
 
-  constructor(private router: Router, private route: ActivatedRoute, private account: AccountService) {
+  constructor(private router: Router, private route: ActivatedRoute, private account: AuthService) {
     this.route.params
   }
 
