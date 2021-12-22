@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
@@ -7,7 +8,7 @@ import { LightChartSettings } from '../../../../shared/models/settings/light-cha
 import { LightChartService } from '../../services/light-chart.service';
 
 @Component({
-  selector: 'ats-light-chart-widget',
+  selector: 'ats-light-chart-widget[shouldShowSettings][widget][resize]',
   templateUrl: './light-chart-widget.component.html',
   styleUrls: ['./light-chart-widget.component.sass'],
   providers: [LightChartService]
@@ -27,7 +28,9 @@ export class LightChartWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     this.service.setSettings(this.widget.settings);
-    this.settings$ = this.service.settings$;
+    this.settings$ = this.service.settings$.pipe(
+      filter((s): s is LightChartSettings => !!s )
+    );;
   }
 
   onSettingsChange(settings: LightChartSettings) {

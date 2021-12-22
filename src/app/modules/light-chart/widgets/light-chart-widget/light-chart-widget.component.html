@@ -1,2 +1,6 @@
-<p>light-chart-widget works!</p>
-<ats-light-chart></ats-light-chart>
+<ats-light-chart *ngIf="(widget.gridItem.type === 'light-chart') && (settings$ | async) as settings"
+  [widget]="widget"
+  [resize]="resize"
+  [settings]="settings"
+  [(shouldShowSettings)]="shouldShowSettings"></ats-light-chart>
+<ats-light-chart-settings *ngIf="shouldShowSettings" (settingsChange)="onSettingsChange($event)"></ats-light-chart-settings>

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { GridsterItem } from 'angular-gridster2';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
@@ -29,7 +30,9 @@ export class OrderbookWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     this.service.setSettings(this.widget.settings);
-    this.settings$ = this.service.settings$;
+    this.settings$ = this.service.settings$.pipe(
+      filter((s): s is OrderbookSettings => !!s )
+    );
   }
 
   onSettingsChange(settings: OrderbookSettings) {

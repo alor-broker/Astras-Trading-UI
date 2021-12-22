@@ -18,13 +18,15 @@ export class OrderbookSettingsComponent implements OnInit {
 
   ngOnInit() {
     this.service.settings$.subscribe(settings => {
-      this.form = new FormGroup({
-        symbol: new FormControl(settings.symbol, [
-          Validators.required,
-          Validators.minLength(4)
-        ]),
-        exchange: new FormControl(settings.exchange, Validators.required),
-      });
+      if (settings) {
+        this.form = new FormGroup({
+          symbol: new FormControl(settings.symbol, [
+            Validators.required,
+            Validators.minLength(4)
+          ]),
+          exchange: new FormControl(settings.exchange, Validators.required),
+        });
+      }
     })
   }
 

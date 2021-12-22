@@ -4,6 +4,7 @@ import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { AnySettings } from '../models/settings/any-settings.model';
 import { NewWidget } from '../models/new-widget.model';
 import { Widget } from '../models/widget.model';
+import { LightChartSettings } from '../models/settings/light-chart-settings.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,9 @@ constructor() { }
       case 'order-book':
         widget = this.createOrderbookService(newWidget)
         break;
+      case 'light-chart':
+        widget = this.createLightChartWidget(newWidget);
+        break;
     }
     if (widget) {
       return widget;
@@ -24,7 +28,7 @@ constructor() { }
     else throw new Error(`Unknow widget type ${newWidget.gridItem.type}`)
   }
 
-  private createOrderbookService(newWidget: NewWidget | Widget<AnySettings>) {
+  private createOrderbookService(newWidget: NewWidget | Widget<OrderbookSettings>) {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
@@ -40,6 +44,27 @@ constructor() { }
     if (this.isWidget(newWidget)) {
       widget.settings = newWidget.settings;
       widget.title = `Стакан ${newWidget.settings.symbol}`
+    }
+
+    return widget;
+  }
+
+  private createLightChartWidget(newWidget: NewWidget | Widget<LightChartSettings>) {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+    const settings : OrderbookSettings = {
+      symbol: 'GAZP',
+      exchange: 'MOEX'
+    }
+    const widget = {
+      gridItem: newWidget.gridItem,
+      title: `График ${settings.symbol}`,
+      settings: settings
+    }
+    if (this.isWidget(newWidget)) {
+      widget.settings = newWidget.settings;
+      widget.title = `График ${newWidget.settings.symbol}`
     }
 
     return widget;

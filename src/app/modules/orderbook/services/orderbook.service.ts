@@ -18,10 +18,7 @@ import { OrderBook } from '../models/orderbook.model';
 export class OrderbookService {
   private orderbook$: Observable<OrderBook | null> = new Observable();
   private subGuid: string | null = null
-  private settings: BehaviorSubject<OrderbookSettings> = new BehaviorSubject<OrderbookSettings>({
-    symbol: 'SBER',
-    exchange: 'MOEX'
-  });
+  private settings: BehaviorSubject<OrderbookSettings | null> = new BehaviorSubject<OrderbookSettings | null>(null);
 
   settings$ = this.settings.asObservable()
 
