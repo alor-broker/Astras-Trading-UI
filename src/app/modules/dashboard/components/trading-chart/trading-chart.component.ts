@@ -1,5 +1,8 @@
 import { Component, OnInit, AfterViewInit, EventEmitter, Input } from '@angular/core';
+import { GridsterItem } from 'angular-gridster2';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
+import { Widget } from 'src/app/shared/models/widget.model';
+import { TradingviewChartSettings } from '../../models/tradingview-chart-settings.model';
 declare const TradingView: any;
 @Component({
   selector: 'ats-trading-chart',
@@ -11,7 +14,7 @@ export class TradingChartComponent implements OnInit {
   private tradingView: any;
 
   @Input()
-  widget! : DashboardItem;
+  widget! : Widget;
   @Input()
   resize!: EventEmitter<DashboardItem>;
 

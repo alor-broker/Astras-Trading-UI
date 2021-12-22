@@ -20,8 +20,7 @@ import { OrderbookPageComponent } from './pages/orderbook-page/orderbook-page.co
     SharedModule
   ],
   exports: [
-    OrderBookComponent,
-    // OrderbookSettingsComponent,
+    OrderbookPageComponent
   ]
 })
 export class OrderbookModule { }

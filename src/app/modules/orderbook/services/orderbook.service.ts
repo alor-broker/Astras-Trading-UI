@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { interval, Observable } from 'rxjs';
+import { BehaviorSubject, interval, Observable,  } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { BaseRequest } from 'src/app/shared/models/ws/base-request.model';
 import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
@@ -8,6 +8,7 @@ import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { OrderbookData } from '../models/orderbook-data.model';
 import { OrderbookRequest } from '../models/orderbook-request.model';
 import { OrderbookRow } from '../models/orderbook-row.model';
+import { OrderbookSettings } from '../models/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { OrderBook } from '../models/orderbook.model';
 
@@ -17,8 +18,24 @@ import { OrderBook } from '../models/orderbook.model';
 export class OrderbookService {
   private orderbook$: Observable<OrderBook | null> = new Observable();
   private subGuid: string | null = null
+  private settings: BehaviorSubject<OrderbookSettings> = new BehaviorSubject<OrderbookSettings>({
+    symbol: 'SBER',
+    exchange: 'MOEX'
+  });
+
+  settings$ = this.settings.asObservable()
 
   constructor(private ws: WebsocketService) {  }
+
+  setSettings(settings: OrderbookSettings) {
+    this.settings.next(settings);
+  }
+
+  unsubscribe() {
+    if (this.subGuid) {
+      this.ws.unsubscribe(this.subGuid);
+    }
+  }
 
   getOrderbook(symbol: string, exchange: string) {
     this.ws.connect()
@@ -33,7 +50,7 @@ export class OrderbookService {
       code: symbol,
       exchange: exchange,
       depth: 10,
-      format:"TV",
+      format:"simple",
       guid: this.subGuid,
     }
     this.ws.subscribe(request)

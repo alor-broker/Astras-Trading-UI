@@ -1,32 +1,32 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { DashboardService } from 'src/app/modules/dashboard/services/dashboard.service';
 import { OrderbookSettings } from '../../models/orderbook-settings.model';
+import { OrderbookService } from '../../services/orderbook.service';
 
 @Component({
-  selector: 'ats-orderbook-settings[settingsChange][settings]',
+  selector: 'ats-orderbook-settings[settingsChange]',
   templateUrl: './orderbook-settings.component.html',
   styleUrls: ['./orderbook-settings.component.sass']
 })
 export class OrderbookSettingsComponent implements OnInit {
-
-  @Input()
-  settings!: OrderbookSettings;
-
   @Output()
   settingsChange: EventEmitter<OrderbookSettings> = new EventEmitter<OrderbookSettings>();
 
   form!: FormGroup;
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private service: OrderbookService ) { }
 
   ngOnInit() {
-    this.form = new FormGroup({
-      symbol: new FormControl(this.settings.symbol, [
-        Validators.required,
-        Validators.minLength(4)
-      ]),
-      exchange: new FormControl(this.settings.exchange, Validators.required),
-    });
+    this.service.settings$.subscribe(settings => {
+      this.form = new FormGroup({
+        symbol: new FormControl(settings.symbol, [
+          Validators.required,
+          Validators.minLength(4)
+        ]),
+        exchange: new FormControl(settings.exchange, Validators.required),
+      });
+    })
   }
 
   submitForm(): void {

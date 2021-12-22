@@ -6,6 +6,7 @@ import { DashboardService } from '../../services/dashboard.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { AccountService } from '../../services/account.service';
 import { PortfolioKey } from '../../models/portfolio-key.model';
+import { GuidGenerator } from 'src/app/shared/utils/guid';
 
 @Component({
   selector: 'ats-navbar',
@@ -33,15 +34,14 @@ export class NavbarComponent implements OnInit{
     this.portfolios$ = this.account.getActivePortfolios();
   }
 
-  addItem(name: string): void {
+  addItem(type: string): void {
     this.service.addWidget({
-      item: {
+      gridItem: {
         x: 0,
         y: 0,
         cols: 1,
         rows: 1,
-        type: name,
-        label: name
+        type: type,
       },
     });
   }

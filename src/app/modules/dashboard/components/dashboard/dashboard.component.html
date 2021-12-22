@@ -1,9 +1,8 @@
 <div class='inner-content'>
   <gridster [options]="options" *ngIf="dashboard$ | async as dashboard">
-    <gridster-item [item]="widget.item" *ngFor="let widget of dashboard">
+    <gridster-item [item]="widget.gridItem" *ngFor="let widget of dashboard">
       <div class="button-holder">
         <ats-parent-widget [widget]="widget" [resize]="resize"></ats-parent-widget>
-        <label *ngIf="!widget.item.hasContent">{{widget.item.label}}</label>
       </div>
     </gridster-item>
   </gridster>
