@@ -14,7 +14,7 @@ export class TradingChartComponent implements OnInit {
   private tradingView: any;
 
   @Input()
-  widget! : Widget;
+  widget! : Widget<TradingviewChartSettings>;
   @Input()
   resize!: EventEmitter<DashboardItem>;
 

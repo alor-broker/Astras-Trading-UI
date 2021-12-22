@@ -11,6 +11,7 @@ import { OrderbookSettings } from 'src/app/modules/orderbook/models/orderbook-se
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { WidgetSettings } from 'src/app/shared/models/widget-settings.model';
 import { Widget } from 'src/app/shared/models/widget.model';
+import { AnySettings } from '../../models/any-settings.model';
 
 @Component({
   selector: 'ats-parent-widget[widget][resize]',
@@ -22,9 +23,9 @@ import { Widget } from 'src/app/shared/models/widget.model';
 export class ParentWidgetComponent implements OnInit {
 
   @Input()
-  widget!: Widget;
+  widget!: Widget<AnySettings>;
   @Input()
-  resize! : EventEmitter<GridsterItem>;
+  resize! : EventEmitter<DashboardItem>;
 
   shouldShowSettings: boolean = false;
 

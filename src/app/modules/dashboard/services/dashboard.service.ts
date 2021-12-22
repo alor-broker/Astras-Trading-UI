@@ -5,7 +5,11 @@ import {
 } from 'rxjs';
 import { NewWidget } from 'src/app/shared/models/new-widget.model';
 import { Widget } from 'src/app/shared/models/widget.model';
-import { WidgetFactoryService } from 'src/app/shared/services/widget-factory.service';
+import { WidgetFactoryService } from 'src/app/modules/dashboard/services/widget-factory.service';
+import { OrderbookSettings } from '../../orderbook/models/orderbook-settings.model';
+import { TradingviewChartSettings } from '../models/tradingview-chart-settings.model';
+import { AnySettings } from '../models/any-settings.model';
+
 
 @Injectable({
   providedIn: 'root',
@@ -13,25 +17,25 @@ import { WidgetFactoryService } from 'src/app/shared/services/widget-factory.ser
 export class DashboardService {
   private dashboardsStorage = 'dashboards';
 
-  private dashboardSource: BehaviorSubject<Widget[]>;
-  readonly dashboard$ : Observable<Widget[]>;
+  private dashboardSource: BehaviorSubject<Widget<AnySettings>[]>;
+  dashboard$ : Observable<Widget<AnySettings>[]>;
 
   constructor(private factory: WidgetFactoryService) {
     const existingDashboardJson = localStorage.getItem(this.dashboardsStorage);
-    let existingDashboard : Widget[] = [];
+    let existingDashboard : Widget<AnySettings>[] = [];
     if (existingDashboardJson) {
       existingDashboard = JSON.parse(existingDashboardJson);
     }
-    this.dashboardSource = new BehaviorSubject<Widget[]>(existingDashboard);
+    this.dashboardSource = new BehaviorSubject<Widget<AnySettings>[]>(existingDashboard);
     this.dashboard$ = this.dashboardSource.asObservable();
   }
 
-  private setDashboard(widgets: Widget[]) {
+  private setDashboard(widgets: Widget<AnySettings>[]) {
     this.dashboardSource.next(widgets);
     this.saveDashboard();
   }
 
-  getDashboard() {
+  private getDashboard() {
     return this.dashboardSource.getValue();
   }
 
@@ -41,17 +45,17 @@ export class DashboardService {
     this.setDashboard(widgets);
   }
 
-  updateWidget(updated: Widget) {
+  updateWidget(updated: Widget<AnySettings>) {
     const existing = this.getDashboard().find(w => w.gridItem.label === updated.gridItem.label);
     if (existing) {
       const updated = this.factory.createNewWidget(existing);
       const widgetsWithoutExisting = this.getDashboard().filter(w => w.gridItem.label !== updated.gridItem.label)
-      const widgets = [...widgetsWithoutExisting, existing];
+      const widgets = [...widgetsWithoutExisting, updated];
       this.setDashboard(widgets);
     }
   }
 
-  removeWidget(widget: Widget) {
+  removeWidget(widget: Widget<AnySettings>) {
     const widgets = this.getDashboard().filter(w => w !== widget);
     this.setDashboard(widgets);
   }

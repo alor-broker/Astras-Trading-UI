@@ -4,7 +4,6 @@ import {
   DisplayGrid,
   Draggable,
   GridsterConfig,
-  GridsterItem,
   GridType,
   PushDirections,
   Resizable,
@@ -12,6 +11,7 @@ import {
 import { Observable } from 'rxjs';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
+import { AnySettings } from '../../models/any-settings.model';
 import { DashboardService } from '../../services/dashboard.service';
 
 interface Safe extends GridsterConfig {
@@ -27,9 +27,9 @@ interface Safe extends GridsterConfig {
 })
 export class DashboardComponent implements OnInit {
   options!: Safe;
-  dashboard$!: Observable<Widget[]>;
+  dashboard$!: Observable<Widget<AnySettings>[]>;
 
-  resize: EventEmitter<GridsterItem> = new EventEmitter<GridsterItem>();
+  resize: EventEmitter<DashboardItem> = new EventEmitter<DashboardItem>();
   constructor(private service: DashboardService) {}
 
   ngOnInit(): void {
@@ -87,9 +87,6 @@ export class DashboardComponent implements OnInit {
       disableWarnings: false,
       scrollToNewItems: false,
       itemResizeCallback: (item, e) => {
-        // update DB with new size
-        // send the update to widgets
-        // this.resize.emit({ item: item, height: e.height, width: e.width });
         this.resize.emit({...item, height: e.height, width: e.width });
       },
     };

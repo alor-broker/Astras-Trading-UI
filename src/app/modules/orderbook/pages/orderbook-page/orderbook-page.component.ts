@@ -18,7 +18,7 @@ export class OrderbookPageComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
-  widget!: Widget;
+  widget!: Widget<OrderbookSettings>;
   @Input()
   resize!: EventEmitter<DashboardItem>;
   @Output()

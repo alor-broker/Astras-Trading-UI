@@ -42,9 +42,9 @@ export class OrderBookComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
-  widget!: Widget;
+  widget!: Widget<OrderbookSettings>;
   @Input()
-  resize!: EventEmitter<GridsterItem>;
+  resize!: EventEmitter<DashboardItem>;
   @Input('settings') set settings(settings: OrderbookSettings) { this.settings$.next(settings); };
   private settings$ = new BehaviorSubject<OrderbookSettings>({
     symbol: 'SBER',

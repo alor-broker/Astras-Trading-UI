@@ -1,11 +1,11 @@
-<div class='panel'>
-  <button nz-button class='btn-panel' *ngIf="!widget.gridItem.hasContent" (mousedown)="switchSettings($event)">
+<div class='panel' *ngIf="widget$ | async as w">
+  <button nz-button class='btn-panel' *ngIf="!w.gridItem.hasContent" (mousedown)="switchSettings($event)">
     <i nz-icon [nzType]="'setting'" [nzTheme]="'fill'"></i>
   </button>
-  <label>{{widget.title}}</label>
+  <label>{{w.title}}</label>
   <span>
-    <button nz-buttonclass='btn-panel' *ngIf="!widget.gridItem.hasContent" (mousedown)="removeItem($event, widget)"
-      (touchstart)="removeItem($event, widget)">
+    <button nz-buttonclass='btn-panel' *ngIf="!w.gridItem.hasContent" (mousedown)="removeItem($event, w)"
+      (touchstart)="removeItem($event, w)">
       <i nz-icon nzType="close-circle" nzTheme="outline"></i>
     </button>
   </span>
