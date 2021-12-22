@@ -1,20 +1,20 @@
-import { Component, OnInit, AfterViewInit, EventEmitter, Input } from '@angular/core';
-import { GridsterItem } from 'angular-gridster2';
+import { Component, EventEmitter, Input, OnInit } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { Widget } from 'src/app/shared/models/widget.model';
-import { TradingviewChartSettings } from '../../models/tradingview-chart-settings.model';
+import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
 declare const TradingView: any;
+
 @Component({
-  selector: 'ats-trading-chart',
-  templateUrl: './trading-chart.component.html',
-  styleUrls: ['./trading-chart.component.scss'],
+  selector: 'ats-light-chart',
+  templateUrl: './light-chart.component.html',
+  styleUrls: ['./light-chart.component.sass']
 })
-export class TradingChartComponent implements OnInit {
+export class LightChartComponent implements OnInit {
 
   private tradingView: any;
 
   @Input()
-  widget! : Widget<TradingviewChartSettings>;
+  widget! : Widget<LightChartSettings>;
   @Input()
   resize!: EventEmitter<DashboardItem>;
 

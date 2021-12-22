@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { DashboardService } from 'src/app/modules/dashboard/services/dashboard.service';
-import { OrderbookSettings } from '../../models/orderbook-settings.model';
+import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
 import { OrderbookService } from '../../services/orderbook.service';
 
 @Component({

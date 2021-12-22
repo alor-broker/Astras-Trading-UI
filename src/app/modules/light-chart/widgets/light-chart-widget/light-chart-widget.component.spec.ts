@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OrderbookPageComponent } from './orderbook-page.component';
+import { LightChartWidgetComponent } from './light-chart-widget.component';
 
-describe('OrderbookPageComponent', () => {
-  let component: OrderbookPageComponent;
-  let fixture: ComponentFixture<OrderbookPageComponent>;
+describe('LightChartWidgetComponent', () => {
+  let component: LightChartWidgetComponent;
+  let fixture: ComponentFixture<LightChartWidgetComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OrderbookPageComponent ]
+      declarations: [ LightChartWidgetComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(OrderbookPageComponent);
+    fixture = TestBed.createComponent(LightChartWidgetComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

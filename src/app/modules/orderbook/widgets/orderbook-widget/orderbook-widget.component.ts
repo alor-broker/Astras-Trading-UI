@@ -1,20 +1,20 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { GridsterItem } from 'angular-gridster2';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { DashboardService } from 'src/app/modules/dashboard/services/dashboard.service';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { Widget } from 'src/app/shared/models/widget.model';
+import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
-import { OrderbookSettings } from '../../models/orderbook-settings.model';
+import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
 import { OrderbookService } from '../../services/orderbook.service';
 
 @Component({
-  selector: 'ats-orderbook-page[shouldShowSettings][widget][resize]',
-  templateUrl: './orderbook-page.component.html',
-  styleUrls: ['./orderbook-page.component.sass'],
+  selector: 'ats-orderbook-widget[shouldShowSettings][widget][resize]',
+  templateUrl: './orderbook-widget.component.html',
+  styleUrls: ['./orderbook-widget.component.sass'],
   providers: [OrderbookService]
 })
-export class OrderbookPageComponent implements OnInit {
+export class OrderbookWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -28,9 +28,7 @@ export class OrderbookPageComponent implements OnInit {
   constructor(private service: OrderbookService, private dashboard: DashboardService) { }
 
   ngOnInit(): void {
-    if (this.isOrderbookSettings(this.widget.settings)) {
-      this.service.setSettings(this.widget.settings);
-    }
+    this.service.setSettings(this.widget.settings);
     this.settings$ = this.service.settings$;
   }
 
@@ -39,13 +37,5 @@ export class OrderbookPageComponent implements OnInit {
     this.widget.settings = settings;
     this.dashboard.updateWidget(this.widget)
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
-  }
-
-  private isOrderbookSettings(options: object): options is OrderbookSettings   {
-    return (
-      options != null &&
-      "symbol" in options &&
-      "exchange" in options
-    )
   }
 }

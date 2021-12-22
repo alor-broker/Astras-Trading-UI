@@ -5,10 +5,8 @@ import {
 } from 'rxjs';
 import { NewWidget } from 'src/app/shared/models/new-widget.model';
 import { Widget } from 'src/app/shared/models/widget.model';
-import { WidgetFactoryService } from 'src/app/modules/dashboard/services/widget-factory.service';
-import { OrderbookSettings } from '../../orderbook/models/orderbook-settings.model';
-import { TradingviewChartSettings } from '../models/tradingview-chart-settings.model';
-import { AnySettings } from '../models/any-settings.model';
+import { AnySettings } from '../models/settings/any-settings.model';
+import { WidgetFactoryService } from './widget-factory.service';
 
 
 @Injectable({

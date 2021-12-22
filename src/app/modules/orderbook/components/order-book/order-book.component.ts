@@ -13,7 +13,7 @@ import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import { OrderBook } from '../../models/orderbook.model';
-import { OrderbookSettings } from '../../models/orderbook-settings.model';
+import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
 import {
   concatMap,
   exhaustMap,

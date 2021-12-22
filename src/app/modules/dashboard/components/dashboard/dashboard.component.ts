@@ -11,8 +11,8 @@ import {
 import { Observable } from 'rxjs';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
-import { AnySettings } from '../../models/any-settings.model';
-import { DashboardService } from '../../services/dashboard.service';
+import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
+import { DashboardService } from 'src/app/shared/services/dashboard.service';
 
 interface Safe extends GridsterConfig {
   draggable: Draggable;

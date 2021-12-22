@@ -1,22 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardRoutingModule } from './dashboard-routing.module';
-import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { ParentWidgetComponent } from './components/parent-widget/parent-widget.component';
-import { TradingChartComponent } from './components/trading-chart/trading-chart.component';
 import { WidgetHeaderComponent } from './components/widget-header/widget-header.component';
 import { OrderbookModule } from '../orderbook/orderbook.module';
+import { DashboardWidgetComponent } from './widgets/dashboard-widget/dashboard-widget.component';
+import { LightChartModule } from '../light-chart/light-chart.module';
 
 @NgModule({
   declarations: [
-    DashboardPageComponent,
+    DashboardWidgetComponent,
     DashboardComponent,
     NavbarComponent,
     ParentWidgetComponent,
-    TradingChartComponent,
     WidgetHeaderComponent
   ],
   imports: [
@@ -24,6 +23,7 @@ import { OrderbookModule } from '../orderbook/orderbook.module';
     DashboardRoutingModule,
     SharedModule,
     OrderbookModule,
+    LightChartModule,
     // components
   ]
 })

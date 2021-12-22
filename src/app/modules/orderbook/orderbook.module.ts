@@ -5,14 +5,14 @@ import { OrderbookRoutingModule } from './orderbook-routing.module';
 import { OrderBookComponent } from './components/order-book/order-book.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { OrderbookSettingsComponent } from './components/orderbook-settings/orderbook-settings.component';
-import { OrderbookPageComponent } from './pages/orderbook-page/orderbook-page.component';
+import { OrderbookWidgetComponent } from './widgets/orderbook-widget/orderbook-widget.component';
 
 
 @NgModule({
   declarations: [
     OrderBookComponent,
     OrderbookSettingsComponent,
-    OrderbookPageComponent,
+    OrderbookWidgetComponent,
   ],
   imports: [
     CommonModule,
@@ -20,7 +20,7 @@ import { OrderbookPageComponent } from './pages/orderbook-page/orderbook-page.co
     SharedModule
   ],
   exports: [
-    OrderbookPageComponent
+    OrderbookWidgetComponent
   ]
 })
 export class OrderbookModule { }

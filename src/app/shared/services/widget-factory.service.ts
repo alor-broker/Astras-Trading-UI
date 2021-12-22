@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
+import { OrderbookSettings } from 'src/app/shared/models/settings/orderbook-settings.model';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
-import { NewWidget } from '../../../shared/models/new-widget.model';
-import { Widget } from '../../../shared/models/widget.model';
-import { OrderbookSettings } from '../../orderbook/models/orderbook-settings.model';
-import { AnySettings } from '../models/any-settings.model';
+import { AnySettings } from '../models/settings/any-settings.model';
+import { NewWidget } from '../models/new-widget.model';
+import { Widget } from '../models/widget.model';
 
 @Injectable({
   providedIn: 'root'

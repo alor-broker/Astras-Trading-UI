@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { DashboardService } from '../../services/dashboard.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { AccountService } from '../../services/account.service';
 import { PortfolioKey } from '../../models/portfolio-key.model';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
+import { DashboardService } from 'src/app/shared/services/dashboard.service';
 
 @Component({
   selector: 'ats-navbar',

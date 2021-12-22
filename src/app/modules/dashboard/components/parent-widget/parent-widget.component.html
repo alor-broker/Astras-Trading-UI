@@ -1,6 +1,9 @@
 <ats-widget-header [widget]="widget" (switchSettingsEvent)="onSwitchSettings($event)"></ats-widget-header>
-<ats-orderbook-page *ngIf="widget.gridItem.type === 'order-book'"
+<ats-orderbook-widget *ngIf="widget.gridItem.type === 'order-book'"
   [widget]="widget"
   [resize]="resize"
-  [(shouldShowSettings)]="shouldShowSettings"></ats-orderbook-page>
-<ats-trading-chart [widget]="widget" [resize]="resize" *ngIf="widget.gridItem.type === 'trading-chart'"></ats-trading-chart>
+  [(shouldShowSettings)]="shouldShowSettings"></ats-orderbook-widget>
+<ats-light-chart-widget *ngIf="widget.gridItem.type === 'light-chart'"
+ [widget]="widget"
+ [resize]="resize"
+ [(shouldShowSettings)]="shouldShowSettings"></ats-light-chart-widget>

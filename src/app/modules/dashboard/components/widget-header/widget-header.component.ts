@@ -4,8 +4,8 @@ import { filter } from 'rxjs/operators';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { WidgetSettings } from 'src/app/shared/models/widget-settings.model';
 import { Widget } from 'src/app/shared/models/widget.model';
-import { AnySettings } from '../../models/any-settings.model';
-import { DashboardService } from '../../services/dashboard.service';
+import { DashboardService } from 'src/app/shared/services/dashboard.service';
+import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
 
 @Component({
   selector: 'ats-widget-header[widget]',

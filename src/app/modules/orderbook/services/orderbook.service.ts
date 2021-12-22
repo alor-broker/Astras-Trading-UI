@@ -8,7 +8,7 @@ import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { OrderbookData } from '../models/orderbook-data.model';
 import { OrderbookRequest } from '../models/orderbook-request.model';
 import { OrderbookRow } from '../models/orderbook-row.model';
-import { OrderbookSettings } from '../models/orderbook-settings.model';
+import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { OrderBook } from '../models/orderbook.model';
 
