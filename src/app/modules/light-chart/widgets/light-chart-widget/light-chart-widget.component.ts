@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
+import { AnySettings } from 'src/app/shared/models/settings/any-settings.model';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';

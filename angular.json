@@ -42,7 +42,9 @@
               "src/styles.sass",
               "src/zorro-styles.less"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/lib/charting_library/charting_library.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -111,7 +113,9 @@
               "src/styles.sass",
               "src/zorro-styles.less"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/lib/charting_library/charting_library.js"
+            ]
           }
         }
       }

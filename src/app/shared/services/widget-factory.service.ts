@@ -5,6 +5,7 @@ import { AnySettings } from '../models/settings/any-settings.model';
 import { NewWidget } from '../models/new-widget.model';
 import { Widget } from '../models/widget.model';
 import { LightChartSettings } from '../models/settings/light-chart-settings.model';
+import { addDays } from '../../shared/utils/datetime'
 
 @Injectable({
   providedIn: 'root'
@@ -53,9 +54,11 @@ constructor() { }
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
-    const settings : OrderbookSettings = {
+    const settings : LightChartSettings = {
       symbol: 'GAZP',
-      exchange: 'MOEX'
+      exchange: 'MOEX',
+      timeFrame: 'D',
+      from: addDays(new Date(), -100).getTime() / 1000
     }
     const widget = {
       gridItem: newWidget.gridItem,
