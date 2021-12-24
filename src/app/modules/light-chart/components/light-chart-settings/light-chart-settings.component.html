@@ -14,6 +14,9 @@
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
+  <nz-select formControlName='timeFrame'>
+    <nz-option  *ngFor='let tf of timeFrames' [nzValue]="tf.value" [nzLabel]="tf.label"></nz-option>
+  </nz-select>
   <nz-form-item>
     <nz-form-control>
       <button nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>

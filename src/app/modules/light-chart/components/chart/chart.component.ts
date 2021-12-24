@@ -24,6 +24,8 @@ import {
   ResolutionString,
 } from '../../../../../assets/lib/charting_library'
 
+// Scaffolded and raw. Don't judge.
+
 @Component({
   selector: 'ats-chart[resize][widget]',
   templateUrl: './chart.component.html',
@@ -72,12 +74,6 @@ export class ChartComponent implements OnInit, OnDestroy {
       locale: 'en',
       disabled_features: ['use_localstorage_for_settings'],
       enabled_features: ['study_templates'],
-      // charts_storage_url: this._chartsStorageUrl,
-      // charts_storage_api_version: this._chartsStorageApiVersion,
-      // client_id: this._clientId,
-      // user_id: this._userId,
-      // fullscreen: this._fullscreen,
-      // autosize: this._autosize,
   };
 
   const tvWidget = new widget(widgetOptions);

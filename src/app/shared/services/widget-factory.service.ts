@@ -5,12 +5,14 @@ import { AnySettings } from '../models/settings/any-settings.model';
 import { NewWidget } from '../models/new-widget.model';
 import { Widget } from '../models/widget.model';
 import { LightChartSettings } from '../models/settings/light-chart-settings.model';
-import { addDays } from '../../shared/utils/datetime'
+import { TimeframesHelper } from 'src/app/modules/light-chart/utils/timeframes-helper';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WidgetFactoryService {
+
+private tfHelper = new TimeframesHelper();
 
 constructor() { }
   createNewWidget(newWidget: NewWidget | Widget<AnySettings>) : Widget<AnySettings> {
@@ -58,7 +60,7 @@ constructor() { }
       symbol: 'GAZP',
       exchange: 'MOEX',
       timeFrame: 'D',
-      from: addDays(new Date(), -100).getTime() / 1000
+      from: this.tfHelper.getDefaultFrom('D')
     }
     const widget = {
       gridItem: newWidget.gridItem,

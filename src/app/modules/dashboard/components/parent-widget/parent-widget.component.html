@@ -4,6 +4,6 @@
   [resize]="resize"
   [(shouldShowSettings)]="shouldShowSettings"></ats-orderbook-widget>
 <ats-light-chart-widget *ngIf="widget.gridItem.type === 'light-chart'"
- [widget]="widget"
+ [widget]="getWidget()"
  [resize]="resize"
  [(shouldShowSettings)]="shouldShowSettings"></ats-light-chart-widget>

@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { LightChartService } from '../../services/light-chart.service';
+import { Timeframe, TimeframesHelper } from '../../utils/timeframes-helper';
 
 @Component({
   selector: 'ats-light-chart-settings',
@@ -15,7 +16,12 @@ export class LightChartSettingsComponent implements OnInit {
 
   form!: FormGroup;
 
-  constructor(private service: LightChartService ) { }
+  timeFrames: Timeframe[]
+
+  constructor(private service: LightChartService ) {
+    const helper = new TimeframesHelper();
+    this.timeFrames = helper.timeFrames;
+  }
 
   ngOnInit() {
     this.service.settings$.subscribe(settings => {
@@ -26,6 +32,7 @@ export class LightChartSettingsComponent implements OnInit {
             Validators.minLength(4)
           ]),
           exchange: new FormControl(settings.exchange, Validators.required),
+          timeFrame: new FormControl(settings.timeFrame, Validators.required)
         });
       }
     })
