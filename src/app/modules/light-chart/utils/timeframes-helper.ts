@@ -42,15 +42,19 @@ export class TimeframesHelper {
   }
 
   getValueByTfLabel(tf: string) {
-    return this.timeFrames.find(t => t.label == tf);
+    const timeframe = this.timeFrames.find(t => t.label == tf);
+    if (!timeframe) {
+      throw new Error('Unknown timeframe');
+    }
+    return timeframe;
   }
 
   getDefaultFrom(label: string) {
     const tf = this.getValueByTfLabel(label);
-    switch(tf?.label) {
+    switch(tf.label) {
       case 'D':
         return addDaysUnix(new Date(), -this.candlesBatchSize);
-      case '3600':
+      case 'H':
         return addHoursUnix(new Date(), -this.candlesBatchSize);
       default:
         return 0;

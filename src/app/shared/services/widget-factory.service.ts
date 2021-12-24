@@ -59,8 +59,8 @@ constructor() { }
     const settings : LightChartSettings = {
       symbol: 'GAZP',
       exchange: 'MOEX',
-      timeFrame: 'D',
-      from: this.tfHelper.getDefaultFrom('D')
+      timeFrame: this.tfHelper.getValueByTfLabel('H')?.value,
+      from: this.tfHelper.getDefaultFrom('H')
     }
     const widget = {
       gridItem: newWidget.gridItem,
