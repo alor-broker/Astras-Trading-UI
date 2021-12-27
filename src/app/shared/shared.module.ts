@@ -16,6 +16,9 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
+import { NzAutocompleteModule } from 'ng-zorro-antd/auto-complete';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzCardModule } from 'ng-zorro-antd/card';
 
 @NgModule({
   declarations: [
@@ -37,6 +40,9 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
     NzFormModule,
     NzSelectModule,
     NzCollapseModule,
+    NzAutocompleteModule,
+    NzTagModule,
+    NzCardModule
   ],
   exports: [
     // Ng zorro
@@ -47,6 +53,9 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
     NzFormModule,
     NzSelectModule,
     NzCollapseModule,
+    NzAutocompleteModule,
+    NzTagModule,
+    NzCardModule,
     // modules
     CommonModule,
     FormsModule,

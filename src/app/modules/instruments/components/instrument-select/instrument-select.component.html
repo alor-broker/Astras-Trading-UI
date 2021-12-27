@@ -1,1 +1,29 @@
-<p>instrument-select works!</p>
+<div>
+  <input class='whole'
+    placeholder='Поиск...'
+    nz-input
+    (mousedown)="$event.stopPropagation()"
+    [(ngModel)]="inputValue"
+    (ngModelChange)="onChange($event)"
+    [nzAutocomplete]="auto"
+  />
+
+  <nz-autocomplete #auto>
+    <nz-auto-option
+     *ngFor="let option of filteredInstruments$ | async" [nzLabel]="option.symbol" [nzValue]="option.description"
+     (selectionChange)='onSelect($event, option)'>
+      <span  class='search-row'>
+        <nz-tag>{{ option.symbol }}</nz-tag>
+        <span class='row-center'>{{ option.shortName }}</span>
+        <nz-tag>{{ option.exchange }}</nz-tag>
+      </span>
+    </nz-auto-option>
+  </nz-autocomplete>
+  <nz-card nzTitle="Активный инструмент" *ngIf="selectedInstrument$ | async as instr">
+    <span  class='search-row'>
+      <nz-tag>{{ instr.symbol }}</nz-tag>
+      <span class='row-center'>{{ instr.instrumentGroup }}</span>
+      <nz-tag>{{ instr.exchange }}</nz-tag>
+    </span>
+  </nz-card>
+</div>

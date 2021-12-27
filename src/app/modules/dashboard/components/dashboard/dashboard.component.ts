@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit {
     this.options = {
       gridType: GridType.Fit,
       compactType: CompactType.None,
-      margin: 10,
+      margin: 5,
       outerMargin: true,
       outerMarginTop: null,
       outerMarginRight: null,
@@ -75,6 +75,10 @@ export class DashboardComponent implements OnInit {
       },
       resizable: {
         enabled: true,
+        handles: {
+          s: true, n: true, w: true, e: true, nw: true, ne: true, sw: true, se: true
+          // se: false
+        }
       },
       pushDirections: { north: true, east: true, south: true, west: true },
       pushResizeItems: false,
@@ -82,7 +86,7 @@ export class DashboardComponent implements OnInit {
       swap: false,
       disablePushOnDrag: false,
       disablePushOnResize: false,
-      displayGrid: DisplayGrid.Always,
+      displayGrid: DisplayGrid.None,
       disableWindowResize: false,
       disableWarnings: false,
       scrollToNewItems: false,

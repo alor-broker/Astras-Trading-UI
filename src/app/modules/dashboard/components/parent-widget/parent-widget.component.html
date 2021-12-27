@@ -4,10 +4,10 @@
   [resize]="widgetResize"
   [(shouldShowSettings)]="shouldShowSettings"></ats-orderbook-widget>
 <ats-light-chart-widget *ngIf="widget.gridItem.type === 'light-chart'"
- [widget]="getWidget()"
- [resize]="widgetResize"
- [(shouldShowSettings)]="shouldShowSettings"></ats-light-chart-widget>
- <ats-instrument-select-widget *ngIf="widget.gridItem.type === 'instrument-select'"
- [widget]="getWidget()"
- [resize]="widgetResize"
- [(shouldShowSettings)]="shouldShowSettings"></ats-instrument-select-widget>
+[widget]="getWidget()"
+[resize]="widgetResize"
+[(shouldShowSettings)]="shouldShowSettings"></ats-light-chart-widget>
+<ats-instrument-select-widget *ngIf="widget.gridItem.type === 'instrument-select'"
+[widget]="getWidget()"
+[resize]="widgetResize"
+[(shouldShowSettings)]="shouldShowSettings"></ats-instrument-select-widget>
