@@ -7,6 +7,12 @@
     <li nz-menu-item (click)="addItem('light-chart')">
       <i nz-icon nzType="area-chart" nzTheme="outline"></i>
     </li>
+    <li nz-menu-item (click)="addItem('instrument-select')">
+      <i nz-icon nzType="eye" nzTheme="outline"></i>
+    </li>
+    <li nz-menu-item (click)="addItem('light-chart')">
+      <i nz-icon nzType="delete" nzTheme="outline"></i>
+    </li>
     <li nz-menu-item *ngIf="portfolios$ | async as portfolios">
       <nz-select nzShowSearch [ngModel]="portfolios[0]">
         <nz-option  *ngFor='let model of portfolios' [nzValue]="model" nzLabel="{{model.portfolio}}:{{model.exchange}}"></nz-option>

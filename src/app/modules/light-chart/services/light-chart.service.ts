@@ -41,7 +41,7 @@ export class LightChartService {
     });
   }
 
-  getBars(symbol: string, exchange: string, tf: string, from: number) {
+  getBars(symbol: string, exchange: string, tf: string, from: number, instrumentGroup?: string) {
     this.ws.connect();
 
     if (this.subGuid) {
@@ -55,6 +55,7 @@ export class LightChartService {
       exchange: exchange,
       format: 'simple',
       guid: this.subGuid,
+      instrumentGroup,
       tf: tf, //60,
       from: from, //1640172544
     };

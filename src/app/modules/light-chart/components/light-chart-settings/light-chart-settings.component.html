@@ -1,25 +1,43 @@
 <p>Настройки</p>
-<form nz-form [nzLayout]="'inline'" [formGroup]="form" (ngSubmit)="submitForm()">
-  <nz-form-item>
-    <nz-form-control nzErrorTip="Инструмент">
+<form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
+  <nz-form-item  class='compact'>
+    <nz-form-control nzErrorTip="Введите имя инструмента">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Тикер</nz-form-label>
       <nz-input-group nzPrefixIcon="user">
         <input formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Symbol" />
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
-  <nz-form-item>
+  <nz-form-item class="compact">
     <nz-form-control nzErrorTip="Биржа">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Биржа</nz-form-label>
       <nz-input-group nzPrefixIcon="lock">
         <input formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Exchange" />
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
-  <nz-select formControlName='timeFrame'>
-    <nz-option  *ngFor='let tf of timeFrames' [nzValue]="tf.value" [nzLabel]="tf.label"></nz-option>
-  </nz-select>
+  <nz-form-item class="compact">
+    <nz-form-label nzRequired nzFor="symbol">Таймфрейм</nz-form-label>
+    <nz-input-group nzPrefixIcon="lock">
+      <nz-select formControlName='timeFrame'>
+        <nz-option  *ngFor='let tf of timeFrames' [nzValue]="tf.value" [nzLabel]="tf.label"></nz-option>
+      </nz-select>
+    </nz-input-group>
+  </nz-form-item>
+  <nz-collapse [nzBordered]="false" class="compact">
+    <nz-collapse-panel nzHeader="Продвинутые">
+      <nz-form-control nzErrorTip="Группа">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Группа</nz-form-label>
+        <nz-input-group nzPrefixIcon="lock">
+          <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+            placeholder="SecurityGroup" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-collapse-panel>
+  </nz-collapse>
   <nz-form-item>
     <nz-form-control>
-      <button nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
+      <button type='submit' nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
     </nz-form-control>
   </nz-form-item>
 </form>

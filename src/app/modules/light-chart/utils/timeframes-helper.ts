@@ -75,7 +75,8 @@ export class TimeframesHelper {
         to: minTime,
         tf: options.timeFrame,
         code: options.symbol,
-        exchange: options.exchange
+        exchange: options.exchange,
+        instrumentGroup: options.instrumentGroup
       };
       return request;
     }

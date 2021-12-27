@@ -3,5 +3,6 @@ export interface HistoryRequest {
   exchange: string,
   tf?: string,
   from?: number,
-  to: number
+  to: number,
+  instrumentGroup?: string
 }

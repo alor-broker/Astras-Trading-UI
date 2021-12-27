@@ -4,5 +4,6 @@ export interface LightChartSettings extends WidgetSettings {
   exchange: string,
   symbol: string,
   timeFrame: string,
-  from: number
+  from: number,
+  instrumentGroup?: string
 }

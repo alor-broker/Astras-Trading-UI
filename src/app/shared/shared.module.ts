@@ -15,7 +15,7 @@ import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzSelectModule } from 'ng-zorro-antd/select';
-
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 
 @NgModule({
   declarations: [
@@ -36,6 +36,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
     NzMenuModule,
     NzFormModule,
     NzSelectModule,
+    NzCollapseModule,
   ],
   exports: [
     // Ng zorro
@@ -45,6 +46,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
     NzLayoutModule,
     NzFormModule,
     NzSelectModule,
+    NzCollapseModule,
     // modules
     CommonModule,
     FormsModule,

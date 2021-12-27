@@ -57,7 +57,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
     this.guid = GuidGenerator.newGuid();
     this.bars$ = this.settings$.pipe(
       filter((s): s is LightChartSettings  => !!s),
-      switchMap(s => this.service.getBars(s.symbol, s.exchange, s.timeFrame, s.from))
+      switchMap(s => this.service.getBars(s.symbol, s.exchange, s.timeFrame, s.from, s.instrumentGroup))
     );
   }
 

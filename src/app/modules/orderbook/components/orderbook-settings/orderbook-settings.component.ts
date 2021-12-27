@@ -25,6 +25,7 @@ export class OrderbookSettingsComponent implements OnInit {
             Validators.minLength(4)
           ]),
           exchange: new FormControl(settings.exchange, Validators.required),
+          instrumentGroup: new FormControl(settings.instrumentGroup),
         });
       }
     })
@@ -33,5 +34,10 @@ export class OrderbookSettingsComponent implements OnInit {
   submitForm(): void {
     this.settingsChange.emit(this.form.value)
     console.log('submit', this.form.value);
+  }
+
+  log(event: Event) {
+    console.log(event)
+    event.stopPropagation();
   }
 }

@@ -6,6 +6,7 @@ import { NewWidget } from '../models/new-widget.model';
 import { Widget } from '../models/widget.model';
 import { LightChartSettings } from '../models/settings/light-chart-settings.model';
 import { TimeframesHelper } from 'src/app/modules/light-chart/utils/timeframes-helper';
+import { InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,10 +20,13 @@ constructor() { }
     let widget : Widget<AnySettings> | null = null
     switch (newWidget.gridItem.type) {
       case 'order-book':
-        widget = this.createOrderbookService(newWidget)
+        widget = this.createOrderbook(newWidget)
         break;
       case 'light-chart':
         widget = this.createLightChartWidget(newWidget);
+        break;
+      case 'instrument-select':
+        widget = this.createInstrumentSelect(newWidget)
         break;
     }
     if (widget) {
@@ -31,7 +35,7 @@ constructor() { }
     else throw new Error(`Unknow widget type ${newWidget.gridItem.type}`)
   }
 
-  private createOrderbookService(newWidget: NewWidget | Widget<OrderbookSettings>) {
+  private createOrderbook(newWidget: NewWidget | Widget<OrderbookSettings>) {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
@@ -46,7 +50,30 @@ constructor() { }
     }
     if (this.isWidget(newWidget)) {
       widget.settings = newWidget.settings;
-      widget.title = `Стакан ${newWidget.settings.symbol}`
+      const hasGroup = widget.settings.instrumentGroup;
+      widget.title = `Стакан ${newWidget.settings.symbol} ${hasGroup ?
+        `(${widget.settings.instrumentGroup})` : ''}`
+    }
+
+    return widget;
+  }
+
+
+  private createInstrumentSelect(newWidget: NewWidget | Widget<InstrumentSelectSettings>) {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+    const settings : InstrumentSelectSettings = {
+
+    }
+    const widget = {
+      gridItem: newWidget.gridItem,
+      title: `Выбор инструмента`,
+      settings: settings
+    }
+    if (this.isWidget(newWidget)) {
+      widget.settings = newWidget.settings;
+      widget.title = `Выбор инструмента`
     }
 
     return widget;
@@ -69,7 +96,9 @@ constructor() { }
     }
     if (this.isWidget(newWidget)) {
       widget.settings = newWidget.settings;
-      widget.title = `График ${newWidget.settings.symbol}`
+      const hasGroup = widget.settings.instrumentGroup;
+      widget.title = `График ${newWidget.settings.symbol} ${hasGroup ?
+        `(${widget.settings.instrumentGroup})` : ''}`
     }
 
     return widget;

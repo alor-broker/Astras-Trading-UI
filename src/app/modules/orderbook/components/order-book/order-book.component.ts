@@ -5,7 +5,6 @@ import {
   Input,
   OnInit,
   Output,
-  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
@@ -15,15 +14,9 @@ import { OrderbookService } from '../../services/orderbook.service';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
 import {
-  concatMap,
-  exhaustMap,
-  map,
-  mergeMap,
   switchMap,
   tap,
 } from 'rxjs/operators';
-import { GuidGenerator } from 'src/app/shared/utils/guid';
-import { GridsterItem } from 'angular-gridster2';
 import { Widget } from 'src/app/shared/models/widget.model';
 
 interface Size {
@@ -68,7 +61,7 @@ export class OrderBookComponent implements OnInit {
 
   ngOnInit(): void {
     this.ob$ = this.settings$.pipe(
-      switchMap(s => this.service.getOrderbook(s.symbol, s.exchange)),
+      switchMap(s => this.service.getOrderbook(s.symbol, s.exchange, s.instrumentGroup)),
       tap(ob => this.maxVolume = ob?.maxVolume ?? 1)
     )
     this.resizeSub = this.resize.subscribe((widget) => {

@@ -5,7 +5,9 @@ import {
   EventEmitter,
   ViewEncapsulation,
   OnInit,
+  Output,
 } from '@angular/core';
+import { filter } from 'rxjs/operators';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { OrderbookSettings } from 'src/app/shared/models/settings/orderbook-settings.model';
@@ -26,11 +28,21 @@ export class ParentWidgetComponent implements OnInit {
   @Input()
   resize! : EventEmitter<DashboardItem>;
 
+  @Output()
+  widgetResize: EventEmitter<DashboardItem> = new EventEmitter<DashboardItem>();
+
   shouldShowSettings: boolean = false;
 
   constructor() {  }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.resize.subscribe(i => {
+      if(i.label == this.widget.gridItem.label) {
+        this.widgetResize.emit(i);
+      }
+    }
+    )
+  }
 
   onSwitchSettings(value: boolean) {
     this.shouldShowSettings = value;
@@ -47,7 +59,6 @@ export class ParentWidgetComponent implements OnInit {
     else if (isOrderbookSettings(settings)) {
       return this.widget as Widget<OrderbookSettings>
     }
-
 
     return this.widget;
   }

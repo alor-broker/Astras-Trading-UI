@@ -9,6 +9,7 @@ import { WidgetHeaderComponent } from './components/widget-header/widget-header.
 import { OrderbookModule } from '../orderbook/orderbook.module';
 import { DashboardWidgetComponent } from './widgets/dashboard-widget/dashboard-widget.component';
 import { LightChartModule } from '../light-chart/light-chart.module';
+import { InstrumentsModule } from '../instruments/instruments.module';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { LightChartModule } from '../light-chart/light-chart.module';
     SharedModule,
     OrderbookModule,
     LightChartModule,
+    InstrumentsModule
     // components
   ]
 })

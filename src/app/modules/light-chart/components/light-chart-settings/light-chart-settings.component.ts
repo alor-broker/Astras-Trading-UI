@@ -32,7 +32,8 @@ export class LightChartSettingsComponent implements OnInit {
             Validators.minLength(4)
           ]),
           exchange: new FormControl(settings.exchange, Validators.required),
-          timeFrame: new FormControl(settings.timeFrame, Validators.required)
+          timeFrame: new FormControl(settings.timeFrame, Validators.required),
+          instrumentGroup: new FormControl(settings.instrumentGroup)
         });
       }
     })

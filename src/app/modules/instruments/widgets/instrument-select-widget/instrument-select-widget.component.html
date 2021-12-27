@@ -1,0 +1,7 @@
+
+<ats-instrument-select *ngIf="(widget.gridItem.type === 'order-book') && (settings$ | async) as settings"
+[widget]="widget"
+[resize]="resize"
+[settings]="settings"
+[(shouldShowSettings)]="shouldShowSettings"></ats-instrument-select>
+<ats-instrument-select-settings *ngIf="shouldShowSettings" (settingsChange)="onSettingsChange($event)"></ats-instrument-select-settings>
