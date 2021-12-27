@@ -10,7 +10,7 @@
     <li nz-menu-item (click)="addItem('instrument-select')">
       <i nz-icon nzType="eye" nzTheme="outline"></i>
     </li>
-    <li nz-menu-item (click)="addItem('light-chart')">
+    <li nz-menu-item (click)="clear()">
       <i nz-icon nzType="delete" nzTheme="outline"></i>
     </li>
     <li nz-menu-item *ngIf="portfolios$ | async as portfolios">

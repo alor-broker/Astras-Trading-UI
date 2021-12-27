@@ -34,6 +34,10 @@ export class NavbarComponent implements OnInit{
     this.portfolios$ = this.account.getActivePortfolios();
   }
 
+  clear() {
+    this.service.clearDashboard();
+  }
+
   addItem(type: string): void {
     this.service.addWidget({
       gridItem: {

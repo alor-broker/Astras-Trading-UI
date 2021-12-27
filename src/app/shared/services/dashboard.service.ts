@@ -62,4 +62,8 @@ export class DashboardService {
     const dashboard = this.getDashboard();
     localStorage.setItem(this.dashboardsStorage, JSON.stringify(dashboard));
   }
+
+  clearDashboard() {
+    this.setDashboard([])
+  }
 }
