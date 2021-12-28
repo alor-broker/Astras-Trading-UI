@@ -34,7 +34,7 @@ export class OrderbookService {
     }
   }
 
-  getOrderbook(symbol: string, exchange: string, instrumentGroup?: string) {
+  getOrderbook(symbol: string, exchange: string, instrumentGroup?: string, depth?: number) {
     this.ws.connect()
 
     if (this.subGuid) {
@@ -46,7 +46,7 @@ export class OrderbookService {
       opcode:"OrderBookGetAndSubscribe",
       code: symbol,
       exchange: exchange,
-      depth: 10,
+      depth: depth ?? 7,
       format:"simple",
       guid: this.subGuid,
       instrumentGroup: instrumentGroup

@@ -20,10 +20,17 @@
     <nz-collapse [nzBordered]="false" class="compact">
       <nz-collapse-panel nzHeader="Продвинутые">
         <nz-form-control nzErrorTip="Группа">
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Группа</nz-form-label>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="symbol">Группа</nz-form-label>
           <nz-input-group nzPrefixIcon="lock">
             <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
               placeholder="SecurityGroup" />
+          </nz-input-group>
+        </nz-form-control>
+        <nz-form-control nzErrorTip="Глубина">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="depth">Глубина</nz-form-label>
+          <nz-input-group nzPrefixIcon="lock">
+            <input formControlName="depth" (mousedown)="$event.stopPropagation()"
+              placeholder="7" />
           </nz-input-group>
         </nz-form-control>
       </nz-collapse-panel>

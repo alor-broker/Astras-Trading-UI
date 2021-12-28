@@ -50,8 +50,10 @@ export class WidgetFactoryService {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
-    const settings: OrderbookSettings = this.selectedInstrument;
-    newWidget.gridItem.minItemRows = 2;
+    const settings: OrderbookSettings = {
+      ...this.selectedInstrument,
+      depth: 7
+    };
     const widget = {
       gridItem: newWidget.gridItem,
       title: `Стакан ${settings.symbol}`,

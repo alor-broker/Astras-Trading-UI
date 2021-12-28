@@ -61,7 +61,7 @@ export class OrderBookComponent implements OnInit {
 
   ngOnInit(): void {
     this.ob$ = this.settings$.pipe(
-      switchMap(s => this.service.getOrderbook(s.symbol, s.exchange, s.instrumentGroup)),
+      switchMap(s => this.service.getOrderbook(s.symbol, s.exchange, s.instrumentGroup, s.depth)),
       tap(ob => this.maxVolume = ob?.maxVolume ?? 1)
     )
     this.resizeSub = this.resize.subscribe((widget) => {
@@ -86,16 +86,14 @@ export class OrderBookComponent implements OnInit {
   getBidStyle(value: number) {
     const size = 100 * (value / this.maxVolume);
     return {
-      background: `linear-gradient(90deg, white ${size}%, lightgreen ${
-        1 - size
-      }%)`,
+      background: `linear-gradient(270deg,  lightgreen ${size}% ,white ${size}%)`,
     };
   }
 
   getAskStyle(value: number) {
     const size = 100 * (value / this.maxVolume);
     return {
-      background: `linear-gradient(90deg, pink ${size}%, white ${1 - size}%)`,
+      background: `linear-gradient(90deg, pink ${size}%, white ${size}%)`,
     };
   }
 }

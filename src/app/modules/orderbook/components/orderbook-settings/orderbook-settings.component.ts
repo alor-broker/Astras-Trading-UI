@@ -25,6 +25,7 @@ export class OrderbookSettingsComponent implements OnInit {
             Validators.minLength(4)
           ]),
           exchange: new FormControl(settings.exchange, Validators.required),
+          depth: new FormControl(settings.depth, [Validators.required, Validators.min(0), Validators.max(20)]),
           instrumentGroup: new FormControl(settings.instrumentGroup),
         });
       }
