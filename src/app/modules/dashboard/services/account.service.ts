@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { distinct, map, switchMap } from 'rxjs/operators';
 import { AuthService } from 'src/app/shared/services/auth.service';
-import { PortfolioKey } from '../models/portfolio-key.model';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { findUnique } from 'src/app/shared/utils/collections';
 import { Observable } from 'rxjs';
+import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 
 @Injectable({
   providedIn: 'root'

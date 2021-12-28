@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, interval, Observable,  } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
-import { BaseRequest } from 'src/app/shared/models/ws/base-request.model';
+import { BehaviorSubject, Observable,  } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { OrderbookData } from '../models/orderbook-data.model';
 import { OrderbookRequest } from '../models/orderbook-request.model';
-import { OrderbookRow } from '../models/orderbook-row.model';
 import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { OrderBook } from '../models/orderbook.model';

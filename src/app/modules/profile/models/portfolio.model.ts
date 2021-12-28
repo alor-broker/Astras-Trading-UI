@@ -1,4 +1,4 @@
-import { Position } from "./position.model";
+import { Position } from "src/app/shared/models/positions/position.model";
 
 export interface Portfolio {
   longPositions: Position[],

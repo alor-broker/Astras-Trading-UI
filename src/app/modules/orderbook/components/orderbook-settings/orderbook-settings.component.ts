@@ -36,9 +36,4 @@ export class OrderbookSettingsComponent implements OnInit {
     this.settingsChange.emit(this.form.value)
     console.log('submit', this.form.value);
   }
-
-  log(event: Event) {
-    console.log(event)
-    event.stopPropagation();
-  }
 }

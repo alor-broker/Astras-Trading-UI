@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { filter } from 'rxjs/operators';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
+import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { OrderbookSettings } from 'src/app/shared/models/settings/orderbook-settings.model';
 import { Widget } from 'src/app/shared/models/widget.model';
@@ -52,12 +53,16 @@ export class ParentWidgetComponent implements OnInit {
   getWidget() : any {
     const isLightChartSettings = (s: AnySettings): s is LightChartSettings =>  'timeFrame' in s && 'from' in s;
     const isOrderbookSettings = (s: AnySettings): s is OrderbookSettings =>  'symbol' in s && 'exchange' in s;
+    const isBlotterSettings = (s: AnySettings): s is BlotterSettings =>  'portfolio' in s && 'exchange' in s;
     const settings = this.widget.settings
     if (isLightChartSettings(settings)) {
       return this.widget as Widget<LightChartSettings>
     }
     else if (isOrderbookSettings(settings)) {
       return this.widget as Widget<OrderbookSettings>
+    }
+    else if (isBlotterSettings(settings)) {
+      return this.widget as Widget<BlotterSettings>
     }
 
     return this.widget;

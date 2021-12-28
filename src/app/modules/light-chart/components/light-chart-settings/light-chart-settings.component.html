@@ -4,20 +4,20 @@
     <nz-form-control nzErrorTip="Введите имя инструмента">
       <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Тикер</nz-form-label>
       <nz-input-group nzPrefixIcon="user">
-        <input formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Symbol" />
+        <input formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Тикер" />
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item class="compact">
-    <nz-form-control nzErrorTip="Биржа">
-      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Биржа</nz-form-label>
+    <nz-form-control nzErrorTip="Введите биржу">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="exchange">Биржа</nz-form-label>
       <nz-input-group nzPrefixIcon="lock">
-        <input formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Exchange" />
+        <input formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Биржа" />
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item class="compact">
-    <nz-form-label nzRequired nzFor="symbol">Таймфрейм</nz-form-label>
+    <nz-form-label nzRequired nzFor="timeFrame">Таймфрейм</nz-form-label>
     <nz-input-group nzPrefixIcon="lock">
       <nz-select formControlName='timeFrame'>
         <nz-option  *ngFor='let tf of timeFrames' [nzValue]="tf.value" [nzLabel]="tf.label"></nz-option>
@@ -26,11 +26,11 @@
   </nz-form-item>
   <nz-collapse [nzBordered]="false" class="compact">
     <nz-collapse-panel nzHeader="Продвинутые">
-      <nz-form-control nzErrorTip="Группа">
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Группа</nz-form-label>
+      <nz-form-control nzErrorTip="Введите режим торгов">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="instrumentGroup">Режим торгов</nz-form-label>
         <nz-input-group nzPrefixIcon="lock">
           <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-            placeholder="SecurityGroup" />
+            placeholder="Режим торгов" />
         </nz-input-group>
       </nz-form-control>
     </nz-collapse-panel>

@@ -21,8 +21,6 @@ export class InstrumentSelectComponent implements OnInit {
   shouldShowSettings!: boolean;
   @Input()
   widget!: Widget<InstrumentSelectSettings>;
-  @Input()
-  resize!: EventEmitter<DashboardItem>;
   @Input('settings') set settings(settings: InstrumentSelectSettings) { this.settings$.next(settings); };
   private settings$ = new BehaviorSubject<InstrumentSelectSettings>({});
   @Output()
@@ -56,7 +54,7 @@ export class InstrumentSelectComponent implements OnInit {
 
   onSelect(event: NzOptionSelectionChange, val: InstrumentSelect) {
     if (event.isUserInput) {
-      this.sync.selectNew(val);
+      this.sync.selectNewInstrument(val);
     }
   }
 

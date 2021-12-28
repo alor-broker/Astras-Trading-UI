@@ -9,5 +9,8 @@
 [(shouldShowSettings)]="shouldShowSettings"></ats-light-chart-widget>
 <ats-instrument-select-widget *ngIf="widget.gridItem.type === 'instrument-select'"
 [widget]="getWidget()"
-[resize]="widgetResize"
 [(shouldShowSettings)]="shouldShowSettings"></ats-instrument-select-widget>
+
+<ats-blotter-widget *ngIf="widget.gridItem.type === 'blotter'"
+[widget]="getWidget()"
+[(shouldShowSettings)]="shouldShowSettings"></ats-blotter-widget>

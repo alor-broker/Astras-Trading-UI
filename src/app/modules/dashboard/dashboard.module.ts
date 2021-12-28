@@ -10,6 +10,8 @@ import { OrderbookModule } from '../orderbook/orderbook.module';
 import { DashboardWidgetComponent } from './widgets/dashboard-widget/dashboard-widget.component';
 import { LightChartModule } from '../light-chart/light-chart.module';
 import { InstrumentsModule } from '../instruments/instruments.module';
+import { BlotterModule } from '../blotter/blotter.module';
+import { CommandModule } from '../command/command.module';
 
 @NgModule({
   declarations: [
@@ -17,15 +19,16 @@ import { InstrumentsModule } from '../instruments/instruments.module';
     DashboardComponent,
     NavbarComponent,
     ParentWidgetComponent,
-    WidgetHeaderComponent
+    WidgetHeaderComponent,
   ],
   imports: [
-    CommonModule,
     DashboardRoutingModule,
     SharedModule,
     OrderbookModule,
     LightChartModule,
-    InstrumentsModule
+    InstrumentsModule,
+    BlotterModule,
+    CommandModule
     // components
   ]
 })

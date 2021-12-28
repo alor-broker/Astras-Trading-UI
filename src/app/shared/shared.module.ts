@@ -19,6 +19,9 @@ import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzAutocompleteModule } from 'ng-zorro-antd/auto-complete';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown'
+import { NzModalModule } from 'ng-zorro-antd/modal';
 
 @NgModule({
   declarations: [
@@ -42,7 +45,10 @@ import { NzCardModule } from 'ng-zorro-antd/card';
     NzCollapseModule,
     NzAutocompleteModule,
     NzTagModule,
-    NzCardModule
+    NzCardModule,
+    NzTabsModule,
+    NzDropDownModule,
+    NzModalModule
   ],
   exports: [
     // Ng zorro
@@ -56,12 +62,15 @@ import { NzCardModule } from 'ng-zorro-antd/card';
     NzAutocompleteModule,
     NzTagModule,
     NzCardModule,
+    NzTabsModule,
+    NzMenuModule,
+    NzDropDownModule,
+    NzModalModule,
     // modules
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     GridsterModule,
-    NzMenuModule,
     // components
   ],
   providers: [

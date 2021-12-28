@@ -1,0 +1,30 @@
+<p>Настройки</p>
+<div>
+  <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите портфель">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="portfolio">Портфель</nz-form-label>
+        <nz-input-group nzPrefixIcon="user">
+          <input formControlName="portfolio" (mousedown)="$event.stopPropagation()" nz-input placeholder="Портфель" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите биржу">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="exchange">Биржа</nz-form-label>
+        <nz-input-group nzPrefixIcon="lock">
+          <input formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Биржа" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-collapse [nzBordered]="false" class="compact">
+      <nz-collapse-panel nzHeader="Продвинутые">
+      </nz-collapse-panel>
+    </nz-collapse>
+    <nz-form-item class="compact">
+      <nz-form-control>
+        <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</div>

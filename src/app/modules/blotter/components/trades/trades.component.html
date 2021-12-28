@@ -1,0 +1,50 @@
+<nz-table *ngIf="displayTrades$ | async as trades" #nzTable [nzData]="trades"
+  #nzTableComponent
+  nzTableLayout="fixed"
+  nzSize="small"
+  [nzFrontPagination]="false"
+  [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th nzCustomFilter>
+        Номер
+        <nz-filter-trigger [(nzVisible)]="getFilter().idMenuVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="menu">
+          <i nz-icon nzType="search"></i>
+        </nz-filter-trigger>
+      </th>
+      <th nzCustomFilter>
+        Тикер
+        <nz-filter-trigger [(nzVisible)]="getFilter().symbolMenuVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="menu">
+          <i nz-icon nzType="search"></i>
+        </nz-filter-trigger>
+      </th>
+      <th>Сторона</th>
+      <th>Цена</th>
+      <th>Кол-во</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let trd of nzTable.data">
+      <td>{{ trd.id }}</td>
+      <td>{{ trd.symbol }}</td>
+      <td>{{ trd.side }}</td>
+      <td>{{ trd.price }}</td>
+      <td>{{ trd.qty }}</td>
+    </tr>
+  </tbody>
+</nz-table>
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box" *ngIf='getFilter().idMenuVisible'>
+      <input type="text" nz-input placeholder="Поиск по тикеру"
+        [ngModel]='getFilter().symbol'
+        (ngModelChange)="filterChange($event, 'symbol')"/>
+    </div>
+    <div class="search-box" *ngIf='getFilter().symbolMenuVisible'>
+      <input type="text" nz-input placeholder="Поиск по тикеру"
+        [ngModel]='getFilter().symbol'
+        (ngModelChange)="filterChange($event, 'symbol')"/>
+    </div>
+  </div>
+  <button nz-button nzSize="small" (click)="reset()">Сбросить</button>
+</nz-dropdown-menu>

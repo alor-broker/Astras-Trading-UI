@@ -18,6 +18,9 @@ import {
   tap,
 } from 'rxjs/operators';
 import { Widget } from 'src/app/shared/models/widget.model';
+import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
+import { SyncService } from 'src/app/shared/services/sync.service';
+import { Side } from 'src/app/shared/models/enums/side.model';
 
 interface Size {
   width: string;
@@ -55,7 +58,7 @@ export class OrderBookComponent implements OnInit {
     height: '100%',
   });
 
-  constructor(private service: OrderbookService) {
+  constructor(private service: OrderbookService, private sync: SyncService) {
 
   }
 
@@ -95,5 +98,14 @@ export class OrderBookComponent implements OnInit {
     return {
       background: `linear-gradient(90deg, pink ${size}%, white ${size}%)`,
     };
+  }
+
+  newLimitOrder(side: string, price: number) {
+    const params: CommandParams = {
+      instrument: { ...this.settings$.getValue() },
+      side: side == 'buy' ? Side.Buy : Side.Sell,
+      price
+    }
+    this.sync.openCommandModal(params);
   }
 }

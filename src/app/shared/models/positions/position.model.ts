@@ -1,5 +1,5 @@
 export interface Position {
-    _symbol: string, // SBER,
+    symbol: string, // SBER,
     brokerSymbol: string, // MOEX:SBER,
     portfolio: string, // D39004,
     exchange: string, // MOEX,

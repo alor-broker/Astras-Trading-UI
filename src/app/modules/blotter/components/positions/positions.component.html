@@ -1,0 +1,53 @@
+<nz-table *ngIf="displayPositions$ | async as positions" #nzTable [nzData]="positions"
+  nzTableLayout="fixed"
+  nzSize="small"
+  [nzFrontPagination]="false"
+  [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th nzCustomFilter>
+        Тикер
+        <nz-filter-trigger [(nzVisible)]="getFilter().symbolMenuVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="menu">
+          <i nz-icon nzType="search"></i>
+        </nz-filter-trigger>
+      </th>
+      <th nzCustomFilter>
+        Имя
+        <nz-filter-trigger [(nzVisible)]="getFilter().shortNameMenuVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="menu">
+          <i nz-icon nzType="search"></i>
+        </nz-filter-trigger>
+      </th>
+      <th>Средняя</th>
+      <th>T0</th>
+      <th>T1</th>
+      <th>T2</th>
+      <th>TFuture</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let pos of nzTable.data">
+      <td>{{ pos.symbol }}</td>
+      <td>{{ pos.shortName }}</td>
+      <td>{{ pos.avgPrice }}</td>
+      <td>{{ pos.qtyT0 }}</td>
+      <td>{{ pos.qtyT1 }}</td>
+      <td>{{ pos.qtyT2 }}</td>
+      <td>{{ pos.qtyTFuture }}</td>
+    </tr>
+  </tbody>
+</nz-table>
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box" *ngIf='getFilter().symbolMenuVisible'>
+      <input type="text" nz-input placeholder="Поиск по тикеру"
+        [ngModel]='getFilter().symbol'
+        (ngModelChange)="filterChange($event, 'symbol')"/>
+    </div>
+    <div class="search-box" *ngIf='getFilter().shortNameMenuVisible'>
+      <input type="text" nz-input placeholder="Поиск по имени"
+        [ngModel]='getFilter().shortName'
+        (ngModelChange)="filterChange($event, 'shortName')"/>
+    </div>
+  </div>
+  <button nz-button nzSize="small" (click)="reset()">Сбросить</button>
+</nz-dropdown-menu>

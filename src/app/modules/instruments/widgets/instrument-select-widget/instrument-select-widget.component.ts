@@ -17,8 +17,6 @@ export class InstrumentSelectWidgetComponent implements OnInit {
   shouldShowSettings!: boolean;
   @Input()
   widget!: Widget<InstrumentSelectSettings>;
-  @Input()
-  resize!: EventEmitter<DashboardItem>;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>()
   settings$!: Observable<InstrumentSelectSettings>;
