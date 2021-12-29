@@ -4,10 +4,10 @@ import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
+import { Side } from 'src/app/shared/models/enums/side.model';
 import { Quote } from 'src/app/shared/models/quotes/quote.model';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
-import { CommandViewData } from '../../models/command-view-data.model';
 import { LimitCommand } from '../../models/limit-command.model';
 import { CommandsService } from '../../services/commands.service';
 
@@ -18,7 +18,7 @@ import { CommandsService } from '../../services/commands.service';
 })
 export class LimitCommandComponent implements OnInit, OnDestroy {
   isVisible$: Observable<boolean> = of(false);
-  viewData = new BehaviorSubject<CommandViewData | null>(null)
+  viewData = new BehaviorSubject<CommandParams | null>(null)
   initialParams: CommandParams | null = null
   initialParamsSub: Subscription
   form!: FormGroup;
@@ -30,14 +30,12 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
       if (this.initialParams?.instrument && this.initialParams.user) {
         this.viewData.next({
-          command: {
-            instrument: this.initialParams?.instrument,
-            user: this.initialParams.user,
-            side: this.initialParams.side,
-            type: CommandType.Limit,
-            price: this.initialParams.price ?? 0,
-            quantity: 100,
-          },
+          instrument: this.initialParams?.instrument,
+          user: this.initialParams.user,
+          side: this.initialParams.side,
+          type: CommandType.Limit,
+          price: this.initialParams.price ?? 0,
+          quantity: 1,
         })
       }
     })
@@ -45,49 +43,32 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
    ngOnInit() {
     this.viewData.pipe(
-      filter((d): d is CommandViewData => !!d),
-      switchMap((data : CommandViewData) : Observable<CommandViewData> => {
-        if (data.command) {
-          const withQuotes = this.quotes.getQuotes(
-            data.command.instrument.symbol,
-            data.command.instrument.exchange,
-            data.command.instrument.instrumentGroup).pipe(
-              filter((q): q is Quote => !!q),
-              map((quote) : CommandViewData => ({
-                command: data.command,
-                quote: quote
-              })
-            )
-          );
-          return withQuotes;
-        }
-        return of(data);
-      }),
-    ).subscribe(data => {
-       if (data && data.command) {
+      filter((d): d is CommandParams => !!d)
+    ).subscribe(command => {
+       if (command) {
          this.form = new FormGroup({
-          quantity: new FormControl(data.command.quantity, [
+          quantity: new FormControl(command.quantity, [
              Validators.required,
            ]),
-           price: new FormControl(data.command.price, [
+           price: new FormControl(command.price, [
               Validators.required,
             ]),
-           instrumentGroup: new FormControl(data.command?.instrument.instrumentGroup),
+           instrumentGroup: new FormControl(command?.instrument.instrumentGroup),
          });
        }
      })
    }
 
    submitForm(): void {
-     const command = this.viewData.getValue()?.command;
+     const command = this.viewData.getValue();
      if (command && command.user) {
       this.service.submitLimit({
-        side: command.side,
-        type: command.type,
+        side: command.side == Side.Buy ? 'buy' : 'sell',
         quantity: command.quantity,
         price: command.price,
         instrument: command.instrument,
-        user: command.user
+        user: command.user,
+        ...this.form.value
       }).subscribe();
       console.log('submit', this.form.value);
      }

@@ -15,7 +15,10 @@ export class CommandsService {
   constructor(private http: HttpClient) { }
 
   submitLimit(command: LimitCommand) {
-    return this.http.post(this.url, command, {
+    return this.http.post(this.url, {
+        ...command,
+        type: 'limit'
+      }, {
       headers: {
         'X-ALOR-REQID': GuidGenerator.newGuid()
       }
