@@ -102,6 +102,9 @@ export class WebsocketService {
   }
 
   subscribe(msg: BaseRequest) {
+    if (this.subscriptions.has(msg.guid)) {
+      return;
+    }
     this.subscriptions.set(msg.guid, msg);
     this.sendMessage(msg);
   }

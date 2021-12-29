@@ -1,45 +1,42 @@
-<nz-modal [nzVisible]='isVisible$ | async' nzTitle="The first Modal" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
-  <ng-container *nzModalContent>
-    <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
-      <nz-form-item class="compact">
-        <nz-form-control nzErrorTip="Введите инструмент">
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Тикер</nz-form-label>
-          <nz-input-group nzPrefixIcon="user">
-            <input formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Symbol" />
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item class="compact">
-        <nz-form-control nzErrorTip="Введите биржу">
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="exchange">Биржа</nz-form-label>
-          <nz-input-group nzPrefixIcon="lock">
-            <input formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Биржа" />
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-collapse [nzBordered]="false" class="compact">
-        <nz-collapse-panel nzHeader="Продвинутые">
-          <nz-form-control nzErrorTip="Группа">
-            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="instrumentGroup">Группа</nz-form-label>
-            <nz-input-group nzPrefixIcon="lock">
-              <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-                placeholder="Режим торгов" />
+<div *ngIf="viewData | async as data">
+
+  <nz-modal [nzVisible]='isVisible$ | async' [nzTitle]="data.command?.instrument?.symbol" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+    <ng-container *nzModalContent>
+      <form  nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
+        <nz-form-item class="compact">
+          <nz-form-control nzErrorTip="Введите кол-во">
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="quantity">Кол-во</nz-form-label>
+            <nz-input-group nzPrefixIcon="user">
+              <input formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="100" />
             </nz-input-group>
           </nz-form-control>
-          <nz-form-control nzErrorTip="Глубина некорректна">
-            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="depth">Глубина</nz-form-label>
+        </nz-form-item>
+        <nz-form-item class="compact">
+          <nz-form-control nzErrorTip="Введите цену">
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="price">Цена</nz-form-label>
             <nz-input-group nzPrefixIcon="lock">
-              <input formControlName="depth" (mousedown)="$event.stopPropagation()"
-                placeholder="7" />
+              <input formControlName="price" (mousedown)="$event.stopPropagation()" placeholder="0" />
             </nz-input-group>
           </nz-form-control>
-        </nz-collapse-panel>
-      </nz-collapse>
-      <nz-form-item class="compact">
-        <nz-form-control>
-          <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
-        </nz-form-control>
-      </nz-form-item>
-    </form>
-  </ng-container>
-</nz-modal>
+        </nz-form-item>
+        <nz-collapse [nzBordered]="false" class="compact">
+          <nz-collapse-panel nzHeader="Продвинутые">
+            <nz-form-control nzErrorTip="Группа">
+              <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="instrumentGroup">Группа</nz-form-label>
+              <nz-input-group nzPrefixIcon="lock">
+                <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+                  placeholder="Режим торгов" />
+              </nz-input-group>
+            </nz-form-control>
+          </nz-collapse-panel>
+        </nz-collapse>
+        <nz-form-item class="compact">
+          <nz-form-control>
+            <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
+
+</div>

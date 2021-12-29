@@ -3,7 +3,6 @@ import { BehaviorSubject, Observable,  } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
-import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { OrderbookData } from '../models/orderbook-data.model';
 import { OrderbookRequest } from '../models/orderbook-request.model';
 import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
@@ -32,6 +31,11 @@ export class OrderbookService {
     }
   }
 
+  generateNewGuid(request: OrderbookRequest) : string {
+    const group = request.instrumentGroup ? request.instrumentGroup : '';
+    return request.opcode + request.code + request.exchange + group + request.depth + request.format;
+  }
+
   getOrderbook(symbol: string, exchange: string, instrumentGroup?: string, depth?: number) {
     this.ws.connect()
 
@@ -39,16 +43,17 @@ export class OrderbookService {
       this.ws.unsubscribe(this.subGuid);
     }
 
-    this.subGuid = GuidGenerator.newGuid();
     const request : OrderbookRequest = {
       opcode:"OrderBookGetAndSubscribe",
       code: symbol,
       exchange: exchange,
       depth: depth ?? 7,
       format:"simple",
-      guid: this.subGuid,
+      guid: '',
       instrumentGroup: instrumentGroup
     }
+    this.subGuid = this.generateNewGuid(request);
+    request.guid = this.subGuid;
     this.ws.subscribe(request)
 
     this.orderbook$ = this.ws.messages$.pipe(

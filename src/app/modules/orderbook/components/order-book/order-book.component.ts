@@ -21,6 +21,7 @@ import { Widget } from 'src/app/shared/models/widget.model';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { Side } from 'src/app/shared/models/enums/side.model';
+import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 
 interface Size {
   width: string;
@@ -104,7 +105,9 @@ export class OrderBookComponent implements OnInit {
     const params: CommandParams = {
       instrument: { ...this.settings$.getValue() },
       side: side == 'buy' ? Side.Buy : Side.Sell,
-      price
+      price,
+      quantity: 0,
+      type: CommandType.Limit
     }
     this.sync.openCommandModal(params);
   }
