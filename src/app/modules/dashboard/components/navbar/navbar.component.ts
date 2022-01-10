@@ -8,6 +8,7 @@ import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
+import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 
 @Component({
   selector: 'ats-navbar',
@@ -23,7 +24,7 @@ export class NavbarComponent implements OnInit{
       map((result) => result.matches),
       shareReplay()
     );
-
+  names = WidgetNames
   constructor(
     private breakpointObserver: BreakpointObserver,
     private service: DashboardService,

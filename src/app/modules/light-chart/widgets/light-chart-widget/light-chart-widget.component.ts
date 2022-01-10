@@ -12,7 +12,7 @@ import { LightChartService } from '../../services/light-chart.service';
   selector: 'ats-light-chart-widget[shouldShowSettings][widget][resize]',
   templateUrl: './light-chart-widget.component.html',
   styleUrls: ['./light-chart-widget.component.sass'],
-  providers: [LightChartService]
+  providers: [ LightChartService ]
 })
 export class LightChartWidgetComponent implements OnInit {
   @Input()

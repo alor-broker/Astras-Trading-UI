@@ -1,4 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { BlotterService } from '../../services/blotter.service';
+import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { PositionsComponent } from './positions.component';
 
@@ -8,6 +13,10 @@ describe('PositionsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [SharedModule],
+      providers: [
+        { provide: BlotterService, useClass: MockServiceBlotter }
+      ],
       declarations: [ PositionsComponent ]
     })
     .compileComponents();

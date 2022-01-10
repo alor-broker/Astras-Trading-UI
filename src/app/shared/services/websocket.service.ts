@@ -27,6 +27,7 @@ export class WebsocketService {
       reconnectTimeout: 2000,
       reconnectAttempts: 5
     }
+    console.log(this.account.test)
     this.account.accessToken$.subscribe(t => {
       this.token.next(t);
     });

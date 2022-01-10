@@ -1,16 +1,23 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async, inject } from '@angular/core/testing';
-import { AccountService } from './account.service';
+import { AuthService } from '../../../shared/services/auth.service'
+import { PositionsService } from 'src/app/shared/services/positions.service';
 
-describe('Service: Account', () => {
+describe('AccountService', () => {
+  const spyAuth = jasmine.createSpyObj('AuthService', ['currentUser$'])
+  const spyPositions = jasmine.createSpyObj('PositionsService', ['getAllByLogin'])
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [AccountService]
+      providers: [
+        { provide: AuthService, useValue: spyAuth },
+        { provide: PositionsService, useValue: spyPositions }
+      ]
     });
   });
 
-  it('should ...', inject([AccountService], (service: AccountService) => {
+  it('should ...', inject([AuthService], (service: AuthService) => {
     expect(service).toBeTruthy();
   }));
 });

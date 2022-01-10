@@ -2,24 +2,27 @@
 
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { TestBed, async, inject } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LoginFormComponent } from 'src/app/modules/login/components/login-form/login-form.component';
 import { SharedModule } from '../shared.module';
 import { AuthService } from './auth.service';
 
-describe('AccountService', () => {
+describe('AuthService', () => {
   let service: AuthService;
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        RouterTestingModule,
-        RouterTestingModule.withRoutes([{ path: 'login', pathMatch: 'full', component: LoginFormComponent },])],
-      providers: [RouterTestingModule]
+        RouterTestingModule.withRoutes([{ path: 'login', pathMatch: 'full', component: LoginFormComponent },])
+      ],
+      providers: [AuthService, RouterTestingModule, HttpClientTestingModule]
     });
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(AuthService);
   });
 

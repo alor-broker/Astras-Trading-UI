@@ -1,14 +1,24 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async, inject } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { OrderBook } from '../models/orderbook.model';
 import { OrderbookService } from './orderbook.service';
 
-describe('Service: Orderbook', () => {
+describe('OrderbookService', () => {
   beforeEach(() => {
+    const spy = jasmine.createSpyObj('WebsocketService', ['settings$']);
+    spy.settings$ = of({
+      exchange: 'MOEX',
+      Symbol: 'SBER'
+    })
     TestBed.configureTestingModule({
-      providers: [OrderbookService]
+      providers: [
+        OrderbookService,
+        { provide: WebsocketService, useValue: spy }
+      ]
     });
   });
 

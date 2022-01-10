@@ -11,6 +11,7 @@ import { SyncService } from './sync.service';
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { BlotterSettings } from '../models/settings/blotter-settings.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
+import { WidgetNames } from '../models/enums/widget-names';
 
 @Injectable({
   providedIn: 'root',
@@ -37,16 +38,16 @@ export class WidgetFactoryService {
   ): Widget<AnySettings> {
     let widget: Widget<AnySettings> | null = null;
     switch (newWidget.gridItem.type) {
-      case 'order-book':
+      case WidgetNames.orderBook:
         widget = this.createOrderbook(newWidget);
         break;
-      case 'light-chart':
+      case WidgetNames.lightChart:
         widget = this.createLightChartWidget(newWidget);
         break;
-      case 'instrument-select':
+      case WidgetNames.instrumentSelect:
         widget = this.createInstrumentSelect(newWidget);
         break;
-      case 'blotter':
+      case WidgetNames.blotter:
         widget = this.createBlotter(newWidget);
         break;
     }
