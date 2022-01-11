@@ -10,11 +10,13 @@ import { SyncService } from 'src/app/shared/services/sync.service';
 import { InstrumentSelect } from '../../models/instrument-select.model';
 import { SearchFilter } from '../../models/search-filter.model';
 import { InstrumentsService } from '../../services/instruments.service';
+import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 
 @Component({
   selector: 'ats-instrument-select[shouldShowSettings][widget][settings]',
   templateUrl: './instrument-select.component.html',
-  styleUrls: ['./instrument-select.component.sass']
+  styleUrls: ['./instrument-select.component.sass'],
+  providers: [WatchInstrumentsService]
 })
 export class InstrumentSelectComponent implements OnInit {
   @Input()
@@ -33,7 +35,7 @@ export class InstrumentSelectComponent implements OnInit {
 
   inputValue?: string;
   filteredOptions: string[] = [];
-  constructor(private service: InstrumentsService, private sync: SyncService) {
+  constructor(private service: InstrumentsService, private sync: SyncService, private watcher: WatchInstrumentsService) {
 
   }
 
@@ -68,5 +70,9 @@ export class InstrumentSelectComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.service.unsubscribe();
+  }
+
+  watch(inst: InstrumentKey) {
+    this.watcher.add(inst);
   }
 }

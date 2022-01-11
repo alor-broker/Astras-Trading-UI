@@ -1,0 +1,23 @@
+<nz-table *ngIf="watchedInstruments$ | async as instruments" #nzTable [nzData]="instruments"
+  #nzTableComponent
+  nzTableLayout="fixed"
+  nzSize="small"
+  [nzFrontPagination]="false"
+  [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Тикер</th>
+      <th>Цена</th>
+      <th>Изм.</th>
+      <th>Изм., %</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let inst of nzTable.data">
+      <td>{{ inst.instrument.symbol }}</td>
+      <td>{{ inst.price }}</td>
+      <td>{{ inst.dayChange }}</td>
+      <td>{{ inst.dayChangePerPrice }}</td>
+    </tr>
+  </tbody>
+</nz-table>

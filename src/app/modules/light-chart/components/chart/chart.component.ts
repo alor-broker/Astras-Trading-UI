@@ -14,7 +14,7 @@ import { LightChartSettings } from '../../../../shared/models/settings/light-cha
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 import { LightChartService } from '../../services/light-chart.service';
-import { Candle } from '../../models/candle.model';
+import { Candle } from '../../../../shared/models/history/candle.model';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
 import {
   widget,

@@ -3,27 +3,27 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, flatMap, map, mergeMap } from 'rxjs/operators';
 import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
+import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { environment } from 'src/environments/environment';
 import { LightChartSettings } from '../../../shared/models/settings/light-chart-settings.model';
 import { BarsRequest } from '../models/bars-request.model';
-import { Candle } from '../models/candle.model';
-import { HistoryRequest } from '../models/history-request.model';
-import { HistoryResponse } from '../models/history-response.model';
+import { Candle } from '../../../shared/models/history/candle.model';
+import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
+import { HistoryResponse } from 'src/app/shared/models/history/history-response.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LightChartService {
-  private url = environment.apiUrl + '/md/history';
   private bars$: Observable<Candle> = new Observable();
   private subGuid: string | null = null;
   private settings: BehaviorSubject<LightChartSettings | null> =
     new BehaviorSubject<LightChartSettings | null>(null);
   settings$ = this.settings.asObservable();
 
-  constructor(private ws: WebsocketService, private http: HttpClient) {}
+  constructor(private ws: WebsocketService, private history: HistoryService) {}
 
   setSettings(settings: LightChartSettings) {
     this.settings.next(settings);
@@ -36,9 +36,7 @@ export class LightChartService {
   }
 
   getHistory(request: HistoryRequest) : Observable<HistoryResponse> {
-    return this.http.get<HistoryResponse>(this.url, {
-      params: { ...request },
-    });
+    return this.history.getHistory(request);
   }
 
   getBars(symbol: string, exchange: string, tf: string, from: number, instrumentGroup?: string) {

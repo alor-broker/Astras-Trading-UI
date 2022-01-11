@@ -6,13 +6,15 @@ import { InstrumentSelectComponent } from './components/instrument-select/instru
 import { InstrumentSelectWidgetComponent } from './widgets/instrument-select-widget/instrument-select-widget.component';
 import { InstrumentSelectSettingsComponent } from './components/instrument-select-settings/instrument-select-settings.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { WatchlistTableComponent } from './components/watchlist-table/watchlist-table.component';
 
 
 @NgModule({
   declarations: [
     InstrumentSelectComponent,
     InstrumentSelectWidgetComponent,
-    InstrumentSelectSettingsComponent
+    InstrumentSelectSettingsComponent,
+    WatchlistTableComponent
   ],
   imports: [
     SharedModule,

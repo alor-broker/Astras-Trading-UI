@@ -1,8 +1,8 @@
+import { HistoryRequest } from "src/app/shared/models/history/history-request.model";
 import { LightChartSettings } from "src/app/shared/models/settings/light-chart-settings.model";
 import { findUniqueElements } from "src/app/shared/utils/collections";
 import { addDaysUnix, addHoursUnix } from "src/app/shared/utils/datetime";
-import { Candle } from "../models/candle.model";
-import { HistoryRequest } from "../models/history-request.model";
+import { Candle } from "../../../shared/models/history/candle.model";
 
 export interface Timeframe {
   label: string,
