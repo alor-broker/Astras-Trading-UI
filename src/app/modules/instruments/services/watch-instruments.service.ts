@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, concat, forkJoin, from, merge, Observable, of, zip } from 'rxjs';
-import { combineAll, concatAll, concatMap, exhaustMap, flatMap, map, mergeAll, mergeMap, switchAll, switchMap, take, withLatestFrom } from 'rxjs/operators';
+import { combineLatestWith, combineAll, concatAll, concatMap, exhaustMap, flatMap, map, mergeAll, mergeMap, mergeMapTo, switchAll, switchMap, take, withLatestFrom, combineLatestAll } from 'rxjs/operators';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
@@ -77,18 +77,10 @@ export class WatchInstrumentsService {
           )
           return instr$;
         });
-        // const p = merge(obs);
-        const t = combineLatest(obs)
-        return t;
+
+        const p = merge(obs).pipe(combineLatestAll())
+        return p;
       })
     )
   }
 }
-function combineLatestAll(obs: Observable<WatchedInstrument>[]) {
-  throw new Error('Function not implemented.');
-}
-
-function combineLatestWith(obs: Observable<WatchedInstrument>[]) {
-  throw new Error('Function not implemented.');
-}
-

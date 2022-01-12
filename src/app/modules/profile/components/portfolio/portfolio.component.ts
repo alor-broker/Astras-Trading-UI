@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { PortfolioService } from '../../services/portfolio.service';
 import { Portfolio } from '../../models/portfolio.model'
-import { Position } from '@angular/compiler';
 import { OrderbookRow } from 'src/app/modules/orderbook/models/orderbook-row.model';
 
 @Component({

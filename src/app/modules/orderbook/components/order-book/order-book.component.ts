@@ -22,6 +22,7 @@ import { CommandParams } from 'src/app/shared/models/commands/command-params.mod
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
+import { sellColorBackground, buyColorBackground } from '../../../../shared/models/settings/styles-constants'
 
 interface Size {
   width: string;
@@ -90,14 +91,14 @@ export class OrderBookComponent implements OnInit {
   getBidStyle(value: number) {
     const size = 100 * (value / this.maxVolume);
     return {
-      background: `linear-gradient(270deg,  lightgreen ${size}% ,white ${size}%)`,
+      background: `linear-gradient(270deg, ${buyColorBackground} ${size}% , rgba(0,0,0,0) ${size}%)`,
     };
   }
 
   getAskStyle(value: number) {
     const size = 100 * (value / this.maxVolume);
     return {
-      background: `linear-gradient(90deg, pink ${size}%, white ${size}%)`,
+      background: `linear-gradient(90deg, ${sellColorBackground} ${size}%, rgba(0,0,0,0) ${size}%)`,
     };
   }
 

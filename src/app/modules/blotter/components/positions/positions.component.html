@@ -39,12 +39,12 @@
 <nz-dropdown-menu #menu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box" *ngIf='getFilter().symbolMenuVisible'>
-      <input type="text" nz-input placeholder="Поиск по тикеру"
+      <input class='ant-input'  type="text" nz-input placeholder="Поиск по тикеру"
         [ngModel]='getFilter().symbol'
         (ngModelChange)="filterChange($event, 'symbol')"/>
     </div>
     <div class="search-box" *ngIf='getFilter().shortNameMenuVisible'>
-      <input type="text" nz-input placeholder="Поиск по имени"
+      <input class='ant-input'  type="text" nz-input placeholder="Поиск по имени"
         [ngModel]='getFilter().shortName'
         (ngModelChange)="filterChange($event, 'shortName')"/>
     </div>

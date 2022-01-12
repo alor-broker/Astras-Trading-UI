@@ -1,3 +1,5 @@
+@import '../../../../../styles'
+
 .order-book
   display: flex
   align-items: stretch
@@ -8,7 +10,7 @@
   padding-bottom: 0 !important
   &--ask
     @extend .row-cell
-    color: red
+    color: $sell-color
   &--bid
     @extend .row-cell
-    color: green
+    color: $buy-color

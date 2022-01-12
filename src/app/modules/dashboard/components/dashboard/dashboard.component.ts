@@ -23,7 +23,7 @@ interface Safe extends GridsterConfig {
 @Component({
   selector: 'ats-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.sass'],
+  styleUrls: ['./dashboard.component.less'],
 })
 export class DashboardComponent implements OnInit {
   options!: Safe;

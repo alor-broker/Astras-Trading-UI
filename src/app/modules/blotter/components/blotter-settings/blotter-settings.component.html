@@ -5,7 +5,7 @@
       <nz-form-control nzErrorTip="Введите портфель">
         <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="portfolio">Портфель</nz-form-label>
         <nz-input-group nzPrefixIcon="user">
-          <input formControlName="portfolio" (mousedown)="$event.stopPropagation()" nz-input placeholder="Портфель" />
+          <input class='ant-input' formControlName="portfolio" (mousedown)="$event.stopPropagation()" nz-input placeholder="Портфель" />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
@@ -13,7 +13,7 @@
       <nz-form-control nzErrorTip="Введите биржу">
         <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="exchange">Биржа</nz-form-label>
         <nz-input-group nzPrefixIcon="lock">
-          <input formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Биржа" />
+          <input class='ant-input' formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Биржа" />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>

@@ -5,7 +5,7 @@
       <nz-form-control nzErrorTip="Введите инструмент">
         <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Тикер</nz-form-label>
         <nz-input-group nzPrefixIcon="user">
-          <input formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Symbol" />
+          <input class='ant-input'  formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Symbol" />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
@@ -13,7 +13,7 @@
       <nz-form-control nzErrorTip="Введите биржу">
         <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="exchange">Биржа</nz-form-label>
         <nz-input-group nzPrefixIcon="lock">
-          <input formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Биржа" />
+          <input class='ant-input'  formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Биржа" />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
@@ -22,14 +22,14 @@
         <nz-form-control nzErrorTip="Группа">
           <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="instrumentGroup">Группа</nz-form-label>
           <nz-input-group nzPrefixIcon="lock">
-            <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+            <input class='ant-input'  formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
               placeholder="Режим торгов" />
           </nz-input-group>
         </nz-form-control>
         <nz-form-control nzErrorTip="Глубина некорректна">
           <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="depth">Глубина</nz-form-label>
           <nz-input-group nzPrefixIcon="lock">
-            <input formControlName="depth" (mousedown)="$event.stopPropagation()"
+            <input class='ant-input'  formControlName="depth" (mousedown)="$event.stopPropagation()"
               placeholder="7" />
           </nz-input-group>
         </nz-form-control>
