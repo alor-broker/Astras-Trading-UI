@@ -27,9 +27,12 @@ export class HistoryService {
       instrumentGroup: instrument.instrumentGroup
     }
     return this.getHistory(request).pipe(
-      map(resp => resp.history.at(-1)),
+      map(resp => {
+        const [lastCandle] = resp.history.slice(-1)
+        return lastCandle
+      },
       tap(c => console.log(c))
-    )
+    ))
   }
 
   getHistory(request: HistoryRequest) : Observable<HistoryResponse> {

@@ -53,6 +53,8 @@ export class QuotesService {
         return br.data;
       })
     )
-    return this.quote$;
+    return this.quote$.pipe(
+      filter((q): q is Quote => !!q)
+    );
   }
 }
