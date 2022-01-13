@@ -29,7 +29,8 @@ export class NavbarComponent implements OnInit{
     private breakpointObserver: BreakpointObserver,
     private service: DashboardService,
     private account: AccountService,
-    private sync: SyncService
+    private sync: SyncService,
+    private auth: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -41,6 +42,10 @@ export class NavbarComponent implements OnInit{
 
   clear() {
     this.service.clearDashboard();
+  }
+
+  logout() {
+    this.auth.logout()
   }
 
   selectDefault(portfolios: PortfolioKey[]) {

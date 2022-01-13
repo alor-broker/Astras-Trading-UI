@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { map, switchMap, tap, finalize } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
+import { map, switchMap, tap, finalize, mergeMap } from 'rxjs/operators';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
@@ -13,8 +13,9 @@ import { SyncService } from 'src/app/shared/services/sync.service';
   providedIn: 'root',
 })
 export class WatchInstrumentsService {
+  private watchlistStorage = 'watchlist';
 
-  private newInstruments: BehaviorSubject<InstrumentKey>;
+  private newInstruments: Subject<InstrumentKey>;
   newInstruments$: Observable<InstrumentKey>;
 
   private watchedInstruments : WatchedInstrument[] = [];
@@ -27,8 +28,8 @@ export class WatchInstrumentsService {
   private quotesSubsByKey = new Map<string, Subscription>();
 
   constructor(private history: HistoryService, private sync: SyncService, private ws: WebsocketService) {
-    this.newInstruments = new BehaviorSubject<InstrumentKey>(this.sync.getCurrentlySelectedInstrument());
-    this.newInstruments$ = this.newInstruments.asObservable();;
+    this.newInstruments = new Subject<InstrumentKey>();
+    this.newInstruments$ = this.newInstruments.asObservable();
   }
 
   add(inst: InstrumentKey) {
@@ -60,7 +61,10 @@ export class WatchInstrumentsService {
 
   getWatched(): Observable<WatchedInstrument[]> {
     const withCloseSub = this.newInstruments$.pipe(
-      switchMap(i => {
+      tap(t => {
+        console.log(t)
+      }),
+      mergeMap(i => {
         const candleObs = this.history.getDaysOpen(i);
         const instrObs = candleObs.pipe(
           map((c) : WatchedInstrument => ({
@@ -114,9 +118,11 @@ export class WatchInstrumentsService {
       else {
         this.watchedInstruments = [...this.watchedInstruments]
       }
+      this.setWatchlist();
       this.watchedInstrumentsSubj.next(this.watchedInstruments);
     })
-
+    this.add(this.sync.getCurrentlySelectedInstrument())
+    this.getWatchList().forEach(i => this.add(i));
     return this.watchedInstruments$;
   }
 
@@ -131,4 +137,17 @@ export class WatchInstrumentsService {
     return `${key.exchange}.${key.instrumentGroup}.${key.symbol}`
   }
 
+  private setWatchlist() {
+    const toWatch = this.watchedInstruments.map(wi => wi.instrument);
+    localStorage.setItem(this.watchlistStorage, JSON.stringify(toWatch));
+  }
+
+  private getWatchList() : InstrumentKey[] {
+    const json = localStorage.getItem(this.watchlistStorage);
+    let existingList : InstrumentKey[] = [];
+    if (json) {
+      existingList = JSON.parse(json);
+    }
+    return existingList;
+  }
 }

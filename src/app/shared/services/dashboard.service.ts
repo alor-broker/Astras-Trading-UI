@@ -28,15 +28,6 @@ export class DashboardService {
     this.dashboard$ = this.dashboardSource.asObservable();
   }
 
-  private setDashboard(widgets: Widget<AnySettings>[]) {
-    this.dashboardSource.next(widgets);
-    this.saveDashboard();
-  }
-
-  private getDashboard() {
-    return this.dashboardSource.getValue();
-  }
-
   addWidget(newWidget: NewWidget) {
     const widget = this.factory.createNewWidget(newWidget);
     const widgets = [...this.getDashboard(), widget];
@@ -65,5 +56,14 @@ export class DashboardService {
 
   clearDashboard() {
     this.setDashboard([])
+  }
+
+  private setDashboard(widgets: Widget<AnySettings>[]) {
+    this.dashboardSource.next(widgets);
+    this.saveDashboard();
+  }
+
+  private getDashboard() {
+    return this.dashboardSource.getValue();
   }
 }
