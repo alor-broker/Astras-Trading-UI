@@ -46,4 +46,8 @@ export class SyncService {
   closeCommandModal() {
     this.shouldShowCommandModal.next(false);
   }
+
+  getCurrentlySelectedInstrument() {
+    return this.selectedInstrument.getValue();
+  }
 }

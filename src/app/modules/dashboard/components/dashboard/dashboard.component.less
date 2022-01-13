@@ -7,6 +7,20 @@
   overflow-y: auto
 }
 
+.show-scroll::-webkit-scrollbar {
+  width: 3px;
+  height: 8px;
+}
+.show-scroll::-webkit-scrollbar-track {
+  background-color: @component-background;
+  border-radius: 10px;
+}
+.show-scroll::-webkit-scrollbar-thumb {
+  background-color: #aaa;/* or add it to the track */
+  // background-color: @primary-color;
+  border-radius: 10px;
+}
+
 gridster ::ng-deep {
   background-color: @layout-body-background;
   color: @text-color

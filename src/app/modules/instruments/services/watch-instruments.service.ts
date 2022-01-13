@@ -1,86 +1,134 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, concat, forkJoin, from, merge, Observable, of, zip } from 'rxjs';
-import { combineLatestWith, combineAll, concatAll, concatMap, exhaustMap, flatMap, map, mergeAll, mergeMap, mergeMapTo, switchAll, switchMap, take, withLatestFrom, combineLatestAll } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { map, switchMap, tap, finalize } from 'rxjs/operators';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { WatchedInstrument } from '../models/watched-instrument.model';
+import { WebsocketService } from 'src/app/shared/services/websocket.service';
+import { SyncService } from 'src/app/shared/services/sync.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WatchInstrumentsService {
-  private watchedInstrumentsSubj = new BehaviorSubject<InstrumentKey[]>([
-    { symbol: 'GAZP', exchange: 'MOEX' },
-  ]);
 
-  watchedInstruments$: Observable<InstrumentKey[]> = this.watchedInstrumentsSubj.asObservable();
+  private newInstruments: BehaviorSubject<InstrumentKey>;
+  newInstruments$: Observable<InstrumentKey>;
 
-  constructor(private history: HistoryService, private quotesService: QuotesService) {
+  private watchedInstruments : WatchedInstrument[] = [];
+  private watchedInstrumentsSubj = new BehaviorSubject<WatchedInstrument[]>(this.watchedInstruments);
+  watchedInstruments$ = this.watchedInstrumentsSubj.asObservable()
 
+  private instrumentsToWatch = new BehaviorSubject<InstrumentKey[]>([]);
+  instrumentsToWatch$: Observable<InstrumentKey[]> = this.instrumentsToWatch.asObservable();
+
+  private quotesSubsByKey = new Map<string, Subscription>();
+
+  constructor(private history: HistoryService, private sync: SyncService, private ws: WebsocketService) {
+    this.newInstruments = new BehaviorSubject<InstrumentKey>(this.sync.getCurrentlySelectedInstrument());
+    this.newInstruments$ = this.newInstruments.asObservable();;
   }
 
   add(inst: InstrumentKey) {
-    const existing = this.watchedInstrumentsSubj.getValue();
-    if (!existing.find((e) => e.symbol == inst.symbol && e.exchange == inst.exchange && e.instrumentGroup == inst.instrumentGroup))
-    {
-      const insts = [...this.watchedInstrumentsSubj.getValue(), inst];
-      this.watchedInstrumentsSubj.next(insts);
+    if (!this.watchedInstruments.find(i =>
+      inst.symbol == i.instrument.symbol
+      && inst.exchange == i.instrument.exchange
+      && inst.instrumentGroup == i.instrument.instrumentGroup)) {
+        this.newInstruments.next(inst)
+      }
+  }
+
+  remove(instr: InstrumentKey) {
+    const key = this.getKey(instr);
+    const sub = this.quotesSubsByKey.get(key);
+    if (sub) {
+      sub.unsubscribe();
+      this.watchedInstruments = this.watchedInstruments.filter(i => this.getKey(i.instrument) != key);
+      this.watchedInstrumentsSubj.next(this.watchedInstruments);
+      this.quotesSubsByKey.delete(key);
     }
   }
 
-  remove(inst: InstrumentKey) {
-    const existing = this.watchedInstrumentsSubj.getValue();
-    const updated = existing.filter(e =>
-      !(e.symbol == inst.symbol && e.exchange == inst.exchange && e.instrumentGroup == inst.instrumentGroup)
-    );
 
-    this.watchedInstrumentsSubj.next(updated);
+  unsubscribe() {
+    this.quotesSubsByKey.forEach((v, k) => {
+      v.unsubscribe();
+    })
   }
 
   getWatched(): Observable<WatchedInstrument[]> {
-    return this.watchedInstruments$.pipe(
-      switchMap(instruments => {
-        const obs = instruments.map(i => {
-          const candleObs = this.history.getDaysOpen(i);
-          const instrObs = candleObs.pipe(
-            map((c) : WatchedInstrument => ({
-              instrument: i,
-              closePrice: c.close,
-              dayChange: 0,
-              price: 0,
-              dayChangePerPrice: 0,
-            }))
-          )
-          return instrObs;
-        });
-        const combined =  combineLatest(obs);
-        return combined;
+    const withCloseSub = this.newInstruments$.pipe(
+      switchMap(i => {
+        const candleObs = this.history.getDaysOpen(i);
+        const instrObs = candleObs.pipe(
+          map((c) : WatchedInstrument => ({
+            instrument: i,
+            closePrice: c.close,
+            prevTickPrice: 0,
+            dayChange: 0,
+            price: 0,
+            dayChangePerPrice: 0,
+          }))
+        )
+        return instrObs;
       }),
-      s => this.enrichWithQuotes(s, this.quotesService)
-    )
-  }
-
-  private enrichWithQuotes(source$: Observable<WatchedInstrument[]>, quotes: QuotesService) : Observable<WatchedInstrument[]> {
-    return source$.pipe(
-      switchMap(instruments => {
-        const obs = instruments.map(i => {
-          const quotes$ = quotes.getQuotes(i.instrument.symbol, i.instrument.exchange, i.instrument.instrumentGroup);
-          const instr$ = quotes$.pipe(
-            map((q) : WatchedInstrument => ({
-              ...i,
-              price: q.last_price,
-              dayChange: MathHelper.round((q.last_price - i.closePrice), 2),
-              dayChangePerPrice: MathHelper.round((1 - (i.closePrice / q.last_price)), 4)
+      tap(wi => {
+        const key = this.getKey(wi.instrument);
+        if (!this.quotesSubsByKey.has(key)) {
+          const service = new QuotesService(this.ws);
+          const sub = service.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup)
+            .pipe(finalize(() => {
+              service.unsubscribe()
             }))
-          )
-          return instr$;
-        });
-
-        const p = merge(obs).pipe(combineLatestAll())
-        return p;
+            .subscribe(q => {
+              const dayChange = this.getDayChange(q.last_price, wi.closePrice);
+              const dayChangePerPrice = this.getDayChangePerPrice(q.last_price, wi.closePrice);
+              const updated = this.watchedInstruments.filter(i => !(
+                wi.instrument.symbol == i.instrument.symbol &&
+                wi.instrument.exchange == i.instrument.exchange &&
+                wi.instrument.instrumentGroup == i.instrument.instrumentGroup));
+              if (updated) {
+                wi.prevTickPrice = wi.price;
+                wi.price = q.last_price;
+                wi.dayChange = dayChange;
+                wi.dayChangePerPrice = dayChangePerPrice;
+                this.watchedInstruments = [...updated, wi].sort((a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol))
+              }
+              else {
+                this.watchedInstruments = [...this.watchedInstruments]
+              }
+              this.watchedInstrumentsSubj.next(this.watchedInstruments);
+            })
+          this.quotesSubsByKey.set(key, sub);
+        }
       })
     )
+
+    withCloseSub.subscribe(wi => {
+      const updated = this.watchedInstruments.filter(i => !(wi.instrument.symbol == i.instrument.symbol && wi.instrument.exchange == i.instrument.exchange));
+      if (updated) {
+        this.watchedInstruments = [...updated, wi].sort((a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol))
+      }
+      else {
+        this.watchedInstruments = [...this.watchedInstruments]
+      }
+      this.watchedInstrumentsSubj.next(this.watchedInstruments);
+    })
+
+    return this.watchedInstruments$;
   }
+
+  private getDayChange(lastPrice: number, closePrice: number) {
+    return MathHelper.round((lastPrice - closePrice), 2);
+  }
+  private getDayChangePerPrice(lastPrice: number, closePrice: number) {
+    return MathHelper.round((1 - (closePrice / lastPrice)) * 100, 2);
+  }
+
+  private getKey(key: InstrumentKey) {
+    return `${key.exchange}.${key.instrumentGroup}.${key.symbol}`
+  }
+
 }

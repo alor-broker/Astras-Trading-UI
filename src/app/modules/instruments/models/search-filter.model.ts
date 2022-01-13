@@ -3,4 +3,6 @@ export interface SearchFilter {
   limit: number,
   sector?: string,
   cficode?: string,
+  exchange?: string,
+  instrumentGroup?: string
 }

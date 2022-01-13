@@ -24,10 +24,12 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown'
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { PriceTickComponent } from './components/price-tick/price-tick.component';
 
 @NgModule({
-  declarations: [
-
+  declarations: [  
+    PriceTickComponent
   ],
   imports: [
     CommonModule,
@@ -50,7 +52,8 @@ import { BrowserModule } from '@angular/platform-browser';
     NzCardModule,
     NzTabsModule,
     NzDropDownModule,
-    NzModalModule
+    NzModalModule,
+    NzToolTipModule
   ],
   exports: [
     // Ng zorro
@@ -68,12 +71,14 @@ import { BrowserModule } from '@angular/platform-browser';
     NzMenuModule,
     NzDropDownModule,
     NzModalModule,
+    NzToolTipModule,
     // modules
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     GridsterModule,
     // components
+    PriceTickComponent
   ],
   providers: [
     HandleErrorService,
