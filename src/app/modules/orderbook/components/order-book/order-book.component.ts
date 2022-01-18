@@ -1,31 +1,19 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-  ViewEncapsulation,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { BehaviorSubject, merge, Observable, of, Subscription, zip } from 'rxjs';
-
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
-import {
-  map,
-  switchMap,
-  tap,
-} from 'rxjs/operators';
+import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
-import { sellColorBackground, buyColorBackground } from '../../../../shared/models/settings/styles-constants'
+import {
+  sellColorBackground,
+  buyColorBackground,
+} from '../../../../shared/models/settings/styles-constants';
 
 interface Size {
   width: string;
@@ -36,22 +24,20 @@ interface Size {
   selector: 'ats-order-book[widget][resize][shouldShowSettings][settings]',
   templateUrl: './order-book.component.html',
   styleUrls: ['./order-book.component.sass'],
-  // changeDetection: ChangeDetectionStrategy.OnPush,
-  // encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
-export class OrderBookComponent implements OnInit, OnChanges {
+export class OrderBookComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
   widget!: Widget<OrderbookSettings>;
   @Input()
   resize!: EventEmitter<DashboardItem>;
-  @Input('settings') set settings(settings: OrderbookSettings) { this.settings$.next(settings); };
-  private settings$ = new BehaviorSubject<OrderbookSettings>({
-    symbol: 'SBER',
-    exchange: 'MOEX',
-    linkToActive: true
-  });
+  @Input('settings') set settings(settings: OrderbookSettings) {
+    console.log(`From input: ${settings.symbol}`)
+    this.service.setSettings(settings);
+  }
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
@@ -64,30 +50,12 @@ export class OrderBookComponent implements OnInit, OnChanges {
     height: '100%',
   });
 
-  private instrumentSub!: Subscription
-
-  constructor(private service: OrderbookService, private sync: SyncService) {
-
-  }
-  ngOnChanges(changes: SimpleChanges): void {
-
-  }
+  constructor(private service: OrderbookService, private sync: SyncService) {}
 
   ngOnInit(): void {
-    this.instrumentSub = this.sync.selectedInstrument$.subscribe(i => {
-      const current = this.settings$.getValue();
-      if (current.linkToActive && !(current.symbol != i.symbol ||
-          current.exchange != i.exchange ||
-          current.instrumentGroup != current.instrumentGroup)) {
-        // ToDo: Неочевидно, но так из-за того что у нас settings это и subject и input.
-        this.settings$.next(current);
-      }
-    })
-
-    this.ob$ = this.settings$.pipe(
-      switchMap(s => this.service.getOrderbook(s.symbol, s.exchange, s.instrumentGroup, s.depth)),
-      tap(ob => this.maxVolume = ob?.maxVolume ?? 1)
-    )
+    this.ob$ = this.service.getOrderbook().pipe(
+      tap((ob) => (this.maxVolume = ob?.maxVolume ?? 1))
+    );
     this.resizeSub = this.resize.subscribe((widget) => {
       if (widget.item === this.widget.gridItem) {
         // or check id , type or whatever you have there
@@ -95,8 +63,8 @@ export class OrderBookComponent implements OnInit, OnChanges {
         this.sizes.next({
           // width: (widget.width ?? 0) + 'px',
           width: (widget.width ?? 0) + 'px',
-          height: (widget.height ?? 0) + 'px'
-        })
+          height: (widget.height ?? 0) + 'px',
+        });
         // console.log(widget);
       }
     });
@@ -105,7 +73,6 @@ export class OrderBookComponent implements OnInit, OnChanges {
   ngOnDestroy(): void {
     this.service.unsubscribe();
     this.resizeSub.unsubscribe();
-    this.instrumentSub.unsubscribe();
   }
 
   getBidStyle(value: number) {
@@ -123,13 +90,16 @@ export class OrderBookComponent implements OnInit, OnChanges {
   }
 
   newLimitOrder(side: string, price: number) {
-    const params: CommandParams = {
-      instrument: { ...this.settings$.getValue() },
-      side: side == 'buy' ? Side.Buy : Side.Sell,
-      price,
-      quantity: 0,
-      type: CommandType.Limit
+    const settings = this.service.getSettings();
+    if (settings) {
+      const params: CommandParams = {
+        instrument: { ...settings },
+        side: side == 'buy' ? Side.Buy : Side.Sell,
+        price,
+        quantity: 0,
+        type: CommandType.Limit,
+      };
+      this.sync.openCommandModal(params);
     }
-    this.sync.openCommandModal(params);
   }
 }

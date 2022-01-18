@@ -37,7 +37,7 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
   switchSettingsEvent = new EventEmitter<boolean>();
 
   @Output()
-  settingsChangedEvent = new EventEmitter<AnySettings>();
+  linkChangedEvent = new EventEmitter<boolean>();
 
   private shouldShowSettings = false;
   private dashboardSub!: Subscription;
@@ -46,13 +46,10 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
   constructor(private dashboard: DashboardService, private sync: SyncService) { }
 
   ngOnInit() {
-    this.widget$.pipe(
-      tap(w => this.settingsChangedEvent.emit(w.settings))
-    )
     const selectedSub = this.sync.selectedInstrument$.subscribe(i => {
       const widget =  this.widgetSubject.getValue();
-      const settings = widget?.settings;
-      if (settings
+      const settings = { ...widget?.settings };
+      if (widget && settings
           && this.isInstrumentDependent(settings)
           && settings.linkToActive
           && (settings.symbol != i.symbol || settings.exchange != i.exchange)) {
@@ -77,7 +74,7 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.dashboardSub?.unsubscribe();
-    // this.selectedSub?.unsubscribe();
+    this.selectedSub?.unsubscribe();
   }
 
   switchSettings($event: MouseEvent) {
@@ -103,6 +100,7 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
         ...widget.settings,
         linkToActive: linkToActive
       }
+      this.linkChangedEvent.emit(settings.linkToActive)
       this.widgetSubject.next({...widget, settings: settings});
     }
   }

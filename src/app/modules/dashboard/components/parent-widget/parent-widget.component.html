@@ -1,16 +1,16 @@
-<ats-widget-header [widget]="widget" (switchSettingsEvent)="onSwitchSettings($event)"></ats-widget-header>
+<ats-widget-header [widget]="widget" (switchSettingsEvent)="onSwitchSettings($event)" (linkChangedEvent)="onLinkedChanged($event)"></ats-widget-header>
 <ats-orderbook-widget *ngIf="widget.gridItem.type === 'order-book'"
   [widget]="getWidget()"
   [resize]="widgetResize"
   [(shouldShowSettings)]="shouldShowSettings"
-  (settingsChangedEvent)="onSettingsChanged"></ats-orderbook-widget>
+  [linkedToActive]="isLinked"></ats-orderbook-widget>
 <ats-light-chart-widget *ngIf="widget.gridItem.type === 'light-chart'"
-[widget]="getWidget()"
-[resize]="widgetResize"
-[(shouldShowSettings)]="shouldShowSettings"></ats-light-chart-widget>
+  [widget]="getWidget()"
+  [resize]="widgetResize"
+  [(shouldShowSettings)]="shouldShowSettings"></ats-light-chart-widget>
 <ats-instrument-select-widget *ngIf="widget.gridItem.type === 'instrument-select'"
-[widget]="getWidget()"
-[(shouldShowSettings)]="shouldShowSettings"></ats-instrument-select-widget>
+  [widget]="getWidget()"
+  [(shouldShowSettings)]="shouldShowSettings"></ats-instrument-select-widget>
 <ats-blotter-widget *ngIf="widget.gridItem.type === 'blotter'"
-[widget]="getWidget()"
-[(shouldShowSettings)]="shouldShowSettings"></ats-blotter-widget>
+  [widget]="getWidget()"
+  [(shouldShowSettings)]="shouldShowSettings"></ats-blotter-widget>

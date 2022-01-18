@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable,  } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription,  } from 'rxjs';
+import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { OrderbookData } from '../models/orderbook-data.model';
@@ -8,21 +8,36 @@ import { OrderbookRequest } from '../models/orderbook-request.model';
 import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { OrderBook } from '../models/orderbook.model';
+import { SyncService } from 'src/app/shared/services/sync.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderbookService {
-  private orderbook$: Observable<OrderBook | null> = new Observable();
-  private subGuid: string | null = null
+  private orderbook$: Observable<OrderBook> = new Observable();
+  private subGuid?: string;
+  private instrumentSub?: Subscription;
   private settings: BehaviorSubject<OrderbookSettings | null> = new BehaviorSubject<OrderbookSettings | null>(null);
 
   settings$ = this.settings.asObservable()
 
-  constructor(private ws: WebsocketService) {  }
+  constructor(private ws: WebsocketService, private sync: SyncService) {
+
+  }
 
   setSettings(settings: OrderbookSettings) {
     this.settings.next(settings);
+  }
+
+  setLinked(isLinked: boolean) {
+    const current = this.settings.getValue();
+    if (current) {
+      this.settings.next({ ...current, linkToActive: isLinked })
+    }
+  }
+
+  getSettings() {
+    return this.settings.getValue();
   }
 
   unsubscribe() {
@@ -36,7 +51,34 @@ export class OrderbookService {
     return request.opcode + request.code + request.exchange + group + request.depth + request.format;
   }
 
-  getOrderbook(symbol: string, exchange: string, instrumentGroup?: string, depth?: number) {
+  getOrderbook() {
+    this.instrumentSub = this.sync.selectedInstrument$.pipe(
+      map((i) => {
+        const current = this.settings.getValue();
+        if (current && current.linkToActive &&
+            !(current.symbol == i.symbol &&
+            current.exchange == i.exchange &&
+            current.instrumentGroup == i.instrumentGroup)
+        ) {
+          this.setSettings({ ...current, ...i });
+        }
+      })
+    ).subscribe();
+    this.orderbook$ = this.settings$.pipe(
+      filter((s): s is OrderbookSettings => !!s),
+      switchMap((s) =>
+        this.getOrderbookReq(
+          s.symbol,
+          s.exchange,
+          s.instrumentGroup,
+          s.depth
+        )
+      )
+    )
+    return this.orderbook$;
+  }
+
+  private getOrderbookReq(symbol: string, exchange: string, instrumentGroup?: string, depth?: number) {
     this.ws.connect()
 
     if (this.subGuid) {
@@ -56,7 +98,7 @@ export class OrderbookService {
     request.guid = this.subGuid;
     this.ws.subscribe(request)
 
-    this.orderbook$ = this.ws.messages$.pipe(
+    const orderbook$ = this.ws.messages$.pipe(
       filter(m => m.guid == this.subGuid),
       map(r => {
         const br = r as BaseResponse<OrderbookData>;
@@ -77,6 +119,7 @@ export class OrderbookService {
         return ob;
       })
     )
-    return this.orderbook$;
+
+    return orderbook$;
   }
 }

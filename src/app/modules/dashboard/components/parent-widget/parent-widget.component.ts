@@ -33,6 +33,7 @@ export class ParentWidgetComponent implements OnInit {
   widgetResize: EventEmitter<DashboardItem> = new EventEmitter<DashboardItem>();
 
   shouldShowSettings: boolean = false;
+  isLinked: boolean = false;
 
   constructor() {  }
 
@@ -48,8 +49,8 @@ export class ParentWidgetComponent implements OnInit {
     this.shouldShowSettings = value;
   }
 
-  onSettingsChanged(newSettings: AnySettings) {
-
+  onLinkedChanged(isLinked: boolean) {
+    this.isLinked = isLinked;
   }
 
   // angular templates doesn't support generics

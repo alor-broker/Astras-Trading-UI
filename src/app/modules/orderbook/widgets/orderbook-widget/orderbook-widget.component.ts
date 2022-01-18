@@ -10,7 +10,7 @@ import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-
 import { OrderbookService } from '../../services/orderbook.service';
 
 @Component({
-  selector: 'ats-orderbook-widget[shouldShowSettings][widget][resize]',
+  selector: 'ats-orderbook-widget[shouldShowSettings][widget][resize][linkedToActive]',
   templateUrl: './orderbook-widget.component.html',
   styleUrls: ['./orderbook-widget.component.sass'],
   providers: [OrderbookService]
@@ -18,6 +18,10 @@ import { OrderbookService } from '../../services/orderbook.service';
 export class OrderbookWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
+  @Input()
+  @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
+    this.service.setLinked(linkedToActive);
+  }
   @Input()
   widget!: Widget<OrderbookSettings>;
   @Input()
