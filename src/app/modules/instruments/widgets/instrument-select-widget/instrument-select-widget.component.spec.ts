@@ -31,10 +31,7 @@ describe('InstrumentSelectWidgetComponent', () => {
     component.widget = {
       title: WidgetNames.instrumentSelect,
       gridItem: { x: 0, y: 0, rows: 1, cols: 1 },
-      settings: {
-        exchange: 'MOEX',
-        portfolio: 'D39004'
-      }
+      settings: {   }
     }
     fixture.detectChanges();
   });

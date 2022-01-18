@@ -122,7 +122,12 @@
             "inlineStyleLanguage": "sass",
             "assets": [
               "src/favicon.svg",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
+                "output": "/assets/"
+              }
             ],
             "styles": [
               "src/styles.sass",

@@ -9,6 +9,7 @@ import { SyncService } from 'src/app/shared/services/sync.service';
 import { AccountService } from '../../services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { of } from 'rxjs';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -17,6 +18,7 @@ describe('NavbarComponent', () => {
   const spyAccount = jasmine.createSpyObj('AccountService', ['getActivePortfolios']);
   spyAccount.getActivePortfolios.and.returnValue(of([]));
   const spyDashboard = jasmine.createSpy('DashboardService');
+  const spyAuth = jasmine.createSpyObj('AuthService', ['logout'])
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -24,12 +26,13 @@ describe('NavbarComponent', () => {
       imports: [
         NoopAnimationsModule,
         LayoutModule,
-        SharedModule,
+        SharedModule
       ],
       providers: [
         { provide: SyncService, useValue: spySync },
         { provide: AccountService, useValue: spyAccount },
         { provide: DashboardService, useValue: spyDashboard },
+        { provide: AuthService, useValue: spyAuth },
       ]
     }).compileComponents();
   }));

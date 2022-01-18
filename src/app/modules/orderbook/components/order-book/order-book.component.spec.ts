@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import { SyncService } from 'src/app/shared/services/sync.service';
+import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookService } from '../../services/orderbook.service';
 
 import { OrderBookComponent } from './order-book.component';
@@ -8,11 +9,16 @@ import { OrderBookComponent } from './order-book.component';
 describe('OrderBookComponent', () => {
   let component: OrderBookComponent;
   let fixture: ComponentFixture<OrderBookComponent>;
-  const spyOb = jasmine.createSpyObj('OrderbookService', ['settings$']);
+  const spyOb = jasmine.createSpyObj('OrderbookService', ['settings$', 'getOrderbook', 'unsubscribe']);
   spyOb.settings$ = of({
     symbol: 'SBER',
     exchange: 'MOEX'
   })
+  const ob : OrderBook = {
+    rows: [],
+    maxVolume: 10
+  }
+  spyOb.getOrderbook.and.returnValue(of(ob))
   const spySync = jasmine.createSpyObj('SyncService', ['openCommandModal'])
 
   beforeEach(async () => {
@@ -29,7 +35,9 @@ describe('OrderBookComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderBookComponent);
     component = fixture.componentInstance;
-    component.resize = jasmine.createSpyObj('resize', ['subscribe']);
+    const spy = jasmine.createSpyObj('resize', ['subscribe']);
+    spy.subscribe.and.returnValue(new Subscription())
+    component.resize = spy;
     fixture.detectChanges();
   });
 

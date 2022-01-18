@@ -35,6 +35,5 @@ export class OrderbookSettingsComponent implements OnInit {
 
   submitForm(): void {
     this.settingsChange.emit({...this.form.value, linkToActive: false})
-    console.log('submit', this.form.value);
   }
 }

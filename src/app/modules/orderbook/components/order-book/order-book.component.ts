@@ -4,7 +4,7 @@ import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { SyncService } from 'src/app/shared/services/sync.service';

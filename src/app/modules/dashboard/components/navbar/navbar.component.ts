@@ -17,16 +17,8 @@ import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 })
 export class NavbarComponent implements OnInit{
   portfolios$!: Observable<PortfolioKey[]>
-
-  isHandset$: Observable<boolean> = this.breakpointObserver
-    .observe(Breakpoints.Handset)
-    .pipe(
-      map((result) => result.matches),
-      shareReplay()
-    );
   names = WidgetNames
   constructor(
-    private breakpointObserver: BreakpointObserver,
     private service: DashboardService,
     private account: AccountService,
     private sync: SyncService,
