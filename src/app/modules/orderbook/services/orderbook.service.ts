@@ -47,7 +47,7 @@ export class OrderbookService {
       opcode:"OrderBookGetAndSubscribe",
       code: symbol,
       exchange: exchange,
-      depth: depth ?? 7,
+      depth: depth ?? 10,
       format:"simple",
       guid: '',
       instrumentGroup: instrumentGroup

@@ -4,7 +4,12 @@
   </button>
   <label>{{w.title}}</label>
   <span>
-    <button nz-button class='btn-panel' nzSize="small" *ngIf="!w.gridItem.hasContent" (mousedown)="removeItem($event, w)"
+    <button *ngIf='w.settings.linkToActive !== undefined' nz-button class='btn-panel' nzSize="small"
+      (mousedown)="linkToActive($event, !w.settings.linkToActive)"
+      (touchstart)="linkToActive($event, !w.settings.linkToActive)">
+      <i nz-icon [nzType]="w.settings.linkToActive ? 'lock' : 'unlock'" [nzTheme]="'outline'"></i>
+    </button>
+    <button nz-button class='btn-panel' nzSize="small" (mousedown)="removeItem($event, w)"
       (touchstart)="removeItem($event, w)">
       <i nz-icon nzType="close-circle" [nzTheme]="'outline'"></i>
     </button>

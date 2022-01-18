@@ -2,7 +2,8 @@
 <ats-orderbook-widget *ngIf="widget.gridItem.type === 'order-book'"
   [widget]="getWidget()"
   [resize]="widgetResize"
-  [(shouldShowSettings)]="shouldShowSettings"></ats-orderbook-widget>
+  [(shouldShowSettings)]="shouldShowSettings"
+  (settingsChangedEvent)="onSettingsChanged"></ats-orderbook-widget>
 <ats-light-chart-widget *ngIf="widget.gridItem.type === 'light-chart'"
 [widget]="getWidget()"
 [resize]="widgetResize"

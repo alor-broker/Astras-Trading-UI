@@ -70,7 +70,6 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         user: command.user,
         ...this.form.value
       }).subscribe();
-      console.log('submit', this.form.value);
      }
      else console.error('Empty command')
    }

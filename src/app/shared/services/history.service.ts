@@ -31,7 +31,6 @@ export class HistoryService {
         const [lastCandle] = resp.history.slice(-1)
         return lastCandle
       },
-      tap(c => console.log(c))
     ))
   }
 

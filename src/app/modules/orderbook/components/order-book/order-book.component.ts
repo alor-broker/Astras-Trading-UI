@@ -3,17 +3,20 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, merge, Observable, of, Subscription, zip } from 'rxjs';
 
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
 import {
+  map,
   switchMap,
   tap,
 } from 'rxjs/operators';
@@ -33,10 +36,10 @@ interface Size {
   selector: 'ats-order-book[widget][resize][shouldShowSettings][settings]',
   templateUrl: './order-book.component.html',
   styleUrls: ['./order-book.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
+  // encapsulation: ViewEncapsulation.None,
 })
-export class OrderBookComponent implements OnInit {
+export class OrderBookComponent implements OnInit, OnChanges {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -46,7 +49,8 @@ export class OrderBookComponent implements OnInit {
   @Input('settings') set settings(settings: OrderbookSettings) { this.settings$.next(settings); };
   private settings$ = new BehaviorSubject<OrderbookSettings>({
     symbol: 'SBER',
-    exchange: 'MOEX'
+    exchange: 'MOEX',
+    linkToActive: true
   });
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
@@ -60,11 +64,26 @@ export class OrderBookComponent implements OnInit {
     height: '100%',
   });
 
+  private instrumentSub!: Subscription
+
   constructor(private service: OrderbookService, private sync: SyncService) {
+
+  }
+  ngOnChanges(changes: SimpleChanges): void {
 
   }
 
   ngOnInit(): void {
+    this.instrumentSub = this.sync.selectedInstrument$.subscribe(i => {
+      const current = this.settings$.getValue();
+      if (current.linkToActive && !(current.symbol != i.symbol ||
+          current.exchange != i.exchange ||
+          current.instrumentGroup != current.instrumentGroup)) {
+        // ToDo: Неочевидно, но так из-за того что у нас settings это и subject и input.
+        this.settings$.next(current);
+      }
+    })
+
     this.ob$ = this.settings$.pipe(
       switchMap(s => this.service.getOrderbook(s.symbol, s.exchange, s.instrumentGroup, s.depth)),
       tap(ob => this.maxVolume = ob?.maxVolume ?? 1)
@@ -86,6 +105,7 @@ export class OrderBookComponent implements OnInit {
   ngOnDestroy(): void {
     this.service.unsubscribe();
     this.resizeSub.unsubscribe();
+    this.instrumentSub.unsubscribe();
   }
 
   getBidStyle(value: number) {

@@ -62,7 +62,8 @@ export class WidgetFactoryService {
     }
     const settings: OrderbookSettings = {
       ...this.selectedInstrument,
-      depth: 7
+      linkToActive: true,
+      depth: 10
     };
     const widget = {
       gridItem: newWidget.gridItem,

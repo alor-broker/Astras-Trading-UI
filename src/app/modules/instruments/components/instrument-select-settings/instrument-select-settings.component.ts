@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { InstrumentSelectSettings } from 'src/app/shared/models/settings/instrument-select-settings.model';
 
 @Component({
   selector: 'ats-instrument-select-settings',
@@ -6,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./instrument-select-settings.component.sass']
 })
 export class InstrumentSelectSettingsComponent implements OnInit {
+  @Output()
+  settingsChange: EventEmitter<InstrumentSelectSettings> = new EventEmitter<InstrumentSelectSettings>();
 
   constructor() { }
 

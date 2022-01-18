@@ -33,7 +33,6 @@ export class BlotterSettingsComponent implements OnInit {
 
   submitForm(): void {
     this.settingsChange.emit(this.form.value)
-    console.log('submit', this.form.value);
   }
 
 }

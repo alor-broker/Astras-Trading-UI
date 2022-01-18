@@ -26,9 +26,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { PriceTickComponent } from './components/price-tick/price-tick.component';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+
 
 @NgModule({
-  declarations: [  
+  declarations: [
     PriceTickComponent
   ],
   imports: [
@@ -53,7 +55,8 @@ import { PriceTickComponent } from './components/price-tick/price-tick.component
     NzTabsModule,
     NzDropDownModule,
     NzModalModule,
-    NzToolTipModule
+    NzToolTipModule,
+    NzSwitchModule
   ],
   exports: [
     // Ng zorro
@@ -72,6 +75,7 @@ import { PriceTickComponent } from './components/price-tick/price-tick.component
     NzDropDownModule,
     NzModalModule,
     NzToolTipModule,
+    NzSwitchModule,
     // modules
     CommonModule,
     FormsModule,

@@ -61,9 +61,6 @@ export class WatchInstrumentsService {
 
   getWatched(): Observable<WatchedInstrument[]> {
     const withCloseSub = this.newInstruments$.pipe(
-      tap(t => {
-        console.log(t)
-      }),
       mergeMap(i => {
         const candleObs = this.history.getDaysOpen(i);
         const instrObs = candleObs.pipe(

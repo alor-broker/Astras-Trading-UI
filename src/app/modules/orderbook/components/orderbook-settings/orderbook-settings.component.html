@@ -5,7 +5,8 @@
       <nz-form-control nzErrorTip="Введите инструмент">
         <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Тикер</nz-form-label>
         <nz-input-group nzPrefixIcon="user">
-          <input class='ant-input'  formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Symbol" />
+          <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input
+            placeholder="Symbol" />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
@@ -13,7 +14,8 @@
       <nz-form-control nzErrorTip="Введите биржу">
         <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="exchange">Биржа</nz-form-label>
         <nz-input-group nzPrefixIcon="lock">
-          <input class='ant-input'  formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Биржа" />
+          <input class='ant-input' formControlName="exchange" (mousedown)="$event.stopPropagation()"
+            placeholder="Биржа" />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
@@ -22,17 +24,22 @@
         <nz-form-control nzErrorTip="Группа">
           <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="instrumentGroup">Группа</nz-form-label>
           <nz-input-group nzPrefixIcon="lock">
-            <input class='ant-input'  formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+            <input class='ant-input' formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
               placeholder="Режим торгов" />
           </nz-input-group>
         </nz-form-control>
         <nz-form-control nzErrorTip="Глубина некорректна">
           <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="depth">Глубина</nz-form-label>
           <nz-input-group nzPrefixIcon="lock">
-            <input class='ant-input'  formControlName="depth" (mousedown)="$event.stopPropagation()"
-              placeholder="7" />
+            <input class='ant-input' formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />
           </nz-input-group>
         </nz-form-control>
+        <!-- <nz-form-control nzErrorTip="Привязка к активному">
+          <nz-switch formControlName='linkToActive' nzFor="linkToActive" [nzCheckedChildren]="checkedTemplate"
+            [nzUnCheckedChildren]="unCheckedTemplate"></nz-switch>
+          <ng-template #checkedTemplate><i nz-icon nzType="check"></i></ng-template>
+          <ng-template #unCheckedTemplate><i nz-icon nzType="close"></i></ng-template>
+        </nz-form-control> -->
       </nz-collapse-panel>
     </nz-collapse>
     <nz-form-item class="compact">

@@ -24,6 +24,7 @@ export class OrderbookSettingsComponent implements OnInit {
             Validators.required,
             Validators.minLength(4)
           ]),
+          // linkToActive: new FormControl(settings.linkToActive),
           exchange: new FormControl(settings.exchange, Validators.required),
           depth: new FormControl(settings.depth, [Validators.required, Validators.min(0), Validators.max(20)]),
           instrumentGroup: new FormControl(settings.instrumentGroup),
@@ -33,7 +34,7 @@ export class OrderbookSettingsComponent implements OnInit {
   }
 
   submitForm(): void {
-    this.settingsChange.emit(this.form.value)
+    this.settingsChange.emit({...this.form.value, linkToActive: false})
     console.log('submit', this.form.value);
   }
 }

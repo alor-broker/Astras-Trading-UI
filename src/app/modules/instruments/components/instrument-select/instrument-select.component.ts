@@ -51,7 +51,7 @@ export class InstrumentSelectComponent implements OnInit {
       const parts = value.split(':');
       exchange = parts[0].toUpperCase();
       query = parts[1];
-      instrumentGroup = parts[2].toUpperCase() ?? '';
+      instrumentGroup = parts[2]?.toUpperCase() ?? '';
     }
     if (existing) {
       filter = {

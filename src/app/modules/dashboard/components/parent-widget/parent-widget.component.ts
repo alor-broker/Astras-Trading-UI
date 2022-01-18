@@ -41,12 +41,15 @@ export class ParentWidgetComponent implements OnInit {
       if(i.label == this.widget.gridItem.label) {
         this.widgetResize.emit(i);
       }
-    }
-    )
+    })
   }
 
   onSwitchSettings(value: boolean) {
     this.shouldShowSettings = value;
+  }
+
+  onSettingsChanged(newSettings: AnySettings) {
+
   }
 
   // angular templates doesn't support generics

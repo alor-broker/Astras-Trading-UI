@@ -26,7 +26,10 @@ export class PriceTickComponent implements OnInit, OnChanges {
   }
 
   private recolor() {
-    const parts = this.price.toString().split('.');
+    if (!this.price) {
+      return;
+    }
+    const parts = this.price.toString()?.split('.');
     this.mainPart = parts[0] + '.';
     this.changingColorPart = parts[1];
     if (!this.changingColorPart) {
