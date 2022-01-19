@@ -60,10 +60,7 @@ export class ChartComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.guid = GuidGenerator.newGuid();
-    this.bars$ = this.settings$.pipe(
-      filter((s): s is LightChartSettings  => !!s),
-      switchMap(s => this.service.getBars(s.symbol, s.exchange, s.timeFrame ?? 'D', s.from ?? 0))
-    );
+    this.bars$ = this.service.getBars();
     const options = this.settings$.getValue();
     const widgetOptions: ChartingLibraryWidgetOptions = {
       symbol: options?.symbol,

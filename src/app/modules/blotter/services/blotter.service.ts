@@ -36,6 +36,17 @@ export class BlotterService {
     this.settings.next(settings);
   }
 
+  setLinked(isLinked: boolean) {
+    const current = this.getSettings();
+    if (current) {
+      this.settings.next({ ...current, linkToActive: isLinked })
+    }
+  }
+
+  getSettings() {
+    return this.settings.getValue();
+  }
+
   unsubscribe() {
     this.subGuidByOpcode.forEach((_, guid) => this.ws.unsubscribe(guid));
   }

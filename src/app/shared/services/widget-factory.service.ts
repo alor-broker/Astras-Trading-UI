@@ -109,6 +109,7 @@ export class WidgetFactoryService {
     }
     const settings: LightChartSettings = {
       ...this.selectedInstrument,
+      linkToActive: true,
       timeFrame: this.tfHelper.getValueByTfLabel('H')?.value,
       from: this.tfHelper.getDefaultFrom('H'),
     };

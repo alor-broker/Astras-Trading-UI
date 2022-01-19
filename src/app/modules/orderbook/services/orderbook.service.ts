@@ -30,7 +30,7 @@ export class OrderbookService {
   }
 
   setLinked(isLinked: boolean) {
-    const current = this.settings.getValue();
+    const current = this.getSettings();
     if (current) {
       this.settings.next({ ...current, linkToActive: isLinked })
     }

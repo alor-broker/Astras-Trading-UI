@@ -17,6 +17,9 @@ import { LightChartService } from '../../services/light-chart.service';
 export class LightChartWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
+  @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
+    this.service.setLinked(linkedToActive);
+  }
   @Input()
   widget!: Widget<LightChartSettings>;
   @Input()

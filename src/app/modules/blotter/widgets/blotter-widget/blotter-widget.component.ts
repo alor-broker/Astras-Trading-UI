@@ -15,6 +15,9 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
 
   @Input()
   shouldShowSettings!: boolean;
+  @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
+    this.service.setLinked(linkedToActive);
+  }
   @Input()
   widget!: Widget<BlotterSettings>;
   @Output()

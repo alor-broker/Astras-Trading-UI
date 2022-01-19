@@ -1,11 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { GridsterItem } from 'angular-gridster2';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
-import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
 import { OrderbookService } from '../../services/orderbook.service';
 
@@ -18,7 +16,6 @@ import { OrderbookService } from '../../services/orderbook.service';
 export class OrderbookWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
-  @Input()
   @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
     this.service.setLinked(linkedToActive);
   }

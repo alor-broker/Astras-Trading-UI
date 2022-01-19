@@ -55,10 +55,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.guid = GuidGenerator.newGuid();
-    this.bars$ = this.settings$.pipe(
-      filter((s): s is LightChartSettings  => !!s),
-      switchMap(s => this.service.getBars(s.symbol, s.exchange, s.timeFrame, s.from, s.instrumentGroup))
-    );
+    this.bars$ = this.service.getBars();
   }
 
   ngOnDestroy(): void {
@@ -91,7 +88,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
     this.history$ = this.chart.logicalRange$.pipe(
       filter(lr => !this.isUpdating && !this.isEndOfHistory && !!lr),
       map(lr =>  {
-        const options = this.settings$.getValue();
+        const options = this.service.getSettings();
         if (options) {
           return this.chart.getRequest(options);
         }
@@ -104,7 +101,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
       }),
       map(res => {
         this.isEndOfHistory = res.prev == null;
-        const options = this.settings$.getValue();
+        const options = this.service.getSettings();
         if (options) {
          this.chart.setData(res.history, options);
         }
