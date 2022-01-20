@@ -40,7 +40,6 @@ export class LightChartSettingsComponent implements OnInit {
   }
 
   submitForm(): void {
-    this.settingsChange.emit(this.form.value)
-    console.log('submit', this.form.value);
+    this.settingsChange.emit({...this.form.value, linkToActive: false})
   }
 }

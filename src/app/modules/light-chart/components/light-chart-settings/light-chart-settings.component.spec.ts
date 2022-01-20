@@ -14,6 +14,7 @@ describe('LightChartSettingsComponent', () => {
   let component: LightChartSettingsComponent;
   let fixture: ComponentFixture<LightChartSettingsComponent>;
   const spy = jasmine.createSpyObj('LightChartService', ['getBars', 'settings$']);
+  spy.getBars.and.returnValue(of([]))
   const settings: LightChartSettings = {
     timeFrame: 'D',
     from: 0,
@@ -22,8 +23,8 @@ describe('LightChartSettingsComponent', () => {
   }
   spy.settings$ = of(settings);
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
+  beforeEach((async () => {
+    await TestBed.configureTestingModule({
       declarations: [ LightChartSettingsComponent ],
       imports: [ SharedModule, AppModule ],
       providers: [

@@ -8,7 +8,8 @@ import { LightChartComponent } from './light-chart.component';
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
   let fixture: ComponentFixture<LightChartComponent>;
-  const spy = jasmine.createSpyObj('LightChartService', ['settings$', 'resize', 'unsubscribe'])
+  const spy = jasmine.createSpyObj('LightChartService', ['settings$', 'resize', 'unsubscribe', 'getBars'])
+  spy.getBars.and.returnValue(of([]))
   const settings: LightChartSettings = {
     timeFrame: 'D',
     from: 0,

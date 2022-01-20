@@ -5,7 +5,7 @@ import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { OrderbookData } from '../models/orderbook-data.model';
 import { OrderbookRequest } from '../models/orderbook-request.model';
-import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
+import { OrderbookSettings, isEqual } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { OrderBook } from '../models/orderbook.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
@@ -26,7 +26,11 @@ export class OrderbookService {
   }
 
   setSettings(settings: OrderbookSettings) {
-    this.settings.next(settings);
+    const current = this.settings.getValue();
+
+    if (!current || !isEqual(current, settings)) {
+      this.settings.next(settings);
+    }
   }
 
   setLinked(isLinked: boolean) {

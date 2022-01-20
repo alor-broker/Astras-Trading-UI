@@ -6,7 +6,7 @@ import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
-import { LightChartSettings } from '../../../shared/models/settings/light-chart-settings.model';
+import { LightChartSettings, isEqual } from '../../../shared/models/settings/light-chart-settings.model';
 import { BarsRequest } from '../models/bars-request.model';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
@@ -26,7 +26,11 @@ export class LightChartService {
   constructor(private ws: WebsocketService, private history: HistoryService, private sync: SyncService) {}
 
   setSettings(settings: LightChartSettings) {
-    this.settings.next(settings);
+    const current = this.settings.getValue();
+
+    if (!current || !isEqual(current, settings)) {
+      this.settings.next(settings);
+    }
   }
 
   setLinked(isLinked: boolean) {

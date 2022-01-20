@@ -111,15 +111,22 @@ setData(candles: Candle[], options: LightChartSettings) {
   this.bars = newBars;
 }
 
-  clear() {
-    this.chart.remove();
-  }
 
-  resize(width: number, height: number) {
-    this.chart.resize(width, (height) - 30);
-  }
+clear() {
+  this.chart.remove();
+}
 
-  getRequest(options: LightChartSettings) {
-    return this.timeframesHelper.getRequest(this.getMinTime(), options);
-  }
+clearSeries() {
+  this.bars = []
+  this.series.setData([]);
+  this.volumeSeries.setData([]);
+}
+
+resize(width: number, height: number) {
+  this.chart.resize(width, (height) - 30);
+}
+
+getRequest(options: LightChartSettings) {
+  return this.timeframesHelper.getRequest(this.getMinTime(), options);
+}
 }

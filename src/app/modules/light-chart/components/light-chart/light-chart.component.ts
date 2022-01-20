@@ -10,9 +10,9 @@ import {
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { Widget } from 'src/app/shared/models/widget.model';
-import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
+import { isEqual, LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
-import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { LightChartService } from '../../services/light-chart.service';
 import { Candle } from '../../../../shared/models/history/candle.model';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
@@ -34,19 +34,19 @@ export class LightChartComponent implements OnInit, OnDestroy {
   @Input()
   resize!: EventEmitter<DashboardItem>;
   @Input('settings') set settings(settings: LightChartSettings) {
-    this.settings$.next(settings);
+    this.service.setSettings(settings);
   }
-  private settings$ = new BehaviorSubject<LightChartSettings | null>(null);
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
   bars$: Observable<Candle | null> = of(null);
-  resizeSub!: Subscription;
   guid: string | null = null;
 
-  private history$ = new Observable<void>();
-  private historySub!: Subscription;
-  private barsSub!: Subscription;
+  private prevOptions?: LightChartSettings;
+  private historySub?: Subscription;
+  private settingsSub?: Subscription;
+  private resizeSub?: Subscription;
+  private barsSub?: Subscription;
   private isUpdating = false;
   private isEndOfHistory = false;
   private chart = new LightChart();
@@ -61,9 +61,9 @@ export class LightChartComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.chart.clear();
     this.service.unsubscribe();
-    this.barsSub.unsubscribe();
-    this.historySub.unsubscribe();
-    this.resizeSub.unsubscribe();
+    this.barsSub?.unsubscribe();
+    this.historySub?.unsubscribe();
+    this.resizeSub?.unsubscribe();
   }
 
   ngAfterViewInit() {
@@ -78,17 +78,26 @@ export class LightChartComponent implements OnInit, OnDestroy {
         this.chart.resize(item.width ?? 0, item.height ?? 0);
       });
     }
-
-    this.historySub = this.history$.subscribe();
   }
 
   private initChart(guid: string) {
     this.chart.create(guid);
 
-    this.history$ = this.chart.logicalRange$.pipe(
+    this.settingsSub = this.service.settings$.pipe(
+      tap(options => {
+        if (options && !isEqual(options, this.prevOptions)){
+          this.prevOptions == options;
+          this.chart.clearSeries();
+        }
+      })
+    ).subscribe();
+
+    this.historySub = this.chart.logicalRange$.pipe(
       filter(lr => !this.isUpdating && !this.isEndOfHistory && !!lr),
-      map(lr =>  {
-        const options = this.service.getSettings();
+      switchMap(lr => {
+        return this.service.settings$;
+      }),
+      map(options =>  {
         if (options) {
           return this.chart.getRequest(options);
         }
@@ -107,6 +116,6 @@ export class LightChartComponent implements OnInit, OnDestroy {
         }
         this.isUpdating = false;
       })
-    )
+    ).subscribe()
   }
 }
