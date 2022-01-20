@@ -1,3 +1,27 @@
-<div *ngIf="quote$ | async as quote">
-  <p>Цена: {{quote.last_price}}</p>
+<div *ngIf="priceData$ | async as price" class="content">
+  <div class='left'>
+    <nz-badge [nzStyle]='position.quantity > 0 ? {background: colors.buyColor}: {background: colors.sellColor}'
+      [nzCount]="position.abs" [nzOverflowCount]='1000000000'>
+      <nz-avatar [nzText]="symbol" [nzSize]="64" nzGap='4' [nzSrc]="'https://storage.alorbroker.ru/icon/' + symbol + '.png'"></nz-avatar>
+    </nz-badge>
+  </div>
+  <div class='middle'>
+    <span class='identifier line'>
+      <p class='ticker'>{{symbol}}</p>
+      <p class='exchange'>{{exchange}}</p>
+    </span>
+    <span><p class='price'>{{price.lastPrice}}</p></span>
+  </div>
+  <div class='right'>
+    <div class='line with-space'>
+      <span class='line'>Изм.&nbsp;<p [class]='price.dayChange < 0 ? "sell" : "buy"'>{{price.dayChange}}</p></span>
+      <span class='line'>High &nbsp;<p>{{price.high}}</p></span>
+      <span class='line'>Ask &nbsp;<p class='sell'>{{price.ask}}</p></span>
+    </div>
+    <div class='line with-space'>
+      <span class='line'>Дн.%&nbsp;<p [class]='price.dayChange < 0 ? "sell" : "buy"'>{{price.dayChangePerPrice}}%</p></span>
+      <span class='line'>Low &nbsp;<p>{{price.low}}</p></span>
+      <span class='line'>Bid &nbsp;<p class='buy'>{{price.bid}}</p></span>
+    </div>
+  </div>
 </div>

@@ -27,7 +27,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { PriceTickComponent } from './components/price-tick/price-tick.component';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
-
+import { NzImageModule } from 'ng-zorro-antd/image';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 
 @NgModule({
   declarations: [
@@ -56,7 +58,10 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
     NzDropDownModule,
     NzModalModule,
     NzToolTipModule,
-    NzSwitchModule
+    NzSwitchModule,
+    NzImageModule,
+    NzAvatarModule,
+    NzBadgeModule
   ],
   exports: [
     // Ng zorro
@@ -76,6 +81,9 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
     NzModalModule,
     NzToolTipModule,
     NzSwitchModule,
+    NzImageModule,
+    NzAvatarModule,
+    NzBadgeModule,
     // modules
     CommonModule,
     FormsModule,

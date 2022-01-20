@@ -8,6 +8,7 @@ import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { WatchedInstrument } from '../models/watched-instrument.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
+import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
 
 @Injectable({
   providedIn: 'root',
@@ -84,8 +85,8 @@ export class WatchInstrumentsService {
               service.unsubscribe()
             }))
             .subscribe(q => {
-              const dayChange = this.getDayChange(q.last_price, wi.closePrice);
-              const dayChangePerPrice = this.getDayChangePerPrice(q.last_price, wi.closePrice);
+              const dayChange = getDayChange(q.last_price, wi.closePrice);
+              const dayChangePerPrice = getDayChangePerPrice(q.last_price, wi.closePrice);
               const updated = this.watchedInstruments.filter(i => !(
                 wi.instrument.symbol == i.instrument.symbol &&
                 wi.instrument.exchange == i.instrument.exchange &&
@@ -121,13 +122,6 @@ export class WatchInstrumentsService {
     this.add(this.sync.getCurrentlySelectedInstrument())
     this.getWatchList().forEach(i => this.add(i));
     return this.watchedInstruments$;
-  }
-
-  private getDayChange(lastPrice: number, closePrice: number) {
-    return MathHelper.round((lastPrice - closePrice), 2);
-  }
-  private getDayChangePerPrice(lastPrice: number, closePrice: number) {
-    return MathHelper.round((1 - (closePrice / lastPrice)) * 100, 2);
   }
 
   private getKey(key: InstrumentKey) {

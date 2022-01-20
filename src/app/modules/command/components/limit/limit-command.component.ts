@@ -17,14 +17,12 @@ import { CommandsService } from '../../services/commands.service';
   styleUrls: ['./limit-command.component.sass']
 })
 export class LimitCommandComponent implements OnInit, OnDestroy {
-  isVisible$: Observable<boolean> = of(false);
   viewData = new BehaviorSubject<CommandParams | null>(null)
   initialParams: CommandParams | null = null
   initialParamsSub: Subscription
   form!: FormGroup;
 
   constructor(private sync: SyncService, private service: CommandsService, private quotes: QuotesService) {
-    this.isVisible$ = this.sync.shouldShowCommandModal$;
     this.initialParamsSub = this.sync.commandParams$.subscribe(initial => {
       this.initialParams = initial;
 
@@ -76,15 +74,5 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.initialParamsSub.unsubscribe();
-  }
-
-  handleOk(): void {
-    console.log('Button ok clicked!');
-    this.sync.closeCommandModal();
-  }
-
-  handleCancel(): void {
-    console.log('Button cancel clicked!');
-    this.sync.closeCommandModal();
   }
 }
