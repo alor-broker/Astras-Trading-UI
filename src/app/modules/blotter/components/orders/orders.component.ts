@@ -33,10 +33,7 @@ export class OrdersComponent implements OnInit {
   constructor(private service: BlotterService) { }
 
   ngOnInit(): void {
-    this.orders$ = this.settings$.pipe(
-      filter((s): s is BlotterSettings => !!s),
-      switchMap(s => this.service.getOrders(s.portfolio, s.exchange))
-    )
+    this.orders$ = this.service.getOrders();
     this.displayOrders$ = this.orders$.pipe(
       mergeMap(orders => this.searchFilter.pipe(
         map(f => orders.filter(o => this.justifyFilter(o, f)))

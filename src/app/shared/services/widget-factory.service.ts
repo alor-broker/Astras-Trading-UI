@@ -136,7 +136,8 @@ export class WidgetFactoryService {
     }
     if (this.selectedPortfolio) {
       const settings: BlotterSettings = {
-        ...this.selectedPortfolio
+        ...this.selectedPortfolio,
+        linkToActive: true,
       };
       const widget = {
         gridItem: newWidget.gridItem,

@@ -31,11 +31,8 @@ export class TradesComponent implements OnInit {
   });
   constructor(private service: BlotterService) { }
 
-  ngOnInit(): void {
-    this.trades$ = this.settings$.pipe(
-      filter((s): s is BlotterSettings => !!s),
-      switchMap(s => this.service.getTrades(s.portfolio, s.exchange))
-    )
+  ngOnInit(): void {    
+    this.trades$ = this.service.getTrades();
     this.displayTrades$ = this.trades$.pipe(
       mergeMap(trades => this.searchFilter.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))

@@ -33,7 +33,7 @@ export class ParentWidgetComponent implements OnInit {
   widgetResize: EventEmitter<DashboardItem> = new EventEmitter<DashboardItem>();
 
   shouldShowSettings: boolean = false;
-  isLinked: boolean = false;
+  isLinked: boolean = true;
 
   constructor() {  }
 

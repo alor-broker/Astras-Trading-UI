@@ -33,11 +33,8 @@ export class PositionsComponent implements OnInit {
 
   constructor(private service: BlotterService) { }
 
-  ngOnInit(): void {
-    this.positions$ = this.settings$.pipe(
-      filter((s): s is BlotterSettings => !!s),
-      switchMap(s => this.service.getPositions(s.portfolio, s.exchange))
-    )
+  ngOnInit(): void {    
+    this.positions$ = this.service.getPositions();
     this.displayPositions$ = this.positions$.pipe(
       mergeMap(poses => this.searchFilter.pipe(
         map(f => poses.filter(p => this.justifyFilter(p, f)))
