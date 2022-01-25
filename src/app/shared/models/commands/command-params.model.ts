@@ -7,7 +7,7 @@ export interface CommandParams {
   instrument: InstrumentKey
   side: Side,
   type: CommandType,
-  price: number,
+  price?: number,
   user?: PortfolioKey,
   quantity: number
 }

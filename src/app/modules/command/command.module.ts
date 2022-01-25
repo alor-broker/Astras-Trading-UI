@@ -1,28 +1,30 @@
 import { NgModule } from '@angular/core';
 
 import { CommandRoutingModule } from './command-routing.module';
-import { LimitCommandComponent } from './components/limit/limit-command.component';
-import { LimitCommandWidgetComponent } from './widgets/limit-command-widget/limit-command-widget.component';
-import { LimitCommandSettingsComponent } from './components/limit-command-settings/limit-command-settings.component';
+import { LimitCommandComponent } from './components/limit-command/limit-command.component';
+import { CommandWidgetComponent } from './widgets/command-widget/command-widget.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { CommandHeaderComponent } from './components/command-header/command-header.component';
 import { CommandFooterComponent } from './components/command-footer/command-footer.component';
+import { MarketCommandComponent } from './components/market-command/market-command.component';
+import { EvaluationComponent } from './components/evaluation/evaluation.component';
 
 
 @NgModule({
   declarations: [
     LimitCommandComponent,
-    LimitCommandWidgetComponent,
-    LimitCommandSettingsComponent,
+    CommandWidgetComponent,
     CommandHeaderComponent,
-    CommandFooterComponent
+    CommandFooterComponent,
+    MarketCommandComponent,
+    EvaluationComponent
   ],
   imports: [
     SharedModule,
     CommandRoutingModule
   ],
   exports: [
-    LimitCommandWidgetComponent
+    CommandWidgetComponent
   ]
 })
 export class CommandModule { }

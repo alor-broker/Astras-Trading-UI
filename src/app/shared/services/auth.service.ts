@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, interval, Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { catchError, debounceTime, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { Login } from '../models/user/login.model';
 import { RefreshToken } from '../models/user/refresh-token.model';
 import { Router } from '@angular/router';
@@ -40,7 +40,6 @@ export class AuthService {
     })
   );
   accessToken$ = this.getAccessToken();
-  test = 'actual'
 
   constructor(private http: HttpClient, private router: Router) {
     const user: User = JSON.parse(localStorage.getItem('user')!);
@@ -124,7 +123,12 @@ export class AuthService {
 
   private getAccessToken(): Observable<string> {
     return this.currentUser$.pipe(
+      // mergeMap(user => interval(1000).pipe(
+      //   debounceTime(2000),
+      //   map(_ =>  { console.log('debounce'); return user; }))
+      // ),
       mergeMap(user => {
+        console.log('Updating token')
         if (this.isAuthorised(user)) {
           return of(user.jwt)
         }

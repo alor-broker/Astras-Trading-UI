@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { NzTableComponent } from 'ng-zorro-antd/table';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { filter, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { Widget } from 'src/app/shared/models/widget.model';
+import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
 import { Order } from '../../models/order.model';
 import { BlotterService } from '../../services/blotter.service';
@@ -13,7 +14,7 @@ import { BlotterService } from '../../services/blotter.service';
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.sass']
 })
-export class OrdersComponent implements OnInit {
+export class OrdersComponent implements OnInit, OnDestroy {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -23,6 +24,11 @@ export class OrdersComponent implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
+  private cancelCommands = new Subject<CancelCommand>();
+  private cancels$ = this.cancelCommands.asObservable()
+  private cancelSub? : Subscription;
+
+  private orders: Order[] = [];
   private orders$: Observable<Order[]> = of([]);
   displayOrders$: Observable<Order[]> = of([]);
   maxVolume: number = 1;
@@ -30,15 +36,25 @@ export class OrdersComponent implements OnInit {
     idMenuVisible: false,
     symbolMenuVisible: false
   });
-  constructor(private service: BlotterService) { }
+  constructor(private service: BlotterService, private cancller: OrderCancellerService) { }
 
   ngOnInit(): void {
-    this.orders$ = this.service.getOrders();
+    this.orders$ = this.service.getOrders().pipe(
+      tap(orders => this.orders = orders)
+    );
     this.displayOrders$ = this.orders$.pipe(
       mergeMap(orders => this.searchFilter.pipe(
         map(f => orders.filter(o => this.justifyFilter(o, f)))
       )),
     )
+    this.cancelSub = this.cancels$.pipe(
+      mergeMap((command) => this.cancller.cancelOrder(command)),
+      catchError((_, caught) => caught)
+    ).subscribe()
+  }
+
+  ngOnDestroy(): void {
+    this.cancelSub?.unsubscribe();
   }
 
   reset(): void {
@@ -56,6 +72,23 @@ export class OrdersComponent implements OnInit {
 
   getFilter() {
     return this.searchFilter.getValue();
+  }
+
+  cancelOrder(orderId: string) {
+    const settings = this.service.getSettings();
+    if (settings) {
+      this.cancelCommands?.next({
+        portfolio: settings.portfolio,
+        exchange: settings.exchange,
+        orderid: orderId,
+        stop: false
+      })
+    }
+  }
+
+  cancelAllOrders() {
+    const working = this.orders.filter(o => o.status == 'working').map(o => o.id)
+    working.forEach(order => this.cancelOrder(order));
   }
 
   private justifyFilter(order: Order, filter: OrderFilter) : boolean {

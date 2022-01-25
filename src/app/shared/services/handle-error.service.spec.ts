@@ -3,7 +3,6 @@
 import { HttpClient } from '@angular/common/http';
 import { TestBed, async, inject } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { HandleErrorService } from './handle-error.service';
 
 describe('HandleErrorService: Register', () => {
@@ -11,8 +10,8 @@ describe('HandleErrorService: Register', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ToastrModule.forRoot()],
-      providers: [ToastrService],
+      imports: [RouterTestingModule],
+      providers: [],
     });
     service = TestBed.inject(HandleErrorService);
   });

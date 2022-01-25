@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { ToastrModule } from 'ngx-toastr';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../shared/interceptors/auth.interceptor';
 import { HandleErrorService } from '../shared/services/handle-error.service';
@@ -30,6 +29,10 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { NzNotificationModule } from 'ng-zorro-antd/notification';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
+
 
 @NgModule({
   declarations: [
@@ -40,7 +43,6 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    ToastrModule.forRoot(),
     GridsterModule,
     // Ng zorro
     NzTableModule,
@@ -61,7 +63,10 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
     NzSwitchModule,
     NzImageModule,
     NzAvatarModule,
-    NzBadgeModule
+    NzBadgeModule,
+    NzNotificationModule,
+    NzPopconfirmModule,
+    NzDescriptionsModule
   ],
   exports: [
     // Ng zorro
@@ -84,6 +89,9 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
     NzImageModule,
     NzAvatarModule,
     NzBadgeModule,
+    NzNotificationModule,
+    NzPopconfirmModule,
+    NzDescriptionsModule,
     // modules
     CommonModule,
     FormsModule,

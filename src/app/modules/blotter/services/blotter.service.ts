@@ -97,7 +97,7 @@ export class BlotterService {
     const orders = this.getEntity<Order>(portfolio, exchange, 'OrdersGetAndSubscribeV2').pipe(
       map((order: Order) => {
         this.orders.set(order.id, order);
-        return Array.from(this.orders.values());
+        return Array.from(this.orders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
       })
     );
     return merge(orders, of([]));

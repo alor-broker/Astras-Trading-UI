@@ -19,8 +19,18 @@
         </nz-filter-trigger>
       </th>
       <th>Сторона</th>
+      <th>Статус</th>
       <th>Цена</th>
       <th>Кол-во</th>
+      <th>
+        <span>
+          <a nz-popconfirm
+            nzPopconfirmTitle="Точно отменить?"
+            nzOkText="Да"
+            nzCancelText="Нет"
+            (nzOnConfirm)="cancelAllOrders()">Снять все</a>
+        </span>
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -28,8 +38,16 @@
       <td>{{ ord.id }}</td>
       <td>{{ ord.symbol }}</td>
       <td>{{ ord.side }}</td>
+      <td>{{ ord.status }}</td>
       <td>{{ ord.price }}</td>
       <td>{{ ord.qty }}</td>
+      <td>
+        <a *ngIf='ord.status == "working"' nz-popconfirm
+          nzPopconfirmTitle="Точно отменить?"
+          nzOkText="Да"
+          nzCancelText="Нет"
+          (nzOnConfirm)="cancelOrder(ord.id)">Отменить</a>
+      </td>
     </tr>
   </tbody>
 </nz-table>
