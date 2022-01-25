@@ -1,0 +1,19 @@
+<div *ngIf="commandParams$ | async as command">
+  <nz-modal nzOkText="Выставить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
+    nzTitle="Выставить заявку" (nzOnCancel)="handleCancel()"
+    [nzFooter]='null'>
+    <ng-container *nzModalContent>
+      <ats-command-header [symbol]='command.instrument.symbol' [exchange]='command.instrument.exchange'
+        [instrumentGroup]="command.instrument.instrumentGroup ?? ''"></ats-command-header>
+      <nz-tabset nzTabPosition="top" nzSize="small" (nzSelectChange)='tabChanged($event)'>
+        <nz-tab nzTitle="Лимитная">
+          <ats-limit-command></ats-limit-command>
+        </nz-tab>
+        <nz-tab nzTitle="Рыночная">
+          <ats-market-command></ats-market-command>
+        </nz-tab>
+      </nz-tabset>
+      <ats-command-footer *ngIf="activeTab | async as tab" [activeTab]='tab'></ats-command-footer>
+    </ng-container>
+  </nz-modal>
+</div>
