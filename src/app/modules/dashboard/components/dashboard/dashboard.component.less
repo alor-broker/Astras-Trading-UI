@@ -1,8 +1,9 @@
-@import "../../../../../zorro-styles.less";
+@import (reference) '/src/styles.less';
 
 .inner-content {
   height: 95vh
 }
+
 .show-scroll {
   overflow-y: auto
 }
@@ -11,10 +12,12 @@
   width: 3px;
   height: 8px;
 }
+
 .show-scroll::-webkit-scrollbar-track {
   background-color: @component-background;
   border-radius: 10px;
 }
+
 .show-scroll::-webkit-scrollbar-thumb {
   background-color: #aaa; /* or add it to the track */
   border-radius: 10px;
