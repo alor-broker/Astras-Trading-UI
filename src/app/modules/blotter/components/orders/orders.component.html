@@ -1,5 +1,10 @@
+<ng-template #empty>
+  <nz-empty nzNotFoundImage="simple" nzNotFoundContent='Заявки сегодня не было'></nz-empty>
+</ng-template>
+
 <nz-table *ngIf="displayOrders$ | async as orders" #nzTable [nzData]="orders"
   #nzTableComponent
+  [nzNoResult]="empty"
   nzTableLayout="fixed"
   nzSize="small"
   [nzFrontPagination]="false"

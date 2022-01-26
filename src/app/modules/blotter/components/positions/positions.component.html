@@ -1,5 +1,9 @@
+<ng-template #empty>
+  <nz-empty nzNotFoundImage="simple" nzNotFoundContent='Позиций нет'></nz-empty>
+</ng-template>
 <nz-table *ngIf="displayPositions$ | async as positions" #nzTable [nzData]="positions"
   nzTableLayout="fixed"
+  [nzNoResult]="empty"
   nzSize="small"
   [nzFrontPagination]="false"
   [nzShowPagination]="false">

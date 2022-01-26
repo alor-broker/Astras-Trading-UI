@@ -5,7 +5,6 @@ import { PortfolioKey } from "../portfolio-key.model";
 
 export interface CommandParams {
   instrument: InstrumentKey
-  side: Side,
   type: CommandType,
   price?: number,
   user?: PortfolioKey,

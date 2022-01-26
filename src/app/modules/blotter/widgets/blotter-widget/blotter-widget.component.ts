@@ -3,8 +3,8 @@ import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { Widget } from 'src/app/shared/models/widget.model';
+import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
-import { BlotterService } from '../../services/blotter.service';
 
 @Component({
   selector: 'ats-blotter-widget[shouldShowSettings][widget]',

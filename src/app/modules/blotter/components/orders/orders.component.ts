@@ -6,8 +6,8 @@ import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings
 import { Widget } from 'src/app/shared/models/widget.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
-import { Order } from '../../models/order.model';
-import { BlotterService } from '../../services/blotter.service';
+import { Order } from '../../../../shared/models/orders/order.model';
+import { BlotterService } from 'src/app/shared/services/blotter.service';
 
 @Component({
   selector: 'ats-orders[shouldShowSettings][widget][settings]',

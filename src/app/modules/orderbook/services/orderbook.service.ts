@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription,  } from 'rxjs';
+import { BehaviorSubject, combineLatest, merge, Observable, Subscription,  } from 'rxjs';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -9,6 +9,7 @@ import { OrderbookSettings, isEqual } from '../../../shared/models/settings/orde
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { OrderBook } from '../models/orderbook.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
+import { BlotterService } from 'src/app/shared/services/blotter.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class OrderbookService {
 
   settings$ = this.settings.asObservable()
 
-  constructor(private ws: WebsocketService, private sync: SyncService) {
+  constructor(private ws: WebsocketService, private sync: SyncService, private blotter: BlotterService) {
 
   }
 
@@ -68,7 +69,8 @@ export class OrderbookService {
         }
       })
     ).subscribe();
-    this.orderbook$ = this.settings$.pipe(
+
+    const obData$ = this.settings$.pipe(
       filter((s): s is OrderbookSettings => !!s),
       switchMap((s) =>
         this.getOrderbookReq(
@@ -78,6 +80,25 @@ export class OrderbookService {
           s.depth
         )
       )
+    )
+
+    const orders$ = this.blotter.getOrders();
+
+    this.orderbook$ = combineLatest([obData$, orders$]).pipe(
+      map(([ob, orders]) => {
+        const withOrdersRows = ob.rows.map(row => {
+          const sumAsk = orders.filter(o => o.price == row.ask && o.status == 'working')
+            .map(o => o.qty)
+            .reduce((prev, curr) => prev + curr, 0);
+          const sumBid = orders.filter(o => o.price == row.bid && o.status == 'working')
+            .map(o => o.qty)
+            .reduce((prev, curr) => prev + curr, 0);
+          row.askOrderVolume = sumAsk;
+          row.bidOrderVolume = sumBid;
+          return row;
+        })
+        return {...ob, rows: withOrdersRows};
+      })
     )
     return this.orderbook$;
   }

@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
+import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { BlotterWidgetComponent } from './blotter-widget.component';

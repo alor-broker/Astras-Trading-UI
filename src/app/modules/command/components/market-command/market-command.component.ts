@@ -37,7 +37,6 @@ export class MarketCommandComponent implements OnInit {
         const command = {
           instrument: this.initialParams?.instrument,
           user: this.initialParams.user,
-          side: this.initialParams.side,
           type: CommandType.Market,
           quantity: 1,
         }
@@ -74,7 +73,7 @@ export class MarketCommandComponent implements OnInit {
     const command = this.viewData.getValue();
     if (command && command.user) {
       const newCommand = {
-        side: command.side == Side.Buy ? 'buy' : 'sell',
+        side: 'buy',
         quantity: form.quantity ?? command?.quantity ?? 0,
         instrument: {
           ...command.instrument,

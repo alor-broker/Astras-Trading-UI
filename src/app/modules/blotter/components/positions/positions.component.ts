@@ -1,12 +1,11 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
-import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
-import { SearchFilter } from 'src/app/modules/instruments/models/search-filter.model';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { Widget } from 'src/app/shared/models/widget.model';
+import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { PositionFilter } from '../../models/position-filter.model';
-import { BlotterService } from '../../services/blotter.service';
 
 @Component({
   selector: 'ats-positions[shouldShowSettings][widget][settings]',

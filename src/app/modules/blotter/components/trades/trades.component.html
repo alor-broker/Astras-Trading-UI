@@ -1,5 +1,9 @@
+<ng-template #empty>
+  <nz-empty nzNotFoundImage="simple" nzNotFoundContent='Сделок сегодня не было'></nz-empty>
+</ng-template>
 <nz-table *ngIf="displayTrades$ | async as trades" #nzTable [nzData]="trades"
   #nzTableComponent
+  [nzNoResult]="empty"
   nzTableLayout="fixed"
   nzSize="small"
   [nzFrontPagination]="false"

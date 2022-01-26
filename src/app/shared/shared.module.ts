@@ -32,7 +32,7 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
-
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @NgModule({
   declarations: [
@@ -66,7 +66,8 @@ import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
     NzBadgeModule,
     NzNotificationModule,
     NzPopconfirmModule,
-    NzDescriptionsModule
+    NzDescriptionsModule,
+    NzEmptyModule
   ],
   exports: [
     // Ng zorro
@@ -92,6 +93,7 @@ import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
     NzNotificationModule,
     NzPopconfirmModule,
     NzDescriptionsModule,
+    NzEmptyModule,
     // modules
     CommonModule,
     FormsModule,

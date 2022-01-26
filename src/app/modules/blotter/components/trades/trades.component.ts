@@ -2,10 +2,11 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
+import { Trade } from 'src/app/shared/models/trades/trade.model';
 import { Widget } from 'src/app/shared/models/widget.model';
+import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { TradeFilter } from '../../models/trade-filter.model';
-import { Trade } from '../../models/trade.model';
-import { BlotterService } from '../../services/blotter.service';
+
 @Component({
   selector: 'ats-trades',
   templateUrl: './trades.component.html',

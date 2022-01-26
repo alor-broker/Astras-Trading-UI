@@ -36,10 +36,9 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         const command = {
           instrument: this.initialParams?.instrument,
           user: this.initialParams.user,
-          side: this.initialParams.side,
           type: CommandType.Limit,
           price: this.initialParams.price ?? 0,
-          quantity: 1,
+          quantity: this.initialParams.quantity ?? 1,
         }
         this.viewData.next(command)
         this.setLimitCommand(command)
@@ -67,7 +66,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     const command = this.viewData.getValue();
     if (command && command.user) {
       const newCommand = {
-        side: command.side == Side.Buy ? 'buy' : 'sell',
+        side: 'buy',
         quantity: form.quantity ?? command?.quantity ?? 0,
         price: form.price ?? command?.price ?? 0,
         instrument: {

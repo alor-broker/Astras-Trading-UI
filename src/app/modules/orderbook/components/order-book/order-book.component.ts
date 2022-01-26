@@ -89,14 +89,13 @@ export class OrderBookComponent implements OnInit {
     };
   }
 
-  newLimitOrder(side: string, price: number) {
+  newLimitOrder(price: number, quantity?: number) {
     const settings = this.service.getSettings();
     if (settings) {
       const params: CommandParams = {
         instrument: { ...settings },
-        side: side == 'buy' ? Side.Buy : Side.Sell,
         price,
-        quantity: 0,
+        quantity: quantity ?? 0,
         type: CommandType.Limit,
       };
       this.sync.openCommandModal(params);

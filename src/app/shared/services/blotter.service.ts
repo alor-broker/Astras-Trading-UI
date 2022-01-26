@@ -8,9 +8,9 @@ import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
-import { Order } from '../models/order.model';
-import { OrdersRequest } from '../models/orders-request.model';
-import { Trade } from '../models/trade.model';
+import { Order } from '../models/orders/order.model';
+import { PortfolioWideRequest } from '../models/ws/portfolio-wide-request.model';
+import { Trade } from '../models/trades/trade.model';
 
 @Injectable({
   providedIn: 'root'
@@ -139,7 +139,7 @@ export class BlotterService {
     }
     guid = GuidGenerator.newGuid();
     this.subGuidByOpcode.set(opcode, guid);
-    const request : OrdersRequest = {
+    const request : PortfolioWideRequest = {
       opcode,
       portfolio,
       exchange,

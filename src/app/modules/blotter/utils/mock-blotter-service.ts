@@ -1,8 +1,8 @@
 import { Observable, of } from "rxjs";
 import { Position } from "src/app/shared/models/positions/position.model";
 import { BlotterSettings } from "src/app/shared/models/settings/blotter-settings.model";
-import { Order } from "../models/order.model";
-import { Trade } from "../models/trade.model";
+import { Trade } from "src/app/shared/models/trades/trade.model";
+import { Order } from "../../../shared/models/orders/order.model";
 
 export class MockServiceBlotter {
   settings$: Observable<BlotterSettings | null> = of({
