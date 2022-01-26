@@ -3,7 +3,7 @@ import { Component, OnInit, Input, OnChanges } from '@angular/core';
 @Component({
   selector: 'ats-price-tick[prevPrice][price]',
   templateUrl: './price-tick.component.html',
-  styleUrls: ['./price-tick.component.sass']
+  styleUrls: ['./price-tick.component.less']
 })
 export class PriceTickComponent implements OnInit, OnChanges {
   @Input()

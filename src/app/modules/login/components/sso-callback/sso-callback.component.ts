@@ -5,7 +5,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 @Component({
   selector: 'ats-sso-callback',
   templateUrl: './sso-callback.component.html',
-  styleUrls: ['./sso-callback.component.sass']
+  styleUrls: ['./sso-callback.component.less']
 })
 export class SsoCallbackComponent implements OnInit {
 

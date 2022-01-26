@@ -9,7 +9,7 @@ import { BlotterService } from '../../services/blotter.service';
 @Component({
   selector: 'ats-trades',
   templateUrl: './trades.component.html',
-  styleUrls: ['./trades.component.sass']
+  styleUrls: ['./trades.component.less']
 })
 export class TradesComponent implements OnInit {
 
@@ -31,7 +31,7 @@ export class TradesComponent implements OnInit {
   });
   constructor(private service: BlotterService) { }
 
-  ngOnInit(): void {    
+  ngOnInit(): void {
     this.trades$ = this.service.getTrades();
     this.displayTrades$ = this.trades$.pipe(
       mergeMap(trades => this.searchFilter.pipe(

@@ -1,5 +1,5 @@
 <div *ngIf="commandParams$ | async as command">
-  <nz-modal nzOkText="Выставить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
+  <nz-modal class='test' nzOkText="Выставить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
     nzTitle="Выставить заявку" (nzOnCancel)="handleCancel()"
     [nzFooter]='null'>
     <ng-container *nzModalContent>

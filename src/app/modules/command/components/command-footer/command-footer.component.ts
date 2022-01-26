@@ -7,7 +7,7 @@ import { CommandsService } from '../../services/commands.service';
 @Component({
   selector: 'ats-command-footer[activeTab]',
   templateUrl: './command-footer.component.html',
-  styleUrls: ['./command-footer.component.sass']
+  styleUrls: ['./command-footer.component.less']
 })
 export class CommandFooterComponent implements OnInit, OnDestroy {
   @Input()

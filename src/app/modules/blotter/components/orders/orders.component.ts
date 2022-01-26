@@ -12,7 +12,7 @@ import { BlotterService } from '../../services/blotter.service';
 @Component({
   selector: 'ats-orders[shouldShowSettings][widget][settings]',
   templateUrl: './orders.component.html',
-  styleUrls: ['./orders.component.sass']
+  styleUrls: ['./orders.component.less']
 })
 export class OrdersComponent implements OnInit, OnDestroy {
   @Input()

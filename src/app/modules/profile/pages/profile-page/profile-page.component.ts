@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'ats-profile-page',
   templateUrl: './profile-page.component.html',
-  styleUrls: ['./profile-page.component.sass']
+  styleUrls: ['./profile-page.component.less']
 })
 export class ProfilePageComponent implements OnInit {
 

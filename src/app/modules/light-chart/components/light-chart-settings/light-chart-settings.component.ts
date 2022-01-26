@@ -7,7 +7,7 @@ import { Timeframe, TimeframesHelper } from '../../utils/timeframes-helper';
 @Component({
   selector: 'ats-light-chart-settings',
   templateUrl: './light-chart-settings.component.html',
-  styleUrls: ['./light-chart-settings.component.sass']
+  styleUrls: ['./light-chart-settings.component.less']
 })
 export class LightChartSettingsComponent implements OnInit {
 

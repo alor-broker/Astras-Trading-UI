@@ -7,7 +7,7 @@ import { OrderbookRow } from 'src/app/modules/orderbook/models/orderbook-row.mod
 @Component({
   selector: 'ats-portfolio',
   templateUrl: './portfolio.component.html',
-  styleUrls: ['./portfolio.component.sass']
+  styleUrls: ['./portfolio.component.less']
 })
 export class PortfolioComponent implements OnInit {
 

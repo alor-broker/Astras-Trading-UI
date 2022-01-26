@@ -6,7 +6,7 @@ import { BlotterService } from '../../services/blotter.service';
 @Component({
   selector: 'ats-blotter-settings',
   templateUrl: './blotter-settings.component.html',
-  styleUrls: ['./blotter-settings.component.sass']
+  styleUrls: ['./blotter-settings.component.less']
 })
 export class BlotterSettingsComponent implements OnInit {
 

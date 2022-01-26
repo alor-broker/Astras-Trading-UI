@@ -15,7 +15,7 @@ import { Position } from 'src/app/shared/models/positions/position.model';
 @Component({
   selector: 'ats-command-header[symbol][exchange]',
   templateUrl: './command-header.component.html',
-  styleUrls: ['./command-header.component.sass']
+  styleUrls: ['./command-header.component.less']
 })
 export class CommandHeaderComponent implements OnInit, OnDestroy {
   @Input()

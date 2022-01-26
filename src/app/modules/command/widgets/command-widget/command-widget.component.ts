@@ -10,7 +10,7 @@ type test = {index: number, tab: NzTabComponent}
 @Component({
   selector: 'ats-command-widget',
   templateUrl: './command-widget.component.html',
-  styleUrls: ['./command-widget.component.sass'],
+  styleUrls: ['./command-widget.component.less'],
   providers: [ QuotesService ]
 })
 export class CommandWidgetComponent implements OnInit {

@@ -11,7 +11,7 @@ import { BlotterService } from '../../services/blotter.service';
 @Component({
   selector: 'ats-positions[shouldShowSettings][widget][settings]',
   templateUrl: './positions.component.html',
-  styleUrls: ['./positions.component.sass']
+  styleUrls: ['./positions.component.less']
 })
 export class PositionsComponent implements OnInit {
   @Input()
@@ -33,7 +33,7 @@ export class PositionsComponent implements OnInit {
 
   constructor(private service: BlotterService) { }
 
-  ngOnInit(): void {    
+  ngOnInit(): void {
     this.positions$ = this.service.getPositions();
     this.displayPositions$ = this.positions$.pipe(
       mergeMap(poses => this.searchFilter.pipe(

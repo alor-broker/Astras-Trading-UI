@@ -23,7 +23,7 @@ interface Size {
 @Component({
   selector: 'ats-order-book[widget][resize][shouldShowSettings][settings]',
   templateUrl: './order-book.component.html',
-  styleUrls: ['./order-book.component.sass'],
+  styleUrls: ['./order-book.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })

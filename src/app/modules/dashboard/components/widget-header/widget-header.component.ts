@@ -24,7 +24,7 @@ type PortfolioDependentSettings = AnySettings & {
 @Component({
   selector: 'ats-widget-header[widget]',
   templateUrl: './widget-header.component.html',
-  styleUrls: ['./widget-header.component.sass']
+  styleUrls: ['./widget-header.component.less']
 })
 export class WidgetHeaderComponent implements OnInit, OnDestroy {
   @Input('widget') set widget(widget: Widget<AnySettings>) { this.widgetSubject.next(widget); };

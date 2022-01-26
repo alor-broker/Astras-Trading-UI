@@ -4,7 +4,7 @@ import { MathHelper } from 'src/app/shared/utils/math-helper';
 @Component({
   selector: 'ats-evaluation[price][quantity]',
   templateUrl: './evaluation.component.html',
-  styleUrls: ['./evaluation.component.sass']
+  styleUrls: ['./evaluation.component.less']
 })
 export class EvaluationComponent implements OnInit {
   @Input()

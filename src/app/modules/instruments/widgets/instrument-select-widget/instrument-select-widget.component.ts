@@ -10,7 +10,7 @@ import { InstrumentsService } from '../../services/instruments.service';
 @Component({
   selector: 'ats-instrument-select-widget',
   templateUrl: './instrument-select-widget.component.html',
-  styleUrls: ['./instrument-select-widget.component.sass']
+  styleUrls: ['./instrument-select-widget.component.less']
 })
 export class InstrumentSelectWidgetComponent implements OnInit {
   @Input()

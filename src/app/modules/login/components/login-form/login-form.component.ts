@@ -7,7 +7,7 @@ import { AuthService } from '../../../../shared/services/auth.service';
 @Component({
   selector: 'ats-login-form',
   templateUrl: './login-form.component.html',
-  styleUrls: ['./login-form.component.sass']
+  styleUrls: ['./login-form.component.less']
 })
 export class LoginFormComponent implements OnInit {
 

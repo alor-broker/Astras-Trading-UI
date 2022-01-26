@@ -10,7 +10,7 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "sass"
+          "style": "less"
         },
         "@schematics/angular:application": {
           "strict": true
@@ -28,7 +28,7 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "sass",
+            "inlineStyleLanguage": "less",
             "assets": [
               "src/favicon.svg",
               "src/assets",
@@ -39,7 +39,7 @@
               }
             ],
             "styles": [
-              "src/styles.sass",
+              "src/styles.less",
               "src/zorro-styles.less"
             ],
             "scripts": [
@@ -119,7 +119,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "inlineStyleLanguage": "sass",
+            "inlineStyleLanguage": "less",
             "assets": [
               "src/favicon.svg",
               "src/assets",
@@ -130,7 +130,7 @@
               }
             ],
             "styles": [
-              "src/styles.sass",
+              "src/styles.less",
               "src/zorro-styles.less"
             ],
             "scripts": [

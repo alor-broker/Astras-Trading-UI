@@ -9,7 +9,7 @@ import { BlotterService } from '../../services/blotter.service';
 @Component({
   selector: 'ats-blotter-widget[shouldShowSettings][widget]',
   templateUrl: './blotter-widget.component.html',
-  styleUrls: ['./blotter-widget.component.sass']
+  styleUrls: ['./blotter-widget.component.less']
 })
 export class BlotterWidgetComponent implements OnInit, OnDestroy {
 

@@ -22,7 +22,7 @@ import { HistoryRequest } from 'src/app/shared/models/history/history-request.mo
 @Component({
   selector: 'ats-light-chart[resize][widget]',
   templateUrl: './light-chart.component.html',
-  styleUrls: ['./light-chart.component.sass'],
+  styleUrls: ['./light-chart.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })

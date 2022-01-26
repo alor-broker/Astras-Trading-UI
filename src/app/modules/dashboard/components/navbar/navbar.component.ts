@@ -13,7 +13,7 @@ import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 @Component({
   selector: 'ats-navbar',
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.sass'],
+  styleUrls: ['./navbar.component.less'],
 })
 export class NavbarComponent implements OnInit{
   portfolios$!: Observable<PortfolioKey[]>

@@ -18,7 +18,7 @@ import { AnySettings } from '../../../../shared/models/settings/any-settings.mod
 @Component({
   selector: 'ats-parent-widget[widget][resize]',
   templateUrl: './parent-widget.component.html',
-  styleUrls: ['./parent-widget.component.sass'],
+  styleUrls: ['./parent-widget.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })

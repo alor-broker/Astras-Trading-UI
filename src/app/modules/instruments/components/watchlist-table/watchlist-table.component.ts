@@ -9,7 +9,7 @@ import { WatchInstrumentsService } from '../../services/watch-instruments.servic
 @Component({
   selector: 'ats-watchlist-table',
   templateUrl: './watchlist-table.component.html',
-  styleUrls: ['./watchlist-table.component.sass']
+  styleUrls: ['./watchlist-table.component.less']
 })
 export class WatchlistTableComponent implements OnInit {
 

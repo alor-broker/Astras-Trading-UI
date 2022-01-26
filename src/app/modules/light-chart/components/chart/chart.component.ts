@@ -29,7 +29,7 @@ import {
 @Component({
   selector: 'ats-chart[resize][widget]',
   templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.sass'],
+  styleUrls: ['./chart.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })

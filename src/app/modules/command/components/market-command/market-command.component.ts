@@ -6,17 +6,14 @@ import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
+import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.model';
 import { MarketFormData } from '../../models/market-form-data.model';
 import { CommandsService } from '../../services/commands.service';
-
-
-type MarketFormControls = { [key in keyof MarketFormData]: AbstractControl };
-type MarketFormGroup = FormGroup & { value: MarketFormData, controls: MarketFormControls }
 
 @Component({
   selector: 'ats-market-command',
   templateUrl: './market-command.component.html',
-  styleUrls: ['./market-command.component.sass']
+  styleUrls: ['./market-command.component.less']
 })
 export class MarketCommandComponent implements OnInit {
   viewData = new BehaviorSubject<CommandParams | null>(null)

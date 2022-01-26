@@ -17,7 +17,7 @@ import { CommandsService } from '../../services/commands.service';
 @Component({
   selector: 'ats-limit-command',
   templateUrl: './limit-command.component.html',
-  styleUrls: ['./limit-command.component.sass']
+  styleUrls: ['./limit-command.component.less']
 })
 export class LimitCommandComponent implements OnInit, OnDestroy {
   viewData = new BehaviorSubject<CommandParams | null>(null)

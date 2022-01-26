@@ -6,7 +6,7 @@ import { OrderbookService } from '../../services/orderbook.service';
 @Component({
   selector: 'ats-orderbook-settings[settingsChange]',
   templateUrl: './orderbook-settings.component.html',
-  styleUrls: ['./orderbook-settings.component.sass']
+  styleUrls: ['./orderbook-settings.component.less']
 })
 export class OrderbookSettingsComponent implements OnInit {
   @Output()

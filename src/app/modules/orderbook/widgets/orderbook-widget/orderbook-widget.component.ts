@@ -10,7 +10,7 @@ import { OrderbookService } from '../../services/orderbook.service';
 @Component({
   selector: 'ats-orderbook-widget[shouldShowSettings][widget][resize][linkedToActive]',
   templateUrl: './orderbook-widget.component.html',
-  styleUrls: ['./orderbook-widget.component.sass'],
+  styleUrls: ['./orderbook-widget.component.less'],
   providers: [OrderbookService]
 })
 export class OrderbookWidgetComponent implements OnInit {

@@ -15,7 +15,7 @@ import { WatchInstrumentsService } from '../../services/watch-instruments.servic
 @Component({
   selector: 'ats-instrument-select[shouldShowSettings][widget][settings]',
   templateUrl: './instrument-select.component.html',
-  styleUrls: ['./instrument-select.component.sass'],
+  styleUrls: ['./instrument-select.component.less'],
   providers: [WatchInstrumentsService]
 })
 export class InstrumentSelectComponent implements OnInit {

@@ -4,7 +4,7 @@ import { InstrumentSelectSettings } from 'src/app/shared/models/settings/instrum
 @Component({
   selector: 'ats-instrument-select-settings',
   templateUrl: './instrument-select-settings.component.html',
-  styleUrls: ['./instrument-select-settings.component.sass']
+  styleUrls: ['./instrument-select-settings.component.less']
 })
 export class InstrumentSelectSettingsComponent implements OnInit {
   @Output()
