@@ -64,10 +64,17 @@ export class OrdersComponent implements OnInit, OnDestroy {
     });
   }
 
-  filterChange(text: string, option: 'symbol' ) {
+  filterChange(text: string, option: 'symbol' | 'id' ) {
     const newFilter = this.searchFilter.getValue();
     newFilter[option] = text;
     this.searchFilter.next(newFilter)
+  }
+
+  sortBy(option: 'symbol' | 'id') {
+    if (option == 'id') {
+      return (o1: Order, o2: Order) =>  Number(o1.id) - Number(o2.id);
+    }
+    else return (o1: Order, o2: Order) => o1.symbol.localeCompare(o2.symbol);
   }
 
   getFilter() {
@@ -94,6 +101,9 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private justifyFilter(order: Order, filter: OrderFilter) : boolean {
     if (filter.symbol) {
       return order.symbol.toLowerCase().includes(filter.symbol.toLowerCase());
+    }
+    if (filter.id) {
+      return order.id.toLowerCase().includes(filter.id.toLowerCase());
     }
     return true;
   }

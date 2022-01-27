@@ -11,7 +11,7 @@
   [nzShowPagination]="false">
   <thead>
     <tr>
-      <th nzCustomFilter>
+      <th nzCustomFilter [nzSortFn]='sortBy("id")'>
         Номер
         <nz-filter-trigger [(nzVisible)]="getFilter().idMenuVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="menu">
           <i nz-icon nzType="search"></i>
@@ -59,9 +59,9 @@
 <nz-dropdown-menu #menu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
     <div class="search-box" *ngIf='getFilter().idMenuVisible'>
-      <input class='ant-input'  type="text" nz-input placeholder="Поиск по тикеру"
-        [ngModel]='getFilter().symbol'
-        (ngModelChange)="filterChange($event, 'symbol')"/>
+      <input class='ant-input'  type="text" nz-input placeholder="Поиск по номеру"
+        [ngModel]='getFilter().id'
+        (ngModelChange)="filterChange($event, 'id')"/>
     </div>
     <div class="search-box" *ngIf='getFilter().symbolMenuVisible'>
       <input class='ant-input'  type="text" nz-input placeholder="Поиск по тикеру"
@@ -69,5 +69,5 @@
         (ngModelChange)="filterChange($event, 'symbol')"/>
     </div>
   </div>
-  <button nz-button nzSize="small" (click)="reset()">Сбросить</button>
+  <button nz-button nzType="primary" nzSize="small" (click)="reset()">Сбросить</button>
 </nz-dropdown-menu>

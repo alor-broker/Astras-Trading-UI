@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject } from 'rxjs';
 import { CommandParams } from '../models/commands/command-params.model';
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
@@ -22,7 +23,7 @@ export class SyncService {
   shouldShowCommandModal$ = this.shouldShowCommandModal.asObservable();
   commandParams$ = this.commandParams.asObservable();
 
-  constructor() { }
+  constructor(private notification: NzNotificationService) { }
 
   selectNewInstrument(key: InstrumentKey) {
     this.selectedInstrument.next(key);

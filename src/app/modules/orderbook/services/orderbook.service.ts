@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, merge, Observable, Subscription,  } from 'rxjs';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, defaultIfEmpty, filter, map, switchMap, tap } from 'rxjs/operators';
 import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { OrderbookData } from '../models/orderbook-data.model';
@@ -10,6 +10,7 @@ import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { OrderBook } from '../models/orderbook.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { BlotterService } from 'src/app/shared/services/blotter.service';
+import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 
 @Injectable({
   providedIn: 'root'
@@ -82,23 +83,41 @@ export class OrderbookService {
       )
     )
 
-    const orders$ = this.blotter.getOrders();
+    const orders$ = this.blotter.getOrders().pipe(
+      tap(orders => {
+        console.log(orders)
+      })
+    );
 
-    this.orderbook$ = combineLatest([obData$, orders$]).pipe(
+    this.orderbook$ = combineLatest([obData$, orders$.pipe(defaultIfEmpty([]))]).pipe(
       map(([ob, orders]) => {
         const withOrdersRows = ob.rows.map(row => {
-          const sumAsk = orders.filter(o => o.price == row.ask && o.status == 'working')
-            .map(o => o.qty)
-            .reduce((prev, curr) => prev + curr, 0);
-          const sumBid = orders.filter(o => o.price == row.bid && o.status == 'working')
-            .map(o => o.qty)
-            .reduce((prev, curr) => prev + curr, 0);
+          const askOrders = orders.filter(o => o.price == row.ask && o.status == 'working');
+          const sumAsk = askOrders.map(o => o.qty).reduce((prev, curr) => prev + curr, 0);
+          const askCancels = askOrders.map((o): CancelCommand => ({
+            orderid: o.id,
+            exchange: o.exchange,
+            portfolio: o.portfolio,
+            stop: false
+          }))
+
+          const bidOrders = orders.filter(o => o.price == row.bid && o.status == 'working');
+          const sumBid = bidOrders.map(o => o.qty).reduce((prev, curr) => prev + curr, 0);
+          const bidCancels = bidOrders.map((o): CancelCommand => ({
+            orderid: o.id,
+            exchange: o.exchange,
+            portfolio: o.portfolio,
+            stop: false
+          }))
           row.askOrderVolume = sumAsk;
+          row.askCancels = askCancels;
           row.bidOrderVolume = sumBid;
+          row.bidCancels = bidCancels;
           return row;
         })
         return {...ob, rows: withOrdersRows};
-      })
+      }),
+      // catchError((e, caught) => caught)
     )
     return this.orderbook$;
   }

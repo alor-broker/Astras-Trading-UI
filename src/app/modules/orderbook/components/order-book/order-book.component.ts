@@ -14,6 +14,7 @@ import {
   sellColorBackground,
   buyColorBackground,
 } from '../../../../shared/models/settings/styles-constants';
+import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 
 interface Size {
   width: string;
@@ -50,7 +51,7 @@ export class OrderBookComponent implements OnInit {
     height: '100%',
   });
 
-  constructor(private service: OrderbookService, private sync: SyncService) {}
+  constructor(private service: OrderbookService, private sync: SyncService, private cancellor: OrderCancellerService) {}
 
   ngOnInit(): void {
     this.ob$ = this.service.getOrderbook().pipe(
