@@ -25,21 +25,13 @@ export class OrderbookWidgetComponent implements OnInit {
   resize!: EventEmitter<DashboardItem>;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>()
-  settings$!: Observable<OrderbookSettings>;
 
-  constructor(private service: OrderbookService, private dashboard: DashboardService) { }
+  constructor(private service: OrderbookService) { }
 
   ngOnInit(): void {
-    this.service.setSettings(this.widget.settings);
-    this.settings$ = this.service.settings$.pipe(
-      filter((s): s is OrderbookSettings => !!s )
-    );
   }
 
-  onSettingsChange(settings: OrderbookSettings) {
-    this.service.setSettings(settings);
-    this.widget.settings = settings;
-    this.dashboard.updateWidget(this.widget)
+  onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
   }
 }

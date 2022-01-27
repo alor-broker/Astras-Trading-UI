@@ -12,6 +12,7 @@ import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { BlotterSettings } from '../models/settings/blotter-settings.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { WidgetNames } from '../models/enums/widget-names';
+import { WidgetSettingsService } from './widget-settings.service';
 
 @Injectable({
   providedIn: 'root',
@@ -62,6 +63,7 @@ export class WidgetFactoryService {
     }
     const settings: OrderbookSettings = {
       ...this.selectedInstrument,
+      guid: newWidget.gridItem.label,
       linkToActive: true,
       depth: 10
     };

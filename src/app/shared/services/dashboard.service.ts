@@ -14,6 +14,7 @@ import { WidgetFactoryService } from './widget-factory.service';
 })
 export class DashboardService {
   private dashboardsStorage = 'dashboards';
+  private settingsByGuid = new BehaviorSubject<Map<string, AnySettings>>(new Map())
 
   private dashboardSource: BehaviorSubject<Widget<AnySettings>[]>;
   dashboard$ : Observable<Widget<AnySettings>[]>;
@@ -41,6 +42,14 @@ export class DashboardService {
       const widgetsWithoutExisting = this.getDashboard().filter(w => w.gridItem.label !== updated.gridItem.label)
       const widgets = [...widgetsWithoutExisting, updated];
       this.setDashboard(widgets);
+    }
+  }
+
+  updateWidgetSettings(guid: string, updated: AnySettings) {
+    const existing = this.getDashboard().find(w => w.gridItem.label === guid);
+    if (existing) {
+      existing.settings = updated;
+      this.updateWidget(existing);
     }
   }
 

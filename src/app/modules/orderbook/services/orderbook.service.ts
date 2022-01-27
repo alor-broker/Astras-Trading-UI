@@ -11,6 +11,7 @@ import { OrderBook } from '../models/orderbook.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
+import { WidgetSettingsService } from 'src/app/shared/services/widget-settings.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,31 +20,35 @@ export class OrderbookService {
   private orderbook$: Observable<OrderBook> = new Observable();
   private subGuid?: string;
   private instrumentSub?: Subscription;
-  private settings: BehaviorSubject<OrderbookSettings | null> = new BehaviorSubject<OrderbookSettings | null>(null);
+  private settings?: OrderbookSettings;
 
-  settings$ = this.settings.asObservable()
+  constructor(private settingsService: WidgetSettingsService,
+    private ws: WebsocketService,
+    private sync: SyncService,
+    private blotter: BlotterService) {
 
-  constructor(private ws: WebsocketService, private sync: SyncService, private blotter: BlotterService) {
+  }
 
+  getSettings(guid: string) {
+    return this.settingsService.getSettings(guid).pipe(
+      filter((s): s is OrderbookSettings => !!s),
+      tap(s => this.settings = s)
+    );
   }
 
   setSettings(settings: OrderbookSettings) {
-    const current = this.settings.getValue();
-
-    if (!current || !isEqual(current, settings)) {
-      this.settings.next(settings);
-    }
+    this.settingsService.setSettings(settings.guid, settings);
   }
 
   setLinked(isLinked: boolean) {
-    const current = this.getSettings();
+    const current = this.getSettingsValue();
     if (current) {
-      this.settings.next({ ...current, linkToActive: isLinked })
+      this.settingsService.setSettings(current.guid, { ...current, linkToActive: isLinked });
     }
   }
 
-  getSettings() {
-    return this.settings.getValue();
+  getSettingsValue() {
+    return this.settings;
   }
 
   unsubscribe() {
@@ -57,10 +62,10 @@ export class OrderbookService {
     return request.opcode + request.code + request.exchange + group + request.depth + request.format;
   }
 
-  getOrderbook() {
+  getOrderbook(guid: string) {
     this.instrumentSub = this.sync.selectedInstrument$.pipe(
       map((i) => {
-        const current = this.settings.getValue();
+        const current = this.settings;
         if (current && current.linkToActive &&
             !(current.symbol == i.symbol &&
             current.exchange == i.exchange &&
@@ -71,7 +76,7 @@ export class OrderbookService {
       })
     ).subscribe();
 
-    const obData$ = this.settings$.pipe(
+    const obData$ = this.getSettings(guid).pipe(
       filter((s): s is OrderbookSettings => !!s),
       switchMap((s) =>
         this.getOrderbookReq(

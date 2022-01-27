@@ -22,7 +22,7 @@ interface Size {
 }
 
 @Component({
-  selector: 'ats-order-book[widget][resize][shouldShowSettings][settings]',
+  selector: 'ats-order-book[widget][resize][shouldShowSettings]',
   templateUrl: './order-book.component.html',
   styleUrls: ['./order-book.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,10 +35,6 @@ export class OrderBookComponent implements OnInit {
   widget!: Widget<OrderbookSettings>;
   @Input()
   resize!: EventEmitter<DashboardItem>;
-  @Input('settings') set settings(settings: OrderbookSettings) {
-    console.log(`From input: ${settings.symbol}`)
-    this.service.setSettings(settings);
-  }
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
@@ -54,7 +50,7 @@ export class OrderBookComponent implements OnInit {
   constructor(private service: OrderbookService, private sync: SyncService, private cancellor: OrderCancellerService) {}
 
   ngOnInit(): void {
-    this.ob$ = this.service.getOrderbook().pipe(
+    this.ob$ = this.service.getOrderbook(this.widget.gridItem.label).pipe(
       tap((ob) => (this.maxVolume = ob?.maxVolume ?? 1))
     );
     this.resizeSub = this.resize.subscribe((widget) => {
@@ -91,7 +87,7 @@ export class OrderBookComponent implements OnInit {
   }
 
   newLimitOrder(price: number, quantity?: number) {
-    const settings = this.service.getSettings();
+    const settings = this.service.getSettingsValue();
     if (settings) {
       const params: CommandParams = {
         instrument: { ...settings },
