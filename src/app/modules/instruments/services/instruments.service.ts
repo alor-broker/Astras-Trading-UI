@@ -7,18 +7,19 @@ import { environment } from 'src/environments/environment';
 import { InstrumentSelect } from '../models/instrument-select.model';
 import { InstrumentSearchResponse } from '../models/instrument-search-response.model';
 import { SearchFilter } from '../models/search-filter.model';
+import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
+import { DashboardService } from 'src/app/shared/services/dashboard.service';
+import { BaseService } from 'src/app/shared/services/base.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class InstrumentsService {
+export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
   private url = environment.apiUrl + '/md/v2/Securities';
-  private settings = new BehaviorSubject<InstrumentSelectSettings | null>(null);
-  settings$: Observable<InstrumentSelectSettings> = this.settings.asObservable().pipe(
-    filter((s): s is InstrumentSelectSettings => !!s)
-  );
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, settingsService: DashboardService) {
+    super(settingsService);
+  }
 
   getInstruments(filter: SearchFilter): Observable<InstrumentSelect[]> {
     return this.http.get<InstrumentSearchResponse[]>(this.url, {
@@ -37,12 +38,5 @@ export class InstrumentsService {
         return selects
       })
     )
-  }
-  unsubscribe() {
-
-  }
-
-  setSettings(settings: InstrumentSelectSettings) {
-    this.settings.next(settings);
   }
 }

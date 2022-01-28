@@ -18,8 +18,8 @@ export class DashboardService {
   private dashboardsStorage = 'dashboards';
   private settingsStorage = 'settings';
 
-  private dashboardSource: BehaviorSubject<Map<string, Widget<AnySettings>>>;
-  dashboard$ : Observable<Map<string, Widget<AnySettings>>>;
+  private dashboardSource: BehaviorSubject<Map<string, Widget>>;
+  dashboard$ : Observable<Map<string, Widget>>;
 
   // We can't store settings in dashboard, because it'll cause unnessasary rerenders
   // each time the settings would change
@@ -29,7 +29,7 @@ export class DashboardService {
   constructor(private factory: WidgetFactoryService) {
     const existingDashboardJson = localStorage.getItem(this.dashboardsStorage);
     const settingsJson = localStorage.getItem(this.settingsStorage);
-    let existingDashboard : Map<string, Widget<AnySettings>> = new Map();
+    let existingDashboard : Map<string, Widget> = new Map();
     if (existingDashboardJson) {
       existingDashboard = new Map(JSON.parse(existingDashboardJson));
     }
@@ -38,7 +38,7 @@ export class DashboardService {
       existingSettings = new Map(JSON.parse(settingsJson));
     }
 
-    this.dashboardSource = new BehaviorSubject<Map<string, Widget<AnySettings>>>(existingDashboard);
+    this.dashboardSource = new BehaviorSubject<Map<string, Widget>>(existingDashboard);
     this.dashboard$ = this.dashboardSource.asObservable();
 
     this.settingsSource = new BehaviorSubject<Map<string, AnySettings>>(existingSettings);
@@ -46,19 +46,22 @@ export class DashboardService {
   }
 
   addWidget(newWidget: NewWidget) {
-    const widget = this.factory.createNewWidget(newWidget);
+    const newSettings = this.factory.createNewSettings(newWidget);
+    const widget = {
+      guid: newWidget.gridItem.label,
+      gridItem: newWidget.gridItem
+    }
     const guid = widget.gridItem.label;
     const widgets = this.getDashboardValue().set(guid, widget);
-    const settings = this.getSettingsValue().set(guid, widget.settings);
+    const settings = this.getSettingsValue().set(guid, newSettings);
     this.setDashboard(widgets);
     this.setSettings(settings);
   }
 
-  updateWidget(updated: Widget<AnySettings>) {
+  updateWidget(updated: Widget) {
     const guid = updated.gridItem.label;
     const existing = this.getDashboardValue().get(guid);
     if (existing) {
-      const updated = this.factory.createNewWidget(existing);
       const widgets = this.getDashboardValue().set(guid, updated);
       this.setDashboard(widgets);
     }
@@ -82,7 +85,7 @@ export class DashboardService {
   getWidget(guid: string) {
     return this.dashboard$.pipe(
       map((widgetsByGuids) => widgetsByGuids.get(guid)),
-      filter((w): w is Widget<AnySettings> => !!w)
+      filter((w): w is Widget => !!w)
     )
   }
 
@@ -101,7 +104,7 @@ export class DashboardService {
     this.storeSettings();
   }
 
-  private setDashboard(widgets: Map<string, Widget<AnySettings>>) {
+  private setDashboard(widgets: Map<string, Widget>) {
     this.dashboardSource.next(widgets);
     this.storeDashboard();
   }

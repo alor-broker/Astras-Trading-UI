@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { Widget } from 'src/app/shared/models/widget.model';
-import { isEqual, LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
+import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { LightChartService } from '../../services/light-chart.service';
@@ -18,9 +18,10 @@ import { Candle } from '../../../../shared/models/history/candle.model';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { LightChart } from '../../utils/light-chart';
 import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
+import { isEqual, isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
 
 @Component({
-  selector: 'ats-light-chart[resize][widget]',
+  selector: 'ats-light-chart[resize][guid][resize]',
   templateUrl: './light-chart.component.html',
   styleUrls: ['./light-chart.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,17 +31,13 @@ export class LightChartComponent implements OnInit, OnDestroy {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
-  widget!: Widget<LightChartSettings>;
+  guid!: string;
   @Input()
   resize!: EventEmitter<DashboardItem>;
-  @Input('settings') set settings(settings: LightChartSettings) {
-    this.service.setSettings(settings);
-  }
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
   bars$: Observable<Candle | null> = of(null);
-  guid: string | null = null;
 
   private prevOptions?: LightChartSettings;
   private historySub?: Subscription;
@@ -54,8 +51,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
   constructor(private service: LightChartService) { }
 
   ngOnInit(): void {
-    this.guid = GuidGenerator.newGuid();
-    this.bars$ = this.service.getBars();
+    this.bars$ = this.service.getBars(this.guid);
   }
 
   ngOnDestroy(): void {
@@ -83,9 +79,9 @@ export class LightChartComponent implements OnInit, OnDestroy {
   private initChart(guid: string) {
     this.chart.create(guid);
 
-    this.settingsSub = this.service.settings$.pipe(
+    this.settingsSub = this.service.getSettings(this.guid).pipe(
       tap(options => {
-        if (options && !isEqual(options, this.prevOptions)){
+        if (options && !isEqualLightChartSettings(options, this.prevOptions)){
           this.prevOptions == options;
           this.chart.clearSeries();
         }
@@ -95,7 +91,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
     this.historySub = this.chart.logicalRange$.pipe(
       filter(lr => !this.isUpdating && !this.isEndOfHistory && !!lr),
       switchMap(lr => {
-        return this.service.settings$;
+        return this.service.getSettings(this.guid);
       }),
       map(options =>  {
         if (options) {
@@ -110,7 +106,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
       }),
       map(res => {
         this.isEndOfHistory = res.prev == null;
-        const options = this.service.getSettings();
+        const options = this.service.getSettingsValue();
         if (options) {
          this.chart.setData(res.history, options);
         }

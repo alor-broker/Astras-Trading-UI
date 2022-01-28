@@ -8,7 +8,7 @@ import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { InstrumentsService } from '../../services/instruments.service';
 
 @Component({
-  selector: 'ats-instrument-select-widget',
+  selector: 'ats-instrument-select-widget[guid]',
   templateUrl: './instrument-select-widget.component.html',
   styleUrls: ['./instrument-select-widget.component.less']
 })
@@ -16,24 +16,17 @@ export class InstrumentSelectWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
-  widget!: Widget<InstrumentSelectSettings>;
+  guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>()
   settings$!: Observable<InstrumentSelectSettings>;
 
-  constructor(private service: InstrumentsService, private dashboard: DashboardService) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this.service.setSettings(this.widget.settings);
-    this.settings$ = this.service.settings$.pipe(
-      filter((s): s is InstrumentSelectSettings => !!s )
-    );
   }
 
-  onSettingsChange(settings: InstrumentSelectSettings) {
-    this.service.setSettings(settings);
-    this.widget.settings = settings;
-    this.dashboard.updateWidget(this.widget)
+  onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
   }
 }

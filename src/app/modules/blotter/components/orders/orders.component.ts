@@ -2,15 +2,13 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
-import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
-import { Widget } from 'src/app/shared/models/widget.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
 import { Order } from '../../../../shared/models/orders/order.model';
 import { BlotterService } from 'src/app/shared/services/blotter.service';
 
 @Component({
-  selector: 'ats-orders[shouldShowSettings][widget][settings]',
+  selector: 'ats-orders[shouldShowSettings][guid]',
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.less']
 })
@@ -18,9 +16,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
-  widget!: Widget<BlotterSettings>;
-  @Input('settings') set settings(settings: BlotterSettings) { this.settings$.next(settings); };
-  private settings$ = new BehaviorSubject<BlotterSettings | null>(null);
+  guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
@@ -39,7 +35,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   constructor(private service: BlotterService, private cancller: OrderCancellerService) { }
 
   ngOnInit(): void {
-    this.orders$ = this.service.getOrders().pipe(
+    this.orders$ = this.service.getOrders(this.guid).pipe(
       tap(orders => this.orders = orders)
     );
     this.displayOrders$ = this.orders$.pipe(
@@ -82,7 +78,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   cancelOrder(orderId: string) {
-    const settings = this.service.getSettings();
+    const settings = this.service.getSettingsValue();
     if (settings) {
       this.cancelCommands?.next({
         portfolio: settings.portfolio,

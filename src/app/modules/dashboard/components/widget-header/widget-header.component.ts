@@ -6,20 +6,9 @@ import { WidgetSettings } from 'src/app/shared/models/widget-settings.model';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
+import { isInstrumentDependent, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
 
-type InstrumentDependentSettings = AnySettings & {
-  symbol: string,
-  exchange: string,
-  instrumentGroup?: string,
-  linkedToActive: boolean
-}
-
-type PortfolioDependentSettings = AnySettings & {
-  portfolio: string,
-  exchange: string,
-  linkedToActive: boolean
-}
 
 @Component({
   selector: 'ats-widget-header[guid]',
@@ -47,11 +36,11 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
       filter((s) : s is AnySettings => !!s),
       map(s => {
         this.settings = s;
-        if (this.isInstrumentDependent(s)) {
+        if (isInstrumentDependent(s)) {
           const group = s.instrumentGroup;
           s.title = `${s.symbol} (${group ? group : ''})`
         }
-        else if (this.isPortfolioDependent(s)) {
+        else if (isPortfolioDependent(s)) {
           s.title = `${s.portfolio} (${s.exchange})`
         }
         return s;
@@ -84,13 +73,5 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
     if (this.settings) {
       this.dashboard.updateSettings(this.guid, { ...this.settings, linkToActive: linkToActive });
     }
-  }
-
-  isInstrumentDependent(settings: AnySettings) : settings is InstrumentDependentSettings {
-    return settings && 'linkToActive' in settings && 'symbol' in settings && 'exchange' in settings;
-  }
-
-  isPortfolioDependent(settings: AnySettings) : settings is PortfolioDependentSettings {
-    return settings && 'linkToActive' in settings && 'potfolio' in settings && 'exchange' in settings;
   }
 }

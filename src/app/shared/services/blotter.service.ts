@@ -1,61 +1,37 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, merge, Observable, of, Subscription } from 'rxjs';
-import { defaultIfEmpty, filter, map, startWith, switchMap, tap } from 'rxjs/operators';
+import { merge, Observable, of, Subscription } from 'rxjs';
+import { filter, map, startWith, switchMap } from 'rxjs/operators';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
-import { BlotterSettings, isEqual } from 'src/app/shared/models/settings/blotter-settings.model';
-import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
+import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
-import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { Order } from '../models/orders/order.model';
-import { PortfolioWideRequest } from '../models/ws/portfolio-wide-request.model';
 import { Trade } from '../models/trades/trade.model';
+import { BaseWebsocketService } from './base-websocket.service';
+import { DashboardService } from './dashboard.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class BlotterService {
+export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   private trades: Map<string, Trade> = new Map<string, Trade>();
   private positions: Map<string, Position> = new Map<string, Position>();
   private orders: Map<string, Order> = new Map<string, Order>();
 
   private portfolioSub?: Subscription;
   private subGuidByOpcode: Map<string, string> = new Map<string, string>();
-  private settings: BehaviorSubject<BlotterSettings | null> = new BehaviorSubject<BlotterSettings | null>(null);
 
-  settings$ = this.settings.asObservable()
   order$: Observable<Order[]> = of([]);
   trade$: Observable<Trade[]> = of([]);
   position$: Observable<Position[]> = of([]);
 
-  constructor(private ws: WebsocketService, private sync: SyncService) {  }
-
-  setSettings(settings: BlotterSettings) {
-    const current = this.settings.getValue();
-
-    if (!current || !isEqual(current, settings)) {
-      this.settings.next(settings);
-    }
+  constructor(ws: WebsocketService, settingsService: DashboardService, private sync: SyncService, ) {
+    super(ws, settingsService);
   }
 
-  setLinked(isLinked: boolean) {
-    const current = this.getSettings();
-    if (current) {
-      this.settings.next({ ...current, linkToActive: isLinked })
-    }
-  }
-
-  getSettings() {
-    return this.settings.getValue();
-  }
-
-  unsubscribe() {
-    this.subGuidByOpcode.forEach((_, guid) => this.ws.unsubscribe(guid));
-  }
-
-  getPositions() {
-    this.position$ = this.settings$.pipe(
+  getPositions(guid: string) {
+    this.position$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
       switchMap(s => this.getPositionsReq(s.portfolio, s.exchange))
     )
@@ -63,8 +39,8 @@ export class BlotterService {
     return this.position$;
   }
 
-  getTrades() {
-    this.trade$ = this.settings$.pipe(
+  getTrades(guid: string) {
+    this.trade$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
       switchMap(s => this.getTradesReq(s.portfolio, s.exchange))
     )
@@ -72,8 +48,8 @@ export class BlotterService {
     return this.trade$;
   }
 
-  getOrders() {
-    this.order$ = this.settings$.pipe(
+  getOrders(guid: string) {
+    this.order$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
       switchMap(s => {
         return this.getOrdersReq(s.portfolio, s.exchange)
@@ -85,7 +61,7 @@ export class BlotterService {
 
   private getPositionsReq(portfolio: string, exchange: string) {
     this.positions = new Map<string, Position>();
-    const positions = this.getEntity<Position>(portfolio, exchange, 'PositionsGetAndSubscribeV2').pipe(
+    const positions = this.getPortfolioEntity<Position>(portfolio, exchange, 'PositionsGetAndSubscribeV2').pipe(
       map((position: Position) => {
         this.positions.set(position.symbol, position);
         return Array.from(this.positions.values());
@@ -96,7 +72,7 @@ export class BlotterService {
 
   private getOrdersReq(portfolio: string, exchange: string) {
     this.orders = new Map<string, Order>();
-    const orders = this.getEntity<Order>(portfolio, exchange, 'OrdersGetAndSubscribeV2').pipe(
+    const orders = this.getPortfolioEntity<Order>(portfolio, exchange, 'OrdersGetAndSubscribeV2').pipe(
       map((order: Order) => {
         this.orders.set(order.id, order);
         return Array.from(this.orders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
@@ -108,7 +84,7 @@ export class BlotterService {
   private getTradesReq(portfolio: string, exchange: string) : Observable<Trade[]> {
     this.trades = new Map<string, Trade>();
 
-    const trades = this.getEntity<Trade>(portfolio, exchange, 'TradesGetAndSubscribeV2').pipe(
+    const trades = this.getPortfolioEntity<Trade>(portfolio, exchange, 'TradesGetAndSubscribeV2').pipe(
       map((trade: Trade) => {
         this.trades.set(trade.id, trade);
         return Array.from(this.trades.values());
@@ -122,7 +98,7 @@ export class BlotterService {
       this.portfolioSub = this.sync.selectedPortfolio$.pipe(
         filter((p): p is PortfolioKey => !!p),
         map((p) => {
-          const current = this.settings.getValue();
+          const current = this.getSettingsValue();
           if (current && current.linkToActive &&
               !(current.portfolio == p.portfolio &&
               current.exchange == p.exchange)) {
@@ -131,31 +107,5 @@ export class BlotterService {
         })
       ).subscribe();
     }
-  }
-
-  private getEntity<T>(portfolio: string, exchange: string, opcode: string) {
-    this.ws.connect()
-    let guid = this.subGuidByOpcode.get(opcode);
-    if (guid) {
-      this.ws.unsubscribe(guid);
-    }
-    guid = GuidGenerator.newGuid();
-    this.subGuidByOpcode.set(opcode, guid);
-    const request : PortfolioWideRequest = {
-      opcode,
-      portfolio,
-      exchange,
-      format:"simple",
-      guid: guid,
-    }
-    this.ws.subscribe(request)
-
-    return this.ws.messages$.pipe(
-      filter(m => m.guid == guid),
-      map(r => {
-        const br = r as BaseResponse<T>;
-        return br.data;
-      })
-    )
   }
 }

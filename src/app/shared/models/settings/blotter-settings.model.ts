@@ -2,7 +2,8 @@ export interface BlotterSettings {
   title?: string,
   exchange: string,
   portfolio: string,
-  linkToActive?: boolean
+  linkToActive?: boolean,
+  guid: string
 }
 
 export function isEqual(

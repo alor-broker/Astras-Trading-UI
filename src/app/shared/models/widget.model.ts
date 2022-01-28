@@ -1,6 +1,6 @@
 import { DashboardItem } from "./dashboard-item.model"
 
-export interface Widget<T> {
+export interface Widget {
   gridItem: DashboardItem,
-  settings: T
+  guid: string
 }

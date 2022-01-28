@@ -1,22 +1,18 @@
-<nz-tabset nzTabPosition="top" *ngIf="!shouldShowSettings && (settings$ | async) as settings" nzSize="small">
-
+<nz-tabset *ngIf="!shouldShowSettings" nzTabPosition="top" nzSize="small">
   <nz-tab nzTitle="Заявки">
     <ats-orders
-      [widget]="widget"
-      [settings]="settings"
+      [guid]="guid"
       [(shouldShowSettings)]="shouldShowSettings"></ats-orders>
   </nz-tab>
   <nz-tab nzTitle="Позиции">
     <ats-positions
-      [widget]="widget"
-      [settings]="settings"
+      [guid]="guid"
       [(shouldShowSettings)]="shouldShowSettings"></ats-positions>
   </nz-tab>
   <nz-tab nzTitle="Сделки">
     <ats-trades
-      [widget]="widget"
-      [settings]="settings"
+      [guid]="guid"
       [(shouldShowSettings)]="shouldShowSettings"></ats-trades>
   </nz-tab>
 </nz-tabset>
-<ats-blotter-settings *ngIf="shouldShowSettings" (settingsChange)="onSettingsChange($event)"></ats-blotter-settings>
+<ats-blotter-settings *ngIf="shouldShowSettings" [guid]='guid' (settingsChange)="onSettingsChange()"></ats-blotter-settings>

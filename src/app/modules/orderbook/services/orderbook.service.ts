@@ -4,7 +4,7 @@ import { catchError, combineLatestWith, debounceTime, filter, map, startWith, sw
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { OrderbookData } from '../models/orderbook-data.model';
 import { OrderbookRequest } from '../models/orderbook-request.model';
-import { isEqual, OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
+import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { OrderBook } from '../models/orderbook.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
@@ -16,41 +16,15 @@ import { Order } from 'src/app/shared/models/orders/order.model';
 @Injectable({
   providedIn: 'root'
 })
-export class OrderbookService extends BaseWebsocketService {
+export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
   private orderbook$: Observable<OrderBook> = new Observable();
   private instrumentSub?: Subscription;
-  private settings?: OrderbookSettings;
   private orders: Map<string, Order> = new Map<string, Order>();
 
   constructor(ws: WebsocketService,
-    private settingsService: DashboardService,
+    settingsService: DashboardService,
     private sync: SyncService) {
-      super(ws);
-  }
-
-  getSettings(guid: string) {
-    return this.settingsService.getSettings(guid).pipe(
-      filter((s): s is OrderbookSettings => !!s),
-      tap(s => this.settings = s)
-    );
-  }
-
-  setSettings(settings: OrderbookSettings) {
-    console.log('Settings set')
-    if (this.settings && !isEqual(this.settings, settings)) {
-      this.settingsService.updateSettings(settings.guid, settings);
-    }
-  }
-
-  setLinked(isLinked: boolean) {
-    const current = this.getSettingsValue();
-    if (current) {
-      this.settingsService.updateSettings(current.guid, { ...current, linkToActive: isLinked });
-    }
-  }
-
-  getSettingsValue() {
-    return this.settings;
+      super(ws, settingsService);
   }
 
   generateNewGuid(request: OrderbookRequest) : string {

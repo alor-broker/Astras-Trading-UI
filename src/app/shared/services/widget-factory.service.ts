@@ -20,6 +20,7 @@ export class WidgetFactoryService {
   private tfHelper = new TimeframesHelper();
   private selectedInstrument: InstrumentKey = {
     symbol: 'GAZP',
+    instrumentGroup: 'TQBR',
     exchange: 'MOEX',
   };
   private selectedPortfolio: PortfolioKey | null = null;
@@ -33,30 +34,30 @@ export class WidgetFactoryService {
     )
   }
 
-  createNewWidget(
-    newWidget: NewWidget | Widget<AnySettings>
-  ): Widget<AnySettings> {
-    let widget: Widget<AnySettings> | null = null;
+  createNewSettings(
+    newWidget: NewWidget | Widget
+  ): AnySettings {
+    let settings: AnySettings | null = null;
     switch (newWidget.gridItem.type) {
       case WidgetNames.orderBook:
-        widget = this.createOrderbook(newWidget);
+        settings = this.createOrderbook(newWidget);
         break;
       case WidgetNames.lightChart:
-        widget = this.createLightChartWidget(newWidget);
+        settings = this.createLightChartWidget(newWidget);
         break;
       case WidgetNames.instrumentSelect:
-        widget = this.createInstrumentSelect(newWidget);
+        settings = this.createInstrumentSelect(newWidget);
         break;
       case WidgetNames.blotter:
-        widget = this.createBlotter(newWidget);
+        settings = this.createBlotter(newWidget);
         break;
     }
-    if (widget) {
-      return widget;
+    if (settings) {
+      return settings;
     } else throw new Error(`Unknow widget type ${newWidget.gridItem.type}`);
   }
 
-  private createOrderbook(newWidget: NewWidget | Widget<OrderbookSettings>) {
+  private createOrderbook(newWidget: NewWidget | Widget) : OrderbookSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
@@ -70,34 +71,24 @@ export class WidgetFactoryService {
       title:  `Стакан ${this.selectedInstrument.symbol} ${group ? group : ''}`
     };
 
-    const widget = {
-      gridItem: newWidget.gridItem,
-      settings: settings,
-    };
-
-    return widget;
+    return settings;
   }
 
-  private createInstrumentSelect(
-    newWidget: NewWidget | Widget<InstrumentSelectSettings>
-  ) {
+  private createInstrumentSelect(newWidget: NewWidget | Widget) : InstrumentSelectSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
     const settings: InstrumentSelectSettings = {
+      guid: newWidget.gridItem.label,
       title: `Выбор инструмента`
     };
-    const widget = {
-      gridItem: newWidget.gridItem,
-      settings: settings,
-    };
 
-    return widget;
+    return settings;
   }
 
   private createLightChartWidget(
-    newWidget: NewWidget | Widget<LightChartSettings>
-  ) {
+    newWidget: NewWidget | Widget
+  ) : LightChartSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
@@ -106,35 +97,28 @@ export class WidgetFactoryService {
     const settings: LightChartSettings = {
       ...this.selectedInstrument,
       linkToActive: true,
+      guid: newWidget.gridItem.label,
       timeFrame: this.tfHelper.getValueByTfLabel('H')?.value,
       from: this.tfHelper.getDefaultFrom('H'),
       title:  `График ${this.selectedInstrument.symbol} ${group ? group : ''}`
     };
 
-    const widget = {
-      gridItem: newWidget.gridItem,
-      settings: settings,
-    };
-
-    return widget;
+    return settings;
   }
 
-  private createBlotter(newWidget: NewWidget | Widget<BlotterSettings>) {
+  private createBlotter(newWidget: NewWidget | Widget) : BlotterSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
     if (this.selectedPortfolio) {
       const settings: BlotterSettings = {
         ...this.selectedPortfolio,
+        guid: newWidget.gridItem.label,
         linkToActive: true,
         title: `Блоттер ${this.selectedPortfolio.portfolio} ${this.selectedPortfolio.exchange}`,
       };
-      const widget = {
-        gridItem: newWidget.gridItem,
-        settings: settings,
-      };
 
-      return widget;
+      return settings;
     }
     throw Error('Portfolio is not selected')
   }

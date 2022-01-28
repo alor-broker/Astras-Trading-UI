@@ -5,7 +5,6 @@ import { LightChartComponent } from './components/light-chart/light-chart.compon
 import { LightChartWidgetComponent } from './widgets/light-chart-widget/light-chart-widget.component';
 import { LightChartSettingsComponent } from './components/light-chart-settings/light-chart-settings.component';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { ChartComponent } from './components/chart/chart.component';
 
 
 @NgModule({
@@ -13,7 +12,6 @@ import { ChartComponent } from './components/chart/chart.component';
     LightChartComponent,
     LightChartSettingsComponent,
     LightChartWidgetComponent,
-    ChartComponent
   ],
   imports: [
     SharedModule,

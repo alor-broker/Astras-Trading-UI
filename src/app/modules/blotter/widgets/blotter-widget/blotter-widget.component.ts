@@ -1,46 +1,32 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
-import { Widget } from 'src/app/shared/models/widget.model';
 import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 
 @Component({
-  selector: 'ats-blotter-widget[shouldShowSettings][widget]',
+  selector: 'ats-blotter-widget[shouldShowSettings][guid][linkedToActive]',
   templateUrl: './blotter-widget.component.html',
   styleUrls: ['./blotter-widget.component.less']
 })
-export class BlotterWidgetComponent implements OnInit, OnDestroy {
-
+export class BlotterWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
     this.service.setLinked(linkedToActive);
   }
   @Input()
-  widget!: Widget<BlotterSettings>;
+  guid!: string
+
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>()
-  settings$!: Observable<BlotterSettings>;
 
-  constructor(private service: BlotterService, private dashboard: DashboardService) { }
+  constructor(private service: BlotterService) { }
 
   ngOnInit(): void {
-    this.service.setSettings(this.widget.settings);
-    this.settings$ = this.service.settings$.pipe(
-      filter((s): s is BlotterSettings => !!s )
-    );
   }
 
-  ngOnDestroy(): void {
-    this.service.unsubscribe();
-  }
-
-  onSettingsChange(settings: BlotterSettings) {
-    this.service.setSettings(settings);
-    this.widget.settings = settings;
-    this.dashboard.updateWidget(this.widget)
+  onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
   }
 }

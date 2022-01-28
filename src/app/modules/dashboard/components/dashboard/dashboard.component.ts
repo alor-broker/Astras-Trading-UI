@@ -27,7 +27,7 @@ interface Safe extends GridsterConfig {
 })
 export class DashboardComponent implements OnInit {
   options!: Safe;
-  dashboard$?: Observable<Widget<AnySettings>[]>;
+  dashboard$?: Observable<Widget[]>;
 
   resize: EventEmitter<DashboardItem> = new EventEmitter<DashboardItem>();
   constructor(private service: DashboardService) {}
