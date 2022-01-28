@@ -71,4 +71,9 @@ export class ParentWidgetComponent implements OnInit {
 
     return this.widget;
   }
+
+  getGuid() {
+    const obWidget = this.widget as Widget<OrderbookSettings>
+    return obWidget.settings.guid;
+  }
 }

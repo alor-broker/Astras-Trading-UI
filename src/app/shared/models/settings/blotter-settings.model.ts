@@ -1,4 +1,5 @@
 export interface BlotterSettings {
+  title?: string,
   exchange: string,
   portfolio: string,
   linkToActive?: boolean

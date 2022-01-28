@@ -36,6 +36,7 @@ export class OrderbookSettingsComponent implements OnInit {
   }
 
   submitForm(): void {
+    this.service.setSettings({...this.form.value, guid: this.guid, linkToActive: false})
     this.settingsChange.emit()
   }
 }

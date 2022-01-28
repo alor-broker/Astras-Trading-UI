@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, merge, Observable, of, Subscription } from 'rxjs';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { defaultIfEmpty, filter, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings, isEqual } from 'src/app/shared/models/settings/blotter-settings.model';
@@ -75,7 +75,9 @@ export class BlotterService {
   getOrders() {
     this.order$ = this.settings$.pipe(
       filter((s): s is BlotterSettings => !!s),
-      switchMap(s => this.getOrdersReq(s.portfolio, s.exchange))
+      switchMap(s => {
+        return this.getOrdersReq(s.portfolio, s.exchange)
+      })
     )
     this.linkToPortfolio();
     return this.order$;
@@ -100,7 +102,7 @@ export class BlotterService {
         return Array.from(this.orders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
       })
     );
-    return merge(orders, of([]));
+    return orders.pipe(startWith([]))
   }
 
   private getTradesReq(portfolio: string, exchange: string) : Observable<Trade[]> {

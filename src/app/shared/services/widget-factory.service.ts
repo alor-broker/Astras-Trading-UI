@@ -12,7 +12,6 @@ import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { BlotterSettings } from '../models/settings/blotter-settings.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { WidgetNames } from '../models/enums/widget-names';
-import { WidgetSettingsService } from './widget-settings.service';
 
 @Injectable({
   providedIn: 'root',
@@ -61,24 +60,20 @@ export class WidgetFactoryService {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
+    const group = this.selectedInstrument.instrumentGroup;
+
     const settings: OrderbookSettings = {
       ...this.selectedInstrument,
       guid: newWidget.gridItem.label,
       linkToActive: true,
-      depth: 10
+      depth: 10,
+      title:  `Стакан ${this.selectedInstrument.symbol} ${group ? group : ''}`
     };
+
     const widget = {
       gridItem: newWidget.gridItem,
-      title: `Стакан ${settings.symbol}`,
       settings: settings,
     };
-    if (this.isWidget(newWidget)) {
-      widget.settings = newWidget.settings;
-      const hasGroup = widget.settings.instrumentGroup;
-      widget.title = `Стакан ${newWidget.settings.symbol} ${
-        hasGroup ? `(${widget.settings.instrumentGroup})` : ''
-      }`;
-    }
 
     return widget;
   }
@@ -89,16 +84,13 @@ export class WidgetFactoryService {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
-    const settings: InstrumentSelectSettings = {};
+    const settings: InstrumentSelectSettings = {
+      title: `Выбор инструмента`
+    };
     const widget = {
       gridItem: newWidget.gridItem,
-      title: `Выбор инструмента`,
       settings: settings,
     };
-    if (this.isWidget(newWidget)) {
-      widget.settings = newWidget.settings;
-      widget.title = `Выбор инструмента`;
-    }
 
     return widget;
   }
@@ -109,28 +101,23 @@ export class WidgetFactoryService {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
+
+    const group = this.selectedInstrument.instrumentGroup;
     const settings: LightChartSettings = {
       ...this.selectedInstrument,
       linkToActive: true,
       timeFrame: this.tfHelper.getValueByTfLabel('H')?.value,
       from: this.tfHelper.getDefaultFrom('H'),
+      title:  `График ${this.selectedInstrument.symbol} ${group ? group : ''}`
     };
+
     const widget = {
       gridItem: newWidget.gridItem,
-      title: `График ${settings.symbol}`,
       settings: settings,
     };
-    if (this.isWidget(newWidget)) {
-      widget.settings = newWidget.settings;
-      const hasGroup = widget.settings.instrumentGroup;
-      widget.title = `График ${newWidget.settings.symbol} ${
-        hasGroup ? `(${widget.settings.instrumentGroup})` : ''
-      }`;
-    }
 
     return widget;
   }
-
 
   private createBlotter(newWidget: NewWidget | Widget<BlotterSettings>) {
     if (!newWidget.gridItem.label) {
@@ -140,25 +127,15 @@ export class WidgetFactoryService {
       const settings: BlotterSettings = {
         ...this.selectedPortfolio,
         linkToActive: true,
+        title: `Блоттер ${this.selectedPortfolio.portfolio} ${this.selectedPortfolio.exchange}`,
       };
       const widget = {
         gridItem: newWidget.gridItem,
-        title: `Блоттер ${settings.portfolio} ${settings.exchange}`,
         settings: settings,
       };
-      if (this.isWidget(newWidget)) {
-        widget.settings = newWidget.settings;
-        widget.title = `Блоттер ${widget.settings.portfolio} ${widget.settings.exchange}`;
-      }
 
       return widget;
     }
     throw Error('Portfolio is not selected')
-  }
-
-  private isWidget<T>(
-    newWidget: NewWidget | Widget<T>
-  ): newWidget is Widget<T> {
-    return newWidget && 'title' in newWidget && 'settings' in newWidget;
   }
 }

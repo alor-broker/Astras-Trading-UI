@@ -29,7 +29,7 @@ setSettings(guid: string, settings: AnySettings) {
   const map = this.settingsByGuid.getValue();
   map.set(guid, settings);
   this.settingsByGuid.next(map)
-  this.dashboard.updateWidgetSettings(guid, settings);
+  this.dashboard.updateSettings(guid, settings);
 }
 
 }

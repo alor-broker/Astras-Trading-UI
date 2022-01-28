@@ -1,5 +1,5 @@
 <div>
-  <div *ngIf="!shouldShowSettings && (ob$ | async) as ob " [ngStyle]="sizes | async">
+  <div *ngIf="!shouldShowSettings && (ob$ | async) as ob" [ngStyle]="sizes | async">
     <nz-table #basicTable [nzData]="ob.rows" nzSize="small" [nzFrontPagination]="false">
       <thead>
         <tr>
