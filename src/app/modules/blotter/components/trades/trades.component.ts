@@ -8,7 +8,7 @@ import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { TradeFilter } from '../../models/trade-filter.model';
 
 @Component({
-  selector: 'ats-trades',
+  selector: 'ats-trades[guid]',
   templateUrl: './trades.component.html',
   styleUrls: ['./trades.component.less']
 })
@@ -17,9 +17,7 @@ export class TradesComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
-  widget!: Widget<BlotterSettings>;
-  @Input('settings') set settings(settings: BlotterSettings) { this.settings$.next(settings); };
-  private settings$ = new BehaviorSubject<BlotterSettings | null>(null);
+  guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
@@ -33,7 +31,7 @@ export class TradesComponent implements OnInit {
   constructor(private service: BlotterService) { }
 
   ngOnInit(): void {
-    this.trades$ = this.service.getTrades();
+    this.trades$ = this.service.getTrades(this.guid);
     this.displayTrades$ = this.trades$.pipe(
       mergeMap(trades => this.searchFilter.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))

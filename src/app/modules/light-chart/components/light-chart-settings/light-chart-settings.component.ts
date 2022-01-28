@@ -1,15 +1,17 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { LightChartService } from '../../services/light-chart.service';
 import { Timeframe, TimeframesHelper } from '../../utils/timeframes-helper';
 
 @Component({
-  selector: 'ats-light-chart-settings',
+  selector: 'ats-light-chart-settings[guid]',
   templateUrl: './light-chart-settings.component.html',
   styleUrls: ['./light-chart-settings.component.less']
 })
 export class LightChartSettingsComponent implements OnInit {
+  @Input()
+  guid!: string
 
   @Output()
   settingsChange: EventEmitter<LightChartSettings> = new EventEmitter<LightChartSettings>();
@@ -24,7 +26,7 @@ export class LightChartSettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.service.settings$.subscribe(settings => {
+    this.service.getSettings(this.guid).subscribe(settings => {
       if (settings) {
         this.form = new FormGroup({
           symbol: new FormControl(settings.symbol, [
@@ -40,6 +42,7 @@ export class LightChartSettingsComponent implements OnInit {
   }
 
   submitForm(): void {
-    this.settingsChange.emit({...this.form.value, linkToActive: false})
+    this.service.setSettings({...this.form.value, guid: this.guid, linkToActive: false})
+    this.settingsChange.emit()
   }
 }

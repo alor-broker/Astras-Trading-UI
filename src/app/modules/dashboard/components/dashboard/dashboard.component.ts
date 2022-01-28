@@ -8,7 +8,7 @@ import {
   PushDirections,
   Resizable,
 } from 'angular-gridster2';
-import { Observable } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
@@ -27,7 +27,7 @@ interface Safe extends GridsterConfig {
 })
 export class DashboardComponent implements OnInit {
   options!: Safe;
-  dashboard$!: Observable<Widget<AnySettings>[]>;
+  dashboard$?: Observable<Widget[]>;
 
   resize: EventEmitter<DashboardItem> = new EventEmitter<DashboardItem>();
   constructor(private service: DashboardService) {}
@@ -95,7 +95,12 @@ export class DashboardComponent implements OnInit {
       },
     };
 
-    this.dashboard$ = this.service.dashboard$;
+    this.dashboard$ = this.service.dashboard$.pipe(
+      map(map => Array.from(map.values())),
+      tap(d => {
+        console.log(d);
+      })
+    );
   }
 
   changedOptions(): void {

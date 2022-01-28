@@ -8,7 +8,7 @@ import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { PositionFilter } from '../../models/position-filter.model';
 
 @Component({
-  selector: 'ats-positions[shouldShowSettings][widget][settings]',
+  selector: 'ats-positions[shouldShowSettings][guid]',
   templateUrl: './positions.component.html',
   styleUrls: ['./positions.component.less']
 })
@@ -16,9 +16,7 @@ export class PositionsComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
-  widget!: Widget<BlotterSettings>;
-  @Input('settings') set settings(settings: BlotterSettings) { this.settings$.next(settings); };
-  private settings$ = new BehaviorSubject<BlotterSettings | null>(null);
+  guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
@@ -33,7 +31,7 @@ export class PositionsComponent implements OnInit {
   constructor(private service: BlotterService) { }
 
   ngOnInit(): void {
-    this.positions$ = this.service.getPositions();
+    this.positions$ = this.service.getPositions(this.guid);
     this.displayPositions$ = this.positions$.pipe(
       mergeMap(poses => this.searchFilter.pipe(
         map(f => poses.filter(p => this.justifyFilter(p, f)))

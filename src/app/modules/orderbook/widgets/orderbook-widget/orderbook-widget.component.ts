@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
@@ -8,7 +8,7 @@ import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-
 import { OrderbookService } from '../../services/orderbook.service';
 
 @Component({
-  selector: 'ats-orderbook-widget[shouldShowSettings][widget][resize][linkedToActive]',
+  selector: 'ats-orderbook-widget[shouldShowSettings][guid][resize][linkedToActive]',
   templateUrl: './orderbook-widget.component.html',
   styleUrls: ['./orderbook-widget.component.less'],
   providers: [OrderbookService]
@@ -20,26 +20,18 @@ export class OrderbookWidgetComponent implements OnInit {
     this.service.setLinked(linkedToActive);
   }
   @Input()
-  widget!: Widget<OrderbookSettings>;
+  guid!: string;
   @Input()
   resize!: EventEmitter<DashboardItem>;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>()
-  settings$!: Observable<OrderbookSettings>;
 
-  constructor(private service: OrderbookService, private dashboard: DashboardService) { }
+  constructor(private service: OrderbookService) { }
 
   ngOnInit(): void {
-    this.service.setSettings(this.widget.settings);
-    this.settings$ = this.service.settings$.pipe(
-      filter((s): s is OrderbookSettings => !!s )
-    );
   }
 
-  onSettingsChange(settings: OrderbookSettings) {
-    this.service.setSettings(settings);
-    this.widget.settings = settings;
-    this.dashboard.updateWidget(this.widget)
+  onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
   }
 }

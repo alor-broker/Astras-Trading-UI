@@ -1,5 +1,7 @@
 import { WidgetSettings } from "../widget-settings.model";
 
 export interface InstrumentSelectSettings extends WidgetSettings {
-  linkToActive?: boolean
+  title?: string,
+  linkToActive?: boolean,
+  guid: string
 }

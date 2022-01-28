@@ -9,7 +9,7 @@ import { LightChartSettings } from '../../../../shared/models/settings/light-cha
 import { LightChartService } from '../../services/light-chart.service';
 
 @Component({
-  selector: 'ats-light-chart-widget[shouldShowSettings][widget][resize]',
+  selector: 'ats-light-chart-widget[shouldShowSettings][guid][resize]',
   templateUrl: './light-chart-widget.component.html',
   styleUrls: ['./light-chart-widget.component.less'],
   providers: [ LightChartService ]
@@ -21,26 +21,20 @@ export class LightChartWidgetComponent implements OnInit {
     this.service.setLinked(linkedToActive);
   }
   @Input()
-  widget!: Widget<LightChartSettings>;
+  guid!: string;
   @Input()
   resize!: EventEmitter<DashboardItem>;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>()
+
   settings$!: Observable<LightChartSettings>;
 
-  constructor(private service: LightChartService, private dashboard: DashboardService) { }
+  constructor(private service: LightChartService) { }
 
   ngOnInit(): void {
-    this.service.setSettings(this.widget.settings);
-    this.settings$ = this.service.settings$.pipe(
-      filter((s): s is LightChartSettings => !!s )
-    );;
   }
 
-  onSettingsChange(settings: LightChartSettings) {
-    this.service.setSettings(settings);
-    this.widget.settings = settings;
-    this.dashboard.updateWidget(this.widget)
+  onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
   }
 }

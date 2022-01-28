@@ -13,7 +13,7 @@ import { InstrumentsService } from '../../services/instruments.service';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 
 @Component({
-  selector: 'ats-instrument-select[shouldShowSettings][widget][settings]',
+  selector: 'ats-instrument-select[shouldShowSettings][guid]',
   templateUrl: './instrument-select.component.html',
   styleUrls: ['./instrument-select.component.less'],
   providers: [WatchInstrumentsService]
@@ -22,9 +22,7 @@ export class InstrumentSelectComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
-  widget!: Widget<InstrumentSelectSettings>;
-  @Input('settings') set settings(settings: InstrumentSelectSettings) { this.settings$.next(settings); };
-  private settings$ = new BehaviorSubject<InstrumentSelectSettings>({});
+  guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
@@ -101,7 +99,6 @@ export class InstrumentSelectComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.service.unsubscribe();
     this.watcher.unsubscribe();
   }
 

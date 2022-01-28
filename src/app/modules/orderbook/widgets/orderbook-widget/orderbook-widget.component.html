@@ -1,7 +1,6 @@
 
-<ats-order-book *ngIf="(widget.gridItem.type === 'order-book') && (settings$ | async) as settings"
-  [widget]="widget"
+<ats-order-book *ngIf="!shouldShowSettings"
+  [guid]="guid"
   [resize]="resize"
-  [settings]="settings"
   [(shouldShowSettings)]="shouldShowSettings"></ats-order-book>
-<ats-orderbook-settings *ngIf="shouldShowSettings" (settingsChange)="onSettingsChange($event)"></ats-orderbook-settings>
+<ats-orderbook-settings *ngIf="shouldShowSettings" [guid]="guid" (settingsChange)="onSettingsChange()"></ats-orderbook-settings>

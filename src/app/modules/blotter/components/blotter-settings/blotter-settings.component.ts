@@ -1,14 +1,16 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { BlotterService } from 'src/app/shared/services/blotter.service';
 
 @Component({
-  selector: 'ats-blotter-settings',
+  selector: 'ats-blotter-settings[guid]',
   templateUrl: './blotter-settings.component.html',
   styleUrls: ['./blotter-settings.component.less']
 })
 export class BlotterSettingsComponent implements OnInit {
+  @Input()
+  guid!: string
 
   @Output()
   settingsChange: EventEmitter<BlotterSettings> = new EventEmitter<BlotterSettings>();
@@ -18,7 +20,7 @@ export class BlotterSettingsComponent implements OnInit {
   constructor(private service: BlotterService ) { }
 
   ngOnInit() {
-    this.service.settings$.subscribe(settings => {
+    this.service.getSettings(this.guid).subscribe(settings => {
       if (settings) {
         this.form = new FormGroup({
           portfolio: new FormControl(settings.portfolio, [
@@ -32,6 +34,7 @@ export class BlotterSettingsComponent implements OnInit {
   }
 
   submitForm(): void {
-    this.settingsChange.emit({ ...this.form.value, linkToActive: false})
+    this.service.setSettings({...this.form.value, guid: this.guid, linkToActive: false})
+    this.settingsChange.emit()
   }
 }

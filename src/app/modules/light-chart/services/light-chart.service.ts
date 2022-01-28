@@ -6,58 +6,36 @@ import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
-import { LightChartSettings, isEqual } from '../../../shared/models/settings/light-chart-settings.model';
+import { LightChartSettings } from '../../../shared/models/settings/light-chart-settings.model';
 import { BarsRequest } from '../models/bars-request.model';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
 import { HistoryResponse } from 'src/app/shared/models/history/history-response.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
+import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
+import { DashboardService } from 'src/app/shared/services/dashboard.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class LightChartService {
+export class LightChartService extends BaseWebsocketService<LightChartSettings> {
   private bars$: Observable<Candle> = new Observable();
-  private subGuid: string | null = null;
-  private settings: BehaviorSubject<LightChartSettings | null> =
-    new BehaviorSubject<LightChartSettings | null>(null);
-  settings$ = this.settings.asObservable();
 
-  constructor(private ws: WebsocketService, private history: HistoryService, private sync: SyncService) {}
-
-  setSettings(settings: LightChartSettings) {
-    const current = this.settings.getValue();
-
-    if (!current || !isEqual(current, settings)) {
-      this.settings.next(settings);
-    }
-  }
-
-  setLinked(isLinked: boolean) {
-    const current = this.getSettings();
-    if (current) {
-      this.settings.next({ ...current, linkToActive: isLinked })
-    }
-  }
-
-  getSettings() {
-    return this.settings.getValue();
-  }
-
-  unsubscribe() {
-    if (this.subGuid) {
-      this.ws.unsubscribe(this.subGuid);
-    }
+  constructor(ws: WebsocketService,
+    settingsService: DashboardService,
+    private history: HistoryService,
+    private sync: SyncService) {
+    super(ws, settingsService);
   }
 
   getHistory(request: HistoryRequest) : Observable<HistoryResponse> {
     return this.history.getHistory(request);
   }
 
-  getBars() {
+  getBars(guid: string) {
     this.sync.selectedInstrument$.pipe(
       map((i) => {
-        const current = this.settings.getValue();
+        const current = this.getSettingsValue();
         if (current && current.linkToActive &&
             !(current.symbol == i.symbol &&
             current.exchange == i.exchange &&
@@ -67,7 +45,7 @@ export class LightChartService {
         }
       })
     ).subscribe();
-    this.bars$ = this.settings$.pipe(
+    this.bars$ = this.getSettings(guid).pipe(
       filter((s): s is LightChartSettings  => !!s),
       switchMap(s => this.getBarsReq(s.symbol, s.exchange, s.timeFrame, s.from, s.instrumentGroup))
     );
@@ -75,30 +53,18 @@ export class LightChartService {
   }
 
   private getBarsReq(symbol: string, exchange: string, tf: string, from: number, instrumentGroup?: string) {
-    this.ws.connect();
-
-    if (this.subGuid) {
-      this.ws.unsubscribe(this.subGuid);
-    }
-
-    this.subGuid = GuidGenerator.newGuid();
     const request: BarsRequest = {
       opcode: 'BarsGetAndSubscribe',
       code: symbol,
       exchange: exchange,
       format: 'simple',
-      guid: this.subGuid,
+      guid: GuidGenerator.newGuid(),
       instrumentGroup,
       tf: tf, //60,
       from: from, //1640172544
     };
-    this.ws.subscribe(request);
 
-    const bars$ = this.ws.messages$.pipe(
-      filter((m) => m.guid == this.subGuid),
-      filter((m): m is BaseResponse<Candle> => !!m),
-      map((m) => m.data)
-    );
+    const bars$ = this.getEntity<Candle>(request);
     return bars$;
   }
 }

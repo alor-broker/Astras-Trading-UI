@@ -4,20 +4,22 @@ import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-
 import { OrderbookService } from '../../services/orderbook.service';
 
 @Component({
-  selector: 'ats-orderbook-settings[settingsChange]',
+  selector: 'ats-orderbook-settings[settingsChange][guid]',
   templateUrl: './orderbook-settings.component.html',
   styleUrls: ['./orderbook-settings.component.less']
 })
 export class OrderbookSettingsComponent implements OnInit {
+  @Input()
+  guid!: string
   @Output()
-  settingsChange: EventEmitter<OrderbookSettings> = new EventEmitter<OrderbookSettings>();
+  settingsChange: EventEmitter<void> = new EventEmitter();
 
   form!: FormGroup;
 
   constructor(private service: OrderbookService ) { }
 
   ngOnInit() {
-    this.service.settings$.subscribe(settings => {
+    this.service.getSettings(this.guid).subscribe(settings => {
       if (settings) {
         this.form = new FormGroup({
           symbol: new FormControl(settings.symbol, [
@@ -34,6 +36,7 @@ export class OrderbookSettingsComponent implements OnInit {
   }
 
   submitForm(): void {
-    this.settingsChange.emit({...this.form.value, linkToActive: false})
+    this.service.setSettings({...this.form.value, guid: this.guid, linkToActive: false})
+    this.settingsChange.emit()
   }
 }

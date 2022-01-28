@@ -1,75 +1,51 @@
 import { Component, Input, Output, OnInit, EventEmitter, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { filter, finalize, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
+import { combineLatestWith, filter, finalize, map, tap } from 'rxjs/operators';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { WidgetSettings } from 'src/app/shared/models/widget-settings.model';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
+import { isInstrumentDependent, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
 
-type InstrumentDependentSettings = AnySettings & {
-  symbol: string,
-  exchange: string,
-  instrumentGroup?: string,
-  linkedToActive: boolean
-}
-
-type PortfolioDependentSettings = AnySettings & {
-  portfolio: string,
-  exchange: string,
-  linkedToActive: boolean
-}
 
 @Component({
-  selector: 'ats-widget-header[widget]',
+  selector: 'ats-widget-header[guid]',
   templateUrl: './widget-header.component.html',
   styleUrls: ['./widget-header.component.less']
 })
 export class WidgetHeaderComponent implements OnInit, OnDestroy {
-  @Input('widget') set widget(widget: Widget<AnySettings>) { this.widgetSubject.next(widget); };
-  private widgetSubject = new BehaviorSubject<Widget<AnySettings> | null>(null);
-
-  widget$ = this.widgetSubject.pipe(
-    filter((w) : w is Widget<AnySettings> => !!w)
-  );
+  @Input()
+  guid!: string;
   @Output()
   switchSettingsEvent = new EventEmitter<boolean>();
-
   @Output()
   linkChangedEvent = new EventEmitter<boolean>();
 
   private shouldShowSettings = false;
-  private dashboardSub!: Subscription;
-  private selectedSub!: Subscription;
+  private dashboardSub?: Subscription;
+  private selectedSub?: Subscription;
+  settings$?: Observable<AnySettings>;
+  private settings?: AnySettings
 
   constructor(private dashboard: DashboardService, private sync: SyncService) { }
 
   ngOnInit() {
-    const selectedSub = this.sync.selectedInstrument$.subscribe(i => {
-      const widget =  this.widgetSubject.getValue();
-      const settings = { ...widget?.settings };
-      if (widget && settings
-          && this.isInstrumentDependent(settings)
-          && settings.linkToActive
-          && (settings.symbol != i.symbol || settings.exchange != i.exchange)) {
-        settings.symbol = i.symbol;
-        settings.exchange = i.exchange;
-        settings.instrumentGroup = i.instrumentGroup;
-
-        const hasGroup = i.instrumentGroup;
-        widget.title = `${widget.title.split(' ')[0]} ${i.symbol} ${
-          hasGroup ? `(${i.instrumentGroup})` : ''
-        }`;
-        this.widgetSubject.next({...widget, settings});
-      }
-    })
-    this.dashboardSub = this.dashboard.dashboard$.subscribe(w => {
-      const found = w.find(w => w.gridItem.label == this.widgetSubject.getValue()?.gridItem.label);
-      if (found) {
-        this.widgetSubject.next(found);
-      }
-    })
+    this.settings$ = this.dashboard.getSettings(this.guid).pipe(
+      filter((s) : s is AnySettings => !!s),
+      map(s => {
+        this.settings = s;
+        if (isInstrumentDependent(s)) {
+          const group = s.instrumentGroup;
+          s.title = `${s.symbol} (${group ? group : ''})`
+        }
+        else if (isPortfolioDependent(s)) {
+          s.title = `${s.portfolio} (${s.exchange})`
+        }
+        return s;
+      }),
+    )
   }
 
   ngOnDestroy() {
@@ -85,31 +61,17 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
 
   }
 
-  removeItem($event: MouseEvent | TouchEvent, item : Widget<AnySettings>): void {
+  removeItem($event: MouseEvent | TouchEvent): void {
     $event.preventDefault();
     $event.stopPropagation();
-    this.dashboard.removeWidget(item);
+    this.dashboard.removeWidget(this.guid);
   }
 
   linkToActive($event: MouseEvent | TouchEvent, linkToActive: boolean) : void {
     $event.preventDefault();
     $event.stopPropagation();
-    const widget = this.widgetSubject.getValue();
-    if (widget) {
-      const settings = {
-        ...widget.settings,
-        linkToActive: linkToActive
-      }
-      this.linkChangedEvent.emit(settings.linkToActive)
-      this.widgetSubject.next({...widget, settings: settings});
+    if (this.settings) {
+      this.dashboard.updateSettings(this.guid, { ...this.settings, linkToActive: linkToActive });
     }
-  }
-
-  isInstrumentDependent(settings: AnySettings) : settings is InstrumentDependentSettings {
-    return settings && 'linkToActive' in settings && 'symbol' in settings && 'exchange' in settings;
-  }
-
-  isPortfolioDependent(settings: AnySettings) : settings is PortfolioDependentSettings {
-    return settings && 'linkToActive' in settings && 'potfolio' in settings && 'exchange' in settings;
   }
 }

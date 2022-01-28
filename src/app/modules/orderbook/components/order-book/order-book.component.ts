@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { BehaviorSubject, merge, Observable, of, Subscription, zip } from 'rxjs';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
-import { tap } from 'rxjs/operators';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
@@ -22,23 +22,19 @@ interface Size {
 }
 
 @Component({
-  selector: 'ats-order-book[widget][resize][shouldShowSettings][settings]',
+  selector: 'ats-order-book[guid][resize][shouldShowSettings]',
   templateUrl: './order-book.component.html',
   styleUrls: ['./order-book.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class OrderBookComponent implements OnInit {
+export class OrderBookComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
-  widget!: Widget<OrderbookSettings>;
+  guid!: string;
   @Input()
   resize!: EventEmitter<DashboardItem>;
-  @Input('settings') set settings(settings: OrderbookSettings) {
-    console.log(`From input: ${settings.symbol}`)
-    this.service.setSettings(settings);
-  }
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
@@ -54,26 +50,25 @@ export class OrderBookComponent implements OnInit {
   constructor(private service: OrderbookService, private sync: SyncService, private cancellor: OrderCancellerService) {}
 
   ngOnInit(): void {
-    this.ob$ = this.service.getOrderbook().pipe(
+    this.ob$ = this.service.getOrderbook(this.guid).pipe(
       tap((ob) => (this.maxVolume = ob?.maxVolume ?? 1))
     );
     this.resizeSub = this.resize.subscribe((widget) => {
-      if (widget.item === this.widget.gridItem) {
-        // or check id , type or whatever you have there
-        // resize your widget, chart, map , etc.
-        this.sizes.next({
-          // width: (widget.width ?? 0) + 'px',
-          width: (widget.width ?? 0) + 'px',
-          height: (widget.height ?? 0) + 'px',
-        });
-        // console.log(widget);
-      }
+      this.sizes.next({
+        width: (widget.width ?? 0) + 'px',
+        height: ((widget.height ?? 0) - 30) + 'px',
+      });
     });
   }
 
   ngOnDestroy(): void {
+    console.warn('destroy')
     this.service.unsubscribe();
     this.resizeSub.unsubscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.warn('Changes')
   }
 
   getBidStyle(value: number) {
@@ -91,7 +86,7 @@ export class OrderBookComponent implements OnInit {
   }
 
   newLimitOrder(price: number, quantity?: number) {
-    const settings = this.service.getSettings();
+    const settings = this.service.getSettingsValue();
     if (settings) {
       const params: CommandParams = {
         instrument: { ...settings },

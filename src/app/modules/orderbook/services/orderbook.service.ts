@@ -1,55 +1,30 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, merge, Observable, Subscription,  } from 'rxjs';
-import { catchError, defaultIfEmpty, filter, map, switchMap, tap } from 'rxjs/operators';
-import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
+import { combineLatest, Observable, of, Subscription, zip,  } from 'rxjs';
+import { catchError, combineLatestWith, debounceTime, filter, map, startWith, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { OrderbookData } from '../models/orderbook-data.model';
 import { OrderbookRequest } from '../models/orderbook-request.model';
-import { OrderbookSettings, isEqual } from '../../../shared/models/settings/orderbook-settings.model';
+import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { OrderBook } from '../models/orderbook.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
-import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
+import { DashboardService } from 'src/app/shared/services/dashboard.service';
+import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
+import { Order } from 'src/app/shared/models/orders/order.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class OrderbookService {
+export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
   private orderbook$: Observable<OrderBook> = new Observable();
-  private subGuid?: string;
   private instrumentSub?: Subscription;
-  private settings: BehaviorSubject<OrderbookSettings | null> = new BehaviorSubject<OrderbookSettings | null>(null);
+  private orders: Map<string, Order> = new Map<string, Order>();
 
-  settings$ = this.settings.asObservable()
-
-  constructor(private ws: WebsocketService, private sync: SyncService, private blotter: BlotterService) {
-
-  }
-
-  setSettings(settings: OrderbookSettings) {
-    const current = this.settings.getValue();
-
-    if (!current || !isEqual(current, settings)) {
-      this.settings.next(settings);
-    }
-  }
-
-  setLinked(isLinked: boolean) {
-    const current = this.getSettings();
-    if (current) {
-      this.settings.next({ ...current, linkToActive: isLinked })
-    }
-  }
-
-  getSettings() {
-    return this.settings.getValue();
-  }
-
-  unsubscribe() {
-    if (this.subGuid) {
-      this.ws.unsubscribe(this.subGuid);
-    }
+  constructor(ws: WebsocketService,
+    settingsService: DashboardService,
+    private sync: SyncService) {
+      super(ws, settingsService);
   }
 
   generateNewGuid(request: OrderbookRequest) : string {
@@ -57,21 +32,26 @@ export class OrderbookService {
     return request.opcode + request.code + request.exchange + group + request.depth + request.format;
   }
 
-  getOrderbook() {
-    this.instrumentSub = this.sync.selectedInstrument$.pipe(
-      map((i) => {
-        const current = this.settings.getValue();
-        if (current && current.linkToActive &&
-            !(current.symbol == i.symbol &&
-            current.exchange == i.exchange &&
-            current.instrumentGroup == i.instrumentGroup)
-        ) {
-          this.setSettings({ ...current, ...i });
+  getOrderbook(guid: string) {
+    console.error('get ob');
+    this.instrumentSub = combineLatest([
+      this.sync.selectedInstrument$,
+      this.getSettings(guid)
+    ]).pipe(
+      map(([i, settings]) => {
+        const shouldUpdate = (settings && settings.linkToActive &&
+          !(settings.symbol == i.symbol &&
+          settings.exchange == i.exchange &&
+          settings.instrumentGroup == i.instrumentGroup));
+        // console.log(shouldUpdate);
+        // console.warn(i);
+        if (shouldUpdate) {
+          this.setSettings({ ...settings, ...i });
         }
       })
     ).subscribe();
 
-    const obData$ = this.settings$.pipe(
+    const obData$ = this.getSettings(guid).pipe(
       filter((s): s is OrderbookSettings => !!s),
       switchMap((s) =>
         this.getOrderbookReq(
@@ -80,16 +60,13 @@ export class OrderbookService {
           s.instrumentGroup,
           s.depth
         )
-      )
+      ),
+      catchError((e,c) => {
+        throw e;
+      })
     )
 
-    const orders$ = this.blotter.getOrders().pipe(
-      tap(orders => {
-        console.log(orders)
-      })
-    );
-
-    this.orderbook$ = combineLatest([obData$, orders$.pipe(defaultIfEmpty([]))]).pipe(
+    this.orderbook$ = combineLatest([obData$, this.getOrders()]).pipe(
       map(([ob, orders]) => {
         const withOrdersRows = ob.rows.map(row => {
           const askOrders = orders.filter(o => o.price == row.ask && o.status == 'working');
@@ -116,19 +93,12 @@ export class OrderbookService {
           return row;
         })
         return {...ob, rows: withOrdersRows};
-      }),
-      // catchError((e, caught) => caught)
+      })
     )
     return this.orderbook$;
   }
 
   private getOrderbookReq(symbol: string, exchange: string, instrumentGroup?: string, depth?: number) {
-    this.ws.connect()
-
-    if (this.subGuid) {
-      this.ws.unsubscribe(this.subGuid);
-    }
-
     const request : OrderbookRequest = {
       opcode:"OrderBookGetAndSubscribe",
       code: symbol,
@@ -138,20 +108,17 @@ export class OrderbookService {
       guid: '',
       instrumentGroup: instrumentGroup
     }
-    this.subGuid = this.generateNewGuid(request);
-    request.guid = this.subGuid;
-    this.ws.subscribe(request)
+    request.guid = this.generateNewGuid(request);
+    const messages$ = this.getEntity<OrderbookData>(request);
 
-    const orderbook$ = this.ws.messages$.pipe(
-      filter(m => m.guid == this.subGuid),
+    const orderbook$ = messages$.pipe(
       map(r => {
-        const br = r as BaseResponse<OrderbookData>;
-        const rows = br.data.asks.map((a, i) => {
+        const rows = r.asks.map((a, i) => {
           const obr: OrderBookViewRow = {
             ask: a.price,
             askVolume: a.volume,
-            bid: br.data.bids[i].price,
-            bidVolume: br.data.bids[i].volume
+            bid: r.bids[i].price,
+            bidVolume: r.bids[i].volume
           }
           return obr;
         })
@@ -165,5 +132,23 @@ export class OrderbookService {
     )
 
     return orderbook$;
+  }
+
+  private getOrders() {
+    const orders$ = this.sync.selectedPortfolio$.pipe(
+      switchMap((p) => {
+        if (p) {
+          return this.getPortfolioEntity<Order>(p.portfolio, p.exchange, 'OrdersGetAndSubscribeV2').pipe(
+            map((order: Order) => {
+              this.orders.set(order.id, order);
+              return Array.from(this.orders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
+            })
+          )
+        }
+        return of([]);
+      }),
+      startWith([]),
+    )
+    return orders$;
   }
 }
