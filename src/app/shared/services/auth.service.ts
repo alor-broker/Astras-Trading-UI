@@ -123,16 +123,15 @@ export class AuthService {
 
   private getAccessToken(): Observable<string> {
     return this.currentUser$.pipe(
-      // mergeMap(user => interval(1000).pipe(
-      //   debounceTime(2000),
-      //   map(_ =>  { console.log('debounce'); return user; }))
-      // ),
+      mergeMap(user => interval(1000).pipe(
+        map(_ => user))
+      ),
       mergeMap(user => {
-        console.log('Updating token')
         if (this.isAuthorised(user)) {
           return of(user.jwt)
         }
         else {
+          console.log('Updating token')
           return this.refresh().pipe(
             map(t => t),
             catchError(e => {

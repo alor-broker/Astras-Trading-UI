@@ -1,4 +1,5 @@
 import { AnySettings } from "../models/settings/any-settings.model";
+import { BlotterSettings } from "../models/settings/blotter-settings.model";
 import { LightChartSettings } from "../models/settings/light-chart-settings.model";
 import { OrderbookSettings } from "../models/settings/orderbook-settings.model";
 
@@ -20,7 +21,7 @@ export function isInstrumentDependent(settings: AnySettings) : settings is Instr
 }
 
 export function isPortfolioDependent(settings: AnySettings) : settings is PortfolioDependentSettings {
-  return settings && 'linkToActive' in settings && 'potfolio' in settings && 'exchange' in settings;
+  return settings && 'linkToActive' in settings && 'portfolio' in settings && 'exchange' in settings;
 }
 
 export function isOrderbookSettings(settings: AnySettings) : settings is OrderbookSettings {
@@ -31,12 +32,19 @@ export function isLightChartSettings(settings: AnySettings) : settings is LightC
   return settings && 'linkToActive' in settings && 'symbol' in settings && 'exchange' in settings && 'timeFrame' in settings;
 }
 
+export function isBlotterSettings(settings: AnySettings) : settings is BlotterSettings {
+  return settings && 'linkToActive' in settings && 'portfolio' in settings && 'exchange' in settings;
+}
+
 export function isEqual(settings1: AnySettings, settings2: AnySettings) {
   if (isOrderbookSettings(settings1) && isOrderbookSettings(settings2)) {
     return isEqualOrderbookSettings(settings1, settings2);
   }
   if (isLightChartSettings(settings1) && isLightChartSettings(settings2)) {
     return isEqualLightChartSettings(settings1, settings2);
+  }
+  if (isBlotterSettings(settings1) && isBlotterSettings(settings2)) {
+    return isEqualBlotterSettings(settings1, settings2);
   }
   else return settings1.guid == settings2.guid && settings1.title == settings2.title;
 }
@@ -68,7 +76,22 @@ export function isEqualLightChartSettings(
       settings1.linkToActive == settings2.linkToActive &&
       settings1.exchange == settings2.exchange &&
       settings1.timeFrame == settings2.timeFrame &&
-      settings1.from == settings2.from
+      settings1.from == settings2.from &&
+      settings1.guid == settings2.guid
+    );
+  } else return false;
+}
+
+export function isEqualBlotterSettings(
+  settings1?: BlotterSettings,
+  settings2?: BlotterSettings
+) {
+  if (settings1 && settings2) {
+    return (
+      settings1.linkToActive == settings2.linkToActive &&
+      settings1.exchange == settings2.exchange &&
+      settings1.portfolio == settings2.portfolio &&
+      settings1.guid == settings2.guid
     );
   } else return false;
 }

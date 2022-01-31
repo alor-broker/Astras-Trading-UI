@@ -12,8 +12,8 @@ import { Candle } from '../../../shared/models/history/candle.model';
 import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
 import { HistoryResponse } from 'src/app/shared/models/history/history-response.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
-import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
+import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 
 @Injectable({
   providedIn: 'root',

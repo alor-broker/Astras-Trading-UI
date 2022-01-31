@@ -33,7 +33,6 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
   }
 
   getOrderbook(guid: string) {
-    console.error('get ob');
     this.instrumentSub = combineLatest([
       this.sync.selectedInstrument$,
       this.getSettings(guid)
@@ -43,8 +42,6 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
           !(settings.symbol == i.symbol &&
           settings.exchange == i.exchange &&
           settings.instrumentGroup == i.instrumentGroup));
-        // console.log(shouldUpdate);
-        // console.warn(i);
         if (shouldUpdate) {
           this.setSettings({ ...settings, ...i });
         }

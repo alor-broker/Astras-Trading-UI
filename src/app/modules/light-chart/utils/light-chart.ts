@@ -96,6 +96,7 @@ export class LightChart {
       this.volumeSeries.update(volume as any);
   }
 }
+
 setData(candles: Candle[], options: LightChartSettings) {
   const newBars = this.timeframesHelper.aggregateBars(this.bars, candles, options);
   this.series.setData(newBars as any);

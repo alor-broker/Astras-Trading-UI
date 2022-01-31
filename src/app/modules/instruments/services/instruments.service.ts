@@ -31,7 +31,7 @@ export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
           shortName: r.shortname,
           exchange: r.exchange,
           description: r.description,
-          instrumentGroup: r.primary_board,
+          instrumentGroup: r.board,
           isin: r.ISIN,
           currency: r.currency
         }))

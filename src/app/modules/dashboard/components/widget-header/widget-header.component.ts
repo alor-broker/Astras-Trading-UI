@@ -36,12 +36,13 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
       filter((s) : s is AnySettings => !!s),
       map(s => {
         this.settings = s;
+        const prefix = s.title?.split(' ')[0];
         if (isInstrumentDependent(s)) {
           const group = s.instrumentGroup;
-          s.title = `${s.symbol} (${group ? group : ''})`
+          s.title = `${prefix} ${s.symbol} (${group ? group : ''})`
         }
         else if (isPortfolioDependent(s)) {
-          s.title = `${s.portfolio} (${s.exchange})`
+          s.title = `${prefix} ${s.portfolio} (${s.exchange})`
         }
         return s;
       }),

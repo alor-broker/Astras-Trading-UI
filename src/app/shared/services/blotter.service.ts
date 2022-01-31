@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { merge, Observable, of, Subscription } from 'rxjs';
-import { filter, map, startWith, switchMap } from 'rxjs/operators';
+import { combineLatest, merge, Observable, of, pipe, Subscription } from 'rxjs';
+import { distinct, filter, map, startWith, switchMap } from 'rxjs/operators';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
@@ -33,7 +33,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   getPositions(guid: string) {
     this.position$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
-      switchMap(s => this.getPositionsReq(s.portfolio, s.exchange))
+      switchMap((settings) => this.getPositionsReq(settings.portfolio, settings.exchange))
     )
     this.linkToPortfolio();
     return this.position$;
@@ -42,7 +42,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   getTrades(guid: string) {
     this.trade$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
-      switchMap(s => this.getTradesReq(s.portfolio, s.exchange))
+      switchMap((settings) => this.getTradesReq(settings.portfolio, settings.exchange))
     )
     this.linkToPortfolio();
     return this.trade$;
@@ -51,9 +51,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   getOrders(guid: string) {
     this.order$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
-      switchMap(s => {
-        return this.getOrdersReq(s.portfolio, s.exchange)
-      })
+      switchMap((settings) => this.getOrdersReq(settings.portfolio, settings.exchange))
     )
     this.linkToPortfolio();
     return this.order$;
@@ -107,5 +105,22 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         })
       ).subscribe();
     }
+  }
+
+  private updateSettings() {
+    return (source : Observable<[PortfolioKey | null, BlotterSettings | null]>) => source.pipe(
+      filter((changes): changes is [PortfolioKey, BlotterSettings] => !!changes[0] && !!changes[1]),
+      map(([portfolio, settings]) => {
+        const shouldUpdate = (settings && settings.linkToActive &&
+          !(settings.portfolio == portfolio.portfolio &&
+          settings.exchange == portfolio.exchange));
+        if (shouldUpdate) {
+          const newSettings = { ...settings, ...portfolio };
+          this.setSettings(newSettings);
+          return newSettings;
+        }
+        return settings;
+      })
+    )
   }
 }

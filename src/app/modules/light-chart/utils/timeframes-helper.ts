@@ -62,7 +62,7 @@ export class TimeframesHelper {
   }
 
   getRequest(minTime: number, options: LightChartSettings) {
-    if (options) {
+    if (options && minTime != Infinity) {
       let from = minTime;
       if (options.timeFrame == 'D') {
         from = addDaysUnix(new Date(minTime * 1000), -this.candlesBatchSize)

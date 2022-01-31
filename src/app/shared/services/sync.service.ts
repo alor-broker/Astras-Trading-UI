@@ -19,11 +19,7 @@ export class SyncService {
   private shouldShowCommandModal = new BehaviorSubject<boolean>(false)
   private commandParams = new BehaviorSubject<CommandParams | null>(null)
 
-  selectedInstrument$ = this.selectedInstrument.asObservable().pipe(
-    tap(v => {
-      console.log(v);
-    })
-  );
+  selectedInstrument$ = this.selectedInstrument.asObservable();
   selectedPortfolio$ = this.selectedPortfolio.asObservable();
   shouldShowCommandModal$ = this.shouldShowCommandModal.asObservable();
   commandParams$ = this.commandParams.asObservable();

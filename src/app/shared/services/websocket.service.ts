@@ -80,19 +80,20 @@ export class WebsocketService {
   connect(): void {
     if (!this.socket$ || this.socket$.closed) {
       this.socket$ = webSocket(this.config);
-      this.socket$.subscribe(
-        (message) => {
+      this.socket$.subscribe({
+        next: (message) => {
           if (this.isBaseResponse(message)) {
             this.messagesSubject$.next(message);
           }
         },
-        (error: Event) => {
+        error: (error: Event) => {
           if (!this.socket$) {
               // run reconnect if errors
               console.log('connect error')
               console.log(error);
           }
-        });
+        }
+      });
 
       for (const [guid, msg] of this.subscriptions) {
         this.subscribe(msg);
