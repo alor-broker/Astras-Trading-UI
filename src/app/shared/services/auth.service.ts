@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, interval, Observable, of } from 'rxjs';
+import { BehaviorSubject, interval, Observable, of, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
 import { catchError, debounceTime, map, mergeMap, switchMap, tap } from 'rxjs/operators';
@@ -123,7 +123,7 @@ export class AuthService {
 
   private getAccessToken(): Observable<string> {
     return this.currentUser$.pipe(
-      mergeMap(user => interval(1000).pipe(
+      switchMap(user => timer(0, 1000).pipe(
         map(_ => user))
       ),
       mergeMap(user => {

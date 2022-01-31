@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { filter, tap } from 'rxjs';
+import { distinct, filter, tap } from 'rxjs';
 import { AnySettings } from '../models/settings/any-settings.model';
 import { isEqual } from '../utils/settings-helper';
 import { DashboardService } from './dashboard.service';
@@ -14,7 +14,8 @@ export class BaseService<T extends AnySettings> {
   getSettings(guid: string) {
     return this.settingsService.getSettings(guid).pipe(
       filter((s): s is T => !!s),
-      tap((s) => (this.settings = s))
+      tap((s) => (this.settings = s)),
+      distinct()
     );
   }
 
