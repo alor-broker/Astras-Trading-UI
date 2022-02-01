@@ -36,9 +36,9 @@ export const allPositionsColumns: ColumnIds[] = [
 
 export const allTradesColumns: ColumnIds[] = [
   { columnId: 'id', name: "Номер" },
+  { columnId: 'orderno', name: "Заявка" },
   { columnId: 'symbol', name: "Тикер" },
   { columnId: 'side', name: "Сторона" },
-  { columnId: 'status', name: "Статус" },
   { columnId: 'price', name: "Цена" },
   { columnId: 'qty', name: "Кол-во" },
   { columnId: 'date', name: 'Время' }

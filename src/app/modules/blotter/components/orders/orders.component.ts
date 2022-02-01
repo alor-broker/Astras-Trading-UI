@@ -29,7 +29,6 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private orders: Order[] = [];
   private orders$: Observable<Order[]> = of([]);
   displayOrders$: Observable<Order[]> = of([]);
-  maxVolume: number = 1;
   searchFilter = new BehaviorSubject<OrderFilter>({ });
 
   allColumns: Column<Order, OrderFilter>[] = [

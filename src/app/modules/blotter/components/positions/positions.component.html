@@ -1,57 +1,50 @@
 <ng-template #empty>
   <nz-empty nzNotFoundImage="simple" nzNotFoundContent='Позиций нет'></nz-empty>
 </ng-template>
+
 <nz-table *ngIf="displayPositions$ | async as positions" #nzTable [nzData]="positions"
-  nzTableLayout="fixed"
-  [nzNoResult]="empty"
-  nzSize="small"
-  [nzFrontPagination]="false"
-  [nzShowPagination]="false">
+    #nzTableComponent
+    [nzNoResult]="empty"
+    nzTableLayout="fixed"
+    nzSize="small"
+    [nzFrontPagination]="false"
+    [nzShowPagination]="false">
   <thead>
     <tr>
-      <th nzCustomFilter>
-        Тикер
-        <nz-filter-trigger [(nzVisible)]="getFilter().symbolMenuVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="menu">
+      <th *ngFor='let column of listOfColumns'
+          [nzCustomFilter]='column.hasSearch ? "": null'
+          [nzSortFn]='column.sortFn'
+          [nzFilters]="column.listOfFilter"
+          [nzShowFilter]="column.hasFilter"
+          [nzFilterFn]="column.filterFn">
+        {{column.name}}
+        <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
           <i nz-icon nzType="search"></i>
         </nz-filter-trigger>
       </th>
-      <th nzCustomFilter>
-        Имя
-        <nz-filter-trigger [(nzVisible)]="getFilter().shortNameMenuVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="menu">
-          <i nz-icon nzType="search"></i>
-        </nz-filter-trigger>
-      </th>
-      <th>Средняя</th>
-      <th>T0</th>
-      <th>T1</th>
-      <th>T2</th>
-      <th>TFuture</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let pos of nzTable.data">
-      <td>{{ pos.symbol }}</td>
-      <td>{{ pos.shortName }}</td>
-      <td>{{ pos.avgPrice }}</td>
-      <td>{{ pos.qtyT0 }}</td>
-      <td>{{ pos.qtyT1 }}</td>
-      <td>{{ pos.qtyT2 }}</td>
-      <td>{{ pos.qtyTFuture }}</td>
+    <tr *ngFor="let ord of nzTable.data">
+      <td class='bold' *ngIf='shouldShow("symbol")'>{{ ord.symbol }}</td>
+      <td *ngIf='shouldShow("shortName")'>{{ ord.shortName }}</td>
+      <td *ngIf='shouldShow("avgPrice")'>{{ round(ord.avgPrice) }}</td>
+      <td *ngIf='shouldShow("qtyT0")' [class]='ord.qtyT0 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT0) }}</td>
+      <td *ngIf='shouldShow("qtyT1")' [class]='ord.qtyT1 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT1) }}</td>
+      <td *ngIf='shouldShow("qtyT2")' [class]='ord.qtyT2 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT2) }}</td>
+      <td *ngIf='shouldShow("qtyTFuture")' [class]='ord.qtyTFuture < 0 ? "sell" : "buy"'>{{ round(ord.qtyTFuture) }}</td>
     </tr>
   </tbody>
 </nz-table>
-<nz-dropdown-menu #menu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box" *ngIf='getFilter().symbolMenuVisible'>
-      <input class='ant-input'  type="text" nz-input placeholder="Поиск по тикеру"
-        [ngModel]='getFilter().symbol'
-        (ngModelChange)="filterChange($event, 'symbol')"/>
-    </div>
-    <div class="search-box" *ngIf='getFilter().shortNameMenuVisible'>
-      <input class='ant-input'  type="text" nz-input placeholder="Поиск по имени"
-        [ngModel]='getFilter().shortName'
-        (ngModelChange)="filterChange($event, 'shortName')"/>
+
+<nz-dropdown-menu #searchMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown" *ngFor='let column of listOfColumns'>
+    <div class="search-box" *ngIf='column.hasSearch && column.isSearchVisible'>
+      <input
+        class='ant-input' type="text" nz-input [placeholder]="column.searchDescription"
+        [ngModel]='getFilter(column.id)'
+        (ngModelChange)="filterChange($event, column.id)"/>
     </div>
   </div>
-  <button nz-button nzSize="small" (click)="reset()">Сбросить</button>
+  <button nz-button nzType="primary" nzSize="small" (click)="reset()">Сбросить</button>
 </nz-dropdown-menu>
