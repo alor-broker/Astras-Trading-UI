@@ -6,25 +6,7 @@ import { OrderCancellerService } from 'src/app/shared/services/order-canceller.s
 import { OrderFilter } from '../../models/order-filter.model';
 import { Order } from '../../../../shared/models/orders/order.model';
 import { BlotterService } from 'src/app/shared/services/blotter.service';
-import { NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder } from 'ng-zorro-antd/table';
-
-interface ColumnItem {
-  id: string,
-  name: string;
-  // sorting
-  sortOrder: NzTableSortOrder | null;
-  sortFn: NzTableSortFn<Order> | null;
-  // search with test
-  searchDescription?: string,
-  searchFn: ((order: Order, filter: OrderFilter) => boolean) | null,
-  isSearchVisible: boolean,
-  hasSearch: boolean
-  // filter from existing values
-  listOfFilter: NzTableFilterList;
-  filterFn: NzTableFilterFn<Order> | null;
-  isFilterVisible: boolean,
-  hasFilter: boolean,
-}
+import { Column } from '../../models/column.model';
 
 @Component({
   selector: 'ats-orders[shouldShowSettings][guid]',
@@ -42,24 +24,26 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private cancelCommands = new Subject<CancelCommand>();
   private cancels$ = this.cancelCommands.asObservable()
   private cancelSub? : Subscription;
+  private settingsSub? : Subscription;
+
   private orders: Order[] = [];
   private orders$: Observable<Order[]> = of([]);
   displayOrders$: Observable<Order[]> = of([]);
   maxVolume: number = 1;
   searchFilter = new BehaviorSubject<OrderFilter>({ });
 
-  listOfColumns: ColumnItem[] = [
+  allColumns: Column<Order, OrderFilter>[] = [
     {
       id: 'id',
       name: 'Id',
       sortOrder: null,
       sortFn: (a: Order, b: Order) => Number(a.id) - Number(b.id),
-      searchFn: null,
       searchDescription: 'Поиск по Номеру',
+      searchFn: (order, filter) => filter.id ? order.id.toLowerCase().includes(filter.id.toLowerCase()) : false,
       isSearchVisible: false,
-      hasSearch: false,
+      hasSearch: true,
       filterFn: null,
-      listOfFilter: [{text: 'test', value: 'val'}],
+      listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
     },
@@ -81,13 +65,11 @@ export class OrdersComponent implements OnInit, OnDestroy {
       id: 'side',
       name: 'Сторона',
       sortOrder: null,
-      sortFn: (a: Order, b: Order) => a.side - b.side,
+      sortFn: (a: Order, b: Order) => a.side.toString().localeCompare(b.side.toString()),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: (list: string[], order: Order) => {
-        return list.some(val => order.side.toString().indexOf(val) !== -1);
-      } ,
+      filterFn: (list: string[], order: Order) => list.some(val => order.side.toString().indexOf(val) !== -1),
       listOfFilter: [
         { text: 'Покупка', value: 'buy' },
         { text: 'Продажа', value: 'sell' }
@@ -95,10 +77,76 @@ export class OrdersComponent implements OnInit, OnDestroy {
       isFilterVisible: false,
       hasFilter: true,
     },
+    {
+      id: 'qty',
+      name: 'Кол-во',
+      sortOrder: null,
+      sortFn: (a: Order, b: Order) => Number(a.qty) - Number(b.qty),
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: null,
+      listOfFilter: [],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
+    {
+      id: 'price',
+      name: 'Цена',
+      sortOrder: null,
+      sortFn: (a: Order, b: Order) => Number(a.price) - Number(b.price),
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: null,
+      listOfFilter: [],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
+    {
+      id: 'status',
+      name: 'Статус',
+      sortOrder: null,
+      sortFn: (a: Order, b: Order) => a.status.localeCompare(b.status),
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: (list: string[], order: Order) => list.some(val => order.status.toString().indexOf(val) !== -1),
+      listOfFilter: [
+        { text: 'Исполнена', value: 'filled' },
+        { text: 'В работе', value: 'working' },
+        { text: 'Отменена', value: 'canceled' }
+      ],
+      isFilterVisible: false,
+      hasFilter: true,
+    },
+    {
+      id: 'transTime',
+      name: 'Время',
+      sortOrder: null,
+      sortFn: (a: Order, b: Order) => Number(a.transTime) - Number(b.transTime),
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: null,
+      listOfFilter: [],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
   ]
+
+  listOfColumns: Column<Order, OrderFilter>[] = [];
+
   constructor(private service: BlotterService, private cancller: OrderCancellerService) { }
 
   ngOnInit(): void {
+    this.settingsSub = this.service.getSettings(this.guid).pipe(
+      tap(s => {
+        if (s.ordersColumns) {
+          this.listOfColumns = this.allColumns.filter(c => s.ordersColumns.includes(c.id))
+        }
+      })
+    ).subscribe();
     this.orders$ = this.service.getOrders(this.guid).pipe(
       tap(orders => this.orders = orders)
     );
@@ -115,6 +163,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.cancelSub?.unsubscribe();
+    this.settingsSub?.unsubscribe();
   }
 
   reset(): void {
@@ -145,9 +194,30 @@ export class OrdersComponent implements OnInit, OnDestroy {
     }
   }
 
+  shouldShow(column: string) {
+    return this.listOfColumns.map(c => c.id).includes(column);
+  }
+
   cancelAllOrders() {
     const working = this.orders.filter(o => o.status == 'working').map(o => o.id)
     working.forEach(order => this.cancelOrder(order));
+  }
+
+  translateStatus(status: string) {
+    switch (status) {
+      case 'filled':
+        return 'Исполнена';
+      case 'canceled':
+        return 'Отменена';
+      case 'working':
+        return 'В работе';
+      default:
+        return status;
+    }
+  }
+
+  formatDate(date: Date) {
+    return new Date(date).toLocaleTimeString();
   }
 
   private justifyFilter(order: Order, filter: OrderFilter) : boolean {

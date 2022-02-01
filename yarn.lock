@@ -128,10 +128,19 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/cdk@^13.0.0", "@angular/cdk@^13.0.1":
+"@angular/cdk@^13.0.0":
   version "13.1.1"
   resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-13.1.1.tgz#bfc1050df357a26bda03410d821ae05826dcf88e"
   integrity sha512-66PyWg+zKdxTe3b1pc1RduT8hsMs/hJ0aD0JX0pSEWVq7O0OJWJ5f0z+Mk03T9tAERA3NK1GifcKEDq5k7R2Zw==
+  dependencies:
+    tslib "^2.3.0"
+  optionalDependencies:
+    parse5 "^5.0.0"
+
+"@angular/cdk@^13.0.1":
+  version "13.2.0"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-13.2.0.tgz#57f0359b230805774abb7e1b8c1699c06ae9a669"
+  integrity sha512-1fQyfr/KmcF8y/Xz789DN37XgjQPE4kAYjoh6GRd62yKDm/Ic9hKuoKfAthA1bQeskjTO1pb4sMOgum8B4iHeA==
   dependencies:
     tslib "^2.3.0"
   optionalDependencies:
@@ -4578,10 +4587,10 @@ ng-dynamic-component@^10.0.0:
   dependencies:
     tslib "^2.0.0"
 
-ng-zorro-antd@^13.0.0:
-  version "13.0.0"
-  resolved "https://registry.yarnpkg.com/ng-zorro-antd/-/ng-zorro-antd-13.0.0.tgz#a117f346b0272f9e8579830c4f5122ac47b3701f"
-  integrity sha512-NuCixRJTM/t7Jp6Fe4kL4pIHoqumZdjR/kH0O1ZK7Dk4MvfZ2XcZ05akiGGB8JZlJ+eVPplVKvNydTqyIisr4Q==
+ng-zorro-antd@^13.0.1:
+  version "13.0.1"
+  resolved "https://registry.yarnpkg.com/ng-zorro-antd/-/ng-zorro-antd-13.0.1.tgz#9b6a98385ff87019f6893d93d5c7e4c37adaa007"
+  integrity sha512-ZoxzQ+VdkiUjbYeEIAvelLZPHFVfFiNE50Mkh2sCY5W/7R06DS/nVm+RRUgoy6gcZfBrpc757rDtrjrKDnkvaQ==
   dependencies:
     "@angular/cdk" "^13.0.1"
     "@ant-design/icons-angular" "^13.0.1"

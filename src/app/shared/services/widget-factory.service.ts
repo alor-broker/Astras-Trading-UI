@@ -9,7 +9,7 @@ import { TimeframesHelper } from 'src/app/modules/light-chart/utils/timeframes-h
 import { InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
 import { SyncService } from './sync.service';
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
-import { BlotterSettings } from '../models/settings/blotter-settings.model';
+import { allOrdersColumns, allPositionsColumns, allTradesColumns, BlotterSettings } from '../models/settings/blotter-settings.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { WidgetNames } from '../models/enums/widget-names';
 
@@ -114,6 +114,9 @@ export class WidgetFactoryService {
       const settings: BlotterSettings = {
         ...this.selectedPortfolio,
         guid: newWidget.gridItem.label,
+        tradesColumns: allTradesColumns.map(c => c.columnId),
+        positionsColumns: allPositionsColumns.map(c => c.columnId),
+        ordersColumns: allOrdersColumns.map(c => c.columnId),
         linkToActive: true,
         title: `Блоттер ${this.selectedPortfolio.portfolio} ${this.selectedPortfolio.exchange}`,
       };

@@ -2,6 +2,7 @@ import { AnySettings } from "../models/settings/any-settings.model";
 import { BlotterSettings } from "../models/settings/blotter-settings.model";
 import { LightChartSettings } from "../models/settings/light-chart-settings.model";
 import { OrderbookSettings } from "../models/settings/orderbook-settings.model";
+import { scalarArrayEqual } from "./collections";
 
 export type InstrumentDependentSettings = AnySettings & {
   symbol: string,
@@ -91,7 +92,8 @@ export function isEqualBlotterSettings(
       settings1.linkToActive == settings2.linkToActive &&
       settings1.exchange == settings2.exchange &&
       settings1.portfolio == settings2.portfolio &&
-      settings1.guid == settings2.guid
+      settings1.guid == settings2.guid &&
+      scalarArrayEqual(settings1.ordersColumns, settings2.ordersColumns)
     );
   } else return false;
 }

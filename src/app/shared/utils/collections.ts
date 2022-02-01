@@ -62,3 +62,7 @@ export function byPropertiesOf<T extends object> (sortBy: Array<sortArg<T>>) {
         return result
     }
 }
+
+export function scalarArrayEqual<T>(array1: Array<T>, array2: Array<T>) {
+  array1.length === array2.length && array1.every((value, index) => value === array2[index])
+}
