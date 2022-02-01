@@ -6,6 +6,25 @@ import { OrderCancellerService } from 'src/app/shared/services/order-canceller.s
 import { OrderFilter } from '../../models/order-filter.model';
 import { Order } from '../../../../shared/models/orders/order.model';
 import { BlotterService } from 'src/app/shared/services/blotter.service';
+import { NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder } from 'ng-zorro-antd/table';
+
+interface ColumnItem {
+  id: string,
+  name: string;
+  // sorting
+  sortOrder: NzTableSortOrder | null;
+  sortFn: NzTableSortFn<Order> | null;
+  // search with test
+  searchDescription?: string,
+  searchFn: ((order: Order, filter: OrderFilter) => boolean) | null,
+  isSearchVisible: boolean,
+  hasSearch: boolean
+  // filter from existing values
+  listOfFilter: NzTableFilterList;
+  filterFn: NzTableFilterFn<Order> | null;
+  isFilterVisible: boolean,
+  hasFilter: boolean,
+}
 
 @Component({
   selector: 'ats-orders[shouldShowSettings][guid]',
@@ -23,15 +42,60 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private cancelCommands = new Subject<CancelCommand>();
   private cancels$ = this.cancelCommands.asObservable()
   private cancelSub? : Subscription;
-
   private orders: Order[] = [];
   private orders$: Observable<Order[]> = of([]);
   displayOrders$: Observable<Order[]> = of([]);
   maxVolume: number = 1;
-  searchFilter = new BehaviorSubject<OrderFilter>({
-    idMenuVisible: false,
-    symbolMenuVisible: false
-  });
+  searchFilter = new BehaviorSubject<OrderFilter>({ });
+
+  listOfColumns: ColumnItem[] = [
+    {
+      id: 'id',
+      name: 'Id',
+      sortOrder: null,
+      sortFn: (a: Order, b: Order) => Number(a.id) - Number(b.id),
+      searchFn: null,
+      searchDescription: 'Поиск по Номеру',
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: null,
+      listOfFilter: [{text: 'test', value: 'val'}],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
+    {
+      id: 'symbol',
+      name: 'Тикер',
+      sortOrder: null,
+      sortFn: (a: Order, b: Order) => a.symbol.localeCompare(b.symbol),
+      searchDescription: 'Поиск по Тикеру',
+      searchFn: (order, filter) => filter.symbol ? order.symbol.toLowerCase().includes(filter.symbol.toLowerCase()) : false,
+      isSearchVisible: false,
+      hasSearch: true,
+      filterFn: null,
+      listOfFilter: [],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
+    {
+      id: 'side',
+      name: 'Сторона',
+      sortOrder: null,
+      sortFn: (a: Order, b: Order) => a.side - b.side,
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: (list: string[], order: Order) => {
+        return list.some(val => order.side.toString().indexOf(val) !== -1);
+      } ,
+      listOfFilter: [
+        { text: 'Покупка', value: 'buy' },
+        { text: 'Продажа', value: 'sell' }
+      ],
+      isFilterVisible: false,
+      hasFilter: true,
+    },
+  ]
   constructor(private service: BlotterService, private cancller: OrderCancellerService) { }
 
   ngOnInit(): void {
@@ -54,27 +118,19 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   reset(): void {
-    this.searchFilter.next({
-      idMenuVisible: false,
-      symbolMenuVisible: false
-    });
+    this.searchFilter.next({ });
   }
 
-  filterChange(text: string, option: 'symbol' | 'id' ) {
+  filterChange(text: string, option: string ) {
     const newFilter = this.searchFilter.getValue();
-    newFilter[option] = text;
-    this.searchFilter.next(newFilter)
-  }
-
-  sortBy(option: 'symbol' | 'id') {
-    if (option == 'id') {
-      return (o1: Order, o2: Order) =>  Number(o1.id) - Number(o2.id);
+    if (option) {
+      newFilter[option as keyof OrderFilter] = text;
+      this.searchFilter.next(newFilter)
     }
-    else return (o1: Order, o2: Order) => o1.symbol.localeCompare(o2.symbol);
   }
 
-  getFilter() {
-    return this.searchFilter.getValue();
+  getFilter(columnId: string) {
+    return this.searchFilter.getValue()[columnId as keyof OrderFilter];
   }
 
   cancelOrder(orderId: string) {
@@ -95,11 +151,11 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   private justifyFilter(order: Order, filter: OrderFilter) : boolean {
-    if (filter.symbol) {
-      return order.symbol.toLowerCase().includes(filter.symbol.toLowerCase());
-    }
-    if (filter.id) {
-      return order.id.toLowerCase().includes(filter.id.toLowerCase());
+    for (const key of Object.keys(filter)) {
+      if (filter[key as keyof OrderFilter]) {
+        const column = this.listOfColumns.find(o => o.id == key);
+        return column?.searchFn ? column.searchFn(order, filter) : false;
+      }
     }
     return true;
   }

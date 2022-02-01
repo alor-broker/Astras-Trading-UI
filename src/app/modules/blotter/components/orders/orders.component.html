@@ -3,30 +3,30 @@
 </ng-template>
 
 <nz-table *ngIf="displayOrders$ | async as orders" #nzTable [nzData]="orders"
-  #nzTableComponent
-  [nzNoResult]="empty"
-  nzTableLayout="fixed"
-  nzSize="small"
-  [nzFrontPagination]="false"
-  [nzShowPagination]="false">
+    #nzTableComponent
+    [nzNoResult]="empty"
+    nzTableLayout="fixed"
+    nzSize="small"
+    [nzFrontPagination]="false"
+    [nzShowPagination]="false">
   <thead>
     <tr>
-      <th nzCustomFilter [nzSortFn]='sortBy("id")'>
-        Номер
-        <nz-filter-trigger [(nzVisible)]="getFilter().idMenuVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="menu">
+      <th *ngFor='let column of listOfColumns'
+          [nzCustomFilter]='column.hasSearch || column.hasFilter ? "": null'
+          [nzSortFn]='column.sortFn'
+          [nzFilters]="column.listOfFilter"
+          [nzFilterFn]="column.filterFn">
+        {{column.name}}
+        <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
           <i nz-icon nzType="search"></i>
         </nz-filter-trigger>
+        <!-- <nz-filter-trigger *ngIf='column.hasFilter' [(nzVisible)]="column.isFilterVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="filterMenu">
+          <i nz-icon nzType="filter"></i>
+        </nz-filter-trigger> -->
       </th>
-      <th nzCustomFilter>
-        Тикер
-        <nz-filter-trigger [(nzVisible)]="getFilter().symbolMenuVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="menu">
-          <i nz-icon nzType="search"></i>
-        </nz-filter-trigger>
-      </th>
-      <th>Сторона</th>
-      <th>Статус</th>
+      <!--<th>Статус</th>
       <th>Цена</th>
-      <th>Кол-во</th>
+      <th>Кол-во</th> -->
       <th>
         <span>
           <a nz-popconfirm
@@ -43,9 +43,9 @@
       <td>{{ ord.id }}</td>
       <td>{{ ord.symbol }}</td>
       <td>{{ ord.side }}</td>
-      <td>{{ ord.status }}</td>
+      <!-- <td>{{ ord.status }}</td>
       <td>{{ ord.price }}</td>
-      <td>{{ ord.qty }}</td>
+      <td>{{ ord.qty }}</td> -->
       <td>
         <a *ngIf='ord.status == "working"' nz-popconfirm
           nzPopconfirmTitle="Точно отменить?"
@@ -56,18 +56,38 @@
     </tr>
   </tbody>
 </nz-table>
-<nz-dropdown-menu #menu="nzDropdownMenu">
+
+<nz-dropdown-menu #searchMenu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown">
-    <div class="search-box" *ngIf='getFilter().idMenuVisible'>
-      <input class='ant-input'  type="text" nz-input placeholder="Поиск по номеру"
-        [ngModel]='getFilter().id'
-        (ngModelChange)="filterChange($event, 'id')"/>
-    </div>
-    <div class="search-box" *ngIf='getFilter().symbolMenuVisible'>
-      <input class='ant-input'  type="text" nz-input placeholder="Поиск по тикеру"
-        [ngModel]='getFilter().symbol'
-        (ngModelChange)="filterChange($event, 'symbol')"/>
+    <div class="search-box" *ngFor='let column of listOfColumns'>
+      <input *ngIf='column.hasSearch'
+        class='ant-input' type="text" nz-input [placeholder]="column.searchDescription"
+        [ngModel]='getFilter(column.id)'
+        (ngModelChange)="filterChange($event, column.id)"/>
     </div>
   </div>
   <button nz-button nzType="primary" nzSize="small" (click)="reset()">Сбросить</button>
 </nz-dropdown-menu>
+
+<!-- <nz-dropdown-menu #filterMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown" *ngFor='let column of listOfColumns'>
+    <ul nz-menu nzSelectable *ngIf='column.hasFilter'>
+      <li nz-menu-item *ngFor='let val of column.listOfFilter'>
+        <label *ngIf='column.filterFn'
+            nz-checkbox [ngModel]="getFilter(column.id)"
+            (ngModelChange)="column.filterFn($event)">
+          {{val.value}}
+        </label>
+        <label nz-checkbox class="ant-checkbox-wrapper">
+        </label>
+      </li>
+    </ul>
+    <div class="search-box" *ngFor='let column of listOfColumns'>
+      <input *ngIf='column.isSearchVisible'
+        class='ant-input' type="text" nz-input [placeholder]="column.searchDescription"
+        [ngModel]='getFilter(column.id)'
+        (ngModelChange)="filterChange($event, column.id)"/>
+    </div>
+  </div>
+  <button nz-button nzType="primary" nzSize="small" (click)="reset()">Сбросить</button>
+</nz-dropdown-menu> -->
