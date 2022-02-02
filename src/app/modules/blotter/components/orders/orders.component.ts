@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
@@ -229,13 +229,11 @@ export class OrdersComponent implements OnInit, OnDestroy {
     this.orders$ = this.service.getOrders(this.guid).pipe(
       tap(orders => this.orders = orders)
     );
-    this.displayOrders$ = this.orders$.pipe(
-      mergeMap(orders => this.searchFilter.pipe(
-        map(f => orders
-          .map(o => ({...o, residue: `${o.filled}/${o.qty}`, volume: MathHelper.round(o.qtyUnits * o.price, 2)}))
-          .filter(o => this.justifyFilter(o, f))
-          .sort(this.sortOrders))
-      ))
+    this.displayOrders$ = combineLatest([ this.orders$, this.searchFilter]).pipe(
+      map(([orders, f]) => orders
+        .map(o => ({...o, residue: `${o.filled}/${o.qty}`, volume: MathHelper.round(o.qtyUnits * o.price, 2)}))
+        .filter(o => this.justifyFilter(o, f))
+        .sort(this.sortOrders))
     )
     this.cancelSub = this.cancels$.pipe(
       mergeMap((command) => this.cancller.cancelOrder(command)),

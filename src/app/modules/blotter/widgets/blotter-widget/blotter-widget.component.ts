@@ -7,7 +7,8 @@ import { DashboardService } from 'src/app/shared/services/dashboard.service';
 @Component({
   selector: 'ats-blotter-widget[shouldShowSettings][guid][linkedToActive]',
   templateUrl: './blotter-widget.component.html',
-  styleUrls: ['./blotter-widget.component.less']
+  styleUrls: ['./blotter-widget.component.less'],
+  providers: [BlotterService]
 })
 export class BlotterWidgetComponent implements OnInit {
   @Input()
