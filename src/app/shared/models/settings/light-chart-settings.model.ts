@@ -6,5 +6,7 @@ export interface LightChartSettings extends WidgetSettings, InstrumentKey {
   timeFrame: string,
   from: number,
   linkToActive?: boolean,
-  guid: string
+  guid: string,
+  width: number,
+  height: number
 }

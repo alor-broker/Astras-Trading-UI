@@ -17,8 +17,8 @@ export class LightChartSettingsComponent implements OnInit {
   settingsChange: EventEmitter<LightChartSettings> = new EventEmitter<LightChartSettings>();
 
   form!: FormGroup;
-
   timeFrames: Timeframe[]
+  prevSettings?: LightChartSettings;
 
   constructor(private service: LightChartService ) {
     const helper = new TimeframesHelper();
@@ -28,6 +28,7 @@ export class LightChartSettingsComponent implements OnInit {
   ngOnInit() {
     this.service.getSettings(this.guid).subscribe(settings => {
       if (settings) {
+        this.prevSettings = settings;
         this.form = new FormGroup({
           symbol: new FormControl(settings.symbol, [
             Validators.required,
@@ -42,7 +43,7 @@ export class LightChartSettingsComponent implements OnInit {
   }
 
   submitForm(): void {
-    this.service.setSettings({...this.form.value, guid: this.guid, linkToActive: false})
+    this.service.setSettings({ ...this.prevSettings, ...this.form.value, linkToActive: false})
     this.settingsChange.emit()
   }
 }

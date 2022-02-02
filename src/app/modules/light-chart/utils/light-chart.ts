@@ -16,11 +16,21 @@ export class LightChart {
   private bars: Candle[] = [];
   private getMinTime = () => Math.min(...this.bars.map(b => b.time));
   private timeframesHelper = new TimeframesHelper()
+  private sizes: {
+    width: number,
+    height: number
+  };
+  constructor(width: number, height: number) {
+    this.sizes = {
+      width: width,
+      height: height - 30
+    };
+  }
 
   create(guid: string) {
     const chart = LightweightCharts.createChart(guid, {
-      width: 300,
-      height: 300,
+      width: this.sizes.width,
+      height: this.sizes.height,
       timeScale: {
         timeVisible: true,
         borderColor: '#D1D4DC',
@@ -124,7 +134,11 @@ clearSeries() {
 }
 
 resize(width: number, height: number) {
-  this.chart.resize(width, (height) - 30);
+  this.sizes = {
+    width: width,
+    height: height - 30
+  };
+  this.chart.resize(this.sizes.width, this.sizes.height);
 }
 
 getRequest(options: LightChartSettings) {

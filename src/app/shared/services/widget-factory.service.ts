@@ -100,7 +100,9 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       timeFrame: this.tfHelper.getValueByTfLabel('H')?.value,
       from: this.tfHelper.getDefaultFrom('H'),
-      title:  `График ${this.selectedInstrument.symbol} ${group ? group : ''}`
+      title:  `График ${this.selectedInstrument.symbol} ${group ? group : ''}`,
+      width: 300,
+      height: 300
     };
 
     return settings;

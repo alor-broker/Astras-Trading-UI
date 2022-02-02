@@ -46,7 +46,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
   private barsSub?: Subscription;
   private isUpdating = false;
   private isEndOfHistory = false;
-  private chart = new LightChart();
+  private chart?: LightChart;
 
   constructor(private service: LightChartService) { }
 
@@ -55,7 +55,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.chart.clear();
+    this.chart?.clear();
     this.service.unsubscribe();
     this.barsSub?.unsubscribe();
     this.historySub?.unsubscribe();
@@ -66,24 +66,35 @@ export class LightChartComponent implements OnInit, OnDestroy {
     if (this.guid) {
       this.initChart(this.guid);
       this.barsSub = this.bars$.subscribe((candle) => {
-        if (candle) {
+        if (candle && this.chart) {
           this.chart.update(candle);
         }
       });
       this.resizeSub = this.resize.subscribe((item) => {
-        this.chart.resize(item.width ?? 0, item.height ?? 0);
+        if (this.chart) {
+          this.chart.resize(item.width ?? 0, item.height ?? 0);
+          const oldSettings = this.service.getSettingsValue();
+          if (oldSettings) {
+            const newSettings = {...oldSettings, width: item.width ?? 300, height: item.height ?? 300};
+            this.service.setSettings(newSettings)
+          }
+        }
       });
     }
   }
 
   private initChart(guid: string) {
+    const settings = this.service.getSettingsValue();
+    this.chart = new LightChart(settings?.width ?? 300, settings?.height ?? 300);
     this.chart.create(guid);
 
     this.settingsSub = this.service.getSettings(this.guid).pipe(
       tap(options => {
         if (options && !isEqualLightChartSettings(options, this.prevOptions)){
           this.prevOptions == options;
-          this.chart.clearSeries();
+          if (this.chart) {
+            this.chart.clearSeries();
+          }
         }
       })
     ).subscribe();
@@ -94,7 +105,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
         return this.service.getSettings(this.guid);
       }),
       map(options =>  {
-        if (options) {
+        if (options && this.chart) {
           return this.chart.getRequest(options);
         }
         else return null;
@@ -107,7 +118,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
       map(res => {
         this.isEndOfHistory = res.prev == null;
         const options = this.service.getSettingsValue();
-        if (options) {
+        if (options && this.chart) {
          this.chart.setData(res.history, options);
         }
         this.isUpdating = false;

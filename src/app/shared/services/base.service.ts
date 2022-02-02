@@ -21,6 +21,7 @@ export class BaseService<T extends AnySettings> {
 
   setSettings(settings: T) {
     if (this.settings && !isEqual(this.settings, settings)) {
+      console.log('updating settings')
       this.settingsService.updateSettings(settings.guid, settings);
     }
   }
