@@ -27,10 +27,8 @@ export class AuthService {
   private requiredServices = [
     'client',
     'Warp',
-    'subscriptionsApi',
-    'ServicesApi',
-    'WarpATConnector',
     'CommandApi',
+    'InstrumentApi'
   ];
 
   currentUser$ = this.currentUser.asObservable();

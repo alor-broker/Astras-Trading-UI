@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, filter, map, Observable, of, Subscription } from 'rxjs';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, filter, map, of, Subscription } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
-import { Side } from 'src/app/shared/models/enums/side.model';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.model';

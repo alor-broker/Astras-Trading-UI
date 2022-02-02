@@ -7,6 +7,15 @@ import { OrderFilter } from '../../models/order-filter.model';
 import { Order } from '../../../../shared/models/orders/order.model';
 import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { Column } from '../../models/column.model';
+import { byPropertiesOf } from 'src/app/shared/utils/collections';
+import { MathHelper } from 'src/app/shared/utils/math-helper';
+import { SyncService } from 'src/app/shared/services/sync.service';
+import { CommandType } from 'src/app/shared/models/enums/command-type.model';
+
+interface DisplayOrder extends Order {
+  residue: string,
+  volume: number
+}
 
 @Component({
   selector: 'ats-orders[shouldShowSettings][guid]',
@@ -28,15 +37,15 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   private orders: Order[] = [];
   private orders$: Observable<Order[]> = of([]);
-  displayOrders$: Observable<Order[]> = of([]);
+  displayOrders$: Observable<DisplayOrder[]> = of([]);
   searchFilter = new BehaviorSubject<OrderFilter>({ });
 
-  allColumns: Column<Order, OrderFilter>[] = [
+  allColumns: Column<DisplayOrder, OrderFilter>[] = [
     {
       id: 'id',
       name: 'Id',
       sortOrder: null,
-      sortFn: (a: Order, b: Order) => Number(a.id) - Number(b.id),
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(a.id) - Number(b.id),
       searchDescription: 'Поиск по Номеру',
       searchFn: (order, filter) => filter.id ? order.id.toLowerCase().includes(filter.id.toLowerCase()) : false,
       isSearchVisible: false,
@@ -50,7 +59,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       id: 'symbol',
       name: 'Тикер',
       sortOrder: null,
-      sortFn: (a: Order, b: Order) => a.symbol.localeCompare(b.symbol),
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.symbol.localeCompare(b.symbol),
       searchDescription: 'Поиск по Тикеру',
       searchFn: (order, filter) => filter.symbol ? order.symbol.toLowerCase().includes(filter.symbol.toLowerCase()) : false,
       isSearchVisible: false,
@@ -64,7 +73,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       id: 'side',
       name: 'Сторона',
       sortOrder: null,
-      sortFn: (a: Order, b: Order) => a.side.toString().localeCompare(b.side.toString()),
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.side.toString().localeCompare(b.side.toString()),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -77,10 +86,36 @@ export class OrdersComponent implements OnInit, OnDestroy {
       hasFilter: true,
     },
     {
+      id: 'residue',
+      name: 'Остаток',
+      sortOrder: null,
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.filled - a.filled,
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: null,
+      listOfFilter: [],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
+    {
+      id: 'volume',
+      name: 'Объем',
+      sortOrder: null,
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.volume - a.volume,
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: null,
+      listOfFilter: [],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
+    {
       id: 'qty',
       name: 'Кол-во',
       sortOrder: null,
-      sortFn: (a: Order, b: Order) => Number(a.qty) - Number(b.qty),
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.qty - a.qty,
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -93,7 +128,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       id: 'price',
       name: 'Цена',
       sortOrder: null,
-      sortFn: (a: Order, b: Order) => Number(a.price) - Number(b.price),
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.price - a.price,
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -106,14 +141,14 @@ export class OrdersComponent implements OnInit, OnDestroy {
       id: 'status',
       name: 'Статус',
       sortOrder: null,
-      sortFn: (a: Order, b: Order) => a.status.localeCompare(b.status),
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.status.localeCompare(b.status),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: (list: string[], order: Order) => list.some(val => order.status.toString().indexOf(val) !== -1),
+      filterFn: (list: string[], order: DisplayOrder) => list.some(val => order.status.toString().indexOf(val) !== -1),
       listOfFilter: [
         { text: 'Исполнена', value: 'filled' },
-        { text: 'В работе', value: 'working' },
+        { text: 'Активна', value: 'working' },
         { text: 'Отменена', value: 'canceled' }
       ],
       isFilterVisible: false,
@@ -123,7 +158,52 @@ export class OrdersComponent implements OnInit, OnDestroy {
       id: 'transTime',
       name: 'Время',
       sortOrder: null,
-      sortFn: (a: Order, b: Order) => Number(a.transTime) - Number(b.transTime),
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(b.transTime) - Number(a.transTime),
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: null,
+      listOfFilter: [],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
+    {
+      id: 'exchange',
+      name: 'Биржа',
+      sortOrder: null,
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.exchange.localeCompare(a.exchange),
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: (list: string[], order: DisplayOrder) => list.some(val => order.exchange.toString().indexOf(val) !== -1),
+      listOfFilter: [
+        { text: 'ММВБ', value: 'MOEX' },
+        { text: 'СПБ', value: 'SPBX' }
+      ],
+      isFilterVisible: false,
+      hasFilter: true,
+    },
+    {
+      id: 'type',
+      name: 'Тип',
+      sortOrder: null,
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.type.localeCompare(a.type),
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: (list: string[], order: DisplayOrder) => list.some(val => order.type.toString().indexOf(val) !== -1),
+      listOfFilter: [
+        { text: 'Лимит', value: 'limit' },
+        { text: 'Рыночн.', value: 'market' }
+      ],
+      isFilterVisible: false,
+      hasFilter: true,
+    },
+    {
+      id: 'endTime',
+      name: 'Действ. до.',
+      sortOrder: null,
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(b.endTime) - Number(a.endTime),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -134,9 +214,9 @@ export class OrdersComponent implements OnInit, OnDestroy {
     },
   ]
 
-  listOfColumns: Column<Order, OrderFilter>[] = [];
+  listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
 
-  constructor(private service: BlotterService, private cancller: OrderCancellerService) { }
+  constructor(private service: BlotterService, private cancller: OrderCancellerService, private sync: SyncService) { }
 
   ngOnInit(): void {
     this.settingsSub = this.service.getSettings(this.guid).pipe(
@@ -151,8 +231,11 @@ export class OrdersComponent implements OnInit, OnDestroy {
     );
     this.displayOrders$ = this.orders$.pipe(
       mergeMap(orders => this.searchFilter.pipe(
-        map(f => orders.filter(o => this.justifyFilter(o, f)))
-      )),
+        map(f => orders
+          .map(o => ({...o, residue: `${o.filled}/${o.qty}`, volume: MathHelper.round(o.qtyUnits * o.price, 2)}))
+          .filter(o => this.justifyFilter(o, f))
+          .sort(this.sortOrders))
+      ))
     )
     this.cancelSub = this.cancels$.pipe(
       mergeMap((command) => this.cancller.cancelOrder(command)),
@@ -193,6 +276,23 @@ export class OrdersComponent implements OnInit, OnDestroy {
     }
   }
 
+  editOrder(order: Order) {
+    this.sync.openEditModal({
+      type: order.type,
+      quantity: order.qty,
+      orderId: order.id,
+      price: order.price,
+      instrument: {
+        symbol: order.symbol,
+        exchange: order.exchange
+      },
+      user: {
+        portfolio: order.portfolio,
+        exchange: order.exchange
+      }
+    })
+  }
+
   shouldShow(column: string) {
     return this.listOfColumns.map(c => c.id).includes(column);
   }
@@ -205,11 +305,11 @@ export class OrdersComponent implements OnInit, OnDestroy {
   translateStatus(status: string) {
     switch (status) {
       case 'filled':
-        return 'Исполнена';
+        return 'Исполн';
       case 'canceled':
-        return 'Отменена';
+        return 'Отменен';
       case 'working':
-        return 'В работе';
+        return 'Активен';
       default:
         return status;
     }
@@ -219,7 +319,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
     return new Date(date).toLocaleTimeString();
   }
 
-  private justifyFilter(order: Order, filter: OrderFilter) : boolean {
+  private justifyFilter(order: DisplayOrder, filter: OrderFilter) : boolean {
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof OrderFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
@@ -227,5 +327,21 @@ export class OrdersComponent implements OnInit, OnDestroy {
       }
     }
     return true;
+  }
+
+  private sortOrders(a: DisplayOrder, b: DisplayOrder) {
+    if (a.status == 'working' && b.status != 'working') {
+      return -1;
+    }
+    else if (b.status == 'working' && a.status != 'working'){
+      return 1;
+    }
+    if (a.endTime < b.endTime) {
+      return -1;
+    }
+    else if (a.endTime > b.endTime) {
+      return 1
+    }
+    return 0;
   }
 }

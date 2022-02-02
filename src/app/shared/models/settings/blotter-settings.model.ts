@@ -20,8 +20,13 @@ export const allOrdersColumns: ColumnIds[] = [
   { columnId: 'side', name: "Сторона" },
   { columnId: 'status', name: "Статус" },
   { columnId: 'qty', name: "Кол-во" },
+  { columnId: 'residue', name: "Остаток" },
+  { columnId: 'volume', name: "Объем" },
   { columnId: 'price', name: "Цена" },
-  { columnId: 'transTime', name: 'Время' }
+  { columnId: 'transTime', name: 'Время' },
+  { columnId: 'exchange', name: "Биржа" },
+  { columnId: 'type', name: "Тип" },
+  { columnId: 'endTime', name: "Действ. до" },
 ]
 
 export const allPositionsColumns: ColumnIds[] = [

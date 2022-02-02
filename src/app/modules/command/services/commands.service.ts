@@ -8,17 +8,21 @@ import { Side } from 'src/app/shared/models/enums/side.model';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { environment } from 'src/environments/environment';
 import { LimitCommand } from '../models/limit-command.model';
+import { LimitEdit } from '../models/limit-edit.model';
 import { MarketCommand } from '../models/market-command.model';
+import { MarketEdit } from '../models/market-edit.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommandsService {
 
-  private url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions/limit'
+  private url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions'
 
   private limitCommand?: BehaviorSubject<LimitCommand>;
+  private limitEdit?: BehaviorSubject<LimitEdit>;
   private marketCommand?: BehaviorSubject<MarketCommand>;
+  private marketEdit?: BehaviorSubject<MarketEdit>;
 
   constructor(private http: HttpClient, private notification: NzNotificationService) { }
 
@@ -34,6 +38,20 @@ export class CommandsService {
       this.marketCommand = new BehaviorSubject<MarketCommand>(command);
     }
     this.marketCommand?.next(command);
+  }
+
+  setLimitEdit(command: LimitEdit) {
+    if (!this.limitEdit) {
+      this.limitEdit = new BehaviorSubject<LimitEdit>(command);
+    }
+    this.limitEdit?.next(command);
+  }
+
+  setMarketEdit(command: MarketEdit) {
+    if (!this.marketEdit) {
+      this.marketEdit = new BehaviorSubject<MarketEdit>(command);
+    }
+    this.marketEdit?.next(command);
   }
 
   submitLimit(side: Side) {
@@ -56,11 +74,47 @@ export class CommandsService {
     }
   }
 
+  submitLimitEdit() {
+    const command = this.limitEdit?.getValue();
+    if (command) {
+      return this.editOrder("limit", command);
+    }
+    else {
+      throw new Error('Empty command')
+    }
+  }
+
+  submitMarketEdit() {
+    const command = this.marketEdit?.getValue();
+    if (command) {
+      return this.editOrder("market", command);
+    }
+    else {
+      throw new Error('Empty command')
+    }
+  }
+
+  private editOrder(type: string, command : LimitEdit | MarketEdit) {
+    return this.http.put<CommandResponse>(`${this.url}/${type.toString()}/${command.id}`, {
+        ...command
+      }, {
+      headers: {
+        'X-ALOR-REQID': GuidGenerator.newGuid()
+      }
+    }).pipe(
+      tap(resp => {
+        if (resp.orderNumber) {
+          this.notification.success(`Заявка изменена`, `Заявка успешно измнена, её номер на бирже: \n ${resp.orderNumber}`)
+        }
+      })
+    )
+  }
+
   private placeOrder(type: string, side: Side, command : LimitCommand | MarketCommand) {
-    command.side = side.toString();
-    return this.http.post<CommandResponse>(this.url, {
+    return this.http.post<CommandResponse>(`${this.url}/${type.toString()}`, {
         ...command,
-        type: type
+        type,
+        side
       }, {
       headers: {
         'X-ALOR-REQID': GuidGenerator.newGuid()
