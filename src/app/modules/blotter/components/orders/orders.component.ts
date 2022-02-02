@@ -20,7 +20,7 @@ interface DisplayOrder extends Order {
 @Component({
   selector: 'ats-orders[shouldShowSettings][guid]',
   templateUrl: './orders.component.html',
-  styleUrls: ['./orders.component.less']
+  styleUrls: ['./orders.component.less'],
 })
 export class OrdersComponent implements OnInit, OnDestroy {
   @Input()
