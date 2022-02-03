@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { GridsterItem } from 'angular-gridster2';
 import {
   BehaviorSubject,
   filter,
@@ -56,6 +57,15 @@ export class DashboardService {
     const settings = this.getSettingsValue().set(guid, newSettings);
     this.setDashboard(widgets);
     this.setSettings(settings);
+  }
+
+  updateGridItem(item: GridsterItem) {
+    const guid = item.label;
+    const existing = this.getDashboardValue().get(guid);
+    if (existing) {
+      const widgets = this.getDashboardValue().set(guid, { ...existing, gridItem: item });
+      this.setDashboard(widgets);
+    }
   }
 
   updateWidget(updated: Widget) {

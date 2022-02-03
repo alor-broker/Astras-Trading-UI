@@ -11,7 +11,6 @@ import {
 import { map, Observable, tap } from 'rxjs';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
-import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 
 interface Safe extends GridsterConfig {
@@ -93,6 +92,9 @@ export class DashboardComponent implements OnInit {
       itemResizeCallback: (item, e) => {
         this.resize.emit({...item, height: e.height, width: e.width });
       },
+      itemChangeCallback: (item, e) => {
+        this.service.updateGridItem(item);
+      }
     };
 
     this.dashboard$ = this.service.dashboard$.pipe(
