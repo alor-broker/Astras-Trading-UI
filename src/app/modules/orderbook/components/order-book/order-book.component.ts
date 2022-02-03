@@ -47,7 +47,7 @@ export class OrderBookComponent implements OnInit, OnDestroy, OnChanges {
     height: '100%',
   });
 
-  constructor(private service: OrderbookService, private sync: SyncService, private cancellor: OrderCancellerService) {}
+  constructor(private service: OrderbookService, private sync: SyncService) {}
 
   ngOnInit(): void {
     this.ob$ = this.service.getOrderbook(this.guid).pipe(

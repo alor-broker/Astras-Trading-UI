@@ -5,12 +5,12 @@ import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.mod
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
 import { Order } from '../../../../shared/models/orders/order.model';
-import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { Column } from '../../models/column.model';
 import { byPropertiesOf } from 'src/app/shared/utils/collections';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
+import { BlotterService } from '../../services/blotter.service';
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -39,6 +39,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private orders$: Observable<Order[]> = of([]);
   displayOrders$: Observable<DisplayOrder[]> = of([]);
   searchFilter = new BehaviorSubject<OrderFilter>({ });
+  tableInnerWidth: string = '1000px';
 
   allColumns: Column<DisplayOrder, OrderFilter>[] = [
     {
@@ -223,6 +224,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       tap(s => {
         if (s.ordersColumns) {
           this.listOfColumns = this.allColumns.filter(c => s.ordersColumns.includes(c.id))
+          this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
         }
       })
     ).subscribe();

@@ -14,7 +14,10 @@ describe('LightChartComponent', () => {
     timeFrame: 'D',
     from: 0,
     symbol: 'SBER',
-    exchange: 'MOEX'
+    exchange: 'MOEX',
+    guid: '123',
+    width: 300,
+    height: 300
   }
   spy.settings$ = of(settings);
 

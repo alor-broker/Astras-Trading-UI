@@ -11,8 +11,8 @@ import { BaseService } from './base.service';
 import { DashboardService } from './dashboard.service';
 import { WebsocketService } from './websocket.service';
 
+@Injectable()
 export abstract class BaseWebsocketService<T extends AnySettings> extends BaseService<T> {
-
 private subGuidByOpCode = new Map<string, string>();
 
 constructor(private ws: WebsocketService, settingsService: DashboardService) {

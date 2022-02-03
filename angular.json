@@ -135,9 +135,14 @@
               }
             ],
             "styles": [
-              "src/styles.less",
-              "src/zorro-styles.less"
+              "src/styles.less"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./node_modules/ng-zorro-antd",
+                "src/styles"
+              ]
+            },
             "scripts": [
               "src/assets/lib/charting_library/charting_library.js"
             ]

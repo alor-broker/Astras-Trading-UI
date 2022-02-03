@@ -4,10 +4,10 @@ import { map, mergeMap, tap } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { Widget } from 'src/app/shared/models/widget.model';
-import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { Column } from '../../models/column.model';
 import { PositionFilter } from '../../models/position-filter.model';
+import { BlotterService } from '../../services/blotter.service';
 
 @Component({
   selector: 'ats-positions[shouldShowSettings][guid]',
@@ -21,6 +21,7 @@ export class PositionsComponent implements OnInit {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+  tableInnerWidth = '1000px'
 
   private settingsSub? : Subscription;
 
@@ -133,6 +134,7 @@ export class PositionsComponent implements OnInit {
       tap(s => {
         if (s.positionsColumns) {
           this.listOfColumns = this.allColumns.filter(c => s.positionsColumns.includes(c.id))
+          this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
         }
       })
     ).subscribe();

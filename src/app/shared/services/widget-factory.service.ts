@@ -116,9 +116,9 @@ export class WidgetFactoryService {
       const settings: BlotterSettings = {
         ...this.selectedPortfolio,
         guid: newWidget.gridItem.label,
-        tradesColumns: allTradesColumns.map(c => c.columnId),
-        positionsColumns: allPositionsColumns.map(c => c.columnId),
-        ordersColumns: allOrdersColumns.map(c => c.columnId),
+        tradesColumns: allTradesColumns.filter(c => c.isDefault).map(c => c.columnId),
+        positionsColumns: allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId),
+        ordersColumns: allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
         linkToActive: true,
         title: `Блоттер ${this.selectedPortfolio.portfolio} ${this.selectedPortfolio.exchange}`,
       };

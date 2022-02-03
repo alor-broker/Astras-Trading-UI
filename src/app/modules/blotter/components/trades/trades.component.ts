@@ -4,9 +4,9 @@ import { catchError, filter, map, mergeMap, switchMap, tap } from 'rxjs/operator
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
 import { Widget } from 'src/app/shared/models/widget.model';
-import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { Column } from '../../models/column.model';
 import { TradeFilter } from '../../models/trade-filter.model';
+import { BlotterService } from '../../services/blotter.service';
 
 @Component({
   selector: 'ats-trades[guid]',
@@ -20,6 +20,7 @@ export class TradesComponent implements OnInit {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+  tableInnerWidth = '1000px'
 
   private settingsSub? : Subscription;
 
@@ -136,7 +137,8 @@ export class TradesComponent implements OnInit {
     this.settingsSub = this.service.getSettings(this.guid).pipe(
       tap(s => {
         if (s.ordersColumns) {
-          this.listOfColumns = this.allColumns.filter(c => s.tradesColumns.includes(c.id))
+          this.listOfColumns = this.allColumns.filter(c => s.tradesColumns.includes(c.id));
+          this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
         }
       })
     ).subscribe();

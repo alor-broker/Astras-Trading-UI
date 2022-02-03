@@ -12,9 +12,9 @@ describe('LimitEditComponent', () => {
   let component: LimitEditComponent;
   let fixture: ComponentFixture<LimitEditComponent>;
 
-  const spySync = jasmine.createSpyObj('SyncService', ['shouldShowCommandModal$', 'commandParams$']);
+  const spySync = jasmine.createSpyObj('SyncService', ['shouldShowCommandModal$', 'editParams$']);
   spySync.shouldShowCommandModal$ = of(false);
-  spySync.commandParams$ = of(null);
+  spySync.editParams$ = of(null);
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand']);
 
   beforeEach(async () => {

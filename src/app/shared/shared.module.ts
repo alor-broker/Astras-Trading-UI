@@ -34,6 +34,7 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
     NzDescriptionsModule,
     NzEmptyModule,
     NzCheckboxModule,
+    ScrollingModule,
   ],
   exports: [
     // Ng zorro
@@ -97,6 +99,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
     NzDescriptionsModule,
     NzEmptyModule,
     NzCheckboxModule,
+    ScrollingModule,
     // modules
     CommonModule,
     FormsModule,

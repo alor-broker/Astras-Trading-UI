@@ -16,7 +16,10 @@ describe('LightChartWidgetComponent', () => {
     timeFrame: 'D',
     from: 0,
     symbol: 'SBER',
-    exchange: 'MOEX'
+    exchange: 'MOEX',
+    guid: '123',
+    width: 300,
+    height: 300
   }
   spyChart.settings$ = of(settings);
 
@@ -41,16 +44,6 @@ describe('LightChartWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LightChartWidgetComponent);
     component = fixture.componentInstance;
-    component.widget = {
-      title: WidgetNames.lightChart,
-      gridItem: { x: 0, y: 0, rows: 1, cols: 1 },
-      settings: {
-        exchange: 'MOEX',
-        symbol: 'SBER',
-        timeFrame: 'D',
-        from: 0
-      }
-    }
     fixture.detectChanges();
   });
 

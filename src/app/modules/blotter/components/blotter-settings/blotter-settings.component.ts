@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { allOrdersColumns, allPositionsColumns, allTradesColumns, BlotterSettings, ColumnIds } from 'src/app/shared/models/settings/blotter-settings.model';
-import { BlotterService } from 'src/app/shared/services/blotter.service';
+import { BlotterService } from '../../services/blotter.service';
 
 @Component({
   selector: 'ats-blotter-settings[guid]',

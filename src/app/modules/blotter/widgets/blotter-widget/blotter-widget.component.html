@@ -1,4 +1,5 @@
-<nz-tabset *ngIf="!shouldShowSettings" nzTabPosition="top" nzSize="small">
+<nz-tabset *ngIf="!shouldShowSettings" nzTabPosition="top" nzSize="small"
+  (mousedown)='$event.stopPropagation()'>
   <nz-tab nzTitle="Заявки">
     <ats-orders
       [guid]="guid"

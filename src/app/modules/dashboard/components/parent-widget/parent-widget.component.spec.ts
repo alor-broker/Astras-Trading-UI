@@ -18,12 +18,8 @@ describe('ParentWidgetComponent', () => {
     fixture = TestBed.createComponent(ParentWidgetComponent);
     component = fixture.componentInstance;
     component.widget = {
-      title: WidgetNames.blotter,
+      guid: '123',
       gridItem: { x: 0, y: 0, rows: 1, cols: 1 },
-      settings: {
-        exchange: 'MOEX',
-        portfolio: 'D39004'
-      }
     }
     component.resize = jasmine.createSpyObj('resize', ['subscribe']);
     fixture.detectChanges();

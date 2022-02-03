@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { BlotterService } from 'src/app/shared/services/blotter.service';
+import { BlotterService } from '../../services/blotter.service';
 
 @Component({
   selector: 'ats-blotter-widget[shouldShowSettings][guid][linkedToActive]',

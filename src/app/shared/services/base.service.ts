@@ -4,9 +4,7 @@ import { AnySettings } from '../models/settings/any-settings.model';
 import { isEqual } from '../utils/settings-helper';
 import { DashboardService } from './dashboard.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class BaseService<T extends AnySettings> {
   protected settings?: T;
   constructor(private settingsService: DashboardService) {}
@@ -21,7 +19,7 @@ export class BaseService<T extends AnySettings> {
 
   setSettings(settings: T) {
     if (this.settings && !isEqual(this.settings, settings)) {
-      console.log('updating settings')
+      console.log
       this.settingsService.updateSettings(settings.guid, settings);
     }
   }

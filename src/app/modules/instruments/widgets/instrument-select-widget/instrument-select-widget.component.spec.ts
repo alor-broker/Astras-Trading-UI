@@ -28,11 +28,6 @@ describe('InstrumentSelectWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(InstrumentSelectWidgetComponent);
     component = fixture.componentInstance;
-    component.widget = {
-      title: WidgetNames.instrumentSelect,
-      gridItem: { x: 0, y: 0, rows: 1, cols: 1 },
-      settings: {   }
-    }
     fixture.detectChanges();
   });
 

@@ -10,11 +10,11 @@ import { OrderbookService } from '../../services/orderbook.service';
 describe('OrderbookSettingsComponent', () => {
   let component: OrderbookSettingsComponent;
   let fixture: ComponentFixture<OrderbookSettingsComponent>;
-  const spy = jasmine.createSpyObj('OrderbookService', ['settings$'])
-  spy.settings$ = of({
+  const spy = jasmine.createSpyObj('OrderbookService', ['getSettings'])
+  spy.getSettings.and.returnValue(of({
     symbol: 'SBER',
     exchange: 'MOEX'
-  })
+  }))
 
   beforeEach((async () => {
     await TestBed.configureTestingModule({

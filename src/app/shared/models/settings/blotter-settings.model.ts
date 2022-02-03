@@ -11,40 +11,41 @@ export interface BlotterSettings {
 
 export interface ColumnIds  {
   columnId: string,
-  name: string
+  name: string,
+  isDefault: boolean
 }
 
 export const allOrdersColumns: ColumnIds[] = [
-  { columnId: 'id', name: "Номер" },
-  { columnId: 'symbol', name: "Тикер" },
-  { columnId: 'side', name: "Сторона" },
-  { columnId: 'status', name: "Статус" },
-  { columnId: 'qty', name: "Кол-во" },
-  { columnId: 'residue', name: "Остаток" },
-  { columnId: 'volume', name: "Объем" },
-  { columnId: 'price', name: "Цена" },
-  { columnId: 'transTime', name: 'Время' },
-  { columnId: 'exchange', name: "Биржа" },
-  { columnId: 'type', name: "Тип" },
-  { columnId: 'endTime', name: "Действ. до" },
+  { columnId: 'id', name: "Номер", isDefault: false },
+  { columnId: 'symbol', name: "Тикер", isDefault: true  },
+  { columnId: 'side', name: "Сторона", isDefault: false  },
+  { columnId: 'status', name: "Статус", isDefault: false  },
+  { columnId: 'qty', name: "Кол-во", isDefault: false  },
+  { columnId: 'residue', name: "Остаток", isDefault: true  },
+  { columnId: 'volume', name: "Объем", isDefault: true  },
+  { columnId: 'price', name: "Цена", isDefault: true  },
+  { columnId: 'transTime', name: 'Время', isDefault: false  },
+  { columnId: 'exchange', name: "Биржа", isDefault: false  },
+  { columnId: 'type', name: "Тип", isDefault: false  },
+  { columnId: 'endTime', name: "Действ. до", isDefault: false  },
 ]
 
 export const allPositionsColumns: ColumnIds[] = [
-  { columnId: 'symbol', name: "Тикер" },
-  { columnId: 'shortName', name: "Имя" },
-  { columnId: 'avgPrice', name: "Средняя" },
-  { columnId: 'qtyT0', name: "T0" },
-  { columnId: 'qtyT1', name: "T1" },
-  { columnId: 'qtyT2', name: "T2" },
-  { columnId: 'qtyTFuture', name: "TFuture" }
+  { columnId: 'symbol', name: "Тикер", isDefault: true  },
+  { columnId: 'shortName', name: "Имя", isDefault: true  },
+  { columnId: 'avgPrice', name: "Средняя", isDefault: true  },
+  { columnId: 'qtyT0', name: "T0", isDefault: true  },
+  { columnId: 'qtyT1', name: "T1", isDefault: false  },
+  { columnId: 'qtyT2', name: "T2", isDefault: true  },
+  { columnId: 'qtyTFuture', name: "TFuture", isDefault: false  }
 ]
 
 export const allTradesColumns: ColumnIds[] = [
-  { columnId: 'id', name: "Номер" },
-  { columnId: 'orderno', name: "Заявка" },
-  { columnId: 'symbol', name: "Тикер" },
-  { columnId: 'side', name: "Сторона" },
-  { columnId: 'price', name: "Цена" },
-  { columnId: 'qty', name: "Кол-во" },
-  { columnId: 'date', name: 'Время' }
+  { columnId: 'id', name: "Номер", isDefault: false  },
+  { columnId: 'orderno', name: "Заявка", isDefault: false  },
+  { columnId: 'symbol', name: "Тикер", isDefault: true  },
+  { columnId: 'side', name: "Сторона", isDefault: true  },
+  { columnId: 'price', name: "Цена", isDefault: true  },
+  { columnId: 'qty', name: "Кол-во", isDefault: true  },
+  { columnId: 'date', name: 'Время', isDefault: false  }
 ]

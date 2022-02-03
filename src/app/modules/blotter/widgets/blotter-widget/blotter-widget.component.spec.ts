@@ -2,15 +2,19 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
-import { BlotterService } from 'src/app/shared/services/blotter.service';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { BlotterWidgetComponent } from './blotter-widget.component';
 
 const settings : BlotterSettings = {
   exchange: 'MOEX',
-  portfolio: 'D39004'
+  portfolio: 'D39004',
+  guid: '1230',
+  ordersColumns: ['ticker'],
+  tradesColumns: ['ticker'],
+  positionsColumns: ['ticker'],
 }
 
 describe('BlotterWidgetComponent', () => {
@@ -22,20 +26,23 @@ describe('BlotterWidgetComponent', () => {
       declarations: [ BlotterWidgetComponent ],
       imports: [SharedModule],
       providers: [
-        { provide: BlotterService, useClass: MockServiceBlotter }
+        { provide: BlotterService, useClass: MockServiceBlotter },
       ],
     })
     .compileComponents();
+
+    TestBed.overrideComponent(BlotterWidgetComponent, {
+      set: {
+        providers: [
+          { provide: BlotterService, useClass: MockServiceBlotter },
+        ]
+      }
+    })
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(BlotterWidgetComponent);
     component = fixture.componentInstance;
-    component.widget = {
-      title: WidgetNames.blotter,
-      gridItem: { x: 0, y: 0, rows: 1, cols: 1 },
-      settings
-    }
     fixture.detectChanges();
   });
 

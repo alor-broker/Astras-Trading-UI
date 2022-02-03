@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, merge, Observable, of, pipe, Subscription } from 'rxjs';
 import { distinct, filter, map, startWith, switchMap } from 'rxjs/operators';
+import { Order } from 'src/app/shared/models/orders/order.model';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
+import { Trade } from 'src/app/shared/models/trades/trade.model';
+import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
+import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
-import { Order } from '../models/orders/order.model';
-import { Trade } from '../models/trades/trade.model';
-import { BaseWebsocketService } from './base-websocket.service';
-import { DashboardService } from './dashboard.service';
 
 @Injectable({
   providedIn: 'root'

@@ -33,11 +33,6 @@ describe('OrderbookWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderbookWidgetComponent);
     component = fixture.componentInstance;
-    component.widget = {
-      title: WidgetNames.orderBook,
-      gridItem: { x: 0, y: 0, rows: 1, cols: 1 },
-      settings
-    }
     fixture.detectChanges();
   });
 
