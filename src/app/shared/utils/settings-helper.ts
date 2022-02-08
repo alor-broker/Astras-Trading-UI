@@ -26,7 +26,8 @@ export function isPortfolioDependent(settings: AnySettings) : settings is Portfo
 }
 
 export function isOrderbookSettings(settings: AnySettings) : settings is OrderbookSettings {
-  return settings && 'linkToActive' in settings && 'symbol' in settings && 'exchange' in settings && 'depth' in settings;
+  return settings && 'linkToActive' in settings && 'symbol' in settings
+    && 'exchange' in settings && 'depth' in settings && 'showChart' in settings;
 }
 
 export function isLightChartSettings(settings: AnySettings) : settings is LightChartSettings {
@@ -61,7 +62,8 @@ export function isEqualOrderbookSettings(
       settings1.instrumentGroup == settings2.instrumentGroup &&
       settings1.linkToActive == settings2.linkToActive &&
       settings1.exchange == settings2.exchange &&
-      settings1.depth == settings2.depth
+      settings1.depth == settings2.depth &&
+      settings1.showChart == settings2.showChart
     );
   } else return false;
 }

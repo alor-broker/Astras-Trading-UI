@@ -19,6 +19,10 @@
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="12" [nzXs]="24">Показавать график</nz-form-label>
+      <nz-switch formControlName='showChart' nzFor="showChart"></nz-switch>
+    </nz-form-item>
     <nz-collapse [nzBordered]="false" class="compact">
       <nz-collapse-panel nzHeader="Продвинутые">
         <nz-form-control nzErrorTip="Группа">
@@ -34,12 +38,6 @@
             <input class='ant-input' formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />
           </nz-input-group>
         </nz-form-control>
-        <!-- <nz-form-control nzErrorTip="Привязка к активному">
-          <nz-switch formControlName='linkToActive' nzFor="linkToActive" [nzCheckedChildren]="checkedTemplate"
-            [nzUnCheckedChildren]="unCheckedTemplate"></nz-switch>
-          <ng-template #checkedTemplate><i nz-icon nzType="check"></i></ng-template>
-          <ng-template #unCheckedTemplate><i nz-icon nzType="close"></i></ng-template>
-        </nz-form-control> -->
       </nz-collapse-panel>
     </nz-collapse>
     <nz-form-item class="compact">

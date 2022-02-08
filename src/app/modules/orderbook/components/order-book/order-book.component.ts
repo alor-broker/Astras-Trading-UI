@@ -8,13 +8,11 @@ import { catchError, finalize, tap } from 'rxjs/operators';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
-import { Side } from 'src/app/shared/models/enums/side.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import {
   sellColorBackground,
   buyColorBackground,
 } from '../../../../shared/models/settings/styles-constants';
-import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 
 interface Size {
   width: string;

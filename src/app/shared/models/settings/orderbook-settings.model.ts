@@ -4,6 +4,7 @@ import { InstrumentKey } from '../instruments/instrument-key.model';
 export interface OrderbookSettings extends WidgetSettings, InstrumentKey {
   title?: string,
   guid: string,
-  depth?: number;
-  linkToActive?: boolean;
+  depth?: number,
+  linkToActive?: boolean,
+  showChart: boolean
 }

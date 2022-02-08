@@ -1,0 +1,14 @@
+<div class='chart' *ngIf='shouldShowChart$ | async'>
+  <ngx-charts-area-chart
+      [legend]="false"
+      [customColors]='{}'
+      [showGridLines]='false'
+      [showXAxisLabel]="false"
+      [showYAxisLabel]="false"
+      [xAxis]="true"
+      [yAxis]="true"
+      [timeline]="false"
+      [rotateXAxisTicks]="false"
+      [results]="data">
+  </ngx-charts-area-chart>
+</div>

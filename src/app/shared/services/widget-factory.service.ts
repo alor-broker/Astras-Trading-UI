@@ -68,7 +68,8 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       linkToActive: true,
       depth: 10,
-      title:  `Стакан ${this.selectedInstrument.symbol} ${group ? group : ''}`
+      title:  `Стакан ${this.selectedInstrument.symbol} ${group ? group : ''}`,
+      showChart: true
     };
 
     return settings;

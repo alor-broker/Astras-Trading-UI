@@ -26,10 +26,10 @@ export class OrderbookSettingsComponent implements OnInit {
             Validators.required,
             Validators.minLength(4)
           ]),
-          // linkToActive: new FormControl(settings.linkToActive),
           exchange: new FormControl(settings.exchange, Validators.required),
           depth: new FormControl(settings.depth, [Validators.required, Validators.min(0), Validators.max(20)]),
           instrumentGroup: new FormControl(settings.instrumentGroup),
+          showChart: new FormControl(settings.showChart),
         });
       }
     })
