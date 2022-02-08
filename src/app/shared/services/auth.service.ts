@@ -95,7 +95,7 @@ export class AuthService {
     return url == `${this.accountUrl}/login` || url == `${this.accountUrl}/refresh`;
   }
 
-  public refresh() {
+  public refresh() : Observable<string> {
     const user = this.currentUser.getValue();
     if (!user) {
       this.redirectToSso();

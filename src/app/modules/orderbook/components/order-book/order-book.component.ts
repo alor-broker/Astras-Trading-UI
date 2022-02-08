@@ -4,7 +4,7 @@ import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
-import { catchError, finalize, tap } from 'rxjs/operators';
+import { catchError, finalize, map, tap } from 'rxjs/operators';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
@@ -36,6 +36,8 @@ export class OrderBookComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
+  shouldShowTable$: Observable<boolean> = of(true);
+
   resizeSub!: Subscription;
   ob$: Observable<OrderBook | null> = of(null);
   maxVolume: number = 1;
@@ -48,6 +50,9 @@ export class OrderBookComponent implements OnInit, OnDestroy, OnChanges {
   constructor(private service: OrderbookService, private sync: SyncService) {}
 
   ngOnInit(): void {
+    this.shouldShowTable$ = this.service.getSettings(this.guid).pipe(
+      map((s) => s.showTable)
+    );
     this.ob$ = this.service.getOrderbook(this.guid).pipe(
       tap((ob) => (this.maxVolume = ob?.maxVolume ?? 1))
     );

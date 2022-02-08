@@ -1,7 +1,7 @@
 <div>
-  <ats-orderbook-chart [guid]='guid'></ats-orderbook-chart>
   <div *ngIf="!shouldShowSettings && (ob$ | async) as ob" [ngStyle]="sizes | async">
-    <nz-table #basicTable [nzData]="ob.rows" nzSize="small" [nzFrontPagination]="false">
+    <ats-orderbook-chart [guid]='guid' [chartData]="ob.chartData"></ats-orderbook-chart>
+    <nz-table *ngIf="shouldShowTable$ | async" #basicTable [nzData]="ob.rows" nzSize="small" [nzFrontPagination]="false">
       <thead>
         <tr>
           <th>Vol</th>

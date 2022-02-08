@@ -35,7 +35,7 @@ import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -47,7 +47,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     ReactiveFormsModule,
     HttpClientModule,
     GridsterModule,
-    NgxChartsModule,
+    NgChartsModule,
     // Ng zorro
     NzTableModule,
     NzButtonModule,
@@ -73,7 +73,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     NzDescriptionsModule,
     NzEmptyModule,
     NzCheckboxModule,
-    ScrollingModule,
+    ScrollingModule
   ],
   exports: [
     // Ng zorro
@@ -107,7 +107,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     FormsModule,
     ReactiveFormsModule,
     GridsterModule,
-    NgxChartsModule,
+    NgChartsModule,
     // components
     PriceTickComponent
   ],

@@ -9,14 +9,21 @@ import { OrderBookComponent } from './order-book.component';
 describe('OrderBookComponent', () => {
   let component: OrderBookComponent;
   let fixture: ComponentFixture<OrderBookComponent>;
-  const spyOb = jasmine.createSpyObj('OrderbookService', ['settings$', 'getOrderbook', 'unsubscribe']);
-  spyOb.settings$ = of({
+  const spyOb = jasmine.createSpyObj('OrderbookService', ['settings$', 'getOrderbook', 'unsubscribe', 'getSettings']);
+  spyOb.getSettings.and.returnValue(of({
     symbol: 'SBER',
-    exchange: 'MOEX'
-  })
+    exchange: 'MOEX',
+    showTable: true
+  }))
   const ob : OrderBook = {
     rows: [],
-    maxVolume: 10
+    maxVolume: 10,
+    chartData: {
+      asks: [],
+      bids: [],
+      minPrice: 0,
+      maxPrice: 0
+    }
   }
   spyOb.getOrderbook.and.returnValue(of(ob))
   const spySync = jasmine.createSpyObj('SyncService', ['openCommandModal'])

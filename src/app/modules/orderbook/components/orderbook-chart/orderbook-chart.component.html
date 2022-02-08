@@ -1,14 +1,9 @@
 <div class='chart' *ngIf='shouldShowChart$ | async'>
-  <ngx-charts-area-chart
-      [legend]="false"
-      [customColors]='{}'
-      [showGridLines]='false'
-      [showXAxisLabel]="false"
-      [showYAxisLabel]="false"
-      [xAxis]="true"
-      [yAxis]="true"
-      [timeline]="false"
-      [rotateXAxisTicks]="false"
-      [results]="data">
-  </ngx-charts-area-chart>
+  <canvas *ngIf="chartData$ | async as cd"
+    baseChart
+    type="scatter"
+    [datasets]="cd"
+    [legend]="false"
+    [options]="chartOptions">
+  </canvas>
 </div>

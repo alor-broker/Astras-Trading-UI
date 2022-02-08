@@ -6,5 +6,6 @@ export interface OrderbookSettings extends WidgetSettings, InstrumentKey {
   guid: string,
   depth?: number,
   linkToActive?: boolean,
-  showChart: boolean
+  showChart: boolean,
+  showTable: boolean
 }

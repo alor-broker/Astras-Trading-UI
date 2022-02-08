@@ -69,7 +69,8 @@ export class WidgetFactoryService {
       linkToActive: true,
       depth: 10,
       title:  `Стакан ${this.selectedInstrument.symbol} ${group ? group : ''}`,
-      showChart: true
+      showChart: true,
+      showTable: true,
     };
 
     return settings;

@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { OrderbookService } from '../../services/orderbook.service';
 
 @Component({
@@ -30,6 +29,7 @@ export class OrderbookSettingsComponent implements OnInit {
           depth: new FormControl(settings.depth, [Validators.required, Validators.min(0), Validators.max(20)]),
           instrumentGroup: new FormControl(settings.instrumentGroup),
           showChart: new FormControl(settings.showChart),
+          showTable: new FormControl(settings.showTable),
         });
       }
     })

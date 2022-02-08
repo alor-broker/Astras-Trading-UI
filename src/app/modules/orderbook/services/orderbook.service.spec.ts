@@ -40,6 +40,24 @@ const generateOrderBook = () : OrderBook => {
   const volumes = [...randomRows.map(p => p?.askVolume ?? 0), ...randomRows.map(p => p?.bidVolume ?? 0)]
   return {
     rows: randomRows,
-    maxVolume: Math.max(...volumes)
+    maxVolume: Math.max(...volumes),
+    chartData:{
+      maxPrice: 400,
+      minPrice: 200,
+      asks: [ { y: 200, x: 300 },
+        { y: 1000, x: 310 },
+        { y: 1700, x: 320 },
+        { y: 2500, x: 340 },
+        { y: 6400, x: 350 },
+        { y: 7800, x: 380 },
+        { y: 9000, x: 400 },],
+      bids: [  { y: 10000, x: 200 },
+        { y: 4000, x: 220 },
+        { y: 2200, x: 240 },
+        { y: 1800, x: 250 },
+        { y: 1700, x: 280 },
+        { y: 500, x: 290 },
+        { y: 200, x: 298 },]
+    }
   }
 }
