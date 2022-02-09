@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, flatMap, map, mergeMap, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { distinct, distinctUntilChanged, filter, flatMap, map, mergeMap, switchMap } from 'rxjs/operators';
 import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -14,12 +14,14 @@ import { HistoryResponse } from 'src/app/shared/models/history/history-response.
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
+import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LightChartService extends BaseWebsocketService<LightChartSettings> {
   private bars$: Observable<Candle> = new Observable();
+  private guid?: string
 
   constructor(ws: WebsocketService,
     settingsService: DashboardService,
@@ -33,9 +35,8 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
   }
 
   getBars(guid: string) {
-    this.sync.selectedInstrument$.pipe(
-      map((i) => {
-        const current = this.getSettingsValue();
+    combineLatest([this.sync.selectedInstrument$, this.getSettings(guid)]).pipe(
+      map(([i, current]) => {
         if (current && current.linkToActive &&
             !(current.symbol == i.symbol &&
             current.exchange == i.exchange &&
@@ -47,7 +48,9 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
     ).subscribe();
     this.bars$ = this.getSettings(guid).pipe(
       filter((s): s is LightChartSettings  => !!s),
-      switchMap(s => this.getBarsReq(s.symbol, s.exchange, s.timeFrame, s.from, s.instrumentGroup))
+      switchMap(s =>{
+        return this.getBarsReq(s.symbol, s.exchange, s.timeFrame, s.from, s.instrumentGroup);
+      })
     );
     return this.bars$;
   }

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { GridsterItem } from 'angular-gridster2';
 import {
   BehaviorSubject,
   filter,
@@ -8,6 +7,7 @@ import {
 } from 'rxjs';
 import { NewWidget } from 'src/app/shared/models/new-widget.model';
 import { Widget } from 'src/app/shared/models/widget.model';
+import { WidgetNames } from '../models/enums/widget-names';
 import { AnySettings } from '../models/settings/any-settings.model';
 import { WidgetFactoryService } from './widget-factory.service';
 
@@ -28,11 +28,15 @@ export class DashboardService {
   settingsByGuid$ : Observable<Map<string, AnySettings>>;
 
   constructor(private factory: WidgetFactoryService) {
+    let firstOpen = false;
     const existingDashboardJson = localStorage.getItem(this.dashboardsStorage);
     const settingsJson = localStorage.getItem(this.settingsStorage);
     let existingDashboard : Map<string, Widget> = new Map();
     if (existingDashboardJson) {
       existingDashboard = new Map(JSON.parse(existingDashboardJson));
+    }
+    else {
+      firstOpen = true;
     }
     let existingSettings : Map<string, AnySettings> = new Map();
     if (settingsJson) {
@@ -44,10 +48,13 @@ export class DashboardService {
 
     this.settingsSource = new BehaviorSubject<Map<string, AnySettings>>(existingSettings);
     this.settingsByGuid$ = this.settingsSource.asObservable();
+    if (firstOpen) {
+      this.createDefaultDashboard();
+    }
   }
 
-  addWidget(newWidget: NewWidget) {
-    const newSettings = this.factory.createNewSettings(newWidget);
+  addWidget(newWidget: NewWidget, additionalSettings?: any) {
+    const newSettings = this.factory.createNewSettings(newWidget, additionalSettings);
     const widget = {
       guid: newWidget.gridItem.label,
       gridItem: newWidget.gridItem
@@ -57,15 +64,6 @@ export class DashboardService {
     const settings = this.getSettingsValue().set(guid, newSettings);
     this.setDashboard(widgets);
     this.setSettings(settings);
-  }
-
-  updateGridItem(item: GridsterItem) {
-    const guid = item.label;
-    const existing = this.getDashboardValue().get(guid);
-    if (existing) {
-      const widgets = this.getDashboardValue().set(guid, { ...existing, gridItem: item });
-      this.setDashboard(widgets);
-    }
   }
 
   updateWidget(updated: Widget) {
@@ -90,6 +88,12 @@ export class DashboardService {
 
   clearDashboard() {
     this.setDashboard(new Map())
+    localStorage.removeItem(this.dashboardsStorage)
+    localStorage.removeItem(this.settingsStorage)
+  }
+
+  saveDashboard(name: string) {
+    this.setDashboard(this.getDashboardValue());
   }
 
   getWidget(guid: string) {
@@ -135,5 +139,25 @@ export class DashboardService {
   private storeSettings() {
     const settings = this.getSettingsValue();
     localStorage.setItem(this.settingsStorage, JSON.stringify(Array.from(settings.entries())));
+  }
+
+  private createDefaultDashboard() {
+    setTimeout(() => {
+      this.addWidget({
+        gridItem: { x: 0, y: 1, cols: 2, rows: 1, type: WidgetNames.blotter },
+      }, { activeTabIndex: 2 });
+      this.addWidget({
+        gridItem: { x: 3, y: 0, cols: 1, rows: 1, type: WidgetNames.orderBook },
+      });
+      this.addWidget({
+        gridItem: { x: 0, y: 0, cols: 3, rows: 1, type: WidgetNames.lightChart },
+      });
+      this.addWidget({
+        gridItem: { x: 3, y: 1, cols: 1, rows: 1, type: WidgetNames.instrumentSelect },
+      });
+      this.addWidget({
+        gridItem: { x: 2, y: 1, cols: 1, rows: 1, type: WidgetNames.blotter },
+      }, { activeTabIndex: 0 });
+    }, 1000)
   }
 }

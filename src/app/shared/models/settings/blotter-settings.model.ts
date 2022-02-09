@@ -1,5 +1,6 @@
 export interface BlotterSettings {
   title?: string,
+  activeTabIndex: number,
   exchange: string,
   portfolio: string,
   linkToActive?: boolean,
@@ -34,7 +35,7 @@ export const allPositionsColumns: ColumnIds[] = [
   { columnId: 'symbol', name: "Тикер", isDefault: true  },
   { columnId: 'shortName', name: "Имя", isDefault: true  },
   { columnId: 'avgPrice', name: "Средняя", isDefault: true  },
-  { columnId: 'qtyT0', name: "T0", isDefault: true  },
+  { columnId: 'qtyT0', name: "T0", isDefault: false  },
   { columnId: 'qtyT1', name: "T1", isDefault: false  },
   { columnId: 'qtyT2', name: "T2", isDefault: true  },
   { columnId: 'qtyTFuture', name: "TFuture", isDefault: false  }

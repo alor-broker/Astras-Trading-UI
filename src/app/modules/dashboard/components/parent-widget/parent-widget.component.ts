@@ -6,6 +6,7 @@ import {
   ViewEncapsulation,
   OnInit,
   Output,
+  OnDestroy,
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { Widget } from 'src/app/shared/models/widget.model';
@@ -17,7 +18,7 @@ import { Widget } from 'src/app/shared/models/widget.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class ParentWidgetComponent implements OnInit {
+export class ParentWidgetComponent implements OnInit, OnDestroy {
 
   @Input()
   widget!: Widget;
@@ -30,7 +31,10 @@ export class ParentWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
   isLinked: boolean = true;
 
-  constructor() {  }
+  constructor() { }
+  ngOnDestroy(): void {
+    console.log(`destroyed: ${this.widget.gridItem.label}`)
+  }
 
   ngOnInit(): void {
     this.resize.subscribe(i => {

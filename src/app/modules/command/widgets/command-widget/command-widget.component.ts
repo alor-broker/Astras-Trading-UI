@@ -29,12 +29,10 @@ export class CommandWidgetComponent implements OnInit {
   }
 
   handleOk(): void {
-    console.log('Button ok clicked!');
     this.sync.closeCommandModal();
   }
 
   handleCancel(): void {
-    console.log('Button cancel clicked!');
     const close = () => this.sync.closeCommandModal();
     close();
   }

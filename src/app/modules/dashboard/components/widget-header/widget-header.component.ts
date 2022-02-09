@@ -1,9 +1,6 @@
 import { Component, Input, Output, OnInit, EventEmitter, OnDestroy } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
-import { combineLatestWith, filter, finalize, map, tap } from 'rxjs/operators';
-import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
-import { WidgetSettings } from 'src/app/shared/models/widget-settings.model';
-import { Widget } from 'src/app/shared/models/widget.model';
+import { Observable, Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { isInstrumentDependent, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';

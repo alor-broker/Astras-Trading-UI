@@ -1,33 +1,46 @@
-
 <nz-header>
   <ul nz-menu nzTheme="dark" nzMode="horizontal">
     <li nz-menu-item>
-      <a [routerLink]="['/']"><div class="logo"></div></a>
+      <a [routerLink]="['/']" nzSuccess><div class="logo"></div></a>
     </li>
-    <li nz-menu-item (click)="addItem(names.orderBook)">
-      <i nz-icon nzType="ordered-list" nzTheme="outline"></i>
+    <li nz-menu-item class='menu-item icon-li' (click)="newOrder()">
+      <i nz-icon nzType="plus-circle" nzTheme="twotone" [nzTwotoneColor]="buyColor" class='managing-icon'></i>
     </li>
-    <li nz-menu-item (click)="addItem(names.lightChart)">
-      <i nz-icon nzType="area-chart" nzTheme="outline"></i>
+    <li nz-menu-item class='menu-item'>
+      <button nz-button nz-dropdown [nzDropdownMenu]="widgetsMenu" nzSize='small' >
+        Виджет
+        <i nz-icon nzType="plus"></i>
+      </button>
     </li>
-    <li nz-menu-item (click)="addItem(names.instrumentSelect)">
-      <i nz-icon nzType="eye" nzTheme="outline"></i>
-    </li>
-    <li nz-menu-item (click)="addItem('blotter')">
-      <i nz-icon nzType="table" nzTheme="outline"></i>
-    </li>
-    <li nz-menu-item (click)="clear()">
-      <i nz-icon nzType="delete" nzTheme="outline"></i>
-    </li>
-    <li nz-menu-item *ngIf="portfolios$ | async as portfolios">
-      <nz-select nzShowSearch [ngModel]="selectDefault(portfolios)" (ngModelChange)="changePortfolio($event)">
-        <nz-option  *ngFor='let model of portfolios'
-          [nzValue]="model"
-          nzLabel="{{model.portfolio}}:{{model.exchange}}"></nz-option>
+    <li nz-menu-item  *ngIf="portfolios$ | async as portfolios"  class='menu-item'>
+      <nz-select nzSize='small' nzShowSearch [ngModel]="selectDefault(portfolios)" (ngModelChange)="changePortfolio($event)">
+        <nz-option *ngFor='let model of portfolios' [nzValue]="model" nzLabel="{{model.portfolio}}:{{model.exchange}}">
+        </nz-option>
       </nz-select>
     </li>
-    <li class='right' nz-menu-item (click)="logout()">
+    <li nz-menu-item (click)="clear()" class='menu-item icon-li'>
+      <i nz-icon nzType="delete" [nzTwotoneColor]="sellColor" nzTheme="outline" class="managing-icon"></i>
+    </li>
+    <li nz-menu-item (click)="logout()" class='right menu-item' >
       <i nz-icon nzType="logout" nzTheme="outline"></i>
     </li>
   </ul>
 </nz-header>
+
+
+<nz-dropdown-menu #widgetsMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item (click)="addItem(names.instrumentSelect)">
+      <span><i nz-icon nzType="eye" nzTheme="outline"></i> <label><strong>&nbsp;Инструменты</strong></label></span>
+    </li>
+    <li nz-menu-item (click)="addItem(names.orderBook)">
+      <span><i nz-icon nzType="ordered-list" nzTheme="outline"></i> <label>&nbsp;Стакан</label></span>
+    </li>
+    <li nz-menu-item (click)="addItem(names.lightChart)">
+      <span><i nz-icon nzType="sliders" nzTheme="outline"></i><label>&nbsp;График</label></span>
+    </li>
+    <li nz-menu-item (click)="addItem('blotter')">
+      <span><i nz-icon nzType="table" nzTheme="outline"></i><label>&nbsp;Блоттер</label></span>
+    </li>
+  </ul>
+</nz-dropdown-menu>

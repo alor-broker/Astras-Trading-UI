@@ -6,7 +6,9 @@ interface CommandError {
   code: string,
   message: string
 }
-const isCommandError = (e: any): e is CommandError => e && 'code' in e && 'message' in e;
+const isCommandError = (e: any): e is CommandError => {
+  return typeof(e) === 'object' && e && 'code' in e && 'message' in e
+}
 
 
 @Injectable({

@@ -4,11 +4,12 @@ import {
   DisplayGrid,
   Draggable,
   GridsterConfig,
+  GridsterItem,
   GridType,
   PushDirections,
   Resizable,
 } from 'angular-gridster2';
-import { map, Observable, tap } from 'rxjs';
+import { distinct, map, Observable, tap } from 'rxjs';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
@@ -29,7 +30,9 @@ export class DashboardComponent implements OnInit {
   dashboard$?: Observable<Widget[]>;
 
   resize: EventEmitter<DashboardItem> = new EventEmitter<DashboardItem>();
-  constructor(private service: DashboardService) {}
+  constructor(private service: DashboardService) {
+
+  }
 
   ngOnInit(): void {
     this.options = {
@@ -56,8 +59,8 @@ export class DashboardComponent implements OnInit {
       defaultItemCols: 1,
       defaultItemRows: 1,
       fixedColWidth: 105,
-      fixedRowHeight: 105,
-      keepFixedHeightInMobile: false,
+      fixedRowHeight: 300,
+      keepFixedHeightInMobile: true,
       keepFixedWidthInMobile: false,
       scrollSensitivity: 10,
       scrollSpeed: 20,
@@ -83,25 +86,27 @@ export class DashboardComponent implements OnInit {
       pushResizeItems: false,
       pushItems: true,
       swap: false,
-      disablePushOnDrag: false,
+      disablePushOnDrag: true,
       disablePushOnResize: false,
       displayGrid: DisplayGrid.None,
       disableWindowResize: false,
-      disableWarnings: false,
+      disableWarnings: true,
       scrollToNewItems: false,
       itemResizeCallback: (item, e) => {
-        this.resize.emit({...item, height: e.height, width: e.width });
+        if (e.resize.resizeEnabled) {
+          this.resize.emit({...item, height: e.height, width: e.width });
+        }
+        else {
+          this.resize.emit({...item, height: e.el.clientHeight, width: e.el.clientWidth });
+        }
       },
       itemChangeCallback: (item, e) => {
-        this.service.updateGridItem(item);
+        this.service.saveDashboard('default');
       }
     };
 
     this.dashboard$ = this.service.dashboard$.pipe(
-      map(map => Array.from(map.values())),
-      tap(d => {
-        console.log(d);
-      })
+      map(map => Array.from(map.values()))
     );
   }
 

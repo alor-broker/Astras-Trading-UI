@@ -1,7 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { filter, map, Observable, of, Subscription, switchMap, tap } from 'rxjs';
-import { Candle } from 'src/app/shared/models/history/candle.model';
-import { Quote } from 'src/app/shared/models/quotes/quote.model';
+import { catchError, filter, map, Observable, of, Subscription, switchMap } from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
@@ -10,7 +8,6 @@ import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-const
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
-import { Position } from 'src/app/shared/models/positions/position.model';
 
 @Component({
   selector: 'ats-command-header[symbol][exchange]',
@@ -54,8 +51,12 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
       switchMap(p => {
          return this.positionService.getByPortfolio(p.portfolio, p.exchange, this.symbol)
       })
-    ).subscribe(p => {
-      this.position = { abs: Math.abs(p.qtyTFutureBatch), quantity: p.qtyTFutureBatch }
+    ).subscribe({
+      next: (p) => {
+        if (p) {
+          this.position = { abs: Math.abs(p.qtyTFutureBatch), quantity: p.qtyTFutureBatch }
+        }
+      }, error: (e) => console.log(e)
     })
 
     this.priceData$ = this.history.getDaysOpen({

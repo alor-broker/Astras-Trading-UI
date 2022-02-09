@@ -35,7 +35,8 @@ export class WidgetFactoryService {
   }
 
   createNewSettings(
-    newWidget: NewWidget | Widget
+    newWidget: NewWidget | Widget,
+    additionalSettings?: AnySettings
   ): AnySettings {
     let settings: AnySettings | null = null;
     switch (newWidget.gridItem.type) {
@@ -53,7 +54,7 @@ export class WidgetFactoryService {
         break;
     }
     if (settings) {
-      return settings;
+      return {...settings, ...additionalSettings };
     } else throw new Error(`Unknow widget type ${newWidget.gridItem.type}`);
   }
 
@@ -102,7 +103,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       timeFrame: this.tfHelper.getValueByTfLabel('H')?.value,
       from: this.tfHelper.getDefaultFrom('H'),
-      title:  `График ${this.selectedInstrument.symbol} ${group ? group : ''}`,
+      title:  `График ${this.selectedInstrument.symbol} (${group ? group : ''})`,
       width: 300,
       height: 300
     };
@@ -114,19 +115,17 @@ export class WidgetFactoryService {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
-    if (this.selectedPortfolio) {
-      const settings: BlotterSettings = {
-        ...this.selectedPortfolio,
-        guid: newWidget.gridItem.label,
-        tradesColumns: allTradesColumns.filter(c => c.isDefault).map(c => c.columnId),
-        positionsColumns: allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId),
-        ordersColumns: allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
-        linkToActive: true,
-        title: `Блоттер ${this.selectedPortfolio.portfolio} ${this.selectedPortfolio.exchange}`,
-      };
+    const settings: BlotterSettings = {
+      ...(this.selectedPortfolio ?? { portfolio: 'D', exchange: 'MOEX' }),
+      activeTabIndex: 0,
+      guid: newWidget.gridItem.label,
+      tradesColumns: allTradesColumns.filter(c => c.isDefault).map(c => c.columnId),
+      positionsColumns: allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId),
+      ordersColumns: allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
+      linkToActive: true,
+      title: `Блоттер ${this.selectedPortfolio?.portfolio ?? 'D'} ${this.selectedPortfolio?.exchange ?? 'MOEX'}`,
+    };
 
-      return settings;
-    }
-    throw Error('Portfolio is not selected')
+    return settings;
   }
 }

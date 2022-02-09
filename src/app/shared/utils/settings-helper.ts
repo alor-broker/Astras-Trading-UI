@@ -35,7 +35,7 @@ export function isLightChartSettings(settings: AnySettings) : settings is LightC
 }
 
 export function isBlotterSettings(settings: AnySettings) : settings is BlotterSettings {
-  return settings && 'linkToActive' in settings && 'portfolio' in settings && 'exchange' in settings;
+  return settings && 'linkToActive' in settings && 'portfolio' in settings && 'exchange' in settings && 'activeTabIndex' in settings;
 }
 
 export function isEqual(settings1: AnySettings, settings2: AnySettings) {
@@ -98,6 +98,7 @@ export function isEqualBlotterSettings(
       settings1.exchange == settings2.exchange &&
       settings1.portfolio == settings2.portfolio &&
       settings1.guid == settings2.guid &&
+      settings1.activeTabIndex == settings2.activeTabIndex &&
       scalarArrayEqual(settings1.ordersColumns, settings2.ordersColumns)
     );
   } else return false;

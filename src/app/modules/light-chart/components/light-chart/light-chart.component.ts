@@ -3,22 +3,23 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
-import { Widget } from 'src/app/shared/models/widget.model';
 import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { LightChartService } from '../../services/light-chart.service';
 import { Candle } from '../../../../shared/models/history/candle.model';
-import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { LightChart } from '../../utils/light-chart';
 import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
-import { isEqual, isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
+import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
+import { GuidGenerator } from 'src/app/shared/utils/guid';
 
 @Component({
   selector: 'ats-light-chart[resize][guid][resize]',
@@ -27,7 +28,7 @@ import { isEqual, isEqualLightChartSettings } from 'src/app/shared/utils/setting
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LightChartComponent implements OnInit, OnDestroy {
+export class LightChartComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -49,6 +50,10 @@ export class LightChartComponent implements OnInit, OnDestroy {
   private chart?: LightChart;
 
   constructor(private service: LightChartService) { }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes.shouldShowSettings)
+  }
 
   ngOnInit(): void {
     this.bars$ = this.service.getBars(this.guid);

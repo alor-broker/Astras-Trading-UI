@@ -1,5 +1,11 @@
 <nz-tabset *ngIf="!shouldShowSettings" nzTabPosition="top" nzSize="small"
-  (mousedown)='$event.stopPropagation()'>
+  (mousedown)='$event.stopPropagation()' [nzSelectedIndex]="activeTabIndex$ | async" (nzSelectChange)="onIndexChange($event)">
+  <nz-tab nzTitle="О портфеле">
+    <ats-summaries
+      [guid]="guid"
+      [(shouldShowSettings)]="shouldShowSettings"
+      [resize]="resize"></ats-summaries>
+  </nz-tab>
   <nz-tab nzTitle="Заявки">
     <ats-orders
       [guid]="guid"

@@ -1,0 +1,20 @@
+<nz-descriptions
+      *ngIf="summary$ | async as summary"
+      nzBordered
+      [nzColumn]="columns"
+      [nzSize]="columns == 1 ? 'small' : 'default'"
+    >
+      <nz-descriptions-item nzTitle="Оценка портфеля">{{formatCurrency(summary.portfolioLiquidationValue)}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Оценка ликв. портфеля">{{formatCurrency(summary.portfolioEvaluation)}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="P/L за день">
+        <span [class]="summary.profit > 0 ? 'buy' : 'sell'">{{formatCurrency(summary.profit)}}</span>
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="P/L за день, %">
+        <span [class]="summary.profit > 0 ? 'buy' : 'sell'">{{summary.profitRate}}%</span>
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Покуп. сила на утро">{{formatCurrency(summary.buyingPowerAtMorning)}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Начальная маржа">{{formatCurrency(summary.initialMargin)}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="НПР2 (до закрытия)">{{formatCurrency(summary.riskBeforeForcePositionClosing)}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Комиссия">{{formatCurrency(summary.commission)}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Покуп. сила">{{formatCurrency(summary.buyingPower)}}</nz-descriptions-item>
+    </nz-descriptions>

@@ -10,6 +10,7 @@ import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.ser
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
+import { Summary } from '../models/summary.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,9 +26,17 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   order$: Observable<Order[]> = of([]);
   trade$: Observable<Trade[]> = of([]);
   position$: Observable<Position[]> = of([]);
+  summary$: Observable<Summary> = of();
 
   constructor(ws: WebsocketService, settingsService: DashboardService, private sync: SyncService, ) {
     super(ws, settingsService);
+  }
+
+  setTabIndex(index: number) {
+    const settings = this.getSettingsValue();
+    if (settings) {
+      this.setSettings( {...settings, activeTabIndex: index })
+    }
   }
 
   getPositions(guid: string) {
@@ -55,6 +64,21 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     )
     this.linkToPortfolio();
     return this.order$;
+  }
+
+  getSummaries(guid: string) : Observable<Summary> {
+    this.summary$ = this.getSettings(guid).pipe(
+      filter((s): s is BlotterSettings => !!s),
+      switchMap((settings) => this.getSummariesReq(settings.portfolio, settings.exchange))
+    )
+    this.linkToPortfolio();
+    return this.summary$;
+  }
+
+  private getSummariesReq(portfolio: string, exchange: string) {
+    const summary$ = this.getPortfolioEntity<Summary>(portfolio, exchange, "SummariesGetAndSubscribeV2");
+    this.summary$ = summary$;
+    return this.summary$;
   }
 
   private getPositionsReq(portfolio: string, exchange: string) {
@@ -105,22 +129,5 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         })
       ).subscribe();
     }
-  }
-
-  private updateSettings() {
-    return (source : Observable<[PortfolioKey | null, BlotterSettings | null]>) => source.pipe(
-      filter((changes): changes is [PortfolioKey, BlotterSettings] => !!changes[0] && !!changes[1]),
-      map(([portfolio, settings]) => {
-        const shouldUpdate = (settings && settings.linkToActive &&
-          !(settings.portfolio == portfolio.portfolio &&
-          settings.exchange == portfolio.exchange));
-        if (shouldUpdate) {
-          const newSettings = { ...settings, ...portfolio };
-          this.setSettings(newSettings);
-          return newSettings;
-        }
-        return settings;
-      })
-    )
   }
 }
