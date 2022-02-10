@@ -1,8 +1,11 @@
+import { Currency } from "../enums/currencies.model"
+
 export interface BlotterSettings {
   title?: string,
   activeTabIndex: number,
   exchange: string,
   portfolio: string,
+  currency: Currency,
   linkToActive?: boolean,
   ordersColumns: string[],
   tradesColumns: string[],

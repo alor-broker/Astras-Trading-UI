@@ -42,7 +42,18 @@
         <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="ordersColumns">Колонки позиций</nz-form-label>
         <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
           nzPlaceHolder="Выберите..." formControlName="positionsColumns">
-          <nz-option *ngFor="let item of allPositionsColumns" [nzLabel]="item.name" [nzValue]="item.columnId"></nz-option>
+          <nz-option *ngFor="let item of allPositionsColumns" [nzLabel]="item.name" [nzValue]="item.columnId">
+          </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Выберите валюту">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="currency">Валюта</nz-form-label>
+        <nz-select formControlName="currency">
+          <nz-option [nzValue]="'RUB'" nzLabel="RUB"></nz-option>
+          <nz-option [nzValue]="'USD'" nzLabel="USD"></nz-option>
+          <nz-option [nzValue]="'EUR'" nzLabel="EUR"></nz-option>
         </nz-select>
       </nz-form-control>
     </nz-form-item>

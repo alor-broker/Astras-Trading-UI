@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Currency } from 'src/app/shared/models/enums/currencies.model';
 import { allOrdersColumns, allPositionsColumns, allTradesColumns, BlotterSettings, ColumnIds } from 'src/app/shared/models/settings/blotter-settings.model';
 import { BlotterService } from '../../services/blotter.service';
 
@@ -37,12 +38,36 @@ export class BlotterSettingsComponent implements OnInit {
           ordersColumns: new FormControl(settings.ordersColumns),
           tradesColumns: new FormControl(settings.tradesColumns),
           positionsColumns: new FormControl(settings.positionsColumns),
+          currency: new FormControl(this.currencyToCode(settings.currency)),
         });
       }
     })
   }
 
+  codeToCurrency(code: string) {
+    switch(code) {
+      case 'USD':
+        return  Currency.Usd
+      case 'EUR':
+        return Currency.Eur
+      default:
+        return Currency.Rub
+    }
+  }
+
+  currencyToCode(currency: Currency) {
+    switch(currency) {
+      case Currency.Usd:
+        return 'USD'
+      case Currency.Eur:
+        return 'EUR'
+      default:
+        return 'RUB'
+    }
+  }
+
   submitForm(): void {
+    this.form.value.currency = this.codeToCurrency(this.form.value.currency);
     this.service.setSettings({ ...this.prevSettings, ...this.form.value, linkToActive: false})
     this.settingsChange.emit()
   }

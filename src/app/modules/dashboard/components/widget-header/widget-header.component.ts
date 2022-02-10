@@ -3,7 +3,7 @@ import { Observable, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
-import { isInstrumentDependent, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';
+import { getTypeBySettings, isInstrumentDependent, isLightChartSettings, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
 
 
@@ -56,7 +56,6 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
     $event.stopPropagation();
     this.shouldShowSettings = !this.shouldShowSettings;
     this.switchSettingsEvent.emit(this.shouldShowSettings)
-
   }
 
   removeItem($event: MouseEvent | TouchEvent): void {
@@ -70,6 +69,13 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
     $event.stopPropagation();
     if (this.settings) {
       this.dashboard.updateSettings(this.guid, { ...this.settings, linkToActive: linkToActive });
+    }
+  }
+
+  openHelp() {
+    if (this.settings) {
+      const name = getTypeBySettings(this.settings)
+      this.sync.openHelpModal(name);
     }
   }
 }

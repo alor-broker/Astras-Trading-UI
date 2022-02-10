@@ -1,0 +1,9 @@
+<div *ngIf="helpParams$ | async as name">
+  <nz-modal nzOkText="Ок" [nzCancelText]="null" [nzVisible]='isVisible$ | async'
+    nzTitle="Справка" (nzOnOk)="handleClose()" (nzOnCancel)="handleClose()" >
+    <!-- [nzBodyStyle]="{overflowY: 'auto', height: '300px' }"  -->
+    <ng-container *nzModalContent>
+      <ats-help [name]="name"></ats-help>
+    </ng-container>
+  </nz-modal>
+</div>

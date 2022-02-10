@@ -13,6 +13,8 @@ import {
   sellColorBackground,
   buyColorBackground,
 } from '../../../../shared/models/settings/styles-constants';
+import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
+import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 
 interface Size {
   width: string;
@@ -86,6 +88,12 @@ export class OrderBookComponent implements OnInit, OnDestroy, OnChanges {
     return {
       background: `linear-gradient(90deg, ${sellColorBackground} ${size}%, rgba(0,0,0,0) ${size}%)`,
     };
+  }
+
+  cancelOrder(cancells: CancelCommand[]) {
+    for (const cancel of cancells) {
+      this.service.cancelOrder(cancel);
+    }
   }
 
   newLimitOrder(price: number, quantity?: number) {

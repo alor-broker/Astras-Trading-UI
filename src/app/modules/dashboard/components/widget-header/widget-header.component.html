@@ -1,5 +1,5 @@
 <div class='panel' *ngIf="settings$ | async as s">
-  <button nz-button class='btn-panel' nzSize="small" (mousedown)="switchSettings($event)">
+  <button nz-button class='btn-panel' nzSize="small" (click)="switchSettings($event)">
     <i nz-icon nzType="setting" [nzTheme]="'fill'"></i>
   </button>
   <label>{{s.title}}</label>
@@ -9,8 +9,7 @@
       (touchstart)="linkToActive($event, !s.linkToActive)">
       <i nz-icon [nzType]="s.linkToActive ? 'lock' : 'unlock'" [nzTheme]="'outline'"></i>
     </button>
-    <button nz-button class='btn-panel' nzSize="small" (mousedown)="removeItem($event)"
-      (touchstart)="removeItem($event)">
+    <button nz-button class='btn-panel' nzSize="small" (click)="openHelp()">
       <i nz-icon nzType="question-circle" [nzTheme]="'outline'"></i>
     </button>
     <button nz-button class='btn-panel' nzSize="small" (mousedown)="removeItem($event)"

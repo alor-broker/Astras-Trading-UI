@@ -12,6 +12,7 @@ import { LightChartModule } from '../light-chart/light-chart.module';
 import { InstrumentsModule } from '../instruments/instruments.module';
 import { BlotterModule } from '../blotter/blotter.module';
 import { CommandModule } from '../command/command.module';
+import { HelpModule } from '../help/help.module';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { CommandModule } from '../command/command.module';
     LightChartModule,
     InstrumentsModule,
     BlotterModule,
-    CommandModule
+    CommandModule,
+    HelpModule,
     // components
   ]
 })

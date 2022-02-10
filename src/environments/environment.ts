@@ -2,6 +2,14 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+// export const environment = {
+//   production: true,
+//   apiUrl: 'https://api.alor.ru',
+//   wsUrl: 'wss://api.alor.ru/ws',
+//   clientDataUrl: 'https://lk-api.alor.ru',
+//   ssoUrl: 'https://login.alor.ru'
+// };
+
 export const environment = {
   production: false,
   apiUrl: 'https://apidev.alor.ru',

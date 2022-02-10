@@ -1,0 +1,3 @@
+<div class="help" *ngIf="help$ | async as help">
+  <markdown [data]="help.markdown"></markdown>
+</div>

@@ -1,4 +1,4 @@
-<div *ngIf="priceData$ | async as price" class="content">
+<div *ngIf="priceData$ | async as price" class="content line">
   <div class='left'>
     <nz-badge [nzStyle]='position.quantity > 0 ? {background: colors.buyColor}: {background: colors.sellColor}'
       [nzCount]="position.abs" [nzOverflowCount]='1000000000'>
@@ -15,16 +15,25 @@
     </span>
     <span><p class='price'>{{price.lastPrice}}</p></span>
   </div>
-  <div class='right'>
-    <div class='line with-space'>
-      <span class='line'>Изм.&nbsp;<p [class]='price.dayChange < 0 ? "sell" : "buy"'>{{price.dayChange}}</p></span>
-      <span class='line'>High &nbsp;<p>{{price.high}}</p></span>
-      <span class='line'>Ask &nbsp;<p class='sell'>{{price.ask}}</p></span>
-    </div>
-    <div class='line with-space'>
-      <span class='line'>Дн.%&nbsp;<p [class]='price.dayChange < 0 ? "sell" : "buy"'>{{price.dayChangePerPrice}}%</p></span>
-      <span class='line'>Low &nbsp;<p>{{price.low}}</p></span>
-      <span class='line'>Bid &nbsp;<p class='buy'>{{price.bid}}</p></span>
-    </div>
-  </div>
+  <nz-descriptions [nzColumn]="{ xxl: 3, xl: 3, lg: 3, md: 2, sm: 2, xs: 2 }" nzSize="small" class="right">
+      <nz-descriptions-item nzTitle="Изм.">
+        <span><p [class]='price.dayChange < 0 ? "sell" : "buy"'>{{price.dayChange}}</p></span>
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="High">
+        <span><p>{{price.high}}</p></span>
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Ask">
+        <span><p class='sell'>{{price.ask}}</p></span>
+      </nz-descriptions-item>
+
+      <nz-descriptions-item nzTitle="Дн.%">
+        <span><p [class]='price.dayChange < 0 ? "sell" : "buy"'>{{price.dayChangePerPrice}}%</p></span>
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Low">
+        <span><p>{{price.low}}</p></span>
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Bid">
+        <span><p class='buy'>{{price.bid}}</p></span>
+      </nz-descriptions-item>
+  </nz-descriptions>
 </div>

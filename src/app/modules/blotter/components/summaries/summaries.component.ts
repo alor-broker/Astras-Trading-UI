@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
+import { SummaryView } from '../../models/summary-view.model';
 import { Summary } from '../../models/summary.model';
 import { BlotterService } from '../../services/blotter.service';
 
@@ -19,7 +20,7 @@ export class SummariesComponent implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
-  summary$: Observable<Summary> = of();
+  summary$: Observable<SummaryView> = of();
 
   columns: number = 1;
 
@@ -44,9 +45,5 @@ export class SummariesComponent implements OnInit {
         }
       }
     })
-  }
-
-  formatCurrency(number: number) {
-    return Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(number);
   }
 }

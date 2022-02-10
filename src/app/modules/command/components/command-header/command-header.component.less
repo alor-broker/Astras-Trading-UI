@@ -1,14 +1,14 @@
 @import (reference) '/src/styles.less';
 
 .content {
-  display: inline-flex;
   width: 100%;
   align-items: center;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .line {
-  display: inline-flex
+  display: inline-flex;
 }
 
 .with-space {
@@ -41,8 +41,8 @@
 }
 
 .left {
-  margin: 10px;
-  align-self: flex-start;
+  margin: 3px 10px;
+  align-self: baseline;
 }
 
 .middle {
@@ -54,6 +54,7 @@
   display: flex;
   flex-direction: column;
   flex-grow: 2;
+  max-width: 300px;
 }
 
 .sell {

@@ -14,8 +14,8 @@
         <tr *ngFor='let row of basicTable.data'>
           <td class='row-cell'>
             <span>
-              <button *ngIf='row.bidOrderVolume' nzSize="small" nz-button nzType="primary"
-                (click)="newLimitOrder(row.bid ?? 0, row.bidOrderVolume)">
+              <button *ngIf='row.bidCancels && row.bidOrderVolume' nzSize="small" nz-button nzType="primary"
+                (click)="cancelOrder(row.bidCancels)">
                 <i *ngIf='row.bidOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
                 {{row.bidOrderVolume}}
               </button>
@@ -27,8 +27,8 @@
           <td class='row-cell' nzAlign='right'>
             <span>
               {{row.askVolume}}
-              <button *ngIf='row.askOrderVolume' nzSize="small" nz-button nzType="primary"
-                (click)="newLimitOrder(row.bid ?? 0, row.askOrderVolume)">
+              <button *ngIf='row.askCancels && row.askOrderVolume' nzSize="small" nz-button nzType="primary"
+                (click)="cancelOrder(row.askCancels)">
                 {{row.askOrderVolume}}
                 <i *ngIf='row.askOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
               </button>

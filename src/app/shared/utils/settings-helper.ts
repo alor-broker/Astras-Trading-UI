@@ -1,3 +1,4 @@
+import { WidgetNames } from "../models/enums/widget-names";
 import { AnySettings } from "../models/settings/any-settings.model";
 import { BlotterSettings } from "../models/settings/blotter-settings.model";
 import { LightChartSettings } from "../models/settings/light-chart-settings.model";
@@ -49,6 +50,19 @@ export function isEqual(settings1: AnySettings, settings2: AnySettings) {
     return isEqualBlotterSettings(settings1, settings2);
   }
   else return settings1.guid == settings2.guid && settings1.title == settings2.title;
+}
+
+export function getTypeBySettings(settings: AnySettings) {
+  if (isOrderbookSettings(settings)) {
+    return WidgetNames.orderBook;
+  }
+  if (isLightChartSettings(settings)) {
+    return WidgetNames.lightChart;
+  }
+  if (isBlotterSettings(settings)) {
+    return WidgetNames.blotter;
+  }
+  return WidgetNames.instrumentSelect;
 }
 
 export function isEqualOrderbookSettings(

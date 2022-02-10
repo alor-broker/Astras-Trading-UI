@@ -12,6 +12,7 @@ import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { allOrdersColumns, allPositionsColumns, allTradesColumns, BlotterSettings } from '../models/settings/blotter-settings.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { WidgetNames } from '../models/enums/widget-names';
+import { Currency } from '../models/enums/currencies.model';
 
 @Injectable({
   providedIn: 'root',
@@ -119,6 +120,7 @@ export class WidgetFactoryService {
       ...(this.selectedPortfolio ?? { portfolio: 'D', exchange: 'MOEX' }),
       activeTabIndex: 0,
       guid: newWidget.gridItem.label,
+      currency: Currency.Usd,
       tradesColumns: allTradesColumns.filter(c => c.isDefault).map(c => c.columnId),
       positionsColumns: allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId),
       ordersColumns: allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),

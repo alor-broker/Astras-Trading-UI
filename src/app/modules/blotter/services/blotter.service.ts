@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, merge, Observable, of, pipe, Subscription } from 'rxjs';
 import { distinct, filter, map, startWith, switchMap } from 'rxjs/operators';
+import { Currency } from 'src/app/shared/models/enums/currencies.model';
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
@@ -8,8 +9,11 @@ import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings
 import { Trade } from 'src/app/shared/models/trades/trade.model';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
+import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
+import { MathHelper } from 'src/app/shared/utils/math-helper';
+import { SummaryView } from '../models/summary-view.model';
 import { Summary } from '../models/summary.model';
 
 @Injectable({
@@ -26,9 +30,13 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   order$: Observable<Order[]> = of([]);
   trade$: Observable<Trade[]> = of([]);
   position$: Observable<Position[]> = of([]);
-  summary$: Observable<Summary> = of();
+  summary$: Observable<SummaryView> = of();
 
-  constructor(ws: WebsocketService, settingsService: DashboardService, private sync: SyncService, ) {
+  constructor(
+    ws: WebsocketService,
+    settingsService: DashboardService,
+    private sync: SyncService,
+    private quotes: QuotesService) {
     super(ws, settingsService);
   }
 
@@ -66,19 +74,61 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     return this.order$;
   }
 
-  getSummaries(guid: string) : Observable<Summary> {
+  getSummaries(guid: string) : Observable<SummaryView> {
     this.summary$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
-      switchMap((settings) => this.getSummariesReq(settings.portfolio, settings.exchange))
+      switchMap((settings) => {
+        if (settings.currency != Currency.Rub) {
+          return combineLatest([
+            this.getSummariesReq(settings.portfolio, settings.exchange),
+            this.quotes.getQuotes(settings.currency, 'MOEX')
+          ]).pipe(
+            map(([summary, quote]) => this.formatSummary(summary, settings.currency, quote.last_price))
+          )
+        }
+        else {
+          return this.getSummariesReq(settings.portfolio, settings.exchange).pipe(
+            map(summary => this.formatSummary(summary, Currency.Rub, 1))
+          );
+        }
+      })
     )
     this.linkToPortfolio();
     return this.summary$;
   }
 
+  private formatSummary(summary: Summary, currency: string, exchangeRate: number) : SummaryView {
+    return ({
+      buyingPowerAtMorning: this.formatCurrency(summary.buyingPowerAtMorning, currency, exchangeRate),
+      buyingPower: this.formatCurrency(summary.buyingPower, currency, exchangeRate),
+      profit: this.formatCurrency(summary.profit, currency, exchangeRate),
+      profitRate: summary.profitRate,
+      portfolioEvaluation: this.formatCurrency(summary.portfolioEvaluation, currency, exchangeRate),
+      portfolioLiquidationValue: this.formatCurrency(summary.portfolioLiquidationValue, currency, exchangeRate),
+      initialMargin: this.formatCurrency(summary.initialMargin, currency, exchangeRate),
+      riskBeforeForcePositionClosing: this.formatCurrency(summary.riskBeforeForcePositionClosing, currency, exchangeRate),
+      commission: this.formatCurrency(summary.commission, currency, exchangeRate),
+    })
+  }
+
+  private formatCurrency(number: number, currency: string, exchangeRate: number) {
+    number = MathHelper.round(number / exchangeRate, 2);
+    let formatCode = 'RUB';
+    let locale = 'ru'
+    if (currency == Currency.Usd) {
+      formatCode = 'USD'
+      locale = 'en'
+    }
+    else if (currency == Currency.Eur) {
+      formatCode = 'EUR'
+      locale = 'de'
+    }
+    return Intl.NumberFormat(locale, { style: 'currency', currency: formatCode }).format(number);
+  }
+
   private getSummariesReq(portfolio: string, exchange: string) {
     const summary$ = this.getPortfolioEntity<Summary>(portfolio, exchange, "SummariesGetAndSubscribeV2");
-    this.summary$ = summary$;
-    return this.summary$;
+    return summary$;
   }
 
   private getPositionsReq(portfolio: string, exchange: string) {

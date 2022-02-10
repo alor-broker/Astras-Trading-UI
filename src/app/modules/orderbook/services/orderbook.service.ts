@@ -23,6 +23,7 @@ import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.mod
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { Order } from 'src/app/shared/models/orders/order.model';
+import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 
 @Injectable({
   providedIn: 'root',
@@ -30,11 +31,12 @@ import { Order } from 'src/app/shared/models/orders/order.model';
 export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
   private orderbook$: Observable<OrderBook> = new Observable();
   private instrumentSub?: Subscription;
-  private orders: Map<string, Order> = new Map<string, Order>();
+  private ordersById: Map<string, Order> = new Map<string, Order>();
 
   constructor(
     ws: WebsocketService,
     settingsService: DashboardService,
+    private canceller: OrderCancellerService,
     private sync: SyncService
   ) {
     super(ws, settingsService);
@@ -128,6 +130,10 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
     return this.orderbook$;
   }
 
+  cancelOrder(cancel: CancelCommand) {
+    this.canceller.cancelOrder(cancel).subscribe();
+  }
+
   private getOrderbookReq(
     symbol: string,
     exchange: string,
@@ -211,8 +217,8 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
             'OrdersGetAndSubscribeV2'
           ).pipe(
             map((order: Order) => {
-              this.orders.set(order.id, order);
-              return Array.from(this.orders.values()).sort((o1, o2) =>
+              this.ordersById.set(order.id, order);
+              return Array.from(this.ordersById.values()).sort((o1, o2) =>
                 o2.id.localeCompare(o1.id)
               );
             })
