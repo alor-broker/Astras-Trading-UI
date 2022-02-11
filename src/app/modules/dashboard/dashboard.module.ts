@@ -13,6 +13,7 @@ import { InstrumentsModule } from '../instruments/instruments.module';
 import { BlotterModule } from '../blotter/blotter.module';
 import { CommandModule } from '../command/command.module';
 import { HelpModule } from '../help/help.module';
+import { InfoModule } from '../info/info.module';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { HelpModule } from '../help/help.module';
     BlotterModule,
     CommandModule,
     HelpModule,
+    InfoModule,
     // components
   ]
 })

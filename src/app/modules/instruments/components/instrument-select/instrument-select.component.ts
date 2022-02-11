@@ -1,10 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
-import { debounceTime, filter, map, switchMap, take } from 'rxjs/operators';
-import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
-import { InstrumentSelectSettings } from 'src/app/shared/models/settings/instrument-select-settings.model';
-import { Widget } from 'src/app/shared/models/widget.model';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { debounceTime, filter, map, switchMap } from 'rxjs/operators';
+import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { InstrumentAdditions } from '../../models/instrument-additions.model';
 import { InstrumentSelect } from '../../models/instrument-select.model';
@@ -102,7 +100,7 @@ export class InstrumentSelectComponent implements OnInit {
     this.watcher.unsubscribe();
   }
 
-  watch(inst: InstrumentKey) {
+  watch(inst: Instrument) {
     this.watcher.add(inst);
   }
 }

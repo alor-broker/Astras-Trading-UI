@@ -1,0 +1,26 @@
+<div *ngIf="info$ | async as info">
+  <ats-info-header [info]="info"></ats-info-header>
+  <ats-fallback-description *ngIf="info.type != 'bond' && info.type != 'stock'" [info]="info"></ats-fallback-description>
+  <nz-tabset *ngIf="info.type == 'bond'" nzTabPosition="top" nzSize="small" (mousedown)='$event.stopPropagation()'>
+    <nz-tab nzTitle="Об инструменте">
+      <ats-description [guid]="guid"></ats-description>
+    </nz-tab>
+    <nz-tab nzTitle="О выпуске">
+      <ats-about-issue [guid]="guid"></ats-about-issue>
+    </nz-tab>
+    <nz-tab nzTitle="Выплаты">
+      <ats-calendar [guid]="guid"></ats-calendar>
+    </nz-tab>
+  </nz-tabset>
+  <nz-tabset *ngIf="info.type == 'stock'" nzTabPosition="top" nzSize="small" (mousedown)='$event.stopPropagation()'>
+    <nz-tab nzTitle="Об инструменте">
+      <ats-description [guid]="guid"></ats-description>
+    </nz-tab>
+    <nz-tab nzTitle="Финансы">
+      <ats-finance [guid]="guid"></ats-finance>
+    </nz-tab>
+    <nz-tab nzTitle="Дивиденды">
+      <ats-dividends [guid]="guid"></ats-dividends>
+    </nz-tab>
+  </nz-tabset>
+</div>

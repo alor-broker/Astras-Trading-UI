@@ -1,11 +1,9 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject, merge, Observable, of, Subscription, zip } from 'rxjs';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import { OrderBook } from '../../models/orderbook.model';
-import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
-import { catchError, finalize, map, tap } from 'rxjs/operators';
-import { Widget } from 'src/app/shared/models/widget.model';
+import { map, tap } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
@@ -13,7 +11,6 @@ import {
   sellColorBackground,
   buyColorBackground,
 } from '../../../../shared/models/settings/styles-constants';
-import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 
 interface Size {

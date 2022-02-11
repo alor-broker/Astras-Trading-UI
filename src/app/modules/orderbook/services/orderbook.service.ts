@@ -1,16 +1,11 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, Subscription, zip } from 'rxjs';
+import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import {
   catchError,
-  combineLatestWith,
-  debounceTime,
   filter,
   map,
   startWith,
   switchMap,
-  take,
-  tap,
-  withLatestFrom,
 } from 'rxjs/operators';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { OrderbookData } from '../models/orderbook-data.model';

@@ -1,0 +1,17 @@
+<nz-table *ngIf="dividends$ | async as dividends" #nzTable [nzData]="dividends" #nzTableComponent
+  nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Дивиденды">
+  <thead>
+    <tr>
+      <th>Дата</th>
+      <th>Дивиденд</th>
+      <th>Див. дох.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let dividend of nzTable.data">
+      <td>{{ dividend.recordDate }}</td>
+      <td>{{ dividend.dividendPerShare | number }} {{dividend.currency}}</td>
+      <td>{{ dividend.dividendYeild | percent }}</td>
+    </tr>
+  </tbody>
+</nz-table>

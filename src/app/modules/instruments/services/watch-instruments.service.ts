@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { map, switchMap, tap, finalize, mergeMap } from 'rxjs/operators';
-import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
+import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
@@ -16,24 +16,24 @@ import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
 export class WatchInstrumentsService {
   private watchlistStorage = 'watchlist';
 
-  private newInstruments: Subject<InstrumentKey>;
-  newInstruments$: Observable<InstrumentKey>;
+  private newInstruments: Subject<Instrument>;
+  newInstruments$: Observable<Instrument>;
 
   private watchedInstruments : WatchedInstrument[] = [];
   private watchedInstrumentsSubj = new BehaviorSubject<WatchedInstrument[]>(this.watchedInstruments);
   watchedInstruments$ = this.watchedInstrumentsSubj.asObservable()
 
-  private instrumentsToWatch = new BehaviorSubject<InstrumentKey[]>([]);
-  instrumentsToWatch$: Observable<InstrumentKey[]> = this.instrumentsToWatch.asObservable();
+  private instrumentsToWatch = new BehaviorSubject<Instrument[]>([]);
+  instrumentsToWatch$: Observable<Instrument[]> = this.instrumentsToWatch.asObservable();
 
   private quotesSubsByKey = new Map<string, Subscription>();
 
   constructor(private history: HistoryService, private sync: SyncService, private ws: WebsocketService) {
-    this.newInstruments = new Subject<InstrumentKey>();
+    this.newInstruments = new Subject<Instrument>();
     this.newInstruments$ = this.newInstruments.asObservable();
   }
 
-  add(inst: InstrumentKey) {
+  add(inst: Instrument) {
     if (!this.watchedInstruments.find(i =>
       inst.symbol == i.instrument.symbol
       && inst.exchange == i.instrument.exchange
@@ -42,7 +42,7 @@ export class WatchInstrumentsService {
       }
   }
 
-  remove(instr: InstrumentKey) {
+  remove(instr: Instrument) {
     const key = this.getKey(instr);
     const sub = this.quotesSubsByKey.get(key);
     if (sub) {
@@ -124,7 +124,7 @@ export class WatchInstrumentsService {
     return this.watchedInstruments$;
   }
 
-  private getKey(key: InstrumentKey) {
+  private getKey(key: Instrument) {
     return `${key.exchange}.${key.instrumentGroup}.${key.symbol}`
   }
 
@@ -133,9 +133,9 @@ export class WatchInstrumentsService {
     localStorage.setItem(this.watchlistStorage, JSON.stringify(toWatch));
   }
 
-  private getWatchList() : InstrumentKey[] {
+  private getWatchList() : Instrument[] {
     const json = localStorage.getItem(this.watchlistStorage);
-    let existingList : InstrumentKey[] = [];
+    let existingList : Instrument[] = [];
     if (json) {
       existingList = JSON.parse(json);
     }

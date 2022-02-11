@@ -5,11 +5,12 @@ import { filter, map } from 'rxjs/operators';
 import { InstrumentSelectSettings } from 'src/app/shared/models/settings/instrument-select-settings.model';
 import { environment } from 'src/environments/environment';
 import { InstrumentSelect } from '../models/instrument-select.model';
-import { InstrumentSearchResponse } from '../models/instrument-search-response.model';
+import { InstrumentSearchResponse } from '../../../shared/models/instruments/instrument-search-response.model';
 import { SearchFilter } from '../models/search-filter.model';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { BaseService } from 'src/app/shared/services/base.service';
+import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 
 @Injectable({
   providedIn: 'root'

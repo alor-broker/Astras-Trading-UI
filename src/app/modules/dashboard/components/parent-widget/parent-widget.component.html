@@ -17,3 +17,8 @@
   [(shouldShowSettings)]="shouldShowSettings"
   [linkedToActive]="isLinked"
   [resize]="widgetResize"></ats-blotter-widget>
+<ats-info-widget *ngIf="widget.gridItem.type === 'instrument-info'"
+  [guid]="getGuid()"
+  [(shouldShowSettings)]="shouldShowSettings"
+  [linkedToActive]="isLinked"
+  [resize]="widgetResize"></ats-info-widget>

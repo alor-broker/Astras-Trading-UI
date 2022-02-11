@@ -12,6 +12,7 @@ import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
+import { formatCurrency } from 'src/app/shared/utils/formatters';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { SummaryView } from '../models/summary-view.model';
 import { Summary } from '../models/summary.model';
@@ -99,31 +100,16 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   private formatSummary(summary: Summary, currency: string, exchangeRate: number) : SummaryView {
     return ({
-      buyingPowerAtMorning: this.formatCurrency(summary.buyingPowerAtMorning, currency, exchangeRate),
-      buyingPower: this.formatCurrency(summary.buyingPower, currency, exchangeRate),
-      profit: this.formatCurrency(summary.profit, currency, exchangeRate),
+      buyingPowerAtMorning: formatCurrency(summary.buyingPowerAtMorning / exchangeRate, currency),
+      buyingPower: formatCurrency(summary.buyingPower / exchangeRate, currency),
+      profit: formatCurrency(summary.profit / exchangeRate, currency),
       profitRate: summary.profitRate,
-      portfolioEvaluation: this.formatCurrency(summary.portfolioEvaluation, currency, exchangeRate),
-      portfolioLiquidationValue: this.formatCurrency(summary.portfolioLiquidationValue, currency, exchangeRate),
-      initialMargin: this.formatCurrency(summary.initialMargin, currency, exchangeRate),
-      riskBeforeForcePositionClosing: this.formatCurrency(summary.riskBeforeForcePositionClosing, currency, exchangeRate),
-      commission: this.formatCurrency(summary.commission, currency, exchangeRate),
+      portfolioEvaluation: formatCurrency(summary.portfolioEvaluation / exchangeRate, currency),
+      portfolioLiquidationValue: formatCurrency(summary.portfolioLiquidationValue / exchangeRate, currency ),
+      initialMargin: formatCurrency(summary.initialMargin / exchangeRate, currency),
+      riskBeforeForcePositionClosing: formatCurrency(summary.riskBeforeForcePositionClosing / exchangeRate, currency),
+      commission: formatCurrency(summary.commission / exchangeRate, currency),
     })
-  }
-
-  private formatCurrency(number: number, currency: string, exchangeRate: number) {
-    number = MathHelper.round(number / exchangeRate, 2);
-    let formatCode = 'RUB';
-    let locale = 'ru'
-    if (currency == Currency.Usd) {
-      formatCode = 'USD'
-      locale = 'en'
-    }
-    else if (currency == Currency.Eur) {
-      formatCode = 'EUR'
-      locale = 'de'
-    }
-    return Intl.NumberFormat(locale, { style: 'currency', currency: formatCode }).format(number);
   }
 
   private getSummariesReq(portfolio: string, exchange: string) {

@@ -2,17 +2,19 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { CommandParams } from '../models/commands/command-params.model';
 import { EditParams } from '../models/commands/edit-params.model';
-import { InstrumentKey } from '../models/instruments/instrument-key.model';
+import { InstrumentType } from '../models/enums/instrument-type.model';
+import { Instrument } from '../models/instruments/instrument.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SyncService {
-  private selectedInstrument = new BehaviorSubject<InstrumentKey>({
+  private selectedInstrument = new BehaviorSubject<Instrument>({
     symbol: 'SBER',
     exchange: 'MOEX',
-    instrumentGroup: 'TQBR'
+    instrumentGroup: 'TQBR',
+    isin: 'RU0009029540'
   })
   private selectedPortfolio = new BehaviorSubject<PortfolioKey | null>(null)
   private shouldShowCommandModal = new BehaviorSubject<boolean>(false)
@@ -38,7 +40,7 @@ export class SyncService {
 
   constructor() {  }
 
-  selectNewInstrument(key: InstrumentKey) {
+  selectNewInstrument(key: Instrument) {
     this.selectedInstrument.next(key);
   }
 

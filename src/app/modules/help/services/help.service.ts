@@ -30,11 +30,6 @@ export class HelpService {
   `;
 
   getHelp(widgetType: string) : Observable<HelpResponse> {
-    // return this.http.get<HelpResponse>(`${this.url}/${widgetType}`);
-    return of({
-      name: 'Test',
-      markdown: this.markdown,
-      id: 0
-    })
+    return this.http.get<HelpResponse>(`${this.url}/${widgetType}`);
   }
 }

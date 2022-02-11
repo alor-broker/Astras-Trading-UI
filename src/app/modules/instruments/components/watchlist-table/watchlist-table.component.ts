@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
+import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
+import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { InstrumentAdditions } from '../../models/instrument-additions.model';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
@@ -21,15 +22,16 @@ export class WatchlistTableComponent implements OnInit {
     this.watchedInstruments$ = this.service.getWatched();
   }
 
-  makeActive(instr: InstrumentKey) {
+  makeActive(instr: Instrument) {
     this.sync.selectNewInstrument({
       symbol: instr.symbol,
       exchange: instr.exchange,
-      instrumentGroup: instr.instrumentGroup
+      instrumentGroup: instr.instrumentGroup,
+      isin: instr.isin
     });
   }
 
-  remove(instr: InstrumentKey) {
+  remove(instr: Instrument) {
     this.service.remove(instr);
   }
 }

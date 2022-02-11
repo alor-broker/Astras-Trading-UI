@@ -144,20 +144,23 @@ export class DashboardService {
   private createDefaultDashboard() {
     setTimeout(() => {
       this.addWidget({
+        gridItem: { x: 0, y: 0, cols: 3, rows: 1, type: WidgetNames.lightChart },
+      });
+      this.addWidget({
         gridItem: { x: 0, y: 1, cols: 2, rows: 1, type: WidgetNames.blotter },
       }, { activeTabIndex: 2 });
       this.addWidget({
         gridItem: { x: 3, y: 0, cols: 1, rows: 1, type: WidgetNames.orderBook },
+      }, { depth: 7 });
+      this.addWidget({
+        gridItem: { x: 4, y: 0, cols: 1, rows: 1, type: WidgetNames.instrumentInfo },
       });
       this.addWidget({
-        gridItem: { x: 0, y: 0, cols: 3, rows: 1, type: WidgetNames.lightChart },
-      });
-      this.addWidget({
-        gridItem: { x: 3, y: 1, cols: 1, rows: 1, type: WidgetNames.instrumentSelect },
+        gridItem: { x: 3, y: 1, cols: 2, rows: 1, type: WidgetNames.instrumentSelect },
       });
       this.addWidget({
         gridItem: { x: 2, y: 1, cols: 1, rows: 1, type: WidgetNames.blotter },
       }, { activeTabIndex: 0 });
-    }, 1000)
+    }, 700)
   }
 }

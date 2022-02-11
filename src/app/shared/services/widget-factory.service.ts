@@ -8,21 +8,23 @@ import { LightChartSettings } from '../models/settings/light-chart-settings.mode
 import { TimeframesHelper } from 'src/app/modules/light-chart/utils/timeframes-helper';
 import { InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
 import { SyncService } from './sync.service';
-import { InstrumentKey } from '../models/instruments/instrument-key.model';
+import { Instrument } from '../models/instruments/instrument.model';
 import { allOrdersColumns, allPositionsColumns, allTradesColumns, BlotterSettings } from '../models/settings/blotter-settings.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { WidgetNames } from '../models/enums/widget-names';
 import { Currency } from '../models/enums/currencies.model';
+import { InfoSettings } from '../models/settings/info-settings.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WidgetFactoryService {
   private tfHelper = new TimeframesHelper();
-  private selectedInstrument: InstrumentKey = {
+  private selectedInstrument: Instrument = {
     symbol: 'GAZP',
     instrumentGroup: 'TQBR',
     exchange: 'MOEX',
+    isin: 'RU0009029540'
   };
   private selectedPortfolio: PortfolioKey | null = null;
 
@@ -52,6 +54,9 @@ export class WidgetFactoryService {
         break;
       case WidgetNames.blotter:
         settings = this.createBlotter(newWidget);
+        break;
+      case WidgetNames.instrumentInfo:
+        settings = this.createInfo(newWidget);
         break;
     }
     if (settings) {
@@ -126,6 +131,22 @@ export class WidgetFactoryService {
       ordersColumns: allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       linkToActive: true,
       title: `Блоттер ${this.selectedPortfolio?.portfolio ?? 'D'} ${this.selectedPortfolio?.exchange ?? 'MOEX'}`,
+    };
+
+    return settings;
+  }
+
+  private createInfo(
+    newWidget: NewWidget | Widget
+  ) : InfoSettings {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+    const settings: InfoSettings = {
+      ...this.selectedInstrument,
+      linkToActive: true,
+      guid: newWidget.gridItem.label,
+      title:  `Инфо ${this.selectedInstrument.symbol}`,
     };
 
     return settings;

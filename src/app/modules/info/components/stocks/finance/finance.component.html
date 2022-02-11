@@ -1,0 +1,12 @@
+<nz-descriptions *ngIf="finance$ | async as finance" nzBordered [nzColumn]="columns"
+  [nzSize]="columns == 1 ? 'small' : 'default'">
+  <nz-descriptions-item nzTitle="Капитализация">{{formatCurrency(finance.marketCap)}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="EBITDA">{{formatCurrency(finance.ebitda)}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="P/E">{{finance.costEstimate.priceToEarnings  | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="P/S">{{finance.costEstimate.pricePerShare  | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="P/S dil.">{{finance.costEstimate.dilutedEarningsPerShare | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="ROE">{{finance.profitability.returnOnEquity  | percent}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="ROA">{{finance.profitability.returnOnAssets  | percent}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Долг к капиталу">{{finance.profitability.debtPerEquity  | percent}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Маржинальность">{{finance.profitability.netProfitMargin  | percent}}</nz-descriptions-item>
+</nz-descriptions>

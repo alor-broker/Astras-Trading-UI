@@ -11,8 +11,9 @@ import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-constants';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
-import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
+import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
+import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 
 @Component({
   selector: 'ats-navbar',
@@ -34,8 +35,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   private instrumentSub?: Subscription;
   private portfolioSub?: Subscription;
-  private activeInstrument: InstrumentKey = {
-    symbol: 'SBER', exchange: 'MOEX'
+  private activeInstrument: Instrument = {
+    symbol: 'SBER', exchange: 'MOEX', isin: 'RU0009029540'
   }
 
   ngOnInit(): void {

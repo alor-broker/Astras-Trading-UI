@@ -1,16 +1,14 @@
 import { Currency } from "../enums/currencies.model"
+import { WidgetSettings } from "../widget-settings.model"
 
-export interface BlotterSettings {
-  title?: string,
+export interface BlotterSettings extends WidgetSettings {
   activeTabIndex: number,
   exchange: string,
   portfolio: string,
   currency: Currency,
-  linkToActive?: boolean,
   ordersColumns: string[],
   tradesColumns: string[],
   positionsColumns: string[],
-  guid: string
 }
 
 export interface ColumnIds  {
