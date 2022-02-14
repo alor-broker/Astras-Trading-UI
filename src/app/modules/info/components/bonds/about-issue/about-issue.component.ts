@@ -14,6 +14,8 @@ export class AboutIssueComponent implements OnInit {
 
   issue$?: Observable<Issue>
 
+  columns = 1
+
   constructor(private service: InfoService) { }
 
   ngOnInit(): void {

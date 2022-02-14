@@ -26,14 +26,13 @@ export interface Finance {
       averageTurnoverPerMonth: number, // 234234234234255,
       beta: number, // 1.49
   },
-  sales: {
-      year: YearDatum[],
-      quorter: QuoterDatum[]
-  },
-  netIncome: {
-      year: YearDatum[],
-      quorter: QuoterDatum[]
-  }
+  sales: DataOverTime,
+  netIncome: DataOverTime
+}
+
+export interface DataOverTime {
+  year: YearDatum[],
+  quorter: QuoterDatum[]
 }
 
 export interface QuoterDatum extends YearDatum {

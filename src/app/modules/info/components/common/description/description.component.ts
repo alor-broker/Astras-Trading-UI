@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Description } from '../../models/description.model';
-import { InfoService } from '../../services/info.service';
+import { Description } from '../../../models/description.model';
+import { InfoService } from '../../../services/info.service';
 
 @Component({
   selector: 'ats-description',

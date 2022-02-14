@@ -1,6 +1,10 @@
 import { Currency } from "../models/enums/currencies.model";
 import { MathHelper } from "./math-helper";
 
+
+/**
+ Currency pipe and angular's formatCurrency throws error, while formating rubles without fraction part. =(
+**/
 export function formatCurrency(number: number, currency: string, maxFractionDigits?: number) {
   if (!maxFractionDigits) {
     maxFractionDigits = 2;

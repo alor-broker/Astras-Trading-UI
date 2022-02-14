@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ExchangeInfo } from '../../models/exchange-info.model';
+import { ExchangeInfo } from '../../../models/exchange-info.model';
 
 @Component({
   selector: 'ats-info-header[info]',

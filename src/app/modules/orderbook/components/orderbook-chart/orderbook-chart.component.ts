@@ -1,12 +1,11 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, of } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { OrderbookService } from '../../services/orderbook.service';
-import { ChartDataset, ChartOptions, ChartType } from 'chart.js';
+import { ChartDataset, ChartOptions } from 'chart.js';
 import { buyColorBackground, sellColorBackground, buyColor, sellColor } from 'src/app/shared/models/settings/styles-constants';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { ChartData } from '../../models/orderbook.model';
 import { BaseChartDirective } from 'ng2-charts';
-
 
 @Component({
   selector: 'ats-orderbook-chart[guid][chartData]',
