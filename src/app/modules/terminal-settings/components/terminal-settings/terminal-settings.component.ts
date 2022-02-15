@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { FullName } from '../../models/full-name.model';
 import { TerminalSettingsService } from '../../services/terminal-settings.service';
@@ -18,8 +19,19 @@ export class TerminalSettingsComponent implements OnInit {
     secondName: ''
   })
 
+  form!: FormGroup;
+
   ngOnInit(): void {
-    this.fullName$ = this.service.getFullName()
+    this.fullName$ = this.service.getFullName();
+    this.form = new FormGroup({
+      hasVerticalScroll: new FormControl(false),
+    });
+  }
+
+  submitForm(): void {
+    // this.service.setSettings({...this.form.value, guid: this.guid, linkToActive: false})
+    // this.settingsChange.emit()
+    console.log(this.form.value);
   }
 
 }

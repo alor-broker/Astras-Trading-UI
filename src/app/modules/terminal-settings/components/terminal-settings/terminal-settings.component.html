@@ -1,3 +1,10 @@
 <div *ngIf="fullName$ | async as name">
-  <h3>{{name.firstName}}&nbsp;{{name.lastName}}</h3>
+  <h1>{{name.firstName}}&nbsp;{{name.lastName}}</h1>
+  <h3>Настройки дашборда</h3>
+  <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="submitForm()">
+    <nz-form-item>
+      <nz-form-label [nzSm]="12" [nzXs]="24">Вертикальная прокрутка</nz-form-label>
+      <nz-switch formControlName='hasVerticalScroll' nzFor="hasVerticalScroll"></nz-switch>
+    </nz-form-item>
+  </form>
 </div>
