@@ -15,7 +15,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let inst of nzTable.data" (click)='makeActive(inst.instrument)'>
-      <td>{{ inst.instrument.symbol }}</td>
+      <td class="ticker">{{ inst.instrument.symbol }}</td>
       <td><ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'></ats-price-tick></td>
       <td [ngClass]="inst.dayChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.dayChange }}</td>
       <td [ngClass]="inst.dayChangePerPrice < 0 ? 'sellCell' : 'buyCell'">{{ inst.dayChangePerPrice + '%' }}</td>

@@ -57,13 +57,18 @@ export class LightChart {
       wickUpColor: buyColorBackground, // 'rgb(38,166,154)',
       wickDownColor: sellColorBackground, // 'rgb(255,82,82)',
       borderVisible: false,
+      priceScaleId: 'plot',
+      scaleMargins: {
+        top: 0,
+        bottom: 0.25,
+      },
     });
     var volumeSeries = chart.addHistogramSeries({
       color: '#26a69a',
       priceFormat: {
         type: 'volume',
       },
-      priceScaleId: '',
+      priceScaleId: 'history',
       scaleMargins: {
         top: 0.8,
         bottom: 0,

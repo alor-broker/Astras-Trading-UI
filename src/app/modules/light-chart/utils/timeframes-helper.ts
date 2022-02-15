@@ -15,7 +15,8 @@ export class TimeframesHelper {
 
   timeFrames : Timeframe[] = [
     { label: 'H', value: '3600' },
-    { label: 'D', value: 'D' }
+    { label: 'D', value: 'D' },
+    { label: 'M', value: 'M' },
   ]
 
    // LightCharts library throws errors, when bars is duplicationg or too close to each other
@@ -26,6 +27,11 @@ export class TimeframesHelper {
       return d.getDate() + '.' + d.getMonth() + '.' + d.getFullYear();
     }
     switch (tf) {
+      case 'M':
+        return findUniqueElements(
+          [...existing, ...history],
+          (b1, b2) => b1.time - b2.time,
+          (b1, b2) => getDate(b1.time) == getDate(b2.time))
       case 'D':
         return findUniqueElements(
           [...existing, ...history],
@@ -52,6 +58,8 @@ export class TimeframesHelper {
   getDefaultFrom(label: string) {
     const tf = this.getValueByTfLabel(label);
     switch(tf.label) {
+      case 'M':
+        return addDaysUnix(new Date(), -this.candlesBatchSize * 30);
       case 'D':
         return addDaysUnix(new Date(), -this.candlesBatchSize);
       case 'H':
@@ -66,6 +74,9 @@ export class TimeframesHelper {
       let from = minTime;
       if (options.timeFrame == 'D') {
         from = addDaysUnix(new Date(minTime * 1000), -this.candlesBatchSize)
+      }
+      else if (options.timeFrame == 'M') {
+        from = addDaysUnix(new Date(minTime * 1000), -this.candlesBatchSize * 30)
       }
       else if (options.timeFrame == '3600') {
         from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize)

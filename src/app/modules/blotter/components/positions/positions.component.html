@@ -27,7 +27,9 @@
   </thead>
   <tbody>
     <tr *ngFor="let ord of nzTable.data">
-      <td class='bold' *ngIf='shouldShow("symbol")'>{{ ord.symbol }}</td>
+      <td class='bold' *ngIf='shouldShow("symbol")' (click)="selectInstrument(ord.symbol, ord.exchange)">
+        {{ ord.symbol }}
+      </td>
       <td *ngIf='shouldShow("shortName")'>{{ ord.shortName }}</td>
       <td *ngIf='shouldShow("avgPrice")'>{{ round(ord.avgPrice) }}</td>
       <td *ngIf='shouldShow("qtyT0")' [class]='ord.qtyT0 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT0) }}</td>

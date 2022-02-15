@@ -5,10 +5,10 @@
     <nz-tab nzTitle="Об инструменте">
       <ats-description [guid]="guid"></ats-description>
     </nz-tab>
-    <nz-tab nzTitle="О выпуске">
+    <nz-tab *ngIf="info.exchange != 'SPBX'" nzTitle="О выпуске">
       <ats-about-issue [guid]="guid"></ats-about-issue>
     </nz-tab>
-    <nz-tab nzTitle="Выплаты">
+    <nz-tab *ngIf="info.exchange != 'SPBX'"  nzTitle="Выплаты">
       <ats-calendar [guid]="guid"></ats-calendar>
     </nz-tab>
   </nz-tabset>
@@ -16,10 +16,10 @@
     <nz-tab nzTitle="Об инструменте">
       <ats-description [guid]="guid"></ats-description>
     </nz-tab>
-    <nz-tab nzTitle="Финансы">
+    <nz-tab *ngIf="info.exchange != 'SPBX'"  nzTitle="Финансы">
       <ats-finance [guid]="guid"></ats-finance>
     </nz-tab>
-    <nz-tab nzTitle="Дивиденды">
+    <nz-tab *ngIf="info.exchange != 'SPBX'" nzTitle="Дивиденды">
       <ats-dividends [guid]="guid"></ats-dividends>
     </nz-tab>
   </nz-tabset>

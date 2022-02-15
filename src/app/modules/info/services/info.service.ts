@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, of, Subscription, switchMap } from 'rxjs';
+import { combineLatest, distinct, distinctUntilChanged, map, Observable, Subscription, switchMap, tap } from 'rxjs';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
@@ -41,7 +41,10 @@ export class InfoService extends BaseService<InfoSettings>{
     }
 
     this.settings$ = combineLatest([
-      this.sync.selectedInstrument$,
+      this.sync.selectedInstrument$.pipe(
+        distinctUntilChanged((a,b) => a.isin == b.isin),
+        tap(i => console.log(i))
+      ),
       this.getSettings(guid).pipe(
         switchMap(s => {
           return this.getExchangeInfoReq({ symbol: s.symbol, exchange: s.exchange }).pipe(
@@ -73,33 +76,42 @@ export class InfoService extends BaseService<InfoSettings>{
   }
 
   getDescription() : Observable<Description> {
-    // return of(description);
     return this.getInstrumentEntity<Description>('description');
   }
 
   getFinance() : Observable<Finance> {
-    //return of(finance);
     return this.getInstrumentEntity<Finance>('finance');
   }
 
   getCalendar() : Observable<Calendar> {
-    // return of(bondsCalendar);
     return this.getInstrumentEntity<Calendar>('bond/calendar');
   }
 
   getIssue() : Observable<Issue> {
-    //return of(bondIssue);
-    return this.getInstrumentEntity<Issue>('bond/issue');
+    return this.getInstrumentEntity<Issue>('bond/issue').pipe(
+      map(i => ({
+        ...i,
+        facevalue: 1000,
+        currentFaceValue: 750,
+        issueVol: 1000000,
+        issueVal: 1000000000,
+        issueDate: new Date(),
+        maturityDate: new Date(),
+        marketVol: 1000000,
+        marketVal: 750000000,
+        issuer: "МСБ-Лизинг",
+      }))
+    );
   }
 
   getDividends() : Observable<Dividend[]> {
-    //return of(dividends);
     return this.getInstrumentEntity<Dividend[]>('stock/dividends');
   }
 
   private getInstrumentEntity<T>(path: string) : Observable<T> {
     if (this.settings$) {
       return this.settings$.pipe(
+        distinct(),
         switchMap(s => this.http.get<T>(`${this.instrumentUrl}/${s.info.isin}/${path}`))
       );
     }
@@ -109,6 +121,9 @@ export class InfoService extends BaseService<InfoSettings>{
   private getExchangeInfoReq(key: InstrumentKey): Observable<ExchangeInfo> {
     return this.http.get<InstrumentSearchResponse>(`${this.securitiesUrl}/${key.exchange}/${key.symbol}`, {
      }).pipe(
+      distinctUntilChanged((a, b) => {
+        return a.symbol == b.symbol && a.exchange == b.exchange;
+      }),
       map(r => {
         const info : ExchangeInfo = {
           symbol: r.symbol,

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, distinct, distinctUntilChanged } from 'rxjs';
 import { CommandParams } from '../models/commands/command-params.model';
 import { EditParams } from '../models/commands/edit-params.model';
 import { InstrumentType } from '../models/enums/instrument-type.model';
@@ -23,8 +23,10 @@ export class SyncService {
   private editParams = new BehaviorSubject<EditParams | null>(null)
   private shouldShowEditModal = new BehaviorSubject<boolean>(false)
 
-  private shouldShowHelpModal = new BehaviorSubject<boolean>(false)
   private helpParams = new BehaviorSubject<string | null>(null)
+  private shouldShowHelpModal = new BehaviorSubject<boolean>(false)
+
+  private shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
 
   selectedInstrument$ = this.selectedInstrument.asObservable();
   selectedPortfolio$ = this.selectedPortfolio.asObservable();
@@ -37,6 +39,8 @@ export class SyncService {
 
   helpParams$ = this.helpParams.asObservable();
   shouldShowHelpModal$ = this.shouldShowHelpModal.asObservable();
+
+  shouldShowTerminalSettingsModal$ = this.shouldShowTerminalSettingsModal.asObservable();
 
   constructor() {  }
 
@@ -67,6 +71,14 @@ export class SyncService {
   openHelpModal(widgetName: string) {
     this.shouldShowHelpModal.next(true);
     this.helpParams.next(widgetName);
+  }
+
+  openTerminalSettingsModal() {
+    this.shouldShowTerminalSettingsModal.next(true);
+  }
+
+  closeTerminalSettingsModal() {
+    this.shouldShowTerminalSettingsModal.next(false);
   }
 
   closeCommandModal() {

@@ -1,5 +1,5 @@
 <div>
-  <nz-table *ngIf="calendar$ | async as calendar" #nzTable [nzData]="calendar.coupon" #nzTableComponent
+  <nz-table *ngIf="calendar$ | async as calendar" #nzTable [nzData]="calendar.coupons" #nzTableComponent
     nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Купоны">
     <thead>
       <tr>
@@ -19,7 +19,7 @@
     </tbody>
   </nz-table>
   <br />
-  <nz-table *ngIf="calendar$ | async as calendar" #nzTable [nzData]="calendar.amortization" #nzTableComponent
+  <nz-table *ngIf="calendar$ | async as calendar" #nzTable [nzData]="calendar.amortizations" #nzTableComponent
     nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Амортизация">
     <thead>
       <tr>

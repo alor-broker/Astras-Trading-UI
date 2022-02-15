@@ -2,8 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
-import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
-import { Widget } from 'src/app/shared/models/widget.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { Column } from '../../models/column.model';
 import { PositionFilter } from '../../models/position-filter.model';
@@ -172,6 +170,10 @@ export class PositionsComponent implements OnInit {
 
   round(number: number) {
     return MathHelper.round(number, 2);
+  }
+
+  selectInstrument(symbol: string, exchange: string) {
+    this.service.selectNewInstrument(symbol, exchange);
   }
 
   private justifyFilter(position: Position, filter: PositionFilter) : boolean {

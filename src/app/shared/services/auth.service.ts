@@ -129,7 +129,6 @@ export class AuthService {
           return of(user.jwt)
         }
         else {
-          console.log('Updating token')
           return this.refresh().pipe(
             map(t => t),
             catchError(e => {

@@ -21,9 +21,12 @@
     <li nz-menu-item (click)="clear()" class='menu-item icon-li'>
       <i nz-icon nzType="delete" [nzTwotoneColor]="sellColor" nzTheme="outline" class="managing-icon"></i>
     </li>
-    <li nz-menu-item (click)="logout()" class='right menu-item' >
+    <button class="right" nz-button nz-dropdown [nzDropdownMenu]="rightMenu" nzPlacement="bottomRight">
+      <i nz-icon nzType="user"></i>
+    </button>
+    <!-- <li nz-menu-item (click)="logout()" class='right menu-item' >
       <i nz-icon nzType="logout" nzTheme="outline"></i>
-    </li>
+    </li> -->
   </ul>
 </nz-header>
 
@@ -44,6 +47,25 @@
     </li>
     <li nz-menu-item (click)="addItem('instrument-info')">
       <span><i nz-icon nzType="info" nzTheme="outline"></i><label>&nbsp;Инфо</label></span>
+    </li>
+  </ul>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #rightMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item (click)="openTerminalSettings()" class='menu-item' >
+      <span><i nz-icon nzType="user" nzTheme="outline"></i> <label>&nbsp;Настройки</label></span>
+    </li>
+    <li nz-menu-item class='menu-item' >
+      <span>
+        <i nz-icon nzType="audit" nzTheme="outline"></i>
+        <label>
+        &nbsp;<a href="https://lk.alor.ru/broker/reports">Отчёты</a>
+        </label>
+      </span>
+    </li>
+    <li nz-menu-item (click)="logout()" class='menu-item' >
+      <span><i nz-icon nzType="logout" nzTheme="outline"></i> <label>&nbsp;Выйти</label></span>
     </li>
   </ul>
 </nz-dropdown-menu>

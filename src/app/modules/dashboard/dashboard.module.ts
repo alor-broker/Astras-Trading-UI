@@ -14,6 +14,7 @@ import { BlotterModule } from '../blotter/blotter.module';
 import { CommandModule } from '../command/command.module';
 import { HelpModule } from '../help/help.module';
 import { InfoModule } from '../info/info.module';
+import { TerminalSettingsModule } from '../terminal-settings/terminal-settings.module';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { InfoModule } from '../info/info.module';
     CommandModule,
     HelpModule,
     InfoModule,
+    TerminalSettingsModule,
     // components
   ]
 })

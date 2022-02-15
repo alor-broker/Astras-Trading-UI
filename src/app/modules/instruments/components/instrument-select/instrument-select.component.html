@@ -20,7 +20,7 @@
     </nz-auto-option>
   </nz-autocomplete>
   <nz-card nzSize="small" *ngIf="selectedInstrument$ | async as instr">
-    <span  class='search-row'>
+    <span class='search-row'>
       <nz-tag >{{ instr.symbol }}</nz-tag>
       <span class='row-center' nz-tooltip [nzTooltipTitle]="instr.fullName">{{ instr.shortName }}</span>
       <nz-tag *ngIf='instr.instrumentGroup'>{{ instr.instrumentGroup }}</nz-tag>

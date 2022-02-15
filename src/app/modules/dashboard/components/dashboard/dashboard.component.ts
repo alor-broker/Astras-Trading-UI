@@ -88,7 +88,7 @@ export class DashboardComponent implements OnInit {
       swap: false,
       disablePushOnDrag: true,
       disablePushOnResize: false,
-      displayGrid: DisplayGrid.None,
+      displayGrid: DisplayGrid.OnDragAndResize,
       disableWindowResize: false,
       disableWarnings: true,
       scrollToNewItems: false,

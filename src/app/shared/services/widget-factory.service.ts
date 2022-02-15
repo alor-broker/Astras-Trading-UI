@@ -75,7 +75,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       linkToActive: true,
       depth: 10,
-      title:  `Стакан ${this.selectedInstrument.symbol} ${group ? group : ''}`,
+      title:  `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
       showChart: true,
       showTable: true,
     };
@@ -107,9 +107,9 @@ export class WidgetFactoryService {
       ...this.selectedInstrument,
       linkToActive: true,
       guid: newWidget.gridItem.label,
-      timeFrame: this.tfHelper.getValueByTfLabel('H')?.value,
-      from: this.tfHelper.getDefaultFrom('H'),
-      title:  `График ${this.selectedInstrument.symbol} (${group ? group : ''})`,
+      timeFrame: this.tfHelper.getValueByTfLabel('D')?.value,
+      from: this.tfHelper.getDefaultFrom('D'),
+      title:  `График ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
       width: 300,
       height: 300
     };

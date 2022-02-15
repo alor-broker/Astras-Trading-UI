@@ -26,8 +26,8 @@ interface Default {
 }
 
 export interface Calendar {
-  amortization: Amortization[],
-  coupon: Coupon[],
+  amortizations: Amortization[],
+  coupons: Coupon[],
   offers: Offer[],
   defaults: Default[]
 }

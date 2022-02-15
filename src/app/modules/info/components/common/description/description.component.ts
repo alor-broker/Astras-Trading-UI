@@ -17,7 +17,7 @@ export class DescriptionComponent implements OnInit {
   constructor(private service: InfoService) { }
 
   ngOnInit(): void {
-    this.description$ = this.service.getDescription();
+    this.description$ = this.service.getDescription()
   }
 
 }

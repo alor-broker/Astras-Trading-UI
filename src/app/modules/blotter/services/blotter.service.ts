@@ -41,6 +41,10 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     super(ws, settingsService);
   }
 
+  selectNewInstrument(symbol: string, exchange: string) {
+    this.sync.selectNewInstrument({symbol, exchange, instrumentGroup: undefined})
+  }
+
   setTabIndex(index: number) {
     const settings = this.getSettingsValue();
     if (settings) {

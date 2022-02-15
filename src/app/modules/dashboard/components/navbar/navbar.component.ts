@@ -91,4 +91,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     };
     this.sync.openCommandModal(params);
   }
+
+  openTerminalSettings() {
+    this.sync.openTerminalSettingsModal();
+  }
 }
