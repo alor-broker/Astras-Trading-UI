@@ -1,0 +1,32 @@
+<div (mousedown)='$event.stopPropagation()'>
+  <input class='whole ant-input'
+    placeholder='Поиск...'
+    nz-input
+    (mousedown)="$event.stopPropagation()"
+    [(ngModel)]="inputValue"
+    (ngModelChange)="onChange($event)"
+    [nzAutocomplete]="auto"
+  />
+  <nz-autocomplete #auto>
+    <nz-auto-option
+     *ngFor="let option of filteredInstruments$ | async" [nzLabel]="option.symbol" [nzValue]="option.description"
+     (selectionChange)='onSelect($event, option)'>
+      <span class='search-row'>
+        <nz-tag>{{ option.symbol }}</nz-tag>
+        <span class='row-center'>{{ option.shortName }}</span>
+        <nz-tag *ngIf='option.instrumentGroup'>{{ option.instrumentGroup }}</nz-tag>
+        <nz-tag>{{ option.exchange }}</nz-tag>
+      </span>
+    </nz-auto-option>
+  </nz-autocomplete>
+  <nz-card nzSize="small" *ngIf="selectedInstrument$ | async as instr">
+    <span class='search-row'>
+      <nz-tag >{{ instr.symbol }}</nz-tag>
+      <span class='row-center' nz-tooltip [nzTooltipTitle]="instr.fullName">{{ instr.shortName }}</span>
+      <nz-tag *ngIf='instr.instrumentGroup'>{{ instr.instrumentGroup }}</nz-tag>
+      <nz-tag>{{ instr.exchange }}</nz-tag>
+      <button nz-button nzSize="small" nzType="primary" (click)="watch(instr)"><i nz-icon nzType="plus"></i></button>
+    </span>
+  </nz-card>
+  <ats-watchlist-table></ats-watchlist-table>
+</div>

@@ -1,28 +1,36 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AccountService } from '../services/account.service';
+import { switchMap, distinct } from 'rxjs/operators'
+import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authorize: AccountService) { }
+  constructor(private authorize: AuthService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = this.authorize.getAccessToken();
-    return this.processRequestWithToken(token, req, next)
-  }
-
-  private processRequestWithToken(token: string | undefined, req: HttpRequest<any>, next: HttpHandler) {
-    if (!!token) {
-      req = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+    if (this.authorize.isAuthRequest(req.url)) {
+      return next.handle(req);
     }
-
-    return next.handle(req);
+    return this.authorize.accessToken$
+      .pipe(
+        distinct(),
+        switchMap(
+          token => {
+            if (!this.authorize.isAuthorised()) {
+              throw new Error('Token is somehow empty');
+            }
+            else {
+              return next.handle(req.clone({
+                setHeaders: {
+                  Authorization: `Bearer ${token}`
+                }
+               }));
+            }
+          }
+        ),
+      );
   }
 }

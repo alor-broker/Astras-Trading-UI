@@ -1,0 +1,14 @@
+<div class="header">
+  <div class='left'>
+    <nz-avatar [nzText]="info.symbol" [nzSize]="64" nzGap='4' [nzSrc]="'https://storage.alorbroker.ru/icon/' + info.symbol + '.png'"></nz-avatar>
+  </div>
+  <div class='middle'>
+    <span class='identifier line'>
+      <p class='ticker'>{{info.shortName}}</p>
+      <div>
+        <p class='exchange'>{{info.exchange}}</p>
+      </div>
+    </span>
+    <!-- <span><p class='price'>{{price.lastPrice}}</p></span> -->
+  </div>
+</div>

@@ -1,0 +1,9 @@
+<div>
+  <nz-modal nzOkText="Ок" [nzCancelText]="null" [nzVisible]='isVisible$ | async'
+    nzTitle="Профиль" (nzOnOk)="handleClose()" (nzOnCancel)="handleClose()" >
+    <!-- [nzBodyStyle]="{overflowY: 'auto', height: '300px' }"  -->
+    <ng-container *nzModalContent>
+      <ats-terminal-settings></ats-terminal-settings>
+    </ng-container>
+  </nz-modal>
+</div>

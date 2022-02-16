@@ -1,0 +1,50 @@
+<ng-template #empty>
+  <nz-empty nzNotFoundImage="simple" nzNotFoundContent='Сделок сегодня не было'></nz-empty>
+</ng-template>
+<nz-table *ngIf="displayTrades$ | async as trades" #nzTable [nzData]="trades"
+    #nzTableComponent
+    [nzNoResult]="empty"
+    nzTableLayout="fixed"
+    nzSize="small"
+    [nzFrontPagination]="false"
+    [nzShowPagination]="false"
+    [nzScroll]="{ x: tableInnerWidth }">
+  <thead>
+    <tr>
+      <th *ngFor='let column of listOfColumns'
+          [nzCustomFilter]='column.hasSearch ? "": null'
+          [nzSortFn]='column.sortFn'
+          [nzFilters]="column.listOfFilter"
+          [nzShowFilter]="column.hasFilter"
+          [nzFilterFn]="column.filterFn">
+        {{column.name}}
+        <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
+          <i nz-icon nzType="search"></i>
+        </nz-filter-trigger>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let ord of nzTable.data">
+      <td *ngIf='shouldShow("id")'>{{ ord.id }}</td>
+      <td *ngIf='shouldShow("orderno")'>{{ ord.orderno }}</td>
+      <td class='bold' *ngIf='shouldShow("symbol")'>{{ ord.symbol }}</td>
+      <td [class]='ord.side.toString() == "sell" ? "sell" : "buy"' *ngIf='shouldShow("side")'>{{ ord.side }}</td>
+      <td *ngIf='shouldShow("qty")'>{{ ord.qty }}</td>
+      <td *ngIf='shouldShow("price")'>{{ ord.price }}</td>
+      <td *ngIf='shouldShow("date")'>{{ formatDate(ord.date) }}</td>
+    </tr>
+  </tbody>
+</nz-table>
+
+<nz-dropdown-menu #searchMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown" *ngFor='let column of listOfColumns'>
+    <div class="search-box" *ngIf='column.hasSearch && column.isSearchVisible'>
+      <input
+        class='ant-input' type="text" nz-input [placeholder]="column.searchDescription"
+        [ngModel]='getFilter(column.id)'
+        (ngModelChange)="filterChange($event, column.id)"/>
+    </div>
+  </div>
+  <button nz-button nzType="primary" nzSize="small" (click)="reset()">Сбросить</button>
+</nz-dropdown-menu>

@@ -1,0 +1,43 @@
+<p>Настройки</p>
+<form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
+  <nz-form-item  class='compact'>
+    <nz-form-control nzErrorTip="Введите имя инструмента">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Тикер</nz-form-label>
+      <nz-input-group nzPrefixIcon="user">
+        <input class='ant-input'  formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Тикер" />
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item class="compact">
+    <nz-form-control nzErrorTip="Введите биржу">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="exchange">Биржа</nz-form-label>
+      <nz-input-group nzPrefixIcon="lock">
+        <input class='ant-input'  formControlName="exchange" (mousedown)="$event.stopPropagation()" placeholder="Биржа" />
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item class="compact">
+    <nz-form-label nzRequired nzFor="timeFrame">Таймфрейм</nz-form-label>
+    <nz-input-group nzPrefixIcon="lock">
+      <nz-select formControlName='timeFrame'>
+        <nz-option  *ngFor='let tf of timeFrames' [nzValue]="tf.value" [nzLabel]="tf.label"></nz-option>
+      </nz-select>
+    </nz-input-group>
+  </nz-form-item>
+  <nz-collapse [nzBordered]="false" class="compact">
+    <nz-collapse-panel nzHeader="Продвинутые">
+      <nz-form-control nzErrorTip="Введите режим торгов">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="instrumentGroup">Режим торгов</nz-form-label>
+        <nz-input-group nzPrefixIcon="lock">
+          <input class='ant-input' formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+            placeholder="Режим торгов" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-collapse-panel>
+  </nz-collapse>
+  <nz-form-item>
+    <nz-form-control>
+      <button type='submit' nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
+    </nz-form-control>
+  </nz-form-item>
+</form>

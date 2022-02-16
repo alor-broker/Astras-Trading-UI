@@ -1,0 +1,21 @@
+@import (reference) '/src/styles.less';
+
+.order-book {
+  display: flex;
+  align-items: stretch;
+  height: inherit;
+}
+
+.row-cell {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  &--ask {
+    &:extend(.row-cell);
+    color: @sell-color;
+  }
+  &--bid {
+    &:extend(.row-cell);
+    color: @buy-color;
+    text-align: right;
+  }
+}

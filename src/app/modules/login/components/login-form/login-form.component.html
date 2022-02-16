@@ -5,9 +5,9 @@
       <label for="username" class="form-label">Email or login</label>
       <div>
         <input type="text"
-               class="form-control gradient-border"
+               class="ant-input form-control gradient-border"
                id="username"
-               [(ngModel)]="model.username"
+               [(ngModel)]="model.login"
                name="username"
                #username="ngModel"
                required>
@@ -23,7 +23,7 @@
       <label for="password" class="form-label">Password</label>
       <div>
         <input type="password"
-               class="form-control gradient-border"
+               class="ant-input form-control gradient-border"
                id="password"
                [(ngModel)]="model.password"
                name="password"

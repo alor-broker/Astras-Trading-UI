@@ -1,0 +1,9 @@
+<div class='inner-content'>
+  <gridster [options]="options" *ngIf="dashboard$ | async as dashboard">
+    <div>
+      <gridster-item class="show-scroll" [item]="widget.gridItem" *ngFor="let widget of dashboard">
+        <ats-parent-widget [widget]="widget" [resize]="resize"></ats-parent-widget>
+      </gridster-item>
+    </div>
+  </gridster>
+</div>

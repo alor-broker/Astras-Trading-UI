@@ -23,13 +23,14 @@ chrome-profiler-events*.json
 *.sublime-workspace
 
 # IDE - VSCode
+.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 .history/*
-
+.angular
 # misc
 /.sass-cache
 /connect.lock
@@ -43,3 +44,4 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+

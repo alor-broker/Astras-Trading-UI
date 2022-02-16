@@ -1,36 +1,32 @@
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
-import { HandleErrorService } from './shared/services/handle-error.service';
-import { HandleErrorsInterceptor } from './shared/interceptors/handle-errors.interceptor';
 import { SharedModule } from './shared/shared.module';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NZ_I18N } from 'ng-zorro-antd/i18n';
+import { ru_RU } from 'ng-zorro-antd/i18n';
+import { registerLocaleData } from '@angular/common';
+import ru from '@angular/common/locales/ru';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+
+registerLocaleData(ru);
 
 @NgModule({
   declarations: [
     AppComponent,
   ],
   imports: [
-    BrowserModule,
     AppRoutingModule,
-    SharedModule
+    SharedModule,
+    BrowserModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    HttpClientModule,
   ],
-  providers: [
-    HandleErrorService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HandleErrorsInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    }
-  ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  providers: [{ provide: NZ_I18N, useValue: ru_RU }]
 })
 export class AppModule { }

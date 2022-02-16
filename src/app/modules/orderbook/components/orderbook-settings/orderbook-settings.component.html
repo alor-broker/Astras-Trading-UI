@@ -1,0 +1,53 @@
+<p>Настройки</p>
+<div>
+  <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите инструмент">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Тикер</nz-form-label>
+        <nz-input-group nzPrefixIcon="user">
+          <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input
+            placeholder="Symbol" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите биржу">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="exchange">Биржа</nz-form-label>
+        <nz-input-group nzPrefixIcon="lock">
+          <input class='ant-input' formControlName="exchange" (mousedown)="$event.stopPropagation()"
+            placeholder="Биржа" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="12" [nzXs]="24">Показавать график</nz-form-label>
+      <nz-switch formControlName='showChart' nzFor="showChart"></nz-switch>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="12" [nzXs]="24">Показавать таблицу</nz-form-label>
+      <nz-switch formControlName='showTable' nzFor="showTable"></nz-switch>
+    </nz-form-item>
+    <nz-collapse [nzBordered]="false" class="compact">
+      <nz-collapse-panel nzHeader="Продвинутые">
+        <nz-form-control nzErrorTip="Группа">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="instrumentGroup">Группа</nz-form-label>
+          <nz-input-group nzPrefixIcon="lock">
+            <input class='ant-input' formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+              placeholder="Режим торгов" />
+          </nz-input-group>
+        </nz-form-control>
+        <nz-form-control nzErrorTip="Глубина некорректна">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="depth">Глубина</nz-form-label>
+          <nz-input-group nzPrefixIcon="lock">
+            <input class='ant-input' formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-collapse-panel>
+    </nz-collapse>
+    <nz-form-item class="compact">
+      <nz-form-control>
+        <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</div>

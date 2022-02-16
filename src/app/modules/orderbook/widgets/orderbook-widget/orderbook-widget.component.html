@@ -1,0 +1,6 @@
+
+<ats-order-book *ngIf="!shouldShowSettings"
+  [guid]="guid"
+  [resize]="resize"
+  [(shouldShowSettings)]="shouldShowSettings"></ats-order-book>
+<ats-orderbook-settings *ngIf="shouldShowSettings" [guid]="guid" (settingsChange)="onSettingsChange()"></ats-orderbook-settings>

@@ -1,0 +1,42 @@
+<div *ngIf="issue$ | async as issue" >
+  <nz-descriptions nzBordered [nzColumn]="columns"
+  [nzSize]="columns == 1 ? 'small' : 'default'">
+  <nz-descriptions-item nzTitle="Номинал">{{issue.facevalue | currency: issue.nearestCoupon.currency:'symbol-narrow'| slice: 0:-3 }}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Тек. номинал">{{issue.currentFaceValue | currency: issue.nearestCoupon.currency:'symbol-narrow'}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Объем выпуска">{{issue.issueVol | number }}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Стоимость выпуска">{{issue.issueVal | currency: issue.nearestCoupon.currency:'symbol-narrow' | slice: 0:-3}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Дата рег. выпуска">{{issue.issueDate | date }}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Дата погашения">{{issue.maturityDate | date}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Рыночный объем">{{issue.marketVol | number }}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Рыночная ном. стоимость">{{issue.marketVal | currency: issue.nearestCoupon.currency:'symbol-narrow'| slice: 0:-3}}</nz-descriptions-item>
+
+  <nz-descriptions-item nzTitle="Текущая дох.">{{issue.currentYield | percent }}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="YTM">{{issue.yieldToMaturity | percent}}</nz-descriptions-item>
+
+  <nz-descriptions-item [nzTitle]="nearestAmortization" nzSpan="2"></nz-descriptions-item>
+  <nz-descriptions-item nzTitle="% от номинала">{{issue.nearestAmortization.parFraction  | percent}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Сумма">{{issue.nearestAmortization.amount  | currency: issue.nearestAmortization.currency:'symbol-narrow'}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Дата">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
+
+  <nz-descriptions-item [nzTitle]="nearestCall" nzSpan="2"></nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Дох. к оферте">{{0.05 | percent}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Дата">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
+
+  <nz-descriptions-item [nzTitle]="nearestPut" nzSpan="2"></nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Дох. к оферте">{{0.07 | percent}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Дата">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
+
+
+  <nz-descriptions-item [nzTitle]="nearestCoupon" nzSpan="2"></nz-descriptions-item>
+  <nz-descriptions-item nzTitle="НКД">{{issue.nearestCoupon.accruedInterest  | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Период, дней">{{issue.nearestCoupon.intervalInDays  | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Тип">{{issue.nearestCoupon.couponType  | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Сумма">{{issue.nearestCoupon.amount  | currency: issue.nearestAmortization.currency:'symbol-narrow'}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Дата">{{issue.nearestCoupon.date | date}}</nz-descriptions-item>
+</nz-descriptions>
+</div>
+
+<ng-template #nearestAmortization let-data><strong>Ближайшая Амортизация</strong></ng-template>
+<ng-template #nearestCoupon let-data><strong>Ближайший купон</strong></ng-template>
+<ng-template #nearestCall let-data><strong>Ближнаяя Call</strong></ng-template>
+<ng-template #nearestPut let-data><strong>Ближная Put</strong></ng-template>

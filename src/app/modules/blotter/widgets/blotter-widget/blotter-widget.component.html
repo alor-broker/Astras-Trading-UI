@@ -1,0 +1,25 @@
+<nz-tabset *ngIf="!shouldShowSettings" nzTabPosition="top" nzSize="small"
+  (mousedown)='$event.stopPropagation()' [nzSelectedIndex]="activeTabIndex$ | async" (nzSelectChange)="onIndexChange($event)">
+  <nz-tab nzTitle="О портфеле">
+    <ats-summaries
+      [guid]="guid"
+      [(shouldShowSettings)]="shouldShowSettings"
+      [resize]="resize"></ats-summaries>
+  </nz-tab>
+  <nz-tab nzTitle="Заявки">
+    <ats-orders
+      [guid]="guid"
+      [(shouldShowSettings)]="shouldShowSettings"></ats-orders>
+  </nz-tab>
+  <nz-tab nzTitle="Позиции">
+    <ats-positions
+      [guid]="guid"
+      [(shouldShowSettings)]="shouldShowSettings"></ats-positions>
+  </nz-tab>
+  <nz-tab nzTitle="Сделки">
+    <ats-trades
+      [guid]="guid"
+      [(shouldShowSettings)]="shouldShowSettings"></ats-trades>
+  </nz-tab>
+</nz-tabset>
+<ats-blotter-settings *ngIf="shouldShowSettings" [guid]='guid' (settingsChange)="onSettingsChange()"></ats-blotter-settings>

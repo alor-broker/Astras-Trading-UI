@@ -1,0 +1,29 @@
+@import (reference) '/src/styles.less';
+
+.help {
+  height: 400px;
+  overflow-y: scroll;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: @text-color-secondary @component-background;
+}
+
+.help::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+.help::-webkit-scrollbar-track {
+  background-color: @component-background;
+  border-radius: 10px;
+}
+
+.help::-webkit-scrollbar-thumb {
+  background-color:  @text-color-secondary; /* or add it to the track */
+  border-radius: 10px;
+}
+
+:host ::ng-deep .ant-table-content::-webkit-scrollbar {
+  height: 5px;
+  width: 3px;
+}

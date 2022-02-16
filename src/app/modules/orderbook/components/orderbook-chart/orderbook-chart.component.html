@@ -1,0 +1,9 @@
+<div class='chart' *ngIf='shouldShowChart$ | async'>
+  <canvas *ngIf="chartData$ | async as cd"
+    baseChart
+    type="scatter"
+    [datasets]="cd"
+    [legend]="false"
+    [options]="chartOptions">
+  </canvas>
+</div>

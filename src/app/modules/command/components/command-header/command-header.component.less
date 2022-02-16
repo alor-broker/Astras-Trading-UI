@@ -1,0 +1,74 @@
+@import (reference) '/src/styles.less';
+
+.content {
+  width: 100%;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.line {
+  display: inline-flex;
+}
+
+.with-space {
+  justify-content: space-between
+}
+
+.price {
+  font-size: 2em;
+  margin-top: 3px;
+}
+
+.identifier {
+  padding: 3px;
+}
+
+.ticker {
+  font-size: 1.5em;
+}
+
+.exchange {
+  font-size: 0.6em;
+  color: darkgray;
+  margin-bottom: 1px;
+}
+
+.instrument-group {
+  font-size: 0.6em;
+  color: lightgray;
+  margin-top: 1px;
+}
+
+.left {
+  margin: 3px 10px;
+  align-self: baseline;
+}
+
+.middle {
+  line-height: 0.7;
+  margin: 10px;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 2;
+  max-width: 300px;
+}
+
+.sell {
+  color: @sell-color;
+}
+
+.buy {
+  color: @buy-color;
+}
+
+.position-long {
+  background: @buy-color
+}
+
+.position-short {
+  background: @sell-color
+}

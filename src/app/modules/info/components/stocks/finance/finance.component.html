@@ -1,0 +1,38 @@
+<div *ngIf="finance$ | async as finance" >
+  <nz-descriptions nzBordered [nzColumn]="columns"
+  [nzSize]="columns == 1 ? 'small' : 'default'">
+  <nz-descriptions-item nzTitle="Капитализация">{{finance.marketCap | currency: finance.currency:'symbol-narrow' | slice: 0:-3 }}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="EBITDA">{{finance.ebitda | currency: finance.currency:'symbol-narrow' | slice: 0:-3}}</nz-descriptions-item>
+
+  <nz-descriptions-item [nzTitle]="costEstimate" nzSpan="2"></nz-descriptions-item>
+  <nz-descriptions-item nzTitle="P/E">{{finance.costEstimate.priceToEarnings  | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="P/S">{{finance.costEstimate.pricePerShare  | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="EPS dil.">{{finance.costEstimate.dilutedEarningsPerShare | number}}</nz-descriptions-item>
+
+  <nz-descriptions-item [nzTitle]="profitability" nzSpan="2"></nz-descriptions-item>
+  <nz-descriptions-item nzTitle="ROE">{{finance.profitability.returnOnEquity  | percent}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="ROA">{{finance.profitability.returnOnAssets  | percent}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Долг к капиталу">{{finance.profitability.debtPerEquity  | percent}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Маржинальность">{{finance.profitability.netProfitMargin  | percent}}</nz-descriptions-item>
+
+  <nz-descriptions-item [nzTitle]="dividends" nzSpan="2"></nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Коэф. выплаты">{{finance.dividends.payoutRation | percent}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Ср. за 5 лет">{{finance.dividends.averageDividendFor5years | currency: finance.currency:'symbol-narrow'}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Последний">{{finance.dividends.lastDividendYield | percent}}</nz-descriptions-item>
+
+  <nz-descriptions-item [nzTitle]="trading" nzSpan="2"></nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Цена закрытия">{{finance.trading.closePrice | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Макс. 52 недели">{{finance.trading.maxFor52Weeks | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Мин. 52 недели">{{finance.trading.minFor52Weeks | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Оборот за день">{{finance.trading.averageTurnoverPerDay | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Оборот за месяц">{{finance.trading.averageTurnoverPerMonth | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Бета">{{finance.trading.beta | number}}</nz-descriptions-item>
+</nz-descriptions>
+
+<ats-finance-bar-chart [finance]="finance"></ats-finance-bar-chart>
+</div>
+
+<ng-template #costEstimate let-data><strong>Мультип. стоимости</strong></ng-template>
+<ng-template #profitability let-data><strong>Рентабельность</strong></ng-template>
+<ng-template #dividends let-data><strong>Дивиденды</strong></ng-template>
+<ng-template #trading let-data><strong>Торговые</strong></ng-template>

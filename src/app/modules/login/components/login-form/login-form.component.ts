@@ -1,21 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Login } from '../../../../shared/models/login.model';
-import { AccountService } from '../../../../shared/services/account.service';
+import { Credentials } from 'src/app/shared/models/user/credentials.model';
+import { Login } from '../../../../shared/models/user/login.model';
+import { AuthService } from '../../../../shared/services/auth.service';
 
 @Component({
   selector: 'ats-login-form',
   templateUrl: './login-form.component.html',
-  styleUrls: ['./login-form.component.sass']
+  styleUrls: ['./login-form.component.less']
 })
 export class LoginFormComponent implements OnInit {
 
   constructor(
-    private authorizeService: AccountService,
+    private authorizeService: AuthService,
     private router: Router) { }
 
-    model: Login = {
-      username: '',
+    model: Credentials = {
+      login: '',
       password: ''
     };
 
@@ -25,10 +26,7 @@ export class LoginFormComponent implements OnInit {
     this.submitted = true;
 
     // Validation on empty strings is done in html
-    this.authorizeService.login({
-      username: this.model.username!,
-      password: this.model.password!
-    }).subscribe();
+    this.authorizeService.login(this.model).subscribe();
   }
 
   ngOnInit(): void {
