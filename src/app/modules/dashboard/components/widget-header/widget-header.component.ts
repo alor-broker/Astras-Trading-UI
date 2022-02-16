@@ -2,6 +2,7 @@ import { Component, Input, Output, OnInit, EventEmitter, OnDestroy } from '@angu
 import { Observable, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { getTypeBySettings, isInstrumentDependent, isLightChartSettings, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
@@ -26,7 +27,7 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
   settings$?: Observable<AnySettings>;
   private settings?: AnySettings
 
-  constructor(private dashboard: DashboardService, private sync: SyncService) { }
+  constructor(private dashboard: DashboardService, private modal: ModalService) { }
 
   ngOnInit() {
     this.settings$ = this.dashboard.getSettings(this.guid).pipe(
@@ -75,7 +76,7 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
   openHelp() {
     if (this.settings) {
       const name = getTypeBySettings(this.settings)
-      this.sync.openHelpModal(name);
+      this.modal.openHelpModal(name);
     }
   }
 }

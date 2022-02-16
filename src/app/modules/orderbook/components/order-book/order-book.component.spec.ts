@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, Subscription } from 'rxjs';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookService } from '../../services/orderbook.service';
@@ -26,14 +27,14 @@ describe('OrderBookComponent', () => {
     }
   }
   spyOb.getOrderbook.and.returnValue(of(ob))
-  const spySync = jasmine.createSpyObj('SyncService', ['openCommandModal'])
+  const modalSync = jasmine.createSpyObj('ModalService', ['openCommandModal'])
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ OrderBookComponent ],
       providers: [
         { provide: OrderbookService, useValue: spyOb },
-        { provide: SyncService, useValue: spySync },
+        { provide: ModalService, useValue: modalSync },
       ]
     })
     .compileComponents();

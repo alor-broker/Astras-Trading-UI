@@ -12,6 +12,7 @@ import {
   buyColorBackground,
 } from '../../../../shared/models/settings/styles-constants';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
+import { ModalService } from 'src/app/shared/services/modal.service';
 
 interface Size {
   width: string;
@@ -46,7 +47,7 @@ export class OrderBookComponent implements OnInit, OnDestroy, OnChanges {
     height: '100%',
   });
 
-  constructor(private service: OrderbookService, private sync: SyncService) {}
+  constructor(private service: OrderbookService, private modal: ModalService) {}
 
   ngOnInit(): void {
     this.shouldShowTable$ = this.service.getSettings(this.guid).pipe(
@@ -102,7 +103,7 @@ export class OrderBookComponent implements OnInit, OnDestroy, OnChanges {
         quantity: quantity ?? 0,
         type: CommandType.Limit,
       };
-      this.sync.openCommandModal(params);
+      this.modal.openCommandModal(params);
     }
   }
 }

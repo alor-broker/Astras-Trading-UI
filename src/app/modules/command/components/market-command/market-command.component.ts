@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, filter, map, of, Subscription } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.model';
@@ -24,12 +25,12 @@ export class MarketCommandComponent implements OnInit {
   price$ = of(0)
 
   constructor(
-    private sync: SyncService,
+    private modal: ModalService,
     private service: CommandsService,
     private quoteService: QuotesService,) { }
 
   ngOnInit(): void {
-    this.initialParamsSub = this.sync.commandParams$.subscribe(initial => {
+    this.initialParamsSub = this.modal.commandParams$.subscribe(initial => {
       this.initialParams = initial;
 
       if (this.initialParams?.instrument && this.initialParams.user) {

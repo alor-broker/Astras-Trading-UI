@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { CommandsService } from '../../services/commands.service';
 
@@ -9,15 +10,15 @@ describe('CommandWidgetComponent', () => {
   let component: CommandWidgetComponent;
   let fixture: ComponentFixture<CommandWidgetComponent>;
 
-  const syncSpy = jasmine.createSpyObj('SyncService', ['commandParams$']);
+  const modalSpy = jasmine.createSpyObj('ModalService', ['commandParams$']);
   const commandSpy = jasmine.createSpyObj('CommandsService', ['submitLimitCommand']);
-  syncSpy.commandParams$ = of();
+  modalSpy.commandParams$ = of();
   beforeEach(async () => {
 
     await TestBed.configureTestingModule({
       declarations: [ CommandWidgetComponent ],
       providers: [
-        { provide: SyncService, useValue: syncSpy },
+        { provide: ModalService, useValue: modalSpy },
         { provide: CommandsService, useValue: commandSpy }
       ]
     })

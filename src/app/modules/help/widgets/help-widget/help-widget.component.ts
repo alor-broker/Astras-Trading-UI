@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { filter, Observable, of, Subscription, tap } from 'rxjs';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 
 @Component({
@@ -13,17 +14,17 @@ export class HelpWidgetComponent implements OnInit {
   private sub: Subscription = new Subscription();
   private params?: string;
 
-  constructor(public sync: SyncService) { }
+  constructor(public modal: ModalService) { }
 
   ngOnInit() {
-    this.helpParams$ = this.sync.helpParams$.pipe(
+    this.helpParams$ = this.modal.helpParams$.pipe(
       filter((p): p is string => !!p),
       tap(p => this.params = p)
     );
-    this.isVisible$ = this.sync.shouldShowHelpModal$;
+    this.isVisible$ = this.modal.shouldShowHelpModal$;
   }
 
   handleClose() {
-    this.sync.closeHelpModal();
+    this.modal.closeHelpModal();
   }
 }

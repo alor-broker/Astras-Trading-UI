@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
-import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
 import { CommandsService } from '../../services/commands.service';
 
@@ -12,16 +11,16 @@ describe('LimitEditComponent', () => {
   let component: LimitEditComponent;
   let fixture: ComponentFixture<LimitEditComponent>;
 
-  const spySync = jasmine.createSpyObj('SyncService', ['shouldShowCommandModal$', 'editParams$']);
-  spySync.shouldShowCommandModal$ = of(false);
-  spySync.editParams$ = of(null);
+  const spyModal = jasmine.createSpyObj('ModalService', ['shouldShowCommandModal$', 'editParams$']);
+  spyModal.shouldShowCommandModal$ = of(false);
+  spyModal.editParams$ = of(null);
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ LimitEditComponent ],
       providers: [
-        { provide: SyncService, useValue: spySync },
+        { provide: ModalService, useValue: spyModal },
         { provide: CommandsService, useValue: spyCommands }
       ]
     })

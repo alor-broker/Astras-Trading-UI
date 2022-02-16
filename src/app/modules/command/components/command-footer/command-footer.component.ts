@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { finalize, Subscription } from 'rxjs';
 import { Side } from 'src/app/shared/models/enums/side.model';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { CommandsService } from '../../services/commands.service';
 
@@ -15,7 +16,7 @@ export class CommandFooterComponent implements OnInit, OnDestroy {
 
   private sub: Subscription = new Subscription();
 
-  constructor(private command: CommandsService, private sync: SyncService) { }
+  constructor(private command: CommandsService, private modal: ModalService) { }
 
   ngOnInit(): void {
 
@@ -50,6 +51,6 @@ export class CommandFooterComponent implements OnInit, OnDestroy {
   }
 
   closeModal() {
-    this.sync.closeCommandModal()
+    this.modal.closeCommandModal()
   }
 }

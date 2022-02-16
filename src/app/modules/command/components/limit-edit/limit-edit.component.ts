@@ -4,7 +4,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
-import { SyncService } from 'src/app/shared/services/sync.service';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandsService } from '../../services/commands.service';
@@ -21,10 +21,10 @@ export class LimitEditComponent implements OnInit, OnDestroy {
   formChangeSub?: Subscription
   form!: LimitFormGroup;
 
-  constructor(private sync: SyncService, private service: CommandsService) { }
+  constructor(private modal: ModalService, private service: CommandsService) { }
 
   ngOnInit() {
-    this.initialParamsSub = this.sync.editParams$.subscribe(initial => {
+    this.initialParamsSub = this.modal.editParams$.subscribe(initial => {
       this.initialParams = initial;
 
       if (this.initialParams?.instrument && this.initialParams.user) {

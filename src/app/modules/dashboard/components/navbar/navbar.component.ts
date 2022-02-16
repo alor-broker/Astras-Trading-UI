@@ -1,10 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { AccountService } from '../../services/account.service';
-import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
@@ -13,7 +10,7 @@ import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-const
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
-import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
+import { ModalService } from 'src/app/shared/services/modal.service';
 
 @Component({
   selector: 'ats-navbar',
@@ -28,6 +25,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private account: AccountService,
     private sync: SyncService,
     private auth: AuthService,
+    private modal: ModalService
   ) { }
 
   buyColor = buyColor;
@@ -89,10 +87,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
       quantity: 0,
       type: CommandType.Limit,
     };
-    this.sync.openCommandModal(params);
+    this.modal.openCommandModal(params);
   }
 
   openTerminalSettings() {
-    this.sync.openTerminalSettingsModal();
+    this.modal.openTerminalSettingsModal();
   }
 }

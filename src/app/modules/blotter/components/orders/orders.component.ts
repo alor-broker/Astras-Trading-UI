@@ -11,6 +11,7 @@ import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { BlotterService } from '../../services/blotter.service';
+import { ModalService } from 'src/app/shared/services/modal.service';
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -217,7 +218,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
 
-  constructor(private service: BlotterService, private cancller: OrderCancellerService, private sync: SyncService) { }
+  constructor(private service: BlotterService, private cancller: OrderCancellerService, private modal: ModalService) { }
 
   ngOnInit(): void {
     this.settingsSub = this.service.getSettings(this.guid).pipe(
@@ -277,7 +278,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   editOrder(order: Order) {
-    this.sync.openEditModal({
+    this.modal.openEditModal({
       type: order.type,
       quantity: order.qty,
       orderId: order.id,

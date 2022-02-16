@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SyncService } from 'src/app/shared/services/sync.service';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { CommandsService } from '../../services/commands.service';
 
 import { CommandFooterComponent } from './command-footer.component';
@@ -10,12 +10,12 @@ describe('CommandFooterComponent', () => {
 
   beforeEach(async () => {
     const commandSpy = jasmine.createSpyObj('CommandsService', ['submitMarket', 'submitLimit']);
-    const syncSpy = jasmine.createSpyObj('SyncService', ['closeCommandModal']);
+    const modalSpy = jasmine.createSpyObj('ModalService', ['closeCommandModal']);
     await TestBed.configureTestingModule({
       declarations: [ CommandFooterComponent ],
       providers: [
         { provide: CommandsService, useValue: commandSpy },
-        { provide: SyncService, useValue: syncSpy },
+        { provide: ModalService, useValue: modalSpy },
       ]
     })
     .compileComponents();

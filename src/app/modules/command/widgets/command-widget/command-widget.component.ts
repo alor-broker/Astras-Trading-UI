@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NzTabChangeEvent, NzTabComponent } from 'ng-zorro-antd/tabs';
 import { BehaviorSubject, filter, Observable, of } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 
@@ -19,21 +20,21 @@ export class CommandWidgetComponent implements OnInit {
 
   activeTab = new BehaviorSubject<string>('limit');
 
-  constructor(public sync: SyncService) { }
+  constructor(public modal: ModalService) { }
 
   ngOnInit(): void {
-    this.commandParams$ = this.sync.commandParams$.pipe(
+    this.commandParams$ = this.modal.commandParams$.pipe(
       filter((p): p is CommandParams => !!p)
     );
-    this.isVisible$ = this.sync.shouldShowCommandModal$;
+    this.isVisible$ = this.modal.shouldShowCommandModal$;
   }
 
   handleOk(): void {
-    this.sync.closeCommandModal();
+    this.modal.closeCommandModal();
   }
 
   handleCancel(): void {
-    const close = () => this.sync.closeCommandModal();
+    const close = () => this.modal.closeCommandModal();
     close();
   }
 

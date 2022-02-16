@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 
 @Component({
@@ -11,13 +12,13 @@ export class TerminalSettingsWidgetComponent implements OnInit {
 
   isVisible$: Observable<boolean> = of(false);
 
-  constructor(private sync: SyncService) { }
+  constructor(private modal: ModalService) { }
 
   ngOnInit(): void {
-    this.isVisible$ = this.sync.shouldShowTerminalSettingsModal$;
+    this.isVisible$ = this.modal.shouldShowTerminalSettingsModal$;
   }
 
   handleClose() {
-    this.sync.closeTerminalSettingsModal();
+    this.modal.closeTerminalSettingsModal();
   }
 }

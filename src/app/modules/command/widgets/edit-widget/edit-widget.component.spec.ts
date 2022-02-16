@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { SyncService } from 'src/app/shared/services/sync.service';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { CommandsService } from '../../services/commands.service';
 
 import { EditWidgetComponent } from './edit-widget.component';
@@ -10,13 +10,13 @@ describe('EditWidgetComponent', () => {
   let fixture: ComponentFixture<EditWidgetComponent>;
 
   beforeEach(async () => {
-    const syncSpy = jasmine.createSpyObj('SyncService', ['editParams$']);
+    const modalSpy = jasmine.createSpyObj('ModalService', ['editParams$']);
     const commandSpy = jasmine.createSpyObj('CommandsService', ['submitLimitEdit']);
-    syncSpy.editParams$ = of();
+    modalSpy.editParams$ = of();
     await TestBed.configureTestingModule({
       declarations: [ EditWidgetComponent ],
       providers: [
-        { provide: SyncService, useValue: syncSpy },
+        { provide: ModalService, useValue: modalSpy },
         { provide: CommandsService, useValue: commandSpy },
       ]
     })

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
+import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
@@ -12,16 +13,16 @@ describe('LimitCommandComponent', () => {
   let component: LimitCommandComponent;
   let fixture: ComponentFixture<LimitCommandComponent>;
 
-  const spySync = jasmine.createSpyObj('SyncService', ['shouldShowCommandModal$', 'commandParams$']);
-  spySync.shouldShowCommandModal$ = of(false);
-  spySync.commandParams$ = of(null);
+  const spyModal = jasmine.createSpyObj('ModalService', ['shouldShowCommandModal$', 'commandParams$']);
+  spyModal.shouldShowCommandModal$ = of(false);
+  spyModal.commandParams$ = of(null);
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ LimitCommandComponent ],
       providers: [
-        { provide: SyncService, useValue: spySync },
+        { provide: ModalService, useValue: spyModal },
         { provide: CommandsService, useValue: spyCommands }
       ]
     })

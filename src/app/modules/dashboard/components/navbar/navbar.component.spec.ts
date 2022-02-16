@@ -10,15 +10,18 @@ import { AccountService } from '../../services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { of } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { ModalService } from 'src/app/shared/services/modal.service';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
-  const spySync = jasmine.createSpy('SyncService');
+  const spySync = jasmine.createSpyObj('SyncService', ['selectedInstrument$']);
+  spySync.selectedInstrument$ = of(null);
   const spyAccount = jasmine.createSpyObj('AccountService', ['getActivePortfolios']);
   spyAccount.getActivePortfolios.and.returnValue(of([]));
   const spyDashboard = jasmine.createSpy('DashboardService');
   const spyAuth = jasmine.createSpyObj('AuthService', ['logout'])
+  const spyModal= jasmine.createSpyObj('ModalService', ['openTerminalSettingsModal'])
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -33,6 +36,7 @@ describe('NavbarComponent', () => {
         { provide: AccountService, useValue: spyAccount },
         { provide: DashboardService, useValue: spyDashboard },
         { provide: AuthService, useValue: spyAuth },
+        { provide: ModalService, useValue: spyModal },
       ]
     }).compileComponents();
   }));
