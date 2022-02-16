@@ -9,7 +9,7 @@ import { FullName } from '../models/full-name.model';
   providedIn: 'root'
 })
 export class TerminalSettingsService {
-  private url = environment.apiUrl + '/client/v1.0/users'
+  private url = environment.apiUrl + '/client/v1.0/users';
 
   constructor(private http: HttpClient, private auth: AuthService) { }
 

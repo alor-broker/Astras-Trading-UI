@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
-import { filter, map, Observable, Subscription, tap } from 'rxjs';
+import { filter, map, Observable } from 'rxjs';
 import { AnySettings } from '../models/settings/any-settings.model';
-import { LightChartSettings } from '../models/settings/light-chart-settings.model';
 import { BaseRequest } from '../models/ws/base-request.model';
 import { BaseResponse } from '../models/ws/base-response.model';
-import { PortfolioWideRequest } from '../models/ws/portfolio-wide-request.model';
 import { GuidGenerator } from '../utils/guid';
-import { isEqual } from '../utils/settings-helper';
 import { BaseService } from './base.service';
 import { DashboardService } from './dashboard.service';
 import { WebsocketService } from './websocket.service';
