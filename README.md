@@ -21,7 +21,7 @@ Angular based trading terminal with main focus on stock trading.
  - less - css препроцессор
  - yarn - менеджер пакетов
 
-## Start
+### Start
 Чтобы запустить проект, необходимо установить пакеты
 
     yarn install
