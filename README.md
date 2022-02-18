@@ -1,6 +1,9 @@
 
 # Astras `Alpha version`
-Angular based trading terminal with main focus on stock trading.
+Торговый терминал на Angular от Алор Брокер.
+
+![image](https://user-images.githubusercontent.com/6408195/154630168-1d8c45fb-deb9-46c6-a4a6-83dd2900d352.png)
+
 
 # Architecture `todo: translate`
 Мы расмотрим общую архитектуру (backend+frontend) и архитектуру самого фронтенда
