@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, distinct, distinctUntilChanged, map, Observable, Subscription, switchMap, tap } from 'rxjs';
+import { combineLatest, distinct, distinctUntilChanged, map, Observable, Subscription, switchMap } from 'rxjs';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
@@ -43,7 +43,6 @@ export class InfoService extends BaseService<InfoSettings>{
     this.settings$ = combineLatest([
       this.sync.selectedInstrument$.pipe(
         distinctUntilChanged((a,b) => a.isin == b.isin),
-        tap(i => console.log(i))
       ),
       this.getSettings(guid).pipe(
         switchMap(s => {

@@ -36,11 +36,13 @@ export class LightChart {
         borderColor: '#D1D4DC',
       },
       rightPriceScale: {
+        visible: true,
         borderColor: '#D1D4DC',
       },
       layout: {
         backgroundColor: componentBackgound, // '#ffffff',
         textColor: '#fff',
+
       },
       grid: {
         horzLines: {
@@ -52,12 +54,12 @@ export class LightChart {
       },
     });
     var series = chart.addCandlestickSeries({
-      upColor: buyColor, // 'rgb(38,166,154)',
-      downColor: sellColor,// 'rgb(255,82,82)',
-      wickUpColor: buyColorBackground, // 'rgb(38,166,154)',
-      wickDownColor: sellColorBackground, // 'rgb(255,82,82)',
+      upColor: buyColor,
+      downColor: sellColor,
+      wickUpColor: buyColorBackground,
+      wickDownColor: sellColorBackground,
       borderVisible: false,
-      priceScaleId: 'plot',
+      priceScaleId:  'right', // 'plot'
       scaleMargins: {
         top: 0,
         bottom: 0.25,

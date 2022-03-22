@@ -1,4 +1,4 @@
-import { Currency } from "../models/enums/currencies.model";
+import { CurrencyInstrument } from "../models/enums/currencies.model";
 import { MathHelper } from "./math-helper";
 
 
@@ -11,11 +11,11 @@ export function formatCurrency(number: number, currency: string, maxFractionDigi
   }
   let formatCode = 'RUB';
   let locale = 'ru'
-  if (currency == Currency.Usd) {
+  if (currency == CurrencyInstrument.USD) {
     formatCode = 'USD'
     locale = 'en'
   }
-  else if (currency == Currency.Eur) {
+  else if (currency == CurrencyInstrument.EUR) {
     formatCode = 'EUR'
     locale = 'de'
   }

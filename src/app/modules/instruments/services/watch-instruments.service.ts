@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { map, switchMap, tap, finalize, mergeMap } from 'rxjs/operators';
+import { map, switchMap, tap, finalize, mergeMap, filter } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
@@ -67,7 +67,7 @@ export class WatchInstrumentsService {
         const instrObs = candleObs.pipe(
           map((c) : WatchedInstrument => ({
             instrument: i,
-            closePrice: c.close,
+            closePrice: c?.close ?? 0,
             prevTickPrice: 0,
             dayChange: 0,
             price: 0,

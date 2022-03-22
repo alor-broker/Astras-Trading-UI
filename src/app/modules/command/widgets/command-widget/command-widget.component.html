@@ -1,7 +1,7 @@
 <div *ngIf="commandParams$ | async as command">
-  <nz-modal class='test' nzOkText="Выставить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
-    nzTitle="Выставить заявку" (nzOnCancel)="handleCancel()"
-    [nzFooter]='null'>
+  <nz-modal nzOkText="Выставить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
+    [nzTitle]="header" (nzOnCancel)="handleCancel()"
+    [nzFooter]='null' [nzMaskClosable]='false'>
     <ng-container *nzModalContent>
       <ats-command-header [symbol]='command.instrument.symbol' [exchange]='command.instrument.exchange'
         [instrumentGroup]="command.instrument.instrumentGroup ?? ''"></ats-command-header>
@@ -17,3 +17,12 @@
     </ng-container>
   </nz-modal>
 </div>
+
+<ng-template #header>
+  <span class="title">
+    <button nz-button class='btn-help' nzSize="small" (click)="openHelp()">
+      <i nz-icon nzType="question-circle" [nzTheme]="'outline'"></i>
+    </button>
+    <label><h2>Выставить заявку</h2></label>
+  </span>
+</ng-template>

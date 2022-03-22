@@ -209,7 +209,8 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
           return this.getPortfolioEntity<Order>(
             p.portfolio,
             p.exchange,
-            'OrdersGetAndSubscribeV2'
+            'OrdersGetAndSubscribeV2',
+            true
           ).pipe(
             map((order: Order) => {
               this.ordersById.set(order.id, order);

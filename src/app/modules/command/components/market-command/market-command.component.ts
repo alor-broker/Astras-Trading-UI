@@ -74,7 +74,7 @@ export class MarketCommandComponent implements OnInit {
     if (command && command.user) {
       const newCommand = {
         side: 'buy',
-        quantity: form.quantity ?? command?.quantity ?? 0,
+        quantity: form.quantity ?? command?.quantity ?? 1,
         instrument: {
           ...command.instrument,
           instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup

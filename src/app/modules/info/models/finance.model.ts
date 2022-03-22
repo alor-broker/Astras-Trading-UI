@@ -2,23 +2,23 @@ export interface Finance {
   marketCap: number, // 6489123123,
   currency: string, // RUB,
   ebitda: number, // 164234324,
-  costEstimate: {
+  costEstimate?: {
       priceToEarnings: number, // 2.21,
       pricePerShare: number, // 5.34,
       dilutedEarningsPerShare: number, // 50.33
   },
-  profitability: {
+  profitability?: {
       returnOnEquity: number, // 0.2101,
       returnOnAssets: number, // 0.0295,
       debtPerEquity: number, // 0.6273,
       netProfitMargin: number, // 0.3791
   },
-  dividends: {
+  dividends?: {
       payoutRation: number, // 0.5794,
       averageDividendFor5years: number, // 0.0643,
       lastDividendYield: number, // 0.0649
   },
-  trading: {
+  trading?: {
       closePrice: number, // 250,
       maxFor52Weeks: number, // 257.05,
       minFor52Weeks: number, // 257.05,

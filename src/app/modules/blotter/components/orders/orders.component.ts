@@ -330,6 +330,10 @@ export class OrdersComponent implements OnInit, OnDestroy {
     return true;
   }
 
+  selectInstrument(symbol: string, exchange: string) {
+    this.service.selectNewInstrument(symbol, exchange);
+  }
+
   private sortOrders(a: DisplayOrder, b: DisplayOrder) {
     if (a.status == 'working' && b.status != 'working') {
       return -1;

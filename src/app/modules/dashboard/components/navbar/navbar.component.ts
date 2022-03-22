@@ -84,7 +84,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     const params: CommandParams = {
       instrument: { ...this.activeInstrument },
       price: 0,
-      quantity: 0,
+      quantity: 1,
       type: CommandType.Limit,
     };
     this.modal.openCommandModal(params);

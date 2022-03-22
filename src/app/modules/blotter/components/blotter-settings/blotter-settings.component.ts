@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Currency } from 'src/app/shared/models/enums/currencies.model';
+import { CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
 import { allOrdersColumns, allPositionsColumns, allTradesColumns, BlotterSettings, ColumnIds } from 'src/app/shared/models/settings/blotter-settings.model';
 import { BlotterService } from '../../services/blotter.service';
 
@@ -47,19 +47,19 @@ export class BlotterSettingsComponent implements OnInit {
   codeToCurrency(code: string) {
     switch(code) {
       case 'USD':
-        return  Currency.Usd
+        return  CurrencyInstrument.USD
       case 'EUR':
-        return Currency.Eur
+        return CurrencyInstrument.EUR
       default:
-        return Currency.Rub
+        return CurrencyInstrument.RUB
     }
   }
 
-  currencyToCode(currency: Currency) {
+  currencyToCode(currency: CurrencyInstrument) {
     switch(currency) {
-      case Currency.Usd:
+      case CurrencyInstrument.USD:
         return 'USD'
-      case Currency.Eur:
+      case CurrencyInstrument.EUR:
         return 'EUR'
       default:
         return 'RUB'

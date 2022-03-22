@@ -44,4 +44,8 @@ export class CommandWidgetComponent implements OnInit {
     }
     else this.activeTab.next('limit')
   }
+
+  openHelp() {
+    this.modal.openHelpModal('new-order');
+  }
 }

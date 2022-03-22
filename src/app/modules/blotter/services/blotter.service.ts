@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { combineLatest, merge, Observable, of, pipe, Subscription } from 'rxjs';
-import { distinct, filter, map, startWith, switchMap } from 'rxjs/operators';
-import { Currency } from 'src/app/shared/models/enums/currencies.model';
+import { distinct, distinctUntilChanged, distinctUntilKeyChanged, filter, map, startWith, switchMap } from 'rxjs/operators';
+import { CurrencyCode, CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
+import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
@@ -9,6 +11,7 @@ import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings
 import { Trade } from 'src/app/shared/models/trades/trade.model';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
+import { OrdersNotificationsService } from 'src/app/shared/services/orders-notifications.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -28,6 +31,8 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   private portfolioSub?: Subscription;
   private subGuidByOpcode: Map<string, string> = new Map<string, string>();
 
+  private INSTANCE_ID = Math.random();
+
   order$: Observable<Order[]> = of([]);
   trade$: Observable<Trade[]> = of([]);
   position$: Observable<Position[]> = of([]);
@@ -36,12 +41,20 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   constructor(
     ws: WebsocketService,
     settingsService: DashboardService,
+    private notification: OrdersNotificationsService,
     private sync: SyncService,
     private quotes: QuotesService) {
     super(ws, settingsService);
   }
 
   selectNewInstrument(symbol: string, exchange: string) {
+    if (symbol == CurrencyCode.RUB) {
+      return;
+    }
+    if (CurrencyCode.isCurrency(symbol)) {
+      symbol = CurrencyCode.toInstrument(symbol)
+      exchange = Exchanges.MOEX
+    }
     this.sync.selectNewInstrument({symbol, exchange, instrumentGroup: undefined})
   }
 
@@ -83,7 +96,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     this.summary$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => {
-        if (settings.currency != Currency.Rub) {
+        if (settings.currency != CurrencyInstrument.RUB) {
           return combineLatest([
             this.getSummariesReq(settings.portfolio, settings.exchange),
             this.quotes.getQuotes(settings.currency, 'MOEX')
@@ -93,7 +106,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         }
         else {
           return this.getSummariesReq(settings.portfolio, settings.exchange).pipe(
-            map(summary => this.formatSummary(summary, Currency.Rub, 1))
+            map(summary => this.formatSummary(summary, CurrencyInstrument.RUB, 1))
           );
         }
       })
@@ -134,13 +147,29 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   private getOrdersReq(portfolio: string, exchange: string) {
     this.orders = new Map<string, Order>();
-    const orders = this.getPortfolioEntity<Order>(portfolio, exchange, 'OrdersGetAndSubscribeV2').pipe(
+    let prevValue: Order | null = null;
+    const opcode = 'OrdersGetAndSubscribeV2'
+    const orders = this.getPortfolioEntity<Order>(portfolio, exchange, opcode, true).pipe(
       map((order: Order) => {
+        const existingOrder = this.orders.get(order.id)
+        order.transTime = new Date(order.transTime);
+        order.endTime = new Date(order.endTime);
+
+        if (existingOrder) {
+          this.notification.notificateOrderChange(order, existingOrder);
+        }
+        else {
+          this.notification.notificateAboutNewOrder(order);
+        }
         this.orders.set(order.id, order);
         return Array.from(this.orders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
       })
     );
     return orders.pipe(startWith([]))
+  }
+
+  private compareOrders(a: Order, b: Order) {
+    return a.id == b.id;
   }
 
   private getTradesReq(portfolio: string, exchange: string) : Observable<Trade[]> {

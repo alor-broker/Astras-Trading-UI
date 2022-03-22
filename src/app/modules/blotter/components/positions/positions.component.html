@@ -26,8 +26,8 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let ord of nzTable.data">
-      <td class='bold' *ngIf='shouldShow("symbol")' (click)="selectInstrument(ord.symbol, ord.exchange)">
+    <tr *ngFor="let ord of nzTable.data" (click)="selectInstrument(ord.symbol, ord.exchange)">
+      <td class='bold' *ngIf='shouldShow("symbol")'>
         {{ ord.symbol }}
       </td>
       <td *ngIf='shouldShow("shortName")'>{{ ord.shortName }}</td>

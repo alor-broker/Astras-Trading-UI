@@ -78,7 +78,7 @@ export class DashboardComponent implements OnInit {
       resizable: {
         enabled: true,
         handles: {
-          s: true, n: true, w: true, e: true, nw: true, ne: true, sw: true, se: true
+          s: true, n: true, w: true, e: true, nw: true, ne: true, sw: true, se: false
           // se: false
         }
       },

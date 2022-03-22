@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { Currency } from 'src/app/shared/models/enums/currencies.model';
+import { CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
 import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -17,7 +17,7 @@ const settings : BlotterSettings = {
   tradesColumns: ['ticker'],
   positionsColumns: ['ticker'],
   activeTabIndex: 0,
-  currency: Currency.Rub
+  currency: CurrencyInstrument.RUB
 }
 
 describe('BlotterWidgetComponent', () => {
