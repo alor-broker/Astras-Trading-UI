@@ -233,8 +233,8 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       tap(orders => this.orders = orders)
     );
     this.displayOrders$ = combineLatest([ this.orders$, this.searchFilter]).pipe(
-      map(([orders, f]) => orders
-        .map(o => ({...o, residue: `${o.filled}/${o.qty}`, volume: MathHelper.round(o.qtyUnits * o.price, 2)}))
+      map(([orders, f]) => orders.slice(0,10)
+        .map(o => ({...o, residue: `0/${o.qty}`, volume: MathHelper.round(o.qtyUnits * o.price, 2)}))
         .filter(o => this.justifyFilter(o, f))
         .sort(this.sortOrders))
     )
