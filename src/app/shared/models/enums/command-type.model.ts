@@ -1,4 +1,5 @@
 export enum CommandType {
   Limit,
-  Market
+  Market,
+  Stop
 }

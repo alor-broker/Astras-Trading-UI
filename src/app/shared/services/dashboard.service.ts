@@ -57,7 +57,9 @@ export class DashboardService {
     const newSettings = this.factory.createNewSettings(newWidget, additionalSettings);
     const widget = {
       guid: newWidget.gridItem.label,
-      gridItem: newWidget.gridItem
+      gridItem: newWidget.gridItem,
+      hasSettings: newWidget.gridItem.type != WidgetNames.instrumentSelect && newWidget.gridItem.type != WidgetNames.instrumentInfo,
+      hasHelp: true
     }
     const guid = widget.gridItem.label;
     const widgets = this.getDashboardValue().set(guid, widget);

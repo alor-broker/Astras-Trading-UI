@@ -74,15 +74,15 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
         )
       }),
       map((data) : PriceData => ({
-        dayChange: getDayChange(data.quote.last_price, data.candle.close),
-        dayChangePerPrice: getDayChangePerPrice(data.quote.last_price, data.candle.close),
+        dayChange: getDayChange(data.quote.last_price, data.candle?.close ?? 0),
+        dayChangePerPrice: getDayChangePerPrice(data.quote.last_price, data.candle?.close ?? 0),
         high: data.quote.high_price,
         low: data.quote.low_price,
         lastPrice: data.quote.last_price,
         ask: data.quote.ask,
         bid: data.quote.bid,
-        dayOpen: data.candle.open,
-        prevClose: data.candle.close
+        dayOpen: data.candle?.open ?? 0,
+        prevClose: data.candle?.close ?? 0
       }))
     )
   }

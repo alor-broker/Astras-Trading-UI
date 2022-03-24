@@ -5,6 +5,7 @@ import { distinct, distinctUntilChanged, distinctUntilKeyChanged, filter, map, s
 import { CurrencyCode, CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { Order } from 'src/app/shared/models/orders/order.model';
+import { StopOrder } from 'src/app/shared/models/orders/stop-order.model';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
@@ -27,6 +28,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   private trades: Map<string, Trade> = new Map<string, Trade>();
   private positions: Map<string, Position> = new Map<string, Position>();
   private orders: Map<string, Order> = new Map<string, Order>();
+  private stopOrders: Map<string, StopOrder> = new Map<string, StopOrder>();
 
   private portfolioSub?: Subscription;
   private subGuidByOpcode: Map<string, string> = new Map<string, string>();
@@ -34,6 +36,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   private INSTANCE_ID = Math.random();
 
   order$: Observable<Order[]> = of([]);
+  stopOrder$: Observable<StopOrder[]> = of([]);
   trade$: Observable<Trade[]> = of([]);
   position$: Observable<Position[]> = of([]);
   summary$: Observable<SummaryView> = of();
@@ -92,6 +95,15 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     return this.order$;
   }
 
+  getStopOrders(guid: string) {
+    this.stopOrder$ = this.getSettings(guid).pipe(
+      filter((s): s is BlotterSettings => !!s),
+      switchMap((settings) => this.getStopOrdersReq(settings.portfolio, settings.exchange))
+    )
+    this.linkToPortfolio();
+    return this.stopOrder$;
+  }
+
   getSummaries(guid: string) : Observable<SummaryView> {
     this.summary$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
@@ -143,6 +155,29 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       }),
     )
     return merge(positions, of([]));
+  }
+
+  private getStopOrdersReq(portfolio: string, exchange: string) : Observable<StopOrder[]> {
+    this.orders = new Map<string, StopOrder>();
+    let prevValue: StopOrder | null = null;
+    const opcode = 'StopOrdersGetAndSubscribe'
+    const stopOrders = this.getPortfolioEntity<StopOrder>(portfolio, exchange, opcode, true).pipe(
+      map((order: StopOrder) => {
+        const existingOrder = this.orders.get(order.id)
+        order.transTime = new Date(order.transTime);
+        order.endTime = new Date(order.endTime);
+
+        if (existingOrder) {
+          this.notification.notificateOrderChange(order, existingOrder);
+        }
+        else {
+          this.notification.notificateAboutNewOrder(order);
+        }
+        this.stopOrders.set(order.id, order);
+        return Array.from(this.stopOrders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
+      })
+    );
+    return stopOrders.pipe(startWith([]))
   }
 
   private getOrdersReq(portfolio: string, exchange: string) {

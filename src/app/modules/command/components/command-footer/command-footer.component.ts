@@ -34,6 +34,9 @@ export class CommandFooterComponent implements OnInit, OnDestroy {
     else if (this.activeTab == 'market') {
       sub = this.command.submitMarket(Side.Buy).subscribe(r => this.closeModal());
     }
+    else if (this.activeTab == 'stop') {
+      sub = this.command.submitStop(Side.Buy).subscribe(r => this.closeModal());
+    }
 
     this.sub.add(sub);
   }
@@ -45,6 +48,9 @@ export class CommandFooterComponent implements OnInit, OnDestroy {
     }
     else if (this.activeTab == 'market') {
       sub = this.command.submitMarket(Side.Sell).subscribe(r => this.closeModal());
+    }
+    else if (this.activeTab == 'stop') {
+      sub = this.command.submitStop(Side.Sell).subscribe(r => this.closeModal());
     }
 
     this.sub.add(sub);

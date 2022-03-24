@@ -56,4 +56,14 @@ export class ParentWidgetComponent implements OnInit, OnDestroy {
     const obWidget = this.widget as Widget
     return obWidget.guid;
   }
+
+  hasSettings() {
+    const obWidget = this.widget as Widget
+    return obWidget.hasSettings;
+  }
+
+  hasHelp() {
+    const obWidget = this.widget as Widget
+    return obWidget.hasHelp;
+  }
 }

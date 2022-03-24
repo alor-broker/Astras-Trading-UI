@@ -9,6 +9,7 @@ import { OrdersComponent } from './components/orders/orders.component';
 import { BlotterSettingsComponent } from './components/blotter-settings/blotter-settings.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { SummariesComponent } from './components/summaries/summaries.component';
+import { StopOrdersComponent } from './components/stop-orders/stop-orders.component';
 
 
 @NgModule({
@@ -17,6 +18,7 @@ import { SummariesComponent } from './components/summaries/summaries.component';
     PositionsComponent,
     TradesComponent,
     OrdersComponent,
+    StopOrdersComponent,
     BlotterSettingsComponent,
     SummariesComponent
   ],

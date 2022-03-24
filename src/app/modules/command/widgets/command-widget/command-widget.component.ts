@@ -42,6 +42,9 @@ export class CommandWidgetComponent implements OnInit {
     if (newTab.tab.nzTitle == 'Рыночная') {
       this.activeTab.next('market')
     }
+    else if (newTab.tab.nzTitle == 'Условная') {
+      this.activeTab.next('stop')
+    }
     else this.activeTab.next('limit')
   }
 

@@ -4,22 +4,23 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
+import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
-import { LimitFormData } from '../../models/limit-form-data.model';
+import { StopFormControls, StopFormGroup } from '../../models/command-forms.model';
+import { StopFormData } from '../../models/stop-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 
 @Component({
-  selector: 'ats-limit-command',
-  templateUrl: './limit-command.component.html',
-  styleUrls: ['./limit-command.component.less']
+  selector: 'ats-stop-command',
+  templateUrl: './stop-command.component.html',
+  styleUrls: ['./stop-command.component.less']
 })
-export class LimitCommandComponent implements OnInit, OnDestroy {
+export class StopCommandComponent implements OnInit, OnDestroy {
   viewData = new BehaviorSubject<CommandParams | null>(null)
   initialParams: CommandParams | null = null
   initialParamsSub?: Subscription
   formChangeSub?: Subscription
-  form!: LimitFormGroup;
+  form!: StopFormGroup;
 
   constructor(private modal: ModalService, private service: CommandsService) { }
 
@@ -31,12 +32,14 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         const command = {
           instrument: this.initialParams?.instrument,
           user: this.initialParams.user,
-          type: CommandType.Limit,
+          type: CommandType.Stop,
           price: this.initialParams.price ?? 0,
           quantity: this.initialParams.quantity ?? 1,
+          triggerPrice: this.initialParams.price ?? 1,
+          condition: StopOrderCondition.More
         }
         this.viewData.next(command)
-        this.setLimitCommand(command)
+        this.setStopCommand(command)
       }
     })
     this.viewData.pipe(
@@ -45,32 +48,35 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         if (command) {
           this.form = new FormGroup({
             quantity: new FormControl(command.quantity, [
-              Validators.required,
+              Validators.required, Validators.min(0),
             ]),
-            price: new FormControl(command.price, [
-              Validators.required,
+            price: new FormControl(command.price),
+            triggerPrice: new FormControl(command.price, [
+              Validators.required, Validators.min(0),
             ]),
-            instrumentGroup: new FormControl(command?.instrument.instrumentGroup),
-          } as LimitFormControls) as LimitFormGroup;
+            condition: new FormControl(StopOrderCondition.More),
+          } as StopFormControls) as StopFormGroup;
         }
       })
-    this.formChangeSub = this.form.valueChanges.subscribe((form : LimitFormData) => this.setLimitCommand(form))
+    this.formChangeSub = this.form.valueChanges.subscribe((form : StopFormData) => this.setStopCommand(form))
   }
 
-  setLimitCommand(form: LimitFormData): void {
+  setStopCommand(form: StopFormData): void {
     const command = this.viewData.getValue();
     if (command && command.user) {
+      const price = Number(form.price);
       const newCommand = {
         side: 'buy',
-        quantity: form.quantity ?? command?.quantity ?? 1,
-        price: form.price ?? command?.price ?? 0,
+        quantity: Number(form.quantity) ?? command?.quantity ?? 1,
+        triggerPrice: Number(form.triggerPrice) ?? command?.price ?? 0,
+        condition: form.condition,
+        price: price == 0 ? null : price,
         instrument: {
-          ...command.instrument,
-          instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
+          ...command.instrument
         },
         user: command.user,
       }
-      this.service.setLimitCommand(newCommand);
+      this.service.setStopCommand(newCommand);
     }
     else console.error('Empty command')
   }

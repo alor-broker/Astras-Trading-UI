@@ -3,19 +3,22 @@ import { Observable, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
-import { getTypeBySettings, isInstrumentDependent, isLightChartSettings, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';
+import { getTypeBySettings, isInstrumentDependent, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
 
 
 @Component({
-  selector: 'ats-widget-header[guid]',
+  selector: 'ats-widget-header[guid][hasSettings][hasHelp]',
   templateUrl: './widget-header.component.html',
   styleUrls: ['./widget-header.component.less']
 })
 export class WidgetHeaderComponent implements OnInit, OnDestroy {
   @Input()
   guid!: string;
+  @Input()
+  hasSettings!: boolean;
+  @Input()
+  hasHelp!: boolean;
   @Output()
   switchSettingsEvent = new EventEmitter<boolean>();
   @Output()

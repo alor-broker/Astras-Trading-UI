@@ -31,11 +31,15 @@ export class LightChart {
     const chart = LightweightCharts.createChart(guid, {
       width: this.sizes.width,
       height: this.sizes.height,
+      handleScale: {
+        // axisPressedMouseMove: true,
+      },
       timeScale: {
         timeVisible: true,
         borderColor: '#D1D4DC',
       },
       rightPriceScale: {
+        autoScale: true,
         visible: true,
         borderColor: '#D1D4DC',
       },
@@ -138,6 +142,7 @@ clearSeries() {
   this.bars = []
   this.series.setData([]);
   this.volumeSeries.setData([]);
+  this.chart.timeScale().fitContent();
 }
 
 resize(width: number, height: number) {

@@ -11,6 +11,7 @@ import { LimitCommand } from '../models/limit-command.model';
 import { LimitEdit } from '../models/limit-edit.model';
 import { MarketCommand } from '../models/market-command.model';
 import { MarketEdit } from '../models/market-edit.model';
+import { StopCommand } from '../models/stop-command.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,12 +20,20 @@ export class CommandsService {
 
   private url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions'
 
+  private stopCommand?: BehaviorSubject<StopCommand>;
   private limitCommand?: BehaviorSubject<LimitCommand>;
   private limitEdit?: BehaviorSubject<LimitEdit>;
   private marketCommand?: BehaviorSubject<MarketCommand>;
   private marketEdit?: BehaviorSubject<MarketEdit>;
 
   constructor(private http: HttpClient, private notification: NzNotificationService) { }
+
+  setStopCommand(command: StopCommand) {
+    if (!this.stopCommand) {
+      this.stopCommand = new BehaviorSubject<StopCommand>(command);
+    }
+    this.stopCommand?.next(command);
+  }
 
   setLimitCommand(command: LimitCommand) {
     if (!this.limitCommand) {
@@ -52,6 +61,16 @@ export class CommandsService {
       this.marketEdit = new BehaviorSubject<MarketEdit>(command);
     }
     this.marketEdit?.next(command);
+  }
+
+  submitStop(side: Side) {
+    const command = this.stopCommand?.getValue();
+    if (command) {
+      return this.placeOrder(command.price ? 'stopLimit' : 'stop', side, command);
+    }
+    else {
+      throw new Error('Empty command')
+    }
   }
 
   submitLimit(side: Side) {
@@ -110,7 +129,7 @@ export class CommandsService {
     )
   }
 
-  private placeOrder(type: string, side: Side, command : LimitCommand | MarketCommand) {
+  private placeOrder(type: string, side: Side, command : LimitCommand | MarketCommand | StopCommand) {
     return this.http.post<CommandResponse>(`${this.url}/${type.toString()}`, {
         ...command,
         type,
