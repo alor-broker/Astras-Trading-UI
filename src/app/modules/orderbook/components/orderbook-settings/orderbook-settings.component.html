@@ -36,14 +36,17 @@
               placeholder="Режим торгов" />
           </nz-input-group>
         </nz-form-control>
-        <nz-form-control nzErrorTip="Глубина некорректна">
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="depth">Глубина</nz-form-label>
-          <nz-input-group nzPrefixIcon="lock">
-            <input class='ant-input' formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />
-          </nz-input-group>
-        </nz-form-control>
+        <nz-form-item>
+          <nz-form-control nzErrorTip="Глубина некорректна">
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="depth">Глубина</nz-form-label>
+            <nz-input-group nzPrefixIcon="lock">
+              <input class='ant-input' formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
       </nz-collapse-panel>
     </nz-collapse>
+    <br />
     <nz-form-item class="compact">
       <nz-form-control>
         <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>

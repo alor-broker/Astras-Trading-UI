@@ -15,6 +15,7 @@ import { Dividend } from '../models/dividend.model';
 import { ExchangeInfo } from '../models/exchange-info.model';
 import { Finance } from '../models/finance.model';
 import { Issue } from '../models/issue.model';
+import { dividends } from './stub';
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,
@@ -104,7 +105,9 @@ export class InfoService extends BaseService<InfoSettings>{
   }
 
   getDividends() : Observable<Dividend[]> {
-    return this.getInstrumentEntity<Dividend[]>('stock/dividends');
+    return this.getInstrumentEntity<Dividend[]>('stock/dividends').pipe(
+      map(dividends => dividends.reverse())
+    );
   }
 
   private getInstrumentEntity<T>(path: string) : Observable<T> {

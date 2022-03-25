@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
-import { Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { LightChartService } from '../../services/light-chart.service';
 import { Candle } from '../../../../shared/models/history/candle.model';
@@ -48,6 +48,7 @@ export class LightChartComponent implements OnInit, OnDestroy, OnChanges {
   private isUpdating = false;
   private isEndOfHistory = false;
   private chart?: LightChart;
+  activeTimeFrame: Subject<string> = new BehaviorSubject('D');
 
   constructor(private service: LightChartService) { }
 
@@ -65,6 +66,10 @@ export class LightChartComponent implements OnInit, OnDestroy, OnChanges {
     this.barsSub?.unsubscribe();
     this.historySub?.unsubscribe();
     this.resizeSub?.unsubscribe();
+  }
+
+  changeTimeframe(timeframe: string) {
+    this.service.changeTimeframe(timeframe);
   }
 
   ngAfterViewInit() {
@@ -97,6 +102,7 @@ export class LightChartComponent implements OnInit, OnDestroy, OnChanges {
       tap(options => {
         if (options && !isEqualLightChartSettings(options, this.prevOptions)){
           this.prevOptions == options;
+          this.activeTimeFrame.next(options.timeFrame);
           if (this.chart) {
             this.chart.clearSeries();
           }

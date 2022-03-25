@@ -1,3 +1,10 @@
+<div class="timeframes" *ngIf="activeTimeFrame | async as tf">
+  <button nz-button [nzType]="tf == '60' ? 'primary': 'default'" (click)="changeTimeframe('60')">1m</button>
+  <button nz-button [nzType]="tf == '900' ? 'primary': 'default'" (click)="changeTimeframe('900')">15m</button>
+  <button nz-button [nzType]="tf == '3600' ? 'primary': 'default'" (click)="changeTimeframe('3600')">H</button>
+  <button nz-button [nzType]="tf == 'D' ? 'primary': 'default'" (click)="changeTimeframe('D')">D</button>
+  <button nz-button [nzType]="tf == 'M' ? 'primary': 'default'" (click)="changeTimeframe('M')">M</button>
+</div>
 <div class="main-chart" #mainChart [hidden]='shouldShowSettings' (mousedown)="$event.stopPropagation()">
   <div [id]="guid"></div>
 </div>

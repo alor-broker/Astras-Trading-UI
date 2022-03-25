@@ -34,6 +34,13 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
     return this.history.getHistory(request);
   }
 
+  changeTimeframe(timeframe: string) {
+    const current = this.getSettingsValue();
+    if (current) {
+      this.setSettings({ ...current, timeFrame: timeframe});
+    }
+  }
+
   getBars(guid: string) {
     combineLatest([this.sync.selectedInstrument$, this.getSettings(guid)]).pipe(
       map(([i, current]) => {
