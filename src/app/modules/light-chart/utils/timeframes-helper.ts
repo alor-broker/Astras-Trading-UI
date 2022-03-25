@@ -15,6 +15,7 @@ export class TimeframesHelper {
 
   timeFrames : Timeframe[] = [
     { label: '1m', value: '60' },
+    { label: '5m', value: '300' },
     { label: '15m', value: '900' },
     { label: 'H', value: '3600' },
     { label: 'D', value: 'D' },
@@ -49,6 +50,11 @@ export class TimeframesHelper {
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
           (b1, b2) => b1.time - b2.time < 900)
+      case '300':
+        return findUniqueElements(
+          [...existing, ...history],
+          (b1, b2) => b1.time - b2.time,
+          (b1, b2) => b1.time - b2.time < 300)
       case '60':
         return findUniqueElements(
           [...existing, ...history],
@@ -78,6 +84,8 @@ export class TimeframesHelper {
         return addHoursUnix(new Date(), -this.candlesBatchSize);
       case '15m':
         return addHoursUnix(new Date(), -(this.candlesBatchSize / 4));
+      case '5m':
+        return addHoursUnix(new Date(), -(this.candlesBatchSize / 12));
       case '1m':
         return addHoursUnix(new Date(), -this.candlesBatchSize / 60);
       default:
@@ -99,6 +107,9 @@ export class TimeframesHelper {
       }
       else if (options.timeFrame == '900') {
         from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 4)
+      }
+      else if (options.timeFrame == '300') {
+        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 12)
       }
       else if (options.timeFrame == '60') {
         from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 60)
