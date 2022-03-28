@@ -9,7 +9,7 @@ import { TimeframesHelper } from 'src/app/modules/light-chart/utils/timeframes-h
 import { InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
 import { SyncService } from './sync.service';
 import { Instrument } from '../models/instruments/instrument.model';
-import { allOrdersColumns, allPositionsColumns, allTradesColumns, BlotterSettings } from '../models/settings/blotter-settings.model';
+import { allOrdersColumns, allStopOrdersColumns, allPositionsColumns, allTradesColumns, BlotterSettings } from '../models/settings/blotter-settings.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { WidgetNames } from '../models/enums/widget-names';
 import { CurrencyInstrument } from '../models/enums/currencies.model';
@@ -129,6 +129,7 @@ export class WidgetFactoryService {
       tradesColumns: allTradesColumns.filter(c => c.isDefault).map(c => c.columnId),
       positionsColumns: allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId),
       ordersColumns: allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
+      stopOrdersColumns: allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       linkToActive: true,
       title: `Блоттер ${this.selectedPortfolio?.portfolio ?? 'D'} ${this.selectedPortfolio?.exchange ?? 'MOEX'}`,
     };

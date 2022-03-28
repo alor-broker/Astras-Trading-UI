@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Dividend } from '../../../models/dividend.model';
 import { InfoService } from '../../../services/info.service';
@@ -19,5 +19,4 @@ export class DividendsComponent implements OnInit {
   ngOnInit(): void {
     this.dividends$ = this.service.getDividends();
   }
-
 }

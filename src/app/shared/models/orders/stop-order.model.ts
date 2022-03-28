@@ -3,6 +3,11 @@ import { Order } from './order.model'
 
 export interface StopOrder extends Order {
   triggerPrice: number,
-  conditionType: StopOrderCondition,
+  conditionType: string,
   validTillUnixTimestamp: Date
+}
+
+export interface StopOrderData extends Omit<StopOrder, ('conditionType' | 'triggerPrice')> {
+  stopPrice: number,
+  condition: string
 }

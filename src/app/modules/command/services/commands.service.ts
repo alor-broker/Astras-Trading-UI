@@ -130,7 +130,11 @@ export class CommandsService {
   }
 
   private placeOrder(type: string, side: Side, command : LimitCommand | MarketCommand | StopCommand) {
-    return this.http.post<CommandResponse>(`${this.url}/${type.toString()}`, {
+    let isStop = false;
+    if (type == 'stop' || type == 'stopLimit') {
+      isStop = true;
+    }
+    return this.http.post<CommandResponse>(`${this.url}/${type.toString()}?stop=${isStop}`, {
         ...command,
         type,
         side

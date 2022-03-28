@@ -12,9 +12,9 @@
       <ats-calendar [guid]="guid"></ats-calendar>
     </nz-tab>
   </nz-tabset>
-  <nz-tabset *ngIf="info.type == 'stock'" nzTabPosition="top" nzSize="small" (mousedown)='$event.stopPropagation()'>
+  <nz-tabset #stocksTabs *ngIf="info.type == 'stock'" nzTabPosition="top" nzSize="small" (mousedown)='$event.stopPropagation()'>
     <nz-tab nzTitle="Об инструменте">
-      <ats-description [guid]="guid"></ats-description>
+      <ats-description q[guid]="guid"></ats-description>
     </nz-tab>
     <nz-tab *ngIf="info.exchange != 'SPBX'"  nzTitle="Финансы">
       <ats-finance [guid]="guid"></ats-finance>

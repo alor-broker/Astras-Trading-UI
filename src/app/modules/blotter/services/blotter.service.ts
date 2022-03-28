@@ -5,7 +5,7 @@ import { distinct, distinctUntilChanged, distinctUntilKeyChanged, filter, map, s
 import { CurrencyCode, CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { Order } from 'src/app/shared/models/orders/order.model';
-import { StopOrder } from 'src/app/shared/models/orders/stop-order.model';
+import { StopOrder, StopOrderData } from 'src/app/shared/models/orders/stop-order.model';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
@@ -161,8 +161,8 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     this.orders = new Map<string, StopOrder>();
     let prevValue: StopOrder | null = null;
     const opcode = 'StopOrdersGetAndSubscribeV2'
-    const stopOrders = this.getPortfolioEntity<StopOrder>(portfolio, exchange, opcode, true).pipe(
-      map((order: StopOrder) => {
+    const stopOrders = this.getPortfolioEntity<StopOrderData>(portfolio, exchange, opcode, true).pipe(
+      map((order: StopOrderData) => {
         const existingOrder = this.orders.get(order.id)
         order.transTime = new Date(order.transTime);
         order.endTime = new Date(order.endTime);
@@ -173,7 +173,12 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         else {
           this.notification.notificateAboutNewOrder(order);
         }
-        this.stopOrders.set(order.id, order);
+        const stopOrder = {
+          ...order,
+          triggerPrice: order.stopPrice,
+          conditionType: order.condition
+        }
+        this.stopOrders.set(order.id, stopOrder);
         return Array.from(this.stopOrders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
       })
     );

@@ -140,6 +140,19 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       hasFilter: false,
     },
     {
+      id: 'triggerPrice',
+      name: 'Сигн. цена',
+      sortOrder: null,
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.triggerPrice - a.triggerPrice,
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: null,
+      listOfFilter: [],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
+    {
       id: 'status',
       name: 'Статус',
       sortOrder: null,
@@ -152,6 +165,22 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
         { text: 'Исполнена', value: 'filled' },
         { text: 'Активна', value: 'working' },
         { text: 'Отменена', value: 'canceled' }
+      ],
+      isFilterVisible: false,
+      hasFilter: true,
+    },
+    {
+      id: 'conditionType',
+      name: 'Условие',
+      sortOrder: null,
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.conditionType.localeCompare(b.conditionType),
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: (list: string[], order: DisplayOrder) => list.some(val => order.conditionType.toString().indexOf(val) !== -1),
+      listOfFilter: [
+        { text: '>', value: 'More' },
+        { text: '<', value: 'Less' }
       ],
       isFilterVisible: false,
       hasFilter: true,
@@ -223,8 +252,8 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.settingsSub = this.service.getSettings(this.guid).pipe(
       tap(s => {
-        if (s.ordersColumns) {
-          this.listOfColumns = this.allColumns.filter(c => s.ordersColumns.includes(c.id))
+        if (s.stopOrdersColumns) {
+          this.listOfColumns = this.allColumns.filter(c => s.stopOrdersColumns.includes(c.id))
           this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
         }
       })
@@ -272,7 +301,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
         portfolio: settings.portfolio,
         exchange: settings.exchange,
         orderid: orderId,
-        stop: false
+        stop: true
       })
     }
   }

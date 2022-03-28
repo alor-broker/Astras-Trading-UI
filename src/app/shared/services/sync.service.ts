@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, distinct, distinctUntilChanged } from 'rxjs';
+import { BehaviorSubject, distinct, distinctUntilChanged, tap } from 'rxjs';
 import { CommandParams } from '../models/commands/command-params.model';
 import { EditParams } from '../models/commands/edit-params.model';
 import { InstrumentType } from '../models/enums/instrument-type.model';

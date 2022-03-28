@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, distinct, distinctUntilChanged, map, Observable, Subscription, switchMap } from 'rxjs';
+import { catchError, combineLatest, distinct, distinctUntilChanged, map, mergeMap, multicast, Observable, retry, retryWhen, Subject, Subscription, switchMap, tap } from 'rxjs';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
@@ -34,6 +34,7 @@ export class InfoService extends BaseService<InfoSettings>{
 
   constructor(private http: HttpClient, settingsService: DashboardService, private sync: SyncService) {
     super(settingsService)
+    console.log('Info service created')
   }
 
   getSettingsWithExchangeInfo(guid: string) {
@@ -66,7 +67,10 @@ export class InfoService extends BaseService<InfoSettings>{
             this.setSettings({ ...settings.settings, ...i });
           }
           return settings;
-        })
+        }),
+        tap(i => {
+          console.log(i)
+        }),
       )
       return this.settings$;
   }

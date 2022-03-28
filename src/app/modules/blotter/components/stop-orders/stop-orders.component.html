@@ -47,9 +47,11 @@
       <td *ngIf='shouldShow("volume")'>{{ ord.volume }}</td>
       <td *ngIf='shouldShow("qty")'>{{ ord.qty }}</td>
       <td *ngIf='shouldShow("price")'>{{ ord.price }}</td>
+      <td *ngIf='shouldShow("triggerPrice")'>{{ ord.triggerPrice }}</td>
       <td [class]='ord.status.toString() == "filled"
         ? (ord.status.toString() == "sell" ? "sell" : "buy") :
         (ord.status.toString() == "canceled" ? "cancelled" : "bold" )' *ngIf='shouldShow("status")'>{{ translateStatus(ord.status) }}</td>
+      <td *ngIf='shouldShow("conditionType")'>{{ ord.conditionType }}</td>
       <td *ngIf='shouldShow("transTime")'>{{ formatDate(ord.transTime) }}</td>
       <td *ngIf='shouldShow("exchange")'>{{ ord.exchange }}</td>
       <td *ngIf='shouldShow("type")'>{{ ord.type }}</td>
