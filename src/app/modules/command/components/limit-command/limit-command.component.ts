@@ -6,6 +6,7 @@ import { CommandParams } from 'src/app/shared/models/commands/command-params.mod
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
+import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 
@@ -15,6 +16,7 @@ import { CommandsService } from '../../services/commands.service';
   styleUrls: ['./limit-command.component.less']
 })
 export class LimitCommandComponent implements OnInit, OnDestroy {
+  evaluation = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   viewData = new BehaviorSubject<CommandParams | null>(null)
   initialParams: CommandParams | null = null
   initialParamsSub?: Subscription
@@ -32,7 +34,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           instrument: this.initialParams?.instrument,
           user: this.initialParams.user,
           type: CommandType.Limit,
-          price: this.initialParams.price ?? 0,
+          price: this.initialParams.price ?? 1,
           quantity: this.initialParams.quantity ?? 1,
         }
         this.viewData.next(command)
@@ -54,21 +56,36 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           } as LimitFormControls) as LimitFormGroup;
         }
       })
-    this.formChangeSub = this.form.valueChanges.subscribe((form : LimitFormData) => this.setLimitCommand(form))
+    this.formChangeSub = this.form.valueChanges.subscribe((form : LimitFormData) => {
+      this.setLimitCommand(form);
+    })
   }
 
   setLimitCommand(form: LimitFormData): void {
     const command = this.viewData.getValue();
+    const price = Number(form.price ?? command?.price ?? 1);
+    const quantity = Number(form.quantity ?? command?.quantity ?? 1);
     if (command && command.user) {
       const newCommand = {
         side: 'buy',
-        quantity: form.quantity ?? command?.quantity ?? 1,
-        price: form.price ?? command?.price ?? 0,
+        quantity: quantity,
+        price: price,
         instrument: {
           ...command.instrument,
           instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
         },
         user: command.user,
+      }
+      const evaluation : EvaluationBaseProperties = {
+        price: price,
+        lotQuantity: quantity,
+        instrument: {
+          ...command.instrument,
+          instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
+        },
+      }
+      if (evaluation.price > 0) {
+        this.evaluation.next(evaluation);
       }
       this.service.setLimitCommand(newCommand);
     }

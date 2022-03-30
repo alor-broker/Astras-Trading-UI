@@ -19,4 +19,4 @@
     </nz-collapse-panel>
   </nz-collapse>
 </form>
-<ats-evaluation *ngIf="price$ | async as price" [price]='price' [quantity]='form.value.quantity'></ats-evaluation>
+<ats-evaluation *ngIf="evaluation | async as evaluation" [evaluationProperties]="evaluation"></ats-evaluation>

@@ -17,5 +17,6 @@
       </nz-form-control>
     </nz-form-item>
   </form>
-  <ats-evaluation [price]='form.value.price' [quantity]='form.value.quantity'></ats-evaluation>
+
+  <ats-evaluation *ngIf="evaluation | async as evaluation" [evaluationProperties]="evaluation"></ats-evaluation>
 </div>

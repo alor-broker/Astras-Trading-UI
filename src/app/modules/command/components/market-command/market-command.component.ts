@@ -7,6 +7,7 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { SyncService } from 'src/app/shared/services/sync.service';
 import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.model';
+import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { MarketFormData } from '../../models/market-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 
@@ -16,6 +17,7 @@ import { CommandsService } from '../../services/commands.service';
   styleUrls: ['./market-command.component.less']
 })
 export class MarketCommandComponent implements OnInit {
+  evaluation = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   viewData = new BehaviorSubject<CommandParams | null>(null)
   initialParams: CommandParams | null = null
   initialParamsSub?: Subscription
@@ -66,11 +68,15 @@ export class MarketCommandComponent implements OnInit {
           } as MarketFormControls) as MarketFormGroup;
         }
       })
-    this.formChangeSub = this.form.valueChanges.subscribe((form : MarketFormData) => this.setMarketCommand(form))
+    this.formChangeSub = this.form.valueChanges.subscribe((form : MarketFormData) => {
+      this.setMarketCommand(form);
+    })
   }
 
   setMarketCommand(form: MarketFormData): void {
     const command = this.viewData.getValue();
+    const price = Number(command?.price ?? 1);
+    const quantity = Number(form.quantity ?? command?.quantity ?? 1);
     if (command && command.user) {
       const newCommand = {
         side: 'buy',
@@ -80,6 +86,17 @@ export class MarketCommandComponent implements OnInit {
           instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
         },
         user: command.user,
+      }
+      const evaluation : EvaluationBaseProperties = {
+        price: price,
+        lotQuantity: quantity,
+        instrument: {
+          ...command.instrument,
+          instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
+        },
+      }
+      if (evaluation.price > 0) {
+        this.evaluation.next(evaluation);
       }
       this.service.setMarketCommand(newCommand);
     }

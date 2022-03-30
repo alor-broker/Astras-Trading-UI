@@ -83,7 +83,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   newOrder() {
     const params: CommandParams = {
       instrument: { ...this.activeInstrument },
-      price: 0,
+      price: 1,
       quantity: 1,
       type: CommandType.Limit,
     };
