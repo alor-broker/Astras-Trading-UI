@@ -1,9 +1,6 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { BehaviorSubject, filter, map, Observable, switchMap, tap } from 'rxjs';
-import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
-import { MathHelper } from 'src/app/shared/utils/math-helper';
+import { Component, Input, OnInit } from '@angular/core';
+import { BehaviorSubject, filter, Observable, switchMap } from 'rxjs';
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
-import { EvaluationRequest } from '../../models/evaluation-request.model';
 import { Evaluation } from '../../models/evaluation.model';
 import { EvaluationService } from '../../services/evaluation.service';
 

@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { NzTabChangeEvent, NzTabComponent } from 'ng-zorro-antd/tabs';
-import { BehaviorSubject, filter, Observable, of, Subscription, tap } from 'rxjs';
-import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
+import { NzTabComponent } from 'ng-zorro-antd/tabs';
+import { filter, Observable, of, Subscription, tap } from 'rxjs';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { CommandsService } from '../../services/commands.service';
 
 type test = {index: number, tab: NzTabComponent}

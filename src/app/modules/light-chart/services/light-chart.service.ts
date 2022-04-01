@@ -1,8 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { distinct, distinctUntilChanged, filter, flatMap, map, mergeMap, switchMap } from 'rxjs/operators';
-import { BaseResponse } from 'src/app/shared/models/ws/base-response.model';
+import { Observable, combineLatest } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
@@ -11,10 +9,10 @@ import { BarsRequest } from '../models/bars-request.model';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
 import { HistoryResponse } from 'src/app/shared/models/history/history-response.model';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
-import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
+import { Store } from '@ngrx/store';
+import { getSelectedInstrument } from 'src/app/shared/ngrx/selectors/sync.selectors';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +24,7 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
   constructor(ws: WebsocketService,
     settingsService: DashboardService,
     private history: HistoryService,
-    private sync: SyncService) {
+    private store: Store) {
     super(ws, settingsService);
   }
 
@@ -42,7 +40,7 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
   }
 
   getBars(guid: string) {
-    combineLatest([this.sync.selectedInstrument$, this.getSettings(guid)]).pipe(
+    combineLatest([this.store.select(getSelectedInstrument), this.getSettings(guid)]).pipe(
       map(([i, current]) => {
         if (current && current.linkToActive &&
             !(current.symbol == i.symbol &&

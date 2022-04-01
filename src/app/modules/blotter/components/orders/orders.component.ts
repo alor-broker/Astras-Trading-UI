@@ -6,10 +6,7 @@ import { OrderCancellerService } from 'src/app/shared/services/order-canceller.s
 import { OrderFilter } from '../../models/order-filter.model';
 import { Order } from '../../../../shared/models/orders/order.model';
 import { Column } from '../../models/column.model';
-import { byPropertiesOf } from 'src/app/shared/utils/collections';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
-import { SyncService } from 'src/app/shared/services/sync.service';
-import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { BlotterService } from '../../services/blotter.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 

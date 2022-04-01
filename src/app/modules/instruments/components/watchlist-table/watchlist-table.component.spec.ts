@@ -1,13 +1,27 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { SyncService } from 'src/app/shared/services/sync.service';
+import { Exchanges } from 'src/app/shared/models/enums/exchanges';
+import { SyncState } from 'src/app/shared/ngrx/reducers/sync.reducer';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
-
+import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { WatchlistTableComponent } from './watchlist-table.component';
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
   let fixture: ComponentFixture<WatchlistTableComponent>;
+
+  const initialState : SyncState = {
+    instrument: {
+      symbol: 'SBER',
+      exchange: Exchanges.MOEX,
+      instrumentGroup: 'TQBR',
+      isin: 'RU0009029540'
+    },
+    portfolio: {
+      portfolio: "D39004",
+      exchange: Exchanges.MOEX
+    }
+  }
 
   const spySync = jasmine.createSpyObj('SyncService', ['selectNewInstrument'])
   spySync.selectedInstrument$ = of(null);
@@ -19,7 +33,7 @@ describe('WatchlistTableComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ WatchlistTableComponent ],
       providers: [
-        { provide: SyncService, useValue: spySync },
+        provideMockStore({ initialState }),
         { provide: WatchInstrumentsService, useValue: spyWatcher },
       ]
     })

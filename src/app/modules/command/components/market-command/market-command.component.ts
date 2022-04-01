@@ -5,7 +5,6 @@ import { CommandParams } from 'src/app/shared/models/commands/command-params.mod
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.model';
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { MarketFormData } from '../../models/market-form-data.model';

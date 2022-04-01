@@ -13,12 +13,14 @@ import { OrderbookRequest } from '../models/orderbook-request.model';
 import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { ChartData, ChartPoint, OrderBook } from '../models/orderbook.model';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
+import { select, Store } from '@ngrx/store';
+import { getSelectedInstrument, getSelectedPortfolio } from 'src/app/shared/ngrx/selectors/sync.selectors';
+import { State } from 'src/app/shared/ngrx/state';
 
 @Injectable({
   providedIn: 'root',
@@ -31,8 +33,8 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
   constructor(
     ws: WebsocketService,
     settingsService: DashboardService,
-    private canceller: OrderCancellerService,
-    private sync: SyncService
+    private store: Store<State>,
+    private canceller: OrderCancellerService
   ) {
     super(ws, settingsService);
   }
@@ -51,7 +53,9 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
 
   getOrderbook(guid: string) {
     this.instrumentSub = combineLatest([
-      this.sync.selectedInstrument$,
+      this.store.pipe(
+        select(getSelectedInstrument),
+      ),
       this.getSettings(guid),
     ])
       .pipe(
@@ -203,7 +207,7 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
   }
 
   private getOrders() {
-    const orders$ = this.sync.selectedPortfolio$.pipe(
+    const orders$ = this.store.select(getSelectedPortfolio).pipe(
       switchMap((p) => {
         if (p) {
           return this.getPortfolioEntity<Order>(

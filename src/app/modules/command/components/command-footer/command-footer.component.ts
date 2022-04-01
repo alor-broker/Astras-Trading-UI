@@ -1,8 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { finalize, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { CommandsService } from '../../services/commands.service';
 
 @Component({

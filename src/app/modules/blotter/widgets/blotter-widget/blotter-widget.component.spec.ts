@@ -14,6 +14,7 @@ const settings : BlotterSettings = {
   portfolio: 'D39004',
   guid: '1230',
   ordersColumns: ['ticker'],
+  stopOrdersColumns: ['ticker'],
   tradesColumns: ['ticker'],
   positionsColumns: ['ticker'],
   activeTabIndex: 0,

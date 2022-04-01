@@ -1,11 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, Subscription } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookService } from '../../services/orderbook.service';
 
-import { OrderBookComponent } from './order-book.component';
+import { OrderBookComponent } from './orderbook.component';
 
 describe('OrderBookComponent', () => {
   let component: OrderBookComponent;

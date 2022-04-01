@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { combineLatest, merge, Observable, of, pipe, Subscription } from 'rxjs';
-import { distinct, distinctUntilChanged, distinctUntilKeyChanged, filter, map, startWith, switchMap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
+import { filter, map, startWith, switchMap } from 'rxjs/operators';
 import { CurrencyCode, CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { Order } from 'src/app/shared/models/orders/order.model';
@@ -10,14 +10,14 @@ import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
+import { selectNewInstrument } from 'src/app/shared/ngrx/actions/sync.actions';
+import { getSelectedPortfolio } from 'src/app/shared/ngrx/selectors/sync.selectors';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { OrdersNotificationsService } from 'src/app/shared/services/orders-notifications.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { formatCurrency } from 'src/app/shared/utils/formatters';
-import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { SummaryView } from '../models/summary-view.model';
 import { Summary } from '../models/summary.model';
 
@@ -45,7 +45,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     ws: WebsocketService,
     settingsService: DashboardService,
     private notification: OrdersNotificationsService,
-    private sync: SyncService,
+    private store: Store,
     private quotes: QuotesService) {
     super(ws, settingsService);
   }
@@ -58,7 +58,8 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       symbol = CurrencyCode.toInstrument(symbol)
       exchange = Exchanges.MOEX
     }
-    this.sync.selectNewInstrument({symbol, exchange, instrumentGroup: undefined})
+    const instrument = { symbol, exchange, instrumentGroup: undefined};
+    this.store.dispatch(selectNewInstrument({ instrument }))
   }
 
   setTabIndex(index: number) {
@@ -226,7 +227,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   private linkToPortfolio() {
     if (!this.portfolioSub) {
-      this.portfolioSub = this.sync.selectedPortfolio$.pipe(
+      this.portfolioSub = this.store.select(getSelectedPortfolio).pipe(
         filter((p): p is PortfolioKey => !!p),
         map((p) => {
           const current = this.getSettingsValue();

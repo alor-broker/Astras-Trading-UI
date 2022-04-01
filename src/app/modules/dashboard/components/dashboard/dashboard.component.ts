@@ -1,15 +1,14 @@
-import { Component, EventEmitter, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, OnInit } from '@angular/core';
 import {
   CompactType,
   DisplayGrid,
   Draggable,
   GridsterConfig,
-  GridsterItem,
   GridType,
   PushDirections,
   Resizable,
 } from 'angular-gridster2';
-import { distinct, map, Observable, tap } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';

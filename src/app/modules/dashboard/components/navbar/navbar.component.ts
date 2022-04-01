@@ -3,7 +3,6 @@ import { Observable, Subscription } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { AccountService } from '../../services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-constants';
@@ -11,6 +10,9 @@ import { CommandParams } from 'src/app/shared/models/commands/command-params.mod
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
+import { Store } from '@ngrx/store';
+import { getSelectedInstrument } from 'src/app/shared/ngrx/selectors/sync.selectors';
+import { selectNewPortfolio } from 'src/app/shared/ngrx/actions/sync.actions';
 
 @Component({
   selector: 'ats-navbar',
@@ -23,7 +25,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   constructor(
     private service: DashboardService,
     private account: AccountService,
-    private sync: SyncService,
+    private store: Store,
     private auth: AuthService,
     private modal: ModalService
   ) { }
@@ -42,7 +44,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.instrumentSub = this.portfolios$.subscribe(portfolios => {
       this.changePortfolio(this.selectDefault(portfolios));
     })
-    this.instrumentSub = this.sync.selectedInstrument$.subscribe(i => {
+    this.instrumentSub = this.store.select(getSelectedInstrument).subscribe(i => {
       this.activeInstrument = i;
     });
   }
@@ -65,7 +67,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   changePortfolio(key: PortfolioKey) {
-    this.sync.selectNewPortfolio(key);
+    this.store.dispatch(selectNewPortfolio({ portfolio: key }))
   }
 
   addItem(type: string): void {

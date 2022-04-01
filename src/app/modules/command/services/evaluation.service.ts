@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { filter, Observable, switchMap } from 'rxjs';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
-import { SyncService } from 'src/app/shared/services/sync.service';
+import { getSelectedPortfolio } from 'src/app/shared/ngrx/selectors/sync.selectors';
 import { environment } from 'src/environments/environment';
 import { EvaluationBaseProperties } from '../models/evaluation-base-properties.model';
 import { EvaluationRequest } from '../models/evaluation-request.model';
@@ -13,9 +14,10 @@ import { Evaluation } from '../models/evaluation.model';
 })
 export class EvaluationService {
   private readonly url = environment.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/estimate'
-  constructor(private http: HttpClient, private sync: SyncService) { }
+  constructor(private http: HttpClient, private store: Store) { }
+
   evaluateOrder(baseRequest: EvaluationBaseProperties) : Observable<Evaluation> {
-    return this.sync.selectedPortfolio$.pipe(
+    return this.store.select(getSelectedPortfolio).pipe(
       filter((pk): pk is PortfolioKey => !!pk),
       switchMap(portfolio => {
         return this.http.post<Evaluation>(this.url, {

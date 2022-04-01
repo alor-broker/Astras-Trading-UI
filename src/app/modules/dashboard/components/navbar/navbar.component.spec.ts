@@ -5,23 +5,36 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './navbar.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { AccountService } from '../../services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { of } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
+import { SyncState } from 'src/app/shared/ngrx/reducers/sync.reducer';
+import { Exchanges } from 'src/app/shared/models/enums/exchanges';
+import { provideMockStore } from '@ngrx/store/testing';
 
-describe('NavbarComponent', () => {
+fdescribe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
-  const spySync = jasmine.createSpyObj('SyncService', ['selectedInstrument$']);
-  spySync.selectedInstrument$ = of(null);
   const spyAccount = jasmine.createSpyObj('AccountService', ['getActivePortfolios']);
   spyAccount.getActivePortfolios.and.returnValue(of([]));
   const spyDashboard = jasmine.createSpy('DashboardService');
   const spyAuth = jasmine.createSpyObj('AuthService', ['logout'])
   const spyModal= jasmine.createSpyObj('ModalService', ['openTerminalSettingsModal'])
+
+  const initialState : SyncState = {
+    instrument: {
+      symbol: 'SBER',
+      exchange: Exchanges.MOEX,
+      instrumentGroup: 'TQBR',
+      isin: 'RU0009029540'
+    },
+    portfolio: {
+      portfolio: "D39004",
+      exchange: Exchanges.MOEX
+    }
+  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -32,11 +45,11 @@ describe('NavbarComponent', () => {
         SharedModule
       ],
       providers: [
-        { provide: SyncService, useValue: spySync },
         { provide: AccountService, useValue: spyAccount },
         { provide: DashboardService, useValue: spyDashboard },
         { provide: AuthService, useValue: spyAuth },
         { provide: ModalService, useValue: spyModal },
+        provideMockStore({ initialState })
       ]
     }).compileComponents();
   }));

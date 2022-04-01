@@ -36,6 +36,9 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgChartsModule } from 'ng2-charts';
+import { StoreModule } from '@ngrx/store';
+import { syncReducer } from './ngrx/reducers/sync.reducer';
+import { State } from './ngrx/state';
 
 @NgModule({
   declarations: [
@@ -73,7 +76,8 @@ import { NgChartsModule } from 'ng2-charts';
     NzDescriptionsModule,
     NzEmptyModule,
     NzCheckboxModule,
-    ScrollingModule
+    ScrollingModule,
+    StoreModule.forFeature('sync', syncReducer)
   ],
   exports: [
     // Ng zorro

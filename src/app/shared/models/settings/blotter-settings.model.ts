@@ -1,4 +1,3 @@
-import { CurrencyInstrument } from "../enums/currencies.model"
 import { WidgetSettings } from "../widget-settings.model"
 
 export interface BlotterSettings extends WidgetSettings {

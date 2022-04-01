@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, combineLatest, distinct, distinctUntilChanged, map, mergeMap, multicast, Observable, retry, retryWhen, Subject, Subscription, switchMap, tap } from 'rxjs';
+import { select, Store } from '@ngrx/store';
+import { combineLatest, distinct, distinctUntilChanged, map, Observable, Subscription, switchMap, tap } from 'rxjs';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
 import { InfoSettings } from 'src/app/shared/models/settings/info-settings.model';
+import { getSelectedInstrument } from 'src/app/shared/ngrx/selectors/sync.selectors';
 import { BaseService } from 'src/app/shared/services/base.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { environment } from 'src/environments/environment';
 import { Calendar } from '../models/calendar.model';
 import { Description } from '../models/description.model';
@@ -15,7 +16,6 @@ import { Dividend } from '../models/dividend.model';
 import { ExchangeInfo } from '../models/exchange-info.model';
 import { Finance } from '../models/finance.model';
 import { Issue } from '../models/issue.model';
-import { dividends } from './stub';
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,
@@ -32,7 +32,7 @@ export class InfoService extends BaseService<InfoSettings>{
   private settings$?: Observable<SettingsWithExchangeInfo>
   private sub?: Subscription;
 
-  constructor(private http: HttpClient, settingsService: DashboardService, private sync: SyncService) {
+  constructor(private http: HttpClient, settingsService: DashboardService, private store: Store) {
     super(settingsService)
     console.log('Info service created')
   }
@@ -43,7 +43,8 @@ export class InfoService extends BaseService<InfoSettings>{
     }
 
     this.settings$ = combineLatest([
-      this.sync.selectedInstrument$.pipe(
+      this.store.pipe(
+        select(getSelectedInstrument),
         distinctUntilChanged((a,b) => a.isin == b.isin),
       ),
       this.getSettings(guid).pipe(

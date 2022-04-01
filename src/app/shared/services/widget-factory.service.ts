@@ -7,13 +7,14 @@ import { Widget } from '../models/widget.model';
 import { LightChartSettings } from '../models/settings/light-chart-settings.model';
 import { TimeframesHelper } from 'src/app/modules/light-chart/utils/timeframes-helper';
 import { InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
-import { SyncService } from './sync.service';
 import { Instrument } from '../models/instruments/instrument.model';
 import { allOrdersColumns, allStopOrdersColumns, allPositionsColumns, allTradesColumns, BlotterSettings } from '../models/settings/blotter-settings.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { WidgetNames } from '../models/enums/widget-names';
 import { CurrencyInstrument } from '../models/enums/currencies.model';
 import { InfoSettings } from '../models/settings/info-settings.model';
+import { Store } from '@ngrx/store';
+import { getSelectedInstrument, getSelectedPortfolio } from '../ngrx/selectors/sync.selectors';
 
 @Injectable({
   providedIn: 'root',
@@ -28,11 +29,11 @@ export class WidgetFactoryService {
   };
   private selectedPortfolio: PortfolioKey | null = null;
 
-  constructor(private sync: SyncService) {
-    this.sync.selectedInstrument$.subscribe(
+  constructor(private store: Store) {
+    this.store.select(getSelectedInstrument).subscribe(
       (si) => (this.selectedInstrument = si)
     );
-    this.sync.selectedPortfolio$.subscribe(
+    this.store.select(getSelectedPortfolio).subscribe(
       (sp) => (this.selectedPortfolio = sp)
     )
   }

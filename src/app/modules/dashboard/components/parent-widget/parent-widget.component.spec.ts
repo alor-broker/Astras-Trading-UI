@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 
 import { ParentWidgetComponent } from './parent-widget.component';
 
@@ -18,6 +17,8 @@ describe('ParentWidgetComponent', () => {
     fixture = TestBed.createComponent(ParentWidgetComponent);
     component = fixture.componentInstance;
     component.widget = {
+      hasSettings: false,
+      hasHelp: false,
       guid: '123',
       gridItem: { x: 0, y: 0, rows: 1, cols: 1 },
     }

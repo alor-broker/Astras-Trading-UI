@@ -1,9 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
-import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
-import { SyncService } from 'src/app/shared/services/sync.service';
-import { InstrumentAdditions } from '../../models/instrument-additions.model';
+import { selectNewInstrument } from 'src/app/shared/ngrx/actions/sync.actions';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 
@@ -16,19 +15,14 @@ export class WatchlistTableComponent implements OnInit {
 
   watchedInstruments$: Observable<WatchedInstrument[]> = of([])
 
-  constructor(private service: WatchInstrumentsService, private sync: SyncService) { }
+  constructor(private store: Store, private service: WatchInstrumentsService) { }
 
   ngOnInit(): void {
     this.watchedInstruments$ = this.service.getWatched();
   }
 
-  makeActive(instr: Instrument) {
-    this.sync.selectNewInstrument({
-      symbol: instr.symbol,
-      exchange: instr.exchange,
-      instrumentGroup: instr.instrumentGroup,
-      isin: instr.isin
-    });
+  makeActive(instrument: Instrument) {
+    this.store.dispatch(selectNewInstrument({ instrument }))
   }
 
   remove(instr: Instrument) {

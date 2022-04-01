@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { filter, Observable, of, Subscription, tap } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 
 @Component({
   selector: 'ats-help-widget',

@@ -5,10 +5,7 @@ import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.mod
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
 import { Column } from '../../models/column.model';
-import { byPropertiesOf } from 'src/app/shared/utils/collections';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
-import { SyncService } from 'src/app/shared/services/sync.service';
-import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { BlotterService } from '../../services/blotter.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { StopOrder } from 'src/app/shared/models/orders/stop-order.model';

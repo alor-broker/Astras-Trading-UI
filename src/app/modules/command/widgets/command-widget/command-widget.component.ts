@@ -4,7 +4,6 @@ import { BehaviorSubject, filter, Observable, of } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 
 type test = {index: number, tab: NzTabComponent}
 

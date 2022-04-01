@@ -1,13 +1,14 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { catchError, filter, map, Observable, of, Subscription, switchMap } from 'rxjs';
+import { filter, map, Observable, of, Subscription, switchMap } from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
 import { PriceData } from '../../models/price-data.model';
 import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-constants';
 import { PositionsService } from 'src/app/shared/services/positions.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
+import { Store } from '@ngrx/store';
+import { getSelectedPortfolio } from 'src/app/shared/ngrx/selectors/sync.selectors';
 
 @Component({
   selector: 'ats-command-header[symbol][exchange]',
@@ -39,14 +40,14 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
       private quoteService: QuotesService,
       private history: HistoryService,
       private positionService: PositionsService,
-      private sync: SyncService) {
+      private store: Store) {
   }
   ngOnDestroy(): void {
     this.positionSub?.unsubscribe();
   }
 
   ngOnInit(): void {
-    this.positionSub = this.sync.selectedPortfolio$.pipe(
+    this.positionSub = this.store.select(getSelectedPortfolio).pipe(
       filter((p): p is PortfolioKey => !!p),
       switchMap(p => {
          return this.positionService.getByPortfolio(p.portfolio, p.exchange, this.symbol)

@@ -5,7 +5,6 @@ import { OrderbookService } from '../../services/orderbook.service';
 import { OrderBook } from '../../models/orderbook.model';
 import { map, tap } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import {
   sellColorBackground,
@@ -21,8 +20,8 @@ interface Size {
 
 @Component({
   selector: 'ats-order-book[guid][resize][shouldShowSettings]',
-  templateUrl: './order-book.component.html',
-  styleUrls: ['./order-book.component.less'],
+  templateUrl: './orderbook.component.html',
+  styleUrls: ['./orderbook.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })

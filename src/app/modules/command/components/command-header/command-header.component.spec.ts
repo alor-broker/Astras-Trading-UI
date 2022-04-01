@@ -1,22 +1,34 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { Exchanges } from 'src/app/shared/models/enums/exchanges';
+import { SyncState } from 'src/app/shared/ngrx/reducers/sync.reducer';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
-
+import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { CommandHeaderComponent } from './command-header.component';
 
 describe('CommandHeaderComponent', () => {
   let component: CommandHeaderComponent;
   let fixture: ComponentFixture<CommandHeaderComponent>;
+  const initialState : SyncState = {
+    instrument: {
+      symbol: 'SBER',
+      exchange: Exchanges.MOEX,
+      instrumentGroup: 'TQBR',
+      isin: 'RU0009029540'
+    },
+    portfolio: {
+      portfolio: "D39004",
+      exchange: Exchanges.MOEX
+    }
+  }
 
   beforeEach(async () => {
     const quoteSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
     const historySpy = jasmine.createSpyObj('HistoryService', ['getDaysOpen']);
     const positionSpy = jasmine.createSpyObj('PositionsService', ['getByPortfolio']);
-    const syncSpy = jasmine.createSpyObj('SyncService', ['selectedPortfolio$']);
-    syncSpy.selectedPortfolio$ = of(null)
+
     historySpy.getDaysOpen.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
@@ -25,7 +37,7 @@ describe('CommandHeaderComponent', () => {
         { provide: QuotesService, useValue: quoteSpy },
         { provide: HistoryService, useValue: historySpy },
         { provide: PositionsService, useValue: positionSpy },
-        { provide: SyncService, useValue: syncSpy },
+        provideMockStore({ initialState }),
       ]
     })
     .compileComponents();
