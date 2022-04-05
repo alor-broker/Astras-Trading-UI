@@ -10,5 +10,5 @@ export interface StopCommand {
   user: PortfolioKey,
   triggerPrice: number,
   condition: StopOrderCondition,
-  validTillUnixTimestamp?: Date
+  validTillUnixTimestamp?: Date | number
 }

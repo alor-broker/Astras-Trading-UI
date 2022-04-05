@@ -7,5 +7,6 @@ export interface CommandParams {
   type: CommandType,
   price?: number,
   user?: PortfolioKey,
-  quantity: number
+  quantity: number,
+  validTillUnixTimestamp?: number
 }

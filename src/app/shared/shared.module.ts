@@ -38,6 +38,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgChartsModule } from 'ng2-charts';
 import { StoreModule } from '@ngrx/store';
 import { syncReducer } from './ngrx/reducers/sync.reducer';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { State } from './ngrx/state';
 
 @NgModule({
@@ -76,6 +77,7 @@ import { State } from './ngrx/state';
     NzDescriptionsModule,
     NzEmptyModule,
     NzCheckboxModule,
+    NzDatePickerModule,
     ScrollingModule,
     StoreModule.forFeature('sync', syncReducer)
   ],
@@ -106,6 +108,7 @@ import { State } from './ngrx/state';
     NzEmptyModule,
     NzCheckboxModule,
     ScrollingModule,
+    NzDatePickerModule,
     // modules
     CommonModule,
     FormsModule,

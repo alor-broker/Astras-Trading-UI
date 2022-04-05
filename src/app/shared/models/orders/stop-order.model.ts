@@ -4,7 +4,7 @@ import { Order } from './order.model'
 export interface StopOrder extends Order {
   triggerPrice: number,
   conditionType: string,
-  validTillUnixTimestamp: Date
+  endTime: Date,
 }
 
 export interface StopOrderData extends Omit<StopOrder, ('conditionType' | 'triggerPrice')> {

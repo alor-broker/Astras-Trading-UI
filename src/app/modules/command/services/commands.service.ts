@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { CommandResponse } from 'src/app/shared/models/commands/command-response.model';
 import { Side } from 'src/app/shared/models/enums/side.model';
+import { addDays, addDaysUnix, toUnixTimestampMillies, toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { environment } from 'src/environments/environment';
 import { LimitCommand } from '../models/limit-command.model';
@@ -131,8 +132,17 @@ export class CommandsService {
 
   private placeOrder(type: string, side: Side, command : LimitCommand | MarketCommand | StopCommand) {
     let isStop = false;
-    if (type == 'stop' || type == 'stopLimit') {
+    if ((type == 'stop' || type == 'stopLimit') && isStopCommand(command)) {
       isStop = true;
+      if (command.validTillUnixTimestamp === undefined) {
+        command.validTillUnixTimestamp = toUnixTimestampMillies(addDays(new Date(), 30));
+      }
+      else if (typeof command.validTillUnixTimestamp === 'number') {
+        command.validTillUnixTimestamp = command.validTillUnixTimestamp;
+      }
+      else {
+        command.validTillUnixTimestamp = toUnixTimestampMillies(command.validTillUnixTimestamp);
+      }
     }
     return this.http.post<CommandResponse>(`${this.url}/${type.toString()}?stop=${isStop}`, {
         ...command,
@@ -150,4 +160,13 @@ export class CommandsService {
       })
     )
   }
+}
+
+function isStopCommand(
+  command: StopCommand | LimitCommand | MarketCommand
+): command is StopCommand {
+  return (
+    command &&
+    'validTillUnixTimestamp' in command
+  );
 }

@@ -6,6 +6,7 @@ import { CommandParams } from 'src/app/shared/models/commands/command-params.mod
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
 import { ModalService } from 'src/app/shared/services/modal.service';
+import { addDays, addDaysUnix, toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
 import { StopFormControls, StopFormGroup } from '../../models/command-forms.model';
 import { StopFormData } from '../../models/stop-form-data.model';
 import { CommandsService } from '../../services/commands.service';
@@ -54,6 +55,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
             triggerPrice: new FormControl(command.price, [
               Validators.required, Validators.min(0),
             ]),
+            validTillUnixTimestamp: new FormControl(command.validTillUnixTimestamp),
             condition: new FormControl(StopOrderCondition.More),
           } as StopFormControls) as StopFormGroup;
         }
@@ -70,6 +72,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         quantity: Number(form.quantity) ?? command?.quantity ?? 1,
         triggerPrice: Number(form.triggerPrice) ?? command?.price ?? 0,
         condition: form.condition,
+        validTillUnixTimestamp: form.validTillUnixTimestamp ?? addDays(new Date(), 30),
         price: price == 0 ? null : price,
         instrument: {
           ...command.instrument

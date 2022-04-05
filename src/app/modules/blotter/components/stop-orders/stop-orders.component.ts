@@ -343,7 +343,10 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   }
 
   formatDate(date: Date) {
-    return new Date(date).toLocaleTimeString();
+    if (date.toDateString() == new Date().toDateString()) {
+      return date.toLocaleTimeString();
+    }
+    else return date.toDateString();
   }
 
   private justifyFilter(order: DisplayOrder, filter: OrderFilter) : boolean {

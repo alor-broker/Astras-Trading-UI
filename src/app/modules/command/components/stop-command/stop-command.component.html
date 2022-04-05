@@ -36,5 +36,21 @@
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Введите дату">
+        <nz-input-group>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="validTillUnixTimestamp">Действ. до</nz-form-label>
+          <nz-date-picker
+            nzShowTime
+            nzFormat="yyyy-MM-dd HH:mm:ss"
+            ngModel
+            formControlName="validTillUnixTimestamp"
+          >
+          <!-- (ngModelChange)="onChange($event)"
+          (nzOnOk)="onOk($event)" -->
+          </nz-date-picker>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
   </form>
 </div>
