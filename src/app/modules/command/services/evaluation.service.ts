@@ -27,7 +27,6 @@ export class EvaluationService {
           board: baseRequest.instrument.instrumentGroup,
           price: baseRequest.price,
           lotQuantity: baseRequest.lotQuantity,
-          currency: 'RUB'
         } as EvaluationRequest);
       })
     )
