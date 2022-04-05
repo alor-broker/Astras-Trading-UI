@@ -14,7 +14,7 @@ import { SyncState } from 'src/app/shared/ngrx/reducers/sync.reducer';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { provideMockStore } from '@ngrx/store/testing';
 
-fdescribe('NavbarComponent', () => {
+describe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
   const spyAccount = jasmine.createSpyObj('AccountService', ['getActivePortfolios']);

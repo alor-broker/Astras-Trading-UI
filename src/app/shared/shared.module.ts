@@ -21,8 +21,6 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown'
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { BrowserModule } from '@angular/platform-browser';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { PriceTickComponent } from './components/price-tick/price-tick.component';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
@@ -39,7 +37,6 @@ import { NgChartsModule } from 'ng2-charts';
 import { StoreModule } from '@ngrx/store';
 import { syncReducer } from './ngrx/reducers/sync.reducer';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
-import { State } from './ngrx/state';
 
 @NgModule({
   declarations: [
