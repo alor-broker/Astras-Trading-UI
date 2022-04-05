@@ -55,7 +55,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
             triggerPrice: new FormControl(command.price, [
               Validators.required, Validators.min(0),
             ]),
-            validTillUnixTimestamp: new FormControl(command.validTillUnixTimestamp),
+            stopEndUnixTime: new FormControl(command.stopEndUnixTime),
             condition: new FormControl(StopOrderCondition.More),
           } as StopFormControls) as StopFormGroup;
         }
@@ -72,7 +72,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         quantity: Number(form.quantity) ?? command?.quantity ?? 1,
         triggerPrice: Number(form.triggerPrice) ?? command?.price ?? 0,
         condition: form.condition,
-        validTillUnixTimestamp: form.validTillUnixTimestamp ?? addDays(new Date(), 30),
+        stopEndUnixTime: form.stopEndUnixTime ?? addDays(new Date(), 30),
         price: price == 0 ? null : price,
         instrument: {
           ...command.instrument

@@ -8,5 +8,5 @@ export interface CommandParams {
   price?: number,
   user?: PortfolioKey,
   quantity: number,
-  validTillUnixTimestamp?: number
+  stopEndUnixTime?: number
 }

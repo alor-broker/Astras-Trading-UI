@@ -134,14 +134,14 @@ export class CommandsService {
     let isStop = false;
     if ((type == 'stop' || type == 'stopLimit') && isStopCommand(command)) {
       isStop = true;
-      if (command.validTillUnixTimestamp === undefined) {
-        command.validTillUnixTimestamp = toUnixTimestampMillies(addDays(new Date(), 30));
+      if (command.stopEndUnixTime === undefined) {
+        command.stopEndUnixTime = toUnixTimestampSeconds(addDays(new Date(), 30));
       }
-      else if (typeof command.validTillUnixTimestamp === 'number') {
-        command.validTillUnixTimestamp = command.validTillUnixTimestamp;
+      else if (typeof command.stopEndUnixTime === 'number') {
+        command.stopEndUnixTime = Number((command.stopEndUnixTime / 1000).toFixed(0));
       }
       else {
-        command.validTillUnixTimestamp = toUnixTimestampMillies(command.validTillUnixTimestamp);
+        command.stopEndUnixTime = toUnixTimestampSeconds(command.stopEndUnixTime);
       }
     }
     return this.http.post<CommandResponse>(`${this.url}/${type.toString()}?stop=${isStop}`, {
@@ -167,6 +167,6 @@ function isStopCommand(
 ): command is StopCommand {
   return (
     command &&
-    'validTillUnixTimestamp' in command
+    'stopEndUnixTime' in command
   );
 }
