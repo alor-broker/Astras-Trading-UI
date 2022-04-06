@@ -16,10 +16,10 @@
     <nz-tab nzTitle="Об инструменте">
       <ats-description [guid]="guid"></ats-description>
     </nz-tab>
-    <nz-tab *ngIf="info.exchange != 'SPBX'"  nzTitle="Финансы">
+    <nz-tab *ngIf="info.exchange == 'SPBX'"  nzTitle="Финансы">
       <ats-finance [guid]="guid"></ats-finance>
     </nz-tab>
-    <nz-tab *ngIf="info.exchange != 'SPBX'" nzTitle="Дивиденды">
+    <nz-tab *ngIf="info.exchange == 'SPBX'" nzTitle="Дивиденды">
       <ats-dividends [guid]="guid"></ats-dividends>
     </nz-tab>
   </nz-tabset>
