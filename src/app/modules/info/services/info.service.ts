@@ -69,9 +69,6 @@ export class InfoService extends BaseService<InfoSettings>{
           }
           return settings;
         }),
-        tap(i => {
-          console.log(i)
-        }),
       )
       return this.settings$;
   }
