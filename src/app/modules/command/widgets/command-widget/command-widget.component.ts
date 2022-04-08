@@ -5,8 +5,6 @@ import { CommandParams } from 'src/app/shared/models/commands/command-params.mod
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 
-type test = {index: number, tab: NzTabComponent}
-
 @Component({
   selector: 'ats-command-widget',
   templateUrl: './command-widget.component.html',
@@ -25,11 +23,8 @@ export class CommandWidgetComponent implements OnInit {
     this.commandParams$ = this.modal.commandParams$.pipe(
       filter((p): p is CommandParams => !!p)
     );
-    this.isVisible$ = this.modal.shouldShowCommandModal$;
-  }
 
-  handleOk(): void {
-    this.modal.closeCommandModal();
+    this.isVisible$ = this.modal.shouldShowCommandModal$;
   }
 
   handleCancel(): void {

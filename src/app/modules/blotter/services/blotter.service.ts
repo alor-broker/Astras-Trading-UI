@@ -31,9 +31,6 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   private stopOrders: Map<string, StopOrder> = new Map<string, StopOrder>();
 
   private portfolioSub?: Subscription;
-  private subGuidByOpcode: Map<string, string> = new Map<string, string>();
-
-  private INSTANCE_ID = Math.random();
 
   order$: Observable<Order[]> = of([]);
   stopOrder$: Observable<StopOrder[]> = of([]);

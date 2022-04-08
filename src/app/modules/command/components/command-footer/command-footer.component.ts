@@ -1,5 +1,5 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, Input, OnInit } from '@angular/core';
+import { of, take } from 'rxjs';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { CommandsService } from '../../services/commands.service';
@@ -9,53 +9,52 @@ import { CommandsService } from '../../services/commands.service';
   templateUrl: './command-footer.component.html',
   styleUrls: ['./command-footer.component.less']
 })
-export class CommandFooterComponent implements OnInit, OnDestroy {
+export class CommandFooterComponent implements OnInit {
   @Input()
   activeTab: string = 'limit'
 
-  private sub: Subscription = new Subscription();
-
-  constructor(private command: CommandsService, private modal: ModalService) { }
+  constructor(private command: CommandsService, private modal: ModalService) {
+  }
 
   ngOnInit(): void {
 
   }
 
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-  }
-
   buy() {
-    let sub;
+    let command$ = of({});
     if (this.activeTab == 'limit') {
-      sub = this.command.submitLimit(Side.Buy).subscribe(r => this.closeModal());
+      command$ = this.command.submitLimit(Side.Buy);
     }
     else if (this.activeTab == 'market') {
-      sub = this.command.submitMarket(Side.Buy).subscribe(r => this.closeModal());
+      command$ = this.command.submitMarket(Side.Buy);
     }
     else if (this.activeTab == 'stop') {
-      sub = this.command.submitStop(Side.Buy).subscribe(r => this.closeModal());
+      command$ = this.command.submitStop(Side.Buy);
     }
 
-    this.sub.add(sub);
+    command$.pipe(
+      take(1)
+    ).subscribe(() => this.closeModal());
   }
 
   sell() {
-    let sub;
+    let command$ = of({});
     if (this.activeTab == 'limit') {
-      sub = this.command.submitLimit(Side.Sell).subscribe(r => this.closeModal());
+      command$ = this.command.submitLimit(Side.Sell);
     }
     else if (this.activeTab == 'market') {
-      sub = this.command.submitMarket(Side.Sell).subscribe(r => this.closeModal());
+      command$ = this.command.submitMarket(Side.Sell);
     }
     else if (this.activeTab == 'stop') {
-      sub = this.command.submitStop(Side.Sell).subscribe(r => this.closeModal());
+      command$ = this.command.submitStop(Side.Sell);
     }
 
-    this.sub.add(sub);
+    command$.pipe(
+      take(1)
+    ).subscribe(() => this.closeModal());
   }
 
   closeModal() {
-    this.modal.closeCommandModal()
+    this.modal.closeCommandModal();
   }
 }

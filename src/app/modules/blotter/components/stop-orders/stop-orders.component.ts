@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, Subject, takeUntil } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
@@ -27,18 +27,9 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-
-  private cancelCommands = new Subject<CancelCommand>();
-  private cancels$ = this.cancelCommands.asObservable()
-  private cancelSub? : Subscription;
-  private settingsSub? : Subscription;
-
-  private orders: StopOrder[] = [];
-  private orders$: Observable<StopOrder[]> = of([]);
   displayOrders$: Observable<DisplayOrder[]> = of([]);
-  searchFilter = new BehaviorSubject<OrderFilter>({ });
+  searchFilter = new BehaviorSubject<OrderFilter>({});
   tableInnerWidth: string = '1000px';
-
   allColumns: Column<DisplayOrder, OrderFilter>[] = [
     {
       id: 'id',
@@ -241,45 +232,54 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       hasFilter: false,
     },
   ]
-
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private cancelCommands = new Subject<CancelCommand>();
+  private cancels$ = this.cancelCommands.asObservable()
+  private orders: StopOrder[] = [];
+  private orders$: Observable<StopOrder[]> = of([]);
 
-  constructor(private service: BlotterService, private cancller: OrderCancellerService, private modal: ModalService) { }
+  constructor(private service: BlotterService, private cancller: OrderCancellerService, private modal: ModalService) {
+  }
 
   ngOnInit(): void {
-    this.settingsSub = this.service.getSettings(this.guid).pipe(
-      tap(s => {
-        if (s.stopOrdersColumns) {
-          this.listOfColumns = this.allColumns.filter(c => s.stopOrdersColumns.includes(c.id))
-          this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
-        }
-      })
-    ).subscribe();
+    this.service.getSettings(this.guid).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(s => {
+      if (s.stopOrdersColumns) {
+        this.listOfColumns = this.allColumns.filter(c => s.stopOrdersColumns.includes(c.id))
+        this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
+      }
+    })
+
     this.orders$ = this.service.getStopOrders(this.guid).pipe(
       tap(orders => this.orders = orders)
     );
-    this.displayOrders$ = combineLatest([ this.orders$, this.searchFilter]).pipe(
-      map(([orders, f]) => orders.slice(0,10)
-        .map(o => ({...o, residue: `0/${o.qty}`, volume: MathHelper.round(o.qtyUnits * o.price, 2)}))
+
+    this.displayOrders$ = combineLatest([this.orders$, this.searchFilter]).pipe(
+      map(([orders, f]) => orders.slice(0, 10)
+        .map(o => ({ ...o, residue: `0/${o.qty}`, volume: MathHelper.round(o.qtyUnits * o.price, 2) }))
         .filter(o => this.justifyFilter(o, f))
         .sort(this.sortOrders))
-    )
-    this.cancelSub = this.cancels$.pipe(
+    );
+
+    this.cancels$.pipe(
       mergeMap((command) => this.cancller.cancelOrder(command)),
-      catchError((_, caught) => caught)
+      catchError((_, caught) => caught),
+      takeUntil(this.destroy$)
     ).subscribe()
   }
 
   ngOnDestroy(): void {
-    this.cancelSub?.unsubscribe();
-    this.settingsSub?.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   reset(): void {
-    this.searchFilter.next({ });
+    this.searchFilter.next({});
   }
 
-  filterChange(text: string, option: string ) {
+  filterChange(text: string, option: string) {
     const newFilter = this.searchFilter.getValue();
     if (option) {
       newFilter[option as keyof OrderFilter] = text;
@@ -349,7 +349,11 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
     else return date.toDateString();
   }
 
-  private justifyFilter(order: DisplayOrder, filter: OrderFilter) : boolean {
+  selectInstrument(symbol: string, exchange: string) {
+    this.service.selectNewInstrument(symbol, exchange);
+  }
+
+  private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof OrderFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
@@ -359,15 +363,11 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  selectInstrument(symbol: string, exchange: string) {
-    this.service.selectNewInstrument(symbol, exchange);
-  }
-
   private sortOrders(a: DisplayOrder, b: DisplayOrder) {
     if (a.status == 'working' && b.status != 'working') {
       return -1;
     }
-    else if (b.status == 'working' && a.status != 'working'){
+    else if (b.status == 'working' && a.status != 'working') {
       return 1;
     }
     if (a.endTime < b.endTime) {

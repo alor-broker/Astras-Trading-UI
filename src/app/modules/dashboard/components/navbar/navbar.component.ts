@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { AccountService } from '../../services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
@@ -20,38 +20,45 @@ import { selectNewPortfolio } from 'src/app/shared/ngrx/actions/sync.actions';
   styleUrls: ['./navbar.component.less'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+
   portfolios$!: Observable<PortfolioKey[]>
   names = WidgetNames
+  buyColor = buyColor;
+  sellColor = sellColor;
+  private activeInstrument: Instrument = {
+    symbol: 'SBER', exchange: 'MOEX', isin: 'RU0009029540'
+  }
+
   constructor(
     private service: DashboardService,
     private account: AccountService,
     private store: Store,
     private auth: AuthService,
     private modal: ModalService
-  ) { }
-
-  buyColor = buyColor;
-  sellColor = sellColor;
-
-  private instrumentSub?: Subscription;
-  private portfolioSub?: Subscription;
-  private activeInstrument: Instrument = {
-    symbol: 'SBER', exchange: 'MOEX', isin: 'RU0009029540'
+  ) {
   }
 
   ngOnInit(): void {
     this.portfolios$ = this.account.getActivePortfolios();
-    this.instrumentSub = this.portfolios$.subscribe(portfolios => {
+
+    this.portfolios$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(portfolios => {
       this.changePortfolio(this.selectDefault(portfolios));
     })
-    this.instrumentSub = this.store.select(getSelectedInstrument).subscribe(i => {
+
+    this.store.select(getSelectedInstrument)
+      .pipe(
+        takeUntil(this.destroy$)
+      ).subscribe(i => {
       this.activeInstrument = i;
     });
   }
 
   ngOnDestroy(): void {
-    this.instrumentSub?.unsubscribe();
-    this.portfolioSub?.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   clear() {
