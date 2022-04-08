@@ -13,6 +13,7 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { SyncState } from 'src/app/shared/ngrx/reducers/sync.reducer';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { provideMockStore } from '@ngrx/store/testing';
+import { StoreModule } from "@ngrx/store";
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -42,7 +43,8 @@ describe('NavbarComponent', () => {
       imports: [
         NoopAnimationsModule,
         LayoutModule,
-        SharedModule
+        SharedModule,
+        StoreModule.forRoot({})
       ],
       providers: [
         { provide: AccountService, useValue: spyAccount },
