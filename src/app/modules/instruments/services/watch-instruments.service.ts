@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { map, switchMap, tap, finalize, mergeMap, filter, first } from 'rxjs/operators';
+import { map, tap, finalize, mergeMap } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { WatchedInstrument } from '../models/watched-instrument.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
-import { select, Store } from '@ngrx/store';
-import { getSelectedInstrument } from 'src/app/shared/ngrx/selectors/sync.selectors';
 
 @Injectable({
   providedIn: 'root',

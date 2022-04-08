@@ -12,6 +12,7 @@ import ru from '@angular/common/locales/ru';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
+import { extModules } from "./build-specifics/ext-modules";
 
 registerLocaleData(ru);
 
@@ -27,6 +28,7 @@ registerLocaleData(ru);
     FormsModule,
     HttpClientModule,
     StoreModule.forRoot({}),
+    ...extModules
   ],
   bootstrap: [AppComponent],
   providers: [{ provide: NZ_I18N, useValue: ru_RU }]

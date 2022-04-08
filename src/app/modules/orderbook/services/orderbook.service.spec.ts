@@ -3,8 +3,6 @@
 import { TestBed, async, inject } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { of } from 'rxjs';
-import { Exchanges } from 'src/app/shared/models/enums/exchanges';
-import { SyncState } from 'src/app/shared/ngrx/reducers/sync.reducer';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -14,18 +12,6 @@ import { OrderbookService } from './orderbook.service';
 
 describe('OrderbookService', () => {
   const dashboardSpy = jasmine.createSpyObj('DashboardService', ['getSettings']);
-  const initialState : SyncState = {
-    instrument: {
-      symbol: 'SBER',
-      exchange: Exchanges.MOEX,
-      instrumentGroup: 'TQBR',
-      isin: 'RU0009029540'
-    },
-    portfolio: {
-      portfolio: "D39004",
-      exchange: Exchanges.MOEX
-    }
-  }
 
   beforeEach(() => {
     const spy = jasmine.createSpyObj('WebsocketService', ['settings$']);
@@ -39,7 +25,7 @@ describe('OrderbookService', () => {
         { provide: WebsocketService, useValue: spy },
         { provide: OrderCancellerService, useValue: cancellerSpy },
         { provide: DashboardService, useValue: dashboardSpy },
-        provideMockStore({ initialState })
+        provideMockStore()
       ]
     });
   });

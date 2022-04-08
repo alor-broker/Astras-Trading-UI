@@ -11,8 +11,8 @@ import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from '@ngrx/store';
-import { getSelectedInstrument } from 'src/app/shared/ngrx/selectors/sync.selectors';
-import { selectNewPortfolio } from 'src/app/shared/ngrx/actions/sync.actions';
+import { getSelectedInstrument } from "../../../../shared/ngrx/instruments/instruments.selectors";
+import { selectPortfolio } from "../../../../shared/ngrx/portfolios/portfolios.actions";
 
 @Component({
   selector: 'ats-navbar',
@@ -74,7 +74,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   changePortfolio(key: PortfolioKey) {
-    this.store.dispatch(selectNewPortfolio({ portfolio: key }))
+    this.store.dispatch(selectPortfolio({ portfolio: key }))
   }
 
   addItem(type: string): void {

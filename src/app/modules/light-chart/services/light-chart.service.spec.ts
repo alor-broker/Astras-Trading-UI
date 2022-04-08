@@ -2,8 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
-import { Exchanges } from 'src/app/shared/models/enums/exchanges';
-import { SyncState } from 'src/app/shared/ngrx/reducers/sync.reducer';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -19,19 +17,6 @@ describe('LightChartService', () => {
   const spyHistory = jasmine.createSpyObj('HistoryService', ['getHistory'])
   const dashboardSpy = jasmine.createSpyObj('DashboardService', ['getSettings']);
 
-  const initialState : SyncState = {
-    instrument: {
-      symbol: 'SBER',
-      exchange: Exchanges.MOEX,
-      instrumentGroup: 'TQBR',
-      isin: 'RU0009029540'
-    },
-    portfolio: {
-      portfolio: "D39004",
-      exchange: Exchanges.MOEX
-    }
-  }
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -41,7 +26,7 @@ describe('LightChartService', () => {
         { provide: WebsocketService, useValue: spy },
         { provide: HistoryService, useValue: spyHistory },
         { provide: DashboardService, useValue: dashboardSpy },
-        provideMockStore({ initialState }),
+        provideMockStore(),
         LightChartService
       ]
     });

@@ -4,13 +4,13 @@ import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { debounceTime, filter, map, switchMap } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
-import { selectNewInstrument } from 'src/app/shared/ngrx/actions/sync.actions';
-import { getSelectedInstrument } from 'src/app/shared/ngrx/selectors/sync.selectors';
 import { InstrumentAdditions } from '../../models/instrument-additions.model';
 import { InstrumentSelect } from '../../models/instrument-select.model';
 import { SearchFilter } from '../../models/search-filter.model';
 import { InstrumentsService } from '../../services/instruments.service';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
+import { selectInstrument } from "../../../../shared/ngrx/instruments/instruments.actions";
+import { getSelectedInstrument } from "../../../../shared/ngrx/instruments/instruments.selectors";
 
 @Component({
   selector: 'ats-instrument-select[shouldShowSettings][guid]',
@@ -72,7 +72,7 @@ export class InstrumentSelectComponent implements OnInit {
 
   onSelect(event: NzOptionSelectionChange, val: InstrumentSelect) {
     if (event.isUserInput) {
-      this.store.dispatch(selectNewInstrument({instrument: val}));
+      this.store.dispatch(selectInstrument({instrument: val}));
     }
   }
 
