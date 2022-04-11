@@ -1,7 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { Exchanges } from 'src/app/shared/models/enums/exchanges';
-import { SyncState } from 'src/app/shared/ngrx/reducers/sync.reducer';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
@@ -12,18 +10,6 @@ import { LoggerService } from "../../../../shared/services/logger.service";
 describe('CommandHeaderComponent', () => {
   let component: CommandHeaderComponent;
   let fixture: ComponentFixture<CommandHeaderComponent>;
-  const initialState : SyncState = {
-    instrument: {
-      symbol: 'SBER',
-      exchange: Exchanges.MOEX,
-      instrumentGroup: 'TQBR',
-      isin: 'RU0009029540'
-    },
-    portfolio: {
-      portfolio: "D39004",
-      exchange: Exchanges.MOEX
-    }
-  }
 
   beforeEach(async () => {
     const quoteSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
@@ -40,7 +26,7 @@ describe('CommandHeaderComponent', () => {
         { provide: HistoryService, useValue: historySpy },
         { provide: PositionsService, useValue: positionSpy },
         { provide: LoggerService, useValue: loggerSpy },
-        provideMockStore({ initialState }),
+        provideMockStore(),
       ]
     })
     .compileComponents();

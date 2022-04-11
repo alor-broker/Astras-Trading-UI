@@ -8,7 +8,7 @@ import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-const
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Store } from '@ngrx/store';
-import { getSelectedPortfolio } from 'src/app/shared/ngrx/selectors/sync.selectors';
+import { getSelectedPortfolio } from "../../../../shared/ngrx/portfolios/portfolios.selectors";
 import { LoggerService } from "../../../../shared/services/logger.service";
 
 @Component({
