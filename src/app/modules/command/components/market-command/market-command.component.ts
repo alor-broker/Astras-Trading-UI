@@ -9,6 +9,7 @@ import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { MarketFormData } from '../../models/market-form-data.model';
 import { CommandsService } from '../../services/commands.service';
+import { LoggerService } from "../../../../shared/services/logger.service";
 
 @Component({
   selector: 'ats-market-command',
@@ -26,7 +27,8 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
   constructor(
     private modal: ModalService,
     private service: CommandsService,
-    private quoteService: QuotesService,) {
+    private quoteService: QuotesService,
+    private logger: LoggerService) {
   }
 
   ngOnInit(): void {
@@ -113,6 +115,8 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       }
       this.service.setMarketCommand(newCommand);
     }
-    else console.error('Empty command')
+    else {
+      this.logger.error('Empty command');
+    }
   }
 }

@@ -11,6 +11,7 @@ import { Credentials } from '../models/user/credentials.model';
 import { RefreshTokenResponse } from '../models/user/refresh-token-response.model';
 import { JwtBody } from '../models/user/jwt.model';
 import { BaseUser } from '../models/user/base-user.model';
+import { LoggerService } from "./logger.service";
 
 @Injectable({
   providedIn: 'root',
@@ -39,7 +40,11 @@ export class AuthService {
   );
   accessToken$ = this.getAccessToken();
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private logger: LoggerService
+  ) {
     const user: User = JSON.parse(localStorage.getItem('user')!);
     this.setCurrentUser(user);
   }
@@ -132,7 +137,10 @@ export class AuthService {
           return this.refresh().pipe(
             map(t => t),
             catchError(e => {
-              console.log(e);
+              this.logger.error(
+                'Token refresh error',
+                e?.toString()
+              )
               this.redirectToSso();
               throw e;
             })
