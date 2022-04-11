@@ -8,6 +8,7 @@ import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { BlotterWidgetComponent } from './blotter-widget.component';
+import { StoreModule } from "@ngrx/store";
 
 const settings : BlotterSettings = {
   exchange: 'MOEX',
@@ -28,7 +29,10 @@ describe('BlotterWidgetComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ BlotterWidgetComponent ],
-      imports: [SharedModule],
+      imports: [
+        SharedModule,
+        StoreModule.forRoot({})
+      ],
       providers: [
         { provide: BlotterService, useClass: MockServiceBlotter },
       ],

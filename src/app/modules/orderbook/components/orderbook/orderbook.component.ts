@@ -1,15 +1,23 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewEncapsulation
+} from '@angular/core';
+import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import { OrderBook } from '../../models/orderbook.model';
 import { map, tap } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
-import {
-  sellColorBackground,
-  buyColorBackground,
-} from '../../../../shared/models/settings/styles-constants';
+import { buyColorBackground, sellColorBackground, } from '../../../../shared/models/settings/styles-constants';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 
@@ -36,26 +44,29 @@ export class OrderBookComponent implements OnInit, OnDestroy, OnChanges {
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
   shouldShowTable$: Observable<boolean> = of(true);
-
-  resizeSub!: Subscription;
   ob$: Observable<OrderBook | null> = of(null);
   maxVolume: number = 1;
-
   sizes: BehaviorSubject<Size> = new BehaviorSubject<Size>({
     width: '100%',
     height: '100%',
   });
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private service: OrderbookService, private modal: ModalService) {}
+  constructor(private service: OrderbookService, private modal: ModalService) {
+  }
 
   ngOnInit(): void {
     this.shouldShowTable$ = this.service.getSettings(this.guid).pipe(
       map((s) => s.showTable)
     );
+
     this.ob$ = this.service.getOrderbook(this.guid).pipe(
       tap((ob) => (this.maxVolume = ob?.maxVolume ?? 1))
     );
-    this.resizeSub = this.resize.subscribe((widget) => {
+
+    this.resize.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((widget) => {
       this.sizes.next({
         width: (widget.width ?? 0) + 'px',
         height: ((widget.height ?? 0) - 30) + 'px',
@@ -66,7 +77,8 @@ export class OrderBookComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy(): void {
     console.warn('destroy')
     this.service.unsubscribe();
-    this.resizeSub.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   ngOnChanges(changes: SimpleChanges): void {

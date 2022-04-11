@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { Column } from '../../models/column.model';
@@ -20,13 +20,8 @@ export class PositionsComponent implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   tableInnerWidth = '1000px'
-
-  private settingsSub? : Subscription;
-
-  private positions$: Observable<Position[]> = of([]);
   displayPositions$: Observable<Position[]> = of([]);
-  searchFilter = new BehaviorSubject<PositionFilter>({ });
-
+  searchFilter = new BehaviorSubject<PositionFilter>({});
   allColumns: Column<Position, PositionFilter>[] = [
     {
       id: 'symbol',
@@ -122,20 +117,24 @@ export class PositionsComponent implements OnInit {
       hasFilter: false,
     },
   ]
-
   listOfColumns: Column<Position, PositionFilter>[] = [];
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private positions$: Observable<Position[]> = of([]);
 
-  constructor(private service: BlotterService) { }
+  constructor(private service: BlotterService) {
+  }
 
   ngOnInit(): void {
-    this.settingsSub = this.service.getSettings(this.guid).pipe(
-      tap(s => {
+    this.service.getSettings(this.guid).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(s => {
         if (s.positionsColumns) {
           this.listOfColumns = this.allColumns.filter(c => s.positionsColumns.includes(c.id))
           this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
         }
-      })
-    ).subscribe();
+      }
+    );
+
     this.positions$ = this.service.getPositions(this.guid);
     this.displayPositions$ = this.positions$.pipe(
       mergeMap(positions => this.searchFilter.pipe(
@@ -145,14 +144,15 @@ export class PositionsComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.settingsSub?.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   reset(): void {
-    this.searchFilter.next({ });
+    this.searchFilter.next({});
   }
 
-  filterChange(text: string, option: string ) {
+  filterChange(text: string, option: string) {
     const newFilter = this.searchFilter.getValue();
     if (option) {
       newFilter[option as keyof PositionFilter] = text;
@@ -176,7 +176,7 @@ export class PositionsComponent implements OnInit {
     this.service.selectNewInstrument(symbol, exchange);
   }
 
-  private justifyFilter(position: Position, filter: PositionFilter) : boolean {
+  private justifyFilter(position: Position, filter: PositionFilter): boolean {
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof PositionFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);

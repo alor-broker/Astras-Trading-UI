@@ -30,14 +30,16 @@ export class MockServiceBlotter {
   }
 
   getTrades(portfolio: string, exchange: string): Observable<Trade[]> {
-    return of([])
+    return of([]);
   }
   getPositions(portfolio: string, exchange: string): Observable<Position[]> {
-    return of([])
+    return of([]);
 
   }
   getOrders(portfolio: string, exchange: string): Observable<Order[]> {
-    return of([])
+    return of([]);
   }
-
+  getStopOrders(guid: string) {
+    return of([]);
+  }
 }

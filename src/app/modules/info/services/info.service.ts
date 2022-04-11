@@ -30,7 +30,6 @@ export class InfoService extends BaseService<InfoSettings>{
   private instrumentUrl = environment.apiUrl + '/instruments/v1';
 
   private settings$?: Observable<SettingsWithExchangeInfo>
-  private sub?: Subscription;
 
   constructor(private http: HttpClient, settingsService: DashboardService, private store: Store) {
     super(settingsService)

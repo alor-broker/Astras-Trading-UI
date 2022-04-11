@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
@@ -17,16 +17,18 @@ import { CommandsService } from '../../services/commands.service';
 })
 export class LimitCommandComponent implements OnInit, OnDestroy {
   evaluation = new BehaviorSubject<EvaluationBaseProperties | null>(null);
-  viewData = new BehaviorSubject<CommandParams | null>(null)
-  initialParams: CommandParams | null = null
-  initialParamsSub?: Subscription
-  formChangeSub?: Subscription
+  viewData = new BehaviorSubject<CommandParams | null>(null);
+  initialParams: CommandParams | null = null;
   form!: LimitFormGroup;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private modal: ModalService, private service: CommandsService) { }
+  constructor(private modal: ModalService, private service: CommandsService) {
+  }
 
   ngOnInit() {
-    this.initialParamsSub = this.modal.commandParams$.subscribe(initial => {
+    this.modal.commandParams$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(initial => {
       this.initialParams = initial;
 
       if (this.initialParams?.instrument && this.initialParams.user) {
@@ -40,25 +42,30 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         this.viewData.next(command)
         this.setLimitCommand(command)
       }
-    })
+    });
+
     this.viewData.pipe(
-      filter((d): d is CommandParams => !!d)
+      filter((d): d is CommandParams => !!d),
+      takeUntil(this.destroy$)
     ).subscribe(command => {
-        if (command) {
-          this.form = new FormGroup({
-            quantity: new FormControl(command.quantity, [
-              Validators.required,
-            ]),
-            price: new FormControl(command.price, [
-              Validators.required,
-            ]),
-            instrumentGroup: new FormControl(command?.instrument.instrumentGroup),
-          } as LimitFormControls) as LimitFormGroup;
-        }
-      })
-    this.formChangeSub = this.form.valueChanges.subscribe((form : LimitFormData) => {
+      if (command) {
+        this.form = new FormGroup({
+          quantity: new FormControl(command.quantity, [
+            Validators.required,
+          ]),
+          price: new FormControl(command.price, [
+            Validators.required,
+          ]),
+          instrumentGroup: new FormControl(command?.instrument.instrumentGroup),
+        } as LimitFormControls) as LimitFormGroup;
+      }
+    });
+
+    this.form.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((form: LimitFormData) => {
       this.setLimitCommand(form);
-    })
+    });
   }
 
   setLimitCommand(form: LimitFormData): void {
@@ -76,7 +83,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         },
         user: command.user,
       }
-      const evaluation : EvaluationBaseProperties = {
+      const evaluation: EvaluationBaseProperties = {
         price: price,
         lotQuantity: quantity,
         instrument: {
@@ -93,7 +100,10 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.initialParamsSub?.unsubscribe();
-    this.formChangeSub?.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.complete();
+
+    this.evaluation.complete();
+    this.viewData.complete()
   }
- }
+}

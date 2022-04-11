@@ -1,5 +1,5 @@
 import { Component, Input, Output, OnInit, EventEmitter, OnDestroy } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -12,7 +12,7 @@ import { AnySettings } from '../../../../shared/models/settings/any-settings.mod
   templateUrl: './widget-header.component.html',
   styleUrls: ['./widget-header.component.less']
 })
-export class WidgetHeaderComponent implements OnInit, OnDestroy {
+export class WidgetHeaderComponent implements OnInit {
   @Input()
   guid!: string;
   @Input()
@@ -25,8 +25,6 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
   linkChangedEvent = new EventEmitter<boolean>();
 
   private shouldShowSettings = false;
-  private dashboardSub?: Subscription;
-  private selectedSub?: Subscription;
   settings$?: Observable<AnySettings>;
   private settings?: AnySettings
 
@@ -48,11 +46,6 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
         return s;
       }),
     )
-  }
-
-  ngOnDestroy() {
-    this.dashboardSub?.unsubscribe();
-    this.selectedSub?.unsubscribe();
   }
 
   switchSettings($event: MouseEvent) {
