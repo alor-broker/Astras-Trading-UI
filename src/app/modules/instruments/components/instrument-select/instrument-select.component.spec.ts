@@ -1,6 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Exchanges } from 'src/app/shared/models/enums/exchanges';
-import { SyncState } from 'src/app/shared/ngrx/reducers/sync.reducer';
 import { InstrumentsService } from '../../services/instruments.service';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
@@ -12,24 +10,12 @@ describe('InstrumentSelectComponent', () => {
   const spyInstrs = jasmine.createSpyObj('InstrumentsService', ['getInstruments', 'unsubscribe'])
   const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['add', 'unsubscribe'])
   spyWatcher.add.and.returnValue();
-  const initialState : SyncState = {
-    instrument: {
-      symbol: 'SBER',
-      exchange: Exchanges.MOEX,
-      instrumentGroup: 'TQBR',
-      isin: 'RU0009029540'
-    },
-    portfolio: {
-      portfolio: "D39004",
-      exchange: Exchanges.MOEX
-    }
-  }
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ InstrumentSelectComponent ],
       providers: [
-        provideMockStore({ initialState }),
+        provideMockStore(),
         { provide: InstrumentsService, useValue: spyInstrs },
       ]
     })

@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
-import { selectNewInstrument } from 'src/app/shared/ngrx/actions/sync.actions';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
+import { selectInstrument } from "../../../../shared/ngrx/instruments/instruments.actions";
 
 @Component({
   selector: 'ats-watchlist-table',
@@ -22,7 +22,7 @@ export class WatchlistTableComponent implements OnInit {
   }
 
   makeActive(instrument: Instrument) {
-    this.store.dispatch(selectNewInstrument({ instrument }))
+    this.store.dispatch(selectInstrument({ instrument }))
   }
 
   remove(instr: Instrument) {

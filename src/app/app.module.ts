@@ -11,6 +11,7 @@ import ru from '@angular/common/locales/ru';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
+import { extModules } from "./build-specifics/ext-modules";
 import { GlobalErrorHandlerService } from "./shared/services/handle-error/global-error-handler.service";
 
 registerLocaleData(ru);
@@ -27,6 +28,7 @@ registerLocaleData(ru);
     FormsModule,
     HttpClientModule,
     StoreModule.forRoot({}),
+    ...extModules
   ],
   bootstrap: [AppComponent],
   providers: [

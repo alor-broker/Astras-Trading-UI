@@ -10,8 +10,6 @@ import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
-import { selectNewInstrument } from 'src/app/shared/ngrx/actions/sync.actions';
-import { getSelectedPortfolio } from 'src/app/shared/ngrx/selectors/sync.selectors';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { OrdersNotificationsService } from 'src/app/shared/services/orders-notifications.service';
@@ -20,6 +18,8 @@ import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { formatCurrency } from 'src/app/shared/utils/formatters';
 import { SummaryView } from '../models/summary-view.model';
 import { Summary } from '../models/summary.model';
+import { selectInstrument } from "../../../shared/ngrx/instruments/instruments.actions";
+import { getSelectedPortfolio } from "../../../shared/ngrx/portfolios/portfolios.selectors";
 
 @Injectable({
   providedIn: 'root'
@@ -56,7 +56,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       exchange = Exchanges.MOEX
     }
     const instrument = { symbol, exchange, instrumentGroup: undefined};
-    this.store.dispatch(selectNewInstrument({ instrument }))
+    this.store.dispatch(selectInstrument({ instrument }))
   }
 
   setTabIndex(index: number) {

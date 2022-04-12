@@ -31,13 +31,12 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgChartsModule } from 'ng2-charts';
-import { StoreModule } from '@ngrx/store';
-import { syncReducer } from './ngrx/reducers/sync.reducer';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { HttpErrorHandler } from "./services/handle-error/http-error-handler";
 import { GlobalErrorHandlerService } from "./services/handle-error/global-error-handler.service";
 import { LogErrorHandler } from "./services/handle-error/log-error-handler";
 import { ERROR_HANDLER } from "./services/handle-error/error-handler";
+import { AtsStoreModule } from "./ngrx/ats-store.module";
 
 @NgModule({
   declarations: [
@@ -77,7 +76,7 @@ import { ERROR_HANDLER } from "./services/handle-error/error-handler";
     NzCheckboxModule,
     NzDatePickerModule,
     ScrollingModule,
-    StoreModule.forFeature('sync', syncReducer)
+    AtsStoreModule
   ],
   exports: [
     // Ng zorro

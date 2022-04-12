@@ -12,7 +12,7 @@ import { HistoryResponse } from 'src/app/shared/models/history/history-response.
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { Store } from '@ngrx/store';
-import { getSelectedInstrument } from 'src/app/shared/ngrx/selectors/sync.selectors';
+import { getSelectedInstrument } from "../../../shared/ngrx/instruments/instruments.selectors";
 
 @Injectable({
   providedIn: 'root',
