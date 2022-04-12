@@ -33,7 +33,7 @@ interface Size {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class OrderBookComponent implements OnInit, OnDestroy, OnChanges {
+export class OrderBookComponent implements OnInit, OnDestroy {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -75,14 +75,9 @@ export class OrderBookComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-    console.warn('destroy')
     this.service.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.complete();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    console.warn('Changes')
   }
 
   getBidStyle(value: number) {

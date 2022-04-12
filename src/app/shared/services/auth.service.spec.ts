@@ -7,11 +7,13 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { LoginFormComponent } from 'src/app/modules/login/components/login-form/login-form.component';
 import { SharedModule } from '../shared.module';
 import { AuthService } from './auth.service';
+import { LoggerService } from "./logger.service";
 
 describe('AuthService', () => {
   let service: AuthService;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
+  const loggerSpy = jasmine.createSpyObj('LoggerService', ['error']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -19,7 +21,12 @@ describe('AuthService', () => {
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([{ path: 'login', pathMatch: 'full', component: LoginFormComponent },])
       ],
-      providers: [AuthService, RouterTestingModule, HttpClientTestingModule]
+      providers: [
+        AuthService,
+        RouterTestingModule,
+        HttpClientTestingModule,
+        { provide: LoggerService, useValue: loggerSpy }
+      ]
     });
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);

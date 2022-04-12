@@ -10,6 +10,7 @@ import { addDays } from 'src/app/shared/utils/datetime';
 import { StopFormControls, StopFormGroup } from '../../models/command-forms.model';
 import { StopFormData } from '../../models/stop-form-data.model';
 import { CommandsService } from '../../services/commands.service';
+import { LoggerService } from "../../../../shared/services/logger.service";
 
 @Component({
   selector: 'ats-stop-command',
@@ -22,7 +23,10 @@ export class StopCommandComponent implements OnInit, OnDestroy {
   form!: StopFormGroup;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private modal: ModalService, private service: CommandsService) {
+  constructor(
+    private modal: ModalService,
+    private service: CommandsService,
+    private logger: LoggerService) {
   }
 
   ngOnInit() {
@@ -88,7 +92,9 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       }
       this.service.setStopCommand(newCommand);
     }
-    else console.error('Empty command')
+    else {
+      this.logger.error('Empty command');
+    }
   }
 
   ngOnDestroy(): void {
