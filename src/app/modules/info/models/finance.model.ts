@@ -1,7 +1,9 @@
 export interface Finance {
-  marketCap: number, // 6489123123,
   currency: string, // RUB,
-  ebitda: number, // 164234324,
+  mainIndicators?: {
+    marketCap: number, // 6489123123,
+    ebitda: number, // 164234324,
+  },
   costEstimate?: {
       priceToEarnings: number, // 2.21,
       pricePerShare: number, // 5.34,
