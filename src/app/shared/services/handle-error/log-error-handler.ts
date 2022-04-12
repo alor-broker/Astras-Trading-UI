@@ -9,6 +9,6 @@ export class LogErrorHandler implements ApplicationErrorHandler {
   }
 
   handleError(error: Error | HttpErrorResponse): void {
-    this.logger.error('Generic Application Error', error);
+    this.logger.error('Application Error', error);
   }
 }
