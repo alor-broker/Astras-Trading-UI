@@ -96,7 +96,9 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
       }
       this.service.setLimitCommand(newCommand);
     }
-    else console.error('Empty command')
+    else {
+      throw new Error('Empty command');
+    }
   }
 
   ngOnDestroy(): void {

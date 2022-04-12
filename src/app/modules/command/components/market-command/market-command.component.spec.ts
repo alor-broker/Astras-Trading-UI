@@ -17,7 +17,7 @@ describe('MarketCommandComponent', () => {
   spyModal.commandParams$ = of(null);
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setMarketCommand']);
   const quotesSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
-  quotesSpy.getQuotes.and.returnValue(of(null))
+  quotesSpy.getQuotes.and.returnValue(of(null));
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

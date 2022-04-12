@@ -26,7 +26,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
   constructor(
     private modal: ModalService,
     private service: CommandsService,
-    private quoteService: QuotesService,) {
+    private quoteService: QuotesService) {
   }
 
   ngOnInit(): void {
@@ -113,6 +113,8 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       }
       this.service.setMarketCommand(newCommand);
     }
-    else console.error('Empty command')
+    else {
+      throw new Error('Empty command');
+    }
   }
 }

@@ -96,7 +96,9 @@ export class LimitEditComponent implements OnInit, OnDestroy {
       }
       this.service.setLimitEdit(newCommand);
     }
-    else console.error('Empty command')
+    else {
+      throw new Error('Empty command');
+    }
   }
 
   ngOnDestroy(): void {

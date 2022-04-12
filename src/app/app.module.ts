@@ -1,17 +1,17 @@
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NZ_I18N } from 'ng-zorro-antd/i18n';
-import { ru_RU } from 'ng-zorro-antd/i18n';
+import { NZ_I18N, ru_RU } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import ru from '@angular/common/locales/ru';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
+import { GlobalErrorHandlerService } from "./shared/services/handle-error/global-error-handler.service";
 
 registerLocaleData(ru);
 
@@ -29,6 +29,10 @@ registerLocaleData(ru);
     StoreModule.forRoot({}),
   ],
   bootstrap: [AppComponent],
-  providers: [{ provide: NZ_I18N, useValue: ru_RU }]
+  providers: [
+    { provide: NZ_I18N, useValue: ru_RU },
+    { provide: ErrorHandler, useClass: GlobalErrorHandlerService }
+  ]
 })
-export class AppModule { }
+export class AppModule {
+}

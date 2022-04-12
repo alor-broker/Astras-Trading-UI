@@ -33,7 +33,7 @@ export class InfoService extends BaseService<InfoSettings>{
   private settings$?: Observable<SettingsWithExchangeInfo>
 
   constructor(private http: HttpClient, settingsService: DashboardService, private store: Store) {
-    super(settingsService)
+    super(settingsService);
   }
 
   getSettingsWithExchangeInfo(guid: string) {

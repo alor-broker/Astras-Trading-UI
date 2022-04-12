@@ -27,7 +27,7 @@ import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper'
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LightChartComponent implements OnInit, OnDestroy, OnChanges {
+export class LightChartComponent implements OnInit, OnDestroy {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -46,10 +46,6 @@ export class LightChartComponent implements OnInit, OnDestroy, OnChanges {
   private chart?: LightChart;
 
   constructor(private service: LightChartService) {
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes.shouldShowSettings)
   }
 
   ngOnInit(): void {

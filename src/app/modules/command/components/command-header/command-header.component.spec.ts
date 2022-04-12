@@ -5,13 +5,13 @@ import { SyncState } from 'src/app/shared/ngrx/reducers/sync.reducer';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { provideMockStore } from '@ngrx/store/testing';
 import { CommandHeaderComponent } from './command-header.component';
 
 describe('CommandHeaderComponent', () => {
   let component: CommandHeaderComponent;
   let fixture: ComponentFixture<CommandHeaderComponent>;
-  const initialState : SyncState = {
+  const initialState: SyncState = {
     instrument: {
       symbol: 'SBER',
       exchange: Exchanges.MOEX,
@@ -32,7 +32,7 @@ describe('CommandHeaderComponent', () => {
     historySpy.getDaysOpen.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
-      declarations: [ CommandHeaderComponent ],
+      declarations: [CommandHeaderComponent],
       providers: [
         { provide: QuotesService, useValue: quoteSpy },
         { provide: HistoryService, useValue: historySpy },
@@ -40,7 +40,7 @@ describe('CommandHeaderComponent', () => {
         provideMockStore({ initialState }),
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

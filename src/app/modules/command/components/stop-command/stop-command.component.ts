@@ -88,7 +88,9 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       }
       this.service.setStopCommand(newCommand);
     }
-    else console.error('Empty command')
+    else {
+      throw new Error('Empty command');
+    }
   }
 
   ngOnDestroy(): void {

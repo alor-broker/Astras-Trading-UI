@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Subject, EMPTY, Observable, timer, BehaviorSubject, merge, fromEvent, of, Subscription, interval } from 'rxjs';
-import { catchError, delayWhen, filter, map, retryWhen, switchAll, switchMap, takeWhile, tap } from 'rxjs/operators';
+import { Subject, Observable, BehaviorSubject, Subscription, interval } from 'rxjs';
+import { map, switchMap, takeWhile, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from "rxjs/webSocket";
 import { environment } from 'src/environments/environment';
 import { BaseRequest } from '../models/ws/base-request.model';
@@ -9,8 +9,7 @@ import { ConfirmResponse } from '../models/ws/confirm-response.model';
 import { WsOptions } from '../models/ws/ws-options.model';
 import { isOnline$ } from '../utils/network';
 import { AuthService } from './auth.service';
-
-const RECONNECT_INTERVAL = 2000;
+import { LoggerService } from "./logger.service";
 
 type WsMessage = BaseResponse<unknown> | BaseRequest | ConfirmResponse;
 
@@ -21,7 +20,7 @@ export class WebsocketService {
   config: WebSocketSubjectConfig<WsMessage>;
   token = new BehaviorSubject<string | null>(null);
 
-  constructor(private account: AuthService) {
+  constructor(private account: AuthService, private logger: LoggerService) {
     this.options = {
       reconnect: true,
       reconnectTimeout: 2000,
@@ -46,13 +45,13 @@ export class WebsocketService {
       openObserver: {
         next: () => {
           this.isClosing.next(false);
-          console.log('[WS]: connection open');
+          this.logger.info('[WS]: connection open');
         }
       },
       closeObserver: {
         next: (v) => {
           this.isClosing.next(true);
-          console.log('[WS]: connection closed');
+          this.logger.info('[WS]: connection closed');
           this.socket$?.complete();
           this.socket$ = null;
           this.reconnect();
@@ -89,15 +88,17 @@ export class WebsocketService {
         error: (error: Event) => {
           if (!this.socket$) {
               // run reconnect if errors
-              console.log('connect error')
-              console.log(error);
+            this.logger.warn(
+              '[WS]: connect error',
+              JSON.stringify(error)
+            );
           }
         }
       });
 
       for (const [guid, msg] of this.subscriptions) {
         this.subscribe(msg);
-        console.log(`[WS]: resubscribe to ${msg.opcode}`)
+        this.logger.info(`[WS]: resubscribe to ${msg.opcode}`);
       }
     }
   }
@@ -136,7 +137,7 @@ export class WebsocketService {
     this.reconnection$ = interval(this.options.reconnectTimeout)
         .pipe(
           takeWhile((v, index) => index < this.options.reconnectAttempts && !this.socket$),
-          tap(attempt => console.log('[WS] Reconnection attempt #' + attempt))
+          tap(attempt =>this.logger.info('[WS] Reconnection attempt #' + attempt))
         );
 
     this.reconnection$.subscribe({

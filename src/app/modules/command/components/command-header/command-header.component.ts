@@ -56,8 +56,7 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
         if (p) {
           this.position = { abs: Math.abs(p.qtyTFutureBatch), quantity: p.qtyTFutureBatch }
         }
-      },
-      error: (e) => console.log(e)
+      }
     })
 
     this.priceData$ = this.history.getDaysOpen({
