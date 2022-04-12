@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { filter, map, Observable, of, Subscription, switchMap } from 'rxjs';
+import { filter, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
@@ -21,43 +21,43 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
   @Input()
   exchange = ''
   @Input()
-  instrumentGroup: string = ''
-
-  priceData$: Observable<PriceData | null> = of(null)
-
+  instrumentGroup : string = ''
+  priceData$ : Observable<PriceData | null> = of(null)
   colors = {
     buyColor: buyColor,
     sellColor: sellColor
   }
-
   position = {
     abs: 0, quantity: 0
   }
-
-  private positionSub?: Subscription
+  private destroy$ : Subject<boolean> = new Subject<boolean>();
 
   constructor(
-      private quoteService: QuotesService,
-      private history: HistoryService,
-      private positionService: PositionsService,
-      private store: Store) {
-  }
-  ngOnDestroy(): void {
-    this.positionSub?.unsubscribe();
+    private quoteService : QuotesService,
+    private history : HistoryService,
+    private positionService : PositionsService,
+    private store : Store) {
   }
 
-  ngOnInit(): void {
-    this.positionSub = this.store.select(getSelectedPortfolio).pipe(
-      filter((p): p is PortfolioKey => !!p),
+  ngOnDestroy() : void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
+
+  ngOnInit() : void {
+    this.store.select(getSelectedPortfolio).pipe(
+      filter((p) : p is PortfolioKey => !!p),
       switchMap(p => {
-         return this.positionService.getByPortfolio(p.portfolio, p.exchange, this.symbol)
-      })
+        return this.positionService.getByPortfolio(p.portfolio, p.exchange, this.symbol)
+      }),
+      takeUntil(this.destroy$)
     ).subscribe({
       next: (p) => {
         if (p) {
           this.position = { abs: Math.abs(p.qtyTFutureBatch), quantity: p.qtyTFutureBatch }
         }
-      }, error: (e) => console.log(e)
+      },
+      error: (e) => console.log(e)
     })
 
     this.priceData$ = this.history.getDaysOpen({

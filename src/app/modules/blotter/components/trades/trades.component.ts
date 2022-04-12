@@ -1,9 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
-import { catchError, filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
-import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
+import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
-import { Widget } from 'src/app/shared/models/widget.model';
 import { Column } from '../../models/column.model';
 import { TradeFilter } from '../../models/trade-filter.model';
 import { BlotterService } from '../../services/blotter.service';
@@ -21,14 +19,8 @@ export class TradesComponent implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   tableInnerWidth = '1000px'
-
-  private settingsSub? : Subscription;
-
-  private trades: Trade[] = [];
-  private trades$: Observable<Trade[]> = of([]);
   displayTrades$: Observable<Trade[]> = of([]);
-  searchFilter = new BehaviorSubject<TradeFilter>({ });
-
+  searchFilter = new BehaviorSubject<TradeFilter>({});
   allColumns: Column<Trade, TradeFilter>[] = [
     {
       id: 'id',
@@ -128,20 +120,24 @@ export class TradesComponent implements OnInit {
       hasFilter: false,
     },
   ]
-
   listOfColumns: Column<Trade, TradeFilter>[] = [];
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private trades: Trade[] = [];
+  private trades$: Observable<Trade[]> = of([]);
 
-  constructor(private service: BlotterService) { }
+  constructor(private service: BlotterService) {
+  }
 
   ngOnInit(): void {
-    this.settingsSub = this.service.getSettings(this.guid).pipe(
-      tap(s => {
-        if (s.ordersColumns) {
-          this.listOfColumns = this.allColumns.filter(c => s.tradesColumns.includes(c.id));
-          this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
-        }
-      })
-    ).subscribe();
+    this.service.getSettings(this.guid).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(s => {
+      if (s.ordersColumns) {
+        this.listOfColumns = this.allColumns.filter(c => s.tradesColumns.includes(c.id));
+        this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
+      }
+    });
+
     this.trades$ = this.service.getTrades(this.guid).pipe(
       tap(trades => this.trades = trades)
     );
@@ -153,14 +149,15 @@ export class TradesComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.settingsSub?.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   reset(): void {
-    this.searchFilter.next({ });
+    this.searchFilter.next({});
   }
 
-  filterChange(text: string, option: string ) {
+  filterChange(text: string, option: string) {
     const newFilter = this.searchFilter.getValue();
     if (option) {
       newFilter[option as keyof TradeFilter] = text;
@@ -180,7 +177,7 @@ export class TradesComponent implements OnInit {
     return new Date(date).toLocaleTimeString();
   }
 
-  private justifyFilter(trade: Trade, filter: TradeFilter) : boolean {
+  private justifyFilter(trade: Trade, filter: TradeFilter): boolean {
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof TradeFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);

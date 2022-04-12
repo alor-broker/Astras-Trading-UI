@@ -6,6 +6,7 @@ import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { StopOrdersComponent } from './stop-orders.component';
+import { StoreModule } from "@ngrx/store";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -15,7 +16,10 @@ describe('StopOrdersComponent', () => {
     const modalSpy = jasmine.createSpyObj('ModalService', ['closeCommandModal']);
     const cancelSpy = jasmine.createSpyObj('OrderCancellerService', ['cancelOrder']);
     await TestBed.configureTestingModule({
-      imports: [SharedModule],
+      imports: [
+        SharedModule,
+        StoreModule.forRoot({})
+      ],
       providers: [
         { provide: BlotterService, useClass: MockServiceBlotter },
         { provide: ModalService, useValue: modalSpy },

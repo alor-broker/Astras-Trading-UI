@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SharedModule } from 'src/app/shared/shared.module';
 
 import { ProfilePageComponent } from './profile-page.component';
+import { StoreModule } from "@ngrx/store";
 
 describe('ProfilePageComponent', () => {
   let component: ProfilePageComponent;
@@ -9,10 +10,13 @@ describe('ProfilePageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ProfilePageComponent ],
-      imports: [ SharedModule ]
+      declarations: [ProfilePageComponent],
+      imports: [
+        SharedModule,
+        StoreModule.forRoot({})
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

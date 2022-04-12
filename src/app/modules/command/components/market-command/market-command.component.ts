@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, filter, map, of, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, map, of, Subject, takeUntil } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -15,23 +15,24 @@ import { CommandsService } from '../../services/commands.service';
   templateUrl: './market-command.component.html',
   styleUrls: ['./market-command.component.less']
 })
-export class MarketCommandComponent implements OnInit {
+export class MarketCommandComponent implements OnInit, OnDestroy {
   evaluation = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   viewData = new BehaviorSubject<CommandParams | null>(null)
   initialParams: CommandParams | null = null
-  initialParamsSub?: Subscription
-  formChangeSub?: Subscription
   form!: MarketFormGroup;
-
   price$ = of(0)
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private modal: ModalService,
     private service: CommandsService,
-    private quoteService: QuotesService,) { }
+    private quoteService: QuotesService,) {
+  }
 
   ngOnInit(): void {
-    this.initialParamsSub = this.modal.commandParams$.subscribe(initial => {
+    this.modal.commandParams$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(initial => {
       this.initialParams = initial;
 
       if (this.initialParams?.instrument && this.initialParams.user) {
@@ -46,30 +47,43 @@ export class MarketCommandComponent implements OnInit {
           command.instrument.symbol,
           command.instrument.exchange,
           command.instrument.instrumentGroup).pipe(
-            map(q => q.last_price)
+          map(q => q.last_price)
         )
         this.viewData.next(command)
         this.setMarketCommand(command)
       }
-    })
+    });
+
     this.viewData.pipe(
-      filter((d): d is CommandParams => !!d)
+      filter((d): d is CommandParams => !!d),
+      takeUntil(this.destroy$)
     ).subscribe(command => {
-        if (command) {
-          this.form = new FormGroup({
-            quantity: new FormControl(command.quantity, [
-              Validators.required,
-            ]),
-            price: new FormControl(command.price, [
-              Validators.required,
-            ]),
-            instrumentGroup: new FormControl(command?.instrument.instrumentGroup),
-          } as MarketFormControls) as MarketFormGroup;
-        }
-      })
-    this.formChangeSub = this.form.valueChanges.subscribe((form : MarketFormData) => {
+      if (command) {
+        this.form = new FormGroup({
+          quantity: new FormControl(command.quantity, [
+            Validators.required,
+          ]),
+          price: new FormControl(command.price, [
+            Validators.required,
+          ]),
+          instrumentGroup: new FormControl(command?.instrument.instrumentGroup),
+        } as MarketFormControls) as MarketFormGroup;
+      }
+    })
+
+    this.form.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((form: MarketFormData) => {
       this.setMarketCommand(form);
     })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+
+    this.evaluation.complete();
+    this.viewData.complete();
   }
 
   setMarketCommand(form: MarketFormData): void {
@@ -86,7 +100,7 @@ export class MarketCommandComponent implements OnInit {
         },
         user: command.user,
       }
-      const evaluation : EvaluationBaseProperties = {
+      const evaluation: EvaluationBaseProperties = {
         price: price,
         lotQuantity: quantity,
         instrument: {

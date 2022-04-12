@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { filter, Observable, of, Subscription, tap } from 'rxjs';
+import { filter, Observable, of, tap } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
 
 @Component({
@@ -10,10 +10,10 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 export class HelpWidgetComponent implements OnInit {
   isVisible$: Observable<boolean> = of(false);
   helpParams$?: Observable<string>;
-  private sub: Subscription = new Subscription();
   private params?: string;
 
-  constructor(public modal: ModalService) { }
+  constructor(public modal: ModalService) {
+  }
 
   ngOnInit() {
     this.helpParams$ = this.modal.helpParams$.pipe(
