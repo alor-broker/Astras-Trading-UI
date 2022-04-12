@@ -1,4 +1,4 @@
-import { ApplicationErrorHandler, ErrorHandlingResult } from "./error-handler";
+import { ApplicationErrorHandler } from "./error-handler";
 import { HttpErrorResponse } from "@angular/common/http";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { Injectable } from "@angular/core";
@@ -22,11 +22,9 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
   constructor(private readonly logger: LoggerService, private readonly notification: NzNotificationService) {
   }
 
-  handleError(error: Error | HttpErrorResponse): ErrorHandlingResult {
+  handleError(error: Error | HttpErrorResponse) {
     if (!(error instanceof HttpErrorResponse)) {
-      return {
-        handled: false
-      };
+      return;
     }
 
     if (this.internalErrorStatusCodes.includes(error.status)) {
@@ -55,10 +53,6 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
       this.notification.error(errorTitle, errorMessage);
       this.logger.error('[API] request processing error', error);
     }
-
-    return {
-      handled: true
-    };
   }
 
 }
