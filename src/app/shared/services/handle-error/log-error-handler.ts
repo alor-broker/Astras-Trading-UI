@@ -1,4 +1,4 @@
-import { ApplicationErrorHandler } from "./error-handler";
+import { ApplicationErrorHandler, ErrorHandlingResult } from "./error-handler";
 import { HttpErrorResponse } from "@angular/common/http";
 import { LoggerService } from "../logger.service";
 import { Injectable } from "@angular/core";
@@ -8,9 +8,11 @@ export class LogErrorHandler implements ApplicationErrorHandler {
   constructor(private readonly logger: LoggerService) {
   }
 
-  handleError(error: Error | HttpErrorResponse): { handled: boolean } | null {
-    this.logger.error('Application Error', error);
+  handleError(error: Error | HttpErrorResponse): ErrorHandlingResult {
+    this.logger.error('[General Error]', error);
 
-    return null;
+    return {
+      handled: true
+    };
   }
 }

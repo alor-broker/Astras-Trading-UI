@@ -22,9 +22,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
   form!: LimitFormGroup;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(
-    private modal: ModalService,
-    private service: CommandsService) {
+  constructor(private modal: ModalService, private service: CommandsService) {
   }
 
   ngOnInit() {

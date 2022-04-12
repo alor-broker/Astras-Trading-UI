@@ -38,9 +38,7 @@ export class AuthService {
   );
   accessToken$ = this.getAccessToken();
 
-  constructor(
-    private http: HttpClient
-  ) {
+  constructor(private http: HttpClient) {
     const user: User = JSON.parse(localStorage.getItem('user')!);
     this.setCurrentUser(user);
   }

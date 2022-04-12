@@ -1,4 +1,4 @@
-import { ApplicationErrorHandler } from "./error-handler";
+import { ApplicationErrorHandler, ErrorHandlingResult } from "./error-handler";
 import { HttpErrorResponse } from "@angular/common/http";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { Injectable } from "@angular/core";
@@ -16,18 +16,17 @@ const isCommandError = (e: any): e is CommandError => {
 @Injectable()
 export class HttpErrorHandler implements ApplicationErrorHandler {
   private readonly internalErrorStatusCodes: number[] = [
-    404,
-    500
+    404
   ];
 
-  constructor(
-    private readonly logger: LoggerService,
-    private readonly notification: NzNotificationService) {
+  constructor(private readonly logger: LoggerService, private readonly notification: NzNotificationService) {
   }
 
-  handleError(error: Error | HttpErrorResponse): { handled: boolean } | null {
+  handleError(error: Error | HttpErrorResponse): ErrorHandlingResult {
     if (!(error instanceof HttpErrorResponse)) {
-      return null;
+      return {
+        handled: false
+      };
     }
 
     if (this.internalErrorStatusCodes.includes(error.status)) {

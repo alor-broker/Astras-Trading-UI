@@ -16,7 +16,7 @@ export class GlobalErrorHandlerService extends ErrorHandler {
 
   handleError(error: Error | HttpErrorResponse): void {
     for (const handler of (this.handlers ?? [])) {
-      if(handler.handleError(error)?.handled) {
+      if(handler.handleError(error).handled) {
         return;
       }
     }

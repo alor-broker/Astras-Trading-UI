@@ -22,9 +22,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
   form!: StopFormGroup;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(
-    private modal: ModalService,
-    private service: CommandsService) {
+  constructor(private modal: ModalService, private service: CommandsService) {
   }
 
   ngOnInit() {
