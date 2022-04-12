@@ -88,7 +88,7 @@ export class WebsocketService {
         error: (error: Event) => {
           if (!this.socket$) {
               // run reconnect if errors
-            this.logger.error(
+            this.logger.warn(
               '[WS]: connect error',
               JSON.stringify(error)
             );

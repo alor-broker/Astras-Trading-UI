@@ -6,7 +6,6 @@ import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.mo
 import { CommandsService } from '../../services/commands.service';
 
 import { LimitEditComponent } from './limit-edit.component';
-import { LoggerService } from "../../../../shared/services/logger.service";
 
 describe('LimitEditComponent', () => {
   let component: LimitEditComponent;
@@ -16,15 +15,13 @@ describe('LimitEditComponent', () => {
   spyModal.shouldShowCommandModal$ = of(false);
   spyModal.editParams$ = of(null);
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand']);
-  const loggerSpy = jasmine.createSpyObj('LoggerService', ['error']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ LimitEditComponent ],
       providers: [
         { provide: ModalService, useValue: spyModal },
-        { provide: CommandsService, useValue: spyCommands },
-        { provide: LoggerService, useValue: loggerSpy }
+        { provide: CommandsService, useValue: spyCommands }
       ]
     })
     .compileComponents();

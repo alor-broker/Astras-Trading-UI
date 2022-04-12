@@ -7,7 +7,6 @@ import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.
 import { CommandsService } from '../../services/commands.service';
 
 import { MarketCommandComponent } from './market-command.component';
-import { LoggerService } from "../../../../shared/services/logger.service";
 
 describe('MarketCommandComponent', () => {
   let component: MarketCommandComponent;
@@ -19,7 +18,6 @@ describe('MarketCommandComponent', () => {
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setMarketCommand']);
   const quotesSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
   quotesSpy.getQuotes.and.returnValue(of(null));
-  const loggerSpy = jasmine.createSpyObj('LoggerService', ['error']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -27,8 +25,7 @@ describe('MarketCommandComponent', () => {
       providers: [
         { provide: ModalService, useValue: spyModal },
         { provide: CommandsService, useValue: spyCommands },
-        { provide: QuotesService, useValue: quotesSpy },
-        { provide: LoggerService, useValue: loggerSpy }
+        { provide: QuotesService, useValue: quotesSpy }
       ]
     })
     .compileComponents();

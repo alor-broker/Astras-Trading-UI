@@ -7,7 +7,6 @@ import { StopFormControls, StopFormGroup } from '../../models/command-forms.mode
 import { CommandsService } from '../../services/commands.service';
 
 import { StopCommandComponent } from './stop-command.component';
-import { LoggerService } from "../../../../shared/services/logger.service";
 
 describe('StopCommandComponent', () => {
   let component: StopCommandComponent;
@@ -17,15 +16,13 @@ describe('StopCommandComponent', () => {
   spyModal.shouldShowCommandModal$ = of(false);
   spyModal.commandParams$ = of(null);
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand']);
-  const loggerSpy = jasmine.createSpyObj('LoggerService', ['error']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ StopCommandComponent ],
       providers: [
         { provide: ModalService, useValue: spyModal },
-        { provide: CommandsService, useValue: spyCommands },
-        { provide: LoggerService, useValue: loggerSpy }
+        { provide: CommandsService, useValue: spyCommands }
       ]
     })
     .compileComponents();
