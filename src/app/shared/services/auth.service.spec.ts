@@ -5,15 +5,12 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LoginFormComponent } from 'src/app/modules/login/components/login-form/login-form.component';
-import { SharedModule } from '../shared.module';
 import { AuthService } from './auth.service';
-import { LoggerService } from "./logger.service";
 
 describe('AuthService', () => {
   let service: AuthService;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  const loggerSpy = jasmine.createSpyObj('LoggerService', ['error']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -25,7 +22,6 @@ describe('AuthService', () => {
         AuthService,
         RouterTestingModule,
         HttpClientTestingModule,
-        { provide: LoggerService, useValue: loggerSpy }
       ]
     });
     httpClient = TestBed.inject(HttpClient);

@@ -1,17 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, interval, Observable, of, timer } from 'rxjs';
+import { BehaviorSubject, Observable, of, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
-import { catchError, debounceTime, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { Login } from '../models/user/login.model';
 import { RefreshToken } from '../models/user/refresh-token.model';
-import { Router } from '@angular/router';
 import { Credentials } from '../models/user/credentials.model';
 import { RefreshTokenResponse } from '../models/user/refresh-token-response.model';
 import { JwtBody } from '../models/user/jwt.model';
 import { BaseUser } from '../models/user/base-user.model';
-import { LoggerService } from "./logger.service";
 
 @Injectable({
   providedIn: 'root',
@@ -41,9 +39,7 @@ export class AuthService {
   accessToken$ = this.getAccessToken();
 
   constructor(
-    private http: HttpClient,
-    private router: Router,
-    private logger: LoggerService
+    private http: HttpClient
   ) {
     const user: User = JSON.parse(localStorage.getItem('user')!);
     this.setCurrentUser(user);
@@ -119,6 +115,7 @@ export class AuthService {
             this.setUser(user);
             return user.jwt;
           }
+
           throw Error('Can\'t refresh token');
         })
       );
@@ -137,10 +134,6 @@ export class AuthService {
           return this.refresh().pipe(
             map(t => t),
             catchError(e => {
-              this.logger.error(
-                'Token refresh error',
-                e?.toString()
-              )
               this.redirectToSso();
               throw e;
             })

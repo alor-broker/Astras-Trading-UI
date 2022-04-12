@@ -9,7 +9,6 @@ import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.mo
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandsService } from '../../services/commands.service';
-import { LoggerService } from "../../../../shared/services/logger.service";
 
 @Component({
   selector: 'ats-limit-command',
@@ -25,8 +24,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
   constructor(
     private modal: ModalService,
-    private service: CommandsService,
-    private logger: LoggerService) {
+    private service: CommandsService) {
   }
 
   ngOnInit() {
@@ -101,7 +99,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
       this.service.setLimitCommand(newCommand);
     }
     else {
-      this.logger.error('Empty command');
+      throw new Error('Empty command');
     }
   }
 

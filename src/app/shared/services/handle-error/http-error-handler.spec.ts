@@ -1,23 +1,22 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { HandleErrorService } from './handle-error.service';
+import { HttpErrorHandler } from "./http-error-handler";
 
-describe('HandleErrorService: Register', () => {
-  let service: HandleErrorService;
+describe('HttpErrorHandler: Register', () => {
+  let service: HttpErrorHandler;
 
   const notificationSpy = jasmine.createSpyObj('NzNotificationService', ['success', 'error', 'blank'])
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
       providers: [
         { provide: NzNotificationService, useValue: notificationSpy },
+        HttpErrorHandler
       ],
     });
-    service = TestBed.inject(HandleErrorService);
+    service = TestBed.inject(HttpErrorHandler);
   });
 
   it('should be created', () => {

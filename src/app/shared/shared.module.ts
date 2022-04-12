@@ -1,11 +1,8 @@
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthInterceptor } from '../shared/interceptors/auth.interceptor';
-import { HandleErrorService } from '../shared/services/handle-error.service';
-import { HandleErrorsInterceptor } from '../shared/interceptors/handle-errors.interceptor';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { GridsterModule } from 'angular-gridster2';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -36,6 +33,10 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgChartsModule } from 'ng2-charts';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { AtsStoreModule } from "./ngrx/ats-store.module";
+import { HttpErrorHandler } from "./services/handle-error/http-error-handler";
+import { GlobalErrorHandlerService } from "./services/handle-error/global-error-handler.service";
+import { LogErrorHandler } from "./services/handle-error/log-error-handler";
+import { ERROR_HANDLER } from "./services/handle-error/error-handler";
 
 @NgModule({
   declarations: [
@@ -115,17 +116,14 @@ import { AtsStoreModule } from "./ngrx/ats-store.module";
     PriceTickComponent
   ],
   providers: [
-    HandleErrorService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HandleErrorsInterceptor,
-      multi: true
-    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    { provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true },
+    { provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true }
   ],
 })
-export class SharedModule { }
+export class SharedModule {
+}

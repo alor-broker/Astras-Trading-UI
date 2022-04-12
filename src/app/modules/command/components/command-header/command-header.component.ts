@@ -9,7 +9,6 @@ import { PositionsService } from 'src/app/shared/services/positions.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Store } from '@ngrx/store';
 import { getSelectedPortfolio } from "../../../../shared/ngrx/portfolios/portfolios.selectors";
-import { LoggerService } from "../../../../shared/services/logger.service";
 
 @Component({
   selector: 'ats-command-header[symbol][exchange]',
@@ -37,8 +36,7 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
     private quoteService : QuotesService,
     private history : HistoryService,
     private positionService : PositionsService,
-    private store : Store,
-    private logger: LoggerService) {
+    private store : Store) {
   }
 
   ngOnDestroy() : void {
@@ -58,8 +56,7 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
         if (p) {
           this.position = { abs: Math.abs(p.qtyTFutureBatch), quantity: p.qtyTFutureBatch }
         }
-      },
-      error: (e) => this.logger.error(e?.toString())
+      }
     })
 
     this.priceData$ = this.history.getDaysOpen({

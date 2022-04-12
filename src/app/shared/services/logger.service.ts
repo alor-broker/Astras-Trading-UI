@@ -12,7 +12,11 @@ export class LoggerService {
     console.trace(message);
   }
 
-  public error(...details: string[]): void {
-    console.error(details);
+  public warn(...details: string[]): void {
+    console.warn(details);
+  }
+
+  public error(message: string, error?: Error): void {
+    console.error(message, error);
   }
 }
