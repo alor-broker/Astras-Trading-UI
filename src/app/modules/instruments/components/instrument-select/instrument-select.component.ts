@@ -9,8 +9,8 @@ import { InstrumentSelect } from '../../models/instrument-select.model';
 import { SearchFilter } from '../../models/search-filter.model';
 import { InstrumentsService } from '../../services/instruments.service';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
-import { selectInstrument } from "../../../../shared/ngrx/instruments/instruments.actions";
-import { getSelectedInstrument } from "../../../../shared/ngrx/instruments/instruments.selectors";
+import { selectNewInstrument } from '../../../../store/instruments/instruments.actions';
+import { getSelectedInstrument } from '../../../../store/instruments/instruments.selectors';
 
 @Component({
   selector: 'ats-instrument-select[shouldShowSettings][guid]',
@@ -72,7 +72,7 @@ export class InstrumentSelectComponent implements OnInit {
 
   onSelect(event: NzOptionSelectionChange, val: InstrumentSelect) {
     if (event.isUserInput) {
-      this.store.dispatch(selectInstrument({instrument: val}));
+      this.store.dispatch(selectNewInstrument({instrument: val}));
     }
   }
 

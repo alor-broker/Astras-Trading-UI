@@ -19,8 +19,8 @@ import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.ser
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { select, Store } from '@ngrx/store';
-import { getSelectedInstrument } from "../../../shared/ngrx/instruments/instruments.selectors";
-import { getSelectedPortfolio } from "../../../shared/ngrx/portfolios/portfolios.selectors";
+import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
+import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
 
 @Injectable({
   providedIn: 'root',

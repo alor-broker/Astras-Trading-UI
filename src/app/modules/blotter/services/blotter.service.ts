@@ -18,8 +18,8 @@ import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { formatCurrency } from 'src/app/shared/utils/formatters';
 import { SummaryView } from '../models/summary-view.model';
 import { Summary } from '../models/summary.model';
-import { selectInstrument } from "../../../shared/ngrx/instruments/instruments.actions";
-import { getSelectedPortfolio } from "../../../shared/ngrx/portfolios/portfolios.selectors";
+import { selectNewInstrument } from '../../../store/instruments/instruments.actions';
+import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
 
 @Injectable({
   providedIn: 'root'
@@ -56,7 +56,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       exchange = Exchanges.MOEX
     }
     const instrument = { symbol, exchange, instrumentGroup: undefined};
-    this.store.dispatch(selectInstrument({ instrument }))
+    this.store.dispatch(selectNewInstrument({ instrument }))
   }
 
   setTabIndex(index: number) {

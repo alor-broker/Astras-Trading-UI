@@ -14,8 +14,8 @@ import { WidgetNames } from '../models/enums/widget-names';
 import { CurrencyInstrument } from '../models/enums/currencies.model';
 import { InfoSettings } from '../models/settings/info-settings.model';
 import { Store } from '@ngrx/store';
-import { getSelectedInstrument } from '../ngrx/instruments/instruments.selectors';
-import { getSelectedPortfolio } from '../ngrx/portfolios/portfolios.selectors';
+import { getSelectedInstrument } from '../../store/instruments/instruments.selectors';
+import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
 
 @Injectable({
   providedIn: 'root',

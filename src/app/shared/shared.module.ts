@@ -1,4 +1,4 @@
-import { ErrorHandler, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
@@ -32,11 +32,10 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgChartsModule } from 'ng2-charts';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
-import { AtsStoreModule } from "./ngrx/ats-store.module";
-import { HttpErrorHandler } from "./services/handle-error/http-error-handler";
-import { GlobalErrorHandlerService } from "./services/handle-error/global-error-handler.service";
-import { LogErrorHandler } from "./services/handle-error/log-error-handler";
-import { ERROR_HANDLER } from "./services/handle-error/error-handler";
+import { HttpErrorHandler } from './services/handle-error/http-error-handler';
+import { LogErrorHandler } from './services/handle-error/log-error-handler';
+import { ERROR_HANDLER } from './services/handle-error/error-handler';
+import { AtsStoreModule } from '../store/ats-store.module';
 
 @NgModule({
   declarations: [
