@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 import { EvaluationBaseProperties } from '../models/evaluation-base-properties.model';
 import { EvaluationRequest } from '../models/evaluation-request.model';
 import { Evaluation } from '../models/evaluation.model';
-import { getSelectedPortfolio } from "../../../shared/ngrx/portfolios/portfolios.selectors";
+import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
 
 @Injectable({
   providedIn: 'root'

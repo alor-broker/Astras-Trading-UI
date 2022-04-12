@@ -16,7 +16,7 @@ import { Dividend } from '../models/dividend.model';
 import { ExchangeInfo } from '../models/exchange-info.model';
 import { Finance } from '../models/finance.model';
 import { Issue } from '../models/issue.model';
-import { getSelectedInstrument } from "../../../shared/ngrx/instruments/instruments.selectors";
+import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,
