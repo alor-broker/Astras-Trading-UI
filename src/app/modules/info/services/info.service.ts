@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { combineLatest, distinct, distinctUntilChanged, map, Observable, Subscription, switchMap, tap } from 'rxjs';
+import { combineLatest, distinct, distinctUntilChanged, map, Observable, Subscription, switchMap } from 'rxjs';
+import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
@@ -33,7 +34,6 @@ export class InfoService extends BaseService<InfoSettings>{
 
   constructor(private http: HttpClient, settingsService: DashboardService, private store: Store) {
     super(settingsService)
-    console.log('Info service created')
   }
 
   getSettingsWithExchangeInfo(guid: string) {
@@ -91,16 +91,7 @@ export class InfoService extends BaseService<InfoSettings>{
   getIssue() : Observable<Issue> {
     return this.getInstrumentEntity<Issue>('bond/issue').pipe(
       map(i => ({
-        ...i,
-        facevalue: 1000,
-        currentFaceValue: 750,
-        issueVol: 1000000,
-        issueVal: 1000000000,
-        issueDate: new Date(),
-        maturityDate: new Date(),
-        marketVol: 1000000,
-        marketVal: 750000000,
-        issuer: "МСБ-Лизинг",
+        ...i
       }))
     );
   }
@@ -115,7 +106,11 @@ export class InfoService extends BaseService<InfoSettings>{
     if (this.settings$) {
       return this.settings$.pipe(
         distinct(),
-        switchMap(s => this.http.get<T>(`${this.instrumentUrl}/${s.info.isin}/${path}`))
+        switchMap(s => this.http.get<T>(
+          this.instrumentUrl +
+          (s.info.exchange == Exchanges.SPBX ? "/international/" : "/") +
+          (s.info.exchange == Exchanges.SPBX ? `${s.info.symbol}/` : `${s.info.isin}/`) +
+          path))
       );
     }
     throw Error('Was not initialised');
