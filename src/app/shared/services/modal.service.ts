@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { CommandParams } from '../models/commands/command-params.model';
 import { EditParams } from '../models/commands/edit-params.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
-import { getSelectedPortfolio } from '../ngrx/selectors/sync.selectors';
+import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
 
 @Injectable({
   providedIn: 'root'

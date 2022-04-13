@@ -3,11 +3,11 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { filter, Observable, switchMap } from 'rxjs';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
-import { getSelectedPortfolio } from 'src/app/shared/ngrx/selectors/sync.selectors';
 import { environment } from 'src/environments/environment';
 import { EvaluationBaseProperties } from '../models/evaluation-base-properties.model';
 import { EvaluationRequest } from '../models/evaluation-request.model';
 import { Evaluation } from '../models/evaluation.model';
+import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
 
 @Injectable({
   providedIn: 'root'

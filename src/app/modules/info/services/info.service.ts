@@ -1,13 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { combineLatest, distinct, distinctUntilChanged, map, Observable, Subscription, switchMap } from 'rxjs';
+import { combineLatest, distinct, distinctUntilChanged, map, Observable, switchMap } from 'rxjs';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
 import { InfoSettings } from 'src/app/shared/models/settings/info-settings.model';
-import { getSelectedInstrument } from 'src/app/shared/ngrx/selectors/sync.selectors';
 import { BaseService } from 'src/app/shared/services/base.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { environment } from 'src/environments/environment';
@@ -17,6 +16,7 @@ import { Dividend } from '../models/dividend.model';
 import { ExchangeInfo } from '../models/exchange-info.model';
 import { Finance } from '../models/finance.model';
 import { Issue } from '../models/issue.model';
+import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,

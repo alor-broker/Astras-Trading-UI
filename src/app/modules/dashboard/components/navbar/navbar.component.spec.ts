@@ -10,8 +10,6 @@ import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { of } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { SyncState } from 'src/app/shared/ngrx/reducers/sync.reducer';
-import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { provideMockStore } from '@ngrx/store/testing';
 import { StoreModule } from "@ngrx/store";
 
@@ -23,19 +21,6 @@ describe('NavbarComponent', () => {
   const spyDashboard = jasmine.createSpy('DashboardService');
   const spyAuth = jasmine.createSpyObj('AuthService', ['logout'])
   const spyModal= jasmine.createSpyObj('ModalService', ['openTerminalSettingsModal'])
-
-  const initialState : SyncState = {
-    instrument: {
-      symbol: 'SBER',
-      exchange: Exchanges.MOEX,
-      instrumentGroup: 'TQBR',
-      isin: 'RU0009029540'
-    },
-    portfolio: {
-      portfolio: "D39004",
-      exchange: Exchanges.MOEX
-    }
-  }
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -51,7 +36,7 @@ describe('NavbarComponent', () => {
         { provide: DashboardService, useValue: spyDashboard },
         { provide: AuthService, useValue: spyAuth },
         { provide: ModalService, useValue: spyModal },
-        provideMockStore({ initialState })
+        provideMockStore()
       ]
     }).compileComponents();
   }));

@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
-import { selectNewInstrument } from 'src/app/shared/ngrx/actions/sync.actions';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
+import { selectNewInstrument } from '../../../../store/instruments/instruments.actions';
 
 @Component({
   selector: 'ats-watchlist-table',

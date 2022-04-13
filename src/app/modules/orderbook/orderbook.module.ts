@@ -7,9 +7,6 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { OrderbookSettingsComponent } from './components/orderbook-settings/orderbook-settings.component';
 import { OrderbookWidgetComponent } from './widgets/orderbook-widget/orderbook-widget.component';
 import { OrderbookChartComponent } from './components/orderbook-chart/orderbook-chart.component';
-import { StoreModule } from '@ngrx/store';
-import { State } from 'src/app/shared/ngrx/state';
-import { syncReducer } from 'src/app/shared/ngrx/reducers/sync.reducer';
 
 
 @NgModule({
@@ -23,10 +20,10 @@ import { syncReducer } from 'src/app/shared/ngrx/reducers/sync.reducer';
     CommonModule,
     OrderbookRoutingModule,
     SharedModule,
-    StoreModule.forFeature<State>('sync', { sync: syncReducer })
   ],
   exports: [
     OrderbookWidgetComponent
   ]
 })
-export class OrderbookModule { }
+export class OrderbookModule {
+}

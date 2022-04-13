@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { filter, Observable, Subject, take, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { AccountService } from '../../services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
@@ -11,8 +11,8 @@ import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from '@ngrx/store';
-import { getSelectedInstrument } from 'src/app/shared/ngrx/selectors/sync.selectors';
-import { selectNewPortfolio } from 'src/app/shared/ngrx/actions/sync.actions';
+import { getSelectedInstrument } from '../../../../store/instruments/instruments.selectors';
+import { selectNewPortfolio } from '../../../../store/portfolios/portfolios.actions';
 
 @Component({
   selector: 'ats-navbar',
@@ -20,15 +20,12 @@ import { selectNewPortfolio } from 'src/app/shared/ngrx/actions/sync.actions';
   styleUrls: ['./navbar.component.less'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  private destroy$: Subject<boolean> = new Subject<boolean>();
-
-  portfolios$!: Observable<PortfolioKey[]>
+  portfolios$!: Observable<PortfolioKey[]>;
   names = WidgetNames
   buyColor = buyColor;
   sellColor = sellColor;
-  private activeInstrument: Instrument = {
-    symbol: 'SBER', exchange: 'MOEX', isin: 'RU0009029540'
-  }
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private activeInstrument$!: Observable<Instrument>;
 
   constructor(
     private service: DashboardService,
@@ -48,12 +45,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.changePortfolio(this.selectDefault(portfolios));
     })
 
-    this.store.select(getSelectedInstrument)
-      .pipe(
-        takeUntil(this.destroy$)
-      ).subscribe(i => {
-      this.activeInstrument = i;
-    });
+    this.activeInstrument$ = this.store.select(getSelectedInstrument);
   }
 
   ngOnDestroy(): void {
@@ -90,13 +82,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   newOrder() {
-    const params: CommandParams = {
-      instrument: { ...this.activeInstrument },
-      price: 1,
-      quantity: 1,
-      type: CommandType.Limit,
-    };
-    this.modal.openCommandModal(params);
+    this.activeInstrument$.pipe(
+      take(1)
+    ).subscribe(activeInstrument => {
+      if(!activeInstrument) {
+        throw new Error('Instrument is not selected');
+      }
+
+      const params: CommandParams = {
+        instrument: { ...activeInstrument },
+        price: 1,
+        quantity: 1,
+        type: CommandType.Limit,
+      };
+      this.modal.openCommandModal(params);
+    });
   }
 
   openTerminalSettings() {
