@@ -8,12 +8,16 @@ export interface InstrumentsState {
   selectedInstrument: Instrument;
 }
 
+export const defaultInstrument: Instrument = {
+  symbol: 'SBER',
+  exchange: 'MOEX',
+  instrumentGroup: 'TQBR',
+  isin: 'RU0009029540'
+};
+
 export const initialState: InstrumentsState = {
   selectedInstrument: {
-    symbol: 'SBER',
-    exchange: 'MOEX',
-    instrumentGroup: 'TQBR',
-    isin: 'RU0009029540'
+    ...defaultInstrument
   }
 };
 

@@ -8,7 +8,13 @@ import { LightChartSettings } from '../models/settings/light-chart-settings.mode
 import { TimeframesHelper } from 'src/app/modules/light-chart/utils/timeframes-helper';
 import { InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
 import { Instrument } from '../models/instruments/instrument.model';
-import { allOrdersColumns, allStopOrdersColumns, allPositionsColumns, allTradesColumns, BlotterSettings } from '../models/settings/blotter-settings.model';
+import {
+  allOrdersColumns,
+  allPositionsColumns,
+  allStopOrdersColumns,
+  allTradesColumns,
+  BlotterSettings
+} from '../models/settings/blotter-settings.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { WidgetNames } from '../models/enums/widget-names';
 import { CurrencyInstrument } from '../models/enums/currencies.model';
@@ -16,18 +22,19 @@ import { InfoSettings } from '../models/settings/info-settings.model';
 import { Store } from '@ngrx/store';
 import { getSelectedInstrument } from '../../store/instruments/instruments.selectors';
 import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
+import { defaultInstrument } from '../../store/instruments/instruments.reducer';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WidgetFactoryService {
   private tfHelper = new TimeframesHelper();
+
+  // TODO: Make the method createNewSettings asynchronous to avoid the need for synchronization with local state
   private selectedInstrument: Instrument = {
-    symbol: 'GAZP',
-    instrumentGroup: 'TQBR',
-    exchange: 'MOEX',
-    isin: 'RU0009029540'
+    ...defaultInstrument
   };
+
   private selectedPortfolio: PortfolioKey | null = null;
 
   constructor(private store: Store) {
@@ -62,11 +69,12 @@ export class WidgetFactoryService {
         break;
     }
     if (settings) {
-      return {...settings, ...additionalSettings };
-    } else throw new Error(`Unknow widget type ${newWidget.gridItem.type}`);
+      return { ...settings, ...additionalSettings };
+    }
+    else throw new Error(`Unknow widget type ${newWidget.gridItem.type}`);
   }
 
-  private createOrderbook(newWidget: NewWidget | Widget) : OrderbookSettings {
+  private createOrderbook(newWidget: NewWidget | Widget): OrderbookSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
@@ -77,7 +85,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       linkToActive: true,
       depth: 10,
-      title:  `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
+      title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
       showChart: true,
       showTable: true,
     };
@@ -85,7 +93,7 @@ export class WidgetFactoryService {
     return settings;
   }
 
-  private createInstrumentSelect(newWidget: NewWidget | Widget) : InstrumentSelectSettings {
+  private createInstrumentSelect(newWidget: NewWidget | Widget): InstrumentSelectSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
@@ -99,7 +107,7 @@ export class WidgetFactoryService {
 
   private createLightChartWidget(
     newWidget: NewWidget | Widget
-  ) : LightChartSettings {
+  ): LightChartSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
@@ -111,7 +119,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       timeFrame: this.tfHelper.getValueByTfLabel('D')?.value,
       from: this.tfHelper.getDefaultFrom('D'),
-      title:  `График ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
+      title: `График ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
       width: 300,
       height: 300
     };
@@ -119,7 +127,7 @@ export class WidgetFactoryService {
     return settings;
   }
 
-  private createBlotter(newWidget: NewWidget | Widget) : BlotterSettings {
+  private createBlotter(newWidget: NewWidget | Widget): BlotterSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
@@ -141,7 +149,7 @@ export class WidgetFactoryService {
 
   private createInfo(
     newWidget: NewWidget | Widget
-  ) : InfoSettings {
+  ): InfoSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
@@ -149,7 +157,7 @@ export class WidgetFactoryService {
       ...this.selectedInstrument,
       linkToActive: true,
       guid: newWidget.gridItem.label,
-      title:  `Инфо ${this.selectedInstrument.symbol}`,
+      title: `Инфо ${this.selectedInstrument.symbol}`,
     };
 
     return settings;
