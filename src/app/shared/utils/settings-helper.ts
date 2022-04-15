@@ -131,6 +131,9 @@ export function getTypeBySettings(settings: AnySettings) {
   if (isBlotterSettings(settings)) {
     return WidgetNames.blotter;
   }
+  if (isInfoSettings(settings)) {
+    return WidgetNames.instrumentInfo;
+  }
   return WidgetNames.instrumentSelect;
 }
 
