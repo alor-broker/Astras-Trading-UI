@@ -36,10 +36,12 @@ import { HttpErrorHandler } from './services/handle-error/http-error-handler';
 import { LogErrorHandler } from './services/handle-error/log-error-handler';
 import { ERROR_HANDLER } from './services/handle-error/error-handler';
 import { AtsStoreModule } from '../store/ats-store.module';
+import { NumericalDirective } from './directives/numerical.directive';
 
 @NgModule({
   declarations: [
-    PriceTickComponent
+    PriceTickComponent,
+    NumericalDirective
   ],
   imports: [
     CommonModule,
@@ -75,7 +77,7 @@ import { AtsStoreModule } from '../store/ats-store.module';
     NzCheckboxModule,
     NzDatePickerModule,
     ScrollingModule,
-    AtsStoreModule
+    AtsStoreModule,
   ],
   exports: [
     // Ng zorro
@@ -112,7 +114,9 @@ import { AtsStoreModule } from '../store/ats-store.module';
     GridsterModule,
     NgChartsModule,
     // components
-    PriceTickComponent
+    PriceTickComponent,
+    // directives
+    NumericalDirective
   ],
   providers: [
     {

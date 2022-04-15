@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, filter, map, of, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, filter, map, of, Subject, takeUntil } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -72,7 +72,8 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     })
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroy$)
+      takeUntil(this.destroy$),
+      distinctUntilChanged((prev, curr) => prev?.price == curr?.price && prev?.quantity == curr?.quantity),
     ).subscribe((form: MarketFormData) => {
       this.setMarketCommand(form);
     })

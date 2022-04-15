@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { distinct, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -27,7 +27,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.modal.commandParams$.pipe(
-      takeUntil(this.destroy$)
+      takeUntil(this.destroy$),
     ).subscribe(initial => {
       this.initialParams = initial;
 
@@ -46,7 +46,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
     this.viewData.pipe(
       filter((d): d is CommandParams => !!d),
-      takeUntil(this.destroy$)
+      takeUntil(this.destroy$),
     ).subscribe(command => {
       if (command) {
         this.form = new FormGroup({
@@ -62,7 +62,8 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     });
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroy$)
+      takeUntil(this.destroy$),
+      distinctUntilChanged((prev, curr) => prev?.price == curr?.price && prev?.quantity == curr?.quantity),
     ).subscribe((form: LimitFormData) => {
       this.setLimitCommand(form);
     });

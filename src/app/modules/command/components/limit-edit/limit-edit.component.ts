@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -62,7 +62,8 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     });
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroy$)
+      takeUntil(this.destroy$),
+      distinctUntilChanged((prev, curr) => prev?.price == curr?.price && prev?.quantity == curr?.quantity),
     ).subscribe((form: LimitFormData) => {
       this.setLimitEdit(form);
     });

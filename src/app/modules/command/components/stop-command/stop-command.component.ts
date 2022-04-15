@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
@@ -32,11 +32,15 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       this.initialParams = initial;
 
       if (this.initialParams?.instrument && this.initialParams.user) {
+        let price = this.initialParams.price;
+        if (price == 1 || price == null) {
+          price = 0;
+        }
         const command = {
           instrument: this.initialParams?.instrument,
           user: this.initialParams.user,
           type: CommandType.Stop,
-          price: this.initialParams.price ?? 0,
+          price,
           quantity: this.initialParams.quantity ?? 1,
           triggerPrice: this.initialParams.price ?? 1,
           condition: StopOrderCondition.More
@@ -66,7 +70,8 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     });
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroy$)
+      takeUntil(this.destroy$),
+      distinctUntilChanged((prev, curr) => prev?.price == curr?.price && prev?.quantity == curr?.quantity),
     ).subscribe((form: StopFormData) => this.setStopCommand(form))
   }
 
@@ -98,5 +103,11 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
 
     this.viewData.complete()
+  }
+
+  clearLimit(value: boolean) {
+    if (this.form.controls.price && value) {
+      this.form.controls.price.setValue(null);
+    }
   }
 }
