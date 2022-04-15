@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable, BehaviorSubject, Subscription, interval } from 'rxjs';
+import { Subject, Observable, BehaviorSubject, Subscription, interval, filter, take } from 'rxjs';
 import { map, switchMap, takeWhile, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from "rxjs/webSocket";
 import { environment } from 'src/environments/environment';
@@ -18,7 +18,6 @@ type WsMessage = BaseResponse<unknown> | BaseRequest | ConfirmResponse;
 })
 export class WebsocketService {
   config: WebSocketSubjectConfig<WsMessage>;
-  token = new BehaviorSubject<string | null>(null);
 
   constructor(private account: AuthService, private logger: LoggerService) {
     this.options = {
@@ -26,21 +25,15 @@ export class WebsocketService {
       reconnectTimeout: 2000,
       reconnectAttempts: 5
     }
-    this.account.accessToken$.subscribe(t => {
-      this.token.next(t);
-    });
 
     this.connectedSub = this.isConnected$.subscribe(isConnected => {
       if (this.options.reconnect && !isConnected) {
         this.reconnect();
       }
     });
+
     this.config = {
       url: environment.wsUrl,
-      serializer: msg => JSON.stringify({
-        ...msg,
-        token: this.token.getValue()
-      }),
       deserializer: ({data}) => JSON.parse(data),
       openObserver: {
         next: () => {
@@ -97,8 +90,10 @@ export class WebsocketService {
       });
 
       for (const [guid, msg] of this.subscriptions) {
-        this.subscribe(msg);
-        this.logger.info(`[WS]: resubscribe to ${msg.opcode}`);
+        this.executeWithCurrentAccessToken(token => {
+          this.sendMessage(msg, token);
+          this.logger.info(`[WS]: resubscribe to ${msg.opcode}`);
+        });
       }
     }
   }
@@ -107,28 +102,39 @@ export class WebsocketService {
     if (this.subscriptions.has(msg.guid)) {
       return;
     }
+
     this.subscriptions.set(msg.guid, msg);
-    this.sendMessage(msg);
+
+    this.executeWithCurrentAccessToken(token => {
+      this.sendMessage(msg, token);
+    });
   }
 
   unsubscribe(guid: string) {
-    const msg : BaseRequest = {
+    const msg: BaseRequest = {
       guid: guid,
-      token: this.token.getValue() ?? '',
       opcode: "unsubscribe",
       format: '',
       exchange: ''
     }
-    this.socket$?.next(msg);
+
+    this.executeWithCurrentAccessToken(token => {
+      this.sendMessage(msg, token);
+    });
+
     this.subscriptions.delete(guid);
   }
 
-  sendMessage(msg: BaseRequest) {
-    this.socket$?.next(msg);
+  private sendMessage(msg: BaseRequest, token: string) {
+    this.socket$?.next(
+      {
+        ...msg,
+        token: token
+      }
+    );
   }
 
   close() {
-    this.token.unsubscribe();
     this.socket$?.complete();
     this.connectedSub.unsubscribe();
   }
@@ -152,8 +158,17 @@ export class WebsocketService {
               this.close();
             }
         }});
-    }
+  }
 
+  private executeWithCurrentAccessToken(action: (token: string) => void) {
+    this.account.accessToken$
+      .pipe(
+        filter(x => !!x),
+        take(1)
+      ).subscribe(token => {
+        action(token);
+    });
+  }
 
   private isBaseResponse(msg: WsMessage): msg is BaseResponse<unknown> {
     return (msg as BaseResponse<unknown>).data !== undefined;
