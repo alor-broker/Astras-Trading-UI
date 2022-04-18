@@ -3,8 +3,7 @@ import { of } from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
-
+import { provideMockStore } from '@ngrx/store/testing';
 import { CommandHeaderComponent } from './command-header.component';
 
 describe('CommandHeaderComponent', () => {
@@ -15,20 +14,19 @@ describe('CommandHeaderComponent', () => {
     const quoteSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
     const historySpy = jasmine.createSpyObj('HistoryService', ['getDaysOpen']);
     const positionSpy = jasmine.createSpyObj('PositionsService', ['getByPortfolio']);
-    const syncSpy = jasmine.createSpyObj('SyncService', ['selectedPortfolio$']);
-    syncSpy.selectedPortfolio$ = of(null)
+
     historySpy.getDaysOpen.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
-      declarations: [ CommandHeaderComponent ],
+      declarations: [CommandHeaderComponent],
       providers: [
         { provide: QuotesService, useValue: quoteSpy },
         { provide: HistoryService, useValue: historySpy },
         { provide: PositionsService, useValue: positionSpy },
-        { provide: SyncService, useValue: syncSpy },
+        provideMockStore(),
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

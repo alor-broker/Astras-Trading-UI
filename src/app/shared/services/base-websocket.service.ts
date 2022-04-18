@@ -47,13 +47,14 @@ protected getEntity<T>(request: BaseRequest) : Observable<T> {
     map(r => r.data))
 }
 
-protected getPortfolioEntity<T>(portfolio: string, exchange: string, opcode: string, guid?: string) {
+protected getPortfolioEntity<T>(portfolio: string, exchange: string, opcode: string, isConstructedGuid = false) {
+  const guid = isConstructedGuid ? `${portfolio}${exchange}${opcode}` : '';
   const request = {
     opcode,
     portfolio,
     exchange,
     format:"simple",
-    guid: ''
+    guid: guid
   }
   return this.getEntity<T>(request);
 }

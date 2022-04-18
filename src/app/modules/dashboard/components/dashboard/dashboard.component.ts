@@ -1,15 +1,14 @@
-import { Component, EventEmitter, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, OnInit } from '@angular/core';
 import {
   CompactType,
   DisplayGrid,
   Draggable,
   GridsterConfig,
-  GridsterItem,
   GridType,
   PushDirections,
   Resizable,
 } from 'angular-gridster2';
-import { distinct, map, Observable, tap } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
@@ -78,7 +77,7 @@ export class DashboardComponent implements OnInit {
       resizable: {
         enabled: true,
         handles: {
-          s: true, n: true, w: true, e: true, nw: true, ne: true, sw: true, se: true
+          s: true, n: true, w: true, e: true, nw: true, ne: true, sw: true, se: false
           // se: false
         }
       },

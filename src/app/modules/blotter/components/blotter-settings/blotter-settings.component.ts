@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Currency } from 'src/app/shared/models/enums/currencies.model';
-import { allOrdersColumns, allPositionsColumns, allTradesColumns, BlotterSettings, ColumnIds } from 'src/app/shared/models/settings/blotter-settings.model';
+import { CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
+import { allOrdersColumns, allPositionsColumns, allStopOrdersColumns, allTradesColumns, BlotterSettings, ColumnIds } from 'src/app/shared/models/settings/blotter-settings.model';
 import { BlotterService } from '../../services/blotter.service';
 
 @Component({
@@ -19,6 +19,7 @@ export class BlotterSettingsComponent implements OnInit {
   form!: FormGroup;
 
   allOrdersColumns: ColumnIds[] = allOrdersColumns;
+  allStopOrdersColumns: ColumnIds[] = allStopOrdersColumns;
   allTradesColumns: ColumnIds[] = allTradesColumns;
   allPositionsColumns: ColumnIds[] = allPositionsColumns;
   prevSettings?: BlotterSettings;
@@ -36,6 +37,7 @@ export class BlotterSettingsComponent implements OnInit {
           ]),
           exchange: new FormControl(settings.exchange, Validators.required),
           ordersColumns: new FormControl(settings.ordersColumns),
+          stopOrdersColumns: new FormControl(settings.stopOrdersColumns),
           tradesColumns: new FormControl(settings.tradesColumns),
           positionsColumns: new FormControl(settings.positionsColumns),
           currency: new FormControl(this.currencyToCode(settings.currency)),
@@ -47,19 +49,19 @@ export class BlotterSettingsComponent implements OnInit {
   codeToCurrency(code: string) {
     switch(code) {
       case 'USD':
-        return  Currency.Usd
+        return  CurrencyInstrument.USD
       case 'EUR':
-        return Currency.Eur
+        return CurrencyInstrument.EUR
       default:
-        return Currency.Rub
+        return CurrencyInstrument.RUB
     }
   }
 
-  currencyToCode(currency: Currency) {
+  currencyToCode(currency: CurrencyInstrument) {
     switch(currency) {
-      case Currency.Usd:
+      case CurrencyInstrument.USD:
         return 'USD'
-      case Currency.Eur:
+      case CurrencyInstrument.EUR:
         return 'EUR'
       default:
         return 'RUB'

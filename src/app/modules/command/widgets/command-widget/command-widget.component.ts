@@ -4,9 +4,6 @@ import { BehaviorSubject, filter, Observable, of } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
-
-type test = {index: number, tab: NzTabComponent}
 
 @Component({
   selector: 'ats-command-widget',
@@ -26,11 +23,8 @@ export class CommandWidgetComponent implements OnInit {
     this.commandParams$ = this.modal.commandParams$.pipe(
       filter((p): p is CommandParams => !!p)
     );
-    this.isVisible$ = this.modal.shouldShowCommandModal$;
-  }
 
-  handleOk(): void {
-    this.modal.closeCommandModal();
+    this.isVisible$ = this.modal.shouldShowCommandModal$;
   }
 
   handleCancel(): void {
@@ -42,6 +36,13 @@ export class CommandWidgetComponent implements OnInit {
     if (newTab.tab.nzTitle == 'Рыночная') {
       this.activeTab.next('market')
     }
+    else if (newTab.tab.nzTitle == 'Условная') {
+      this.activeTab.next('stop')
+    }
     else this.activeTab.next('limit')
+  }
+
+  openHelp() {
+    this.modal.openHelpModal('new-order');
   }
 }

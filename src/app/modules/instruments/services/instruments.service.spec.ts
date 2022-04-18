@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { DashboardService } from 'src/app/shared/services/dashboard.service';
 
 import { InstrumentsService } from './instruments.service';
 
@@ -8,13 +9,17 @@ describe('InstrumentsService', () => {
   let service: InstrumentsService;
   let httpController: HttpTestingController;
   let httpClient: HttpClient;
+  const dashboardSpy = jasmine.createSpyObj('DashboardService', ['']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
       ],
-      providers: [InstrumentsService]
+      providers: [
+        InstrumentsService,
+        { provide: DashboardService, useValue: dashboardSpy }
+      ]
     });
     service = TestBed.inject(InstrumentsService);
     httpClient = TestBed.inject(HttpClient);

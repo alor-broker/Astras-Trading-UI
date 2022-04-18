@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Subject, EMPTY, Observable, timer, BehaviorSubject, merge, fromEvent, of, Subscription, interval } from 'rxjs';
-import { catchError, delayWhen, filter, map, retryWhen, switchAll, switchMap, takeWhile, tap } from 'rxjs/operators';
+import { Subject, Observable, BehaviorSubject, Subscription, interval, filter, take } from 'rxjs';
+import { map, switchMap, takeWhile, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from "rxjs/webSocket";
 import { environment } from 'src/environments/environment';
 import { BaseRequest } from '../models/ws/base-request.model';
@@ -9,8 +9,7 @@ import { ConfirmResponse } from '../models/ws/confirm-response.model';
 import { WsOptions } from '../models/ws/ws-options.model';
 import { isOnline$ } from '../utils/network';
 import { AuthService } from './auth.service';
-
-const RECONNECT_INTERVAL = 2000;
+import { LoggerService } from "./logger.service";
 
 type WsMessage = BaseResponse<unknown> | BaseRequest | ConfirmResponse;
 
@@ -19,40 +18,33 @@ type WsMessage = BaseResponse<unknown> | BaseRequest | ConfirmResponse;
 })
 export class WebsocketService {
   config: WebSocketSubjectConfig<WsMessage>;
-  token = new BehaviorSubject<string | null>(null);
 
-  constructor(private account: AuthService) {
+  constructor(private account: AuthService, private logger: LoggerService) {
     this.options = {
       reconnect: true,
       reconnectTimeout: 2000,
       reconnectAttempts: 5
     }
-    this.account.accessToken$.subscribe(t => {
-      this.token.next(t);
-    });
 
     this.connectedSub = this.isConnected$.subscribe(isConnected => {
       if (this.options.reconnect && !isConnected) {
         this.reconnect();
       }
     });
+
     this.config = {
       url: environment.wsUrl,
-      serializer: msg => JSON.stringify({
-        ...msg,
-        token: this.token.getValue()
-      }),
       deserializer: ({data}) => JSON.parse(data),
       openObserver: {
         next: () => {
           this.isClosing.next(false);
-          console.log('[WS]: connection open');
+          this.logger.info('[WS]: connection open');
         }
       },
       closeObserver: {
         next: (v) => {
           this.isClosing.next(true);
-          console.log('[WS]: connection closed');
+          this.logger.info('[WS]: connection closed');
           this.socket$?.complete();
           this.socket$ = null;
           this.reconnect();
@@ -89,15 +81,19 @@ export class WebsocketService {
         error: (error: Event) => {
           if (!this.socket$) {
               // run reconnect if errors
-              console.log('connect error')
-              console.log(error);
+            this.logger.warn(
+              '[WS]: connect error',
+              JSON.stringify(error)
+            );
           }
         }
       });
 
       for (const [guid, msg] of this.subscriptions) {
-        this.subscribe(msg);
-        console.log(`[WS]: resubscribe to ${msg.opcode}`)
+        this.executeWithCurrentAccessToken(token => {
+          this.sendMessage(msg, token);
+          this.logger.info(`[WS]: resubscribe to ${msg.opcode}`);
+        });
       }
     }
   }
@@ -106,28 +102,39 @@ export class WebsocketService {
     if (this.subscriptions.has(msg.guid)) {
       return;
     }
+
     this.subscriptions.set(msg.guid, msg);
-    this.sendMessage(msg);
+
+    this.executeWithCurrentAccessToken(token => {
+      this.sendMessage(msg, token);
+    });
   }
 
   unsubscribe(guid: string) {
-    const msg : BaseRequest = {
+    const msg: BaseRequest = {
       guid: guid,
-      token: this.token.getValue() ?? '',
       opcode: "unsubscribe",
       format: '',
       exchange: ''
     }
-    this.socket$?.next(msg);
+
+    this.executeWithCurrentAccessToken(token => {
+      this.sendMessage(msg, token);
+    });
+
     this.subscriptions.delete(guid);
   }
 
-  sendMessage(msg: BaseRequest) {
-    this.socket$?.next(msg);
+  private sendMessage(msg: BaseRequest, token: string) {
+    this.socket$?.next(
+      {
+        ...msg,
+        token: token
+      }
+    );
   }
 
   close() {
-    this.token.unsubscribe();
     this.socket$?.complete();
     this.connectedSub.unsubscribe();
   }
@@ -136,7 +143,7 @@ export class WebsocketService {
     this.reconnection$ = interval(this.options.reconnectTimeout)
         .pipe(
           takeWhile((v, index) => index < this.options.reconnectAttempts && !this.socket$),
-          tap(attempt => console.log('[WS] Reconnection attempt #' + attempt))
+          tap(attempt =>this.logger.info('[WS] Reconnection attempt #' + attempt))
         );
 
     this.reconnection$.subscribe({
@@ -151,8 +158,17 @@ export class WebsocketService {
               this.close();
             }
         }});
-    }
+  }
 
+  private executeWithCurrentAccessToken(action: (token: string) => void) {
+    this.account.accessToken$
+      .pipe(
+        filter(x => !!x),
+        take(1)
+      ).subscribe(token => {
+        action(token);
+    });
+  }
 
   private isBaseResponse(msg: WsMessage): msg is BaseResponse<unknown> {
     return (msg as BaseResponse<unknown>).data !== undefined;

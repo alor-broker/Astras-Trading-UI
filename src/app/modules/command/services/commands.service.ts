@@ -5,12 +5,14 @@ import { BehaviorSubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { CommandResponse } from 'src/app/shared/models/commands/command-response.model';
 import { Side } from 'src/app/shared/models/enums/side.model';
+import { addDays, addDaysUnix, toUnixTimestampMillies, toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { environment } from 'src/environments/environment';
 import { LimitCommand } from '../models/limit-command.model';
 import { LimitEdit } from '../models/limit-edit.model';
 import { MarketCommand } from '../models/market-command.model';
 import { MarketEdit } from '../models/market-edit.model';
+import { StopCommand } from '../models/stop-command.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,12 +21,20 @@ export class CommandsService {
 
   private url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions'
 
+  private stopCommand?: BehaviorSubject<StopCommand>;
   private limitCommand?: BehaviorSubject<LimitCommand>;
   private limitEdit?: BehaviorSubject<LimitEdit>;
   private marketCommand?: BehaviorSubject<MarketCommand>;
   private marketEdit?: BehaviorSubject<MarketEdit>;
 
   constructor(private http: HttpClient, private notification: NzNotificationService) { }
+
+  setStopCommand(command: StopCommand) {
+    if (!this.stopCommand) {
+      this.stopCommand = new BehaviorSubject<StopCommand>(command);
+    }
+    this.stopCommand?.next(command);
+  }
 
   setLimitCommand(command: LimitCommand) {
     if (!this.limitCommand) {
@@ -52,6 +62,16 @@ export class CommandsService {
       this.marketEdit = new BehaviorSubject<MarketEdit>(command);
     }
     this.marketEdit?.next(command);
+  }
+
+  submitStop(side: Side) {
+    const command = this.stopCommand?.getValue();
+    if (command) {
+      return this.placeOrder(command.price ? 'stopLimit' : 'stop', side, command);
+    }
+    else {
+      throw new Error('Empty command')
+    }
   }
 
   submitLimit(side: Side) {
@@ -110,8 +130,21 @@ export class CommandsService {
     )
   }
 
-  private placeOrder(type: string, side: Side, command : LimitCommand | MarketCommand) {
-    return this.http.post<CommandResponse>(`${this.url}/${type.toString()}`, {
+  private placeOrder(type: string, side: Side, command : LimitCommand | MarketCommand | StopCommand) {
+    let isStop = false;
+    if ((type == 'stop' || type == 'stopLimit') && isStopCommand(command)) {
+      isStop = true;
+      if (command.stopEndUnixTime === undefined) {
+        command.stopEndUnixTime = toUnixTimestampSeconds(addDays(new Date(), 30));
+      }
+      else if (typeof command.stopEndUnixTime === 'number') {
+        command.stopEndUnixTime = Number((command.stopEndUnixTime / 1000).toFixed(0));
+      }
+      else {
+        command.stopEndUnixTime = toUnixTimestampSeconds(command.stopEndUnixTime);
+      }
+    }
+    return this.http.post<CommandResponse>(`${this.url}/${type.toString()}?stop=${isStop}`, {
         ...command,
         type,
         side
@@ -127,4 +160,13 @@ export class CommandsService {
       })
     )
   }
+}
+
+function isStopCommand(
+  command: StopCommand | LimitCommand | MarketCommand
+): command is StopCommand {
+  return (
+    command &&
+    'stopEndUnixTime' in command
+  );
 }

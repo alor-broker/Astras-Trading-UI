@@ -1,29 +1,33 @@
-import { Component, Input, Output, OnInit, EventEmitter, OnDestroy } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
-import { getTypeBySettings, isInstrumentDependent, isLightChartSettings, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';
+import { getTypeBySettings, isInstrumentDependent, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
+import { joyrideContent } from '../../models/joyride';
 
 
 @Component({
-  selector: 'ats-widget-header[guid]',
+  selector: 'ats-widget-header[guid][hasSettings][hasHelp]',
   templateUrl: './widget-header.component.html',
   styleUrls: ['./widget-header.component.less']
 })
-export class WidgetHeaderComponent implements OnInit, OnDestroy {
+export class WidgetHeaderComponent implements OnInit {
   @Input()
   guid!: string;
+  @Input()
+  hasSettings!: boolean;
+  @Input()
+  hasHelp!: boolean;
   @Output()
   switchSettingsEvent = new EventEmitter<boolean>();
   @Output()
   linkChangedEvent = new EventEmitter<boolean>();
 
+  joyrideContent = joyrideContent;
+
   private shouldShowSettings = false;
-  private dashboardSub?: Subscription;
-  private selectedSub?: Subscription;
   settings$?: Observable<AnySettings>;
   private settings?: AnySettings
 
@@ -45,11 +49,6 @@ export class WidgetHeaderComponent implements OnInit, OnDestroy {
         return s;
       }),
     )
-  }
-
-  ngOnDestroy() {
-    this.dashboardSub?.unsubscribe();
-    this.selectedSub?.unsubscribe();
   }
 
   switchSettings($event: MouseEvent) {

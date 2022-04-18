@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
+import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 
@@ -15,16 +16,19 @@ import { CommandsService } from '../../services/commands.service';
   styleUrls: ['./limit-edit.component.less']
 })
 export class LimitEditComponent implements OnInit, OnDestroy {
+  evaluation = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   viewData = new BehaviorSubject<EditParams | null>(null)
   initialParams: EditParams | null = null
-  initialParamsSub?: Subscription
-  formChangeSub?: Subscription
   form!: LimitFormGroup;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private modal: ModalService, private service: CommandsService) { }
+  constructor(private modal: ModalService, private service: CommandsService) {
+  }
 
   ngOnInit() {
-    this.initialParamsSub = this.modal.editParams$.subscribe(initial => {
+    this.modal.editParams$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(initial => {
       this.initialParams = initial;
 
       if (this.initialParams?.instrument && this.initialParams.user) {
@@ -32,37 +36,47 @@ export class LimitEditComponent implements OnInit, OnDestroy {
           instrument: this.initialParams?.instrument,
           user: this.initialParams.user,
           type: CommandType.Limit.toString().toLowerCase(),
-          price: this.initialParams.price ?? 0,
+          price: this.initialParams.price ?? 1,
           quantity: this.initialParams.quantity ?? 1,
           orderId: this.initialParams.orderId
         }
         this.viewData.next(command)
         this.setLimitEdit(command)
       }
-    })
+    });
+
     this.viewData.pipe(
-      filter((d): d is EditParams => !!d)
+      filter((d): d is EditParams => !!d),
+      takeUntil(this.destroy$)
     ).subscribe(command => {
-        if (command) {
-          this.form = new FormGroup({
-            quantity: new FormControl(command.quantity, [
-              Validators.required,
-            ]),
-            price: new FormControl(command.price, [
-              Validators.required,
-            ])
-          } as LimitFormControls) as LimitFormGroup;
-        }
-      })
-    this.formChangeSub = this.form.valueChanges.subscribe((form : LimitFormData) => this.setLimitEdit(form))
+      if (command) {
+        this.form = new FormGroup({
+          quantity: new FormControl(command.quantity, [
+            Validators.required,
+          ]),
+          price: new FormControl(command.price, [
+            Validators.required,
+          ])
+        } as LimitFormControls) as LimitFormGroup;
+      }
+    });
+
+    this.form.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      distinctUntilChanged((prev, curr) => prev?.price == curr?.price && prev?.quantity == curr?.quantity),
+    ).subscribe((form: LimitFormData) => {
+      this.setLimitEdit(form);
+    });
   }
 
   setLimitEdit(form: LimitFormData): void {
     const command = this.viewData.getValue();
+    const price = Number(form.price ?? command?.price ?? 1);
+    const quantity = Number(form.quantity ?? command?.quantity ?? 1);
     if (command && command.user) {
       const newCommand = {
-        quantity: form.quantity ?? command?.quantity ?? 0,
-        price: form.price ?? command?.price ?? 0,
+        quantity: form.quantity ?? command?.quantity ?? 1,
+        price: form.price ?? command?.price ?? 1,
         instrument: {
           ...command.instrument,
           instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
@@ -70,13 +84,29 @@ export class LimitEditComponent implements OnInit, OnDestroy {
         user: command.user,
         id: command.orderId
       }
+      const evaluation: EvaluationBaseProperties = {
+        price: price,
+        lotQuantity: quantity,
+        instrument: {
+          ...command.instrument,
+          instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
+        },
+      }
+      if (evaluation.price > 0) {
+        this.evaluation.next(evaluation);
+      }
       this.service.setLimitEdit(newCommand);
     }
-    else console.error('Empty command')
+    else {
+      throw new Error('Empty command');
+    }
   }
 
   ngOnDestroy(): void {
-    this.initialParamsSub?.unsubscribe();
-    this.formChangeSub?.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.complete();
+
+    this.evaluation.complete();
+    this.viewData.complete();
   }
- }
+}

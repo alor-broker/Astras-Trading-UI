@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { AccountService } from '../../services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-constants';
@@ -11,6 +10,10 @@ import { CommandParams } from 'src/app/shared/models/commands/command-params.mod
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
+import { Store } from '@ngrx/store';
+import { getSelectedInstrument } from '../../../../store/instruments/instruments.selectors';
+import { selectNewPortfolio } from '../../../../store/portfolios/portfolios.actions';
+import { joyrideContent } from '../../models/joyride';
 
 @Component({
   selector: 'ats-navbar',
@@ -18,38 +21,38 @@ import { ModalService } from 'src/app/shared/services/modal.service';
   styleUrls: ['./navbar.component.less'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  portfolios$!: Observable<PortfolioKey[]>
+  portfolios$!: Observable<PortfolioKey[]>;
   names = WidgetNames
+  buyColor = buyColor;
+  sellColor = sellColor;
+  joyrideContent = joyrideContent;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private activeInstrument$!: Observable<Instrument>;
+
   constructor(
     private service: DashboardService,
     private account: AccountService,
-    private sync: SyncService,
+    private store: Store,
     private auth: AuthService,
     private modal: ModalService
-  ) { }
-
-  buyColor = buyColor;
-  sellColor = sellColor;
-
-  private instrumentSub?: Subscription;
-  private portfolioSub?: Subscription;
-  private activeInstrument: Instrument = {
-    symbol: 'SBER', exchange: 'MOEX', isin: 'RU0009029540'
+  ) {
   }
 
   ngOnInit(): void {
     this.portfolios$ = this.account.getActivePortfolios();
-    this.instrumentSub = this.portfolios$.subscribe(portfolios => {
+
+    this.portfolios$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(portfolios => {
       this.changePortfolio(this.selectDefault(portfolios));
     })
-    this.instrumentSub = this.sync.selectedInstrument$.subscribe(i => {
-      this.activeInstrument = i;
-    });
+
+    this.activeInstrument$ = this.store.select(getSelectedInstrument);
   }
 
   ngOnDestroy(): void {
-    this.instrumentSub?.unsubscribe();
-    this.portfolioSub?.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   clear() {
@@ -65,7 +68,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   changePortfolio(key: PortfolioKey) {
-    this.sync.selectNewPortfolio(key);
+    this.store.dispatch(selectNewPortfolio({ portfolio: key }))
   }
 
   addItem(type: string): void {
@@ -81,13 +84,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   newOrder() {
-    const params: CommandParams = {
-      instrument: { ...this.activeInstrument },
-      price: 0,
-      quantity: 0,
-      type: CommandType.Limit,
-    };
-    this.modal.openCommandModal(params);
+    this.activeInstrument$.pipe(
+      take(1)
+    ).subscribe(activeInstrument => {
+      if(!activeInstrument) {
+        throw new Error('Instrument is not selected');
+      }
+
+      const params: CommandParams = {
+        instrument: { ...activeInstrument },
+        price: 1,
+        quantity: 1,
+        type: CommandType.Limit,
+      };
+      this.modal.openCommandModal(params);
+    });
   }
 
   openTerminalSettings() {

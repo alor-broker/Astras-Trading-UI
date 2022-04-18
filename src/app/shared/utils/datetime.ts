@@ -18,3 +18,11 @@ export function addHoursUnix(date: Date, hours: number) {
   const time = new Date(date.setHours(date.getHours() + hours)).getTime() / 1000;
   return Math.floor(time);
 }
+
+export function toUnixTimestampSeconds(date: Date) : number {
+  return Number((Number(date) / 1000).toFixed(0))
+}
+
+export function toUnixTimestampMillies(date: Date) : number {
+  return Number(date)
+}

@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import { map, Observable, tap } from 'rxjs';
 import { Dividend } from '../../../models/dividend.model';
 import { InfoService } from '../../../services/info.service';
 
@@ -17,7 +17,6 @@ export class DividendsComponent implements OnInit {
   constructor(private service: InfoService) { }
 
   ngOnInit(): void {
-    this.dividends$ = this.service.getDividends();
+    this.dividends$ = this.service.getDividends().pipe(map(divs => divs.reverse()));
   }
-
 }

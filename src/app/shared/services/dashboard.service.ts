@@ -18,6 +18,7 @@ import { WidgetFactoryService } from './widget-factory.service';
 export class DashboardService {
   private dashboardsStorage = 'dashboards';
   private settingsStorage = 'settings';
+  private profileStorage = 'profile';
 
   private dashboardSource: BehaviorSubject<Map<string, Widget>>;
   dashboard$ : Observable<Map<string, Widget>>;
@@ -57,7 +58,9 @@ export class DashboardService {
     const newSettings = this.factory.createNewSettings(newWidget, additionalSettings);
     const widget = {
       guid: newWidget.gridItem.label,
-      gridItem: newWidget.gridItem
+      gridItem: newWidget.gridItem,
+      hasSettings: newWidget.gridItem.type != WidgetNames.instrumentSelect && newWidget.gridItem.type != WidgetNames.instrumentInfo,
+      hasHelp: true
     }
     const guid = widget.gridItem.label;
     const widgets = this.getDashboardValue().set(guid, widget);
@@ -88,8 +91,9 @@ export class DashboardService {
 
   clearDashboard() {
     this.setDashboard(new Map())
-    localStorage.removeItem(this.dashboardsStorage)
-    localStorage.removeItem(this.settingsStorage)
+    localStorage.removeItem(this.dashboardsStorage);
+    localStorage.removeItem(this.settingsStorage);
+    localStorage.removeItem(this.profileStorage);
   }
 
   saveDashboard(name: string) {
@@ -148,7 +152,7 @@ export class DashboardService {
       });
       this.addWidget({
         gridItem: { x: 0, y: 1, cols: 2, rows: 1, type: WidgetNames.blotter },
-      }, { activeTabIndex: 2 });
+      }, { activeTabIndex: 3 });
       this.addWidget({
         gridItem: { x: 3, y: 0, cols: 1, rows: 1, type: WidgetNames.orderBook },
       }, { depth: 7 });

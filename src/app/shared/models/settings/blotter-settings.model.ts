@@ -1,12 +1,12 @@
-import { Currency } from "../enums/currencies.model"
 import { WidgetSettings } from "../widget-settings.model"
 
 export interface BlotterSettings extends WidgetSettings {
   activeTabIndex: number,
   exchange: string,
   portfolio: string,
-  currency: Currency,
+  currency: string,
   ordersColumns: string[],
+  stopOrdersColumns: string[],
   tradesColumns: string[],
   positionsColumns: string[],
 }
@@ -30,6 +30,12 @@ export const allOrdersColumns: ColumnIds[] = [
   { columnId: 'exchange', name: "Биржа", isDefault: false  },
   { columnId: 'type', name: "Тип", isDefault: false  },
   { columnId: 'endTime', name: "Действ. до", isDefault: false  },
+]
+
+export const allStopOrdersColumns: ColumnIds[] = [
+  ...allOrdersColumns,
+  { columnId: 'triggerPrice', name: "Сигнальная цена", isDefault: true  },
+  { columnId: 'conditionType', name: "Условие", isDefault: true  },
 ]
 
 export const allPositionsColumns: ColumnIds[] = [

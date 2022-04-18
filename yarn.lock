@@ -1182,6 +1182,32 @@
   resolved "https://registry.yarnpkg.com/@jridgewell/resolve-uri/-/resolve-uri-3.0.3.tgz#b80093f4edbb5490c49746231513669c8f518acb"
   integrity sha512-fuIOnc81C5iRNevb/XPiM8Khp9bVjreydRQ37rt0C/dY0PAW1DRvEM3WrKX/5rStS5lbgwS0FCgqSndh9tvK5w==
 
+"@ngrx/effects@^13.1.0":
+  version "13.1.0"
+  resolved "https://registry.yarnpkg.com/@ngrx/effects/-/effects-13.1.0.tgz#06d3fb04e7a37a3176f05054682ba353e8e6dce6"
+  integrity sha512-b0kaC1yly1WawtQils3Bxy2FhE9OwlQD/bptVd3s+bskdZ+iw9VlAMH9Spk2mfX+MyOEOk2FyrWlrOePtkw+7Q==
+  dependencies:
+    tslib "^2.0.0"
+
+"@ngrx/schematics@^13.1.0":
+  version "13.1.0"
+  resolved "https://registry.yarnpkg.com/@ngrx/schematics/-/schematics-13.1.0.tgz#28ca9ceaa3271d3c019f93194ac488bac9d768c3"
+  integrity sha512-u832wAllTSF5Nivs/XoYL+nhKd6RKT8JY+CUiUXjfe+lX9EyRRfHXmolXG60g6a681HQs/2YT0fs4cVtE94HdA==
+
+"@ngrx/store-devtools@^13.1.0":
+  version "13.1.0"
+  resolved "https://registry.yarnpkg.com/@ngrx/store-devtools/-/store-devtools-13.1.0.tgz#2bea7d6e4e0e85f23062ff07068e4640f59abf70"
+  integrity sha512-HAF2q1qk7n0Q3rkHncdXIokGXbPFKWwmfhGFS9pnq63FScgPgHjNXSlPmwgycb+LqDvDR4C8f1HSbPhOb6I29w==
+  dependencies:
+    tslib "^2.0.0"
+
+"@ngrx/store@^13.1.0":
+  version "13.1.0"
+  resolved "https://registry.yarnpkg.com/@ngrx/store/-/store-13.1.0.tgz#40665a09f673d64e9b6df3aed224ce51219151d3"
+  integrity sha512-2Phsd/CC5FcoS2VgC+Fo5VgfAUK3m7bjWTc8d6+h3UcoQpS3xyPnybGYifa/JYN1CFYmqypVDRWSMAgML2NU/A==
+  dependencies:
+    tslib "^2.0.0"
+
 "@ngtools/webpack@13.2.1":
   version "13.2.1"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-13.2.1.tgz#20887a22ecde77d3f022f7fdace8aead2e425bab"
@@ -4354,6 +4380,13 @@ ng2-charts@^3.0.8:
   dependencies:
     lodash-es "^4.17.15"
     tslib "^2.3.0"
+
+ngx-joyride@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/ngx-joyride/-/ngx-joyride-2.5.0.tgz#21452ad0deadb4e49f11f5f940339e8e6e003bfa"
+  integrity sha512-C/J8C4uWZjKl9aMmRBt9egVjuIpwWFplJgBZDl1EfqNVTJkdEC51nt9DpAOuDwOgkbArhJ9sZIk3bZT4vkud/w==
+  dependencies:
+    tslib "^2.0.0"
 
 ngx-markdown@^13.1.0:
   version "13.1.0"

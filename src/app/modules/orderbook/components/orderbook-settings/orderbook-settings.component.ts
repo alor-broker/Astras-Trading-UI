@@ -1,6 +1,18 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { OrderbookService } from '../../services/orderbook.service';
+
+interface SettingsFormData {
+  depth: number,
+  exchange: string,
+  symbol: string,
+  instrumentGroup: string,
+  showChart: boolean,
+  showTable: boolean
+}
+
+type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
+type SettingsFormGroup = FormGroup & { value: SettingsFormData, controls: SettingsFormControls }
 
 @Component({
   selector: 'ats-orderbook-settings[settingsChange][guid]',
@@ -13,7 +25,7 @@ export class OrderbookSettingsComponent implements OnInit {
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
 
-  form!: FormGroup;
+  form!: SettingsFormGroup;
 
   constructor(private service: OrderbookService ) { }
 
@@ -30,7 +42,7 @@ export class OrderbookSettingsComponent implements OnInit {
           instrumentGroup: new FormControl(settings.instrumentGroup),
           showChart: new FormControl(settings.showChart),
           showTable: new FormControl(settings.showTable),
-        });
+        } as SettingsFormControls) as SettingsFormGroup;
       }
     })
   }

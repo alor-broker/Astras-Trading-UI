@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { ExchangeInfo } from '../../models/exchange-info.model';
 import { InfoService } from '../../services/info.service';

@@ -1,13 +1,14 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { catchError, filter, map, Observable, of, Subscription, switchMap } from 'rxjs';
+import { filter, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
 import { PriceData } from '../../models/price-data.model';
 import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-constants';
 import { PositionsService } from 'src/app/shared/services/positions.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
+import { Store } from '@ngrx/store';
+import { getSelectedPortfolio } from '../../../../store/portfolios/portfolios.selectors';
 
 @Component({
   selector: 'ats-command-header[symbol][exchange]',
@@ -20,43 +21,42 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
   @Input()
   exchange = ''
   @Input()
-  instrumentGroup: string = ''
-
-  priceData$: Observable<PriceData | null> = of(null)
-
+  instrumentGroup : string = ''
+  priceData$ : Observable<PriceData | null> = of(null)
   colors = {
     buyColor: buyColor,
     sellColor: sellColor
   }
-
   position = {
     abs: 0, quantity: 0
   }
-
-  private positionSub?: Subscription
+  private destroy$ : Subject<boolean> = new Subject<boolean>();
 
   constructor(
-      private quoteService: QuotesService,
-      private history: HistoryService,
-      private positionService: PositionsService,
-      private sync: SyncService) {
-  }
-  ngOnDestroy(): void {
-    this.positionSub?.unsubscribe();
+    private quoteService : QuotesService,
+    private history : HistoryService,
+    private positionService : PositionsService,
+    private store : Store) {
   }
 
-  ngOnInit(): void {
-    this.positionSub = this.sync.selectedPortfolio$.pipe(
-      filter((p): p is PortfolioKey => !!p),
+  ngOnDestroy() : void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
+
+  ngOnInit() : void {
+    this.store.select(getSelectedPortfolio).pipe(
+      filter((p) : p is PortfolioKey => !!p),
       switchMap(p => {
-         return this.positionService.getByPortfolio(p.portfolio, p.exchange, this.symbol)
-      })
+        return this.positionService.getByPortfolio(p.portfolio, p.exchange, this.symbol)
+      }),
+      takeUntil(this.destroy$)
     ).subscribe({
       next: (p) => {
         if (p) {
           this.position = { abs: Math.abs(p.qtyTFutureBatch), quantity: p.qtyTFutureBatch }
         }
-      }, error: (e) => console.log(e)
+      }
     })
 
     this.priceData$ = this.history.getDaysOpen({
@@ -74,15 +74,15 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
         )
       }),
       map((data) : PriceData => ({
-        dayChange: getDayChange(data.quote.last_price, data.candle.close),
-        dayChangePerPrice: getDayChangePerPrice(data.quote.last_price, data.candle.close),
+        dayChange: getDayChange(data.quote.last_price, data.candle?.close ?? 0),
+        dayChangePerPrice: getDayChangePerPrice(data.quote.last_price, data.candle?.close ?? 0),
         high: data.quote.high_price,
         low: data.quote.low_price,
         lastPrice: data.quote.last_price,
         ask: data.quote.ask,
         bid: data.quote.bid,
-        dayOpen: data.candle.open,
-        prevClose: data.candle.close
+        dayOpen: data.candle?.open ?? 0,
+        prevClose: data.candle?.close ?? 0
       }))
     )
   }

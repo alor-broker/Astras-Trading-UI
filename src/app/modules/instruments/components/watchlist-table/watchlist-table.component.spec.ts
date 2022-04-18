@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
-
+import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { WatchlistTableComponent } from './watchlist-table.component';
 
 describe('WatchlistTableComponent', () => {
@@ -19,7 +18,7 @@ describe('WatchlistTableComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ WatchlistTableComponent ],
       providers: [
-        { provide: SyncService, useValue: spySync },
+        provideMockStore(),
         { provide: WatchInstrumentsService, useValue: spyWatcher },
       ]
     })

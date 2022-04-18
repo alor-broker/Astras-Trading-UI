@@ -1,14 +1,16 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { select, Store } from '@ngrx/store';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { debounceTime, filter, map, switchMap } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { InstrumentAdditions } from '../../models/instrument-additions.model';
 import { InstrumentSelect } from '../../models/instrument-select.model';
 import { SearchFilter } from '../../models/search-filter.model';
 import { InstrumentsService } from '../../services/instruments.service';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
+import { selectNewInstrument } from '../../../../store/instruments/instruments.actions';
+import { getSelectedInstrument } from '../../../../store/instruments/instruments.selectors';
 
 @Component({
   selector: 'ats-instrument-select[shouldShowSettings][guid]',
@@ -31,7 +33,7 @@ export class InstrumentSelectComponent implements OnInit {
 
   inputValue?: string;
   filteredOptions: string[] = [];
-  constructor(private service: InstrumentsService, private sync: SyncService, private watcher: WatchInstrumentsService) {
+  constructor(private service: InstrumentsService, private store: Store, private watcher: WatchInstrumentsService) {
 
   }
 
@@ -61,7 +63,7 @@ export class InstrumentSelectComponent implements OnInit {
         query: isComplexSearch ? query : value,
         exchange: isComplexSearch ? exchange : '',
         instrumentGroup: isComplexSearch && instrumentGroup ? instrumentGroup : '',
-        limit: 10
+        limit: 20
       }
     }
 
@@ -70,7 +72,7 @@ export class InstrumentSelectComponent implements OnInit {
 
   onSelect(event: NzOptionSelectionChange, val: InstrumentSelect) {
     if (event.isUserInput) {
-      this.sync.selectNewInstrument(val);
+      this.store.dispatch(selectNewInstrument({instrument: val}));
     }
   }
 
@@ -80,7 +82,8 @@ export class InstrumentSelectComponent implements OnInit {
       debounceTime(200),
       switchMap(filter => this.service.getInstruments(filter))
     )
-    this.selectedInstrument$ = this.sync.selectedInstrument$.pipe(
+    this.selectedInstrument$ = this.store.pipe(
+      select(getSelectedInstrument),
       switchMap(i => {
         return this.service.getInstruments({
           query: i.symbol,

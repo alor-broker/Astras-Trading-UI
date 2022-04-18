@@ -82,14 +82,19 @@ export class FinanceBarChartComponent implements OnInit {
   }
 
   private getPlotData(finance: Finance, period: 'year' | 'quorter') {
+    let labels: string[] = [];
+    if (finance.sales) {
+      labels = period == 'quorter' ?
+      finance.sales.quorter.map(q => `${q.year} q${q.quorterNumber}`) :
+      finance.sales[period].map(y => y.year.toString());
+    }
+    const datasets = [
+      { data: finance?.sales?.[period].map(y => y.value), label: 'Выручка', ...this.salesColors ?? []},
+      { data: finance?.netIncome?.[period].map(y => y.value), label: 'Чистая прибыль', ...this.incomeColors ?? []}
+    ];
     const chartData = {
-      labels: period == 'quorter' ?
-        finance.sales.quorter.map(q => `${q.year} q${q.quorterNumber}`) :
-        finance.sales[period].map(y => y.year),
-      datasets: [
-        { data: finance.sales[period].map(y => y.value), label: 'Выручка', ...this.salesColors },
-        { data: finance.netIncome[period].map(y => y.value), label: 'Чистая прибыль', ...this.incomeColors }
-      ]
+      labels,
+      datasets
     }
     return chartData;
   }

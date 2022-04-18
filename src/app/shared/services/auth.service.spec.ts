@@ -5,7 +5,6 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LoginFormComponent } from 'src/app/modules/login/components/login-form/login-form.component';
-import { SharedModule } from '../shared.module';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
@@ -19,7 +18,11 @@ describe('AuthService', () => {
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([{ path: 'login', pathMatch: 'full', component: LoginFormComponent },])
       ],
-      providers: [AuthService, RouterTestingModule, HttpClientTestingModule]
+      providers: [
+        AuthService,
+        RouterTestingModule,
+        HttpClientTestingModule,
+      ]
     });
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);

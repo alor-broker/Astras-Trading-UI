@@ -1,13 +1,17 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async, inject } from '@angular/core/testing';
+import { provideMockStore } from '@ngrx/store/testing';
 import { AnySettings } from '../models/settings/any-settings.model';
 import { BaseService } from './base.service';
 
-describe('Service: Base', () => {
+describe('BaseService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [BaseService]
+      providers: [
+        BaseService,
+        provideMockStore()
+      ]
     });
   });
 

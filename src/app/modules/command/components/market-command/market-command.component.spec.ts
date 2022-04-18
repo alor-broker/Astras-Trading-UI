@@ -3,7 +3,6 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { of } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.model';
 import { CommandsService } from '../../services/commands.service';
 
@@ -18,7 +17,7 @@ describe('MarketCommandComponent', () => {
   spyModal.commandParams$ = of(null);
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setMarketCommand']);
   const quotesSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
-  quotesSpy.getQuotes.and.returnValue(of(null))
+  quotesSpy.getQuotes.and.returnValue(of(null));
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

@@ -1,7 +1,8 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "defaultCollection": "@ngrx/schematics"
   },
   "version": 1,
   "newProjectRoot": "projects",
@@ -57,7 +58,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "1500kb",
-                  "maximumError": "2mb"
+                  "maximumError": "2.2mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -69,6 +70,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src/app/build-specifics/ext-modules.ts",
+                  "with": "src/app/build-specifics/ext-modules.prod.ts"
                 }
               ],
               "outputHashing": "all"
@@ -78,7 +83,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "1500kb",
-                  "maximumError": "2mb"
+                  "maximumError": "2.2mb"
                 },
                 {
                   "type": "anyComponentStyle",

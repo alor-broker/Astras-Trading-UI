@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { OnboardingService } from '../../services/onboarding.service';
 
 @Component({
   selector: 'ats-dashboard-widget',
@@ -8,16 +9,20 @@ import { AuthService } from 'src/app/shared/services/auth.service';
   styleUrls: ['./dashboard-widget.component.less']
 })
 export class DashboardWidgetComponent implements OnInit, OnDestroy {
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  private sub: Subscription;
-
-  constructor(private auth: AuthService) {
-    this.sub = this.auth.refresh().subscribe();
+  constructor(private auth: AuthService, private readonly onboarding: OnboardingService) {
   }
 
   ngOnInit(): void {
+    this.auth.refresh().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe();
+    this.onboarding.start();
   }
+
   ngOnDestroy(): void {
-      this.sub.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }

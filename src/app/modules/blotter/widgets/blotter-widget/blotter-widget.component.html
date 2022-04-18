@@ -1,22 +1,32 @@
-<nz-tabset *ngIf="!shouldShowSettings" nzTabPosition="top" nzSize="small"
-  (mousedown)='$event.stopPropagation()' [nzSelectedIndex]="activeTabIndex$ | async" (nzSelectChange)="onIndexChange($event)">
-  <nz-tab nzTitle="О портфеле">
+<nz-tabset
+*ngIf="!shouldShowSettings"
+  nzTabPosition="top"
+  nzSize="small"
+  (mousedown)='$event.stopPropagation()' [nzSelectedIndex]="activeTabIndex$ | async"
+  (nzSelectChange)="onIndexChange($event)"
+  [nzAnimated]="false">
+  <nz-tab nzTitle="О портфеле" nzForceRender>
     <ats-summaries
       [guid]="guid"
       [(shouldShowSettings)]="shouldShowSettings"
       [resize]="resize"></ats-summaries>
   </nz-tab>
-  <nz-tab nzTitle="Заявки">
+  <nz-tab nzTitle="Заявки" nzForceRender>
     <ats-orders
       [guid]="guid"
       [(shouldShowSettings)]="shouldShowSettings"></ats-orders>
   </nz-tab>
-  <nz-tab nzTitle="Позиции">
+  <nz-tab nzTitle="Стопы" nzForceRender>
+    <ats-stop-orders
+      [guid]="guid"
+      [(shouldShowSettings)]="shouldShowSettings"></ats-stop-orders>
+  </nz-tab>
+  <nz-tab nzTitle="Позиции" nzForceRender>
     <ats-positions
       [guid]="guid"
       [(shouldShowSettings)]="shouldShowSettings"></ats-positions>
   </nz-tab>
-  <nz-tab nzTitle="Сделки">
+  <nz-tab nzTitle="Сделки" nzForceRender>
     <ats-trades
       [guid]="guid"
       [(shouldShowSettings)]="shouldShowSettings"></ats-trades>

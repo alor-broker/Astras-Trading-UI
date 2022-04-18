@@ -1,4 +1,9 @@
-<ats-widget-header [guid]="widget.gridItem.label" (switchSettingsEvent)="onSwitchSettings($event)" (linkChangedEvent)="onLinkedChanged($event)"></ats-widget-header>
+<ats-widget-header
+  [guid]="widget.gridItem.label"
+  (switchSettingsEvent)="onSwitchSettings($event)"
+  (linkChangedEvent)="onLinkedChanged($event)"
+  [hasSettings]="hasSettings()"
+  [hasHelp]="hasHelp()"></ats-widget-header>
 <ats-orderbook-widget *ngIf="widget.gridItem.type === 'order-book'"
   [guid]="getGuid()"
   [resize]="widgetResize"

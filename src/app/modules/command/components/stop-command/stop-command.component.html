@@ -1,0 +1,56 @@
+<div>
+  <form nz-form [formGroup]="form">
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите кол-во">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="quantity">Кол-во</nz-form-label>
+        <nz-input-group nzPrefixIcon="user">
+          <input class='ant-input' atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="100" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item >
+      <nz-form-control nzErrorTip="Выберите условие исполнения">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="condition">Условие</nz-form-label>
+        <nz-select formControlName="condition">
+          <nz-option [nzValue]="'More'" nzLabel="Больше"></nz-option>
+          <nz-option [nzValue]="'Less'" nzLabel="Меньше"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите сигн. цену">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="triggerPrice">Сигнальная цена</nz-form-label>
+        <nz-input-group nzPrefixIcon="lock">
+          <input class='ant-input' atsNumerical formControlName="triggerPrice" (mousedown)="$event.stopPropagation()" placeholder="0" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="12" [nzXs]="24">Лимит?</nz-form-label>
+      <nz-switch #withLimit (click)="clearLimit(withLimit.isChecked)"></nz-switch>
+    </nz-form-item>
+    <nz-form-item *ngIf="withLimit.isChecked">
+      <nz-form-control nzErrorTip="Введите цену">
+        <nz-input-group nzPrefixIcon="lock">
+          <input class='ant-input' atsNumerical formControlName="price" (mousedown)="$event.stopPropagation()" placeholder="0" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Введите дату">
+        <nz-input-group>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="stopEndUnixTime">Действ. до</nz-form-label>
+          <nz-date-picker
+            nzShowTime
+            nzFormat="yyyy-MM-dd HH:mm:ss"
+            ngModel
+            formControlName="stopEndUnixTime"
+          >
+          <!-- (ngModelChange)="onChange($event)"
+          (nzOnOk)="onOk($event)" -->
+          </nz-date-picker>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</div>

@@ -5,18 +5,17 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './navbar.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { AccountService } from '../../services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { of } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
+import { provideMockStore } from '@ngrx/store/testing';
+import { StoreModule } from "@ngrx/store";
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
-  const spySync = jasmine.createSpyObj('SyncService', ['selectedInstrument$']);
-  spySync.selectedInstrument$ = of(null);
   const spyAccount = jasmine.createSpyObj('AccountService', ['getActivePortfolios']);
   spyAccount.getActivePortfolios.and.returnValue(of([]));
   const spyDashboard = jasmine.createSpy('DashboardService');
@@ -29,14 +28,15 @@ describe('NavbarComponent', () => {
       imports: [
         NoopAnimationsModule,
         LayoutModule,
-        SharedModule
+        SharedModule,
+        StoreModule.forRoot({})
       ],
       providers: [
-        { provide: SyncService, useValue: spySync },
         { provide: AccountService, useValue: spyAccount },
         { provide: DashboardService, useValue: spyDashboard },
         { provide: AuthService, useValue: spyAuth },
         { provide: ModalService, useValue: spyModal },
+        provideMockStore()
       ]
     }).compileComponents();
   }));

@@ -1,21 +1,25 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, merge, Observable, of, pipe, Subscription } from 'rxjs';
-import { distinct, filter, map, startWith, switchMap } from 'rxjs/operators';
-import { Currency } from 'src/app/shared/models/enums/currencies.model';
+import { Store } from '@ngrx/store';
+import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
+import { filter, map, startWith, switchMap } from 'rxjs/operators';
+import { CurrencyCode, CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
+import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { Order } from 'src/app/shared/models/orders/order.model';
+import { StopOrder, StopOrderData } from 'src/app/shared/models/orders/stop-order.model';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
+import { OrdersNotificationsService } from 'src/app/shared/services/orders-notifications.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { formatCurrency } from 'src/app/shared/utils/formatters';
-import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { SummaryView } from '../models/summary-view.model';
 import { Summary } from '../models/summary.model';
+import { selectNewInstrument } from '../../../store/instruments/instruments.actions';
+import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
 
 @Injectable({
   providedIn: 'root'
@@ -24,11 +28,12 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   private trades: Map<string, Trade> = new Map<string, Trade>();
   private positions: Map<string, Position> = new Map<string, Position>();
   private orders: Map<string, Order> = new Map<string, Order>();
+  private stopOrders: Map<string, StopOrder> = new Map<string, StopOrder>();
 
   private portfolioSub?: Subscription;
-  private subGuidByOpcode: Map<string, string> = new Map<string, string>();
 
   order$: Observable<Order[]> = of([]);
+  stopOrder$: Observable<StopOrder[]> = of([]);
   trade$: Observable<Trade[]> = of([]);
   position$: Observable<Position[]> = of([]);
   summary$: Observable<SummaryView> = of();
@@ -36,13 +41,22 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   constructor(
     ws: WebsocketService,
     settingsService: DashboardService,
-    private sync: SyncService,
+    private notification: OrdersNotificationsService,
+    private store: Store,
     private quotes: QuotesService) {
     super(ws, settingsService);
   }
 
   selectNewInstrument(symbol: string, exchange: string) {
-    this.sync.selectNewInstrument({symbol, exchange, instrumentGroup: undefined})
+    if (symbol == CurrencyCode.RUB) {
+      return;
+    }
+    if (CurrencyCode.isCurrency(symbol)) {
+      symbol = CurrencyCode.toInstrument(symbol)
+      exchange = Exchanges.MOEX
+    }
+    const instrument = { symbol, exchange, instrumentGroup: undefined};
+    this.store.dispatch(selectNewInstrument({ instrument }))
   }
 
   setTabIndex(index: number) {
@@ -79,11 +93,20 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     return this.order$;
   }
 
+  getStopOrders(guid: string) {
+    this.stopOrder$ = this.getSettings(guid).pipe(
+      filter((s): s is BlotterSettings => !!s),
+      switchMap((settings) => this.getStopOrdersReq(settings.portfolio, settings.exchange))
+    )
+    this.linkToPortfolio();
+    return this.stopOrder$;
+  }
+
   getSummaries(guid: string) : Observable<SummaryView> {
     this.summary$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => {
-        if (settings.currency != Currency.Rub) {
+        if (settings.currency != CurrencyInstrument.RUB) {
           return combineLatest([
             this.getSummariesReq(settings.portfolio, settings.exchange),
             this.quotes.getQuotes(settings.currency, 'MOEX')
@@ -93,7 +116,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         }
         else {
           return this.getSummariesReq(settings.portfolio, settings.exchange).pipe(
-            map(summary => this.formatSummary(summary, Currency.Rub, 1))
+            map(summary => this.formatSummary(summary, CurrencyInstrument.RUB, 1))
           );
         }
       })
@@ -132,15 +155,59 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     return merge(positions, of([]));
   }
 
+  private getStopOrdersReq(portfolio: string, exchange: string) : Observable<StopOrder[]> {
+    this.orders = new Map<string, StopOrder>();
+    let prevValue: StopOrder | null = null;
+    const opcode = 'StopOrdersGetAndSubscribeV2'
+    const stopOrders = this.getPortfolioEntity<StopOrderData>(portfolio, exchange, opcode, true).pipe(
+      map((order: StopOrderData) => {
+        const existingOrder = this.orders.get(order.id)
+        order.transTime = new Date(order.transTime);
+        order.endTime = new Date(order.endTime);
+
+        if (existingOrder) {
+          this.notification.notificateOrderChange(order, existingOrder);
+        }
+        else {
+          this.notification.notificateAboutNewOrder(order);
+        }
+        const stopOrder = {
+          ...order,
+          triggerPrice: order.stopPrice,
+          conditionType: order.condition
+        }
+        this.stopOrders.set(order.id, stopOrder);
+        return Array.from(this.stopOrders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
+      })
+    );
+    return stopOrders.pipe(startWith([]))
+  }
+
   private getOrdersReq(portfolio: string, exchange: string) {
     this.orders = new Map<string, Order>();
-    const orders = this.getPortfolioEntity<Order>(portfolio, exchange, 'OrdersGetAndSubscribeV2').pipe(
+    let prevValue: Order | null = null;
+    const opcode = 'OrdersGetAndSubscribeV2'
+    const orders = this.getPortfolioEntity<Order>(portfolio, exchange, opcode, true).pipe(
       map((order: Order) => {
+        const existingOrder = this.orders.get(order.id)
+        order.transTime = new Date(order.transTime);
+        order.endTime = new Date(order.endTime);
+
+        if (existingOrder) {
+          this.notification.notificateOrderChange(order, existingOrder);
+        }
+        else {
+          this.notification.notificateAboutNewOrder(order);
+        }
         this.orders.set(order.id, order);
         return Array.from(this.orders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
       })
     );
     return orders.pipe(startWith([]))
+  }
+
+  private compareOrders(a: Order, b: Order) {
+    return a.id == b.id;
   }
 
   private getTradesReq(portfolio: string, exchange: string) : Observable<Trade[]> {
@@ -157,7 +224,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   private linkToPortfolio() {
     if (!this.portfolioSub) {
-      this.portfolioSub = this.sync.selectedPortfolio$.pipe(
+      this.portfolioSub = this.store.select(getSelectedPortfolio).pipe(
         filter((p): p is PortfolioKey => !!p),
         map((p) => {
           const current = this.getSettingsValue();

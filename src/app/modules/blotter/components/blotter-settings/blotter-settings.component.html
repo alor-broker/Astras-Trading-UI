@@ -30,6 +30,15 @@
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Выберите колонки">
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="stopOrdersColumns">Колонки стоп-заявок</nz-form-label>
+        <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
+          nzPlaceHolder="Выберите..." formControlName="stopOrdersColumns">
+          <nz-option *ngFor="let item of allStopOrdersColumns" [nzLabel]="item.name" [nzValue]="item.columnId"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Выберите колонки">
         <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="ordersColumns">Колонки сделок</nz-form-label>
         <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
           nzPlaceHolder="Выберите..." formControlName="tradesColumns">

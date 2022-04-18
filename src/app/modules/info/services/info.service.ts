@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, distinct, distinctUntilChanged, map, Observable, Subscription, switchMap, tap } from 'rxjs';
+import { select, Store } from '@ngrx/store';
+import { combineLatest, distinct, distinctUntilChanged, map, Observable, switchMap } from 'rxjs';
+import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
 import { InfoSettings } from 'src/app/shared/models/settings/info-settings.model';
 import { BaseService } from 'src/app/shared/services/base.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { environment } from 'src/environments/environment';
 import { Calendar } from '../models/calendar.model';
 import { Description } from '../models/description.model';
@@ -15,6 +16,7 @@ import { Dividend } from '../models/dividend.model';
 import { ExchangeInfo } from '../models/exchange-info.model';
 import { Finance } from '../models/finance.model';
 import { Issue } from '../models/issue.model';
+import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,
@@ -29,10 +31,9 @@ export class InfoService extends BaseService<InfoSettings>{
   private instrumentUrl = environment.apiUrl + '/instruments/v1';
 
   private settings$?: Observable<SettingsWithExchangeInfo>
-  private sub?: Subscription;
 
-  constructor(private http: HttpClient, settingsService: DashboardService, private sync: SyncService) {
-    super(settingsService)
+  constructor(private http: HttpClient, settingsService: DashboardService, private store: Store) {
+    super(settingsService);
   }
 
   getSettingsWithExchangeInfo(guid: string) {
@@ -41,9 +42,9 @@ export class InfoService extends BaseService<InfoSettings>{
     }
 
     this.settings$ = combineLatest([
-      this.sync.selectedInstrument$.pipe(
+      this.store.pipe(
+        select(getSelectedInstrument),
         distinctUntilChanged((a,b) => a.isin == b.isin),
-        tap(i => console.log(i))
       ),
       this.getSettings(guid).pipe(
         switchMap(s => {
@@ -66,7 +67,7 @@ export class InfoService extends BaseService<InfoSettings>{
             this.setSettings({ ...settings.settings, ...i });
           }
           return settings;
-        })
+        }),
       )
       return this.settings$;
   }
@@ -90,29 +91,26 @@ export class InfoService extends BaseService<InfoSettings>{
   getIssue() : Observable<Issue> {
     return this.getInstrumentEntity<Issue>('bond/issue').pipe(
       map(i => ({
-        ...i,
-        facevalue: 1000,
-        currentFaceValue: 750,
-        issueVol: 1000000,
-        issueVal: 1000000000,
-        issueDate: new Date(),
-        maturityDate: new Date(),
-        marketVol: 1000000,
-        marketVal: 750000000,
-        issuer: "МСБ-Лизинг",
+        ...i
       }))
     );
   }
 
   getDividends() : Observable<Dividend[]> {
-    return this.getInstrumentEntity<Dividend[]>('stock/dividends');
+    return this.getInstrumentEntity<Dividend[]>('stock/dividends').pipe(
+      map(dividends => dividends.reverse())
+    );
   }
 
   private getInstrumentEntity<T>(path: string) : Observable<T> {
     if (this.settings$) {
       return this.settings$.pipe(
         distinct(),
-        switchMap(s => this.http.get<T>(`${this.instrumentUrl}/${s.info.isin}/${path}`))
+        switchMap(s => this.http.get<T>(
+          this.instrumentUrl +
+          (s.info.exchange == Exchanges.SPBX ? "/international/" : "/") +
+          (s.info.exchange == Exchanges.SPBX ? `${s.info.symbol}/` : `${s.info.isin}/`) +
+          path))
       );
     }
     throw Error('Was not initialised');

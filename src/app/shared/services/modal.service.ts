@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { BehaviorSubject } from 'rxjs';
 import { CommandParams } from '../models/commands/command-params.model';
 import { EditParams } from '../models/commands/edit-params.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
-import { SyncService } from './sync.service';
+import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
 
 @Injectable({
   providedIn: 'root'
@@ -33,8 +34,8 @@ export class ModalService {
 
   shouldShowTerminalSettingsModal$ = this.shouldShowTerminalSettingsModal.asObservable();
 
-  constructor(private sync: SyncService) {
-    this.sync.selectedPortfolio$.subscribe(p => {
+  constructor(private store: Store) {
+    this.store.select(getSelectedPortfolio).subscribe(p => {
       if (p) {
         this.selectedPortfolio = p;
       }

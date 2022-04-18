@@ -10,12 +10,14 @@ import { MarketCommandComponent } from './components/market-command/market-comma
 import { EvaluationComponent } from './components/evaluation/evaluation.component';
 import { EditWidgetComponent } from './widgets/edit-widget/edit-widget.component';
 import { LimitEditComponent } from './components/limit-edit/limit-edit.component';
+import { StopCommandComponent } from './components/stop-command/stop-command.component';
 
 
 @NgModule({
   declarations: [
     LimitCommandComponent,
     LimitEditComponent,
+    StopCommandComponent,
     CommandWidgetComponent,
     EditWidgetComponent,
     CommandHeaderComponent,

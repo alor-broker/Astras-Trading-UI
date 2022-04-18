@@ -7,7 +7,7 @@ const routes: Routes = [{
   path: 'login',
   component: LoginPageComponent
 },  {
-  path: 'callbacksso',
+  path: 'sso',
   component: SsoCallbackComponent
 }];
 

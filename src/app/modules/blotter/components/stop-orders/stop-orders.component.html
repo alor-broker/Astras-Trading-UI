@@ -1,0 +1,86 @@
+<ng-template #empty>
+  <nz-empty nzNotFoundImage="simple" nzNotFoundContent='Заявок сегодня не было'></nz-empty>
+</ng-template>
+
+<nz-table *ngIf="displayOrders$ | async as orders" #nzTable [nzData]="orders"
+    #nzTableComponent
+    [nzNoResult]="empty"
+    nzTableLayout="fixed"
+    nzSize="small"
+    [nzFrontPagination]="false"
+    [nzShowPagination]="false"
+    [nzScroll]="{ x: tableInnerWidth }">
+  <thead>
+    <tr>
+      <th nzWidth="5px"></th>
+      <th *ngFor='let column of listOfColumns'
+          [nzCustomFilter]='column.hasSearch ? "": null'
+          [nzSortFn]='column.sortFn'
+          [nzFilters]="column.listOfFilter"
+          [nzShowFilter]="column.hasFilter"
+          [nzFilterFn]="column.filterFn">
+        {{column.name}}
+        <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
+          <i nz-icon nzType="search"></i>
+        </nz-filter-trigger>
+      </th>
+      <th>
+        <span>
+          <a nz-popconfirm
+            nzPopconfirmTitle="Точно отменить?"
+            nzOkText="Да"
+            nzCancelText="Нет"
+            (nzOnConfirm)="cancelAllOrders()">Снять все</a>
+        </span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let ord of nzTable.data" (click)="selectInstrument(ord.symbol, ord.exchange)">
+      <td nzWidth='5px'>
+        <span [class]='ord.side.toString() == "sell" ? "side-sell" : "side-buy"'>&nbsp;</span>
+      </td>
+      <td *ngIf='shouldShow("id")'>{{ ord.id }}</td>
+      <td class='bold' *ngIf='shouldShow("symbol")'>{{ ord.symbol }}</td>
+      <td [class]='ord.side.toString() == "sell" ? "sell" : "buy"' *ngIf='shouldShow("side")'>{{ ord.side }}</td>
+      <td *ngIf='shouldShow("residue")'>{{ ord.residue }}</td>
+      <td *ngIf='shouldShow("volume")'>{{ ord.volume }}</td>
+      <td *ngIf='shouldShow("qty")'>{{ ord.qty }}</td>
+      <td *ngIf='shouldShow("price")'>{{ ord.price }}</td>
+      <td *ngIf='shouldShow("triggerPrice")'>{{ ord.triggerPrice }}</td>
+      <td [class]='ord.status.toString() == "filled"
+        ? (ord.status.toString() == "sell" ? "sell" : "buy") :
+        (ord.status.toString() == "canceled" ? "cancelled" : "bold" )' *ngIf='shouldShow("status")'>{{ translateStatus(ord.status) }}</td>
+      <td *ngIf='shouldShow("conditionType")'>{{ ord.conditionType }}</td>
+      <td *ngIf='shouldShow("transTime")'>{{ formatDate(ord.transTime) }}</td>
+      <td *ngIf='shouldShow("exchange")'>{{ ord.exchange }}</td>
+      <td *ngIf='shouldShow("type")'>{{ ord.type }}</td>
+      <td *ngIf='shouldShow("endTime")'>{{ formatDate(ord.endTime) }}</td>
+      <td>
+        <a *ngIf='ord.status == "working" && ord.type == "limit"' (click)="editOrder(ord)">
+          <i nz-icon nzType="edit" nzTheme="outline"></i>
+        </a>
+        &nbsp;
+        <a *ngIf='ord.status == "working"' nz-popconfirm
+          nzPopconfirmTitle="Точно отменить?"
+          nzOkText="Да"
+          nzCancelText="Нет"
+          (nzOnConfirm)="cancelOrder(ord.id)">
+          <i nz-icon nzType="close-circle" nzTheme="outline"></i>
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+
+<nz-dropdown-menu #searchMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown" *ngFor='let column of listOfColumns'>
+    <div class="search-box" *ngIf='column.hasSearch && column.isSearchVisible'>
+      <input
+        class='ant-input' type="text" nz-input [placeholder]="column.searchDescription"
+        [ngModel]='getFilter(column.id)'
+        (ngModelChange)="filterChange($event, column.id)"/>
+    </div>
+  </div>
+  <button nz-button nzType="primary" nzSize="small" (click)="reset()">Сбросить</button>
+</nz-dropdown-menu>

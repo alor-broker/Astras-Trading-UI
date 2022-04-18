@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { map, switchMap, tap, finalize, mergeMap } from 'rxjs/operators';
+import { map, tap, finalize, mergeMap } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { WatchedInstrument } from '../models/watched-instrument.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
 
 @Injectable({
@@ -28,7 +26,7 @@ export class WatchInstrumentsService {
 
   private quotesSubsByKey = new Map<string, Subscription>();
 
-  constructor(private history: HistoryService, private sync: SyncService, private ws: WebsocketService) {
+  constructor(private history: HistoryService, private ws: WebsocketService) {
     this.newInstruments = new Subject<Instrument>();
     this.newInstruments$ = this.newInstruments.asObservable();
   }
@@ -67,7 +65,7 @@ export class WatchInstrumentsService {
         const instrObs = candleObs.pipe(
           map((c) : WatchedInstrument => ({
             instrument: i,
-            closePrice: c.close,
+            closePrice: c?.close ?? 0,
             prevTickPrice: 0,
             dayChange: 0,
             price: 0,
@@ -119,7 +117,6 @@ export class WatchInstrumentsService {
       this.setWatchlist();
       this.watchedInstrumentsSubj.next(this.watchedInstruments);
     })
-    this.add(this.sync.getCurrentlySelectedInstrument())
     this.getWatchList().forEach(i => this.add(i));
     return this.watchedInstruments$;
   }

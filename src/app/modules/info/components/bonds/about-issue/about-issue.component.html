@@ -30,7 +30,7 @@
   <nz-descriptions-item [nzTitle]="nearestCoupon" nzSpan="2"></nz-descriptions-item>
   <nz-descriptions-item nzTitle="НКД">{{issue.nearestCoupon.accruedInterest  | number}}</nz-descriptions-item>
   <nz-descriptions-item nzTitle="Период, дней">{{issue.nearestCoupon.intervalInDays  | number}}</nz-descriptions-item>
-  <nz-descriptions-item nzTitle="Тип">{{issue.nearestCoupon.couponType  | number}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Тип">{{issue.nearestCoupon.couponType }}</nz-descriptions-item>
   <nz-descriptions-item nzTitle="Сумма">{{issue.nearestCoupon.amount  | currency: issue.nearestAmortization.currency:'symbol-narrow'}}</nz-descriptions-item>
   <nz-descriptions-item nzTitle="Дата">{{issue.nearestCoupon.date | date}}</nz-descriptions-item>
 </nz-descriptions>

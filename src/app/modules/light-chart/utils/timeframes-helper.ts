@@ -14,6 +14,9 @@ export class TimeframesHelper {
   private readonly candlesBatchSize = 300;
 
   timeFrames : Timeframe[] = [
+    { label: '1m', value: '60' },
+    { label: '5m', value: '300' },
+    { label: '15m', value: '900' },
     { label: 'H', value: '3600' },
     { label: 'D', value: 'D' },
     { label: 'M', value: 'M' },
@@ -42,6 +45,21 @@ export class TimeframesHelper {
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
           (b1, b2) => b1.time - b2.time < 3600)
+      case '900':
+        return findUniqueElements(
+          [...existing, ...history],
+          (b1, b2) => b1.time - b2.time,
+          (b1, b2) => b1.time - b2.time < 900)
+      case '300':
+        return findUniqueElements(
+          [...existing, ...history],
+          (b1, b2) => b1.time - b2.time,
+          (b1, b2) => b1.time - b2.time < 300)
+      case '60':
+        return findUniqueElements(
+          [...existing, ...history],
+          (b1, b2) => b1.time - b2.time,
+          (b1, b2) => b1.time - b2.time < 60)
       default:
         return existing;
     }
@@ -64,6 +82,12 @@ export class TimeframesHelper {
         return addDaysUnix(new Date(), -this.candlesBatchSize);
       case 'H':
         return addHoursUnix(new Date(), -this.candlesBatchSize);
+      case '15m':
+        return addHoursUnix(new Date(), -(this.candlesBatchSize / 4));
+      case '5m':
+        return addHoursUnix(new Date(), -(this.candlesBatchSize / 12));
+      case '1m':
+        return addHoursUnix(new Date(), -this.candlesBatchSize / 60);
       default:
         return 0;
     }
@@ -80,6 +104,15 @@ export class TimeframesHelper {
       }
       else if (options.timeFrame == '3600') {
         from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize)
+      }
+      else if (options.timeFrame == '900') {
+        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 4)
+      }
+      else if (options.timeFrame == '300') {
+        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 12)
+      }
+      else if (options.timeFrame == '60') {
+        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 60)
       }
       var request : HistoryRequest = {
         from,

@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
-import { SyncService } from 'src/app/shared/services/sync.service';
-
+import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { InfoService } from './info.service';
 
 describe('InfoService', () => {
@@ -11,7 +10,6 @@ describe('InfoService', () => {
   let httpController: HttpTestingController;
   let httpClient: HttpClient;
   const dashboardSpy = jasmine.createSpyObj('DashboardService', ['getSettings'])
-  const syncSpy = jasmine.createSpyObj('SyncService', ['selectedInstrument$'])
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -20,7 +18,7 @@ describe('InfoService', () => {
       ],
       providers: [
         { provide: DashboardService, useValue: dashboardSpy },
-        { provide: SyncService, useValue: syncSpy },
+        provideMockStore(),
       ]
     });
     service = TestBed.inject(InfoService);
@@ -33,3 +31,4 @@ describe('InfoService', () => {
     expect(service).toBeTruthy();
   });
 });
+
