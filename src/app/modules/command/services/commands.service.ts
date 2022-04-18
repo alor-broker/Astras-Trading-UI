@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { CommandResponse } from 'src/app/shared/models/commands/command-response.model';
 import { Side } from 'src/app/shared/models/enums/side.model';
-import { addDays, addDaysUnix, toUnixTimestampMillies, toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
+import { addDays, toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { environment } from 'src/environments/environment';
 import { LimitCommand } from '../models/limit-command.model';
@@ -119,7 +119,8 @@ export class CommandsService {
         ...command
       }, {
       headers: {
-        'X-ALOR-REQID': GuidGenerator.newGuid()
+        'X-ALOR-REQID': GuidGenerator.newGuid(),
+        'X-ALOR-ORIGINATOR': 'astras'
       }
     }).pipe(
       tap(resp => {
@@ -150,7 +151,8 @@ export class CommandsService {
         side
       }, {
       headers: {
-        'X-ALOR-REQID': GuidGenerator.newGuid()
+        'X-ALOR-REQID': GuidGenerator.newGuid(),
+        'X-ALOR-ORIGINATOR': 'astras'
       }
     }).pipe(
       tap(resp => {
