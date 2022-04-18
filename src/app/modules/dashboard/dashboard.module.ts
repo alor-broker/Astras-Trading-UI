@@ -15,6 +15,8 @@ import { CommandModule } from '../command/command.module';
 import { HelpModule } from '../help/help.module';
 import { InfoModule } from '../info/info.module';
 import { TerminalSettingsModule } from '../terminal-settings/terminal-settings.module';
+import { JoyrideModule } from 'ngx-joyride';
+import { OnboardingService } from './services/onboarding.service';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,7 @@ import { TerminalSettingsModule } from '../terminal-settings/terminal-settings.m
     DashboardComponent,
     NavbarComponent,
     ParentWidgetComponent,
-    WidgetHeaderComponent,
+    WidgetHeaderComponent
   ],
   imports: [
     DashboardRoutingModule,
@@ -35,7 +37,11 @@ import { TerminalSettingsModule } from '../terminal-settings/terminal-settings.m
     HelpModule,
     InfoModule,
     TerminalSettingsModule,
+    JoyrideModule.forRoot(),
     // components
+  ],
+  providers: [
+    OnboardingService
   ]
 })
 export class DashboardModule { }

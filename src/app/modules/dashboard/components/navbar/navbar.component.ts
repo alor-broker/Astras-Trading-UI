@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { filter, Observable, Subject, take, takeUntil } from 'rxjs';
+import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { AccountService } from '../../services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
@@ -13,6 +13,7 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from '@ngrx/store';
 import { getSelectedInstrument } from '../../../../store/instruments/instruments.selectors';
 import { selectNewPortfolio } from '../../../../store/portfolios/portfolios.actions';
+import { joyrideContent } from '../../models/joyride';
 
 @Component({
   selector: 'ats-navbar',
@@ -24,6 +25,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   names = WidgetNames
   buyColor = buyColor;
   sellColor = sellColor;
+  joyrideContent = joyrideContent;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private activeInstrument$!: Observable<Instrument>;
 

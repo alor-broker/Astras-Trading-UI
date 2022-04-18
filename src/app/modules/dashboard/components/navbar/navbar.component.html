@@ -3,30 +3,50 @@
     <li nz-menu-item>
       <a [routerLink]="['/']" nzSuccess><div class="logo"></div></a>
     </li>
-    <li nz-menu-item class='menu-item icon-li' (click)="newOrder()">
+    <li nz-menu-item
+      class='menu-item icon-li'
+      (click)="newOrder()"
+      joyrideStep="step3"
+      [title]="joyrideContent.step3.title"
+      [text]="joyrideContent.step3.text"
+    >
       <i nz-icon nzType="plus-circle" nzTheme="twotone" [nzTwotoneColor]="buyColor" class='managing-icon'></i>
     </li>
     <li nz-menu-item class='menu-item'>
-      <button nz-button nz-dropdown [nzDropdownMenu]="widgetsMenu" nzSize='small' >
+      <button nz-button nz-dropdown
+        [nzDropdownMenu]="widgetsMenu"
+        nzSize='small'
+        joyrideStep="step2"
+        [title]="joyrideContent.step2.title"
+        [text]="joyrideContent.step2.text">
         Виджет
         <i nz-icon nzType="plus"></i>
       </button>
     </li>
     <li nz-menu-item  *ngIf="portfolios$ | async as portfolios"  class='menu-item'>
-      <nz-select nzSize='small' nzShowSearch [ngModel]="selectDefault(portfolios)" (ngModelChange)="changePortfolio($event)">
+      <nz-select nzSize='small'
+        nzShowSearch [ngModel]="selectDefault(portfolios)"
+        (ngModelChange)="changePortfolio($event)"
+        joyrideStep="step1"
+        [title]="joyrideContent.step1.title"
+        [text]="joyrideContent.step1.text">
         <nz-option *ngFor='let model of portfolios' [nzValue]="model" nzLabel="{{model.portfolio}}:{{model.exchange}}">
         </nz-option>
       </nz-select>
     </li>
     <li nz-menu-item (click)="clear()" class='menu-item icon-li'>
-      <i nz-icon nzType="delete" [nzTwotoneColor]="sellColor" nzTheme="outline" class="managing-icon"></i>
+      <i nz-icon
+        nzType="delete"
+        [nzTwotoneColor]="sellColor"
+        nzTheme="outline"
+        class="managing-icon"
+        joyrideStep="step4"
+        [title]="joyrideContent.step4.title"
+        [text]="joyrideContent.step4.text"></i>
     </li>
     <button class="right" nz-button nz-dropdown [nzDropdownMenu]="rightMenu" nzPlacement="bottomRight">
       <i nz-icon nzType="user"></i>
     </button>
-    <!-- <li nz-menu-item (click)="logout()" class='right menu-item' >
-      <i nz-icon nzType="logout" nzTheme="outline"></i>
-    </li> -->
   </ul>
 </nz-header>
 
