@@ -11,13 +11,13 @@ assignees: ''
 
 
 **Is your feature request related to a problem? Please describe. \ Опишите проблему, которую решает ваша фича**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...] \ Краткое и понятное описание сути проблемы, которую решает фича.
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...] \ Краткое и понятное описание сути проблемы, которую решает фича. Например: Я испытываю трудности когда [...]
 
 **Describe the solution you'd like \ Опишите предлагаемое вами решение**
-A clear and concise description of what you want to happen. \ Краткое и понятное описание того, как вы предлагаете решить проблему.
+A clear and concise description of what you want to happen. \ Краткое и понятное описание того, что должно произойти.
 
 **Describe alternatives you've considered \ Опишите альтернативные решения, о которых вы думали**
-A clear and concise description of any alternative solutions or features you've considered. \ Краткое и понятное описания альтернативных решений или фич, которые пришли вам в голову.
+A clear and concise description of any alternative solutions or features you've considered. \ Краткое и понятное описание альтернативных решений или фич, которые пришли вам в голову.
 
 **Additional context \ Дополнительная информация**
 Add any other context or screenshots about the feature request here. Добавьте любую дополнительную информацию или скриншоты.
