@@ -63,7 +63,7 @@ export class InstrumentSelectComponent implements OnInit {
         query: isComplexSearch ? query : value,
         exchange: isComplexSearch ? exchange : '',
         instrumentGroup: isComplexSearch && instrumentGroup ? instrumentGroup : '',
-        limit: 7
+        limit: 20
       }
     }
 
