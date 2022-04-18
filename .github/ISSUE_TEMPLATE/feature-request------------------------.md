@@ -3,7 +3,7 @@ name: Feature request \ Предложить функционал
 about: Suggest an idea for this project \ Предложите идею новой фичи
 title: "[FEATURE]"
 labels: enhancement, help wanted
-assignees: PilgrimViis
+assignees: ''
 
 ---
 

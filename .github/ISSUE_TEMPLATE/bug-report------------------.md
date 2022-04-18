@@ -3,8 +3,8 @@ name: Bug report \ Сообщить о баге
 about: Create a report to help us improve \ Сообщите о проблеме, чтобы помочь нам
   улучшить продукт
 title: "[BUG] "
-labels: bug, help wanted
-assignees: ''
+labels: bug, enhancement, help wanted
+assignees: PilgrimViis
 
 ---
 
