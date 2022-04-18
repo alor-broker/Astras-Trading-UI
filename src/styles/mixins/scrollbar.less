@@ -1,0 +1,23 @@
+@import (reference) 'zorro';
+
+.scrollbar() {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: @text-color-secondary @component-background;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: @component-background;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: @text-color-secondary; /* or add it to the track */
+    border-radius: 10px;
+  }
+}
+
