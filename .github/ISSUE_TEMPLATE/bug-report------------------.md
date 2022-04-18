@@ -32,10 +32,7 @@ If applicable, add screenshots to help explain your problem \ Если нужн�
  - Version \ Версия [e.g. 22]
 
 **Smartphone (please complete the following information) \ Если смартфон. Опишите среду в которой баг воспроизводится:**
- - Device \ Устройство: [e.g. iPhone6]
- - OS \ ОС: [e.g. iOS8.1]
- - Browser \ Браузер [e.g. stock browser, safari]
- - Version \ Версия [e.g. 22]
+Please note, we do not officially support mobile devices for now. Although we strive to make Astras work on mobile, too. \ Пожалуйста обратите внимание, мы официально не поддерживаем мобильные устройства на данный момент. Хотя мы и стараемся, чтобы Astras был доступен и на мобильном тоже.
 
 **Additional context \ Дополнительная информация**
 Add any other context about the problem here. \ Любая дополнительная информация, которая по вашему мнению может быть полезна
