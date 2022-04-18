@@ -3,14 +3,14 @@ name: Bug report \ Сообщить о баге
 about: Create a report to help us improve \ Сообщите о проблеме, чтобы помочь нам
   улучшить продукт
 title: "[BUG] "
-labels: bug, enhancement, help wanted
-assignees: PilgrimViis
+labels: bug, help wanted
+assignees: ''
 
 ---
 
 **If you have a question, a suggestion or some issue with the Alor's product or services, please email us at support@alor.ru. Github issues are only for bugs and feature requests for Astras. \ Если у вас вопрос, предложения или какая-то проблема с продуктом или сервисами Алора, пожалуйста напишите нам на support@alor.ru. Github используется только для описания багов и предложения фич по Astras.**
 
-**Describe the bug\Опишите баг**
+**Describe the bug \ Опишите баг**
 A clear and concise description of what the bug is. \ Краткое и понятное описание сути бага
 
 **To Reproduce \ Как воспроизвести **
