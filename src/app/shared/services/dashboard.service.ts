@@ -18,6 +18,7 @@ import { WidgetFactoryService } from './widget-factory.service';
 export class DashboardService {
   private dashboardsStorage = 'dashboards';
   private settingsStorage = 'settings';
+  private profileStorage = 'profile';
 
   private dashboardSource: BehaviorSubject<Map<string, Widget>>;
   dashboard$ : Observable<Map<string, Widget>>;
@@ -90,8 +91,9 @@ export class DashboardService {
 
   clearDashboard() {
     this.setDashboard(new Map())
-    localStorage.removeItem(this.dashboardsStorage)
-    localStorage.removeItem(this.settingsStorage)
+    localStorage.removeItem(this.dashboardsStorage);
+    localStorage.removeItem(this.settingsStorage);
+    localStorage.removeItem(this.profileStorage);
   }
 
   saveDashboard(name: string) {

@@ -7,7 +7,7 @@ import * as fromPortfolios from './portfolios/portfolios.reducer';
   declarations: [],
   imports: [
     StoreModule.forFeature(fromInstruments.instrumentsFeatureKey, fromInstruments.reducer),
-    StoreModule.forFeature(fromPortfolios.portfoliosFeatureKey, fromPortfolios.reducer)
+    StoreModule.forFeature(fromPortfolios.portfoliosFeatureKey, fromPortfolios.reducer),
   ],
   exports: [],
   providers: [],

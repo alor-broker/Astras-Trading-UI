@@ -1,10 +1,11 @@
-import { Component, Input, Output, OnInit, EventEmitter, OnDestroy } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { getTypeBySettings, isInstrumentDependent, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
+import { joyrideContent } from '../../models/joyride';
 
 
 @Component({
@@ -23,6 +24,8 @@ export class WidgetHeaderComponent implements OnInit {
   switchSettingsEvent = new EventEmitter<boolean>();
   @Output()
   linkChangedEvent = new EventEmitter<boolean>();
+
+  joyrideContent = joyrideContent;
 
   private shouldShowSettings = false;
   settings$?: Observable<AnySettings>;
