@@ -19,13 +19,17 @@
       <ats-command-footer *ngIf="activeTab | async as tab" [activeTab]='tab'></ats-command-footer>
     </ng-container>
   </nz-modal>
-</div>
 
-<ng-template #header>
+  <ng-template #header>
   <span class="title">
     <button nz-button class='btn-help' nzSize="small" (click)="openHelp()">
       <i nz-icon nzType="question-circle" [nzTheme]="'outline'"></i>
     </button>
-    <label><h2>Выставить заявку</h2></label>
+    <label>
+      <h2>Выставить заявку<span *ngIf="command?.user as portfolio"> ({{portfolio.portfolio}}:{{portfolio.exchange}})</span></h2>
+    </label>
   </span>
-</ng-template>
+  </ng-template>
+</div>
+
+
