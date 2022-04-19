@@ -1,0 +1,63 @@
+name: Bug report RU
+description: Уведомить о баге. Если у вас проблема с сервисами Алора, напишите нам на support@alor.ru. Github issues только для багов и фич по Astras. 
+title: '[BUG] ... '
+labels: 
+  - bug
+  - recently reported
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Опишите баг
+      description: Краткое и понятное описание сути бага
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Воспроизведение
+      description: Опишите шаги для воспроизведения
+      placeholder: |
+        - 1. Создать виджет '...'
+        - 2. Кликнуть на '....'
+        - 3. Проскролить вниз '....'
+        - 4. Увидеть ошибку '...'
+    validations:
+      required: true
+  - type: textarea
+    id: platform
+    attributes:
+      label: Среда.
+      description: Опишите среду в которой баг воспроизводится. Мы пока официально не поддерживаем мобильные платформы (Android / iOs), но стараемся чтобы Astras можно было использовать и так.
+      placeholder: |
+       - ОС [e.g. Windows 10]
+       - Браузер [e.g. chrome]
+       - Версия [e.g. 102]
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Ожидаемое поведение
+      description: Краткое и понятное объяснение ожидаемого поведения. 
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Скриншоты
+      description: Если нужно, то добавьте скриншоты для объяснения проблемы
+  - type: textarea
+    id: additional
+    attributes:
+      label: Дополнительная информация
+      description: Любая дополнительная информация, которая по вашему мнению может быть полезна
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Правила
+      description: Отправляя, вы соглашаетесь с [Code of Conduct](https://github.com/alor-broker/.github/blob/master/CODE_OF_CONDUCT.md) и [Contribution guideline](https://github.com/alor-broker/Astras-Trading-UI/blob/master/CONTRIBUTING.md)
+      options:
+        - label: Я согласен следовать правилам
+          required: true
+
