@@ -1,10 +1,9 @@
 <div *ngIf="fullName$ | async as name">
   <h1>{{name.firstName}}&nbsp;{{name.lastName}}</h1>
-  <h3>Настройки дашборда</h3>
-  <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="submitForm()">
-    <nz-form-item>
-      <nz-form-label [nzSm]="12" [nzXs]="24">Вертикальная прокрутка</nz-form-label>
-      <nz-switch formControlName='hasVerticalScroll' nzFor="hasVerticalScroll"></nz-switch>
-    </nz-form-item>
-  </form>
+  <h3>Полезные ссылки</h3>
+  <div>
+    <a target="_blank" rel="noopener noreferrer" href="https://www.alorbroker.ru">Официальный сайт</a> <br />
+    <a target="_blank" rel="noopener noreferrer" href="https://www.alorbroker.ru/trading/leverage">Ставки риска</a>  <br />
+    <a target="_blank" rel="noopener noreferrer" href="https://lk.alor.ru">Кабинет клиента</a>
+  </div>
 </div>
