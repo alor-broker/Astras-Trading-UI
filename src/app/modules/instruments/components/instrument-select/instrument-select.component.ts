@@ -85,12 +85,11 @@ export class InstrumentSelectComponent implements OnInit {
     this.selectedInstrument$ = this.store.pipe(
       select(getSelectedInstrument),
       switchMap(i => {
-        return this.service.getInstruments({
-          query: i.symbol,
+        return this.service.getInstrument({
+          symbol: i.symbol,
           exchange: i.exchange,
           instrumentGroup: i.instrumentGroup ?? '',
-          limit: 1
-        }).pipe(map(resp => resp[0]))
+        })
       }),
       map((val) : InstrumentAdditions => ({
         ...val,
