@@ -52,10 +52,10 @@ export class LimitEditComponent implements OnInit, OnDestroy {
       if (command) {
         this.form = new FormGroup({
           quantity: new FormControl(command.quantity, [
-            Validators.required,
+            Validators.required, Validators.min(0), Validators.max(1000000000)
           ]),
           price: new FormControl(command.price, [
-            Validators.required,
+            Validators.required, Validators.min(0), Validators.max(1000000000)
           ])
         } as LimitFormControls) as LimitFormGroup;
       }
@@ -65,7 +65,9 @@ export class LimitEditComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       distinctUntilChanged((prev, curr) => prev?.price == curr?.price && prev?.quantity == curr?.quantity),
     ).subscribe((form: LimitFormData) => {
-      this.setLimitEdit(form);
+      if (this.form.valid) {
+        this.setLimitEdit(form);
+      }
     });
   }
 
