@@ -17,7 +17,7 @@ describe('OrderbookChartComponent', () => {
       symbol: 'SBER',
       exchange: 'MOEX',
       showTable: true
-    }))
+    }));
     await TestBed.configureTestingModule({
       declarations: [ OrderbookChartComponent ],
       providers: [

@@ -20,7 +20,7 @@ export class TimeframesHelper {
     { label: 'H', value: '3600' },
     { label: 'D', value: 'D' },
     { label: 'M', value: 'M' },
-  ]
+  ];
 
    // LightCharts library throws errors, when bars is duplicationg or too close to each other
    aggregateBars(existing: Candle[], history: Candle[], options: LightChartSettings) {
@@ -28,38 +28,38 @@ export class TimeframesHelper {
     const getDate = (p: any) => {
       const d = new Date(p * 1000);
       return d.getDate() + '.' + d.getMonth() + '.' + d.getFullYear();
-    }
+    };
     switch (tf) {
       case 'M':
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
-          (b1, b2) => getDate(b1.time) == getDate(b2.time))
+          (b1, b2) => getDate(b1.time) == getDate(b2.time));
       case 'D':
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
-          (b1, b2) => getDate(b1.time) == getDate(b2.time))
+          (b1, b2) => getDate(b1.time) == getDate(b2.time));
       case '3600':
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
-          (b1, b2) => b1.time - b2.time < 3600)
+          (b1, b2) => b1.time - b2.time < 3600);
       case '900':
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
-          (b1, b2) => b1.time - b2.time < 900)
+          (b1, b2) => b1.time - b2.time < 900);
       case '300':
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
-          (b1, b2) => b1.time - b2.time < 300)
+          (b1, b2) => b1.time - b2.time < 300);
       case '60':
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
-          (b1, b2) => b1.time - b2.time < 60)
+          (b1, b2) => b1.time - b2.time < 60);
       default:
         return existing;
     }
@@ -97,22 +97,22 @@ export class TimeframesHelper {
     if (options && minTime != Infinity) {
       let from = minTime;
       if (options.timeFrame == 'D') {
-        from = addDaysUnix(new Date(minTime * 1000), -this.candlesBatchSize)
+        from = addDaysUnix(new Date(minTime * 1000), -this.candlesBatchSize);
       }
       else if (options.timeFrame == 'M') {
-        from = addDaysUnix(new Date(minTime * 1000), -this.candlesBatchSize * 30)
+        from = addDaysUnix(new Date(minTime * 1000), -this.candlesBatchSize * 30);
       }
       else if (options.timeFrame == '3600') {
-        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize)
+        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize);
       }
       else if (options.timeFrame == '900') {
-        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 4)
+        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 4);
       }
       else if (options.timeFrame == '300') {
-        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 12)
+        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 12);
       }
       else if (options.timeFrame == '60') {
-        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 60)
+        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 60);
       }
       var request : HistoryRequest = {
         from,

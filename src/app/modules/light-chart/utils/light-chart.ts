@@ -1,10 +1,10 @@
 import * as LightweightCharts from 'lightweight-charts';
 import { Observable } from 'rxjs';
-import { distinct, filter, map } from 'rxjs/operators';
+import { distinct, map } from 'rxjs/operators';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { TimeframesHelper } from './timeframes-helper';
-import { buyColor, sellColor, buyColorBackground, sellColorBackground, componentBackgound } from '../../../shared/models/settings/styles-constants'
+import { buyColor, sellColor, buyColorBackground, sellColorBackground, componentBackgound } from '../../../shared/models/settings/styles-constants';
 
 export class LightChart {
   chart!: LightweightCharts.IChartApi;
@@ -15,7 +15,7 @@ export class LightChart {
 
   private bars: Candle[] = [];
   private getMinTime = () => Math.min(...this.bars.map(b => b.time));
-  private timeframesHelper = new TimeframesHelper()
+  private timeframesHelper = new TimeframesHelper();
   private sizes: {
     width: number,
     height: number
@@ -83,7 +83,7 @@ export class LightChart {
     volumeSeries.setData([]);
     series.setData([]);
     this.logicalRange$ = new Observable(sub => {
-      chart.timeScale().subscribeVisibleLogicalRangeChange(lrc => sub.next(lrc))
+      chart.timeScale().subscribeVisibleLogicalRangeChange(lrc => sub.next(lrc));
     }).pipe(
         distinct(),
         map(logicalRange => {
@@ -95,7 +95,7 @@ export class LightChart {
           }
           return null;
         })
-      )
+      );
 
       this.series = series;
       this.volumeSeries = volumeSeries;
@@ -128,7 +128,7 @@ setData(candles: Candle[], options: LightChartSettings) {
       candle.close > candle.open
         ? buyColor
         : sellColor,
-  }))
+  }));
   this.volumeSeries.setData(volumes as any);
   this.bars = newBars;
 }
@@ -139,7 +139,7 @@ clear() {
 }
 
 clearSeries() {
-  this.bars = []
+  this.bars = [];
   this.series.setData([]);
   this.volumeSeries.setData([]);
   this.chart.timeScale().fitContent();

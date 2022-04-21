@@ -8,5 +8,5 @@ export function isOnline$() {
     fromEvent(window, 'offline')
   ).pipe(
     map(() => navigator.onLine),
-  )
+  );
 }

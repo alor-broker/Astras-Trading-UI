@@ -1,13 +1,12 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
@@ -27,7 +26,7 @@ import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper'
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LightChartComponent implements OnInit, OnDestroy {
+export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -38,7 +37,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
   bars$: Observable<Candle | null> = of(null);
-  activeTimeFrame: Subject<string> = new BehaviorSubject('D');
+  activeTimeFrame$: Subject<string> = new BehaviorSubject('D');
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private prevOptions?: LightChartSettings;
   private isUpdating = false;
@@ -83,7 +82,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
           const oldSettings = this.service.getSettingsValue();
           if (oldSettings) {
             const newSettings = { ...oldSettings, width: item.width ?? 300, height: item.height ?? 300 };
-            this.service.setSettings(newSettings)
+            this.service.setSettings(newSettings);
           }
         }
       });
@@ -100,7 +99,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
     ).subscribe(options => {
       if (options && !isEqualLightChartSettings(options, this.prevOptions)) {
         this.prevOptions = options;
-        this.activeTimeFrame.next(options.timeFrame);
+        this.activeTimeFrame$.next(options.timeFrame);
         if (this.chart) {
           this.chart.clearSeries();
         }
@@ -131,6 +130,6 @@ export class LightChartComponent implements OnInit, OnDestroy {
         this.chart.setData(res.history, options);
       }
       this.isUpdating = false;
-    })
+    });
   }
 }

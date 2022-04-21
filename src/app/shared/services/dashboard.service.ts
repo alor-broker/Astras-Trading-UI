@@ -61,7 +61,7 @@ export class DashboardService {
       gridItem: newWidget.gridItem,
       hasSettings: newWidget.gridItem.type != WidgetNames.instrumentSelect && newWidget.gridItem.type != WidgetNames.instrumentInfo,
       hasHelp: true
-    }
+    };
     const guid = widget.gridItem.label;
     const widgets = this.getDashboardValue().set(guid, widget);
     const settings = this.getSettingsValue().set(guid, newSettings);
@@ -84,18 +84,20 @@ export class DashboardService {
   }
 
   removeWidget(guid: string) {
-    let widgets = Array.from(this.getDashboardValue().entries())
-    widgets = widgets.filter(([k,_]) => k !== guid);
+    let widgets = Array.from(this.getDashboardValue().entries());
+    widgets = widgets.filter(([k,]) => k !== guid);
     this.setDashboard(new Map(widgets));
   }
 
   clearDashboard() {
-    this.setDashboard(new Map())
+    this.setDashboard(new Map());
     localStorage.removeItem(this.dashboardsStorage);
     localStorage.removeItem(this.settingsStorage);
     localStorage.removeItem(this.profileStorage);
   }
 
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   saveDashboard(name: string) {
     this.setDashboard(this.getDashboardValue());
   }
@@ -104,7 +106,7 @@ export class DashboardService {
     return this.dashboard$.pipe(
       map((widgetsByGuids) => widgetsByGuids.get(guid)),
       filter((w): w is Widget => !!w)
-    )
+    );
   }
 
   getSettings(guid: string) : Observable<AnySettings | null> {
@@ -113,7 +115,7 @@ export class DashboardService {
         const settings = map.get(guid);
         return settings ?? null;
       })
-    )
+    );
     return settings$;
   }
 
@@ -165,6 +167,6 @@ export class DashboardService {
       this.addWidget({
         gridItem: { x: 2, y: 1, cols: 1, rows: 1, type: WidgetNames.blotter },
       }, { activeTabIndex: 0 });
-    }, 700)
+    }, 700);
   }
 }

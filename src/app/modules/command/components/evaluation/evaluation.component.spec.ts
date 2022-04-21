@@ -6,7 +6,7 @@ import { EvaluationComponent } from './evaluation.component';
 describe('EvaluationComponent', () => {
   let component: EvaluationComponent;
   let fixture: ComponentFixture<EvaluationComponent>;
-  let spy = jasmine.createSpyObj('EvaluationService', ['evaluate'])
+  let spy = jasmine.createSpyObj('EvaluationService', ['evaluate']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

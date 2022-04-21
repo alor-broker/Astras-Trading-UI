@@ -14,7 +14,7 @@ import { BaseChartDirective } from 'ng2-charts';
 })
 export class OrderbookChartComponent implements OnInit, OnChanges {
   @Input()
-  chartData!: ChartData
+  chartData!: ChartData;
   @Input()
   guid!: string;
 
@@ -76,7 +76,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
       },
       y: {
         ticks: {
-          callback: (value, _, __) => {
+          callback: (value) => {
             if (typeof value === 'number') {
               if (value >= 1000000) {
                 return MathHelper.round(value / 1000000, 1) + 'M';
@@ -101,8 +101,8 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.initialData[0].data = changes.chartData.currentValue.bids
-    this.initialData[1].data = changes.chartData.currentValue.asks
+    this.initialData[0].data = changes.chartData.currentValue.bids;
+    this.initialData[1].data = changes.chartData.currentValue.asks;
     this.chartData$?.next(this.initialData);
     const x = this.chartOptions.scales?.x;
     if (x) {

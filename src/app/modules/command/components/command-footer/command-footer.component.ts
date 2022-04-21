@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { of, take } from 'rxjs';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -9,15 +9,11 @@ import { CommandsService } from '../../services/commands.service';
   templateUrl: './command-footer.component.html',
   styleUrls: ['./command-footer.component.less']
 })
-export class CommandFooterComponent implements OnInit {
+export class CommandFooterComponent {
   @Input()
-  activeTab: string = 'limit'
+  activeTab: string = 'limit';
 
   constructor(private command: CommandsService, private modal: ModalService) {
-  }
-
-  ngOnInit(): void {
-
   }
 
   buy() {

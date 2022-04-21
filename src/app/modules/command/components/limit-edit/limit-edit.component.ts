@@ -17,8 +17,8 @@ import { CommandsService } from '../../services/commands.service';
 })
 export class LimitEditComponent implements OnInit, OnDestroy {
   evaluation = new BehaviorSubject<EvaluationBaseProperties | null>(null);
-  viewData = new BehaviorSubject<EditParams | null>(null)
-  initialParams: EditParams | null = null
+  viewData = new BehaviorSubject<EditParams | null>(null);
+  initialParams: EditParams | null = null;
   form!: LimitFormGroup;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -39,9 +39,9 @@ export class LimitEditComponent implements OnInit, OnDestroy {
           price: this.initialParams.price ?? 1,
           quantity: this.initialParams.quantity ?? 1,
           orderId: this.initialParams.orderId
-        }
-        this.viewData.next(command)
-        this.setLimitEdit(command)
+        };
+        this.viewData.next(command);
+        this.setLimitEdit(command);
       }
     });
 
@@ -85,7 +85,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
         },
         user: command.user,
         id: command.orderId
-      }
+      };
       const evaluation: EvaluationBaseProperties = {
         price: price,
         lotQuantity: quantity,
@@ -93,7 +93,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
           ...command.instrument,
           instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
         },
-      }
+      };
       if (evaluation.price > 0) {
         this.evaluation.next(evaluation);
       }

@@ -1,6 +1,6 @@
 <div *ngIf="finance$ | async as finance" >
   <nz-descriptions nzBordered [nzColumn]="columns"
-  [nzSize]="columns == 1 ? 'small' : 'default'">
+  [nzSize]="columns === 1 ? 'small' : 'default'">
   <ng-container *ngIf="finance.mainIndicators">
     <nz-descriptions-item [nzTitle]="mainIndicators" nzSpan="2"></nz-descriptions-item>
     <nz-descriptions-item *ngIf="finance.mainIndicators.ebitda" nzTitle="EBITDA">{{finance.mainIndicators.ebitda | currency: finance.currency:'symbol-narrow' | slice: 0:-3}}</nz-descriptions-item>

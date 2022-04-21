@@ -19,7 +19,7 @@ describe('OrderbookService', () => {
     spy.settings$ = of({
       exchange: 'MOEX',
       Symbol: 'SBER'
-    })
+    });
     TestBed.configureTestingModule({
       providers: [
         { provide: WebsocketService, useValue: spy },
@@ -42,10 +42,10 @@ const generateOrderBook = () : OrderBook => {
       bid: Math.floor(Math.random() * 10),
       ask: Math.floor(Math.random() * 100),
       askVolume: Math.floor(Math.random() * 10),
-    }
-  }
+    };
+  };
   const randomRows = Array.from(Array(5)).map(_ => getRandom());
-  const volumes = [...randomRows.map(p => p?.askVolume ?? 0), ...randomRows.map(p => p?.bidVolume ?? 0)]
+  const volumes = [...randomRows.map(p => p?.askVolume ?? 0), ...randomRows.map(p => p?.bidVolume ?? 0)];
   return {
     rows: randomRows,
     maxVolume: Math.max(...volumes),
@@ -67,5 +67,5 @@ const generateOrderBook = () : OrderBook => {
         { y: 500, x: 290 },
         { y: 200, x: 298 },]
     }
-  }
-}
+  };
+};

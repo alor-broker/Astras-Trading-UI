@@ -1,6 +1,6 @@
 <div *ngIf="issue$ | async as issue" >
   <nz-descriptions nzBordered [nzColumn]="columns"
-  [nzSize]="columns == 1 ? 'small' : 'default'">
+  [nzSize]="columns === 1 ? 'small' : 'default'">
   <nz-descriptions-item nzTitle="Номинал">{{issue.facevalue | currency: issue.nearestCoupon.currency:'symbol-narrow'| slice: 0:-3 }}</nz-descriptions-item>
   <nz-descriptions-item nzTitle="Тек. номинал">{{issue.currentFaceValue | currency: issue.nearestCoupon.currency:'symbol-narrow'}}</nz-descriptions-item>
   <nz-descriptions-item nzTitle="Объем выпуска">{{issue.issueVol | number }}</nz-descriptions-item>

@@ -14,7 +14,7 @@ describe('OrderBookComponent', () => {
     symbol: 'SBER',
     exchange: 'MOEX',
     showTable: true
-  }))
+  }));
   const ob : OrderBook = {
     rows: [],
     maxVolume: 10,
@@ -24,9 +24,9 @@ describe('OrderBookComponent', () => {
       minPrice: 0,
       maxPrice: 0
     }
-  }
-  spyOb.getOrderbook.and.returnValue(of(ob))
-  const modalSync = jasmine.createSpyObj('ModalService', ['openCommandModal'])
+  };
+  spyOb.getOrderbook.and.returnValue(of(ob));
+  const modalSync = jasmine.createSpyObj('ModalService', ['openCommandModal']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

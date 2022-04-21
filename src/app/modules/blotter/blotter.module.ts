@@ -1,6 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
 import { BlotterRoutingModule } from './blotter-routing.module';
 import { BlotterWidgetComponent } from './widgets/blotter-widget/blotter-widget.component';
 import { PositionsComponent } from './components/positions/positions.component';

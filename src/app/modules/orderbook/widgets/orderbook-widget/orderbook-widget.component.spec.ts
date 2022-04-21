@@ -8,13 +8,13 @@ import { OrderbookWidgetComponent } from './orderbook-widget.component';
 const settings = {
   symbol: 'SBER',
   exchange: 'MOEX'
-}
+};
 
 describe('OrderbookWidgetComponent', () => {
   let component: OrderbookWidgetComponent;
   let fixture: ComponentFixture<OrderbookWidgetComponent>;
   const spyOb = jasmine.createSpyObj('OrderbookService', ['settings$', 'setSettings']);
-  spyOb.settings$ = of(settings)
+  spyOb.settings$ = of(settings);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -27,7 +27,7 @@ describe('OrderbookWidgetComponent', () => {
         providers: [
           { provide: OrderbookService, useValue: spyOb }
         ]
-      }})
+      }});
   });
 
   beforeEach(() => {

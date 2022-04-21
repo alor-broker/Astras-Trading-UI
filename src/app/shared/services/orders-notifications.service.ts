@@ -22,7 +22,7 @@ export class OrdersNotificationsService {
       this.notificate(`Статус заявки ${newOrder.id} изменился на ${newOrder.status}`);
     }
     else if (newOrder.filledQtyUnits != oldOrder.filledQtyUnits) {
-      this.notificate(`Заявка ${newOrder.id} исполнилась на ${newOrder.filledQtyUnits - oldOrder.filledQtyUnits} шт.`)
+      this.notificate(`Заявка ${newOrder.id} исполнилась на ${newOrder.filledQtyUnits - oldOrder.filledQtyUnits} шт.`);
     }
   }
 

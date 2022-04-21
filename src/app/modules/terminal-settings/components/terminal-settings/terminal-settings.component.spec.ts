@@ -7,7 +7,7 @@ describe('TerminalSettingsComponent', () => {
   let component: TerminalSettingsComponent;
   let fixture: ComponentFixture<TerminalSettingsComponent>;
 
-  const tsSpy = jasmine.createSpyObj('TerminalSettingsService', ['getFullName'])
+  const tsSpy = jasmine.createSpyObj('TerminalSettingsService', ['getFullName']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

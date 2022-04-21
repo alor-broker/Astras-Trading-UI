@@ -10,8 +10,8 @@ describe('DashboardWidgetComponent', () => {
   let fixture: ComponentFixture<DashboardWidgetComponent>;
 
   beforeEach(async () => {
-    const spyAuth = jasmine.createSpyObj('AuthService', ['refresh'])
-    const spyOnboarding = jasmine.createSpyObj('OnboardingService', ['start'])
+    const spyAuth = jasmine.createSpyObj('AuthService', ['refresh']);
+    const spyOnboarding = jasmine.createSpyObj('OnboardingService', ['start']);
     spyAuth.refresh.and.returnValue(of(''));
     await TestBed.configureTestingModule({
       declarations: [ DashboardWidgetComponent ],

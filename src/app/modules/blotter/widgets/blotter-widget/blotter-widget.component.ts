@@ -14,16 +14,17 @@ import { BlotterService } from '../../services/blotter.service';
 export class BlotterWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
-  @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
+  @Input()
+  set linkedToActive(linkedToActive: boolean) {
     this.service.setLinked(linkedToActive);
   }
   @Input()
-  guid!: string
+  guid!: string;
   @Input()
   resize!: EventEmitter<DashboardItem>;
 
   @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>()
+  shouldShowSettingsChange = new EventEmitter<boolean>();
 
   activeTabIndex$ = of(0);
 
@@ -32,7 +33,7 @@ export class BlotterWidgetComponent implements OnInit {
   ngOnInit(): void {
     this.activeTabIndex$ = this.service.getSettings(this.guid).pipe(
       map(s => s.activeTabIndex)
-    )
+    );
   }
 
   onSettingsChange() {
@@ -40,6 +41,6 @@ export class BlotterWidgetComponent implements OnInit {
   }
 
   onIndexChange(event: NzTabChangeEvent) {
-    this.service.setTabIndex(event.index ?? 0)
+    this.service.setTabIndex(event.index ?? 0);
   }
 }

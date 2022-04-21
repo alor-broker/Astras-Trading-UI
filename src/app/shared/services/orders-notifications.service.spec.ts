@@ -6,7 +6,7 @@ import { OrdersNotificationsService } from './orders-notifications.service';
 
 describe('OrdersNotificationsService', () => {
 
-  const spy = jasmine.createSpyObj('NzNotificationService', ['info'])
+  const spy = jasmine.createSpyObj('NzNotificationService', ['info']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({

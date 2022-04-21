@@ -9,7 +9,7 @@ describe('OrderCancellerService', () => {
   let service: OrderCancellerService;
   let http: HttpClient;
 
-  const notificationSpy = jasmine.createSpyObj('NzNotificationService', ['success', 'error', 'blank'])
+  const notificationSpy = jasmine.createSpyObj('NzNotificationService', ['success', 'error', 'blank']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({

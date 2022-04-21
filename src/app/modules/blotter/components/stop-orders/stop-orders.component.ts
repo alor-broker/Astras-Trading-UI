@@ -231,11 +231,11 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       isFilterVisible: false,
       hasFilter: false,
     },
-  ]
+  ];
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private cancelCommands = new Subject<CancelCommand>();
-  private cancels$ = this.cancelCommands.asObservable()
+  private cancels$ = this.cancelCommands.asObservable();
   private orders: StopOrder[] = [];
   private orders$: Observable<StopOrder[]> = of([]);
 
@@ -247,10 +247,10 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(s => {
       if (s.stopOrdersColumns) {
-        this.listOfColumns = this.allColumns.filter(c => s.stopOrdersColumns.includes(c.id))
+        this.listOfColumns = this.allColumns.filter(c => s.stopOrdersColumns.includes(c.id));
         this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
       }
-    })
+    });
 
     this.orders$ = this.service.getStopOrders(this.guid).pipe(
       tap(orders => this.orders = orders)
@@ -267,7 +267,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       mergeMap((command) => this.cancller.cancelOrder(command)),
       catchError((_, caught) => caught),
       takeUntil(this.destroy$)
-    ).subscribe()
+    ).subscribe();
   }
 
   ngOnDestroy(): void {
@@ -283,7 +283,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
     const newFilter = this.searchFilter.getValue();
     if (option) {
       newFilter[option as keyof OrderFilter] = text;
-      this.searchFilter.next(newFilter)
+      this.searchFilter.next(newFilter);
     }
   }
 
@@ -299,7 +299,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
         exchange: settings.exchange,
         orderid: orderId,
         stop: true
-      })
+      });
     }
   }
 
@@ -317,7 +317,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
         portfolio: order.portfolio,
         exchange: order.exchange
       }
-    })
+    });
   }
 
   shouldShow(column: string) {
@@ -325,7 +325,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   }
 
   cancelAllOrders() {
-    const working = this.orders.filter(o => o.status == 'working').map(o => o.id)
+    const working = this.orders.filter(o => o.status == 'working').map(o => o.id);
     working.forEach(order => this.cancelOrder(order));
   }
 
@@ -374,7 +374,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       return -1;
     }
     else if (a.endTime > b.endTime) {
-      return 1
+      return 1;
     }
     return 0;
   }

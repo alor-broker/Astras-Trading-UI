@@ -11,13 +11,13 @@ import { Timeframe, TimeframesHelper } from '../../utils/timeframes-helper';
 })
 export class LightChartSettingsComponent implements OnInit {
   @Input()
-  guid!: string
+  guid!: string;
 
   @Output()
   settingsChange: EventEmitter<LightChartSettings> = new EventEmitter<LightChartSettings>();
 
   form!: FormGroup;
-  timeFrames: Timeframe[]
+  timeFrames: Timeframe[];
   prevSettings?: LightChartSettings;
 
   constructor(private service: LightChartService ) {
@@ -39,11 +39,11 @@ export class LightChartSettingsComponent implements OnInit {
           instrumentGroup: new FormControl(settings.instrumentGroup)
         });
       }
-    })
+    });
   }
 
   submitForm(): void {
-    this.service.setSettings({ ...this.prevSettings, ...this.form.value, linkToActive: false})
-    this.settingsChange.emit()
+    this.service.setSettings({ ...this.prevSettings, ...this.form.value, linkToActive: false});
+    this.settingsChange.emit();
   }
 }

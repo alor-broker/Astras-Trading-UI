@@ -3,11 +3,9 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
   ViewEncapsulation
 } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
@@ -101,7 +99,7 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   }
 
   newLimitOrder(event: MouseEvent, price: number, quantity?: number) {
-    event.stopPropagation()
+    event.stopPropagation();
     const settings = this.service.getSettingsValue();
     if (settings) {
       const params: CommandParams = {

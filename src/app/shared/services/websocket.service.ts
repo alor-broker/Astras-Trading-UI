@@ -24,7 +24,7 @@ export class WebsocketService {
       reconnect: true,
       reconnectTimeout: 2000,
       reconnectAttempts: 5
-    }
+    };
 
     this.connectedSub = this.isConnected$.subscribe(isConnected => {
       if (this.options.reconnect && !isConnected) {
@@ -42,7 +42,7 @@ export class WebsocketService {
         }
       },
       closeObserver: {
-        next: (v) => {
+        next: () => {
           this.isClosing.next(true);
           this.logger.info('[WS]: connection closed');
           this.socket$?.complete();
@@ -89,7 +89,7 @@ export class WebsocketService {
         }
       });
 
-      for (const [guid, msg] of this.subscriptions) {
+      for (const [, msg] of this.subscriptions) {
         this.executeWithCurrentAccessToken(token => {
           this.sendMessage(msg, token);
           this.logger.info(`[WS]: resubscribe to ${msg.opcode}`);
@@ -116,7 +116,7 @@ export class WebsocketService {
       opcode: "unsubscribe",
       format: '',
       exchange: ''
-    }
+    };
 
     this.executeWithCurrentAccessToken(token => {
       this.sendMessage(msg, token);
@@ -148,9 +148,9 @@ export class WebsocketService {
 
     this.reconnection$.subscribe({
         next: () => {
-          this.connect()
+          this.connect();
         },
-        error: (e) => null,
+        error: () => null,
         complete: () => {
             this.reconnection$ = null;
 

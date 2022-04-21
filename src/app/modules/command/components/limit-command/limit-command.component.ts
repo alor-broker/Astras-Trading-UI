@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
-import { distinct, distinctUntilChanged, filter, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter} from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -38,9 +38,9 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           type: CommandType.Limit,
           price: this.initialParams.price ?? 1,
           quantity: this.initialParams.quantity ?? 1,
-        }
-        this.viewData.next(command)
-        this.setLimitCommand(command)
+        };
+        this.viewData.next(command);
+        this.setLimitCommand(command);
       }
     });
 
@@ -85,7 +85,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
         },
         user: command.user,
-      }
+      };
       const evaluation: EvaluationBaseProperties = {
         price: price,
         lotQuantity: quantity,
@@ -93,7 +93,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           ...command.instrument,
           instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
         },
-      }
+      };
       if (evaluation.price > 0) {
         this.evaluation.next(evaluation);
       }
@@ -109,6 +109,6 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
 
     this.evaluation.complete();
-    this.viewData.complete()
+    this.viewData.complete();
   }
 }

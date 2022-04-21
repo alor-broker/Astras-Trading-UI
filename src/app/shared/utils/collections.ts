@@ -3,7 +3,7 @@ export function findUnique<T, P>(array: Array<T>, selector: (element: T) => P) :
   return [...new Set(selected)].map(j => JSON.parse(j));
 }
 
-export function findUniqueElements<T, P>(
+export function findUniqueElements<T>(
     array: Array<T>,
     sorter: (e1: T, e2: T) => number,
     comparer: (first: T, seconds: T) => boolean) : T[]
@@ -22,7 +22,7 @@ export function findUniqueElements<T, P>(
   return array;
 }
 
-type sortArg<T> = keyof T | `-${string & keyof T}`
+type sortArg<T> = keyof T | `-${string & keyof T}`;
 
 /**
  * Returns a comparator for objects of type T that can be used by sort
@@ -33,36 +33,36 @@ type sortArg<T> = keyof T | `-${string & keyof T}`
  */
 export function byPropertiesOf<T extends object> (sortBy: Array<sortArg<T>>) {
     function compareByProperty (arg: sortArg<T>) {
-        let key: keyof T
-        let sortOrder = 1
+        let key: keyof T;
+        let sortOrder = 1;
         if (typeof arg === 'string' && arg.startsWith('-')) {
-            sortOrder = -1
+            sortOrder = -1;
             // Typescript is not yet smart enough to infer that substring is keyof T
-            key = arg.substr(1) as keyof T
+            key = arg.substr(1) as keyof T;
         } else {
             // Likewise it is not yet smart enough to infer that arg is not keyof T
-            key = arg as keyof T
+            key = arg as keyof T;
         }
         return function (a: T, b: T) {
-            const result = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0
+            const result = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
 
-            return result * sortOrder
-        }
+            return result * sortOrder;
+        };
     }
 
     return function (obj1: T, obj2: T) {
-        let i = 0
-        let result = 0
-        const numberOfProperties = sortBy?.length
+        let i = 0;
+        let result = 0;
+        const numberOfProperties = sortBy?.length;
         while (result === 0 && i < numberOfProperties) {
-            result = compareByProperty(sortBy[i])(obj1, obj2)
-            i++
+            result = compareByProperty(sortBy[i])(obj1, obj2);
+            i++;
         }
 
-        return result
-    }
+        return result;
+    };
 }
 
 export function scalarArrayEqual<T>(array1: Array<T>, array2: Array<T>) {
-  array1.length === array2.length && array1.every((value, index) => value === array2[index])
+  array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 }

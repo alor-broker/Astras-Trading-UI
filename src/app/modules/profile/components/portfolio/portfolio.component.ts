@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PortfolioService } from '../../services/portfolio.service';
-import { Portfolio } from '../../models/portfolio.model'
+import { Portfolio } from '../../models/portfolio.model';
 import { OrderbookRow } from 'src/app/modules/orderbook/models/orderbook-row.model';
 
 @Component({
@@ -20,10 +20,10 @@ export class PortfolioComponent implements OnInit {
     { volume: 20, price: 150 },
   ];
 
-  portfolio$: Observable<Portfolio>
+  portfolio$: Observable<Portfolio>;
 
   ngOnInit(): void {
-    this.portfolio$ = this.service.get()
+    this.portfolio$ = this.service.get();
   }
 
 }

@@ -1,5 +1,5 @@
 <nz-descriptions *ngIf="description$ | async as description" nzBordered [nzColumn]="columns"
-  [nzSize]="columns == 1 ? 'small' : 'default'">
+  [nzSize]="columns === 1 ? 'small' : 'default'">
   <nz-descriptions-item nzTitle="Описание"><span class="full-description">{{description.description}}</span>
   </nz-descriptions-item>
   <nz-descriptions-item nzTitle="Сектор">{{description.sector}}</nz-descriptions-item>

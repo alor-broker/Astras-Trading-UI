@@ -14,7 +14,7 @@ describe('LightChartSettingsComponent', () => {
   let component: LightChartSettingsComponent;
   let fixture: ComponentFixture<LightChartSettingsComponent>;
   const spy = jasmine.createSpyObj('LightChartService', ['getBars', 'getSettings']);
-  spy.getBars.and.returnValue(of([]))
+  spy.getBars.and.returnValue(of([]));
   const settings: LightChartSettings = {
     timeFrame: 'D',
     from: 0,
@@ -23,7 +23,7 @@ describe('LightChartSettingsComponent', () => {
     guid: '123',
     width: 300,
     height: 300
-  }
+  };
   spy.getSettings.and.returnValue(of(settings));
 
   beforeEach((async () => {

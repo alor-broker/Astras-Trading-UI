@@ -13,7 +13,7 @@ import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selec
   providedIn: 'root'
 })
 export class EvaluationService {
-  private readonly url = environment.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/estimate'
+  private readonly url = environment.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/estimate';
   constructor(private http: HttpClient, private store: Store) { }
 
   evaluateOrder(baseRequest: EvaluationBaseProperties) : Observable<Evaluation> {
@@ -29,6 +29,6 @@ export class EvaluationService {
           lotQuantity: baseRequest.lotQuantity,
         } as EvaluationRequest);
       })
-    )
+    );
   }
 }

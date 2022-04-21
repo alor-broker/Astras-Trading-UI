@@ -1,12 +1,12 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async, inject } from '@angular/core/testing';
-import { AuthService } from '../../../shared/services/auth.service'
+import { AuthService } from '../../../shared/services/auth.service';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 
 describe('AccountService', () => {
-  const spyAuth = jasmine.createSpyObj('AuthService', ['currentUser$'])
-  const spyPositions = jasmine.createSpyObj('PositionsService', ['getAllByLogin'])
+  const spyAuth = jasmine.createSpyObj('AuthService', ['currentUser$']);
+  const spyPositions = jasmine.createSpyObj('PositionsService', ['getAllByLogin']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({

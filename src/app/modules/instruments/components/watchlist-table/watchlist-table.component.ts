@@ -13,7 +13,7 @@ import { selectNewInstrument } from '../../../../store/instruments/instruments.a
 })
 export class WatchlistTableComponent implements OnInit {
 
-  watchedInstruments$: Observable<WatchedInstrument[]> = of([])
+  watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
 
   constructor(private store: Store, private service: WatchInstrumentsService) { }
 
@@ -22,7 +22,7 @@ export class WatchlistTableComponent implements OnInit {
   }
 
   makeActive(instrument: Instrument) {
-    this.store.dispatch(selectNewInstrument({ instrument }))
+    this.store.dispatch(selectNewInstrument({ instrument }));
   }
 
   remove(instr: Instrument) {

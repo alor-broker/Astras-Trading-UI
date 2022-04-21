@@ -7,7 +7,7 @@ import { DashboardComponent } from './dashboard.component';
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
-  let spy = jasmine.createSpyObj('DashboardService', ['saveDashboard', 'dashboard$'])
+  let spy = jasmine.createSpyObj('DashboardService', ['saveDashboard', 'dashboard$']);
   spy.dashboard$ = of([]);
 
   beforeEach(async () => {

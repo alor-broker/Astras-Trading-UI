@@ -1,4 +1,4 @@
-import { Calendar } from "../models/calendar.model"
+import { Calendar } from "../models/calendar.model";
 import { Dividend } from "../models/dividend.model";
 
 export const description = JSON.parse(`{
@@ -169,4 +169,4 @@ export const dividends : Dividend[] = JSON.parse(`[
       "currency": "RUB"
   }
 ]
-`)
+`);

@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { JoyrideService } from 'ngx-joyride';
 
 @Component({
-  selector: 'app-root',
+  selector: 'ats-app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.less'],
 })

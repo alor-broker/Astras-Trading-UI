@@ -14,7 +14,7 @@ describe('InfoHeaderComponent', () => {
     isin: '',
     currency: '',
     type: ''
-  }
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

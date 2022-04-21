@@ -5,7 +5,7 @@ import { TerminalSettingsService } from './terminal-settings.service';
 
 describe('TerminalSettingsService', () => {
   let service: TerminalSettingsService;
-  const spyAuth = jasmine.createSpyObj('AuthService', ['logout'])
+  const spyAuth = jasmine.createSpyObj('AuthService', ['logout']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 
@@ -8,10 +8,11 @@ import { OrderbookService } from '../../services/orderbook.service';
   styleUrls: ['./orderbook-widget.component.less'],
   providers: [OrderbookService]
 })
-export class OrderbookWidgetComponent implements OnInit {
+export class OrderbookWidgetComponent {
   @Input()
   shouldShowSettings!: boolean;
-  @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
+  @Input()
+  set linkedToActive(linkedToActive: boolean) {
     this.service.setLinked(linkedToActive);
   }
   @Input()
@@ -19,12 +20,9 @@ export class OrderbookWidgetComponent implements OnInit {
   @Input()
   resize!: EventEmitter<DashboardItem>;
   @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>()
+  shouldShowSettingsChange = new EventEmitter<boolean>();
 
   constructor(private service: OrderbookService) { }
-
-  ngOnInit(): void {
-  }
 
   onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);

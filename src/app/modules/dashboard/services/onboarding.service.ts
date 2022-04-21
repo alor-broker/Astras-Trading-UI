@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { JoyrideService } from 'ngx-joyride';
 import { buyColor } from 'src/app/shared/models/settings/styles-constants';
-import { DashboardModule } from '../dashboard.module';
 
 @Injectable({
   providedIn: 'root'
@@ -20,9 +19,9 @@ export class OnboardingService {
         this.joyride.startTour({
           steps: Array(8).fill(1).map((_, i) => `step${i + 1}`),
           themeColor: buyColor
-        })
+        });
         this.setIsCompleted(true);
-      }, 5000)
+      }, 5000);
     }
   }
 
@@ -47,7 +46,7 @@ export class OnboardingService {
     const profile =  {
       ...this.getProfile(),
       isCompleted
-    }
+    };
 
     localStorage.setItem(this.profileStorage, JSON.stringify(profile));
   }

@@ -10,11 +10,11 @@ import { InfoService } from '../../../services/info.service';
 })
 export class AboutIssueComponent implements OnInit {
   @Input()
-  guid!: string
+  guid!: string;
 
-  issue$?: Observable<Issue>
+  issue$?: Observable<Issue>;
 
-  columns = 1
+  columns = 1;
 
   constructor(private service: InfoService) { }
 

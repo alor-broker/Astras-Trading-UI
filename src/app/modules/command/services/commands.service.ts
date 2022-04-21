@@ -19,7 +19,7 @@ import { StopCommand } from '../models/stop-command.model';
 })
 export class CommandsService {
 
-  private url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions'
+  private url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
 
   private stopCommand?: BehaviorSubject<StopCommand>;
   private limitCommand?: BehaviorSubject<LimitCommand>;
@@ -70,7 +70,7 @@ export class CommandsService {
       return this.placeOrder(command.price ? 'stopLimit' : 'stop', side, command);
     }
     else {
-      throw new Error('Empty command')
+      throw new Error('Empty command');
     }
   }
 
@@ -80,7 +80,7 @@ export class CommandsService {
       return this.placeOrder("limit", side, command);
     }
     else {
-      throw new Error('Empty command')
+      throw new Error('Empty command');
     }
   }
 
@@ -90,7 +90,7 @@ export class CommandsService {
       return this.placeOrder("market", side, command);
     }
     else {
-      throw new Error('Empty command')
+      throw new Error('Empty command');
     }
   }
 
@@ -100,7 +100,7 @@ export class CommandsService {
       return this.editOrder("limit", command);
     }
     else {
-      throw new Error('Empty command')
+      throw new Error('Empty command');
     }
   }
 
@@ -110,7 +110,7 @@ export class CommandsService {
       return this.editOrder("market", command);
     }
     else {
-      throw new Error('Empty command')
+      throw new Error('Empty command');
     }
   }
 
@@ -125,10 +125,10 @@ export class CommandsService {
     }).pipe(
       tap(resp => {
         if (resp.orderNumber) {
-          this.notification.success(`Заявка изменена`, `Заявка успешно измнена, её номер на бирже: \n ${resp.orderNumber}`)
+          this.notification.success(`Заявка изменена`, `Заявка успешно измнена, её номер на бирже: \n ${resp.orderNumber}`);
         }
       })
-    )
+    );
   }
 
   private placeOrder(type: string, side: Side, command : LimitCommand | MarketCommand | StopCommand) {
@@ -157,10 +157,10 @@ export class CommandsService {
     }).pipe(
       tap(resp => {
         if (resp.orderNumber) {
-          this.notification.success(`Заявка выставлена`, `Заявка успешно выставлена, её номер на бирже: \n ${resp.orderNumber}`)
+          this.notification.success(`Заявка выставлена`, `Заявка успешно выставлена, её номер на бирже: \n ${resp.orderNumber}`);
         }
       })
-    )
+    );
   }
 }
 

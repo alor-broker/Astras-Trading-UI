@@ -202,11 +202,11 @@ export class OrdersComponent implements OnInit, OnDestroy {
       isFilterVisible: false,
       hasFilter: false,
     },
-  ]
+  ];
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private cancelCommands = new Subject<CancelCommand>();
-  private cancels$ = this.cancelCommands.asObservable()
+  private cancels$ = this.cancelCommands.asObservable();
   private orders: Order[] = [];
   private orders$: Observable<Order[]> = of([]);
 
@@ -232,7 +232,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
         .map(o => ({ ...o, residue: `${o.filled}/${o.qty}`, volume: MathHelper.round(o.qtyUnits * o.price, 2) }))
         .filter(o => this.justifyFilter(o, f))
         .sort(this.sortOrders))
-    )
+    );
 
     this.cancels$.pipe(
       mergeMap((command) => this.canceller.cancelOrder(command)),
@@ -270,7 +270,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
         exchange: settings.exchange,
         orderid: orderId,
         stop: false
-      })
+      });
     }
   }
 
@@ -288,7 +288,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
         portfolio: order.portfolio,
         exchange: order.exchange
       }
-    })
+    });
   }
 
   shouldShow(column: string) {
@@ -296,7 +296,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   cancelAllOrders() {
-    const working = this.orders.filter(o => o.status == 'working').map(o => o.id)
+    const working = this.orders.filter(o => o.status == 'working').map(o => o.id);
     working.forEach(order => this.cancelOrder(order));
   }
 
@@ -342,7 +342,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       return -1;
     }
     else if (a.endTime > b.endTime) {
-      return 1
+      return 1;
     }
     return 0;
   }

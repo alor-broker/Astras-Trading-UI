@@ -11,11 +11,11 @@ import { InfoService } from '../../../services/info.service';
 })
 export class FinanceComponent implements OnInit {
   @Input()
-  guid!: string
+  guid!: string;
 
   columns = 1;
 
-  finance$?: Observable<Finance>
+  finance$?: Observable<Finance>;
   private currency = "RUB";
 
   constructor(private service: InfoService) { }
@@ -26,10 +26,10 @@ export class FinanceComponent implements OnInit {
     );
   }
   format(number: number) {
-    return formatCurrency(number, this.currency, 0)
+    return formatCurrency(number, this.currency, 0);
   }
 
   formatCurrency(number: number) {
-    return formatCurrency(number, this.currency, 0)
+    return formatCurrency(number, this.currency, 0);
   }
 }

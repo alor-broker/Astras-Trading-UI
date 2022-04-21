@@ -43,7 +43,7 @@ export class WidgetFactoryService {
     );
     this.store.select(getSelectedPortfolio).subscribe(
       (sp) => (this.selectedPortfolio = sp)
-    )
+    );
   }
 
   createNewSettings(

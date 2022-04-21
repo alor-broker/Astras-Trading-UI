@@ -19,7 +19,7 @@ export class WatchInstrumentsService {
 
   private watchedInstruments : WatchedInstrument[] = [];
   private watchedInstrumentsSubj = new BehaviorSubject<WatchedInstrument[]>(this.watchedInstruments);
-  watchedInstruments$ = this.watchedInstrumentsSubj.asObservable()
+  watchedInstruments$ = this.watchedInstrumentsSubj.asObservable();
 
   private instrumentsToWatch = new BehaviorSubject<Instrument[]>([]);
   instrumentsToWatch$: Observable<Instrument[]> = this.instrumentsToWatch.asObservable();
@@ -36,7 +36,7 @@ export class WatchInstrumentsService {
       inst.symbol == i.instrument.symbol
       && inst.exchange == i.instrument.exchange
       && inst.instrumentGroup == i.instrument.instrumentGroup)) {
-        this.newInstruments.next(inst)
+        this.newInstruments.next(inst);
       }
   }
 
@@ -53,9 +53,9 @@ export class WatchInstrumentsService {
 
 
   unsubscribe() {
-    this.quotesSubsByKey.forEach((v, k) => {
+    this.quotesSubsByKey.forEach((v) => {
       v.unsubscribe();
-    })
+    });
   }
 
   getWatched(): Observable<WatchedInstrument[]> {
@@ -71,7 +71,7 @@ export class WatchInstrumentsService {
             price: 0,
             dayChangePerPrice: 0,
           }))
-        )
+        );
         return instrObs;
       }),
       tap(wi => {
@@ -80,7 +80,7 @@ export class WatchInstrumentsService {
           const service = new QuotesService(this.ws);
           const sub = service.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup)
             .pipe(finalize(() => {
-              service.unsubscribe()
+              service.unsubscribe();
             }))
             .subscribe(q => {
               const dayChange = getDayChange(q.last_price, wi.closePrice);
@@ -94,35 +94,35 @@ export class WatchInstrumentsService {
                 wi.price = q.last_price;
                 wi.dayChange = dayChange;
                 wi.dayChangePerPrice = dayChangePerPrice;
-                this.watchedInstruments = [...updated, wi].sort((a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol))
+                this.watchedInstruments = [...updated, wi].sort((a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol));
               }
               else {
-                this.watchedInstruments = [...this.watchedInstruments]
+                this.watchedInstruments = [...this.watchedInstruments];
               }
               this.watchedInstrumentsSubj.next(this.watchedInstruments);
-            })
+            });
           this.quotesSubsByKey.set(key, sub);
         }
       })
-    )
+    );
 
     withCloseSub.subscribe(wi => {
       const updated = this.watchedInstruments.filter(i => !(wi.instrument.symbol == i.instrument.symbol && wi.instrument.exchange == i.instrument.exchange));
       if (updated) {
-        this.watchedInstruments = [...updated, wi].sort((a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol))
+        this.watchedInstruments = [...updated, wi].sort((a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol));
       }
       else {
-        this.watchedInstruments = [...this.watchedInstruments]
+        this.watchedInstruments = [...this.watchedInstruments];
       }
       this.setWatchlist();
       this.watchedInstrumentsSubj.next(this.watchedInstruments);
-    })
+    });
     this.getWatchList().forEach(i => this.add(i));
     return this.watchedInstruments$;
   }
 
   private getKey(key: Instrument) {
-    return `${key.exchange}.${key.instrumentGroup}.${key.symbol}`
+    return `${key.exchange}.${key.instrumentGroup}.${key.symbol}`;
   }
 
   private setWatchlist() {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
@@ -10,10 +10,11 @@ import { LightChartService } from '../../services/light-chart.service';
   styleUrls: ['./light-chart-widget.component.less'],
   providers: [ LightChartService ]
 })
-export class LightChartWidgetComponent implements OnInit {
+export class LightChartWidgetComponent {
   @Input()
   shouldShowSettings!: boolean;
-  @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
+  @Input()
+  set linkedToActive(linkedToActive: boolean) {
     this.service.setLinked(linkedToActive);
   }
   @Input()
@@ -21,14 +22,11 @@ export class LightChartWidgetComponent implements OnInit {
   @Input()
   resize!: EventEmitter<DashboardItem>;
   @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>()
+  shouldShowSettingsChange = new EventEmitter<boolean>();
 
   settings$!: Observable<LightChartSettings>;
 
   constructor(private service: LightChartService) { }
-
-  ngOnInit(): void {
-  }
 
   onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);

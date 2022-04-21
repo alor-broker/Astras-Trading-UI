@@ -1,4 +1,4 @@
-import { DashboardItem } from "./dashboard-item.model"
+import { DashboardItem } from "./dashboard-item.model";
 
 export interface Widget {
   gridItem: DashboardItem,

@@ -7,7 +7,7 @@ import { HttpErrorHandler } from "./http-error-handler";
 describe('HttpErrorHandler: Register', () => {
   let service: HttpErrorHandler;
 
-  const notificationSpy = jasmine.createSpyObj('NzNotificationService', ['success', 'error', 'blank'])
+  const notificationSpy = jasmine.createSpyObj('NzNotificationService', ['success', 'error', 'blank']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({

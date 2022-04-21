@@ -37,7 +37,7 @@ export class ParentWidgetComponent implements OnInit {
       if(i.label == this.widget.gridItem.label) {
         this.widgetResize.emit(i);
       }
-    })
+    });
   }
 
   onSwitchSettings(value: boolean) {
@@ -49,17 +49,17 @@ export class ParentWidgetComponent implements OnInit {
   }
 
   getGuid() {
-    const obWidget = this.widget as Widget
+    const obWidget = this.widget as Widget;
     return obWidget.guid;
   }
 
   hasSettings() {
-    const obWidget = this.widget as Widget
+    const obWidget = this.widget as Widget;
     return obWidget.hasSettings;
   }
 
   hasHelp() {
-    const obWidget = this.widget as Widget
+    const obWidget = this.widget as Widget;
     return obWidget.hasHelp;
   }
 }

@@ -7,11 +7,11 @@ export class LoadingHandler {
   isLoading$ = this.isLoading.pipe(
     switchMap(isLoading => {
       if (!isLoading) {
-        return of(false)
+        return of(false);
       }
       return of(true).pipe(delay(1000));
     })
-  )
+  );
 
   start() {
     this.isLoading.next(true);

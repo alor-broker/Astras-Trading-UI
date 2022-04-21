@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input} from '@angular/core';
 import { ExchangeInfo } from '../../../models/exchange-info.model';
 
 @Component({
@@ -6,13 +6,9 @@ import { ExchangeInfo } from '../../../models/exchange-info.model';
   templateUrl: './info-header.component.html',
   styleUrls: ['./info-header.component.less']
 })
-export class InfoHeaderComponent implements OnInit {
+export class InfoHeaderComponent {
   @Input()
-  info!: ExchangeInfo
+  info!: ExchangeInfo;
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

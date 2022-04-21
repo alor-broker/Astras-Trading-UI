@@ -29,7 +29,7 @@ export class WidgetHeaderComponent implements OnInit {
 
   private shouldShowSettings = false;
   settings$?: Observable<AnySettings>;
-  private settings?: AnySettings
+  private settings?: AnySettings;
 
   constructor(private dashboard: DashboardService, private modal: ModalService) { }
 
@@ -44,18 +44,18 @@ export class WidgetHeaderComponent implements OnInit {
           s.title = `${prefix} ${s.symbol} ${group ? '(' + group + ')' : ''}`;
         }
         else if (isPortfolioDependent(s)) {
-          s.title = `${prefix} ${s.portfolio} (${s.exchange})`
+          s.title = `${prefix} ${s.portfolio} (${s.exchange})`;
         }
         return s;
       }),
-    )
+    );
   }
 
   switchSettings($event: MouseEvent) {
     $event.preventDefault();
     $event.stopPropagation();
     this.shouldShowSettings = !this.shouldShowSettings;
-    this.switchSettingsEvent.emit(this.shouldShowSettings)
+    this.switchSettingsEvent.emit(this.shouldShowSettings);
   }
 
   removeItem($event: MouseEvent | TouchEvent): void {
@@ -74,7 +74,7 @@ export class WidgetHeaderComponent implements OnInit {
 
   openHelp() {
     if (this.settings) {
-      const name = getTypeBySettings(this.settings)
+      const name = getTypeBySettings(this.settings);
       this.modal.openHelpModal(name);
     }
   }

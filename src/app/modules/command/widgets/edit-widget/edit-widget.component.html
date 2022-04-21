@@ -4,7 +4,7 @@
     <ng-container *nzModalContent>
       <ats-command-header [symbol]='command.instrument.symbol' [exchange]='command.instrument.exchange'
         [instrumentGroup]="command.instrument.instrumentGroup ?? ''"></ats-command-header>
-      <ats-limit-edit *ngIf='command.type == "limit"'></ats-limit-edit>
+      <ats-limit-edit *ngIf='command.type === "limit"'></ats-limit-edit>
     </ng-container>
   </nz-modal>
 </div>

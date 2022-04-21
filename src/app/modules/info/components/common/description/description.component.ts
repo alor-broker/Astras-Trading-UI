@@ -10,14 +10,14 @@ import { InfoService } from '../../../services/info.service';
 })
 export class DescriptionComponent implements OnInit {
   @Input()
-  guid!: string
+  guid!: string;
   columns: number = 1;
-  description$?: Observable<Description>
+  description$?: Observable<Description>;
 
   constructor(private service: InfoService) { }
 
   ngOnInit(): void {
-    this.description$ = this.service.getDescription()
+    this.description$ = this.service.getDescription();
   }
 
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -18,7 +18,7 @@ import { getSelectedInstrument } from '../../../../store/instruments/instruments
   styleUrls: ['./instrument-select.component.less'],
   providers: [WatchInstrumentsService]
 })
-export class InstrumentSelectComponent implements OnInit {
+export class InstrumentSelectComponent implements OnInit, OnDestroy {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -28,8 +28,8 @@ export class InstrumentSelectComponent implements OnInit {
 
   private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
 
-  filteredInstruments$: Observable<InstrumentSelect[]> = of([])
-  selectedInstrument$: Observable<InstrumentAdditions | null> =  of(null)
+  filteredInstruments$: Observable<InstrumentSelect[]> = of([]);
+  selectedInstrument$: Observable<InstrumentAdditions | null> =  of(null);
 
   inputValue?: string;
   filteredOptions: string[] = [];
@@ -57,14 +57,14 @@ export class InstrumentSelectComponent implements OnInit {
         query: isComplexSearch ? query : value,
         exchange: isComplexSearch ? exchange : '',
         instrumentGroup: isComplexSearch && instrumentGroup ? instrumentGroup : ''
-      }
+      };
     } else {
       filter = {
         query: isComplexSearch ? query : value,
         exchange: isComplexSearch ? exchange : '',
         instrumentGroup: isComplexSearch && instrumentGroup ? instrumentGroup : '',
         limit: 20
-      }
+      };
     }
 
     this.filter$.next(filter);
@@ -81,7 +81,7 @@ export class InstrumentSelectComponent implements OnInit {
       filter((f) : f is SearchFilter => !!f),
       debounceTime(200),
       switchMap(filter => this.service.getInstruments(filter))
-    )
+    );
     this.selectedInstrument$ = this.store.pipe(
       select(getSelectedInstrument),
       switchMap(i => {
@@ -89,7 +89,7 @@ export class InstrumentSelectComponent implements OnInit {
           symbol: i.symbol,
           exchange: i.exchange,
           instrumentGroup: i.instrumentGroup ?? '',
-        })
+        });
       }),
       map((val) : InstrumentAdditions => ({
         ...val,

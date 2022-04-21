@@ -9,8 +9,8 @@ import { PortfolioComponent } from './portfolio.component';
 describe('PortfolioComponent', () => {
   let component: PortfolioComponent;
   let fixture: ComponentFixture<PortfolioComponent>;
-  const portfolioSpy = jasmine.createSpyObj('PortfolioService', ['get'])
-  portfolioSpy.get.and.returnValue(of({}))
+  const portfolioSpy = jasmine.createSpyObj('PortfolioService', ['get']);
+  portfolioSpy.get.and.returnValue(of({}));
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

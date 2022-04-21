@@ -8,10 +8,10 @@ describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
   let fixture: ComponentFixture<WatchlistTableComponent>;
 
-  const spySync = jasmine.createSpyObj('SyncService', ['selectNewInstrument'])
+  const spySync = jasmine.createSpyObj('SyncService', ['selectNewInstrument']);
   spySync.selectedInstrument$ = of(null);
 
-  const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['getWatched'])
+  const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['getWatched']);
   spyWatcher.getWatched.and.returnValue(of([]));
 
   beforeEach(async () => {

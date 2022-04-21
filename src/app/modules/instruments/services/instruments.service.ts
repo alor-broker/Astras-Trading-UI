@@ -1,16 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { InstrumentSelectSettings } from 'src/app/shared/models/settings/instrument-select-settings.model';
 import { environment } from 'src/environments/environment';
 import { InstrumentSelect } from '../models/instrument-select.model';
 import { InstrumentSearchResponse } from '../../../shared/models/instruments/instrument-search-response.model';
 import { SearchFilter } from '../models/search-filter.model';
-import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { BaseService } from 'src/app/shared/services/base.service';
-import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 
 @Injectable({
@@ -37,10 +35,10 @@ export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
           instrumentGroup: r.board,
           isin: r.ISIN,
           currency: r.currency
-        }
-        return selected
+        };
+        return selected;
       })
-    )
+    );
   }
 
   getInstruments(filter: SearchFilter): Observable<InstrumentSelect[]> {
@@ -56,9 +54,9 @@ export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
           instrumentGroup: r.board,
           isin: r.ISIN,
           currency: r.currency
-        }))
-        return selects
+        }));
+        return selects;
       })
-    )
+    );
   }
 }

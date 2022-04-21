@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Position } from '../models/positions/position.model'
+import { Position } from '../models/positions/position.model';
 import { environment } from 'src/environments/environment';
 import { catchError } from 'rxjs/operators';
 
@@ -11,7 +11,7 @@ import { catchError } from 'rxjs/operators';
 export class PositionsService {
   private readonly url: string;
   constructor(private http: HttpClient) {
-    this.url = environment.apiUrl + '/md/v2/clients'
+    this.url = environment.apiUrl + '/md/v2/clients';
   }
 
   getAllByLogin(login: string) : Observable<Position[]> {

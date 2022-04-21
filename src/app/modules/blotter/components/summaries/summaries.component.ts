@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { SummaryView } from '../../models/summary-view.model';
-import { Summary } from '../../models/summary.model';
 import { BlotterService } from '../../services/blotter.service';
 
 @Component({
@@ -24,7 +23,7 @@ export class SummariesComponent implements OnInit {
 
   columns: number = 1;
 
-  private resizeSub?: Subscription
+  private resizeSub?: Subscription;
   constructor(private service: BlotterService) { }
 
   ngOnInit(): void {
@@ -44,6 +43,6 @@ export class SummariesComponent implements OnInit {
           this.columns = 4;
         }
       }
-    })
+    });
   }
 }
