@@ -143,6 +143,9 @@ clearSeries() {
   this.series.setData([]);
   this.volumeSeries.setData([]);
   this.chart.timeScale().fitContent();
+  this.chart.priceScale().applyOptions({
+    autoScale: true
+  });
 }
 
 resize(width: number, height: number) {
