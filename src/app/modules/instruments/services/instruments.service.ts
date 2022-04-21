@@ -25,7 +25,7 @@ export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
 
   getInstrument(instrument: InstrumentKey): Observable<InstrumentSelect> {
     const instrumentGroup = instrument.instrumentGroup ?? "";
-    return this.http.get<InstrumentSearchResponse>(this.url, {
+    return this.http.get<InstrumentSearchResponse>(`${this.url}/${instrument.exchange}/${instrument.symbol}`, {
       params: { instrumentGroup: instrumentGroup }
     }).pipe(
       map(r => {
