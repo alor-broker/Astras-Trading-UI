@@ -318,7 +318,8 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       user: {
         portfolio: order.portfolio,
         exchange: order.exchange
-      }
+      },
+      side: order.side
     });
   }
 

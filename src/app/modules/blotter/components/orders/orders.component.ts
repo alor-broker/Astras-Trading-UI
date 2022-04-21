@@ -288,7 +288,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
       user: {
         portfolio: order.portfolio,
         exchange: order.exchange
-      }
+      },
+      side: order.side
     });
   }
 
