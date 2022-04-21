@@ -8,7 +8,7 @@ import { ExchangeInfo } from '../../../models/exchange-info.model';
 })
 export class FallbackDescriptionComponent {
   @Input()
-  info!: ExchangeInfo
+  info!: ExchangeInfo;
 
   constructor() { }
 }

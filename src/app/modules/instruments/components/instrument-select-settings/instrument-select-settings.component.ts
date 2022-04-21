@@ -8,7 +8,7 @@ import { InstrumentSelectSettings } from 'src/app/shared/models/settings/instrum
 })
 export class InstrumentSelectSettingsComponent {
   @Input()
-  guid!: string
+  guid!: string;
 
   @Output()
   settingsChange: EventEmitter<InstrumentSelectSettings> = new EventEmitter<InstrumentSelectSettings>();

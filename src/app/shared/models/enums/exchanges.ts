@@ -1,4 +1,4 @@
 export class Exchanges {
-  static MOEX = 'MOEX'
-  static SPBX = 'SPBX'
+  static MOEX = 'MOEX';
+  static SPBX = 'SPBX';
 }

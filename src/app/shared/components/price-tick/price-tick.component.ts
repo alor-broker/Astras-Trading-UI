@@ -7,13 +7,13 @@ import { Component, OnInit, Input, OnChanges } from '@angular/core';
 })
 export class PriceTickComponent implements OnInit, OnChanges {
   @Input()
-  prevPrice: number = 0
+  prevPrice: number = 0;
   @Input()
-  price: number = 0
+  price: number = 0;
 
-  changingColorPart: string = ''
-  mainPart: string = ''
-  isUp: boolean = true
+  changingColorPart: string = '';
+  mainPart: string = '';
+  isUp: boolean = true;
 
   constructor() { }
 
@@ -33,8 +33,8 @@ export class PriceTickComponent implements OnInit, OnChanges {
     this.mainPart = parts[0] + '.';
     this.changingColorPart = parts[1];
     if (!this.changingColorPart) {
-      this.changingColorPart = '0'
+      this.changingColorPart = '0';
     }
-    this.isUp = this.price - this.prevPrice >= 0
+    this.isUp = this.price - this.prevPrice >= 0;
   }
 }

@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 describe('HelpWidgetComponent', () => {
   let component: HelpWidgetComponent;
   let fixture: ComponentFixture<HelpWidgetComponent>;
-  let modalSpy = jasmine.createSpyObj('ModalService' , ['helpParams$'])
+  let modalSpy = jasmine.createSpyObj('ModalService' , ['helpParams$']);
   modalSpy.helpParams$ = of();
 
   beforeEach((async () => {

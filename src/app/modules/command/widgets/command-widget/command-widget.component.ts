@@ -34,12 +34,12 @@ export class CommandWidgetComponent implements OnInit {
 
   tabChanged(newTab: NzTabChangeEvent) {
     if (newTab.tab.nzTitle == 'Рыночная') {
-      this.activeTab.next('market')
+      this.activeTab.next('market');
     }
     else if (newTab.tab.nzTitle == 'Условная') {
-      this.activeTab.next('stop')
+      this.activeTab.next('stop');
     }
-    else this.activeTab.next('limit')
+    else this.activeTab.next('limit');
   }
 
   openHelp() {

@@ -17,10 +17,10 @@ import { CommandsService } from '../../services/commands.service';
 })
 export class MarketCommandComponent implements OnInit, OnDestroy {
   evaluation = new BehaviorSubject<EvaluationBaseProperties | null>(null);
-  viewData = new BehaviorSubject<CommandParams | null>(null)
-  initialParams: CommandParams | null = null
+  viewData = new BehaviorSubject<CommandParams | null>(null);
+  initialParams: CommandParams | null = null;
   form!: MarketFormGroup;
-  price$ = of(0)
+  price$ = of(0);
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -41,16 +41,16 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
           user: this.initialParams.user,
           type: CommandType.Market,
           quantity: 1,
-        }
+        };
 
         this.price$ = this.quoteService.getQuotes(
           command.instrument.symbol,
           command.instrument.exchange,
           command.instrument.instrumentGroup).pipe(
           map(q => q.last_price)
-        )
-        this.viewData.next(command)
-        this.setMarketCommand(command)
+        );
+        this.viewData.next(command);
+        this.setMarketCommand(command);
       }
     });
 
@@ -69,7 +69,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
           instrumentGroup: new FormControl(command?.instrument.instrumentGroup),
         } as MarketFormControls) as MarketFormGroup;
       }
-    })
+    });
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
@@ -78,7 +78,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       if (this.form.valid) {
         this.setMarketCommand(form);
       }
-    })
+    });
   }
 
   ngOnDestroy(): void {
@@ -102,7 +102,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
           instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
         },
         user: command.user,
-      }
+      };
       const evaluation: EvaluationBaseProperties = {
         price: price,
         lotQuantity: quantity,
@@ -110,7 +110,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
           ...command.instrument,
           instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
         },
-      }
+      };
       if (evaluation.price > 0) {
         this.evaluation.next(evaluation);
       }

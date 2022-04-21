@@ -9,7 +9,7 @@ describe('InfoService', () => {
   let service: InfoService;
   let httpController: HttpTestingController;
   let httpClient: HttpClient;
-  const dashboardSpy = jasmine.createSpyObj('DashboardService', ['getSettings'])
+  const dashboardSpy = jasmine.createSpyObj('DashboardService', ['getSettings']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({

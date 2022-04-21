@@ -11,15 +11,15 @@ import { MathHelper } from 'src/app/shared/utils/math-helper';
 })
 export class FinanceBarChartComponent implements OnInit {
   @Input()
-  finance!: Finance
+  finance!: Finance;
 
   private salesColors = {
     backgroundColor: primaryColor, hoverBackgroundColor: errorColor, borderColor: primaryColor
-  }
+  };
 
   private incomeColors = {
     backgroundColor: purpleColor5, hoverBackgroundColor: errorColor, borderColor: purpleColor5
-  }
+  };
 
   public yearChartOptions: ChartConfiguration['options'] = {
     responsive: true,
@@ -61,7 +61,7 @@ export class FinanceBarChartComponent implements OnInit {
       legend: {
         display: false,
       }
-    }}
+    }};
 
   public barChartType: ChartType = 'bar';
   public yearChartData: ChartData<'bar'> = {
@@ -72,7 +72,7 @@ export class FinanceBarChartComponent implements OnInit {
   public quorterChartData: ChartData<'bar'> = {
     labels: [],
     datasets: []
-  }
+  };
 
   constructor() { }
 
@@ -95,7 +95,7 @@ export class FinanceBarChartComponent implements OnInit {
     const chartData = {
       labels,
       datasets
-    }
+    };
     return chartData;
   }
 

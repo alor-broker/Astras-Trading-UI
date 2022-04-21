@@ -34,6 +34,6 @@ export class LoginFormComponent implements OnInit {
       if (isAuth) {
         this.router.navigate(['profile']);
       }
-    })
+    });
   }
 }

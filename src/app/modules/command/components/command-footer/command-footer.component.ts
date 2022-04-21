@@ -11,7 +11,7 @@ import { CommandsService } from '../../services/commands.service';
 })
 export class CommandFooterComponent {
   @Input()
-  activeTab: string = 'limit'
+  activeTab: string = 'limit';
 
   constructor(private command: CommandsService, private modal: ModalService) {
   }

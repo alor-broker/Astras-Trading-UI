@@ -17,19 +17,19 @@ import { getSelectedPortfolio } from '../../../../store/portfolios/portfolios.se
 })
 export class CommandHeaderComponent implements OnInit, OnDestroy {
   @Input()
-  symbol = ''
+  symbol = '';
   @Input()
-  exchange = ''
+  exchange = '';
   @Input()
-  instrumentGroup : string = ''
-  priceData$ : Observable<PriceData | null> = of(null)
+  instrumentGroup : string = '';
+  priceData$ : Observable<PriceData | null> = of(null);
   colors = {
     buyColor: buyColor,
     sellColor: sellColor
-  }
+  };
   position = {
     abs: 0, quantity: 0
-  }
+  };
   private destroy$ : Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -48,16 +48,16 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
     this.store.select(getSelectedPortfolio).pipe(
       filter((p) : p is PortfolioKey => !!p),
       switchMap(p => {
-        return this.positionService.getByPortfolio(p.portfolio, p.exchange, this.symbol)
+        return this.positionService.getByPortfolio(p.portfolio, p.exchange, this.symbol);
       }),
       takeUntil(this.destroy$)
     ).subscribe({
       next: (p) => {
         if (p) {
-          this.position = { abs: Math.abs(p.qtyTFutureBatch), quantity: p.qtyTFutureBatch }
+          this.position = { abs: Math.abs(p.qtyTFutureBatch), quantity: p.qtyTFutureBatch };
         }
       }
-    })
+    });
 
     this.priceData$ = this.history.getDaysOpen({
       symbol: this.symbol,
@@ -71,7 +71,7 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
           this.instrumentGroup
         ).pipe(
           map(quote => ({ candle, quote }))
-        )
+        );
       }),
       map((data) : PriceData => ({
         dayChange: getDayChange(data.quote.last_price, data.candle?.close ?? 0),
@@ -84,7 +84,7 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
         dayOpen: data.candle?.open ?? 0,
         prevClose: data.candle?.close ?? 0
       }))
-    )
+    );
   }
 
 }

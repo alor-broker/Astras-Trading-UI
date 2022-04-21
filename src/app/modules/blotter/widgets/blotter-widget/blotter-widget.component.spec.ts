@@ -20,7 +20,7 @@ const settings : BlotterSettings = {
   positionsColumns: ['ticker'],
   activeTabIndex: 0,
   currency: CurrencyInstrument.RUB
-}
+};
 
 describe('BlotterWidgetComponent', () => {
   let component: BlotterWidgetComponent;
@@ -45,7 +45,7 @@ describe('BlotterWidgetComponent', () => {
           { provide: BlotterService, useClass: MockServiceBlotter },
         ]
       }
-    })
+    });
   });
 
   beforeEach(() => {

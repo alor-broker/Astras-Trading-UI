@@ -101,7 +101,7 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   }
 
   newLimitOrder(event: MouseEvent, price: number, quantity?: number) {
-    event.stopPropagation()
+    event.stopPropagation();
     const settings = this.service.getSettingsValue();
     if (settings) {
       const params: CommandParams = {

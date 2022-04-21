@@ -10,7 +10,7 @@ import { InfoService } from '../../../services/info.service';
 })
 export class DividendsComponent implements OnInit {
   @Input()
-  guid!: string
+  guid!: string;
 
   dividends$?: Observable<Dividend[]>;
 

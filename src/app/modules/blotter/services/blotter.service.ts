@@ -52,17 +52,17 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       return;
     }
     if (CurrencyCode.isCurrency(symbol)) {
-      symbol = CurrencyCode.toInstrument(symbol)
-      exchange = Exchanges.MOEX
+      symbol = CurrencyCode.toInstrument(symbol);
+      exchange = Exchanges.MOEX;
     }
     const instrument = { symbol, exchange, instrumentGroup: undefined};
-    this.store.dispatch(selectNewInstrument({ instrument }))
+    this.store.dispatch(selectNewInstrument({ instrument }));
   }
 
   setTabIndex(index: number) {
     const settings = this.getSettingsValue();
     if (settings) {
-      this.setSettings( {...settings, activeTabIndex: index })
+      this.setSettings( {...settings, activeTabIndex: index });
     }
   }
 
@@ -70,7 +70,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     this.position$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => this.getPositionsReq(settings.portfolio, settings.exchange))
-    )
+    );
     this.linkToPortfolio();
     return this.position$;
   }
@@ -79,7 +79,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     this.trade$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => this.getTradesReq(settings.portfolio, settings.exchange))
-    )
+    );
     this.linkToPortfolio();
     return this.trade$;
   }
@@ -88,7 +88,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     this.order$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => this.getOrdersReq(settings.portfolio, settings.exchange))
-    )
+    );
     this.linkToPortfolio();
     return this.order$;
   }
@@ -97,7 +97,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     this.stopOrder$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => this.getStopOrdersReq(settings.portfolio, settings.exchange))
-    )
+    );
     this.linkToPortfolio();
     return this.stopOrder$;
   }
@@ -112,7 +112,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
             this.quotes.getQuotes(settings.currency, 'MOEX')
           ]).pipe(
             map(([summary, quote]) => this.formatSummary(summary, settings.currency, quote.last_price))
-          )
+          );
         }
         else {
           return this.getSummariesReq(settings.portfolio, settings.exchange).pipe(
@@ -120,7 +120,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
           );
         }
       })
-    )
+    );
     this.linkToPortfolio();
     return this.summary$;
   }
@@ -136,7 +136,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       initialMargin: formatCurrency(summary.initialMargin / exchangeRate, currency),
       riskBeforeForcePositionClosing: formatCurrency(summary.riskBeforeForcePositionClosing / exchangeRate, currency),
       commission: formatCurrency(summary.commission / exchangeRate, currency),
-    })
+    });
   }
 
   private getSummariesReq(portfolio: string, exchange: string) {
@@ -151,17 +151,17 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         this.positions.set(position.symbol, position);
         return Array.from(this.positions.values());
       }),
-    )
+    );
     return merge(positions, of([]));
   }
 
   private getStopOrdersReq(portfolio: string, exchange: string) : Observable<StopOrder[]> {
     this.orders = new Map<string, StopOrder>();
     let prevValue: StopOrder | null = null;
-    const opcode = 'StopOrdersGetAndSubscribeV2'
+    const opcode = 'StopOrdersGetAndSubscribeV2';
     const stopOrders = this.getPortfolioEntity<StopOrderData>(portfolio, exchange, opcode, true).pipe(
       map((order: StopOrderData) => {
-        const existingOrder = this.orders.get(order.id)
+        const existingOrder = this.orders.get(order.id);
         order.transTime = new Date(order.transTime);
         order.endTime = new Date(order.endTime);
 
@@ -175,21 +175,21 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
           ...order,
           triggerPrice: order.stopPrice,
           conditionType: order.condition
-        }
+        };
         this.stopOrders.set(order.id, stopOrder);
         return Array.from(this.stopOrders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
       })
     );
-    return stopOrders.pipe(startWith([]))
+    return stopOrders.pipe(startWith([]));
   }
 
   private getOrdersReq(portfolio: string, exchange: string) {
     this.orders = new Map<string, Order>();
     let prevValue: Order | null = null;
-    const opcode = 'OrdersGetAndSubscribeV2'
+    const opcode = 'OrdersGetAndSubscribeV2';
     const orders = this.getPortfolioEntity<Order>(portfolio, exchange, opcode, true).pipe(
       map((order: Order) => {
-        const existingOrder = this.orders.get(order.id)
+        const existingOrder = this.orders.get(order.id);
         order.transTime = new Date(order.transTime);
         order.endTime = new Date(order.endTime);
 
@@ -203,7 +203,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         return Array.from(this.orders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
       })
     );
-    return orders.pipe(startWith([]))
+    return orders.pipe(startWith([]));
   }
 
   private compareOrders(a: Order, b: Order) {
@@ -218,7 +218,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         this.trades.set(trade.id, trade);
         return Array.from(this.trades.values());
       })
-    )
+    );
     return merge(trades, of([]));
   }
 

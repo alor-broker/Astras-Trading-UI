@@ -20,7 +20,7 @@ describe('LightChartWidgetComponent', () => {
     guid: '123',
     width: 300,
     height: 300
-  }
+  };
   spyChart.settings$ = of(settings);
 
   beforeEach(async () => {
@@ -38,7 +38,7 @@ describe('LightChartWidgetComponent', () => {
           { provide: LightChartService, useValue: spyChart },
         ]
       }
-    })
+    });
   });
 
   beforeEach(() => {

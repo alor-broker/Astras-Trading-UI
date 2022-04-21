@@ -17,7 +17,7 @@ export class TerminalSettingsComponent implements OnInit {
     firstName: '',
     lastName: '',
     secondName: ''
-  })
+  });
 
   form!: FormGroup;
 

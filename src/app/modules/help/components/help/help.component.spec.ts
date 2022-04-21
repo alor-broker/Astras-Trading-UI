@@ -11,7 +11,7 @@ describe('HelpComponent', () => {
   let component: HelpComponent;
   let fixture: ComponentFixture<HelpComponent>;
 
-  const helpSpy = jasmine.createSpyObj('HelpService', ['getHelp'])
+  const helpSpy = jasmine.createSpyObj('HelpService', ['getHelp']);
   helpSpy.getHelp.and.returnValue(of(null));
 
   beforeEach(async(() => {

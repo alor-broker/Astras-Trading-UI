@@ -12,7 +12,7 @@ import { WebsocketService } from './websocket.service';
 export class QuotesService {
 
   private quote$: Observable<Quote | null> = new Observable();
-  private subGuid: string | null = null
+  private subGuid: string | null = null;
 
   constructor(private ws: WebsocketService) {  }
 
@@ -28,7 +28,7 @@ export class QuotesService {
   }
 
   getQuotes(symbol: string, exchange: string, instrumentGroup?: string) {
-    this.ws.connect()
+    this.ws.connect();
 
     if (this.subGuid) {
       this.ws.unsubscribe(this.subGuid);
@@ -41,10 +41,10 @@ export class QuotesService {
       format:"simple",
       guid: '',
       instrumentGroup: instrumentGroup
-    }
+    };
     this.subGuid = this.generateNewGuid(request);
     request.guid = this.subGuid;
-    this.ws.subscribe(request)
+    this.ws.subscribe(request);
 
     this.quote$ = this.ws.messages$.pipe(
       filter(m => m.guid == this.subGuid),
@@ -52,7 +52,7 @@ export class QuotesService {
         const br = r as BaseResponse<Quote>;
         return br.data;
       })
-    )
+    );
     return this.quote$.pipe(
       filter((q): q is Quote => !!q)
     );

@@ -8,7 +8,7 @@ import { DashboardService } from './dashboard.service';
 })
 export class WidgetSettingsService {
 
-private settingsByGuid = new BehaviorSubject<Map<string, AnySettings>>(new Map())
+private settingsByGuid = new BehaviorSubject<Map<string, AnySettings>>(new Map());
 
 constructor(private dashboard: DashboardService) { }
 
@@ -21,14 +21,14 @@ getSettings(guid: string) : Observable<AnySettings | null> {
       }
       return null;
     })
-  )
+  );
   return settings$;
 }
 
 setSettings(guid: string, settings: AnySettings) {
   const map = this.settingsByGuid.getValue();
   map.set(guid, settings);
-  this.settingsByGuid.next(map)
+  this.settingsByGuid.next(map);
   this.dashboard.updateSettings(guid, settings);
 }
 

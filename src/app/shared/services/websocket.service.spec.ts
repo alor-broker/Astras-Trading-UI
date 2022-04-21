@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 import { WebsocketService } from './websocket.service';
 
 describe('Service: Websocket', () => {
-  const spy = jasmine.createSpyObj('AuthService', ['accessToken$'])
+  const spy = jasmine.createSpyObj('AuthService', ['accessToken$']);
   spy.accessToken$ = of("");
 
   beforeEach(() => {

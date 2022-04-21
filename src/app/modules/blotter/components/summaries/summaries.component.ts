@@ -24,7 +24,7 @@ export class SummariesComponent implements OnInit {
 
   columns: number = 1;
 
-  private resizeSub?: Subscription
+  private resizeSub?: Subscription;
   constructor(private service: BlotterService) { }
 
   ngOnInit(): void {
@@ -44,6 +44,6 @@ export class SummariesComponent implements OnInit {
           this.columns = 4;
         }
       }
-    })
+    });
   }
 }

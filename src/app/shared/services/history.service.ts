@@ -25,13 +25,13 @@ export class HistoryService {
       from: addDaysUnix(new Date(), -14),
       to: Date.now(),
       instrumentGroup: instrument.instrumentGroup
-    }
+    };
     return this.getHistory(request).pipe(
       map(resp => {
-        const [lastCandle] = resp.history.slice(-1)
-        return lastCandle
+        const [lastCandle] = resp.history.slice(-1);
+        return lastCandle;
       },
-    ))
+    ));
   }
 
   getHistory(request: HistoryRequest) : Observable<HistoryResponse> {

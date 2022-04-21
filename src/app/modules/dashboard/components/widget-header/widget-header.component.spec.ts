@@ -11,9 +11,9 @@ import { of } from 'rxjs';
 describe('WidgetHeaderComponent', () => {
   let component: WidgetHeaderComponent;
   let fixture: ComponentFixture<WidgetHeaderComponent>;
-  let spy = jasmine.createSpyObj('DashboardService', ['getSettings'])
+  let spy = jasmine.createSpyObj('DashboardService', ['getSettings']);
   spy.getSettings.and.returnValue(of({}));
-  let modalSpy = jasmine.createSpyObj('ModalService' , ['openHelpModal'])
+  let modalSpy = jasmine.createSpyObj('ModalService' , ['openHelpModal']);
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

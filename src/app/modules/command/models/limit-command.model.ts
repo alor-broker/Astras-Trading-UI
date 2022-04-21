@@ -1,5 +1,5 @@
-import { InstrumentKey } from "src/app/shared/models/instruments/instrument-key.model"
-import { PortfolioKey } from "src/app/shared/models/portfolio-key.model"
+import { InstrumentKey } from "src/app/shared/models/instruments/instrument-key.model";
+import { PortfolioKey } from "src/app/shared/models/portfolio-key.model";
 
 export interface LimitCommand {
   side: string,

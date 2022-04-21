@@ -18,7 +18,7 @@ export class TradesComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  tableInnerWidth = '1000px'
+  tableInnerWidth = '1000px';
   displayTrades$: Observable<Trade[]> = of([]);
   searchFilter = new BehaviorSubject<TradeFilter>({});
   allColumns: Column<Trade, TradeFilter>[] = [
@@ -119,7 +119,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       isFilterVisible: false,
       hasFilter: false,
     },
-  ]
+  ];
   listOfColumns: Column<Trade, TradeFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private trades: Trade[] = [];
@@ -145,7 +145,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       mergeMap(trades => this.searchFilter.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))
       )),
-    )
+    );
   }
 
   ngOnDestroy(): void {
@@ -161,7 +161,7 @@ export class TradesComponent implements OnInit, OnDestroy {
     const newFilter = this.searchFilter.getValue();
     if (option) {
       newFilter[option as keyof TradeFilter] = text;
-      this.searchFilter.next(newFilter)
+      this.searchFilter.next(newFilter);
     }
   }
 

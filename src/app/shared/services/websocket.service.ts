@@ -24,7 +24,7 @@ export class WebsocketService {
       reconnect: true,
       reconnectTimeout: 2000,
       reconnectAttempts: 5
-    }
+    };
 
     this.connectedSub = this.isConnected$.subscribe(isConnected => {
       if (this.options.reconnect && !isConnected) {
@@ -116,7 +116,7 @@ export class WebsocketService {
       opcode: "unsubscribe",
       format: '',
       exchange: ''
-    }
+    };
 
     this.executeWithCurrentAccessToken(token => {
       this.sendMessage(msg, token);
@@ -148,7 +148,7 @@ export class WebsocketService {
 
     this.reconnection$.subscribe({
         next: () => {
-          this.connect()
+          this.connect();
         },
         error: (e) => null,
         complete: () => {

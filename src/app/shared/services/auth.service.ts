@@ -103,7 +103,7 @@ export class AuthService {
     const refreshModel : RefreshToken = {
       oldJwt: user.jwt,
       refreshToken: user.refreshToken,
-    }
+    };
     return this.http
       .post<RefreshTokenResponse>(`${this.accountUrl}/refresh`, refreshModel)
       .pipe(
@@ -126,7 +126,7 @@ export class AuthService {
       ),
       mergeMap(user => {
         if (this.isAuthorised(user)) {
-          return of(user.jwt)
+          return of(user.jwt);
         }
         else {
           return this.refresh().pipe(
@@ -135,10 +135,10 @@ export class AuthService {
               this.redirectToSso();
               throw e;
             })
-          )
+          );
         }
       })
-    )
+    );
   }
 
   private redirectToSso() {

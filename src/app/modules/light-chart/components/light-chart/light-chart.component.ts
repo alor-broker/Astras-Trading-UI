@@ -84,7 +84,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
           const oldSettings = this.service.getSettingsValue();
           if (oldSettings) {
             const newSettings = { ...oldSettings, width: item.width ?? 300, height: item.height ?? 300 };
-            this.service.setSettings(newSettings)
+            this.service.setSettings(newSettings);
           }
         }
       });
@@ -132,6 +132,6 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.chart.setData(res.history, options);
       }
       this.isUpdating = false;
-    })
+    });
   }
 }

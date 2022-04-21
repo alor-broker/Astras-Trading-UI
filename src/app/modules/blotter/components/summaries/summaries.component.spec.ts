@@ -7,7 +7,7 @@ import { SummariesComponent } from './summaries.component';
 describe('SummariesComponent', () => {
   let component: SummariesComponent;
   let fixture: ComponentFixture<SummariesComponent>;
-  const spyBlotter = jasmine.createSpyObj('BlotterService', ['summary$', 'getSummaries'])
+  const spyBlotter = jasmine.createSpyObj('BlotterService', ['summary$', 'getSummaries']);
   spyBlotter.summary$ = of(null);
   spyBlotter.getSummaries.and.returnValue(of(null));
 

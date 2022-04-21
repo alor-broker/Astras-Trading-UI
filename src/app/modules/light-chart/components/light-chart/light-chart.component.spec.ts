@@ -8,8 +8,8 @@ import { LightChartComponent } from './light-chart.component';
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
   let fixture: ComponentFixture<LightChartComponent>;
-  const spy = jasmine.createSpyObj('LightChartService', ['settings$', 'resize', 'unsubscribe', 'getBars'])
-  spy.getBars.and.returnValue(of([]))
+  const spy = jasmine.createSpyObj('LightChartService', ['settings$', 'resize', 'unsubscribe', 'getBars']);
+  spy.getBars.and.returnValue(of([]));
   const settings: LightChartSettings = {
     timeFrame: 'D',
     from: 0,
@@ -18,7 +18,7 @@ describe('LightChartComponent', () => {
     guid: '123',
     width: 300,
     height: 300
-  }
+  };
   spy.settings$ = of(settings);
 
   beforeEach(async () => {
@@ -35,7 +35,7 @@ describe('LightChartComponent', () => {
     fixture = TestBed.createComponent(LightChartComponent);
     component = fixture.componentInstance;
     const spy = jasmine.createSpyObj('resize', ['subscribe']);
-    spy.subscribe.and.returnValue(new Subscription())
+    spy.subscribe.and.returnValue(new Subscription());
     component.resize = spy;
     fixture.detectChanges();
   });

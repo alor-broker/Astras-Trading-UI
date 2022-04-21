@@ -10,8 +10,8 @@ interface CommandError {
 }
 
 const isCommandError = (e: any): e is CommandError => {
-  return typeof (e) === 'object' && e && 'code' in e && 'message' in e
-}
+  return typeof (e) === 'object' && e && 'code' in e && 'message' in e;
+};
 
 @Injectable()
 export class HttpErrorHandler implements ApplicationErrorHandler {
@@ -38,8 +38,8 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
         errorMessage = `Произошла ошибка: ${error?.message}`;
       }
       else if (isCommandError(error.error)) {
-        errorTitle = 'Заявка не выставлена'
-        errorMessage = `Ошибка ${error.error.code} \n ${error.error.message}`
+        errorTitle = 'Заявка не выставлена';
+        errorMessage = `Ошибка ${error.error.code} \n ${error.error.message}`;
       }
       else {
         // Backend error goes here
@@ -47,7 +47,7 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
         Object.values(error.error.errors) // Asp.net validation errors have wierd structure
           .flatMap(v => v)
           .reduce((k, j) => `${k}\n${j}`)
-        }`
+        }`;
       }
 
       this.notification.error(errorTitle, errorMessage);

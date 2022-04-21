@@ -6,7 +6,7 @@ import { CalendarComponent } from './calendar.component';
 describe('CalendarComponent', () => {
   let component: CalendarComponent;
   let fixture: ComponentFixture<CalendarComponent>;
-  const infoSpy = jasmine.createSpyObj('InfoService', ['getCalendar'])
+  const infoSpy = jasmine.createSpyObj('InfoService', ['getCalendar']);
   infoSpy.getCalendar.and.returnValue(null);
 
   beforeEach(async () => {

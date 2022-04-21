@@ -20,9 +20,9 @@ export function addHoursUnix(date: Date, hours: number) {
 }
 
 export function toUnixTimestampSeconds(date: Date) : number {
-  return Number((Number(date) / 1000).toFixed(0))
+  return Number((Number(date) / 1000).toFixed(0));
 }
 
 export function toUnixTimestampMillies(date: Date) : number {
-  return Number(date)
+  return Number(date);
 }

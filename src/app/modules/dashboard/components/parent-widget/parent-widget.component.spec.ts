@@ -21,7 +21,7 @@ describe('ParentWidgetComponent', () => {
       hasHelp: false,
       guid: '123',
       gridItem: { x: 0, y: 0, rows: 1, cols: 1 },
-    }
+    };
     component.resize = jasmine.createSpyObj('resize', ['subscribe']);
     fixture.detectChanges();
   });

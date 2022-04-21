@@ -12,7 +12,7 @@ interface SettingsFormData {
 }
 
 type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
-type SettingsFormGroup = FormGroup & { value: SettingsFormData, controls: SettingsFormControls }
+type SettingsFormGroup = FormGroup & { value: SettingsFormData, controls: SettingsFormControls };
 
 @Component({
   selector: 'ats-orderbook-settings[settingsChange][guid]',
@@ -21,7 +21,7 @@ type SettingsFormGroup = FormGroup & { value: SettingsFormData, controls: Settin
 })
 export class OrderbookSettingsComponent implements OnInit {
   @Input()
-  guid!: string
+  guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
 
@@ -44,11 +44,11 @@ export class OrderbookSettingsComponent implements OnInit {
           showTable: new FormControl(settings.showTable),
         } as SettingsFormControls) as SettingsFormGroup;
       }
-    })
+    });
   }
 
   submitForm(): void {
-    this.service.setSettings({...this.form.value, guid: this.guid, linkToActive: false})
-    this.settingsChange.emit()
+    this.service.setSettings({...this.form.value, guid: this.guid, linkToActive: false});
+    this.settingsChange.emit();
   }
 }

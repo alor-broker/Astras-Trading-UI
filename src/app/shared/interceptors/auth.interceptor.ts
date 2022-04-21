@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { switchMap, distinct } from 'rxjs/operators'
+import { switchMap, distinct } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({

@@ -30,7 +30,7 @@ export class InfoService extends BaseService<InfoSettings>{
   private securitiesUrl = environment.apiUrl + '/md/v2/Securities';
   private instrumentUrl = environment.apiUrl + '/instruments/v1';
 
-  private settings$?: Observable<SettingsWithExchangeInfo>
+  private settings$?: Observable<SettingsWithExchangeInfo>;
 
   constructor(private http: HttpClient, settingsService: DashboardService, private store: Store) {
     super(settingsService);
@@ -68,7 +68,7 @@ export class InfoService extends BaseService<InfoSettings>{
           }
           return settings;
         }),
-      )
+      );
       return this.settings$;
   }
 
@@ -132,10 +132,10 @@ export class InfoService extends BaseService<InfoSettings>{
           isin: r.ISIN,
           currency: r.currency,
           type: this.getTypeByCfi(r.cfiCode)
-        }
-        return info
+        };
+        return info;
       })
-    )
+    );
   }
 
   private getTypeByCfi(cfi: string | undefined) {
@@ -143,20 +143,20 @@ export class InfoService extends BaseService<InfoSettings>{
       return InstrumentType.Other;
     }
     if (cfi.startsWith('DB')) {
-      return InstrumentType.Bond
+      return InstrumentType.Bond;
     }
     else if (cfi.startsWith('E')) {
-      return InstrumentType.Stock
+      return InstrumentType.Stock;
     }
     else if (cfi.startsWith('MRC')) {
-      return InstrumentType.CurrencyInstrument
+      return InstrumentType.CurrencyInstrument;
     }
     else if (cfi.startsWith('F')) {
-      return InstrumentType.Futures
+      return InstrumentType.Futures;
     }
     else if (cfi.startsWith('O')) {
-      return InstrumentType.Options
+      return InstrumentType.Options;
     }
-    return InstrumentType.Other
+    return InstrumentType.Other;
   }
 }

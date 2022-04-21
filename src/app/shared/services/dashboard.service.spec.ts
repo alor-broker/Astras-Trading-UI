@@ -5,7 +5,7 @@ import { WidgetFactoryService } from './widget-factory.service';
 
 describe('DashboardService', () => {
   let service: DashboardService;
-  const factorySpy = jasmine.createSpyObj('WidgetFactoryService', ['createNewSettings'])
+  const factorySpy = jasmine.createSpyObj('WidgetFactoryService', ['createNewSettings']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({

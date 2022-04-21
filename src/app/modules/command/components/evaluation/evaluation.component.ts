@@ -11,7 +11,7 @@ import { EvaluationService } from '../../services/evaluation.service';
 })
 export class EvaluationComponent {
   @Input()
-  quantity = 0
+  quantity = 0;
 
   @Input()
   set evaluationProperties(evaluationProperties: EvaluationBaseProperties) {
@@ -25,6 +25,6 @@ export class EvaluationComponent {
     this.evaluation$ = this.evaluationRequest.pipe(
       filter((er): er is EvaluationBaseProperties => !!er),
       switchMap(er => this.service.evaluateOrder(er))
-    )
+    );
   }
 }

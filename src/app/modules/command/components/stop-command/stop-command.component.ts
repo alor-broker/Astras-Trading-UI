@@ -17,8 +17,8 @@ import { CommandsService } from '../../services/commands.service';
   styleUrls: ['./stop-command.component.less']
 })
 export class StopCommandComponent implements OnInit, OnDestroy {
-  viewData = new BehaviorSubject<CommandParams | null>(null)
-  initialParams: CommandParams | null = null
+  viewData = new BehaviorSubject<CommandParams | null>(null);
+  initialParams: CommandParams | null = null;
   form!: StopFormGroup;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -44,9 +44,9 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           quantity: this.initialParams.quantity ?? 1,
           triggerPrice: this.initialParams.price ?? 1,
           condition: StopOrderCondition.More
-        }
-        this.viewData.next(command)
-        this.setStopCommand(command)
+        };
+        this.viewData.next(command);
+        this.setStopCommand(command);
       }
     });
 
@@ -72,7 +72,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
       distinctUntilChanged((prev, curr) => prev?.price == curr?.price && prev?.quantity == curr?.quantity),
-    ).subscribe((form: StopFormData) => this.setStopCommand(form))
+    ).subscribe((form: StopFormData) => this.setStopCommand(form));
   }
 
   setStopCommand(form: StopFormData): void {
@@ -90,7 +90,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           ...command.instrument
         },
         user: command.user,
-      }
+      };
       this.service.setStopCommand(newCommand);
     }
     else {
@@ -102,7 +102,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     this.destroy$.next(true);
     this.destroy$.complete();
 
-    this.viewData.complete()
+    this.viewData.complete();
   }
 
   clearLimit(value: boolean) {

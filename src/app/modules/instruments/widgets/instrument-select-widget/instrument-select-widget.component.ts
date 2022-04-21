@@ -18,7 +18,7 @@ export class InstrumentSelectWidgetComponent {
   @Input()
   guid!: string;
   @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>()
+  shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<InstrumentSelectSettings>;
 
   constructor() { }

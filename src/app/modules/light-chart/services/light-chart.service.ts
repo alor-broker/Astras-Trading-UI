@@ -19,7 +19,7 @@ import { getSelectedInstrument } from '../../../store/instruments/instruments.se
 })
 export class LightChartService extends BaseWebsocketService<LightChartSettings> {
   private bars$: Observable<Candle> = new Observable();
-  private guid?: string
+  private guid?: string;
 
   constructor(ws: WebsocketService,
     settingsService: DashboardService,

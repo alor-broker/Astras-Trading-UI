@@ -21,7 +21,7 @@ describe('InfoWidgetComponent', () => {
           { provide: InfoService, useValue: infoSpy }
         ]
       }
-    })
+    });
   });
 
   beforeEach(() => {

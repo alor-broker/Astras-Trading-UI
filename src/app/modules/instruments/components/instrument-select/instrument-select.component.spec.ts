@@ -7,8 +7,8 @@ import { InstrumentSelectComponent } from './instrument-select.component';
 describe('InstrumentSelectComponent', () => {
   let component: InstrumentSelectComponent;
   let fixture: ComponentFixture<InstrumentSelectComponent>;
-  const spyInstrs = jasmine.createSpyObj('InstrumentsService', ['getInstruments', 'unsubscribe'])
-  const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['add', 'unsubscribe'])
+  const spyInstrs = jasmine.createSpyObj('InstrumentsService', ['getInstruments', 'unsubscribe']);
+  const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['add', 'unsubscribe']);
   spyWatcher.add.and.returnValue();
 
   beforeEach(async () => {
@@ -26,7 +26,7 @@ describe('InstrumentSelectComponent', () => {
           { provide: WatchInstrumentsService, useValue: spyWatcher },
         ]
       }
-    })
+    });
   });
 
   beforeEach(() => {

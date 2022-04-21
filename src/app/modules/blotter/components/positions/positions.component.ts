@@ -19,7 +19,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  tableInnerWidth = '1000px'
+  tableInnerWidth = '1000px';
   displayPositions$: Observable<Position[]> = of([]);
   searchFilter = new BehaviorSubject<PositionFilter>({});
   allColumns: Column<Position, PositionFilter>[] = [
@@ -116,7 +116,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       isFilterVisible: false,
       hasFilter: false,
     },
-  ]
+  ];
   listOfColumns: Column<Position, PositionFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private positions$: Observable<Position[]> = of([]);
@@ -129,7 +129,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(s => {
         if (s.positionsColumns) {
-          this.listOfColumns = this.allColumns.filter(c => s.positionsColumns.includes(c.id))
+          this.listOfColumns = this.allColumns.filter(c => s.positionsColumns.includes(c.id));
           this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
         }
       }
@@ -140,7 +140,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       mergeMap(positions => this.searchFilter.pipe(
         map(f => positions.filter(o => this.justifyFilter(o, f)))
       )),
-    )
+    );
   }
 
   ngOnDestroy(): void {
@@ -156,7 +156,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
     const newFilter = this.searchFilter.getValue();
     if (option) {
       newFilter[option as keyof PositionFilter] = text;
-      this.searchFilter.next(newFilter)
+      this.searchFilter.next(newFilter);
     }
   }
 

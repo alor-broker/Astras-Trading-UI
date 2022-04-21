@@ -22,7 +22,7 @@ export class LightChartWidgetComponent {
   @Input()
   resize!: EventEmitter<DashboardItem>;
   @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>()
+  shouldShowSettingsChange = new EventEmitter<boolean>();
 
   settings$!: Observable<LightChartSettings>;
 

@@ -19,8 +19,8 @@ describe('NavbarComponent', () => {
   const spyAccount = jasmine.createSpyObj('AccountService', ['getActivePortfolios']);
   spyAccount.getActivePortfolios.and.returnValue(of([]));
   const spyDashboard = jasmine.createSpy('DashboardService');
-  const spyAuth = jasmine.createSpyObj('AuthService', ['logout'])
-  const spyModal= jasmine.createSpyObj('ModalService', ['openTerminalSettingsModal'])
+  const spyAuth = jasmine.createSpyObj('AuthService', ['logout']);
+  const spyModal= jasmine.createSpyObj('ModalService', ['openTerminalSettingsModal']);
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -58,11 +58,11 @@ describe('NavbarComponent', () => {
     }, {
       exchange: "MOEX",
       portfolio: "7500GHC"
-    }]
+    }];
     const portfolio = component.selectDefault(portfolios);
     expect(portfolio).toEqual({
       exchange: "MOEX",
       portfolio: "D39004"
     });
-  })
+  });
 });

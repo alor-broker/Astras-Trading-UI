@@ -1,4 +1,4 @@
-import { WidgetSettings } from "../widget-settings.model"
+import { WidgetSettings } from "../widget-settings.model";
 
 export interface BlotterSettings extends WidgetSettings {
   activeTabIndex: number,
@@ -30,13 +30,13 @@ export const allOrdersColumns: ColumnIds[] = [
   { columnId: 'exchange', name: "Биржа", isDefault: false  },
   { columnId: 'type', name: "Тип", isDefault: false  },
   { columnId: 'endTime', name: "Действ. до", isDefault: false  },
-]
+];
 
 export const allStopOrdersColumns: ColumnIds[] = [
   ...allOrdersColumns,
   { columnId: 'triggerPrice', name: "Сигнальная цена", isDefault: true  },
   { columnId: 'conditionType', name: "Условие", isDefault: true  },
-]
+];
 
 export const allPositionsColumns: ColumnIds[] = [
   { columnId: 'symbol', name: "Тикер", isDefault: true  },
@@ -46,7 +46,7 @@ export const allPositionsColumns: ColumnIds[] = [
   { columnId: 'qtyT1', name: "T1", isDefault: false  },
   { columnId: 'qtyT2', name: "T2", isDefault: true  },
   { columnId: 'qtyTFuture', name: "TFuture", isDefault: false  }
-]
+];
 
 export const allTradesColumns: ColumnIds[] = [
   { columnId: 'id', name: "Номер", isDefault: false  },
@@ -56,4 +56,4 @@ export const allTradesColumns: ColumnIds[] = [
   { columnId: 'price', name: "Цена", isDefault: true  },
   { columnId: 'qty', name: "Кол-во", isDefault: true  },
   { columnId: 'date', name: 'Время', isDefault: false  }
-]
+];

@@ -22,7 +22,7 @@ import { joyrideContent } from '../../models/joyride';
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   portfolios$!: Observable<PortfolioKey[]>;
-  names = WidgetNames
+  names = WidgetNames;
   buyColor = buyColor;
   sellColor = sellColor;
   joyrideContent = joyrideContent;
@@ -45,7 +45,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(portfolios => {
       this.changePortfolio(this.selectDefault(portfolios));
-    })
+    });
 
     this.activeInstrument$ = this.store.select(getSelectedInstrument);
   }
@@ -60,7 +60,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.auth.logout()
+    this.auth.logout();
   }
 
   selectDefault(portfolios: PortfolioKey[]) {
@@ -68,7 +68,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   changePortfolio(key: PortfolioKey) {
-    this.store.dispatch(selectNewPortfolio({ portfolio: key }))
+    this.store.dispatch(selectNewPortfolio({ portfolio: key }));
   }
 
   addItem(type: string): void {

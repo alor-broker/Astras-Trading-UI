@@ -42,7 +42,7 @@ describe('FinanceBarChartComponent', () => {
       averageTurnoverPerMonth: 0,
       beta: 0
     }
-  }
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

@@ -23,7 +23,7 @@ getActivePortfolios() : Observable<PortfolioKey[]> {
         ({ portfolio: pos.portfolio, exchange: pos.exchange })
       );
     })
-  )
+  );
 }
 
 }

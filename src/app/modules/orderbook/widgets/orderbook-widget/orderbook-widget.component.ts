@@ -20,7 +20,7 @@ export class OrderbookWidgetComponent {
   @Input()
   resize!: EventEmitter<DashboardItem>;
   @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>()
+  shouldShowSettingsChange = new EventEmitter<boolean>();
 
   constructor(private service: OrderbookService) { }
 

@@ -11,7 +11,7 @@ import { BlotterService } from '../../services/blotter.service';
 })
 export class BlotterSettingsComponent implements OnInit {
   @Input()
-  guid!: string
+  guid!: string;
 
   @Output()
   settingsChange: EventEmitter<BlotterSettings> = new EventEmitter<BlotterSettings>();
@@ -43,34 +43,34 @@ export class BlotterSettingsComponent implements OnInit {
           currency: new FormControl(this.currencyToCode(settings.currency)),
         });
       }
-    })
+    });
   }
 
   codeToCurrency(code: string) {
     switch(code) {
       case 'USD':
-        return  CurrencyInstrument.USD
+        return  CurrencyInstrument.USD;
       case 'EUR':
-        return CurrencyInstrument.EUR
+        return CurrencyInstrument.EUR;
       default:
-        return CurrencyInstrument.RUB
+        return CurrencyInstrument.RUB;
     }
   }
 
   currencyToCode(currency: CurrencyInstrument) {
     switch(currency) {
       case CurrencyInstrument.USD:
-        return 'USD'
+        return 'USD';
       case CurrencyInstrument.EUR:
-        return 'EUR'
+        return 'EUR';
       default:
-        return 'RUB'
+        return 'RUB';
     }
   }
 
   submitForm(): void {
     this.form.value.currency = this.codeToCurrency(this.form.value.currency);
-    this.service.setSettings({ ...this.prevSettings, ...this.form.value, linkToActive: false})
-    this.settingsChange.emit()
+    this.service.setSettings({ ...this.prevSettings, ...this.form.value, linkToActive: false});
+    this.settingsChange.emit();
   }
 }

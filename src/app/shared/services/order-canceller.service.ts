@@ -11,7 +11,7 @@ import { GuidGenerator } from '../utils/guid';
   providedIn: 'root'
 })
 export class OrderCancellerService {
-  private url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders'
+  private url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders';
 
   constructor(private http: HttpClient, private notification: NzNotificationService) { }
 
@@ -24,9 +24,9 @@ export class OrderCancellerService {
     }).pipe(
       tap(resp => {
         if (resp.orderNumber) {
-          this.notification.success(`Заявка отменена`, `Заявка ${command.orderid} на ${command.exchange} успешно отменена`)
+          this.notification.success(`Заявка отменена`, `Заявка ${command.orderid} на ${command.exchange} успешно отменена`);
         }
       })
-    )
+    );
   }
 }

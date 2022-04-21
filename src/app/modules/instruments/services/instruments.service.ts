@@ -37,10 +37,10 @@ export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
           instrumentGroup: r.board,
           isin: r.ISIN,
           currency: r.currency
-        }
-        return selected
+        };
+        return selected;
       })
-    )
+    );
   }
 
   getInstruments(filter: SearchFilter): Observable<InstrumentSelect[]> {
@@ -56,9 +56,9 @@ export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
           instrumentGroup: r.board,
           isin: r.ISIN,
           currency: r.currency
-        }))
-        return selects
+        }));
+        return selects;
       })
-    )
+    );
   }
 }

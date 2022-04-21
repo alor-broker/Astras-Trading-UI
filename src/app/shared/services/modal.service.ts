@@ -12,14 +12,14 @@ import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selector
 export class ModalService {
   private selectedPortfolio?: PortfolioKey;
 
-  private shouldShowCommandModal = new BehaviorSubject<boolean>(false)
-  private commandParams = new BehaviorSubject<CommandParams | null>(null)
+  private shouldShowCommandModal = new BehaviorSubject<boolean>(false);
+  private commandParams = new BehaviorSubject<CommandParams | null>(null);
 
-  private editParams = new BehaviorSubject<EditParams | null>(null)
-  private shouldShowEditModal = new BehaviorSubject<boolean>(false)
+  private editParams = new BehaviorSubject<EditParams | null>(null);
+  private shouldShowEditModal = new BehaviorSubject<boolean>(false);
 
-  private helpParams = new BehaviorSubject<string | null>(null)
-  private shouldShowHelpModal = new BehaviorSubject<boolean>(false)
+  private helpParams = new BehaviorSubject<string | null>(null);
+  private shouldShowHelpModal = new BehaviorSubject<boolean>(false);
 
   private shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
 
@@ -39,7 +39,7 @@ export class ModalService {
       if (p) {
         this.selectedPortfolio = p;
       }
-    })
+    });
   }
 
   openCommandModal(data: CommandParams) {

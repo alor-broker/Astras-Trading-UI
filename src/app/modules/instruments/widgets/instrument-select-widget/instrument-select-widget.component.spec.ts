@@ -9,10 +9,10 @@ import { InstrumentSelectWidgetComponent } from './instrument-select-widget.comp
 describe('InstrumentSelectWidgetComponent', () => {
   let component: InstrumentSelectWidgetComponent;
   let fixture: ComponentFixture<InstrumentSelectWidgetComponent>;
-  const spyInstrs = jasmine.createSpyObj('InstrumentsService', ['settings$', 'setSettings'])
-  spyInstrs.settings$ = of(null)
+  const spyInstrs = jasmine.createSpyObj('InstrumentsService', ['settings$', 'setSettings']);
+  spyInstrs.settings$ = of(null);
   spyInstrs.setSettings.and.returnValue();
-  const spyDash = jasmine.createSpyObj('DashboardService', ['updateWidget'])
+  const spyDash = jasmine.createSpyObj('DashboardService', ['updateWidget']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

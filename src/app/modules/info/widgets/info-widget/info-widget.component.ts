@@ -18,14 +18,14 @@ export class InfoWidgetComponent implements OnInit {
     this.service.setLinked(linkedToActive);
   }
   @Input()
-  guid!: string
+  guid!: string;
   @Input()
   resize!: EventEmitter<DashboardItem>;
 
   @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>()
+  shouldShowSettingsChange = new EventEmitter<boolean>();
 
-  info$?: Observable<ExchangeInfo | null>
+  info$?: Observable<ExchangeInfo | null>;
 
   constructor(private service: InfoService) { }
 

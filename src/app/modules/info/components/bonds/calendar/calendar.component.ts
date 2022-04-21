@@ -10,7 +10,7 @@ import { InfoService } from '../../../services/info.service';
 })
 export class CalendarComponent implements OnInit {
   @Input()
-  guid!: string
+  guid!: string;
 
   calendar$?: Observable<Calendar>;
 

@@ -16,6 +16,6 @@ export class TerminalSettingsService {
   getFullName() {
     return this.auth.currentUser$.pipe(
       switchMap(u => this.http.get<FullName>(`${this.url}/${u.login}/full-name`))
-    )
+    );
   }
 }

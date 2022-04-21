@@ -10,7 +10,7 @@ describe('CommandsService', () => {
   let httpController: HttpTestingController;
   let httpClient: HttpClient;
 
-  const notificationSpy = jasmine.createSpyObj('NzNotificationService', ['error', 'success'])
+  const notificationSpy = jasmine.createSpyObj('NzNotificationService', ['error', 'success']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({

@@ -6,7 +6,7 @@ import { OnboardingService } from './onboarding.service';
 
 describe('Service: Onboarding', () => {
   beforeEach(() => {
-    let spy = jasmine.createSpyObj('JoyrideService', ['startTour'])
+    let spy = jasmine.createSpyObj('JoyrideService', ['startTour']);
     TestBed.configureTestingModule({
       providers: [
         OnboardingService,

@@ -14,7 +14,7 @@ describe('LightChartService', () => {
   let httpClient: HttpClient;
 
   const spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
-  const spyHistory = jasmine.createSpyObj('HistoryService', ['getHistory'])
+  const spyHistory = jasmine.createSpyObj('HistoryService', ['getHistory']);
   const dashboardSpy = jasmine.createSpyObj('DashboardService', ['getSettings']);
 
   beforeEach(() => {

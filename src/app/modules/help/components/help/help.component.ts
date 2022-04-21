@@ -10,7 +10,7 @@ import { HelpService } from '../../services/help.service';
 })
 export class HelpComponent implements OnInit {
   @Input()
-  name!: string
+  name!: string;
   help$?: Observable<HelpResponse>;
 
   constructor(private service: HelpService) { }

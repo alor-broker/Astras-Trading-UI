@@ -8,4 +8,4 @@ export const selectPortfoliosState = createFeatureSelector<fromPortfolios.Portfo
 export const getSelectedPortfolio = createSelector(
   selectPortfoliosState,
   (state) => state.selectedPortfolio
-)
+);
