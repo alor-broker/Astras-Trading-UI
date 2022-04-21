@@ -38,7 +38,8 @@ export class LimitEditComponent implements OnInit, OnDestroy {
           type: CommandType.Limit.toString().toLowerCase(),
           price: this.initialParams.price ?? 1,
           quantity: this.initialParams.quantity ?? 1,
-          orderId: this.initialParams.orderId
+          orderId: this.initialParams.orderId,
+          side: this.initialParams.side
         };
         this.viewData.next(command);
         this.setLimitEdit(command);
@@ -84,7 +85,8 @@ export class LimitEditComponent implements OnInit, OnDestroy {
           instrumentGroup: form.instrumentGroup ?? command.instrument.instrumentGroup
         },
         user: command.user,
-        id: command.orderId
+        id: command.orderId,
+        side: command.side
       };
       const evaluation: EvaluationBaseProperties = {
         price: price,
