@@ -155,7 +155,7 @@ export class DashboardService {
       }, { activeTabIndex: 3 });
       this.addWidget({
         gridItem: { x: 3, y: 0, cols: 1, rows: 1, type: WidgetNames.orderBook },
-      }, { depth: 7 });
+      }, { depth: 10 });
       this.addWidget({
         gridItem: { x: 4, y: 0, cols: 1, rows: 1, type: WidgetNames.instrumentInfo },
       });
