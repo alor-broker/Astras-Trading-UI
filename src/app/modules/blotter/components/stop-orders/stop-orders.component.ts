@@ -29,6 +29,8 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayOrders$: Observable<DisplayOrder[]> = of([]);
   searchFilter = new BehaviorSubject<OrderFilter>({});
+  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0
+
   tableInnerWidth: string = '1000px';
   allColumns: Column<DisplayOrder, OrderFilter>[] = [
     {
@@ -351,6 +353,11 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
 
   selectInstrument(symbol: string, exchange: string) {
     this.service.selectNewInstrument(symbol, exchange);
+  }
+
+  isFilterApplied(column: Column<DisplayOrder, OrderFilter>) {
+    const filter = this.searchFilter.getValue();
+    return column.id in filter && filter[column.id] !== ''
   }
 
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {

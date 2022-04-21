@@ -1,5 +1,8 @@
 <ng-template #empty>
-  <nz-empty nzNotFoundImage="simple" nzNotFoundContent='Заявок сегодня не было'></nz-empty>
+  <nz-empty
+    nzNotFoundImage="simple"
+    [nzNotFoundContent]='isFilterDisabled() ? "Заявок сегодня не было" : "С такими фильтрами ничего не найдено"'>
+  </nz-empty>
 </ng-template>
 
 <nz-table *ngIf="displayOrders$ | async as orders" #nzTable [nzData]="orders"
@@ -21,7 +24,7 @@
           [nzFilterFn]="column.filterFn">
         {{column.name}}
         <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
-          <i nz-icon nzType="search"></i>
+          <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
         </nz-filter-trigger>
       </th>
       <th>
