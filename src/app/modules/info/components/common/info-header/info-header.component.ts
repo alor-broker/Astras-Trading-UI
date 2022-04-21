@@ -6,13 +6,9 @@ import { ExchangeInfo } from '../../../models/exchange-info.model';
   templateUrl: './info-header.component.html',
   styleUrls: ['./info-header.component.less']
 })
-export class InfoHeaderComponent implements OnInit {
+export class InfoHeaderComponent {
   @Input()
   info!: ExchangeInfo
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

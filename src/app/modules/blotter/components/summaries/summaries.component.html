@@ -2,7 +2,7 @@
       *ngIf="summary$ | async as summary"
       nzBordered
       [nzColumn]="columns"
-      [nzSize]="columns == 1 ? 'small' : 'default'"
+      [nzSize]="columns === 1 ? 'small' : 'default'"
     >
       <nz-descriptions-item nzTitle="Оценка портфеля">{{summary.portfolioLiquidationValue}}</nz-descriptions-item>
       <nz-descriptions-item nzTitle="Оценка ликв. портфеля">{{summary.portfolioEvaluation}}</nz-descriptions-item>

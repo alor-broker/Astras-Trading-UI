@@ -13,7 +13,8 @@ import { InfoService } from '../../services/info.service';
 export class InfoWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
-  @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
+  @Input()
+  set linkedToActive(linkedToActive: boolean) {
     this.service.setLinked(linkedToActive);
   }
   @Input()

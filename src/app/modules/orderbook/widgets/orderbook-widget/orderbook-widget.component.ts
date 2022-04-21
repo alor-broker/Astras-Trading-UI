@@ -8,10 +8,11 @@ import { OrderbookService } from '../../services/orderbook.service';
   styleUrls: ['./orderbook-widget.component.less'],
   providers: [OrderbookService]
 })
-export class OrderbookWidgetComponent implements OnInit {
+export class OrderbookWidgetComponent {
   @Input()
   shouldShowSettings!: boolean;
-  @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
+  @Input()
+  set linkedToActive(linkedToActive: boolean) {
     this.service.setLinked(linkedToActive);
   }
   @Input()
@@ -22,9 +23,6 @@ export class OrderbookWidgetComponent implements OnInit {
   shouldShowSettingsChange = new EventEmitter<boolean>()
 
   constructor(private service: OrderbookService) { }
-
-  ngOnInit(): void {
-  }
 
   onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);

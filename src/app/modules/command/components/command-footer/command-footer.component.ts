@@ -9,15 +9,11 @@ import { CommandsService } from '../../services/commands.service';
   templateUrl: './command-footer.component.html',
   styleUrls: ['./command-footer.component.less']
 })
-export class CommandFooterComponent implements OnInit {
+export class CommandFooterComponent {
   @Input()
   activeTab: string = 'limit'
 
   constructor(private command: CommandsService, private modal: ModalService) {
-  }
-
-  ngOnInit(): void {
-
   }
 
   buy() {

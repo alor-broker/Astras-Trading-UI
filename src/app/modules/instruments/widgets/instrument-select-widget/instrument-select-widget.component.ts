@@ -12,7 +12,7 @@ import { InstrumentsService } from '../../services/instruments.service';
   templateUrl: './instrument-select-widget.component.html',
   styleUrls: ['./instrument-select-widget.component.less']
 })
-export class InstrumentSelectWidgetComponent implements OnInit {
+export class InstrumentSelectWidgetComponent {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -22,9 +22,6 @@ export class InstrumentSelectWidgetComponent implements OnInit {
   settings$!: Observable<InstrumentSelectSettings>;
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
 
   onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);

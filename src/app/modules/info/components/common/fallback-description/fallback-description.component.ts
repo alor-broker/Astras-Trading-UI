@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ExchangeInfo } from '../../../models/exchange-info.model';
 
 @Component({
@@ -6,13 +6,9 @@ import { ExchangeInfo } from '../../../models/exchange-info.model';
   templateUrl: './fallback-description.component.html',
   styleUrls: ['./fallback-description.component.less']
 })
-export class FallbackDescriptionComponent implements OnInit {
+export class FallbackDescriptionComponent {
   @Input()
   info!: ExchangeInfo
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

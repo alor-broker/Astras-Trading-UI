@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
@@ -27,7 +28,7 @@ import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper'
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LightChartComponent implements OnInit, OnDestroy {
+export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -38,7 +39,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
   bars$: Observable<Candle | null> = of(null);
-  activeTimeFrame: Subject<string> = new BehaviorSubject('D');
+  activeTimeFrame$: Subject<string> = new BehaviorSubject('D');
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private prevOptions?: LightChartSettings;
   private isUpdating = false;
@@ -100,7 +101,7 @@ export class LightChartComponent implements OnInit, OnDestroy {
     ).subscribe(options => {
       if (options && !isEqualLightChartSettings(options, this.prevOptions)) {
         this.prevOptions = options;
-        this.activeTimeFrame.next(options.timeFrame);
+        this.activeTimeFrame$.next(options.timeFrame);
         if (this.chart) {
           this.chart.clearSeries();
         }

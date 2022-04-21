@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -18,7 +18,7 @@ import { getSelectedInstrument } from '../../../../store/instruments/instruments
   styleUrls: ['./instrument-select.component.less'],
   providers: [WatchInstrumentsService]
 })
-export class InstrumentSelectComponent implements OnInit {
+export class InstrumentSelectComponent implements OnInit, OnDestroy {
   @Input()
   shouldShowSettings!: boolean;
   @Input()

@@ -5,11 +5,7 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './profile-page.component.html',
   styleUrls: ['./profile-page.component.less']
 })
-export class ProfilePageComponent implements OnInit {
+export class ProfilePageComponent {
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

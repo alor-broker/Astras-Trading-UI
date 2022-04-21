@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
@@ -11,7 +11,7 @@ import { BlotterService } from '../../services/blotter.service';
   templateUrl: './trades.component.html',
   styleUrls: ['./trades.component.less']
 })
-export class TradesComponent implements OnInit {
+export class TradesComponent implements OnInit, OnDestroy {
   @Input()
   shouldShowSettings!: boolean;
   @Input()

@@ -10,10 +10,11 @@ import { LightChartService } from '../../services/light-chart.service';
   styleUrls: ['./light-chart-widget.component.less'],
   providers: [ LightChartService ]
 })
-export class LightChartWidgetComponent implements OnInit {
+export class LightChartWidgetComponent {
   @Input()
   shouldShowSettings!: boolean;
-  @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
+  @Input()
+  set linkedToActive(linkedToActive: boolean) {
     this.service.setLinked(linkedToActive);
   }
   @Input()
@@ -26,9 +27,6 @@ export class LightChartWidgetComponent implements OnInit {
   settings$!: Observable<LightChartSettings>;
 
   constructor(private service: LightChartService) { }
-
-  ngOnInit(): void {
-  }
 
   onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);

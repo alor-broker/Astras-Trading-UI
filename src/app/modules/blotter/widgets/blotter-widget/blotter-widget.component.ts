@@ -14,7 +14,8 @@ import { BlotterService } from '../../services/blotter.service';
 export class BlotterWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
-  @Input('linkedToActive') set linkedToActive(linkedToActive: boolean) {
+  @Input()
+  set linkedToActive(linkedToActive: boolean) {
     this.service.setLinked(linkedToActive);
   }
   @Input()

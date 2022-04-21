@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { InstrumentSelectSettings } from 'src/app/shared/models/settings/instrument-select-settings.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { InstrumentSelectSettings } from 'src/app/shared/models/settings/instrum
   templateUrl: './instrument-select-settings.component.html',
   styleUrls: ['./instrument-select-settings.component.less']
 })
-export class InstrumentSelectSettingsComponent implements OnInit {
+export class InstrumentSelectSettingsComponent {
   @Input()
   guid!: string
 
@@ -14,8 +14,4 @@ export class InstrumentSelectSettingsComponent implements OnInit {
   settingsChange: EventEmitter<InstrumentSelectSettings> = new EventEmitter<InstrumentSelectSettings>();
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

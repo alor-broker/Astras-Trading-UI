@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
@@ -12,7 +12,7 @@ import { BlotterService } from '../../services/blotter.service';
   templateUrl: './positions.component.html',
   styleUrls: ['./positions.component.less']
 })
-export class PositionsComponent implements OnInit {
+export class PositionsComponent implements OnInit, OnDestroy {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
