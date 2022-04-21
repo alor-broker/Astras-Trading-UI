@@ -80,7 +80,7 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
       switchMap((s) =>
         this.getOrderbookReq(s.symbol, s.exchange, s.instrumentGroup, s.depth)
       ),
-      catchError((e, c) => {
+      catchError((e,) => {
         throw e;
       })
     );

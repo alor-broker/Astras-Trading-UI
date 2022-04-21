@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { HelpComponent } from './components/help/help.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { HelpWidgetComponent } from './widgets/help-widget/help-widget.component';

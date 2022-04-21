@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
-import { distinct, distinctUntilChanged, filter, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter} from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';

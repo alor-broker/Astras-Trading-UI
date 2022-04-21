@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, switchMap } from 'rxjs';
+import { switchMap } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { environment } from 'src/environments/environment';
 import { FullName } from '../models/full-name.model';

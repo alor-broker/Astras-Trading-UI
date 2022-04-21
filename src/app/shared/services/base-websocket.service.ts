@@ -18,7 +18,7 @@ constructor(private ws: WebsocketService, settingsService: DashboardService) {
 
 unsubscribe() {
   if (this.subGuidByOpCode) {
-    for (const [guid, _] of this.subGuidByOpCode) {
+    for (const [guid,] of this.subGuidByOpCode) {
       this.ws.unsubscribe(guid);
     }
   }

@@ -1,5 +1,3 @@
-import { EvaluationBaseProperties } from "./evaluation-base-properties.model";
-
 export interface EvaluationRequest{
   exchange: string,
   portfolio: string,

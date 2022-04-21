@@ -1,5 +1,4 @@
 import { CurrencyInstrument } from "../models/enums/currencies.model";
-import { MathHelper } from "./math-helper";
 
 
 /**

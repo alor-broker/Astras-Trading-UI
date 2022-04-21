@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Portfolio } from '../models/portfolio.model';
-import { ProfileModule } from '../profile.module';
 
 @Injectable({
   providedIn: 'root'

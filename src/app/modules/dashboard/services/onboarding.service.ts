@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { JoyrideService } from 'ngx-joyride';
 import { buyColor } from 'src/app/shared/models/settings/styles-constants';
-import { DashboardModule } from '../dashboard.module';
 
 @Injectable({
   providedIn: 'root'

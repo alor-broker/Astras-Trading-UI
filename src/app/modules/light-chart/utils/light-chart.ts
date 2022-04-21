@@ -1,6 +1,6 @@
 import * as LightweightCharts from 'lightweight-charts';
 import { Observable } from 'rxjs';
-import { distinct, filter, map } from 'rxjs/operators';
+import { distinct, map } from 'rxjs/operators';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { TimeframesHelper } from './timeframes-helper';

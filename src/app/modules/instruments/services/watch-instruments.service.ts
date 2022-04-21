@@ -53,7 +53,7 @@ export class WatchInstrumentsService {
 
 
   unsubscribe() {
-    this.quotesSubsByKey.forEach((v, k) => {
+    this.quotesSubsByKey.forEach((v) => {
       v.unsubscribe();
     });
   }

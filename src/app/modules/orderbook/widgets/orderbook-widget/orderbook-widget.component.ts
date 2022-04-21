@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 

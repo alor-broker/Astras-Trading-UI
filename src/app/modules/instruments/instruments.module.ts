@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { InstrumentsRoutingModule } from './instruments-routing.module';
 import { InstrumentSelectComponent } from './components/instrument-select/instrument-select.component';

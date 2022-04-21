@@ -3,7 +3,7 @@ export function findUnique<T, P>(array: Array<T>, selector: (element: T) => P) :
   return [...new Set(selected)].map(j => JSON.parse(j));
 }
 
-export function findUniqueElements<T, P>(
+export function findUniqueElements<T>(
     array: Array<T>,
     sorter: (e1: T, e2: T) => number,
     comparer: (first: T, seconds: T) => boolean) : T[]

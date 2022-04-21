@@ -76,7 +76,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
       },
       y: {
         ticks: {
-          callback: (value, _, __) => {
+          callback: (value) => {
             if (typeof value === 'number') {
               if (value >= 1000000) {
                 return MathHelper.round(value / 1000000, 1) + 'M';

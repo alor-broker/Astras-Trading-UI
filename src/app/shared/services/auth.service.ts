@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
-import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, switchMap} from 'rxjs/operators';
 import { Login } from '../models/user/login.model';
 import { RefreshToken } from '../models/user/refresh-token.model';
 import { Credentials } from '../models/user/credentials.model';
@@ -122,7 +122,7 @@ export class AuthService {
   private getAccessToken(): Observable<string> {
     return this.currentUser$.pipe(
       switchMap(user => timer(0, 1000).pipe(
-        map(_ => user))
+        map(() => user))
       ),
       mergeMap(user => {
         if (this.isAuthorised(user)) {

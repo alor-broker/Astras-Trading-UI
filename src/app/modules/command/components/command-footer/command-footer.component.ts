@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { of, take } from 'rxjs';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { ModalService } from 'src/app/shared/services/modal.service';

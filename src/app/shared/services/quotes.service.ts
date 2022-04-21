@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable,  } from 'rxjs';
+import { Observable,  } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Quote } from '../models/quotes/quote.model';
 import { QuotesRequest } from '../models/quotes/quotes-request.model';

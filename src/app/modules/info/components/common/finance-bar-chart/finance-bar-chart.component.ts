@@ -33,7 +33,7 @@ export class FinanceBarChartComponent implements OnInit {
       },
       y: {
         ticks: {
-          callback: (value, _, __) => {
+          callback: (value) => {
             if (typeof value === 'number') {
               if (value >= Math.pow(10, 9)) {
                 return MathHelper.round(value / Math.pow(10, 9), 1) + 'B';

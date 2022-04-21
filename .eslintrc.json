@@ -40,6 +40,15 @@
       }
     },
     {
+      "files": ["*.spec.ts"],
+      "extends": [
+        "plugin:@angular-eslint/recommended"
+      ],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": ["off"]
+      }
+    },
+    {
       "files": [
         "*.html"
       ],

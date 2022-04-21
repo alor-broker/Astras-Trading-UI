@@ -1,9 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Observable, of } from "rxjs";
 import { Position } from "src/app/shared/models/positions/position.model";
 import { BlotterSettings } from "src/app/shared/models/settings/blotter-settings.model";
 import { Trade } from "src/app/shared/models/trades/trade.model";
-import { BaseWebsocketService } from "src/app/shared/services/base-websocket.service";
-import { isBlotterSettings } from "src/app/shared/utils/settings-helper";
 import { Order } from "../../../shared/models/orders/order.model";
 
 export class MockServiceBlotter {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';

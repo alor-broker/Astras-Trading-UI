@@ -85,7 +85,7 @@ export class DashboardService {
 
   removeWidget(guid: string) {
     let widgets = Array.from(this.getDashboardValue().entries());
-    widgets = widgets.filter(([k,_]) => k !== guid);
+    widgets = widgets.filter(([k,]) => k !== guid);
     this.setDashboard(new Map(widgets));
   }
 
@@ -96,6 +96,8 @@ export class DashboardService {
     localStorage.removeItem(this.profileStorage);
   }
 
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   saveDashboard(name: string) {
     this.setDashboard(this.getDashboardValue());
   }

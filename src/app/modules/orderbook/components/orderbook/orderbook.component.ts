@@ -3,11 +3,9 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
   ViewEncapsulation
 } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';

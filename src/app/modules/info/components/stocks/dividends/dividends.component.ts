@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { Component, Input, OnInit } from '@angular/core';
+import { map, Observable} from 'rxjs';
 import { Dividend } from '../../../models/dividend.model';
 import { InfoService } from '../../../services/info.service';
 

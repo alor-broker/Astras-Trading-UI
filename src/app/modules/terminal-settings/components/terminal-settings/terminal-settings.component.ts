@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup} from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { FullName } from '../../models/full-name.model';
 import { TerminalSettingsService } from '../../services/terminal-settings.service';

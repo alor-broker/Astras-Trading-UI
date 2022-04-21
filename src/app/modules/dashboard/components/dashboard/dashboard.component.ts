@@ -99,7 +99,7 @@ export class DashboardComponent implements OnInit {
           this.resize.emit({...item, height: e.el.clientHeight, width: e.el.clientWidth });
         }
       },
-      itemChangeCallback: (item, e) => {
+      itemChangeCallback: () => {
         this.service.saveDashboard('default');
       }
     };

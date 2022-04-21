@@ -4,11 +4,9 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';

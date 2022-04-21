@@ -157,7 +157,6 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   private getStopOrdersReq(portfolio: string, exchange: string) : Observable<StopOrder[]> {
     this.orders = new Map<string, StopOrder>();
-    let prevValue: StopOrder | null = null;
     const opcode = 'StopOrdersGetAndSubscribeV2';
     const stopOrders = this.getPortfolioEntity<StopOrderData>(portfolio, exchange, opcode, true).pipe(
       map((order: StopOrderData) => {
@@ -185,7 +184,6 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   private getOrdersReq(portfolio: string, exchange: string) {
     this.orders = new Map<string, Order>();
-    let prevValue: Order | null = null;
     const opcode = 'OrdersGetAndSubscribeV2';
     const orders = this.getPortfolioEntity<Order>(portfolio, exchange, opcode, true).pipe(
       map((order: Order) => {
