@@ -21,6 +21,7 @@ export class TradesComponent implements OnInit, OnDestroy {
   tableInnerWidth = '1000px';
   displayTrades$: Observable<Trade[]> = of([]);
   searchFilter = new BehaviorSubject<TradeFilter>({});
+  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0
   allColumns: Column<Trade, TradeFilter>[] = [
     {
       id: 'id',
@@ -175,6 +176,11 @@ export class TradesComponent implements OnInit, OnDestroy {
 
   formatDate(date: Date) {
     return new Date(date).toLocaleTimeString();
+  }
+
+  isFilterApplied(column: Column<Trade, TradeFilter>) {
+    const filter = this.searchFilter.getValue();
+    return column.id in filter && filter[column.id] !== ''
   }
 
   private justifyFilter(trade: Trade, filter: TradeFilter): boolean {
