@@ -1,5 +1,5 @@
 <div class='panel' *ngIf="settings$ | async as s">
-  <button *ngIf="hasSettings" nz-button class='btn-panel above-all' nzSize="small" (click)="switchSettings($event)">
+  <button *ngIf="hasSettings" nz-button nzSize="small" (click)="switchSettings($event)">
     <i nz-icon
       nzType="setting"
       [nzTheme]="'fill'"
@@ -7,9 +7,9 @@
       [title]="joyrideContent.step8.title"
       [text]="joyrideContent.step8.text"></i>
   </button>
-  <label>{{s.title}}</label>
+  <label class="title">{{s.title}}</label>
   <span>
-    <button *ngIf='s.linkToActive !== undefined' nz-button class='btn-panel above-all' nzSize="small"
+    <button *ngIf='s.linkToActive !== undefined' nz-button nzSize="small"
       (mousedown)="linkToActive($event, !s.linkToActive)"
       (touchstart)="linkToActive($event, !s.linkToActive)">
       <i nz-icon
@@ -19,14 +19,13 @@
         [title]="joyrideContent.step7.title"
         [text]="joyrideContent.step7.text"></i>
     </button>
-    <button *ngIf="hasHelp" nz-button class='btn-panel above-all' nzSize="small" (click)="openHelp()">
+    <button *ngIf="hasHelp" nz-button nzSize="small" (click)="openHelp()">
       <i nz-icon nzType="question-circle" [nzTheme]="'outline'"
       joyrideStep="step6"
       [title]="joyrideContent.step6.title"
       [text]="joyrideContent.step6.text"></i>
     </button>
     <button nz-button
-      class='btn-panel above-all'
       nzSize="small"
       (mousedown)="removeItem($event)"
       (touchstart)="removeItem($event)"
