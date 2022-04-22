@@ -7,11 +7,11 @@ import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { WatchedInstrument } from '../models/watched-instrument.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
+import { GuidGenerator } from '../../../shared/utils/guid';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class WatchInstrumentsService {
+  private readonly quitesSubscriptionId = GuidGenerator.newGuid();
   private readonly watchlistStorage = 'watchlist';
 
   private watchListState: WatchedInstrument[] = [];
@@ -124,7 +124,7 @@ export class WatchInstrumentsService {
     const key = WatchInstrumentsService.getKey(wi.instrument);
 
     const service = new QuotesService(this.ws);
-    const sub = service.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup)
+    const sub = service.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup, this.quitesSubscriptionId)
       .pipe(finalize(() => {
         service.unsubscribe();
       }))
