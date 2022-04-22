@@ -66,8 +66,8 @@ export class OrderBookComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe((widget) => {
       this.sizes.next({
-        width: (widget.width ?? 0) + 'px',
-        height: ((widget.height ?? 0) - 30) + 'px',
+        width: (widget.width ?? 0) - 20 + 'px',
+        height: ((widget.height ?? 0) - 40) + 'px',
       });
     });
   }
