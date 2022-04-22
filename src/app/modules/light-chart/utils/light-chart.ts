@@ -4,7 +4,7 @@ import { distinct, map } from 'rxjs/operators';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { TimeframesHelper } from './timeframes-helper';
-import { buyColor, sellColor, buyColorBackground, sellColorBackground, componentBackgound } from '../../../shared/models/settings/styles-constants';
+import { buyColor, sellColor, buyColorBackground, sellColorBackground, componentBackgound, borderColor } from '../../../shared/models/settings/styles-constants';
 
 export class LightChart {
   chart!: LightweightCharts.IChartApi;
@@ -36,24 +36,24 @@ export class LightChart {
       },
       timeScale: {
         timeVisible: true,
-        borderColor: '#D1D4DC',
+        borderColor: borderColor,
       },
       rightPriceScale: {
         autoScale: true,
         visible: true,
-        borderColor: '#D1D4DC',
+        borderColor: borderColor,
       },
       layout: {
         backgroundColor: componentBackgound, // '#ffffff',
-        textColor: '#fff',
+        textColor: '#000',
 
       },
       grid: {
         horzLines: {
-          color: '#444', // '#F0F3FA',
+          color: '#F0F3FA', // '#F0F3FA',
         },
         vertLines: {
-          color: '#444', // '#F0F3FA',
+          color: '#F0F3FA', // '#F0F3FA',
         },
       },
     });
