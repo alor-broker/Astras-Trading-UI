@@ -22,7 +22,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
   tableInnerWidth = '1000px';
   displayPositions$: Observable<Position[]> = of([]);
   searchFilter = new BehaviorSubject<PositionFilter>({});
-  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0
+  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
 
   allColumns: Column<Position, PositionFilter>[] = [
     {
@@ -180,7 +180,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
 
   isFilterApplied(column: Column<Position, PositionFilter>) {
     const filter = this.searchFilter.getValue();
-    return column.id in filter && filter[column.id] !== ''
+    return column.id in filter && filter[column.id] !== '';
   }
 
   private justifyFilter(position: Position, filter: PositionFilter): boolean {

@@ -29,7 +29,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayOrders$: Observable<DisplayOrder[]> = of([]);
   searchFilter = new BehaviorSubject<OrderFilter>({});
-  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0
+  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
   tableInnerWidth: string = '1000px';
   allColumns: Column<DisplayOrder, OrderFilter>[] = [
     {
@@ -325,7 +325,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   isFilterApplied(column: Column<DisplayOrder, OrderFilter>) {
     const filter = this.searchFilter.getValue();
-    return column.id in filter && filter[column.id] !== ''
+    return column.id in filter && filter[column.id] !== '';
   }
 
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {

@@ -14,8 +14,7 @@ import { Widget } from 'src/app/shared/models/widget.model';
   selector: 'ats-parent-widget[widget][resize]',
   templateUrl: './parent-widget.component.html',
   styleUrls: ['./parent-widget.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ParentWidgetComponent implements OnInit {
 
@@ -61,5 +60,10 @@ export class ParentWidgetComponent implements OnInit {
   hasHelp() {
     const obWidget = this.widget as Widget;
     return obWidget.hasHelp;
+  }
+
+  get contentHeightAdjustment(): number {
+    // TODO: need to calculate this value. Now it depends on styles
+    return 40;
   }
 }

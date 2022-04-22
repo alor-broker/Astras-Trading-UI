@@ -23,7 +23,7 @@ export class LightChart {
   constructor(width: number, height: number) {
     this.sizes = {
       width: width,
-      height: height - 30
+      height: height
     };
   }
 
@@ -151,7 +151,7 @@ clearSeries() {
 resize(width: number, height: number) {
   this.sizes = {
     width: width,
-    height: height - 30
+    height: height
   };
   this.chart.resize(this.sizes.width, this.sizes.height);
 }

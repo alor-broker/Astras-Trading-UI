@@ -1,5 +1,6 @@
 <ats-light-chart *ngIf="!shouldShowSettings"
   [guid]="guid"
   [resize]="resize"
+  [heightAdjustment]="heightAdjustment"
   [(shouldShowSettings)]="shouldShowSettings"></ats-light-chart>
 <ats-light-chart-settings *ngIf="shouldShowSettings" [guid]="guid" (settingsChange)="onSettingsChange()"></ats-light-chart-settings>

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, timer } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, of, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
 import { catchError, map, mergeMap, switchMap} from 'rxjs/operators';
@@ -21,7 +21,8 @@ export class AuthService {
     login: '',
     jwt: '',
     refreshToken: '',
-    portfolios: []
+    portfolios: [],
+    isLoggedOut: false
   });
   private requiredServices = [
     'client',
@@ -76,7 +77,8 @@ export class AuthService {
       login: '',
       jwt: '',
       refreshToken: '',
-      portfolios: []
+      portfolios: [],
+      isLoggedOut: true
     });
   }
 
@@ -96,14 +98,16 @@ export class AuthService {
 
   public refresh() : Observable<string> {
     const user = this.currentUser.getValue();
-    if (!user) {
+    if (!user || user.isLoggedOut) {
       this.redirectToSso();
-      throw Error('User is empty, can\'t refresh token');
+      return EMPTY;
     }
+
     const refreshModel : RefreshToken = {
       oldJwt: user.jwt,
       refreshToken: user.refreshToken,
     };
+
     return this.http
       .post<RefreshTokenResponse>(`${this.accountUrl}/refresh`, refreshModel)
       .pipe(

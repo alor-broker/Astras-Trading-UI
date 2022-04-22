@@ -10,7 +10,6 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 export class SsoCallbackComponent implements OnInit {
 
   constructor(private router: Router, private route: ActivatedRoute, private account: AuthService) {
-    this.route.params;
   }
 
   ngOnInit() {
@@ -18,7 +17,8 @@ export class SsoCallbackComponent implements OnInit {
       this.account.setUser({
         refreshToken: params['refreshToken'],
         login: params['userName'],
-        jwt: params['token']
+        jwt: params['token'],
+        isLoggedOut: false
       });
     });
     this.router.navigate(['/dashboard']);
