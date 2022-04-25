@@ -52,8 +52,8 @@ export class WebsocketService {
       },
     };
   }
-  // @ts-ignore: Property has no initializer and is not definitely assigned
-  private socket$: WebSocketSubject<WsMessage> | null;
+
+  private socket$?: WebSocketSubject<WsMessage> | null;
   private subscriptions = new Map<string, BaseRequest>();
   private options: WsOptions;
   private reconnection$: Observable<number> | null = null;

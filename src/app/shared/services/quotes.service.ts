@@ -6,9 +6,7 @@ import { QuotesRequest } from '../models/quotes/quotes-request.model';
 import { BaseResponse } from '../models/ws/base-response.model';
 import { WebsocketService } from './websocket.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class QuotesService {
 
   private quote$: Observable<Quote | null> = new Observable();
@@ -22,12 +20,12 @@ export class QuotesService {
     }
   }
 
-  generateNewGuid(request: QuotesRequest) : string {
+  generateNewGuid(request: QuotesRequest, subscriptionId: string) : string {
     const group = request.instrumentGroup ? request.instrumentGroup : '';
-    return request.opcode + request.code + request.exchange + group + request.format;
+    return request.opcode + request.code + request.exchange + group + request.format + subscriptionId;
   }
 
-  getQuotes(symbol: string, exchange: string, instrumentGroup?: string) {
+  getQuotes(symbol: string, exchange: string, instrumentGroup?: string, subscriptionId?: string): Observable<Quote> {
     this.ws.connect();
 
     if (this.subGuid) {
@@ -42,9 +40,9 @@ export class QuotesService {
       guid: '',
       instrumentGroup: instrumentGroup
     };
-    this.subGuid = this.generateNewGuid(request);
+
+    this.subGuid = this.generateNewGuid(request, subscriptionId ?? '');
     request.guid = this.subGuid;
-    this.ws.subscribe(request);
 
     this.quote$ = this.ws.messages$.pipe(
       filter(m => m.guid == this.subGuid),
@@ -53,6 +51,9 @@ export class QuotesService {
         return br.data;
       })
     );
+
+    this.ws.subscribe(request);
+
     return this.quote$.pipe(
       filter((q): q is Quote => !!q)
     );

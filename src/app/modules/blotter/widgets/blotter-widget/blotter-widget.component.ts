@@ -4,12 +4,16 @@ import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { BlotterService } from '../../services/blotter.service';
+import { QuotesService } from '../../../../shared/services/quotes.service';
 
 @Component({
   selector: 'ats-blotter-widget[shouldShowSettings][guid][linkedToActive][resize]',
   templateUrl: './blotter-widget.component.html',
   styleUrls: ['./blotter-widget.component.less'],
-  providers: [BlotterService]
+  providers: [
+    QuotesService,
+    BlotterService
+  ]
 })
 export class BlotterWidgetComponent implements OnInit {
   @Input()
