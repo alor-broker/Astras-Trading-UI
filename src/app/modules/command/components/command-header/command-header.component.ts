@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { filter, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
+import { filter, interval, map, Observable, of, Subject, switchMap, takeUntil, withLatestFrom } from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
@@ -85,6 +85,15 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
         prevClose: data.candle?.close ?? 0
       }))
     );
+/*
+    this.priceData$ = interval(2000)
+      .pipe(
+        withLatestFrom(this.priceData$),
+        filter(([a, x]) => !!x),
+        map(([a, x]) => (<PriceData | null>{
+          ...x,
+          lastPrice: !!x ? ( a%2 ? x.lastPrice + 0.01 : Math.ceil(x.lastPrice)): 0
+        }))
+      );*/
   }
-
 }
