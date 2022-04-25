@@ -12,31 +12,27 @@
       </thead>
       <tbody>
         <tr *ngFor='let row of basicTable.data'>
-          <td class='row-cell' [ngStyle]="{background: 'unset'}">
-            <span>
-              <button *ngIf='row.bidCancels && row.bidOrderVolume' nzSize="small" nz-button nzType="primary"
-                (click)="cancelOrder(row.bidCancels)">
-                <i *ngIf='row.bidOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
-                {{row.bidOrderVolume}}
-              </button>
-              <span (click)="newLimitOrder($event, row.bid ?? 0)">
+          <td class='row-cell' [ngStyle]="{background: 'unset'}" (click)="newLimitOrder($event, row.bid ?? 0)">
+            <button *ngIf='row.bidCancels && row.bidOrderVolume' nzSize="small" nz-button nzType="primary"
+                    (click)="cancelOrder($event, row.bidCancels)">
+              <i *ngIf='row.bidOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
+              {{row.bidOrderVolume}}
+            </button>
+            <span class="cell-value">
                 {{row.bidVolume}}
-              </span>
             </span>
           </td>
           <td class='row-cell--bid' (click)="newLimitOrder($event, row.bid ?? 0)" [ngStyle]='getBidStyle(row.bidVolume ?? 0)'>{{row.bid}}</td>
           <td class='row-cell--ask' (click)="newLimitOrder($event, row.ask ?? 0)" [ngStyle]='getAskStyle(row.askVolume ?? 0)'>{{row.ask}}</td>
-          <td [ngStyle]="{background: 'unset'}" ngClass="without-hover-background" class='row-cell' nzAlign='right' (mousedown)="newLimitOrder($event, row.ask ?? 0)">
-            <span (click)="newLimitOrder($event, row.ask ?? 0)">
-              <span (click)="newLimitOrder($event, row.ask ?? 0)">
+          <td [ngStyle]="{background: 'unset'}" ngClass="without-hover-background" class='row-cell' nzAlign='right' (click)="newLimitOrder($event, row.ask ?? 0)">
+            <span class="cell-value">
                 {{row.askVolume}}
-              </span>
-              <button *ngIf='row.askCancels && row.askOrderVolume' nzSize="small" nz-button nzType="primary"
-                (click)="cancelOrder(row.askCancels)">
-                {{row.askOrderVolume}}
-                <i *ngIf='row.askOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
-              </button>
             </span>
+            <button *ngIf='row.askCancels && row.askOrderVolume' nzSize="small" nz-button nzType="primary"
+                    (click)="cancelOrder($event, row.askCancels)">
+              {{row.askOrderVolume}}
+              <i *ngIf='row.askOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
+            </button>
           </td>
         </tr>
       </tbody>
