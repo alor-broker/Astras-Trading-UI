@@ -60,7 +60,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
             Validators.required, Validators.min(0),
           ]),
           price: new FormControl(command.price),
-          triggerPrice: new FormControl(command.price, [
+          triggerPrice: new FormControl(0, [
             Validators.required, Validators.min(0),
           ]),
           stopEndUnixTime: new FormControl(command.stopEndUnixTime),
@@ -71,7 +71,11 @@ export class StopCommandComponent implements OnInit, OnDestroy {
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
-      distinctUntilChanged((prev, curr) => prev?.price == curr?.price && prev?.quantity == curr?.quantity),
+      distinctUntilChanged((prev, curr) =>
+        prev?.condition == curr?.condition &&
+        prev?.price == curr?.price &&
+        prev?.quantity == curr?.quantity &&
+        prev?.triggerPrice == curr?.triggerPrice),
     ).subscribe((form: StopFormData) => this.setStopCommand(form));
   }
 
