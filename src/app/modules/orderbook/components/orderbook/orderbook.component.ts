@@ -92,7 +92,8 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     };
   }
 
-  cancelOrder(cancells: CancelCommand[]) {
+  cancelOrder(event: MouseEvent, cancells: CancelCommand[]) {
+    event.stopPropagation();
     for (const cancel of cancells) {
       this.service.cancelOrder(cancel);
     }
