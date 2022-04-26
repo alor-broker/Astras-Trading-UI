@@ -19,6 +19,8 @@ export class WidgetHeaderComponent implements OnInit {
   @Input()
   hasSettings!: boolean;
   @Input()
+  shouldShowSettings = false;
+  @Input()
   hasHelp!: boolean;
   @Output()
   switchSettingsEvent = new EventEmitter<boolean>();
@@ -26,8 +28,6 @@ export class WidgetHeaderComponent implements OnInit {
   linkChangedEvent = new EventEmitter<boolean>();
 
   joyrideContent = joyrideContent;
-
-  private shouldShowSettings = false;
   settings$?: Observable<AnySettings>;
   private settings?: AnySettings;
 
