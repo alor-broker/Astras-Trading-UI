@@ -10,7 +10,9 @@ import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selector
   providedIn: 'root'
 })
 export class ModalService {
+  private betaFlagStorage = 'beta';
   private selectedPortfolio?: PortfolioKey;
+  private shouldShowBetaReminderModal = new BehaviorSubject<boolean>(false);
 
   private shouldShowCommandModal = new BehaviorSubject<boolean>(false);
   private commandParams = new BehaviorSubject<CommandParams | null>(null);
@@ -22,6 +24,8 @@ export class ModalService {
   private shouldShowHelpModal = new BehaviorSubject<boolean>(false);
 
   private shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
+
+  shouldShowBetaReminderModal$ = this.shouldShowBetaReminderModal.asObservable();
 
   shouldShowCommandModal$ = this.shouldShowCommandModal.asObservable();
   commandParams$ = this.commandParams.asObservable();
@@ -51,6 +55,17 @@ export class ModalService {
         user: portfolio
       });
     }
+  }
+
+  openBetaReminderModal() {
+    let isBetaAccepted = localStorage.getItem(this.betaFlagStorage);
+    if (!isBetaAccepted) {
+      this.shouldShowBetaReminderModal.next(true);
+    }
+  }
+
+  closeBetaReminderModal() {
+    this.shouldShowBetaReminderModal.next(false);
   }
 
   openEditModal(data: EditParams) {

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PortfolioService } from '../../services/portfolio.service';
 import { Portfolio } from '../../models/portfolio.model';
 import { OrderbookRow } from 'src/app/modules/orderbook/models/orderbook-row.model';
+import { ClientService } from 'src/app/shared/services/client.service';
 
 @Component({
   selector: 'ats-portfolio',
@@ -11,7 +11,7 @@ import { OrderbookRow } from 'src/app/modules/orderbook/models/orderbook-row.mod
 })
 export class PortfolioComponent implements OnInit {
 
-  constructor(private service: PortfolioService) {
+  constructor(private service: ClientService) {
     this.portfolio$ = new Observable();
   }
 

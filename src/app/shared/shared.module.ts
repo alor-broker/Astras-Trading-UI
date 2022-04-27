@@ -77,7 +77,7 @@ import { NumericalDirective } from './directives/numerical.directive';
     NzCheckboxModule,
     NzDatePickerModule,
     ScrollingModule,
-    AtsStoreModule,
+    AtsStoreModule
   ],
   exports: [
     // Ng zorro

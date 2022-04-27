@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
-import { PortfolioService } from './portfolio.service';
+import { ClientService } from './client.service';
 import { HttpClient } from '@angular/common/http';
 import { SharedModule } from 'src/app/shared/shared.module';
 
-describe('PortfolioService', () => {
-  let service: PortfolioService;
+describe('ClientService', () => {
+  let service: ClientService;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
 
@@ -18,7 +18,7 @@ describe('PortfolioService', () => {
 
     httpClient = TestBed.inject(HttpClient);
     // httpTestingController = TestBed.inject(HttpTestingController);
-    service = TestBed.inject(PortfolioService);
+    service = TestBed.inject(ClientService);
   });
 
   it('should be created', () => {

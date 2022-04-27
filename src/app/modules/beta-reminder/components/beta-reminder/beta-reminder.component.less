@@ -1,0 +1,24 @@
+@import (reference) '/src/styles.less';
+
+.beta {
+  height: 400px;
+  overflow-y: scroll;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: @text-color-secondary @component-background;
+}
+
+.beta::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+.beta::-webkit-scrollbar-track {
+  background-color: @component-background;
+  border-radius: 10px;
+}
+
+.beta::-webkit-scrollbar-thumb {
+  background-color:  @text-color-secondary; /* or add it to the track */
+  border-radius: 10px;
+}
