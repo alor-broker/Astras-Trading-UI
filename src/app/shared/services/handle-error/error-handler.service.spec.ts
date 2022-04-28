@@ -1,12 +1,12 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed } from '@angular/core/testing';
-import { GlobalErrorHandlerService } from './global-error-handler.service';
+import { ErrorHandlerService } from './error-handler.service';
 import { LogErrorHandler } from "./log-error-handler";
 import { ERROR_HANDLER } from "./error-handler";
 
-describe('GlobalErrorHandlerService: Register', () => {
-  let service: GlobalErrorHandlerService;
+describe('ErrorHandlerService: Register', () => {
+  let service: ErrorHandlerService;
   const handlerSpy = jasmine.createSpyObj('ApplicationErrorHandler', ['handleError']);
 
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('GlobalErrorHandlerService: Register', () => {
         LogErrorHandler
       ],
     });
-    service = TestBed.inject(GlobalErrorHandlerService);
+    service = TestBed.inject(ErrorHandlerService);
   });
 
   it('should be created', () => {

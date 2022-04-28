@@ -6,7 +6,7 @@ import { ApplicationErrorHandler, ERROR_HANDLER } from "./error-handler";
 @Injectable({
   providedIn: 'root',
 })
-export class GlobalErrorHandlerService extends ErrorHandler {
+export class ErrorHandlerService extends ErrorHandler {
   constructor(
     @Inject(ERROR_HANDLER)
     private readonly handlers: ApplicationErrorHandler[]

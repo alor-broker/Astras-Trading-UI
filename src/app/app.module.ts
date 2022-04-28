@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { extModules } from "./build-specifics/ext-modules";
-import { GlobalErrorHandlerService } from "./shared/services/handle-error/global-error-handler.service";
+import { ErrorHandlerService } from "./shared/services/handle-error/error-handler.service";
 
 registerLocaleData(ru);
 
@@ -33,7 +33,7 @@ registerLocaleData(ru);
   bootstrap: [AppComponent],
   providers: [
     { provide: NZ_I18N, useValue: ru_RU },
-    { provide: ErrorHandler, useClass: GlobalErrorHandlerService }
+    { provide: ErrorHandler, useClass: ErrorHandlerService }
   ]
 })
 export class AppModule {

@@ -18,9 +18,9 @@ import { Finance } from '../models/finance.model';
 import { Issue } from '../models/issue.model';
 import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
 import { InstrumentEqualityComparer } from '../../../shared/models/instruments/instrument.model';
-import { LoggerService } from '../../../shared/services/logger.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { distinct } from 'rxjs/operators';
+import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,
@@ -37,7 +37,7 @@ export class InfoService extends BaseService<InfoSettings>{
   constructor(
     settingsService: DashboardService,
     private readonly http: HttpClient,
-    private readonly logger: LoggerService,
+    private readonly errorHandlerService: ErrorHandlerService,
     private readonly store: Store) {
     super(settingsService);
   }
@@ -58,7 +58,7 @@ export class InfoService extends BaseService<InfoSettings>{
             map(ei => ({ settings: s, info: ei })),
             catchHttpError(
               { settings: s, info: <ExchangeInfo>{} },
-              this.logger)
+              this.errorHandlerService)
           );
         }),
         shareReplay()

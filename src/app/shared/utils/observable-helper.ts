@@ -1,15 +1,14 @@
 import { MonoTypeOperatorFunction, of, pipe } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
-import { LoggerService } from '../services/logger.service';
-import { LoggerHelper } from './logger-helper';
+import { ErrorHandlerService } from '../services/handle-error/error-handler.service';
 
-export function catchHttpError<T>(valueToReturn: T, logger?: LoggerService): MonoTypeOperatorFunction<T> {
+export function catchHttpError<T>(valueToReturn: T, errorHandler?: ErrorHandlerService): MonoTypeOperatorFunction<T> {
   return pipe(
     catchError(err => {
       if (err instanceof HttpErrorResponse) {
-        if (!!logger) {
-          LoggerHelper.logHttpError(err, logger);
+        if (!!errorHandler) {
+          errorHandler.handleError(err);
         }
 
         return of(valueToReturn);

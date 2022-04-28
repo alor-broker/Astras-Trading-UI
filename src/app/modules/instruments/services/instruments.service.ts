@@ -11,7 +11,7 @@ import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { BaseService } from 'src/app/shared/services/base.service';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
-import { LoggerService } from '../../../shared/services/logger.service';
+import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +22,7 @@ export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
   constructor(
     settingsService: DashboardService,
     private readonly http: HttpClient,
-    private readonly logger: LoggerService
+    private readonly errorHandlerService: ErrorHandlerService
     ) {
     super(settingsService);
   }
@@ -44,7 +44,7 @@ export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
         };
         return selected;
       }),
-      catchHttpError<InstrumentSelect | null>(null, this.logger),
+      catchHttpError<InstrumentSelect | null>(null, this.errorHandlerService),
     );
   }
 
