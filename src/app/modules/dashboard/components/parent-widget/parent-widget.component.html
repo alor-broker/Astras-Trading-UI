@@ -4,6 +4,7 @@
     (switchSettingsEvent)="onSwitchSettings($event)"
     (linkChangedEvent)="onLinkedChanged($event)"
     [hasSettings]="hasSettings()"
+    [shouldShowSettings]="shouldShowSettings"
     [hasHelp]="hasHelp()"></ats-widget-header>
   <ats-orderbook-widget *ngIf="widget.gridItem.type === 'order-book'"
     [guid]="getGuid()"

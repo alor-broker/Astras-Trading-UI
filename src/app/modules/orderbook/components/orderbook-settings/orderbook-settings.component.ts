@@ -41,14 +41,18 @@ export class OrderbookSettingsComponent implements OnInit {
           depth: new FormControl(settings.depth, [Validators.required, Validators.min(0), Validators.max(20)]),
           instrumentGroup: new FormControl(settings.instrumentGroup),
           showChart: new FormControl(settings.showChart),
-          showTable: new FormControl(settings.showTable),
+          showTable: new FormControl(settings.showTable)
         } as SettingsFormControls) as SettingsFormGroup;
       }
     });
   }
 
   submitForm(): void {
-    this.service.setSettings({...this.form.value, guid: this.guid, linkToActive: false});
+    this.service.setSettings({
+      ...this.form.value,
+      guid: this.guid,
+      linkToActive: false
+    });
     this.settingsChange.emit();
   }
 }
