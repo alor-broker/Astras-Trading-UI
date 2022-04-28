@@ -16,6 +16,7 @@ import { InfoModule } from '../info/info.module';
 import { TerminalSettingsModule } from '../terminal-settings/terminal-settings.module';
 import { JoyrideModule } from 'ngx-joyride';
 import { OnboardingService } from './services/onboarding.service';
+import { BetaReminderModule } from '../beta-reminder/beta-reminder.module';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { OnboardingService } from './services/onboarding.service';
     CommandModule,
     HelpModule,
     InfoModule,
+    BetaReminderModule,
     TerminalSettingsModule,
     JoyrideModule.forRoot(),
     // components

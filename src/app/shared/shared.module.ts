@@ -119,9 +119,9 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     NgChartsModule,
     // components
     PriceTickComponent,
+    LoadingIndicatorComponent,
     // directives
-    NumericalDirective,
-    LoadingIndicatorComponent
+    NumericalDirective
   ],
   providers: [
     {

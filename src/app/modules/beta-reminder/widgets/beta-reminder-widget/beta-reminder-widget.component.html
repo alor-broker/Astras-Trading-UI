@@ -1,0 +1,6 @@
+<nz-modal nzOkText="Согласен" [nzCancelText]="null" [nzVisible]='isVisible$ | async'
+  nzTitle="Согласие на бета тестирование" (nzOnOk)="handleClose()" (nzOnCancel)="null" [nzClosable]="false">
+  <ng-container *nzModalContent>
+    <ats-beta-reminder></ats-beta-reminder>
+  </ng-container>
+</nz-modal>
