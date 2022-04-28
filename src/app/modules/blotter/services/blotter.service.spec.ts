@@ -3,6 +3,7 @@ import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { BlotterService } from './blotter.service';
 import { OrdersNotificationsService } from 'src/app/shared/services/orders-notifications.service';
+import { QuotesService } from '../../../shared/services/quotes.service';
 
 describe('BlotterService', () => {
   let store: MockStore;
@@ -15,6 +16,7 @@ describe('BlotterService', () => {
       providers: [
         { provide: WebsocketService, useValue: spy },
         { provide: OrdersNotificationsService, useValue: notificationSpy },
+        QuotesService,
         provideMockStore(),
       ]
     });

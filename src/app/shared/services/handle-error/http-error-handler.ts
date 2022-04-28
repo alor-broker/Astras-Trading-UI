@@ -3,6 +3,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { Injectable } from "@angular/core";
 import { LoggerService } from '../logger.service';
+import { LoggerHelper } from '../../utils/logger-helper';
 
 interface CommandError {
   code: string,
@@ -15,9 +16,6 @@ const isCommandError = (e: any): e is CommandError => {
 
 @Injectable()
 export class HttpErrorHandler implements ApplicationErrorHandler {
-  private readonly internalErrorStatusCodes: number[] = [
-    404
-  ];
 
   constructor(private readonly logger: LoggerService, private readonly notification: NzNotificationService) {
   }
@@ -27,8 +25,8 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
       return;
     }
 
-    if (this.internalErrorStatusCodes.includes(error.status)) {
-      this.logger.error('[API] endpoint error', error);
+    if (!LoggerHelper.isRequestProcessingError(error)) {
+      LoggerHelper.logApiEndpointError(error, this.logger);
     }
     else {
       let errorMessage: string;
@@ -51,7 +49,7 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
       }
 
       this.notification.error(errorTitle, errorMessage);
-      this.logger.error('[API] request processing error', error);
+      LoggerHelper.logRequestProcessingError(error, this.logger);
     }
   }
 

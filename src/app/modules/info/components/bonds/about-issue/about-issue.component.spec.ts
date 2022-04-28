@@ -6,7 +6,7 @@ import { AboutIssueComponent } from './about-issue.component';
 describe('AboutIssueComponent', () => {
   let component: AboutIssueComponent;
   let fixture: ComponentFixture<AboutIssueComponent>;
-  const infoSpy = jasmine.createSpyObj('InfoService', ['getIssue']);
+  const infoSpy = jasmine.createSpyObj('InfoService', ['getIssue', 'getExchangeInfo']);
   infoSpy.getIssue.and.returnValue(null);
 
   beforeEach(async () => {

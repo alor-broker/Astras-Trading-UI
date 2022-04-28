@@ -1,58 +1,58 @@
-<div>
-  <nz-table *ngIf="calendar$ | async as calendar" #nzTable [nzData]="calendar.coupons" #nzTableComponent
-    nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Купоны">
-    <thead>
+<ng-container *ngIf="calendar$ | async as calendar">
+  <div *ngIf="(isLoading$ | async) === false">
+    <nz-table  #couponsTable [nzData]="calendar.coupons" #nzTableComponent nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Купоны">
+      <thead>
       <tr>
         <th>Дата</th>
         <th>Кол-во</th>
         <th>Тип купона</th>
         <th>НКД</th>
       </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let coupon of nzTable.data">
+      </thead>
+      <tbody>
+      <tr *ngFor="let coupon of couponsTable.data">
         <td>{{ coupon.date | date }}</td>
         <td>{{ coupon.amount | currency: coupon.currency:'symbol-narrow' | slice: 0:-3}}</td>
         <td>{{ coupon.couponType }}</td>
         <td>{{ coupon.accruedInterest | currency: coupon.currency:'symbol-narrow' | slice: 0:-3}}</td>
       </tr>
-    </tbody>
-  </nz-table>
-  <br />
-  <nz-table *ngIf="calendar$ | async as calendar" #nzTable [nzData]="calendar.amortizations" #nzTableComponent
-    nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Амортизация">
-    <thead>
+      </tbody>
+    </nz-table>
+    <br />
+    <nz-table #amortizationsTable [nzData]="calendar.amortizations" #nzTableComponent nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Амортизация">
+      <thead>
       <tr>
         <th>Дата</th>
         <th>Кол-во</th>
         <th>% номинала</th>
       </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let amort of nzTable.data">
+      </thead>
+      <tbody>
+      <tr *ngFor="let amort of amortizationsTable.data">
         <td>{{ amort.date | date }}</td>
         <td>{{ amort.amount | currency: amort.currency:'symbol-narrow' | slice: 0:-3}}</td>
         <td>{{ amort.parFraction }}</td>
       </tr>
-    </tbody>
-  </nz-table>
-  <br />
-  <nz-table *ngIf="calendar$ | async as calendar" #nzTable [nzData]="calendar.offers" #nzTableComponent
-    nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Оферты">
-    <thead>
+      </tbody>
+    </nz-table>
+    <br />
+    <nz-table #offersTable [nzData]="calendar.offers" #nzTableComponent nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Оферты">
+      <thead>
       <tr>
         <th>Дата</th>
         <th>Тип</th>
         <th>Описание</th>
         <th>НКД</th>
       </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let offer of nzTable.data">
+      </thead>
+      <tbody>
+      <tr *ngFor="let offer of offersTable.data">
         <td>{{ offer.date | date }}</td>
         <td>{{ offer.type }}</td>
         <td>{{ offer.description }}</td>
       </tr>
-    </tbody>
-  </nz-table>
-</div>
+      </tbody>
+    </nz-table>
+  </div>
+</ng-container>
+<ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { InstrumentSelectSettings } from 'src/app/shared/models/settings/instrument-select-settings.model';
 import { environment } from 'src/environments/environment';
@@ -10,6 +10,8 @@ import { SearchFilter } from '../models/search-filter.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { BaseService } from 'src/app/shared/services/base.service';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
+import { catchHttpError } from '../../../shared/utils/observable-helper';
+import { LoggerService } from '../../../shared/services/logger.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,11 +19,15 @@ import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.
 export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
   private url = environment.apiUrl + '/md/v2/Securities';
 
-  constructor(private http: HttpClient, settingsService: DashboardService) {
+  constructor(
+    settingsService: DashboardService,
+    private readonly http: HttpClient,
+    private readonly logger: LoggerService
+    ) {
     super(settingsService);
   }
 
-  getInstrument(instrument: InstrumentKey): Observable<InstrumentSelect> {
+  getInstrument(instrument: InstrumentKey): Observable<InstrumentSelect | null> {
     const instrumentGroup = instrument.instrumentGroup ?? "";
     return this.http.get<InstrumentSearchResponse>(`${this.url}/${instrument.exchange}/${instrument.symbol}`, {
       params: { instrumentGroup: instrumentGroup }
@@ -37,7 +43,8 @@ export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
           currency: r.currency
         };
         return selected;
-      })
+      }),
+      catchHttpError<InstrumentSelect | null>(null, this.logger),
     );
   }
 

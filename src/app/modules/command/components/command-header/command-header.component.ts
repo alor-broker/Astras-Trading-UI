@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { filter, interval, map, Observable, of, Subject, switchMap, takeUntil, withLatestFrom } from 'rxjs';
+import { filter, map, Observable, of, Subject, switchMap, takeUntil} from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';

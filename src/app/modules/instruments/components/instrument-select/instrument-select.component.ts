@@ -25,14 +25,12 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-
-  private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
-
   filteredInstruments$: Observable<InstrumentSelect[]> = of([]);
-  selectedInstrument$: Observable<InstrumentAdditions | null> =  of(null);
-
+  selectedInstrument$: Observable<InstrumentAdditions | null> = of(null);
   inputValue?: string;
   filteredOptions: string[] = [];
+  private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
+
   constructor(private service: InstrumentsService, private store: Store, private watcher: WatchInstrumentsService) {
 
   }
@@ -58,7 +56,8 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
         exchange: isComplexSearch ? exchange : '',
         instrumentGroup: isComplexSearch && instrumentGroup ? instrumentGroup : ''
       };
-    } else {
+    }
+    else {
       filter = {
         query: isComplexSearch ? query : value,
         exchange: isComplexSearch ? exchange : '',
@@ -72,13 +71,13 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
 
   onSelect(event: NzOptionSelectionChange, val: InstrumentSelect) {
     if (event.isUserInput) {
-      this.store.dispatch(selectNewInstrument({instrument: val}));
+      this.store.dispatch(selectNewInstrument({ instrument: val }));
     }
   }
 
   ngOnInit(): void {
     this.filteredInstruments$ = this.filter$.pipe(
-      filter((f) : f is SearchFilter => !!f),
+      filter((f): f is SearchFilter => !!f),
       debounceTime(200),
       switchMap(filter => this.service.getInstruments(filter))
     );
@@ -91,10 +90,14 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
           instrumentGroup: i.instrumentGroup ?? '',
         });
       }),
-      map((val) : InstrumentAdditions => ({
-        ...val,
-        fullName: val.description
-      }))
+      map((val) => {
+        return !!val
+          ? {
+            ...val,
+            fullName: val.description
+          }
+          : null;
+      })
     );
   }
 

@@ -7,7 +7,7 @@ describe('DescriptionComponent', () => {
   let component: DescriptionComponent;
   let fixture: ComponentFixture<DescriptionComponent>;
 
-  const infoSpy = jasmine.createSpyObj('InfoService', ['getDescription']);
+  const infoSpy = jasmine.createSpyObj('InfoService', ['getDescription', 'getExchangeInfo']);
   infoSpy.getDescription.and.returnValue(null);
 
   beforeEach(async () => {

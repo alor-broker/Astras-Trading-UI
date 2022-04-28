@@ -30,6 +30,7 @@ export class InfoWidgetComponent implements OnInit {
   constructor(private service: InfoService) { }
 
   ngOnInit(): void {
-    this.info$ = this.service.getExchangeInfo(this.guid);
+    this.service.init(this.guid);
+    this.info$ = this.service.getExchangeInfo();
   }
 }

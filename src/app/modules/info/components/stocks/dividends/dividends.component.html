@@ -1,17 +1,22 @@
-<nz-table *ngIf="dividends$ | async as dividends" #nzTable [nzData]="dividends" #nzTableComponent
-  nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false">
-  <thead>
+<ng-container *ngIf="dividends$ | async as dividends">
+  <nz-table #nzTable *ngIf="(isLoading$ | async) === false" [nzData]="dividends"
+            [nzFrontPagination]="false" [nzShowPagination]="false" nzSize="small" nzTableLayout="fixed">
+    <thead>
     <tr>
       <th>Дата фикс.</th>
       <th>Дивиденд</th>
       <th>Див. дох.</th>
     </tr>
-  </thead>
-  <tbody>
+    </thead>
+    <tbody>
     <tr *ngFor="let dividend of nzTable.data">
       <td>{{ dividend.recordDate | date }}</td>
       <td>{{ dividend.dividendPerShare | currency: dividend.currency:'symbol-narrow'}}</td>
       <td>{{ dividend.dividendYield | percent:'1.1-2'}}</td>
     </tr>
-  </tbody>
-</nz-table>
+    </tbody>
+  </nz-table>
+</ng-container>
+<ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>
+
+

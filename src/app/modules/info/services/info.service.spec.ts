@@ -17,6 +17,7 @@ describe('InfoService', () => {
         HttpClientTestingModule
       ],
       providers: [
+        InfoService,
         { provide: DashboardService, useValue: dashboardSpy },
         provideMockStore(),
       ]
