@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { combineLatest, distinct, distinctUntilChanged, map, Observable, switchMap } from 'rxjs';
+import { combineLatest, distinctUntilChanged, map, Observable, shareReplay, switchMap } from 'rxjs';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
@@ -17,103 +17,111 @@ import { ExchangeInfo } from '../models/exchange-info.model';
 import { Finance } from '../models/finance.model';
 import { Issue } from '../models/issue.model';
 import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
+import { InstrumentIsinEqualityComparer } from '../../../shared/models/instruments/instrument.model';
+import { catchHttpError } from '../../../shared/utils/observable-helper';
+import { distinct } from 'rxjs/operators';
+import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,
   info: ExchangeInfo
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class InfoService extends BaseService<InfoSettings>{
   private securitiesUrl = environment.apiUrl + '/md/v2/Securities';
   private instrumentUrl = environment.apiUrl + '/instruments/v1';
 
   private settings$?: Observable<SettingsWithExchangeInfo>;
 
-  constructor(private http: HttpClient, settingsService: DashboardService, private store: Store) {
+  constructor(
+    settingsService: DashboardService,
+    private readonly http: HttpClient,
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly store: Store) {
     super(settingsService);
   }
 
-  getSettingsWithExchangeInfo(guid: string) {
+  init(guid: string) {
     if (this.settings$) {
-      return this.settings$;
+      return;
     }
 
     this.settings$ = combineLatest([
       this.store.pipe(
         select(getSelectedInstrument),
-        distinctUntilChanged((a,b) => a.isin == b.isin),
+        distinctUntilChanged(InstrumentIsinEqualityComparer.equals),
       ),
       this.getSettings(guid).pipe(
         switchMap(s => {
           return this.getExchangeInfoReq({ symbol: s.symbol, exchange: s.exchange }).pipe(
-            map(ei => ({ settings: s, info: ei }))
+            map(ei => ({ settings: s, info: ei })),
+            catchHttpError(
+              { settings: s, info: <ExchangeInfo>{} },
+              this.errorHandlerService)
           );
-        })
+        }),
+        shareReplay()
       )
     ]).pipe(
-        map(([i, settings]) => {
-          const shouldUpdate =
-            settings &&
-            settings.settings.linkToActive &&
-            !(
-              settings.settings.symbol == i.symbol &&
-              settings.settings.exchange == i.exchange &&
-              settings.settings.instrumentGroup == i.instrumentGroup
-            );
-          if (shouldUpdate) {
-            this.setSettings({ ...settings.settings, ...i });
-          }
-          return settings;
-        }),
-      );
-      return this.settings$;
+      map(([i, settings]) => {
+        const shouldUpdate =
+          settings &&
+          settings.settings.linkToActive &&
+          !(
+            settings.settings.symbol == i.symbol &&
+            settings.settings.exchange == i.exchange &&
+            settings.settings.instrumentGroup == i.instrumentGroup
+          );
+        if (shouldUpdate) {
+          this.setSettings({ ...settings.settings, ...i });
+        }
+        return settings;
+      })
+    );
   }
 
-  getExchangeInfo(guid: string) : Observable<ExchangeInfo> {
-    return this.getSettingsWithExchangeInfo(guid).pipe(map(s => s.info));
+  getExchangeInfo() : Observable<ExchangeInfo> {
+    if(!this.settings$) {
+      throw Error('Was not initialised');
+    }
+
+    return this.settings$!.pipe(
+      map(s => s.info),
+      distinct()
+    );
   }
 
-  getDescription() : Observable<Description> {
-    return this.getInstrumentEntity<Description>('description');
+  getDescription(exchangeInfo: ExchangeInfo) : Observable<Description> {
+    return this.getInstrumentEntity<Description>(exchangeInfo,'description');
   }
 
-  getFinance() : Observable<Finance> {
-    return this.getInstrumentEntity<Finance>('finance');
+  getFinance(exchangeInfo: ExchangeInfo) : Observable<Finance> {
+    return this.getInstrumentEntity<Finance>(exchangeInfo,'finance');
   }
 
-  getCalendar() : Observable<Calendar> {
-    return this.getInstrumentEntity<Calendar>('bond/calendar');
+  getCalendar(exchangeInfo: ExchangeInfo) : Observable<Calendar> {
+    return this.getInstrumentEntity<Calendar>(exchangeInfo,'bond/calendar');
   }
 
-  getIssue() : Observable<Issue> {
-    return this.getInstrumentEntity<Issue>('bond/issue').pipe(
+  getIssue(exchangeInfo: ExchangeInfo) : Observable<Issue> {
+    return this.getInstrumentEntity<Issue>(exchangeInfo,'bond/issue').pipe(
       map(i => ({
         ...i
       }))
     );
   }
 
-  getDividends() : Observable<Dividend[]> {
-    return this.getInstrumentEntity<Dividend[]>('stock/dividends').pipe(
-      map(dividends => dividends.reverse())
-    );
+  getDividends(exchangeInfo: ExchangeInfo) : Observable<Dividend[]> {
+    return this.getInstrumentEntity<Dividend[]>(exchangeInfo,'stock/dividends');
   }
 
-  private getInstrumentEntity<T>(path: string) : Observable<T> {
-    if (this.settings$) {
-      return this.settings$.pipe(
-        distinct(),
-        switchMap(s => this.http.get<T>(
-          this.instrumentUrl +
-          (s.info.exchange == Exchanges.SPBX ? "/international/" : "/") +
-          (s.info.exchange == Exchanges.SPBX ? `${s.info.symbol}/` : `${s.info.isin}/`) +
-          path))
-      );
-    }
-    throw Error('Was not initialised');
+  private getInstrumentEntity<T>(exchangeInfo: ExchangeInfo, path: string) : Observable<T> {
+    return this.http.get<T>(
+      this.instrumentUrl +
+      (exchangeInfo.exchange == Exchanges.SPBX ? "/international/" : "/") +
+      (exchangeInfo.exchange == Exchanges.SPBX ? `${exchangeInfo.symbol}/` : `${exchangeInfo.isin}/`) +
+      path);
   }
 
   private getExchangeInfoReq(key: InstrumentKey): Observable<ExchangeInfo> {

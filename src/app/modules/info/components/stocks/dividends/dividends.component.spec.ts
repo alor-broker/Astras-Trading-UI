@@ -8,7 +8,7 @@ describe('DividendsComponent', () => {
   let component: DividendsComponent;
   let fixture: ComponentFixture<DividendsComponent>;
 
-  const infoSpy = jasmine.createSpyObj('InfoService', ['getDividends']);
+  const infoSpy = jasmine.createSpyObj('InfoService', ['getDividends', 'getExchangeInfo']);
   infoSpy.getDividends.and.returnValue(of([]));
 
   beforeEach(async () => {

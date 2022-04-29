@@ -4,12 +4,14 @@ import { TestBed } from '@angular/core/testing';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 
 import { InstrumentsService } from './instruments.service';
+import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 
 describe('InstrumentsService', () => {
   let service: InstrumentsService;
   let httpController: HttpTestingController;
   let httpClient: HttpClient;
   const dashboardSpy = jasmine.createSpyObj('DashboardService', ['']);
+  const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -18,7 +20,8 @@ describe('InstrumentsService', () => {
       ],
       providers: [
         InstrumentsService,
-        { provide: DashboardService, useValue: dashboardSpy }
+        { provide: DashboardService, useValue: dashboardSpy },
+        { provide: ErrorHandlerService, useValue: errorHandlerSpy }
       ]
     });
     service = TestBed.inject(InstrumentsService);

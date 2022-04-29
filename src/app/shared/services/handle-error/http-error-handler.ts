@@ -15,7 +15,7 @@ const isCommandError = (e: any): e is CommandError => {
 
 @Injectable()
 export class HttpErrorHandler implements ApplicationErrorHandler {
-  private readonly internalErrorStatusCodes: number[] = [
+  private readonly apiAccessibilityErrorStatusCodes: number[] = [
     404
   ];
 
@@ -27,7 +27,7 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
       return;
     }
 
-    if (this.internalErrorStatusCodes.includes(error.status)) {
+    if (this.apiAccessibilityErrorStatusCodes.includes(error.status)) {
       this.logger.error('[API] endpoint error', error);
     }
     else {

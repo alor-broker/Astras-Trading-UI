@@ -4,23 +4,26 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { OnboardingService } from '../../services/onboarding.service';
 
 import { DashboardWidgetComponent } from './dashboard-widget.component';
+import { ModalService } from '../../../../shared/services/modal.service';
 
 describe('DashboardWidgetComponent', () => {
   let component: DashboardWidgetComponent;
   let fixture: ComponentFixture<DashboardWidgetComponent>;
+  const modalServiceSpy = jasmine.createSpyObj('ModalService', ['openBetaReminderModal']);
 
   beforeEach(async () => {
     const spyAuth = jasmine.createSpyObj('AuthService', ['refresh']);
     const spyOnboarding = jasmine.createSpyObj('OnboardingService', ['start']);
     spyAuth.refresh.and.returnValue(of(''));
     await TestBed.configureTestingModule({
-      declarations: [ DashboardWidgetComponent ],
+      declarations: [DashboardWidgetComponent],
       providers: [
         { provide: AuthService, useValue: spyAuth },
-        { provide: OnboardingService, useValue: spyOnboarding }
+        { provide: OnboardingService, useValue: spyOnboarding },
+        { provide: ModalService, useValue: modalServiceSpy }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

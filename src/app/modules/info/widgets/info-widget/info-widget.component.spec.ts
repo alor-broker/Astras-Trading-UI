@@ -6,7 +6,7 @@ import { InfoWidgetComponent } from './info-widget.component';
 describe('InfoWidgetComponent', () => {
   let component: InfoWidgetComponent;
   let fixture: ComponentFixture<InfoWidgetComponent>;
-  const infoSpy = jasmine.createSpyObj('InfoService', ['getExchangeInfo']);
+  const infoSpy = jasmine.createSpyObj('InfoService', ['getExchangeInfo', 'init']);
   infoSpy.getExchangeInfo.and.returnValue(null);
 
   beforeEach(async () => {

@@ -37,11 +37,14 @@ import { LogErrorHandler } from './services/handle-error/log-error-handler';
 import { ERROR_HANDLER } from './services/handle-error/error-handler';
 import { AtsStoreModule } from '../store/ats-store.module';
 import { NumericalDirective } from './directives/numerical.directive';
+import { LoadingIndicatorComponent } from './components/loading-indicator/loading-indicator.component';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 @NgModule({
   declarations: [
     PriceTickComponent,
-    NumericalDirective
+    NumericalDirective,
+    LoadingIndicatorComponent
   ],
   imports: [
     CommonModule,
@@ -77,7 +80,8 @@ import { NumericalDirective } from './directives/numerical.directive';
     NzCheckboxModule,
     NzDatePickerModule,
     ScrollingModule,
-    AtsStoreModule
+    AtsStoreModule,
+    NzSpinModule,
   ],
   exports: [
     // Ng zorro
@@ -115,6 +119,7 @@ import { NumericalDirective } from './directives/numerical.directive';
     NgChartsModule,
     // components
     PriceTickComponent,
+    LoadingIndicatorComponent,
     // directives
     NumericalDirective
   ],
