@@ -13,9 +13,6 @@
         <nz-tab nzTitle="Рыночная">
           <ats-market-command></ats-market-command>
         </nz-tab>
-        <nz-tab nzTitle="Условная">
-          <ats-stop-command></ats-stop-command>
-        </nz-tab>
       </nz-tabset>
       <ats-command-footer *ngIf="activeTab | async as tab" [activeTab]='tab'></ats-command-footer>
     </ng-container>
