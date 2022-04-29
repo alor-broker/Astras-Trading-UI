@@ -77,7 +77,8 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         prev?.condition == curr?.condition &&
         prev?.price == curr?.price &&
         prev?.quantity == curr?.quantity &&
-        prev?.triggerPrice == curr?.triggerPrice),
+        prev?.triggerPrice == curr?.triggerPrice &&
+        prev?.stopEndUnixTime == curr?.stopEndUnixTime),
     ).subscribe((form: StopFormData) => this.setStopCommand(form));
   }
 
