@@ -1,7 +1,8 @@
 <div *ngIf="commandParams$ | async as command">
   <nz-modal nzOkText="Выставить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
     [nzTitle]="header" (nzOnCancel)="handleCancel()"
-    [nzFooter]='null' [nzMaskClosable]='false'>
+    [nzFooter]='null' [nzMaskClosable]='false'
+    nzClosable="false">
     <ng-container *nzModalContent>
       <ats-command-header [symbol]='command.instrument.symbol' [exchange]='command.instrument.exchange'
         [instrumentGroup]="command.instrument.instrumentGroup ?? ''"></ats-command-header>
@@ -21,14 +22,21 @@
   </nz-modal>
 
   <ng-template #header>
-  <span class="title">
-    <button nz-button class='btn-help' nzSize="small" (click)="openHelp()">
-      <i nz-icon nzType="question-circle" [nzTheme]="'outline'"></i>
-    </button>
-    <label>
-      <h2>Выставить заявку<span *ngIf="command?.user as portfolio"> ({{portfolio.portfolio}}:{{portfolio.exchange}})</span></h2>
-    </label>
-  </span>
+  <div class="title">
+    <div class="left">
+      <label>
+        <h2>Выставить заявку<span *ngIf="command?.user as portfolio"> ({{portfolio.portfolio}}:{{portfolio.exchange}})</span></h2>
+      </label>
+    </div>
+    <div class="right">
+      <button nz-button (click)="openHelp()" aria-label="Help">
+        <i nz-icon nzType="question-circle"  [nzTheme]="'outline'"></i>
+      </button>
+      <button nz-button (click)="handleCancel()" aria-label="Close">
+        <i nz-icon nzType="close" [nzTheme]="'outline'"></i>
+      </button>
+    </div>
+  </div>
   </ng-template>
 </div>
 
