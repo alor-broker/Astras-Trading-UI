@@ -43,7 +43,8 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           price,
           quantity: this.initialParams.quantity ?? 1,
           triggerPrice: this.initialParams.price ?? 1,
-          condition: StopOrderCondition.More
+          condition: StopOrderCondition.More,
+          withLimit: false
         };
         this.viewData.next(command);
         this.setStopCommand(command);
@@ -65,6 +66,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           ]),
           stopEndUnixTime: new FormControl(command.stopEndUnixTime),
           condition: new FormControl(StopOrderCondition.More),
+          withLimit: new FormControl(false)
         } as StopFormControls) as StopFormGroup;
       }
     });
@@ -89,7 +91,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         triggerPrice: Number(form.triggerPrice) ?? command?.price ?? 0,
         condition: form.condition,
         stopEndUnixTime: form.stopEndUnixTime ?? addDays(new Date(), 30),
-        price: price == 0 ? null : price,
+        price: form.withLimit ? price : null,
         instrument: {
           ...command.instrument
         },

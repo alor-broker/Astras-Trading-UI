@@ -39,6 +39,9 @@ import { AtsStoreModule } from '../store/ats-store.module';
 import { NumericalDirective } from './directives/numerical.directive';
 import { LoadingIndicatorComponent } from './components/loading-indicator/loading-indicator.component';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { NzRadioModule } from 'ng-zorro-antd/radio';
+
 
 @NgModule({
   declarations: [
@@ -82,6 +85,8 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     ScrollingModule,
     AtsStoreModule,
     NzSpinModule,
+    NzTypographyModule,
+    NzRadioModule
   ],
   exports: [
     // Ng zorro
@@ -111,6 +116,8 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     NzCheckboxModule,
     ScrollingModule,
     NzDatePickerModule,
+    NzTypographyModule,
+    NzRadioModule,
     // modules
     CommonModule,
     FormsModule,

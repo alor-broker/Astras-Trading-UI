@@ -5,5 +5,6 @@ export interface StopFormData {
   price?: number,
   triggerPrice: number,
   condition: StopOrderCondition,
-  stopEndUnixTime?: Date
+  stopEndUnixTime?: Date,
+  withLimit: boolean
 }
