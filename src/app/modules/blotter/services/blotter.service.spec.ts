@@ -8,15 +8,16 @@ import { QuotesService } from '../../../shared/services/quotes.service';
 describe('BlotterService', () => {
   let store: MockStore;
   let service: BlotterService;
-  const spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
+  const wsSpy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
   const notificationSpy = jasmine.createSpyObj('OrdersNotificationsService', ['notificateOrderChange']);
+  const quotesSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: WebsocketService, useValue: spy },
+        { provide: WebsocketService, useValue: wsSpy },
         { provide: OrdersNotificationsService, useValue: notificationSpy },
-        QuotesService,
+        { provide: QuotesService, useValue: quotesSpy },
         provideMockStore(),
       ]
     });

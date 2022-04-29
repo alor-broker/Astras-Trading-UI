@@ -17,7 +17,7 @@ import { ExchangeInfo } from '../models/exchange-info.model';
 import { Finance } from '../models/finance.model';
 import { Issue } from '../models/issue.model';
 import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
-import { InstrumentEqualityComparer } from '../../../shared/models/instruments/instrument.model';
+import { InstrumentIsinEqualityComparer } from '../../../shared/models/instruments/instrument.model';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { distinct } from 'rxjs/operators';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
@@ -50,7 +50,7 @@ export class InfoService extends BaseService<InfoSettings>{
     this.settings$ = combineLatest([
       this.store.pipe(
         select(getSelectedInstrument),
-        distinctUntilChanged(InstrumentEqualityComparer.equals),
+        distinctUntilChanged(InstrumentIsinEqualityComparer.equals),
       ),
       this.getSettings(guid).pipe(
         switchMap(s => {

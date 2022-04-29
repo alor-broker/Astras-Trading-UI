@@ -42,8 +42,6 @@ export class AboutIssueComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.isLoading$.complete();
-    this.isLoading$.unsubscribe();
     this.isActivated$.complete();
-    this.isActivated$.unsubscribe();
   }
 }
