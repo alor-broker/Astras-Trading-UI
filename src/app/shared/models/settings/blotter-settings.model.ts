@@ -45,7 +45,8 @@ export const allPositionsColumns: ColumnIds[] = [
   { columnId: 'qtyT0', name: "T0", isDefault: false  },
   { columnId: 'qtyT1', name: "T1", isDefault: false  },
   { columnId: 'qtyT2', name: "T2", isDefault: true  },
-  { columnId: 'qtyTFuture', name: "TFuture", isDefault: false  }
+  { columnId: 'qtyTFuture', name: "TFuture", isDefault: false  },
+  { columnId: 'avgValue', name: "Стоимость", isDefault: false  },
 ];
 
 export const allTradesColumns: ColumnIds[] = [

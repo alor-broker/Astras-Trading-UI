@@ -39,6 +39,7 @@
       <td *ngIf='shouldShow("qtyT1")' [class]='ord.qtyT1 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT1) }}</td>
       <td *ngIf='shouldShow("qtyT2")' [class]='ord.qtyT2 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT2) }}</td>
       <td *ngIf='shouldShow("qtyTFuture")' [class]='ord.qtyTFuture < 0 ? "sell" : "buy"'>{{ round(ord.qtyTFuture) }}</td>
+      <td *ngIf='shouldShow("avgValue")'>{{ getPositionValue(ord) }}</td>
     </tr>
   </tbody>
 </nz-table>
