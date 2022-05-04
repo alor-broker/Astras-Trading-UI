@@ -118,19 +118,6 @@ export class PositionsComponent implements OnInit, OnDestroy {
       isFilterVisible: false,
       hasFilter: false,
     },
-    {
-      id: 'avgValue',
-      name: 'Стоимость',
-      sortOrder: null,
-      sortFn: (a: Position, b: Position) => this.getPositionValue(a) - this.getPositionValue(b),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      filterFn: null,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
-    },
   ];
   listOfColumns: Column<Position, PositionFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -194,10 +181,6 @@ export class PositionsComponent implements OnInit, OnDestroy {
   isFilterApplied(column: Column<Position, PositionFilter>) {
     const filter = this.searchFilter.getValue();
     return column.id in filter && filter[column.id] !== '';
-  }
-
-  getPositionValue(position: Position) {
-    return this.round(Number(position.avgPrice) * Math.abs(Number(position.qty)));
   }
 
   private justifyFilter(position: Position, filter: PositionFilter): boolean {
