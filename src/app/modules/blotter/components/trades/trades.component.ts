@@ -1,10 +1,15 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
 import { Column } from '../../models/column.model';
 import { TradeFilter } from '../../models/trade-filter.model';
 import { BlotterService } from '../../services/blotter.service';
+import { MathHelper } from '../../../../shared/utils/math-helper';
+
+interface DisplayTrade extends Trade {
+  volume: number;
+}
 
 @Component({
   selector: 'ats-trades[guid]',
@@ -19,15 +24,15 @@ export class TradesComponent implements OnInit, OnDestroy {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   tableInnerWidth = '1000px';
-  displayTrades$: Observable<Trade[]> = of([]);
+  displayTrades$: Observable<DisplayTrade[]> = of([]);
   searchFilter = new BehaviorSubject<TradeFilter>({});
   isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
-  allColumns: Column<Trade, TradeFilter>[] = [
+  allColumns: Column<DisplayTrade, TradeFilter>[] = [
     {
       id: 'id',
       name: 'Id',
       sortOrder: null,
-      sortFn: (a: Trade, b: Trade) => Number(a.id) - Number(b.id),
+      sortFn: (a: DisplayTrade, b: DisplayTrade) => Number(a.id) - Number(b.id),
       searchDescription: 'Поиск по Номеру',
       searchFn: (trade, filter) => filter.id ? trade.id.toLowerCase().includes(filter.id.toLowerCase()) : false,
       isSearchVisible: false,
@@ -41,7 +46,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       id: 'orderno',
       name: 'Заявка',
       sortOrder: null,
-      sortFn: (a: Trade, b: Trade) => Number(a.orderno) - Number(b.orderno),
+      sortFn: (a: DisplayTrade, b: DisplayTrade) => Number(a.orderno) - Number(b.orderno),
       searchDescription: 'Поиск по заявке',
       searchFn: (trade, filter) => filter.orderno ? trade.orderno.toLowerCase().includes(filter.orderno.toLowerCase()) : false,
       isSearchVisible: false,
@@ -55,7 +60,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       id: 'symbol',
       name: 'Тикер',
       sortOrder: null,
-      sortFn: (a: Trade, b: Trade) => a.symbol.localeCompare(b.symbol),
+      sortFn: (a: DisplayTrade, b: DisplayTrade) => a.symbol.localeCompare(b.symbol),
       searchDescription: 'Поиск по Тикеру',
       searchFn: (trade, filter) => filter.symbol ? trade.symbol.toLowerCase().includes(filter.symbol.toLowerCase()) : false,
       isSearchVisible: false,
@@ -69,11 +74,11 @@ export class TradesComponent implements OnInit, OnDestroy {
       id: 'side',
       name: 'Сторона',
       sortOrder: null,
-      sortFn: (a: Trade, b: Trade) => a.side.toString().localeCompare(b.side.toString()),
+      sortFn: (a: DisplayTrade, b: DisplayTrade) => a.side.toString().localeCompare(b.side.toString()),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: (list: string[], trade: Trade) => list.some(val => trade.side.toString().indexOf(val) !== -1),
+      filterFn: (list: string[], trade: DisplayTrade) => list.some(val => trade.side.toString().indexOf(val) !== -1),
       listOfFilter: [
         { text: 'Покупка', value: 'buy' },
         { text: 'Продажа', value: 'sell' }
@@ -85,7 +90,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       id: 'qty',
       name: 'Кол-во',
       sortOrder: null,
-      sortFn: (a: Trade, b: Trade) => Number(a.qty) - Number(b.qty),
+      sortFn: (a: DisplayTrade, b: DisplayTrade) => Number(a.qty) - Number(b.qty),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -98,7 +103,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       id: 'price',
       name: 'Цена',
       sortOrder: null,
-      sortFn: (a: Trade, b: Trade) => Number(a.price) - Number(b.price),
+      sortFn: (a: DisplayTrade, b: DisplayTrade) => Number(a.price) - Number(b.price),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -111,7 +116,20 @@ export class TradesComponent implements OnInit, OnDestroy {
       id: 'date',
       name: 'Время',
       sortOrder: null,
-      sortFn: (a: Trade, b: Trade) => Number(a.date) - Number(b.date),
+      sortFn: (a: DisplayTrade, b: DisplayTrade) => Number(a.date) - Number(b.date),
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: null,
+      listOfFilter: [],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
+    {
+      id: 'volume',
+      name: 'Объем',
+      sortOrder: null,
+      sortFn: (a: DisplayTrade, b: DisplayTrade) => b.volume - a.volume,
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -121,10 +139,8 @@ export class TradesComponent implements OnInit, OnDestroy {
       hasFilter: false,
     },
   ];
-  listOfColumns: Column<Trade, TradeFilter>[] = [];
+  listOfColumns: Column<DisplayTrade, TradeFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  private trades: Trade[] = [];
-  private trades$: Observable<Trade[]> = of([]);
 
   constructor(private service: BlotterService) {
   }
@@ -139,10 +155,11 @@ export class TradesComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.trades$ = this.service.getTrades(this.guid).pipe(
-      tap(trades => this.trades = trades)
-    );
-    this.displayTrades$ = this.trades$.pipe(
+    this.displayTrades$ = this.service.getTrades(this.guid).pipe(
+      map(trades => trades.map(t => <DisplayTrade>{
+        ...t,
+        volume: MathHelper.round(t.qtyUnits * t.price, 2)
+      })),
       mergeMap(trades => this.searchFilter.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))
       )),
@@ -178,12 +195,12 @@ export class TradesComponent implements OnInit, OnDestroy {
     return new Date(date).toLocaleTimeString();
   }
 
-  isFilterApplied(column: Column<Trade, TradeFilter>) {
+  isFilterApplied(column: Column<DisplayTrade, TradeFilter>) {
     const filter = this.searchFilter.getValue();
     return column.id in filter && filter[column.id] !== '';
   }
 
-  private justifyFilter(trade: Trade, filter: TradeFilter): boolean {
+  private justifyFilter(trade: DisplayTrade, filter: TradeFilter): boolean {
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof TradeFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
