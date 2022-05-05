@@ -8,7 +8,7 @@ import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 
 interface PositionDisplay extends Position {
-  avgVolume: number
+  volume: number
 }
 
 @Component({
@@ -123,10 +123,10 @@ export class PositionsComponent implements OnInit, OnDestroy {
       hasFilter: false,
     },
     {
-      id: 'avgVolume',
+      id: 'volume',
       name: 'Объем',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.avgVolume - b.avgVolume,
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.volume - b.volume,
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -156,7 +156,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
     this.displayPositions$ = this.service.getPositions(this.guid).pipe(
       map(positions => positions.map(p => <PositionDisplay>{
         ...p,
-        avgVolume: this.round(Number(p.avgPrice) * Math.abs(Number(p.qtyUnits)))
+        volume: this.round(Number(p.avgPrice) * Math.abs(Number(p.qtyUnits)))
       })),
       mergeMap(positions => this.searchFilter.pipe(
         map(f => positions.filter(o => this.justifyFilter(o, f)))
