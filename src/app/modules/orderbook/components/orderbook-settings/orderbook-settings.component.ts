@@ -26,6 +26,10 @@ export class OrderbookSettingsComponent implements OnInit {
   settingsChange: EventEmitter<void> = new EventEmitter();
 
   form!: SettingsFormGroup;
+  readonly validationOptions = {
+    minDepth: 0,
+    maxDepth: 20
+  };
 
   constructor(private service: OrderbookService ) { }
 
@@ -38,7 +42,7 @@ export class OrderbookSettingsComponent implements OnInit {
             Validators.minLength(4)
           ]),
           exchange: new FormControl(settings.exchange, Validators.required),
-          depth: new FormControl(settings.depth, [Validators.required, Validators.min(0), Validators.max(20)]),
+          depth: new FormControl(settings.depth, [Validators.required, Validators.min(this.validationOptions.minDepth), Validators.max(this.validationOptions.maxDepth)]),
           instrumentGroup: new FormControl(settings.instrumentGroup),
           showChart: new FormControl(settings.showChart),
           showTable: new FormControl(settings.showTable)
