@@ -7,6 +7,10 @@ import { Column } from '../../models/column.model';
 import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 
+interface PositionDisplay extends Position {
+  avgVolume: number
+}
+
 @Component({
   selector: 'ats-positions[shouldShowSettings][guid]',
   templateUrl: './positions.component.html',
@@ -20,16 +24,16 @@ export class PositionsComponent implements OnInit, OnDestroy {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   tableInnerWidth = '1000px';
-  displayPositions$: Observable<Position[]> = of([]);
+  displayPositions$: Observable<PositionDisplay[]> = of([]);
   searchFilter = new BehaviorSubject<PositionFilter>({});
   isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
 
-  allColumns: Column<Position, PositionFilter>[] = [
+  allColumns: Column<PositionDisplay, PositionFilter>[] = [
     {
       id: 'symbol',
       name: 'Тикер',
       sortOrder: null,
-      sortFn: (a: Position, b: Position) => a.symbol.localeCompare(b.symbol),
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.symbol.localeCompare(b.symbol),
       searchDescription: 'Поиск по Тикеру',
       searchFn: (position, filter) => filter.symbol ? position.symbol.toLowerCase().includes(filter.symbol.toLowerCase()) : false,
       isSearchVisible: false,
@@ -43,7 +47,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       id: 'shortName',
       name: 'Имя',
       sortOrder: null,
-      sortFn: (a: Position, b: Position) => a.shortName.localeCompare(b.shortName),
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.shortName.localeCompare(b.shortName),
       searchDescription: 'Поиск по имени',
       searchFn: (position, filter) => filter.shortName ? position.shortName.toLowerCase().includes(filter.shortName.toLowerCase()) : false,
       isSearchVisible: false,
@@ -57,7 +61,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       id: 'avgPrice',
       name: 'Средняя',
       sortOrder: null,
-      sortFn: (a: Position, b: Position) => Number(a.avgPrice) - Number(b.avgPrice),
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.avgPrice) - Number(b.avgPrice),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -70,7 +74,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       id: 'qtyT0',
       name: 'Кол-во Т0',
       sortOrder: null,
-      sortFn: (a: Position, b: Position) => Number(a.qtyT0) - Number(b.qtyT0),
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyT0) - Number(b.qtyT0),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -83,7 +87,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       id: 'qtyT1',
       name: 'Кол-во Т1',
       sortOrder: null,
-      sortFn: (a: Position, b: Position) => Number(a.qtyT1) - Number(b.qtyT1),
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyT1) - Number(b.qtyT1),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -96,7 +100,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       id: 'qtyT2',
       name: 'Кол-во Т2',
       sortOrder: null,
-      sortFn: (a: Position, b: Position) => Number(a.qtyT2) - Number(b.qtyT2),
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyT2) - Number(b.qtyT2),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -109,7 +113,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       id: 'qtyTFuture',
       name: 'Кол-во ТFuture',
       sortOrder: null,
-      sortFn: (a: Position, b: Position) => Number(a.qtyTFuture) - Number(b.qtyTFuture),
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyTFuture) - Number(b.qtyTFuture),
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -119,10 +123,10 @@ export class PositionsComponent implements OnInit, OnDestroy {
       hasFilter: false,
     },
     {
-      id: 'avgValue',
-      name: 'Стоимость',
+      id: 'avgVolume',
+      name: 'Объем',
       sortOrder: null,
-      sortFn: (a: Position, b: Position) => this.getPositionValue(a) - this.getPositionValue(b),
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.avgVolume - b.avgVolume,
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
@@ -132,9 +136,8 @@ export class PositionsComponent implements OnInit, OnDestroy {
       hasFilter: false,
     },
   ];
-  listOfColumns: Column<Position, PositionFilter>[] = [];
+  listOfColumns: Column<PositionDisplay, PositionFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  private positions$: Observable<Position[]> = of([]);
 
   constructor(private service: BlotterService) {
   }
@@ -150,8 +153,11 @@ export class PositionsComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.positions$ = this.service.getPositions(this.guid);
-    this.displayPositions$ = this.positions$.pipe(
+    this.displayPositions$ = this.service.getPositions(this.guid).pipe(
+      map(positions => positions.map(p => <PositionDisplay>{
+        ...p,
+        avgVolume: this.round(Number(p.avgPrice) * Math.abs(Number(p.qtyUnits)))
+      })),
       mergeMap(positions => this.searchFilter.pipe(
         map(f => positions.filter(o => this.justifyFilter(o, f)))
       )),
@@ -191,16 +197,12 @@ export class PositionsComponent implements OnInit, OnDestroy {
     this.service.selectNewInstrument(symbol, exchange);
   }
 
-  isFilterApplied(column: Column<Position, PositionFilter>) {
+  isFilterApplied(column: Column<PositionDisplay, PositionFilter>) {
     const filter = this.searchFilter.getValue();
     return column.id in filter && filter[column.id] !== '';
   }
 
-  getPositionValue(position: Position) {
-    return this.round(Number(position.avgPrice) * Math.abs(Number(position.qty)));
-  }
-
-  private justifyFilter(position: Position, filter: PositionFilter): boolean {
+  private justifyFilter(position: PositionDisplay, filter: PositionFilter): boolean {
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof PositionFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
