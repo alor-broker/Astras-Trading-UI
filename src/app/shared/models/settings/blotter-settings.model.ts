@@ -21,7 +21,7 @@ export const allOrdersColumns: ColumnIds[] = [
   { columnId: 'id', name: "Номер", isDefault: false },
   { columnId: 'symbol', name: "Тикер", isDefault: true  },
   { columnId: 'side', name: "Сторона", isDefault: false  },
-  { columnId: 'status', name: "Статус", isDefault: false  },
+  { columnId: 'status', name: "Статус", isDefault: true  },
   { columnId: 'qty', name: "Кол-во", isDefault: false  },
   { columnId: 'residue', name: "Остаток", isDefault: true  },
   { columnId: 'volume', name: "Объем", isDefault: true  },
