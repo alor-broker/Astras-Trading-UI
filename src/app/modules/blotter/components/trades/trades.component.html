@@ -36,6 +36,7 @@
       <td *ngIf='shouldShow("qty")'>{{ ord.qty }}</td>
       <td *ngIf='shouldShow("price")'>{{ ord.price }}</td>
       <td *ngIf='shouldShow("date")'>{{ formatDate(ord.date) }}</td>
+      <td *ngIf='shouldShow("volume")'>{{ ord.volume }}</td>
     </tr>
   </tbody>
 </nz-table>

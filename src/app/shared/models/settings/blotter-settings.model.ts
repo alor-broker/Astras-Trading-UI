@@ -55,5 +55,6 @@ export const allTradesColumns: ColumnIds[] = [
   { columnId: 'side', name: "Сторона", isDefault: true  },
   { columnId: 'price', name: "Цена", isDefault: true  },
   { columnId: 'qty', name: "Кол-во", isDefault: true  },
-  { columnId: 'date', name: 'Время', isDefault: false  }
+  { columnId: 'date', name: 'Время', isDefault: false  },
+  { columnId: 'volume', name: 'Объем', isDefault: false  }
 ];
