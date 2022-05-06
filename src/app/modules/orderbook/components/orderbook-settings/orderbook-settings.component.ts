@@ -39,7 +39,7 @@ export class OrderbookSettingsComponent implements OnInit {
         this.form = new FormGroup({
           symbol: new FormControl(settings.symbol, [
             Validators.required,
-            Validators.minLength(4)
+            Validators.minLength(2)
           ]),
           exchange: new FormControl(settings.exchange, Validators.required),
           depth: new FormControl(settings.depth, [Validators.required, Validators.min(this.validationOptions.minDepth), Validators.max(this.validationOptions.maxDepth)]),
