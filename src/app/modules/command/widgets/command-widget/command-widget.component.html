@@ -2,22 +2,25 @@
   <nz-modal nzOkText="Выставить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
     [nzTitle]="header" (nzOnCancel)="handleCancel()"
     [nzFooter]='null' [nzMaskClosable]='false'
+            (nzAfterOpen)="setInitialCommandTab()"
     nzClosable="false">
     <ng-container *nzModalContent>
       <ats-command-header [symbol]='command.instrument.symbol' [exchange]='command.instrument.exchange'
         [instrumentGroup]="command.instrument.instrumentGroup ?? ''"></ats-command-header>
-      <nz-tabset nzTabPosition="top" nzSize="small" (nzSelectChange)='tabChanged($event)' class="command-parameters">
-        <nz-tab nzTitle="Лимитная">
+      <nz-tabset nzTabPosition="top" nzSize="small" class="command-parameters" #commandTabs>
+        <nz-tab nzTitle="Лимитная" #limitTab (nzSelect)="setSelectedCommandType(commandTypes.Limit)">
           <ats-limit-command></ats-limit-command>
         </nz-tab>
-        <nz-tab nzTitle="Рыночная">
-          <ats-market-command></ats-market-command>
+        <nz-tab nzTitle="Рыночная" #marketTab (nzSelect)="setSelectedCommandType(commandTypes.Market)">
+          <ats-market-command [activated]="marketTab.isActive"></ats-market-command>
         </nz-tab>
-        <nz-tab nzTitle="Условная">
+        <nz-tab nzTitle="Условная" #stopTab (nzSelect)="setSelectedCommandType(commandTypes.Stop)">
           <ats-stop-command></ats-stop-command>
         </nz-tab>
       </nz-tabset>
-      <ats-command-footer *ngIf="activeTab | async as tab" [activeTab]='tab'></ats-command-footer>
+      <ng-container *ngIf="selectedCommandType$ | async as commandType">
+        <ats-command-footer  [activeCommandType]="commandType"></ats-command-footer>
+      </ng-container>
     </ng-container>
   </nz-modal>
 

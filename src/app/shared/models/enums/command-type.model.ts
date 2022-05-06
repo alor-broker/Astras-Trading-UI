@@ -1,5 +1,5 @@
 export enum CommandType {
-  Limit,
-  Market,
-  Stop
+  Limit = 'limit',
+  Market = 'market',
+  Stop = 'stop'
 }

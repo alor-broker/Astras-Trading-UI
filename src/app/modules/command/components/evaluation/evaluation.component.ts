@@ -18,7 +18,7 @@ export class EvaluationComponent {
     this.evaluationRequest.next(evaluationProperties);
   }
 
-  evaluation$: Observable<Evaluation>;
+  evaluation$: Observable<Evaluation | null>;
   evaluationRequest: BehaviorSubject<EvaluationBaseProperties | null> = new BehaviorSubject<EvaluationBaseProperties | null>(null);
 
   constructor(private service: EvaluationService) {
