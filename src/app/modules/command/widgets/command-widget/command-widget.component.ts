@@ -4,8 +4,7 @@ import { CommandParams } from 'src/app/shared/models/commands/command-params.mod
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { CommandType } from '../../../../shared/models/enums/command-type.model';
-import { NzTabComponent } from 'ng-zorro-antd/tabs/tab.component';
-import { NzTabSetComponent } from 'ng-zorro-antd/tabs/tabset.component';
+import { NzTabComponent, NzTabSetComponent } from 'ng-zorro-antd/tabs';
 
 @Component({
   selector: 'ats-command-widget',
