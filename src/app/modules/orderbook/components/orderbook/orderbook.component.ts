@@ -11,8 +11,8 @@ import {
 import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
-import { OrderBook } from '../../models/orderbook.model';
-import { map, tap } from 'rxjs/operators';
+import { ChartData, OrderBook } from '../../models/orderbook.model';
+import { map, startWith, tap } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { buyColorBackground, sellColorBackground, } from '../../../../shared/models/settings/styles-constants';
@@ -59,7 +59,18 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     );
 
     this.ob$ = this.service.getOrderbook(this.guid).pipe(
-      tap((ob) => (this.maxVolume = ob?.maxVolume ?? 1))
+      tap((ob) => (this.maxVolume = ob?.maxVolume ?? 1)),
+      startWith(<OrderBook>{
+          rows: [],
+          maxVolume: 1,
+          chartData: <ChartData>{
+            asks: [],
+            bids: [],
+            minPrice: 0,
+            maxPrice: 0
+          }
+        }
+      )
     );
 
     this.resize.pipe(
