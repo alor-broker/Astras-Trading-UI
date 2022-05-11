@@ -135,7 +135,7 @@ export class CommandsService {
     let isStop = false;
     if ((type == 'stop' || type == 'stopLimit') && isStopCommand(command)) {
       isStop = true;
-      if (command.stopEndUnixTime === undefined) {
+      if (!command.stopEndUnixTime) {
         command.stopEndUnixTime = toUnixTimestampSeconds(addDays(new Date(), 30));
       }
       else if (typeof command.stopEndUnixTime === 'number') {

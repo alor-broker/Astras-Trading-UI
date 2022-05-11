@@ -8,15 +8,22 @@ import { EvaluationBaseProperties } from '../models/evaluation-base-properties.m
 import { EvaluationRequest } from '../models/evaluation-request.model';
 import { Evaluation } from '../models/evaluation.model';
 import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
+import { catchHttpError } from '../../../shared/utils/observable-helper';
+import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EvaluationService {
   private readonly url = environment.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/estimate';
-  constructor(private http: HttpClient, private store: Store) { }
 
-  evaluateOrder(baseRequest: EvaluationBaseProperties) : Observable<Evaluation> {
+  constructor(
+    private readonly http: HttpClient,
+    private readonly store: Store,
+    private readonly errorHandlerService: ErrorHandlerService
+  ) { }
+
+  evaluateOrder(baseRequest: EvaluationBaseProperties) : Observable<Evaluation | null> {
     return this.store.select(getSelectedPortfolio).pipe(
       filter((pk): pk is PortfolioKey => !!pk),
       switchMap(portfolio => {
@@ -28,7 +35,8 @@ export class EvaluationService {
           price: baseRequest.price,
           lotQuantity: baseRequest.lotQuantity,
         } as EvaluationRequest);
-      })
+      }),
+      catchHttpError<Evaluation | null>(null, this.errorHandlerService)
     );
   }
 }
