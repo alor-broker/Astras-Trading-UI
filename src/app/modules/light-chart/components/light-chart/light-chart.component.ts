@@ -27,6 +27,16 @@ import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper'
   encapsulation: ViewEncapsulation.None,
 })
 export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
+  readonly availableTimeFrames: { label: string, value: string }[] = [
+    { label: '1m', value: '60' },
+    { label: '5m', value: '300' },
+    { label: '15m', value: '900' },
+    { label: 'H', value: '3600' },
+    { label: '4H', value: '14400' },
+    { label: 'D', value: 'D' },
+    { label: 'M', value: 'M' }
+  ];
+
   @Input()
   shouldShowSettings!: boolean;
   @Input()
