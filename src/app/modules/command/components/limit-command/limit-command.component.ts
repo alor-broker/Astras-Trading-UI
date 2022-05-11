@@ -23,28 +23,6 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
   constructor(private modal: ModalService, private service: CommandsService) {
   }
 
-  private static buildForm(initialParameters: CommandParams) {
-    return new FormGroup({
-      quantity: new FormControl(
-        initialParameters.quantity ?? 1,
-        [
-          Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
-        ]
-      ),
-      price: new FormControl(
-        initialParameters.price ?? 1,
-        [
-          Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
-        ]
-      ),
-      instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),
-    } as LimitFormControls) as LimitFormGroup;
-  }
-
   ngOnInit() {
     this.modal.commandParams$.pipe(
       takeUntil(this.destroy$),
@@ -87,6 +65,28 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     this.evaluation$.complete();
   }
 
+  private buildForm(initialParameters: CommandParams) {
+    return new FormGroup({
+      quantity: new FormControl(
+        initialParameters.quantity ?? 1,
+        [
+          Validators.required,
+          Validators.min(0),
+          Validators.max(1000000000)
+        ]
+      ),
+      price: new FormControl(
+        initialParameters.price ?? 1,
+        [
+          Validators.required,
+          Validators.min(0),
+          Validators.max(1000000000)
+        ]
+      ),
+      instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),
+    } as LimitFormControls) as LimitFormGroup;
+  }
+
   private updateEvaluation(command: LimitCommand) {
     const evaluation: EvaluationBaseProperties = {
       price: command.price,
@@ -106,7 +106,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.form = LimitCommandComponent.buildForm(initialParameters);
+    this.form = this.buildForm(initialParameters);
     this.setLimitCommand(initialParameters);
 
     this.form.valueChanges.pipe(

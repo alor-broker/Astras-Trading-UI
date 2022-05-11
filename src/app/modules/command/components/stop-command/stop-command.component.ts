@@ -23,42 +23,6 @@ export class StopCommandComponent implements OnInit, OnDestroy {
   constructor(private modal: ModalService, private service: CommandsService) {
   }
 
-  private static buildForm(initialParameters: CommandParams) {
-    let price = initialParameters.price;
-    if (price == 1 || price == null) {
-      price = 0;
-    }
-
-    return new FormGroup({
-      quantity: new FormControl(
-        initialParameters.quantity ?? 1,
-        [
-          Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
-        ]
-      ),
-      price: new FormControl(
-        price,
-        [
-          Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
-        ]
-      ),
-      triggerPrice: new FormControl(
-        0,
-        [
-          Validators.required,
-          Validators.min(0),
-        ]
-      ),
-      stopEndUnixTime: new FormControl(initialParameters.stopEndUnixTime),
-      condition: new FormControl(StopOrderCondition.More),
-      withLimit: new FormControl(false)
-    } as StopFormControls) as StopFormGroup;
-  }
-
   ngOnInit() {
     this.modal.commandParams$.pipe(
       takeUntil(this.destroy$),
@@ -101,12 +65,48 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  private buildForm(initialParameters: CommandParams) {
+    let price = initialParameters.price;
+    if (price == 1 || price == null) {
+      price = 0;
+    }
+
+    return new FormGroup({
+      quantity: new FormControl(
+        initialParameters.quantity ?? 1,
+        [
+          Validators.required,
+          Validators.min(0),
+          Validators.max(1000000000)
+        ]
+      ),
+      price: new FormControl(
+        price,
+        [
+          Validators.required,
+          Validators.min(0),
+          Validators.max(1000000000)
+        ]
+      ),
+      triggerPrice: new FormControl(
+        0,
+        [
+          Validators.required,
+          Validators.min(0),
+        ]
+      ),
+      stopEndUnixTime: new FormControl(initialParameters.stopEndUnixTime),
+      condition: new FormControl(StopOrderCondition.More),
+      withLimit: new FormControl(false)
+    } as StopFormControls) as StopFormGroup;
+  }
+
   private initCommandForm(initialParameters: CommandParams | null) {
     if (!initialParameters) {
       return;
     }
 
-    this.form = StopCommandComponent.buildForm(initialParameters);
+    this.form = this.buildForm(initialParameters);
     this.setStopCommand(initialParameters);
 
     this.form.valueChanges.pipe(

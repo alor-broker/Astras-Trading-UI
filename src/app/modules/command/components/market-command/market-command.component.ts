@@ -45,30 +45,6 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     this.isActivated$.next(value);
   }
 
-  private static buildForm(initialParameters: CommandParams) {
-    return new FormGroup({
-      quantity: new FormControl(
-        initialParameters.quantity ?? 1,
-        [
-          Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
-        ]
-      ),
-      instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),
-    } as MarketFormControls) as MarketFormGroup;
-  }
-
-  private static buildEvaluationProperties(command: MarketCommand | null, price: number): EvaluationBaseProperties {
-    return {
-      price: price,
-      lotQuantity: command?.quantity,
-      instrument: {
-        ...command?.instrument
-      },
-    } as EvaluationBaseProperties;
-  }
-
   ngOnInit(): void {
     this.modal.commandParams$.pipe(
       takeUntil(this.destroy$),
@@ -114,6 +90,30 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     }
   }
 
+  private buildEvaluationProperties(command: MarketCommand | null, price: number): EvaluationBaseProperties {
+    return {
+      price: price,
+      lotQuantity: command?.quantity,
+      instrument: {
+        ...command?.instrument
+      },
+    } as EvaluationBaseProperties;
+  }
+
+  private buildForm(initialParameters: CommandParams) {
+    return new FormGroup({
+      quantity: new FormControl(
+        initialParameters.quantity ?? 1,
+        [
+          Validators.required,
+          Validators.min(0),
+          Validators.max(1000000000)
+        ]
+      ),
+      instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),
+    } as MarketFormControls) as MarketFormGroup;
+  }
+
   private initEvaluationUpdates() {
     const currentInstrumentPrice$ = this.lastCommand$.pipe(
       distinctUntilChanged((previous, current) =>
@@ -131,7 +131,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       this.isActivated$
     ]).pipe(
       filter(([, , isActivated]) => isActivated),
-      map(([command, price,]) => MarketCommandComponent.buildEvaluationProperties(command, price)),
+      map(([command, price,]) => this.buildEvaluationProperties(command, price)),
       filter(e => e.price > 0)
     );
   }
@@ -141,7 +141,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.form = MarketCommandComponent.buildForm(initialParameters);
+    this.form = this.buildForm(initialParameters);
     this.setMarketCommand(initialParameters);
 
     this.form.valueChanges.pipe(
