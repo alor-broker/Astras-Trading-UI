@@ -60,13 +60,13 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
   }
 
   private static buildEvaluationProperties(command: MarketCommand | null, price: number): EvaluationBaseProperties {
-    return <EvaluationBaseProperties>{
+    return {
       price: price,
       lotQuantity: command?.quantity,
       instrument: {
         ...command?.instrument
       },
-    };
+    } as EvaluationBaseProperties;
   }
 
   ngOnInit(): void {
@@ -91,11 +91,11 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formValue = <MarketFormData>this.form.value;
+    const formValue: MarketFormData = this.form.value;
     const quantity = Number(formValue.quantity ?? initialParameters?.quantity ?? 1);
 
     if (initialParameters && initialParameters.user) {
-      const newCommand = {
+      const newCommand: MarketCommand = {
         side: 'buy',
         quantity: Number(quantity),
         instrument: {
