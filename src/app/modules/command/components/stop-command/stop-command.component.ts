@@ -36,7 +36,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formValue: StopFormData = this.form.value;
+    const formValue = this.form.value as StopFormData;
 
     if (initialParameters && initialParameters.user) {
       const price = Number(formValue.price);

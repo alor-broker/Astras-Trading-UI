@@ -36,7 +36,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formValue: LimitFormData = this.form.value;
+    const formValue = this.form.value as LimitFormData;
 
     if (initialParameters && initialParameters.user) {
       const newCommand: LimitCommand = {

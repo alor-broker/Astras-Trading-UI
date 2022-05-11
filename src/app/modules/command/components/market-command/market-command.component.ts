@@ -67,7 +67,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formValue: MarketFormData = this.form.value;
+    const formValue = this.form.value as MarketFormData;
     const quantity = Number(formValue.quantity ?? initialParameters?.quantity ?? 1);
 
     if (initialParameters && initialParameters.user) {
