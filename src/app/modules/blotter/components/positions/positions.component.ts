@@ -135,6 +135,32 @@ export class PositionsComponent implements OnInit, OnDestroy {
       isFilterVisible: false,
       hasFilter: false,
     },
+    {
+      id: 'unrealisedPl',
+      name: 'P/L всего',
+      sortOrder: null,
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.unrealisedPl - b.unrealisedPl,
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: null,
+      listOfFilter: [],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
+    {
+      id: 'dailyUnrealisedPl',
+      name: 'P/L дн.',
+      sortOrder: null,
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.dailyUnrealisedPl - b.dailyUnrealisedPl,
+      searchFn: null,
+      isSearchVisible: false,
+      hasSearch: false,
+      filterFn: null,
+      listOfFilter: [],
+      isFilterVisible: false,
+      hasFilter: false,
+    },
   ];
   listOfColumns: Column<PositionDisplay, PositionFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
