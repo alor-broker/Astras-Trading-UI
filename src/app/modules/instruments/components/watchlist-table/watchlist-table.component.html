@@ -14,7 +14,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let inst of nzTable.data" (click)='makeActive(inst.instrument)'>
+    <tr *ngFor="let inst of nzTable.data; trackBy: getTrackKey" (click)='makeActive(inst.instrument)'>
       <td class="ticker">{{ inst.instrument.symbol }}</td>
       <td><ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'></ats-price-tick></td>
       <td [ngClass]="inst.dayChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.dayChange }}</td>
