@@ -6,6 +6,7 @@ import { buyColor } from 'src/app/shared/models/settings/styles-constants';
   providedIn: 'root'
 })
 export class OnboardingService {
+  private betaFlagStorage = 'beta';
   private profileStorage = 'profile';
   private isCompleted = false;
 
@@ -15,12 +16,16 @@ export class OnboardingService {
 
   start() {
     if (!this.isCompleted) {
-      setTimeout(() => {
-        this.joyride.startTour({
-          steps: Array(8).fill(1).map((_, i) => `step${i + 1}`),
-          themeColor: buyColor
-        });
-        this.setIsCompleted(true);
+      const interval = setInterval(() => {
+        let isBetaAccepted = localStorage.getItem(this.betaFlagStorage);
+        if (isBetaAccepted) {
+          this.joyride.startTour({
+            steps: Array(8).fill(1).map((_, i) => `step${i + 1}`),
+            themeColor: buyColor
+          });
+          this.setIsCompleted(true);
+          clearInterval(interval);
+        }
       }, 5000);
     }
   }

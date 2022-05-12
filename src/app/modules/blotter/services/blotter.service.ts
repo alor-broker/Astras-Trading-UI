@@ -69,7 +69,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   getPositions(guid: string) {
     this.position$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
-      switchMap((settings) => this.getPositionsReq(settings.portfolio, settings.exchange))
+      switchMap((settings) => this.getPositionsReq(settings.portfolio, settings.exchange)),
     );
     this.linkToPortfolio();
     return this.position$;
@@ -148,11 +148,17 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     this.positions = new Map<string, Position>();
     const positions = this.getPortfolioEntity<Position>(portfolio, exchange, 'PositionsGetAndSubscribeV2').pipe(
       map((position: Position) => {
-        this.positions.set(position.symbol, position);
+        if (!this.isEmptyPosition(position)) {
+          this.positions.set(position.symbol, position);
+        }
         return Array.from(this.positions.values());
       }),
     );
     return merge(positions, of([]));
+  }
+
+  private isEmptyPosition(position: Position) {
+    return position.qtyT0 === 0 && position.qtyT1 === 0 && position.qtyT2 === 0 && position.qtyTFuture === 0;
   }
 
   private getStopOrdersReq(portfolio: string, exchange: string) : Observable<StopOrder[]> {
@@ -202,10 +208,6 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       })
     );
     return orders.pipe(startWith([]));
-  }
-
-  private compareOrders(a: Order, b: Order) {
-    return a.id == b.id;
   }
 
   private getTradesReq(portfolio: string, exchange: string) : Observable<Trade[]> {
