@@ -11,13 +11,15 @@
   <span>
     <button *ngIf='s.linkToActive !== undefined' nz-button nzSize="small"
       (mousedown)="linkToActive($event, !s.linkToActive)"
-      (touchstart)="linkToActive($event, !s.linkToActive)">
+      (touchstart)="linkToActive($event, !s.linkToActive)"
+      class="link-to-active-btn">
       <i nz-icon
-        [nzType]="s.linkToActive ? 'lock' : 'unlock'"
+        [nzType]="'link'"
         [nzTheme]="'outline'"
         joyrideStep="step7"
         [title]="joyrideContent.step7.title"
-        [text]="joyrideContent.step7.text"></i>
+        [text]="joyrideContent.step7.text"
+        [class.active]="s.linkToActive"></i>
     </button>
     <button *ngIf="hasHelp" nz-button nzSize="small" (click)="openHelp()">
       <i nz-icon nzType="question-circle" [nzTheme]="'outline'"
