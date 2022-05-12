@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
@@ -27,5 +27,9 @@ export class WatchlistTableComponent implements OnInit {
 
   remove(instr: Instrument) {
     this.service.remove(instr);
+  }
+
+  getTrackKey(index: number, item: WatchedInstrument): string {
+    return `${item.instrument.exchange}.${item.instrument.instrumentGroup}.${item.instrument.symbol}`;
   }
 }
