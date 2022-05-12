@@ -21,8 +21,7 @@ export class LightChartSettingsComponent implements OnInit {
   prevSettings?: LightChartSettings;
 
   constructor(private service: LightChartService ) {
-    const helper = new TimeframesHelper();
-    this.timeFrames = helper.timeFrames;
+    this.timeFrames = TimeframesHelper.timeFrames;
   }
 
   ngOnInit() {
