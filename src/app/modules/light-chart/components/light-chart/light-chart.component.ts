@@ -18,6 +18,7 @@ import { Candle } from '../../../../shared/models/history/candle.model';
 import { LightChart } from '../../utils/light-chart';
 import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
 import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
+import { TimeframesHelper } from '../../utils/timeframes-helper';
 
 @Component({
   selector: 'ats-light-chart[resize][guid][resize]',
@@ -27,15 +28,7 @@ import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper'
   encapsulation: ViewEncapsulation.None,
 })
 export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
-  readonly availableTimeFrames: { label: string, value: string }[] = [
-    { label: '1m', value: '60' },
-    { label: '5m', value: '300' },
-    { label: '15m', value: '900' },
-    { label: 'H', value: '3600' },
-    { label: '4H', value: '14400' },
-    { label: 'D', value: 'D' },
-    { label: 'M', value: 'M' }
-  ];
+  readonly availableTimeFrames = TimeframesHelper.timeFrames;
 
   @Input()
   shouldShowSettings!: boolean;
@@ -50,7 +43,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
   bars$: Observable<Candle | null> = of(null);
-  activeTimeFrame$: Subject<string> = new BehaviorSubject('D');
+  activeTimeFrame$ = new BehaviorSubject('D');
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private prevOptions?: LightChartSettings;
   private isUpdating = false;
@@ -69,6 +62,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.service.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.complete();
+    this.activeTimeFrame$.complete();
   }
 
   changeTimeframe(timeframe: string) {
@@ -114,7 +108,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     ).subscribe(options => {
       if (options && !isEqualLightChartSettings(options, this.prevOptions)) {
         this.prevOptions = options;
-        this.activeTimeFrame$.next(options.timeFrame);
+        this.setActiveTimeFrame(options.timeFrame);
         if (this.chart) {
           this.chart.clearSeries();
         }
@@ -146,5 +140,10 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       this.isUpdating = false;
     });
+  }
+
+  private setActiveTimeFrame(timeFrame: string) {
+    // for some reason template is not updated without using setTimeout
+    setTimeout(()=> this.activeTimeFrame$.next(timeFrame));
   }
 }

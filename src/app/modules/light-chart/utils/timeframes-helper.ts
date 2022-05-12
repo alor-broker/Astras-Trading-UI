@@ -13,11 +13,12 @@ export class TimeframesHelper {
 
   private readonly candlesBatchSize = 300;
 
-  timeFrames : Timeframe[] = [
+  public static timeFrames : Timeframe[] = [
     { label: '1m', value: '60' },
     { label: '5m', value: '300' },
     { label: '15m', value: '900' },
     { label: 'H', value: '3600' },
+    { label: '4H', value: '14400' },
     { label: 'D', value: 'D' },
     { label: 'M', value: 'M' },
   ];
@@ -66,7 +67,7 @@ export class TimeframesHelper {
   }
 
   getValueByTfLabel(tf: string) {
-    const timeframe = this.timeFrames.find(t => t.label == tf);
+    const timeframe = TimeframesHelper.timeFrames.find(t => t.label == tf);
     if (!timeframe) {
       throw new Error('Unknown timeframe');
     }
