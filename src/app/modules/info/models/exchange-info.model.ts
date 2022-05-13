@@ -6,5 +6,6 @@ export interface ExchangeInfo {
   instrumentGroup?: string,
   isin: string,
   currency: string,
-  type: string
+  type: string,
+  lotsize: number
 }

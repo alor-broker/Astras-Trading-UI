@@ -2,10 +2,11 @@
   <nz-descriptions *ngIf="(isLoading$ | async) === false" [nzColumn]="columns" [nzSize]="columns === 1 ? 'small' : 'default'" nzBordered>
     <nz-descriptions-item nzTitle="Описание"><span class="full-description">{{description.description}}</span>
     </nz-descriptions-item>
-    <nz-descriptions-item nzTitle="Сектор">{{description.sector}}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="ISIN">{{description.isin}}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="Базовая валюта">{{description.baseCurrency}}</nz-descriptions-item>
-    <nz-descriptions-item nzTitle="Тип">{{description.securityType}}</nz-descriptions-item>
+    <nz-descriptions-item *ngIf="description.sector" nzTitle="Сектор">{{description.sector}}</nz-descriptions-item>
+    <nz-descriptions-item *ngIf="description.isin" nzTitle="ISIN">{{description.isin}}</nz-descriptions-item>
+    <nz-descriptions-item *ngIf="description.baseCurrency" nzTitle="Базовая валюта">{{description.baseCurrency}}</nz-descriptions-item>
+    <nz-descriptions-item *ngIf="description.securityType" nzTitle="Тип">{{description.securityType}}</nz-descriptions-item>
+    <nz-descriptions-item *ngIf="description.lotsize" nzTitle="Размер лота">{{description.lotsize}}</nz-descriptions-item>
   </nz-descriptions>
 </ng-container>
 <ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>

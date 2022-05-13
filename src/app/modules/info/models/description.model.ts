@@ -4,4 +4,5 @@ export interface Description {
   isin: string, //"RU0009029540",
   baseCurrency: string, // "RUB",
   securityType: string, // "stock"
+  lotsize: number, // "10"
 }

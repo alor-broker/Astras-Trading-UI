@@ -57,7 +57,7 @@ export class InfoService extends BaseService<InfoSettings>{
           return this.getExchangeInfoReq({ symbol: s.symbol, exchange: s.exchange }).pipe(
             map(ei => ({ settings: s, info: ei })),
             catchHttpError(
-              { settings: s, info: <ExchangeInfo>{} },
+              { settings: s, info: {} as ExchangeInfo },
               this.errorHandlerService)
           );
         }),
@@ -93,7 +93,14 @@ export class InfoService extends BaseService<InfoSettings>{
   }
 
   getDescription(exchangeInfo: ExchangeInfo) : Observable<Description> {
-    return this.getInstrumentEntity<Description>(exchangeInfo,'description');
+    return this.getInstrumentEntity<Description>(exchangeInfo, 'description').pipe(
+      map(d => {
+        if (d.securityType == 'unknown') {
+          d.securityType = exchangeInfo.type;
+        }
+        return d;
+      })
+    );
   }
 
   getFinance(exchangeInfo: ExchangeInfo) : Observable<Finance> {
@@ -117,10 +124,14 @@ export class InfoService extends BaseService<InfoSettings>{
   }
 
   private getInstrumentEntity<T>(exchangeInfo: ExchangeInfo, path: string) : Observable<T> {
+    let identifier = exchangeInfo.symbol;
+    if (exchangeInfo.exchange == Exchanges.MOEX && exchangeInfo.isin) {
+      identifier = exchangeInfo.isin;
+    }
     return this.http.get<T>(
       this.instrumentUrl +
       (exchangeInfo.exchange == Exchanges.SPBX ? "/international/" : "/") +
-      (exchangeInfo.exchange == Exchanges.SPBX ? `${exchangeInfo.symbol}/` : `${exchangeInfo.isin}/`) +
+      `${identifier}/` +
       path);
   }
 
@@ -139,7 +150,8 @@ export class InfoService extends BaseService<InfoSettings>{
           instrumentGroup: r.board,
           isin: r.ISIN,
           currency: r.currency,
-          type: this.getTypeByCfi(r.cfiCode)
+          type: this.getTypeByCfi(r.cfiCode),
+          lotsize: r.lotsize ?? 1
         };
         return info;
       })

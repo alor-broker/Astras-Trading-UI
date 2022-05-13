@@ -7,7 +7,6 @@ import { DescriptionComponent } from './components/common/description/descriptio
 import { FinanceComponent } from './components/stocks/finance/finance.component';
 import { AboutIssueComponent } from './components/bonds/about-issue/about-issue.component';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { FallbackDescriptionComponent } from './components/common/fallback-description/fallback-description.component';
 import { InfoHeaderComponent } from './components/common/info-header/info-header.component';
 import { FinanceBarChartComponent } from './components/common/finance-bar-chart/finance-bar-chart.component';
 
@@ -20,7 +19,6 @@ import { FinanceBarChartComponent } from './components/common/finance-bar-chart/
     DescriptionComponent,
     FinanceComponent,
     AboutIssueComponent,
-    FallbackDescriptionComponent,
     InfoHeaderComponent,
     FinanceBarChartComponent
   ],
