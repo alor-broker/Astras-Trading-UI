@@ -33,6 +33,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
 
   setStopCommand(initialParameters: CommandParams): void {
     if (!this.form.valid) {
+      this.service.setStopCommand(null);
       return;
     }
 

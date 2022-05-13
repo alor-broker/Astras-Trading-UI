@@ -13,7 +13,8 @@ describe('InfoHeaderComponent', () => {
     description: '',
     isin: '',
     currency: '',
-    type: ''
+    type: '',
+    lotsize: 1
   };
 
   beforeEach(async () => {

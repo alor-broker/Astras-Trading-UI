@@ -4,6 +4,7 @@ import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { CommandsService } from '../../services/commands.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'ats-edit-widget',
@@ -14,6 +15,7 @@ import { CommandsService } from '../../services/commands.service';
 export class EditWidgetComponent implements OnInit, OnDestroy {
   isVisible$: Observable<boolean> = of(false);
   editParams$?: Observable<EditParams>;
+  isBusy = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private params?: EditParams;
 
@@ -38,8 +40,10 @@ export class EditWidgetComponent implements OnInit, OnDestroy {
       command$ = this.command.submitMarketEdit();
     }
 
+    this.isBusy = true;
     command$.pipe(
-      take(1)
+      take(1),
+      finalize(() => this.isBusy = false)
     ).subscribe(() => this.modal.closeEditModal());
   }
 

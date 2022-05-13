@@ -64,6 +64,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
 
   setMarketCommand(initialParameters: CommandParams): void {
     if (!this.form.valid) {
+      this.service.setMarketCommand(null);
       return;
     }
 
