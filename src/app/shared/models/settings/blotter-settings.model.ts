@@ -27,7 +27,7 @@ export const allOrdersColumns: ColumnIds[] = [
   { columnId: 'residue', name: "Остаток", isDefault: true  },
   { columnId: 'volume', name: "Объем", isDefault: true  },
   { columnId: 'price', name: "Цена", isDefault: true  },
-  { columnId: 'transTime', name: 'Время', isDefault: false  },
+  { columnId: 'transTime', name: 'Время', isDefault: true  },
   { columnId: 'exchange', name: "Биржа", isDefault: false  },
   { columnId: 'type', name: "Тип", isDefault: false  },
   { columnId: 'endTime', name: "Действ. до", isDefault: false  },
