@@ -66,6 +66,10 @@
         </nz-select>
       </nz-form-control>
     </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="isSoldPositionsHidden">Скрыть проданные</nz-form-label>
+      <nz-switch formControlName='isSoldPositionsHidden'></nz-switch>
+    </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control>
         <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>

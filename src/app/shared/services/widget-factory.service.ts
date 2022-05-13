@@ -142,6 +142,7 @@ export class WidgetFactoryService {
       stopOrdersColumns: allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       linkToActive: true,
       title: `Блоттер ${this.selectedPortfolio?.portfolio ?? 'D'} ${this.selectedPortfolio?.exchange ?? 'MOEX'}`,
+      isSoldPositionsHidden: true
     };
 
     return settings;

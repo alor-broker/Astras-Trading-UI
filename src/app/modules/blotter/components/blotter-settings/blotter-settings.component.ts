@@ -41,6 +41,7 @@ export class BlotterSettingsComponent implements OnInit {
           tradesColumns: new FormControl(settings.tradesColumns),
           positionsColumns: new FormControl(settings.positionsColumns),
           currency: new FormControl(this.currencyToCode(settings.currency)),
+          isSoldPositionsHidden: new FormControl(settings.isSoldPositionsHidden),
         });
       }
     });
