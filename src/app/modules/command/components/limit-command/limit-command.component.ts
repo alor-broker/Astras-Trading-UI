@@ -33,6 +33,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
   setLimitCommand(initialParameters: CommandParams): void {
     if (!this.form.valid) {
+      this.service.setLimitCommand(null);
       return;
     }
 

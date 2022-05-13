@@ -18,5 +18,5 @@
     </nz-form-item>
   </form>
 
-  <ats-evaluation *ngIf="evaluation | async as evaluation" [evaluationProperties]="evaluation"></ats-evaluation>
+  <ats-evaluation *ngIf="evaluation$ | async as evaluation" [evaluationProperties]="evaluation"></ats-evaluation>
 </div>

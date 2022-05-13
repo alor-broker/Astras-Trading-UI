@@ -21,45 +21,45 @@ export class CommandsService {
 
   private url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
 
-  private stopCommand?: BehaviorSubject<StopCommand>;
-  private limitCommand?: BehaviorSubject<LimitCommand>;
-  private limitEdit?: BehaviorSubject<LimitEdit>;
-  private marketCommand?: BehaviorSubject<MarketCommand>;
-  private marketEdit?: BehaviorSubject<MarketEdit>;
+  private stopCommand?: BehaviorSubject<StopCommand | null>;
+  private limitCommand?: BehaviorSubject<LimitCommand | null>;
+  private limitEdit?: BehaviorSubject<LimitEdit | null>;
+  private marketCommand?: BehaviorSubject<MarketCommand | null>;
+  private marketEdit?: BehaviorSubject<MarketEdit | null>;
 
   constructor(private http: HttpClient, private notification: NzNotificationService) { }
 
-  setStopCommand(command: StopCommand) {
+  setStopCommand(command: StopCommand | null) {
     if (!this.stopCommand) {
-      this.stopCommand = new BehaviorSubject<StopCommand>(command);
+      this.stopCommand = new BehaviorSubject<StopCommand | null>(command);
     }
     this.stopCommand?.next(command);
   }
 
-  setLimitCommand(command: LimitCommand) {
+  setLimitCommand(command: LimitCommand | null) {
     if (!this.limitCommand) {
-      this.limitCommand = new BehaviorSubject<LimitCommand>(command);
+      this.limitCommand = new BehaviorSubject<LimitCommand | null>(command);
     }
     this.limitCommand?.next(command);
   }
 
-  setMarketCommand(command: MarketCommand) {
+  setMarketCommand(command: MarketCommand | null) {
     if (!this.marketCommand) {
-      this.marketCommand = new BehaviorSubject<MarketCommand>(command);
+      this.marketCommand = new BehaviorSubject<MarketCommand | null>(command);
     }
     this.marketCommand?.next(command);
   }
 
-  setLimitEdit(command: LimitEdit) {
+  setLimitEdit(command: LimitEdit | null) {
     if (!this.limitEdit) {
-      this.limitEdit = new BehaviorSubject<LimitEdit>(command);
+      this.limitEdit = new BehaviorSubject<LimitEdit | null>(command);
     }
     this.limitEdit?.next(command);
   }
 
-  setMarketEdit(command: MarketEdit) {
+  setMarketEdit(command: MarketEdit | null) {
     if (!this.marketEdit) {
-      this.marketEdit = new BehaviorSubject<MarketEdit>(command);
+      this.marketEdit = new BehaviorSubject<MarketEdit | null>(command);
     }
     this.marketEdit?.next(command);
   }

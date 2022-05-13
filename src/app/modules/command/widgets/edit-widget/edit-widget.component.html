@@ -1,6 +1,14 @@
 <div *ngIf="editParams$ | async as command">
-  <nz-modal class='test' nzOkText="Изменить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
-    nzTitle="Изменить заявку" (nzOnOk)='handleOk()' (nzOnCancel)="handleCancel()" [nzMaskClosable]='false'>
+  <nz-modal
+    nzTitle="Изменить заявку"
+    nzOkText="Изменить"
+    nzCancelText="Отмена"
+    [nzVisible]='isVisible$ | async'
+    (nzOnOk)='handleOk()'
+    (nzOnCancel)="handleCancel()"
+    [nzMaskClosable]='false'
+    [nzOkLoading]='isBusy'
+  >
     <ng-container *nzModalContent>
       <ats-command-header [symbol]='command.instrument.symbol' [exchange]='command.instrument.exchange'
         [instrumentGroup]="command.instrument.instrumentGroup ?? ''"></ats-command-header>

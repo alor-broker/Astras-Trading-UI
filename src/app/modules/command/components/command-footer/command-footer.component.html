@@ -1,2 +1,14 @@
-<button class='buy-button' nz-button nzSize="large" (click)="buy()">Купить</button>
-<button class='sell-button' nz-button nzSize="large" (click)="sell()">Продать</button>
+<button
+  (click)="buy()"
+  [attr.disabled]="isButtonsLocked ? '' : null"
+  [nzLoading]="isBuyButtonLoading"
+  class='buy-button'
+  nz-button
+  nzSize="large">Купить</button>
+<button
+  (click)="sell()"
+  [attr.disabled]="isButtonsLocked ? '' : null"
+  [nzLoading]="isSellButtonLoading"
+  class='sell-button'
+  nz-button
+  nzSize="large">Продать</button>
