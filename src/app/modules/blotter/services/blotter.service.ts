@@ -69,7 +69,11 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   getPositions(guid: string) {
     this.position$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
-      switchMap((settings) => this.getPositionsReq(settings.portfolio, settings.exchange)),
+      switchMap((settings) =>
+        this.getPositionsReq(settings.portfolio, settings.exchange).pipe(
+          map(poses => settings.isSoldPositionsHidden ? poses.filter(p => p.qtyTFuture !== 0) : poses)
+        )
+      ),
     );
     this.linkToPortfolio();
     return this.position$;
