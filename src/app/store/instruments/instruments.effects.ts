@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { InstrumentsService } from 'src/app/modules/instruments/services/instruments.service';
 import { mergeMap, map, tap } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
-import { newInstrumentSelectedName, selectNewInstrumentName } from './instruments.actions';
+import { selectNewInstrument, newInstrumentSelectedName } from './instruments.actions';
 import { ErrorHandlerService } from 'src/app/shared/services/handle-error/error-handler.service';
 import { catchHttpError } from 'src/app/shared/utils/observable-helper';
 
@@ -19,8 +19,8 @@ export class InstrumentsEffects {
 
   loadInstruments$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(selectNewInstrumentName),
-      mergeMap((action: { instrument: Instrument }) => this.instrumentsService.getInstrument(action.instrument)),
+      ofType(selectNewInstrument),
+      mergeMap((action) => this.instrumentsService.getInstrument(action.instrument)),
       tap(instrument => this.instrument = instrument),
       map((instrument) => ({
         type: newInstrumentSelectedName,
