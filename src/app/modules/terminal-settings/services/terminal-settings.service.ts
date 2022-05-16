@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ClientService } from 'src/app/shared/services/client.service';
+import { AccountService } from 'src/app/shared/services/account.service';
 import { FullName } from '../../../shared/models/user/full-name.model';
 
 @Injectable({
@@ -8,7 +8,7 @@ import { FullName } from '../../../shared/models/user/full-name.model';
 })
 export class TerminalSettingsService {
   constructor(
-    private profile: ClientService) { }
+    private profile: AccountService) { }
 
   getFullName() : Observable<FullName> {
     return this.profile.getFullName();

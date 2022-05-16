@@ -21,6 +21,7 @@ export class AuthService {
     login: '',
     jwt: '',
     refreshToken: '',
+    clientId: '',
     portfolios: [],
     isLoggedOut: false
   });
@@ -45,9 +46,11 @@ export class AuthService {
   }
 
   public setUser(baseUser: BaseUser) {
-    const portfolios = this.exctractPortfolios(baseUser.jwt);
+    const portfolios = this.extractPortfolios(baseUser.jwt);
+    const clientId = this.extractClientId(baseUser.jwt);
     const user : User = {
       ...baseUser,
+      clientId,
       portfolios
     };
     localStorage.setItem('user', JSON.stringify(user));
@@ -64,7 +67,8 @@ export class AuthService {
       map((user: User) => {
         if (user) {
           user.login = credentials.login;
-          user.portfolios = this.exctractPortfolios(user?.jwt);
+          user.portfolios = this.extractPortfolios(user?.jwt);
+          user.clientId = this.extractClientId(user?.clientId);
           this.setUser(user);
         }
       })
@@ -76,6 +80,7 @@ export class AuthService {
     this.currentUser.next({
       login: '',
       jwt: '',
+      clientId: '',
       refreshToken: '',
       portfolios: [],
       isLoggedOut: true
@@ -149,11 +154,19 @@ export class AuthService {
     window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
   }
 
-  private exctractPortfolios(jwt: string) : string[] {
+  private extractPortfolios(jwt: string) : string[] {
     if (jwt) {
       return this.decodeJwtBody(jwt).portfolios.split(' ');
     }
     return [];
+  }
+
+  private extractClientId(jwt: string | undefined) : string {
+    if (jwt) {
+      let decoded = this.decodeJwtBody(jwt);
+      return decoded.clientid;
+    }
+    return '';
   }
 
   private decodeJwtBody(jwt: string) : JwtBody {

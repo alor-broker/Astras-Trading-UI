@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subject, take, takeUntil } from 'rxjs';
+import { map, Observable, Subject, take, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
-import { AccountService } from '../../services/account.service';
+import { AccountService } from '../../../../shared/services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
-import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-constants';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
@@ -14,6 +13,7 @@ import { Store } from '@ngrx/store';
 import { getSelectedInstrument } from '../../../../store/instruments/instruments.selectors';
 import { selectNewPortfolio } from '../../../../store/portfolios/portfolios.actions';
 import { joyrideContent } from '../../models/joyride';
+import { PortfolioExtended } from 'src/app/shared/models/user/portfolio-extended.model';
 
 @Component({
   selector: 'ats-navbar',
@@ -21,7 +21,7 @@ import { joyrideContent } from '../../models/joyride';
   styleUrls: ['./navbar.component.less'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  portfolios$!: Observable<PortfolioKey[]>;
+  portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   names = WidgetNames;
   buyColor = buyColor;
   sellColor = sellColor;
@@ -63,11 +63,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.auth.logout();
   }
 
-  selectDefault(portfolios: PortfolioKey[]) {
-    return portfolios.find(p => p.exchange == 'MOEX' && p.portfolio.startsWith('D')) ?? portfolios[0];
+  selectDefault(portfoliosByAgreement: Map<string, PortfolioExtended[]>) {
+    let portfolios = [...portfoliosByAgreement.values()].flat();
+    let result = portfolios.find(p => p.exchange == 'MOEX' && p.portfolio.startsWith('D')) ?? portfoliosByAgreement.values().next().value;
+    return result;
   }
 
-  changePortfolio(key: PortfolioKey) {
+  changePortfolio(key: PortfolioExtended) {
     this.store.dispatch(selectNewPortfolio({ portfolio: key }));
   }
 
