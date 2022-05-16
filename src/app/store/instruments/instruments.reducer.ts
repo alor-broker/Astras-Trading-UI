@@ -12,7 +12,11 @@ export const defaultInstrument: Instrument = {
   symbol: 'SBER',
   exchange: 'MOEX',
   instrumentGroup: 'TQBR',
-  isin: 'RU0009029540'
+  isin: 'RU0009029540',
+  shortName: "Сбербанк АО",
+  description: "Сбербанк АО",
+  currency: "RUB",
+  minstep: 0.01
 };
 
 export const initialState: InstrumentsState = {
@@ -23,8 +27,7 @@ export const initialState: InstrumentsState = {
 
 export const reducer = createReducer(
   initialState,
-
-  on(InstrumentsActions.selectNewInstrument, (state, { instrument }) => ({
+  on(InstrumentsActions.newInstrumentSelected, (state, { instrument }) => ({
       ...state,
       selectedInstrument: {
         ...instrument

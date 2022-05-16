@@ -14,6 +14,8 @@ import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.ser
 import { Store } from '@ngrx/store';
 import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
 
+type LightChartSettingsExtended = LightChartSettings & { minstep: number };
+
 @Injectable({
   providedIn: 'root',
 })
@@ -52,12 +54,20 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
       })
     ).subscribe();
     this.bars$ = this.getSettings(guid).pipe(
-      filter((s): s is LightChartSettings  => !!s),
+      filter((s): s is LightChartSettingsExtended  => !!s),
       switchMap(s =>{
         return this.getBarsReq(s.symbol, s.exchange, s.timeFrame, s.from, s.instrumentGroup);
       })
     );
     return this.bars$;
+  }
+
+  getSettings(guid: string) : Observable<LightChartSettingsExtended> {
+    return super.getSettings(guid).pipe(
+      switchMap(s => this.store.select(getSelectedInstrument).pipe(
+        map(i => ({...s, ...i}))
+      ))
+    );
   }
 
   private getBarsReq(symbol: string, exchange: string, tf: string, from: number, instrumentGroup?: string) {

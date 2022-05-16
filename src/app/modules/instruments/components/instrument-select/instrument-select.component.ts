@@ -5,7 +5,6 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { debounceTime, filter, map, switchMap } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { InstrumentAdditions } from '../../models/instrument-additions.model';
-import { InstrumentSelect } from '../../models/instrument-select.model';
 import { SearchFilter } from '../../models/search-filter.model';
 import { InstrumentsService } from '../../services/instruments.service';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
@@ -25,7 +24,7 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  filteredInstruments$: Observable<InstrumentSelect[]> = of([]);
+  filteredInstruments$: Observable<Instrument[]> = of([]);
   selectedInstrument$: Observable<InstrumentAdditions | null> = of(null);
   inputValue?: string;
   filteredOptions: string[] = [];
@@ -69,7 +68,7 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
     this.filter$.next(filter);
   }
 
-  onSelect(event: NzOptionSelectionChange, val: InstrumentSelect) {
+  onSelect(event: NzOptionSelectionChange, val: Instrument) {
     if (event.isUserInput) {
       this.store.dispatch(selectNewInstrument({ instrument: val }));
     }
@@ -83,13 +82,6 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
     );
     this.selectedInstrument$ = this.store.pipe(
       select(getSelectedInstrument),
-      switchMap(i => {
-        return this.service.getInstrument({
-          symbol: i.symbol,
-          exchange: i.exchange,
-          instrumentGroup: i.instrumentGroup ?? '',
-        });
-      }),
       map((val) => {
         return !!val
           ? {
