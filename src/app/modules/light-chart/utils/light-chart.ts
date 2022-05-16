@@ -175,13 +175,19 @@ getRequest(options: LightChartSettings) {
  * @return {ShortPriceFormat} Price format, to be assigned to lightcharts.
  */
 private getPriceFormat(minstep: number): ShortPriceFormat {
+  if (minstep >= 1) {
+    return {
+      minMove: 1,
+      precision: 0
+    }
+  }
   const log10 = -Math.log10(minstep);
   const isHalf = (log10 % 1) !== 0;
   const minMove = isHalf ? minstep / 5 : minstep;
   const roundedLog10 = Math.floor(log10);
   const priceFormat = {
     minMove: Number(minMove.toFixed(roundedLog10  + 1)),
-    precision: isHalf ? roundedLog10 + 1 : roundedLog10
+    precision: isHalf ? roundedLog10 + 1 : (log10 < 0) ? -roundedLog10 : roundedLog10
   };
   return priceFormat;
 }
