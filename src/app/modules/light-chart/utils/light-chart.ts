@@ -46,7 +46,6 @@ export class LightChart {
       layout: {
         backgroundColor: componentBackgound, // '#ffffff',
         textColor: '#fff',
-
       },
       grid: {
         horzLines: {
@@ -144,7 +143,11 @@ clearSeries() {
   this.volumeSeries.setData([]);
   this.chart.timeScale().fitContent();
   this.chart.priceScale().applyOptions({
-    autoScale: true
+    autoScale: true,
+    scaleMargins: {
+      top: 0,
+      bottom: 0.2,
+    }
   });
 }
 
