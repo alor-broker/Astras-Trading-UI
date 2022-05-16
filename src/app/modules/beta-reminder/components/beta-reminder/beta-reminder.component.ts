@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { map, of } from 'rxjs';
-import { ClientService } from 'src/app/shared/services/client.service';
+import { AccountService } from 'src/app/shared/services/account.service';
 
 @Component({
   selector: 'ats-beta-reminder',
@@ -10,7 +10,7 @@ import { ClientService } from 'src/app/shared/services/client.service';
 export class BetaReminderComponent implements OnInit {
   fullName$ = of('');
 
-  constructor(private readonly client: ClientService) { }
+  constructor(private readonly client: AccountService) { }
 
   ngOnInit(): void {
     this.fullName$ = this.client.getFullName().pipe(

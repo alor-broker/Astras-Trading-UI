@@ -5,7 +5,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './navbar.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
-import { AccountService } from '../../services/account.service';
+import { AccountService } from '../../../../shared/services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { of } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';

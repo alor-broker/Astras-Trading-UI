@@ -24,14 +24,17 @@
       </button>
     </li>
     <li nz-menu-item  *ngIf="portfolios$ | async as portfolios"  class='menu-item'>
+
       <nz-select nzSize='small'
         nzShowSearch [ngModel]="selectDefault(portfolios)"
         (ngModelChange)="changePortfolio($event)"
         joyrideStep="step1"
         [title]="joyrideContent.step1.title"
         [text]="joyrideContent.step1.text">
-        <nz-option *ngFor='let model of portfolios' [nzValue]="model" nzLabel="{{model.portfolio}}:{{model.exchange}}">
-        </nz-option>
+        <nz-option-group *ngFor='let kvp of portfolios | keyvalue' [nzLabel]="kvp.key">
+          <nz-option *ngFor='let model of kvp.value' [nzValue]="model" nzLabel="{{model.market}} {{model.portfolio}}">
+          </nz-option>
+        </nz-option-group>
       </nz-select>
     </li>
     <li nz-menu-item (click)="clear()" class='menu-item icon-li'>
