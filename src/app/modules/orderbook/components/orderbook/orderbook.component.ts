@@ -18,6 +18,7 @@ import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { buyColorBackground, sellColorBackground, } from '../../../../shared/models/settings/styles-constants';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
+import { OrderBookViewRow } from '../../models/orderbook-view-row.model';
 
 interface Size {
   width: string;
@@ -122,5 +123,9 @@ export class OrderBookComponent implements OnInit, OnDestroy {
       };
       this.modal.openCommandModal(params);
     }
+  }
+
+  getTrackKey(index: number): number {
+    return index;
   }
 }
