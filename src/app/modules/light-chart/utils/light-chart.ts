@@ -6,6 +6,8 @@ import { Candle } from '../../../shared/models/history/candle.model';
 import { TimeframesHelper } from './timeframes-helper';
 import { buyColor, sellColor, buyColorBackground, sellColorBackground, componentBackgound } from '../../../shared/models/settings/styles-constants';
 
+type ShortPriceFormat = { minMove: number; precision: number; };
+
 export class LightChart {
   chart!: LightweightCharts.IChartApi;
   series!: LightweightCharts.ISeriesApi<'Candlestick'>;
@@ -137,9 +139,12 @@ clear() {
   this.chart.remove();
 }
 
-clearSeries() {
+prepareSeries(minstep: number) {
   this.bars = [];
   this.series.setData([]);
+  this.series.applyOptions({
+    priceFormat: this.getPriceFormat(minstep)
+  });
   this.volumeSeries.setData([]);
   this.chart.timeScale().fitContent();
   this.chart.priceScale().applyOptions({
@@ -162,4 +167,23 @@ resize(width: number, height: number) {
 getRequest(options: LightChartSettings) {
   return this.timeframesHelper.getRequest(this.getMinTime(), options);
 }
+
+/**
+ * Returns price format for light-charts
+ *
+ * @param {number} minstep Minimum value the price can change. It can be like 0.01 or 0.0005. 0.07 is not the case thanks god.
+ * @return {ShortPriceFormat} Price format, to be assigned to lightcharts.
+ */
+private getPriceFormat(minstep: number): ShortPriceFormat {
+  const log10 = -Math.log10(minstep);
+  const isHalf = (log10 % 1) !== 0;
+  const minMove = isHalf ? minstep / 5 : minstep;
+  const roundedLog10 = Math.floor(log10);
+  const priceFormat = {
+    minMove: Number(minMove.toFixed(roundedLog10  + 1)),
+    precision: isHalf ? roundedLog10 + 1 : roundedLog10
+  };
+  return priceFormat;
+}
+
 }

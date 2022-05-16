@@ -110,7 +110,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.prevOptions = options;
         this.setActiveTimeFrame(options.timeFrame);
         if (this.chart) {
-          this.chart.clearSeries();
+          this.chart.prepareSeries(options.minstep);
         }
       }
     });

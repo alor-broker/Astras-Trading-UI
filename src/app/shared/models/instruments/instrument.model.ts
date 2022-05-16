@@ -1,7 +1,11 @@
 import { InstrumentKey } from "./instrument-key.model";
 
 export interface Instrument extends InstrumentKey {
-  isin?: string
+  isin?: string,
+  shortName: string,
+  description: string,
+  currency: string,
+  minstep: number
 }
 
 export class InstrumentIsinEqualityComparer {

@@ -13,6 +13,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { extModules } from "./build-specifics/ext-modules";
 import { ErrorHandlerService } from "./shared/services/handle-error/error-handler.service";
+import { EffectsModule } from '@ngrx/effects';
 
 registerLocaleData(ru);
 
@@ -28,6 +29,7 @@ registerLocaleData(ru);
     FormsModule,
     HttpClientModule,
     StoreModule.forRoot({}),
+    EffectsModule.forRoot(),
     ...extModules
   ],
   bootstrap: [AppComponent],
