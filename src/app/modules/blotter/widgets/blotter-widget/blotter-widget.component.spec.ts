@@ -9,6 +9,7 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { BlotterWidgetComponent } from './blotter-widget.component';
 import { StoreModule } from "@ngrx/store";
+import { EffectsModule } from '@ngrx/effects';
 
 const settings : BlotterSettings = {
   exchange: 'MOEX',
@@ -19,7 +20,8 @@ const settings : BlotterSettings = {
   tradesColumns: ['ticker'],
   positionsColumns: ['ticker'],
   activeTabIndex: 0,
-  currency: CurrencyInstrument.RUB
+  currency: CurrencyInstrument.RUB,
+  isSoldPositionsHidden: false
 };
 
 describe('BlotterWidgetComponent', () => {
@@ -31,7 +33,8 @@ describe('BlotterWidgetComponent', () => {
       declarations: [ BlotterWidgetComponent ],
       imports: [
         SharedModule,
-        StoreModule.forRoot({})
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot()
       ],
       providers: [
         { provide: BlotterService, useClass: MockServiceBlotter },

@@ -2,19 +2,19 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BetaReminderComponent } from './beta-reminder.component';
 import { of } from 'rxjs';
-import { ClientService } from '../../../../shared/services/client.service';
+import { AccountService } from '../../../../shared/services/account.service';
 
 describe('BetaReminderComponent', () => {
   let component: BetaReminderComponent;
   let fixture: ComponentFixture<BetaReminderComponent>;
-  const clientServiceSpy = jasmine.createSpyObj('ClientService', ['getFullName']);
-  clientServiceSpy.getFullName.and.returnValue(of({}));
+  const accountServiceSpy = jasmine.createSpyObj('AccountService', ['getFullName']);
+  accountServiceSpy.getFullName.and.returnValue(of({}));
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [BetaReminderComponent],
       providers: [
-        { provide: ClientService, useValue: clientServiceSpy }
+        { provide: AccountService, useValue: accountServiceSpy }
       ]
     })
       .compileComponents();

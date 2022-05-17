@@ -7,6 +7,7 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { StopOrdersComponent } from './stop-orders.component';
 import { StoreModule } from "@ngrx/store";
+import { EffectsModule } from '@ngrx/effects';
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -18,7 +19,8 @@ describe('StopOrdersComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         SharedModule,
-        StoreModule.forRoot({})
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot()
       ],
       providers: [
         { provide: BlotterService, useClass: MockServiceBlotter },
