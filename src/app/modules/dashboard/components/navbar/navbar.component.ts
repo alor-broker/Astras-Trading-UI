@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { map, Observable, Subject, take, takeUntil } from 'rxjs';
+import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { AccountService } from '../../../../shared/services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';

@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
-import { BehaviorSubject, Observable, of, Subject, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
 import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
 import { LightChartService } from '../../services/light-chart.service';
 import { Candle } from '../../../../shared/models/history/candle.model';

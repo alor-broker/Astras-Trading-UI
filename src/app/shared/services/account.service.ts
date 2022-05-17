@@ -10,13 +10,12 @@ import { FullName } from 'src/app/shared/models/user/full-name.model';
 import { environment } from 'src/environments/environment';
 import { PortfolioMeta } from 'src/app/shared/models/user/portfolio-meta.model';
 import { PortfolioExtended } from '../models/user/portfolio-extended.model';
-import { Exchanges } from '../models/enums/exchanges';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccountService {
-  private accountUrl = environment.clientDataUrl + '/client/v1.0';;
+  private accountUrl = environment.clientDataUrl + '/client/v1.0';
   constructor(
     private auth: AuthService,
     private positionsService: PositionsService,
