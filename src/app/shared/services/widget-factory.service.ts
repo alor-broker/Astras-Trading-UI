@@ -5,7 +5,7 @@ import { AnySettings } from '../models/settings/any-settings.model';
 import { NewWidget } from '../models/new-widget.model';
 import { Widget } from '../models/widget.model';
 import { LightChartSettings } from '../models/settings/light-chart-settings.model';
-import { TimeframesHelper } from 'src/app/modules/light-chart/utils/timeframes-helper';
+import { TimeframesHelper, TimeframeValue } from 'src/app/modules/light-chart/utils/timeframes-helper';
 import { InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
 import { Instrument } from '../models/instruments/instrument.model';
 import {
@@ -28,7 +28,6 @@ import { defaultInstrument } from '../../store/instruments/instruments.reducer';
   providedIn: 'root',
 })
 export class WidgetFactoryService {
-  private tfHelper = new TimeframesHelper();
 
   // TODO: Make the method createNewSettings asynchronous to avoid the need for synchronization with local state
   private selectedInstrument: Instrument = {
@@ -117,8 +116,8 @@ export class WidgetFactoryService {
       ...this.selectedInstrument,
       linkToActive: true,
       guid: newWidget.gridItem.label,
-      timeFrame: this.tfHelper.getValueByTfLabel('D')?.value,
-      from: this.tfHelper.getDefaultFrom('D'),
+      timeFrame: TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value,
+      from: TimeframesHelper.getDefaultFrom(TimeframeValue.Day),
       title: `График ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
       width: 300,
       height: 300

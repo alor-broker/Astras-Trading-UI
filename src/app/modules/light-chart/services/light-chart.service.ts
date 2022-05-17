@@ -13,6 +13,7 @@ import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { Store } from '@ngrx/store';
 import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
+import { TimeframesHelper } from '../utils/timeframes-helper';
 
 type LightChartSettingsExtended = LightChartSettings & { minstep: number };
 
@@ -21,7 +22,6 @@ type LightChartSettingsExtended = LightChartSettings & { minstep: number };
 })
 export class LightChartService extends BaseWebsocketService<LightChartSettings> {
   private bars$: Observable<Candle> = new Observable();
-  private guid?: string;
 
   constructor(ws: WebsocketService,
     settingsService: DashboardService,
@@ -37,7 +37,7 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
   changeTimeframe(timeframe: string) {
     const current = this.getSettingsValue();
     if (current) {
-      this.setSettings({ ...current, timeFrame: timeframe});
+      this.setSettings({ ...current, timeFrame: timeframe, from: TimeframesHelper.getDefaultFrom(timeframe)});
     }
   }
 
@@ -53,12 +53,14 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
         }
       })
     ).subscribe();
+
     this.bars$ = this.getSettings(guid).pipe(
       filter((s): s is LightChartSettingsExtended  => !!s),
       switchMap(s =>{
         return this.getBarsReq(s.symbol, s.exchange, s.timeFrame, s.from, s.instrumentGroup);
       })
     );
+
     return this.bars$;
   }
 

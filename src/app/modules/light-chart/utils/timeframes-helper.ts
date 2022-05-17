@@ -4,59 +4,74 @@ import { findUniqueElements } from "src/app/shared/utils/collections";
 import { addDaysUnix, addHoursUnix } from "src/app/shared/utils/datetime";
 import { Candle } from "../../../shared/models/history/candle.model";
 
+export enum TimeframeValue {
+  M1 = '60',
+  M5 = '300',
+  M15 = '900',
+  H = '3600',
+  H4 = '14400',
+  Day = 'D',
+  Month = 'M'
+}
+
 export interface Timeframe {
   label: string,
-  value: string
+  value: TimeframeValue
 }
 
 export class TimeframesHelper {
 
-  private readonly candlesBatchSize = 300;
+  private static candlesBatchSize = 300;
 
   public static timeFrames : Timeframe[] = [
-    { label: '1m', value: '60' },
-    { label: '5m', value: '300' },
-    { label: '15m', value: '900' },
-    { label: 'H', value: '3600' },
-    { label: '4H', value: '14400' },
-    { label: 'D', value: 'D' },
-    { label: 'M', value: 'M' },
+    { label: '1m', value: TimeframeValue.M1 },
+    { label: '5m', value: TimeframeValue.M5 },
+    { label: '15m', value: TimeframeValue.M15 },
+    { label: 'H', value: TimeframeValue.H },
+    { label: '4H', value: TimeframeValue.H4 },
+    { label: 'D', value: TimeframeValue.Day },
+    { label: 'M', value: TimeframeValue.Month },
   ];
 
    // LightCharts library throws errors, when bars is duplicationg or too close to each other
-   aggregateBars(existing: Candle[], history: Candle[], options: LightChartSettings) {
+   static aggregateBars(existing: Candle[], history: Candle[], options: LightChartSettings) {
     const tf = options.timeFrame;
     const getDate = (p: any) => {
       const d = new Date(p * 1000);
       return d.getDate() + '.' + d.getMonth() + '.' + d.getFullYear();
     };
     switch (tf) {
-      case 'M':
+      case TimeframeValue.Month:
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
           (b1, b2) => getDate(b1.time) == getDate(b2.time));
-      case 'D':
+      case TimeframeValue.Day:
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
           (b1, b2) => getDate(b1.time) == getDate(b2.time));
-      case '3600':
+      case TimeframeValue.H4:
+        return findUniqueElements(
+          [...existing, ...history],
+          (b1, b2) => b1.time - b2.time,
+          (b1, b2) => b1.time - b2.time < 14400);
+      case TimeframeValue.H:
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
           (b1, b2) => b1.time - b2.time < 3600);
-      case '900':
+      case TimeframeValue.M15:
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
           (b1, b2) => b1.time - b2.time < 900);
-      case '300':
+      case TimeframeValue.M5:
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
           (b1, b2) => b1.time - b2.time < 300);
-      case '60':
+      case TimeframeValue.M1:
         return findUniqueElements(
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
@@ -66,65 +81,73 @@ export class TimeframesHelper {
     }
   }
 
-  getValueByTfLabel(tf: string) {
-    const timeframe = TimeframesHelper.timeFrames.find(t => t.label == tf);
+  static getTimeframeByValue(timeframeValue: string): Timeframe {
+    const timeframe = TimeframesHelper.timeFrames.find(t => t.value === timeframeValue);
     if (!timeframe) {
       throw new Error('Unknown timeframe');
     }
+
     return timeframe;
   }
 
-  getDefaultFrom(label: string) {
-    const tf = this.getValueByTfLabel(label);
-    switch(tf.label) {
-      case 'M':
+  static getDefaultFrom(timeframeValue: string) {
+    const tf = this.getTimeframeByValue(timeframeValue);
+    switch(tf?.value) {
+      case TimeframeValue.Month:
         return addDaysUnix(new Date(), -this.candlesBatchSize * 30);
-      case 'D':
+      case TimeframeValue.Day:
         return addDaysUnix(new Date(), -this.candlesBatchSize);
-      case 'H':
+      case TimeframeValue.H4:
+        return addHoursUnix(new Date(), -this.candlesBatchSize * 2);
+      case TimeframeValue.H:
         return addHoursUnix(new Date(), -this.candlesBatchSize);
-      case '15m':
+      case TimeframeValue.M15:
         return addHoursUnix(new Date(), -(this.candlesBatchSize / 4));
-      case '5m':
+      case TimeframeValue.M5:
         return addHoursUnix(new Date(), -(this.candlesBatchSize / 12));
-      case '1m':
+      case TimeframeValue.M1:
         return addHoursUnix(new Date(), -this.candlesBatchSize / 60);
       default:
         return 0;
     }
   }
 
-  getRequest(minTime: number, options: LightChartSettings) {
+  static getRequest(minTime: number, options: LightChartSettings) {
     if (options && minTime != Infinity) {
       let from = minTime;
-      if (options.timeFrame == 'D') {
-        from = addDaysUnix(new Date(minTime * 1000), -this.candlesBatchSize);
-      }
-      else if (options.timeFrame == 'M') {
+
+      if (options.timeFrame == TimeframeValue.Month) {
         from = addDaysUnix(new Date(minTime * 1000), -this.candlesBatchSize * 30);
       }
-      else if (options.timeFrame == '3600') {
+      else if (options.timeFrame == TimeframeValue.Day) {
+        from = addDaysUnix(new Date(minTime * 1000), -this.candlesBatchSize);
+      }
+      else if (options.timeFrame == TimeframeValue.H4) {
+        from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize * 2);
+      }
+      else if (options.timeFrame == TimeframeValue.H) {
         from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize);
       }
-      else if (options.timeFrame == '900') {
+      else if (options.timeFrame == TimeframeValue.M15) {
         from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 4);
       }
-      else if (options.timeFrame == '300') {
+      else if (options.timeFrame == TimeframeValue.M5) {
         from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 12);
       }
-      else if (options.timeFrame == '60') {
+      else if (options.timeFrame == TimeframeValue.M1) {
         from = addHoursUnix(new Date(minTime * 1000), -this.candlesBatchSize / 60);
       }
-      var request : HistoryRequest = {
+
+      return {
         from,
         to: minTime,
         tf: options.timeFrame,
         code: options.symbol,
         exchange: options.exchange,
         instrumentGroup: options.instrumentGroup
-      };
-      return request;
+      } as HistoryRequest;
     }
+
     return null;
   }
 }

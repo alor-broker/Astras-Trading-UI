@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
-import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, take, takeUntil } from 'rxjs';
 import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
 import { LightChartService } from '../../services/light-chart.service';
 import { Candle } from '../../../../shared/models/history/candle.model';
@@ -109,17 +109,13 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
       if (options && !isEqualLightChartSettings(options, this.prevOptions)) {
         this.prevOptions = options;
         this.setActiveTimeFrame(options.timeFrame);
-        if (this.chart) {
-          this.chart.prepareSeries(options.minstep);
-        }
+        this.chart?.prepareSeries(options.minstep);
       }
     });
 
     this.chart.logicalRange$.pipe(
       filter(lr => !this.isUpdating && !this.isEndOfHistory && !!lr),
-      switchMap(() => {
-        return this.service.getSettings(this.guid);
-      }),
+      switchMap(() => this.service.getSettings(this.guid)),
       map(options => {
         if (options && this.chart) {
           return this.chart.getRequest(options);
