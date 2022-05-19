@@ -117,7 +117,6 @@ export class WidgetFactoryService {
       linkToActive: true,
       guid: newWidget.gridItem.label,
       timeFrame: TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value,
-      from: TimeframesHelper.getDefaultFrom(TimeframeValue.Day),
       title: `График ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
       width: 300,
       height: 300

@@ -1,10 +1,11 @@
 import * as LightweightCharts from 'lightweight-charts';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { distinct, map } from 'rxjs/operators';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { TimeframesHelper } from './timeframes-helper';
 import { buyColor, sellColor, buyColorBackground, sellColorBackground, componentBackgound } from '../../../shared/models/settings/styles-constants';
+import { LogicalRange } from 'lightweight-charts';
 
 type ShortPriceFormat = { minMove: number; precision: number; };
 
@@ -13,7 +14,9 @@ export class LightChart {
   series!: LightweightCharts.ISeriesApi<'Candlestick'>;
   volumeSeries!: LightweightCharts.ISeriesApi<'Histogram'>;
 
-  logicalRange$!: Observable<unknown>;
+  historyItemsCountToLoad$!: Observable<number>;
+
+  private readonly logicalRange$ = new Subject<LogicalRange | null>();
 
   private bars: Candle[] = [];
   private getMinTime = () => Math.min(...this.bars.map(b => b.time));
@@ -21,6 +24,9 @@ export class LightChart {
     width: number,
     height: number
   };
+
+  private historyPrevTime: number | null = null;
+
   constructor(width: number, height: number) {
     this.sizes = {
       width: width,
@@ -86,18 +92,19 @@ export class LightChart {
     volumeSeries.setData([]);
     series.setData([]);
 
-    this.logicalRange$ = new Observable(sub => {
-      chart.timeScale().subscribeVisibleLogicalRangeChange(lrc => sub.next(lrc));
-    }).pipe(
+    chart.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => this.logicalRange$.next(logicalRange));
+
+    this.historyItemsCountToLoad$ = this.logicalRange$.pipe(
         distinct(),
         map(logicalRange => {
           if (logicalRange !== null) {
             const barsInfo = series.barsInLogicalRange(logicalRange as any);
-            if (barsInfo !== null && barsInfo.barsBefore < 10) {
-              return logicalRange;
+            if (barsInfo !== null && barsInfo.barsBefore < 0) {
+              return Math.ceil(Math.abs(barsInfo.barsBefore));
             }
           }
-          return null;
+
+          return 0;
         })
       );
 
@@ -122,7 +129,7 @@ export class LightChart {
     }
   }
 
-  setData(candles: Candle[], options: LightChartSettings) {
+  setData(candles: Candle[], options: LightChartSettings, historyPrevTime: number | null) {
   const newBars = TimeframesHelper.aggregateBars(this.bars, candles, options);
   this.series.setData(newBars as any);
   const volumes = newBars.map(candle => ({
@@ -135,6 +142,7 @@ export class LightChart {
   }));
   this.volumeSeries.setData(volumes as any);
   this.bars = newBars;
+  this.historyPrevTime = historyPrevTime;
 }
 
 
@@ -143,6 +151,7 @@ export class LightChart {
   }
 
   prepareSeries(minstep: number) {
+    this.historyPrevTime = null;
     this.bars = [];
     this.series.setData([]);
     this.series.applyOptions({
@@ -159,6 +168,10 @@ export class LightChart {
     });
   }
 
+  checkMissingVisibleData(){
+    this.logicalRange$.next(this.chart.timeScale().getVisibleLogicalRange());
+  }
+
   resize(width: number, height: number) {
     this.sizes = {
       width: width,
@@ -167,8 +180,8 @@ export class LightChart {
     this.chart.resize(this.sizes.width, this.sizes.height);
   }
 
-  getRequest(options: LightChartSettings) {
-    return TimeframesHelper.getRequest(this.getMinTime(), options);
+  getRequest(options: LightChartSettings, itemsCountToLoad: number) {
+    return TimeframesHelper.getRequest(this.getMinTime(), options, itemsCountToLoad, this.historyPrevTime);
   }
 
   /**

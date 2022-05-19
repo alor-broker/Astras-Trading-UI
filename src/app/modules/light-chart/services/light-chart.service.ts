@@ -37,7 +37,7 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
   changeTimeframe(timeframe: string) {
     const current = this.getSettingsValue();
     if (current) {
-      this.setSettings({ ...current, timeFrame: timeframe, from: TimeframesHelper.getDefaultFrom(timeframe)});
+      this.setSettings({ ...current, timeFrame: timeframe});
     }
   }
 
@@ -57,7 +57,7 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
     this.bars$ = this.getSettings(guid).pipe(
       filter((s): s is LightChartSettingsExtended  => !!s),
       switchMap(s =>{
-        return this.getBarsReq(s.symbol, s.exchange, s.timeFrame, s.from, s.instrumentGroup);
+        return this.getBarsReq(s.symbol, s.exchange, s.timeFrame, s.instrumentGroup);
       })
     );
 
@@ -72,7 +72,7 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
     );
   }
 
-  private getBarsReq(symbol: string, exchange: string, tf: string, from: number, instrumentGroup?: string) {
+  private getBarsReq(symbol: string, exchange: string, tf: string, instrumentGroup?: string) {
     const request: BarsRequest = {
       opcode: 'BarsGetAndSubscribe',
       code: symbol,
@@ -81,7 +81,7 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
       guid: GuidGenerator.newGuid(),
       instrumentGroup,
       tf: tf, //60,
-      from: from, //1640172544
+      from: TimeframesHelper.getFromTimeForTimeframe(tf)
     };
 
     const bars$ = this.getEntity<Candle>(request);

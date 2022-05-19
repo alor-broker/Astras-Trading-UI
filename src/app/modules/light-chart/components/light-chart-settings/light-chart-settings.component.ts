@@ -45,8 +45,7 @@ export class LightChartSettingsComponent implements OnInit {
     this.service.setSettings({
       ...this.prevSettings,
       ...this.form.value,
-      linkToActive: false,
-      from: TimeframesHelper.getDefaultFrom(this.form.value.timeFrame)
+      linkToActive: false
     });
     this.settingsChange.emit();
   }
