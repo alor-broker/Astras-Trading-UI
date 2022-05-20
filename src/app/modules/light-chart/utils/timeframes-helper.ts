@@ -20,7 +20,7 @@ export interface Timeframe {
 }
 
 export class TimeframesHelper {
-  public static timeFrames : Timeframe[] = [
+  public static timeFrames: Timeframe[] = [
     { label: '1m', value: TimeframeValue.M1 },
     { label: '5m', value: TimeframeValue.M5 },
     { label: '15m', value: TimeframeValue.M15 },
@@ -47,8 +47,8 @@ export class TimeframesHelper {
     [TimeframeValue.M1, 480],
   ]);
 
-   // LightCharts library throws errors, when bars is duplicationg or too close to each other
-   static aggregateBars(existing: Candle[], history: Candle[], options: LightChartSettings) {
+  // LightCharts library throws errors, when bars is duplicationg or too close to each other
+  static aggregateBars(existing: Candle[], history: Candle[], options: LightChartSettings) {
     const tf = options.timeFrame;
     const getDate = (p: any) => {
       const d = new Date(p * 1000);
@@ -104,73 +104,70 @@ export class TimeframesHelper {
     return timeframe;
   }
 
-  static getFromTimeForTimeframe(timeframeValue: string) {
+  static getFromTimeForTimeframe(timeframeValue: string, from?: Date) {
     const tf = this.getTimeframeByValue(timeframeValue);
 
     const batchSize = this.timeframeBatchSizes.get(tf?.value) ?? 5;
+    const startPoint = from ?? new Date();
 
-    switch(tf?.value) {
+    switch (tf?.value) {
       case TimeframeValue.Month:
-        return addDaysUnix(new Date(), -batchSize * 30);
+        return addDaysUnix(startPoint, -batchSize * 30);
       case TimeframeValue.Day:
-        return addDaysUnix(new Date(), -batchSize);
+        return addDaysUnix(startPoint, -batchSize);
       case TimeframeValue.H4:
-        return addHoursUnix(new Date(), -batchSize * 4);
+        return addHoursUnix(startPoint, -batchSize * 4);
       case TimeframeValue.H:
-        return addHoursUnix(new Date(), -batchSize);
+        return addHoursUnix(startPoint, -batchSize);
       case TimeframeValue.M15:
-        return addHoursUnix(new Date(), -batchSize / 4);
+        return addHoursUnix(startPoint, -batchSize / 4);
       case TimeframeValue.M5:
-        return addHoursUnix(new Date(), -batchSize / 12);
+        return addHoursUnix(startPoint, -batchSize / 12);
       case TimeframeValue.M1:
-        return addHoursUnix(new Date(), -batchSize / 60);
+        return addHoursUnix(startPoint, -batchSize / 60);
       default:
-        return new Date().getTime() / 1000;
+        return startPoint.getTime() / 1000;
     }
   }
 
   static getRequest(loadedMinTime: number, options: LightChartSettings, itemsCountToLoad: number, historyPrevTime: number | null = null) {
-    if (options && loadedMinTime != Infinity) {
-      let from = loadedMinTime;
+    let from = loadedMinTime;
 
-      const batchSize = this.timeframeBatchSizes.get(options.timeFrame as TimeframeValue) ?? 5;
+    const batchSize = this.timeframeBatchSizes.get(options.timeFrame as TimeframeValue) ?? 5;
 
-      if (options.timeFrame == TimeframeValue.Month) {
-        from = addDaysUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)) * 30);
-      }
-      else if (options.timeFrame == TimeframeValue.Day) {
-        from = addDaysUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)));
-      }
-      else if (options.timeFrame == TimeframeValue.H4) {
-        from = addHoursUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)) * 4);
-      }
-      else if (options.timeFrame == TimeframeValue.H) {
-        from = addHoursUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)));
-      }
-      else if (options.timeFrame == TimeframeValue.M15) {
-        from = addHoursUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)) / 4);
-      }
-      else if (options.timeFrame == TimeframeValue.M5) {
-        from = addHoursUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)) / 12);
-      }
-      else if (options.timeFrame == TimeframeValue.M1) {
-        from = addHoursUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)) / 60);
-      }
-
-      if(historyPrevTime != null && historyPrevTime < from) {
-        from = historyPrevTime;
-      }
-
-      return {
-        from,
-        to: loadedMinTime,
-        tf: options.timeFrame,
-        code: options.symbol,
-        exchange: options.exchange,
-        instrumentGroup: options.instrumentGroup
-      } as HistoryRequest;
+    if (options.timeFrame == TimeframeValue.Month) {
+      from = addDaysUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)) * 30);
+    }
+    else if (options.timeFrame == TimeframeValue.Day) {
+      from = addDaysUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)));
+    }
+    else if (options.timeFrame == TimeframeValue.H4) {
+      from = addHoursUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)) * 4);
+    }
+    else if (options.timeFrame == TimeframeValue.H) {
+      from = addHoursUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)));
+    }
+    else if (options.timeFrame == TimeframeValue.M15) {
+      from = addHoursUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)) / 4);
+    }
+    else if (options.timeFrame == TimeframeValue.M5) {
+      from = addHoursUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)) / 12);
+    }
+    else if (options.timeFrame == TimeframeValue.M1) {
+      from = addHoursUnix(new Date(loadedMinTime * 1000), -(Math.max(itemsCountToLoad, batchSize)) / 60);
     }
 
-    return null;
+    if (historyPrevTime != null && historyPrevTime < from) {
+      from = historyPrevTime;
+    }
+
+    return {
+      from,
+      to: loadedMinTime,
+      tf: options.timeFrame,
+      code: options.symbol,
+      exchange: options.exchange,
+      instrumentGroup: options.instrumentGroup
+    } as HistoryRequest;
   }
 }

@@ -154,11 +154,12 @@ export class LightChart {
     this.historyPrevTime = null;
     this.bars = [];
     this.series.setData([]);
+    this.volumeSeries.setData([]);
+
     this.series.applyOptions({
       priceFormat: this.getPriceFormat(minstep)
     });
-    this.volumeSeries.setData([]);
-    this.chart.timeScale().fitContent();
+
     this.chart.priceScale().applyOptions({
       autoScale: true,
       scaleMargins: {
@@ -166,6 +167,8 @@ export class LightChart {
         bottom: 0.2,
       }
     });
+
+    this.chart.timeScale().fitContent();
   }
 
   checkMissingVisibleData(){
@@ -181,7 +184,12 @@ export class LightChart {
   }
 
   getRequest(options: LightChartSettings, itemsCountToLoad: number) {
-    return TimeframesHelper.getRequest(this.getMinTime(), options, itemsCountToLoad, this.historyPrevTime);
+    const minTime = this.getMinTime();
+    if(!options || minTime == Infinity) {
+      return null;
+    }
+
+    return TimeframesHelper.getRequest(minTime, options, itemsCountToLoad, this.historyPrevTime);
   }
 
   /**

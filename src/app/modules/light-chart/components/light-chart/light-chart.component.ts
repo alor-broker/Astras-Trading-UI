@@ -78,6 +78,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
       ).subscribe((candle) => {
         if (candle && this.chart) {
           this.chart.update(candle);
+          this.chart.checkMissingVisibleData();
         }
       });
 
@@ -110,6 +111,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.prevOptions = options;
         this.setActiveTimeFrame(options.timeFrame);
         this.isEndOfHistory = false;
+
         this.chart?.prepareSeries(options.minstep);
       }
     });
