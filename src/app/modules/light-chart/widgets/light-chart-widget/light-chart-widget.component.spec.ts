@@ -14,7 +14,6 @@ describe('LightChartWidgetComponent', () => {
   const spyDashboard = jasmine.createSpyObj('DashboardService', ['updateWidget']);
   const settings: LightChartSettings = {
     timeFrame: 'D',
-    from: 0,
     symbol: 'SBER',
     exchange: 'MOEX',
     guid: '123',

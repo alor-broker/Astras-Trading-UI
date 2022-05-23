@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
-import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, takeUntil} from 'rxjs';
 import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
 import { LightChartService } from '../../services/light-chart.service';
 import { Candle } from '../../../../shared/models/history/candle.model';
@@ -78,6 +78,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
       ).subscribe((candle) => {
         if (candle && this.chart) {
           this.chart.update(candle);
+          this.chart.checkMissingVisibleData();
         }
       });
 
@@ -109,20 +110,25 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
       if (options && !isEqualLightChartSettings(options, this.prevOptions)) {
         this.prevOptions = options;
         this.setActiveTimeFrame(options.timeFrame);
-        if (this.chart) {
-          this.chart.prepareSeries(options.minstep);
-        }
+        this.isEndOfHistory = false;
+
+        this.chart?.prepareSeries(options.minstep);
       }
     });
 
-    this.chart.logicalRange$.pipe(
-      filter(lr => !this.isUpdating && !this.isEndOfHistory && !!lr),
-      switchMap(() => {
-        return this.service.getSettings(this.guid);
-      }),
+    this.chart.historyItemsCountToLoad$.pipe(
+      filter(count => !this.isUpdating && !this.isEndOfHistory && count > 0),
+      switchMap(count => this.service.getSettings(this.guid)
+        .pipe(
+          map(settings => ({
+            settings,
+            itemsCountToLoad: count
+          }))
+        )
+      ),
       map(options => {
         if (options && this.chart) {
-          return this.chart.getRequest(options);
+          return this.chart.getRequest(options.settings, options.itemsCountToLoad);
         }
         else return null;
       }),
@@ -135,10 +141,16 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     ).subscribe(res => {
       this.isEndOfHistory = res.prev == null;
       const options = this.service.getSettingsValue();
-      if (options && this.chart) {
-        this.chart.setData(res.history, options);
+      if (options) {
+        this.chart?.setData(res.history, options, res.prev);
+        this.isUpdating = false;
+
+        // sometimes the downloaded data is not enough to fill the entire time scale space.
+        // This is visible when the widget is stretched to full screen.
+        // All changes were ignored by the filter !this.isUpdating.
+        // Therefore after rendering we need to check again
+        this.chart?.checkMissingVisibleData();
       }
-      this.isUpdating = false;
     });
   }
 
