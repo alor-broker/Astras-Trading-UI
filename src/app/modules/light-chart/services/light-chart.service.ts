@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, Subscription } from 'rxjs';
+import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -14,18 +14,22 @@ import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.ser
 import { Store } from '@ngrx/store';
 import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
 import { TimeframesHelper } from '../utils/timeframes-helper';
+import { Instrument } from '../../../shared/models/instruments/instrument.model';
+import { InstrumentsService } from '../../instruments/services/instruments.service';
 
-type LightChartSettingsExtended = LightChartSettings & { minstep: number };
+type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
 @Injectable()
 export class LightChartService extends BaseWebsocketService<LightChartSettings> {
   private settingsSub?: Subscription;
   private bars$: Observable<Candle> = new Observable();
 
-  constructor(ws: WebsocketService,
-              settingsService: DashboardService,
-              private history: HistoryService,
-              private store: Store) {
+  constructor(
+    ws: WebsocketService,
+    settingsService: DashboardService,
+    private readonly history: HistoryService,
+    private readonly instrumentsService: InstrumentsService,
+    private store: Store) {
     super(ws, settingsService);
   }
 
@@ -44,11 +48,7 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
     this.settingsSub?.unsubscribe();
     this.settingsSub = combineLatest([this.store.select(getSelectedInstrument), this.getSettings(guid)]).pipe(
       map(([i, current]) => {
-        if (current && current.linkToActive &&
-          !(current.symbol == i.symbol &&
-            current.exchange == i.exchange &&
-            current.instrumentGroup == i.instrumentGroup)
-        ) {
+        if (current && current.linkToActive && !this.isSettingsMatchInstrument(current, i)) {
           this.setSettings({ ...current, ...i });
         }
       })
@@ -76,11 +76,49 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
   }
 
   getSettings(guid: string): Observable<LightChartSettingsExtended> {
-    return super.getSettings(guid).pipe(
-      switchMap(s => this.store.select(getSelectedInstrument).pipe(
-        map(i => ({ ...s, ...i }))
-      ))
+    return combineLatest([
+      super.getSettings(guid),
+      this.store.select(getSelectedInstrument)
+    ]).pipe(
+      filter(([settings, instrument]) => !!settings && !!instrument),
+      map(([settings, instrument]) => {
+        if (settings.linkToActive && this.isSettingsMatchInstrument(settings, instrument)) {
+          return {
+            ...settings,
+            ...instrument
+          };
+        }
+
+        return settings as LightChartSettingsExtended;
+      }),
+      switchMap(settings => {
+        if (settings.minstep == null) {
+          return this.instrumentsService.getInstrument({
+            symbol: settings.symbol,
+            exchange: settings.exchange,
+            instrumentGroup: settings.instrumentGroup
+          }).pipe(
+            filter(x => !!x),
+            map(x => ({
+              ...settings,
+              ...x
+            }))
+          );
+        }
+
+        return of(settings);
+      })
     );
+  }
+
+  private isSettingsMatchInstrument(settings: LightChartSettings, instrument: Instrument) {
+    if (!settings || !instrument) {
+      return false;
+    }
+
+    return settings.symbol == instrument.symbol &&
+      settings.exchange == instrument.exchange &&
+      settings.instrumentGroup == instrument.instrumentGroup;
   }
 
   private getLastHistoryPoint(settings: LightChartSettingsExtended): Observable<number> {
