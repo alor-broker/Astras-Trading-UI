@@ -22,9 +22,7 @@ import { select, Store } from '@ngrx/store';
 import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
 import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
   private orderbook$: Observable<OrderBook> = new Observable();
   private instrumentSub?: Subscription;
@@ -52,6 +50,7 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
   }
 
   getOrderbook(guid: string) {
+    this.instrumentSub?.unsubscribe();
     this.instrumentSub = combineLatest([
       this.store.pipe(
         select(getSelectedInstrument),

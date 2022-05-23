@@ -1,7 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Observable } from 'rxjs';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
-import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
 import { LightChartService } from '../../services/light-chart.service';
 
 @Component({
@@ -25,8 +23,6 @@ export class LightChartWidgetComponent {
   heightAdjustment: number = 0;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-
-  settings$!: Observable<LightChartSettings>;
 
   constructor(private service: LightChartService) { }
 

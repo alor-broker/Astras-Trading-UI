@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, combineLatest } from 'rxjs';
+import { Observable, combineLatest, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -16,10 +16,9 @@ import { getSelectedInstrument } from '../../../store/instruments/instruments.se
 
 type LightChartSettingsExtended = LightChartSettings & { minstep: number };
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class LightChartService extends BaseWebsocketService<LightChartSettings> {
+  private settingsSub?: Subscription;
   private bars$: Observable<Candle> = new Observable();
   private guid?: string;
 
@@ -42,7 +41,8 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
   }
 
   getBars(guid: string) {
-    combineLatest([this.store.select(getSelectedInstrument), this.getSettings(guid)]).pipe(
+    this.settingsSub?.unsubscribe();
+    this.settingsSub = combineLatest([this.store.select(getSelectedInstrument), this.getSettings(guid)]).pipe(
       map(([i, current]) => {
         if (current && current.linkToActive &&
             !(current.symbol == i.symbol &&
@@ -53,6 +53,7 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
         }
       })
     ).subscribe();
+
     this.bars$ = this.getSettings(guid).pipe(
       filter((s): s is LightChartSettingsExtended  => !!s),
       switchMap(s =>{
