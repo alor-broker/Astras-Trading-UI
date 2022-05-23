@@ -6,6 +6,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 
 import { LoginFormComponent } from './login-form.component';
 import { StoreModule } from "@ngrx/store";
+import { EffectsModule } from '@ngrx/effects';
 
 describe('LoginFormComponent', () => {
   let component: LoginFormComponent;
@@ -17,7 +18,8 @@ describe('LoginFormComponent', () => {
         RouterTestingModule,
         HttpClientTestingModule,
         SharedModule,
-        StoreModule.forRoot({})
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot()
       ],
       declarations: [LoginFormComponent],
       providers: [AuthService]

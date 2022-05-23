@@ -166,7 +166,6 @@ export function isEqualLightChartSettings(
       settings1.linkToActive == settings2.linkToActive &&
       settings1.exchange == settings2.exchange &&
       settings1.timeFrame == settings2.timeFrame &&
-      settings1.from == settings2.from &&
       settings1.guid == settings2.guid &&
       settings1.width == settings2.width &&
       settings1.height == settings2.height

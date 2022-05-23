@@ -12,7 +12,6 @@ describe('LightChartComponent', () => {
   spy.getBars.and.returnValue(of([]));
   const settings: LightChartSettings = {
     timeFrame: 'D',
-    from: 0,
     symbol: 'SBER',
     exchange: 'MOEX',
     guid: '123',
