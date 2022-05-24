@@ -7,6 +7,7 @@ import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 
 import { LightChartService } from './light-chart.service';
+import { InstrumentsService } from '../../instruments/services/instruments.service';
 
 describe('LightChartService', () => {
   let service: LightChartService;
@@ -16,6 +17,7 @@ describe('LightChartService', () => {
   const spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
   const spyHistory = jasmine.createSpyObj('HistoryService', ['getHistory']);
   const dashboardSpy = jasmine.createSpyObj('DashboardService', ['getSettings']);
+  const instrumentsSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -26,6 +28,7 @@ describe('LightChartService', () => {
         { provide: WebsocketService, useValue: spy },
         { provide: HistoryService, useValue: spyHistory },
         { provide: DashboardService, useValue: dashboardSpy },
+        { provide: InstrumentsService, useValue: instrumentsSpy },
         provideMockStore(),
         LightChartService
       ]

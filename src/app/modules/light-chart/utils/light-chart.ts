@@ -150,14 +150,14 @@ export class LightChart {
     this.chart.remove();
   }
 
-  prepareSeries(minstep: number) {
+  prepareSeries(minstep?: number) {
     this.historyPrevTime = null;
     this.bars = [];
     this.series.setData([]);
     this.volumeSeries.setData([]);
 
     this.series.applyOptions({
-      priceFormat: this.getPriceFormat(minstep)
+      priceFormat: this.getPriceFormat(minstep ?? 1)
     });
 
     this.chart.priceScale().applyOptions({
