@@ -16,6 +16,7 @@ describe('LimitEditComponent', () => {
   spyModal.editParams$ = of(null);
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ LimitEditComponent ],
@@ -33,6 +34,8 @@ describe('LimitEditComponent', () => {
     component.form = new FormGroup({ quantity: new FormControl(0), price: new FormControl(0)} as LimitFormControls) as LimitFormGroup;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InstrumentsService } from '../../services/instruments.service';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
-import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { InstrumentSelectComponent } from './instrument-select.component';
+import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 
 describe('InstrumentSelectComponent', () => {
   let component: InstrumentSelectComponent;
@@ -11,15 +11,16 @@ describe('InstrumentSelectComponent', () => {
   const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['add', 'unsubscribe']);
   spyWatcher.add.and.returnValue();
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InstrumentSelectComponent ],
+      imports: [...sharedModuleImportForTests],
+      declarations: [InstrumentSelectComponent],
       providers: [
-        provideMockStore(),
         { provide: InstrumentsService, useValue: spyInstrs },
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
+
     TestBed.overrideComponent(InstrumentSelectComponent, {
       set: {
         providers: [
@@ -34,6 +35,8 @@ describe('InstrumentSelectComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

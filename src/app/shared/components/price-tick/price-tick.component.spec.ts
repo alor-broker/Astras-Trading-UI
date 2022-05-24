@@ -6,11 +6,11 @@ describe('PriceTickComponent', () => {
   let component: PriceTickComponent;
   let fixture: ComponentFixture<PriceTickComponent>;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PriceTickComponent ]
-    })
-    .compileComponents();
+      declarations: [PriceTickComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -18,6 +18,8 @@ describe('PriceTickComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -16,6 +16,7 @@ describe('WatchInstrumentsService', () => {
 
   const toInstrumentsArray = (s: string) => !!s ? <Instrument[]> JSON.parse(s) : [];
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [

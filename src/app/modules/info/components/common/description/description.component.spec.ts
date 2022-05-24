@@ -10,14 +10,14 @@ describe('DescriptionComponent', () => {
   const infoSpy = jasmine.createSpyObj('InfoService', ['getDescription', 'getExchangeInfo']);
   infoSpy.getDescription.and.returnValue(null);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DescriptionComponent ],
+      declarations: [DescriptionComponent],
       providers: [
         { provide: InfoService, useValue: infoSpy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -25,6 +25,8 @@ describe('DescriptionComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -9,6 +9,7 @@ describe('AboutIssueComponent', () => {
   const infoSpy = jasmine.createSpyObj('InfoService', ['getIssue', 'getExchangeInfo']);
   infoSpy.getIssue.and.returnValue(null);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ AboutIssueComponent ],
@@ -24,6 +25,8 @@ describe('AboutIssueComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

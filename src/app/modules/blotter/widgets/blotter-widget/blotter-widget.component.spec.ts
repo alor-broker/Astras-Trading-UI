@@ -1,17 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
 import { CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
-import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { BlotterWidgetComponent } from './blotter-widget.component';
-import { StoreModule } from "@ngrx/store";
-import { EffectsModule } from '@ngrx/effects';
 
-const settings : BlotterSettings = {
+const settings: BlotterSettings = {
   exchange: 'MOEX',
   portfolio: 'D39004',
   guid: '1230',
@@ -28,19 +23,12 @@ describe('BlotterWidgetComponent', () => {
   let component: BlotterWidgetComponent;
   let fixture: ComponentFixture<BlotterWidgetComponent>;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BlotterWidgetComponent ],
-      imports: [
-        SharedModule,
-        StoreModule.forRoot({}),
-        EffectsModule.forRoot()
-      ],
-      providers: [
-        { provide: BlotterService, useClass: MockServiceBlotter },
-      ],
-    })
-    .compileComponents();
+      declarations: [BlotterWidgetComponent],
+      imports: []
+    }).compileComponents();
 
     TestBed.overrideComponent(BlotterWidgetComponent, {
       set: {
@@ -56,6 +44,8 @@ describe('BlotterWidgetComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

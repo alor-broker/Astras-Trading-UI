@@ -11,11 +11,13 @@ describe('OrderCancellerService', () => {
 
   const notificationSpy = jasmine.createSpyObj('NzNotificationService', ['success', 'error', 'blank']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientTestingModule ],
+      imports: [HttpClientTestingModule],
       providers: [
-        { provide: NzNotificationService, useValue: notificationSpy }
+        { provide: NzNotificationService, useValue: notificationSpy },
+        OrderCancellerService
       ]
     });
 

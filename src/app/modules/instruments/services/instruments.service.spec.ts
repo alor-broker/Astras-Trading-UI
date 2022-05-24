@@ -13,6 +13,7 @@ describe('InstrumentsService', () => {
   const dashboardSpy = jasmine.createSpyObj('DashboardService', ['']);
   const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [

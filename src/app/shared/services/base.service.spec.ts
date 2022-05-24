@@ -1,21 +1,25 @@
-/* tslint:disable:no-unused-variable */
-
-import { TestBed, async, inject } from '@angular/core/testing';
-import { provideMockStore } from '@ngrx/store/testing';
+import { TestBed } from '@angular/core/testing';
 import { AnySettings } from '../models/settings/any-settings.model';
 import { BaseService } from './base.service';
+import { DashboardService } from './dashboard.service';
 
 describe('BaseService', () => {
+  let service: BaseService<AnySettings>;
+  let settingsServiceSpy = jasmine.createSpyObj('DashboardService', ['getSettings', 'updateSettings']);
+
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         BaseService,
-        provideMockStore()
+        { provide: DashboardService, useValue: settingsServiceSpy }
       ]
     });
+
+    service = TestBed.inject(BaseService);
   });
 
-  it('should ...', inject([BaseService], (service: BaseService<AnySettings>) => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
-  }));
+  });
 });

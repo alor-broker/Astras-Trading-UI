@@ -12,6 +12,7 @@ describe('CommandsService', () => {
 
   const notificationSpy = jasmine.createSpyObj('NzNotificationService', ['error', 'success']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -19,7 +20,7 @@ describe('CommandsService', () => {
       ],
       providers: [
         CommandsService,
-        { provide: NzNotificationService, useValue: notificationSpy}
+        { provide: NzNotificationService, useValue: notificationSpy }
       ]
     });
     service = TestBed.inject(CommandsService);

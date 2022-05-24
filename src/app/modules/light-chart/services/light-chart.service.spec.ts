@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideMockStore } from '@ngrx/store/testing';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 
 import { LightChartService } from './light-chart.service';
+import { sharedModuleImportForTests } from '../../../shared/utils/testing';
 
 describe('LightChartService', () => {
   let service: LightChartService;
@@ -17,16 +17,17 @@ describe('LightChartService', () => {
   const spyHistory = jasmine.createSpyObj('HistoryService', ['getHistory']);
   const dashboardSpy = jasmine.createSpyObj('DashboardService', ['getSettings']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
+        ...sharedModuleImportForTests
       ],
       providers: [
         { provide: WebsocketService, useValue: spy },
         { provide: HistoryService, useValue: spyHistory },
         { provide: DashboardService, useValue: dashboardSpy },
-        provideMockStore(),
         LightChartService
       ]
     });

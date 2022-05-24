@@ -1,31 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { TradesComponent } from './trades.component';
-import { StoreModule } from "@ngrx/store";
-import { EffectsModule } from '@ngrx/effects';
+import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 
 describe('TradesComponent', () => {
   let component: TradesComponent;
   let fixture: ComponentFixture<TradesComponent>;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        SharedModule,
-        StoreModule.forRoot({}),
-        EffectsModule.forRoot()
+        ...sharedModuleImportForTests
       ],
       providers: [
         { provide: BlotterService, useClass: MockServiceBlotter }
       ],
-      declarations: [ TradesComponent ]
-    })
-    .compileComponents();
+      declarations: [TradesComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -33,6 +27,8 @@ describe('TradesComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

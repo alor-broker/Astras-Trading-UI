@@ -1,7 +1,4 @@
-/* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OrderbookSettingsComponent } from './orderbook-settings.component';
 import { of } from 'rxjs';
@@ -16,14 +13,14 @@ describe('OrderbookSettingsComponent', () => {
     exchange: 'MOEX'
   }));
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach((async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OrderbookSettingsComponent ],
+      declarations: [OrderbookSettingsComponent],
       providers: [
         { provide: OrderbookService, useValue: spy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -31,6 +28,8 @@ describe('OrderbookSettingsComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

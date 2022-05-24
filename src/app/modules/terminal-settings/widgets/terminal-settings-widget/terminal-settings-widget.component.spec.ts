@@ -6,16 +6,16 @@ import { TerminalSettingsWidgetComponent } from './terminal-settings-widget.comp
 describe('TerminalSettingsWidgetComponent', () => {
   let component: TerminalSettingsWidgetComponent;
   let fixture: ComponentFixture<TerminalSettingsWidgetComponent>;
-  let modalSpy = jasmine.createSpyObj('ModalService' , ['openHelpModal']);
+  let modalSpy = jasmine.createSpyObj('ModalService', ['openHelpModal']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TerminalSettingsWidgetComponent ],
+      declarations: [TerminalSettingsWidgetComponent],
       providers: [
         { provide: ModalService, useValue: modalSpy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -23,6 +23,8 @@ describe('TerminalSettingsWidgetComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

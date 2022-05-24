@@ -19,16 +19,16 @@ describe('MarketCommandComponent', () => {
   const quotesSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
   quotesSpy.getQuotes.and.returnValue(of(null));
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MarketCommandComponent ],
+      declarations: [MarketCommandComponent],
       providers: [
         { provide: ModalService, useValue: spyModal },
         { provide: CommandsService, useValue: spyCommands },
         { provide: QuotesService, useValue: quotesSpy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -37,6 +37,8 @@ describe('MarketCommandComponent', () => {
     component.form = new FormGroup({ quantity: new FormControl(0) } as MarketFormControls) as MarketFormGroup;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

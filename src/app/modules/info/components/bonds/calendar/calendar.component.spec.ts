@@ -9,6 +9,7 @@ describe('CalendarComponent', () => {
   const infoSpy = jasmine.createSpyObj('InfoService', ['getCalendar', 'getExchangeInfo']);
   infoSpy.getCalendar.and.returnValue(null);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ CalendarComponent ],
@@ -24,6 +25,8 @@ describe('CalendarComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

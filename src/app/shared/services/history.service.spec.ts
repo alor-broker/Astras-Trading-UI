@@ -6,6 +6,7 @@ import { HistoryService } from './history.service';
 describe('HistoryService', () => {
   let service: HistoryService;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],

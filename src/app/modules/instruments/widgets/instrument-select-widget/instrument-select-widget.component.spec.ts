@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { InstrumentsService } from '../../services/instruments.service';
 
@@ -14,15 +13,15 @@ describe('InstrumentSelectWidgetComponent', () => {
   spyInstrs.setSettings.and.returnValue();
   const spyDash = jasmine.createSpyObj('DashboardService', ['updateWidget']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InstrumentSelectWidgetComponent ],
+      declarations: [InstrumentSelectWidgetComponent],
       providers: [
         { provide: InstrumentsService, useValue: spyInstrs },
         { provide: DashboardService, useValue: spyDash },
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -30,6 +29,8 @@ describe('InstrumentSelectWidgetComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

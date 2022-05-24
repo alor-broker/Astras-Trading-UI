@@ -1,7 +1,5 @@
 /* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HelpComponent } from './help.component';
 import { HelpService } from '../../services/help.service';
@@ -14,21 +12,23 @@ describe('HelpComponent', () => {
   const helpSpy = jasmine.createSpyObj('HelpService', ['getHelp']);
   helpSpy.getHelp.and.returnValue(of(null));
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ HelpComponent ],
+  beforeAll(() => TestBed.resetTestingModule());
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [HelpComponent],
       providers: [
-        { provide: HelpService, useValue: helpSpy}
+        { provide: HelpService, useValue: helpSpy }
       ]
-    })
-    .compileComponents();
-  }));
+    }).compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HelpComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

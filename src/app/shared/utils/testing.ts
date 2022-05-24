@@ -1,5 +1,9 @@
 import { defer } from 'rxjs';
 import { Instrument } from '../models/instruments/instrument.model';
+import { ModuleWithProviders, Type } from '@angular/core';
+import { SharedModule } from '../shared.module';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 
 /** Create async observable that emits-once and completes
  *  after a JS engine turn */
@@ -53,3 +57,10 @@ export class TestData {
     ];
   }
 }
+
+// SharedModule requires store module registered for root
+export const sharedModuleImportForTests: Array<Type<any> | ModuleWithProviders<{}> | any[]> = [
+  StoreModule.forRoot({}),
+  EffectsModule.forRoot(),
+  SharedModule
+];

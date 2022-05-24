@@ -11,6 +11,7 @@ describe('DashboardWidgetComponent', () => {
   let fixture: ComponentFixture<DashboardWidgetComponent>;
   const modalServiceSpy = jasmine.createSpyObj('ModalService', ['openBetaReminderModal']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     const spyAuth = jasmine.createSpyObj('AuthService', ['refresh']);
     const spyOnboarding = jasmine.createSpyObj('OnboardingService', ['start']);
@@ -22,8 +23,7 @@ describe('DashboardWidgetComponent', () => {
         { provide: OnboardingService, useValue: spyOnboarding },
         { provide: ModalService, useValue: modalServiceSpy }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -31,6 +31,8 @@ describe('DashboardWidgetComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

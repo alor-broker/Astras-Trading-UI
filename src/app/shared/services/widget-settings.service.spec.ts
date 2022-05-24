@@ -1,22 +1,25 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { WidgetSettingsService } from './widget-settings.service';
-import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { DashboardService } from './dashboard.service';
 
 describe('WidgetSettingsService', () => {
-  let store: MockStore;
+  let service: WidgetSettingsService;
+  let dashboardServiceSpy = jasmine.createSpyObj('DashboardService', ['updateSettings']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        WidgetSettingsService,
-        provideMockStore(),
+        { provide: DashboardService, useValue: dashboardServiceSpy },
+        WidgetSettingsService
       ],
     });
-    store = TestBed.inject(MockStore);
+
+    service = TestBed.inject(WidgetSettingsService);
   });
 
-  it('should ...', inject([WidgetSettingsService], (service: WidgetSettingsService) => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
-  }));
+  });
 });
 

@@ -6,6 +6,7 @@ describe('LoadingIndicatorComponent', () => {
   let component: LoadingIndicatorComponent;
   let fixture: ComponentFixture<LoadingIndicatorComponent>;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ LoadingIndicatorComponent ]
@@ -18,6 +19,8 @@ describe('LoadingIndicatorComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

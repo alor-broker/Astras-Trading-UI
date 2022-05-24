@@ -2,9 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
-import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { InfoService } from './info.service';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
+import { sharedModuleImportForTests } from '../../../shared/utils/testing';
 
 describe('InfoService', () => {
   let service: InfoService;
@@ -13,16 +13,17 @@ describe('InfoService', () => {
   const dashboardSpy = jasmine.createSpyObj('DashboardService', ['getSettings']);
   const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        ...sharedModuleImportForTests
       ],
       providers: [
-        InfoService,
         { provide: DashboardService, useValue: dashboardSpy },
         { provide: ErrorHandlerService, useValue: errorHandlerSpy },
-        provideMockStore(),
+        InfoService
       ]
     });
     service = TestBed.inject(InfoService);

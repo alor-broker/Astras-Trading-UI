@@ -8,6 +8,7 @@ describe('CommandFooterComponent', () => {
   let component: CommandFooterComponent;
   let fixture: ComponentFixture<CommandFooterComponent>;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     const commandSpy = jasmine.createSpyObj('CommandsService', ['submitMarket', 'submitLimit']);
     const modalSpy = jasmine.createSpyObj('ModalService', ['closeCommandModal']);
@@ -26,6 +27,8 @@ describe('CommandFooterComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

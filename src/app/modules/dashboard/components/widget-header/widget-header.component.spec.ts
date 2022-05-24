@@ -1,7 +1,4 @@
-/* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WidgetHeaderComponent } from './widget-header.component';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
@@ -13,24 +10,26 @@ describe('WidgetHeaderComponent', () => {
   let fixture: ComponentFixture<WidgetHeaderComponent>;
   let spy = jasmine.createSpyObj('DashboardService', ['getSettings']);
   spy.getSettings.and.returnValue(of({}));
-  let modalSpy = jasmine.createSpyObj('ModalService' , ['openHelpModal']);
+  let modalSpy = jasmine.createSpyObj('ModalService', ['openHelpModal']);
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ WidgetHeaderComponent ],
+  beforeAll(() => TestBed.resetTestingModule());
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [WidgetHeaderComponent],
       providers: [
         { provide: DashboardService, useValue: spy },
         { provide: ModalService, useValue: modalSpy }
       ]
-    })
-    .compileComponents();
-  }));
+    }).compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WidgetHeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

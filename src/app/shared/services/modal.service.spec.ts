@@ -1,20 +1,22 @@
-/* tslint:disable:no-unused-variable */
-
-import { TestBed, async, inject } from '@angular/core/testing';
-import { provideMockStore } from '@ngrx/store/testing';
+import { TestBed } from '@angular/core/testing';
 import { ModalService } from './modal.service';
+import { sharedModuleImportForTests } from '../utils/testing';
 
-describe('Service: Modal', () => {
+describe('ModalService', () => {
+  let service: ModalService;
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [...sharedModuleImportForTests],
       providers: [
-        ModalService,
-        provideMockStore()
+        ModalService
       ]
     });
+
+    service = TestBed.inject(ModalService);
   });
 
-  it('should ...', inject([ModalService], (service: ModalService) => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
-  }));
+  });
 });

@@ -10,6 +10,7 @@ describe('BetaReminderComponent', () => {
   const accountServiceSpy = jasmine.createSpyObj('AccountService', ['getFullName']);
   accountServiceSpy.getFullName.and.returnValue(of({}));
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [BetaReminderComponent],
@@ -25,6 +26,8 @@ describe('BetaReminderComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

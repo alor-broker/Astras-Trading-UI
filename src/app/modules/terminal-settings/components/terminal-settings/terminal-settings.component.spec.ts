@@ -9,14 +9,14 @@ describe('TerminalSettingsComponent', () => {
 
   const tsSpy = jasmine.createSpyObj('TerminalSettingsService', ['getFullName']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TerminalSettingsComponent ],
+      declarations: [TerminalSettingsComponent],
       providers: [
         { provide: TerminalSettingsService, useValue: tsSpy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -24,6 +24,8 @@ describe('TerminalSettingsComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

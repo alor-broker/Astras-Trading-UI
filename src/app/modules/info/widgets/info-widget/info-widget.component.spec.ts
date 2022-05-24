@@ -9,6 +9,7 @@ describe('InfoWidgetComponent', () => {
   const infoSpy = jasmine.createSpyObj('InfoService', ['getExchangeInfo', 'init']);
   infoSpy.getExchangeInfo.and.returnValue(null);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ InfoWidgetComponent ],
@@ -29,6 +30,8 @@ describe('InfoWidgetComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

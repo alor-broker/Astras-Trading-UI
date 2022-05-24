@@ -3,13 +3,14 @@ import { of } from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { provideMockStore } from '@ngrx/store/testing';
 import { CommandHeaderComponent } from './command-header.component';
+import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 
 describe('CommandHeaderComponent', () => {
   let component: CommandHeaderComponent;
   let fixture: ComponentFixture<CommandHeaderComponent>;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     const quoteSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
     const historySpy = jasmine.createSpyObj('HistoryService', ['getDaysOpen']);
@@ -18,15 +19,14 @@ describe('CommandHeaderComponent', () => {
     historySpy.getDaysOpen.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
+      imports: [...sharedModuleImportForTests],
       declarations: [CommandHeaderComponent],
       providers: [
         { provide: QuotesService, useValue: quoteSpy },
         { provide: HistoryService, useValue: historySpy },
-        { provide: PositionsService, useValue: positionSpy },
-        provideMockStore(),
+        { provide: PositionsService, useValue: positionSpy }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -34,6 +34,8 @@ describe('CommandHeaderComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

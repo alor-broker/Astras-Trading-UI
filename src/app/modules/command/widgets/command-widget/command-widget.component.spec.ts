@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { CommandsService } from '../../services/commands.service';
 
 import { CommandWidgetComponent } from './command-widget.component';
 
@@ -10,18 +9,16 @@ describe('CommandWidgetComponent', () => {
   let fixture: ComponentFixture<CommandWidgetComponent>;
 
   const modalSpy = jasmine.createSpyObj('ModalService', ['commandParams$']);
-  const commandSpy = jasmine.createSpyObj('CommandsService', ['submitLimitCommand']);
   modalSpy.commandParams$ = of();
-  beforeEach(async () => {
 
+  beforeAll(() => TestBed.resetTestingModule());
+  beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CommandWidgetComponent ],
+      declarations: [CommandWidgetComponent],
       providers: [
-        { provide: ModalService, useValue: modalSpy },
-        { provide: CommandsService, useValue: commandSpy }
+        { provide: ModalService, useValue: modalSpy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -29,6 +26,8 @@ describe('CommandWidgetComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
-import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { WatchlistTableComponent } from './watchlist-table.component';
+import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
@@ -14,15 +14,15 @@ describe('WatchlistTableComponent', () => {
   const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['getWatched']);
   spyWatcher.getWatched.and.returnValue(of([]));
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ WatchlistTableComponent ],
+      imports: [...sharedModuleImportForTests],
+      declarations: [WatchlistTableComponent],
       providers: [
-        provideMockStore(),
         { provide: WatchInstrumentsService, useValue: spyWatcher },
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -30,6 +30,8 @@ describe('WatchlistTableComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();
