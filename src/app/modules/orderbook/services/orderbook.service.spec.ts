@@ -24,6 +24,7 @@ describe('OrderbookService', () => {
     TestBed.configureTestingModule({
       imports: [...sharedModuleImportForTests],
       providers: [
+        OrderbookService,
         { provide: WebsocketService, useValue: spy },
         { provide: OrderCancellerService, useValue: cancellerSpy },
         { provide: DashboardService, useValue: dashboardSpy },
