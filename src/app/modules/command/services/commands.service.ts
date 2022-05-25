@@ -135,16 +135,19 @@ export class CommandsService {
     let isStop = false;
     if ((type == 'stop' || type == 'stopLimit') && isStopCommand(command)) {
       isStop = true;
-      if (!command.stopEndUnixTime) {
-        command.stopEndUnixTime = toUnixTimestampSeconds(addDays(new Date(), 30));
-      }
-      else if (typeof command.stopEndUnixTime === 'number') {
-        command.stopEndUnixTime = Number((command.stopEndUnixTime / 1000).toFixed(0));
-      }
-      else {
-        command.stopEndUnixTime = toUnixTimestampSeconds(command.stopEndUnixTime);
+
+      if(command.stopEndUnixTime != null) {
+        if (typeof command.stopEndUnixTime === 'number') {
+          command.stopEndUnixTime = Number((command.stopEndUnixTime / 1000).toFixed(0));
+        }
+        else {
+          command.stopEndUnixTime = toUnixTimestampSeconds(command.stopEndUnixTime);
+        }
+      } else {
+        command.stopEndUnixTime = 0;
       }
     }
+
     return this.http.post<CommandResponse>(`${this.url}/${type.toString()}?stop=${isStop}`, {
         ...command,
         type,
