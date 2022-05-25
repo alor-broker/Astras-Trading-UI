@@ -22,6 +22,7 @@ describe('StopCommandComponent', () => {
   spyModal.commandParams$ = testCommand$;
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ StopCommandComponent ],
@@ -29,8 +30,7 @@ describe('StopCommandComponent', () => {
         { provide: ModalService, useValue: spyModal },
         { provide: CommandsService, useValue: spyCommands }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -38,6 +38,8 @@ describe('StopCommandComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

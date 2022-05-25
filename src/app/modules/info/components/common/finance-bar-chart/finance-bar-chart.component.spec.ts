@@ -44,6 +44,7 @@ describe('FinanceBarChartComponent', () => {
     }
   };
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ FinanceBarChartComponent ]
@@ -57,6 +58,8 @@ describe('FinanceBarChartComponent', () => {
     component.finance = finance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

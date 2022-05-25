@@ -6,6 +6,7 @@ describe('ParentWidgetComponent', () => {
   let component: ParentWidgetComponent;
   let fixture: ComponentFixture<ParentWidgetComponent>;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ ParentWidgetComponent ]
@@ -25,6 +26,8 @@ describe('ParentWidgetComponent', () => {
     component.resize = jasmine.createSpyObj('resize', ['subscribe']);
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

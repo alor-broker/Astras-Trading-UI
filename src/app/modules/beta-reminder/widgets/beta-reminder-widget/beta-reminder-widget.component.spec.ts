@@ -10,6 +10,7 @@ describe('BetaReminderWidgetComponent', () => {
   const modalServiceSpy = jasmine.createSpyObj('ModalService', ['shouldShowBetaReminderModal$']);
   modalServiceSpy.shouldShowBetaReminderModal$ = of(false);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [BetaReminderWidgetComponent],
@@ -25,6 +26,8 @@ describe('BetaReminderWidgetComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

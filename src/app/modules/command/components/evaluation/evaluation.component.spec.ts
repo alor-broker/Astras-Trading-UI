@@ -8,15 +8,16 @@ describe('EvaluationComponent', () => {
   let fixture: ComponentFixture<EvaluationComponent>;
   let spy = jasmine.createSpyObj('EvaluationService', ['evaluate']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EvaluationComponent ],
+      declarations: [EvaluationComponent],
       providers: [
         EvaluationComponent,
         { provide: EvaluationService, useValue: spy }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -24,6 +25,8 @@ describe('EvaluationComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

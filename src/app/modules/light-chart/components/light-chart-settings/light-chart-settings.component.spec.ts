@@ -1,14 +1,12 @@
 /* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LightChartSettingsComponent } from './light-chart-settings.component';
 import { LightChartService } from '../../services/light-chart.service';
 import { of } from 'rxjs';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { AppModule } from 'src/app/app.module';
+import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 
 describe('LightChartSettingsComponent', () => {
   let component: LightChartSettingsComponent;
@@ -25,15 +23,16 @@ describe('LightChartSettingsComponent', () => {
   };
   spy.getSettings.and.returnValue(of(settings));
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach((async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LightChartSettingsComponent ],
-      imports: [ SharedModule, AppModule ],
+      declarations: [LightChartSettingsComponent],
+      imports: [...sharedModuleImportForTests, AppModule],
       providers: [
-        { provide: LightChartService, useValue:  spy }
+        { provide: LightChartService, useValue: spy }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -41,6 +40,8 @@ describe('LightChartSettingsComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

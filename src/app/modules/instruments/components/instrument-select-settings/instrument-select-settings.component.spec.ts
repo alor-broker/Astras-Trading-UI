@@ -6,11 +6,11 @@ describe('InstrumentSelectSettingsComponent', () => {
   let component: InstrumentSelectSettingsComponent;
   let fixture: ComponentFixture<InstrumentSelectSettingsComponent>;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InstrumentSelectSettingsComponent ]
-    })
-    .compileComponents();
+      declarations: [InstrumentSelectSettingsComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -18,6 +18,8 @@ describe('InstrumentSelectSettingsComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -1,5 +1,3 @@
-/* tslint:disable:no-unused-variable */
-
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -12,6 +10,7 @@ describe('AuthService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [

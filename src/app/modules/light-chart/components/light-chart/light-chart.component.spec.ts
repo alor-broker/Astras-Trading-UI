@@ -20,14 +20,14 @@ describe('LightChartComponent', () => {
   };
   spy.settings$ = of(settings);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LightChartComponent ],
+      declarations: [LightChartComponent],
       providers: [
         { provide: LightChartService, useValue: spy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -38,6 +38,8 @@ describe('LightChartComponent', () => {
     component.resize = spy;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

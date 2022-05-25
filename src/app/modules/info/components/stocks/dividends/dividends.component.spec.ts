@@ -11,15 +11,15 @@ describe('DividendsComponent', () => {
   const infoSpy = jasmine.createSpyObj('InfoService', ['getDividends', 'getExchangeInfo']);
   infoSpy.getDividends.and.returnValue(of([]));
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DividendsComponent ],
+      declarations: [DividendsComponent],
       providers: [
-        { provide: InfoService, useValue: infoSpy}
+        { provide: InfoService, useValue: infoSpy }
       ]
 
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -27,6 +27,8 @@ describe('DividendsComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

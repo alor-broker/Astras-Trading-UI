@@ -1,7 +1,4 @@
-/* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OrderbookChartComponent } from './orderbook-chart.component';
 import { OrderbookService } from '../../services/orderbook.service';
@@ -11,6 +8,7 @@ describe('OrderbookChartComponent', () => {
   let component: OrderbookChartComponent;
   let fixture: ComponentFixture<OrderbookChartComponent>;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach((async () => {
     const spyOb = jasmine.createSpyObj('OrderbookService', ['getSettings']);
     spyOb.getSettings.and.returnValue(of({
@@ -19,12 +17,11 @@ describe('OrderbookChartComponent', () => {
       showTable: true
     }));
     await TestBed.configureTestingModule({
-      declarations: [ OrderbookChartComponent ],
+      declarations: [OrderbookChartComponent],
       providers: [
         { provide: OrderbookService, useValue: spyOb },
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -32,6 +29,8 @@ describe('OrderbookChartComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

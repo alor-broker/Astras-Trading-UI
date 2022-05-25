@@ -17,6 +17,7 @@ describe('InfoHeaderComponent', () => {
     lotsize: 1
   };
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ InfoHeaderComponent ]
@@ -30,6 +31,8 @@ describe('InfoHeaderComponent', () => {
     component.info = info;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

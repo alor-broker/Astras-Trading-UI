@@ -7,6 +7,7 @@ describe('DashboardService', () => {
   let service: DashboardService;
   const factorySpy = jasmine.createSpyObj('WidgetFactoryService', ['createNewSettings']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [

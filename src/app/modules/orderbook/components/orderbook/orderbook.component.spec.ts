@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, Subject, Subscription } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookService } from '../../services/orderbook.service';
@@ -15,7 +15,7 @@ describe('OrderBookComponent', () => {
     exchange: 'MOEX',
     showTable: true
   }));
-  const ob : OrderBook = {
+  const ob: OrderBook = {
     rows: [],
     maxVolume: 10,
     chartData: {
@@ -28,15 +28,16 @@ describe('OrderBookComponent', () => {
   spyOb.getOrderbook.and.returnValue(of(ob));
   const modalSync = jasmine.createSpyObj('ModalService', ['openCommandModal']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OrderBookComponent ],
+      declarations: [OrderBookComponent],
       providers: [
         { provide: OrderbookService, useValue: spyOb },
         { provide: ModalService, useValue: modalSync },
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -47,6 +48,7 @@ describe('OrderBookComponent', () => {
     component.resize = spy;
     fixture.detectChanges();
   });
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

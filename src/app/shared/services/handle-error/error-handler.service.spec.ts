@@ -1,17 +1,17 @@
-/* tslint:disable:no-unused-variable */
-
 import { TestBed } from '@angular/core/testing';
 import { ErrorHandlerService } from './error-handler.service';
 import { LogErrorHandler } from "./log-error-handler";
 import { ERROR_HANDLER } from "./error-handler";
 
-describe('ErrorHandlerService: Register', () => {
+describe('ErrorHandlerService', () => {
   let service: ErrorHandlerService;
   const handlerSpy = jasmine.createSpyObj('ApplicationErrorHandler', ['handleError']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        ErrorHandlerService,
         { provide: ERROR_HANDLER, useValue: handlerSpy, multi: true },
         LogErrorHandler
       ],

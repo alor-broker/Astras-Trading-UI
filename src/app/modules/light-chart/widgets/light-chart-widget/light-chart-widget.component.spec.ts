@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { LightChartService } from '../../services/light-chart.service';
@@ -22,14 +21,15 @@ describe('LightChartWidgetComponent', () => {
   };
   spyChart.settings$ = of(settings);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LightChartWidgetComponent ],
+      declarations: [LightChartWidgetComponent],
       providers: [
         { provide: DashboardService, useValue: spyDashboard },
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     TestBed.overrideComponent(LightChartWidgetComponent, {
       set: {
@@ -45,6 +45,8 @@ describe('LightChartWidgetComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

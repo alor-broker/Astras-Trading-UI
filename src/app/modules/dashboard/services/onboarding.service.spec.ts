@@ -1,10 +1,11 @@
-/* tslint:disable:no-unused-variable */
-
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { JoyrideService } from 'ngx-joyride';
 import { OnboardingService } from './onboarding.service';
 
-describe('Service: Onboarding', () => {
+describe('OnboardingService', () => {
+  let service: OnboardingService;
+
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     let spy = jasmine.createSpyObj('JoyrideService', ['startTour']);
     TestBed.configureTestingModule({
@@ -13,9 +14,11 @@ describe('Service: Onboarding', () => {
         { provide: JoyrideService, useValue: spy }
       ]
     });
+
+    service = TestBed.inject(OnboardingService);
   });
 
-  it('should ...', inject([OnboardingService], (service: OnboardingService) => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
-  }));
+  });
 });

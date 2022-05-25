@@ -1,29 +1,26 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { PositionsComponent } from './positions.component';
-import { StoreModule } from "@ngrx/store";
-import { EffectsModule } from '@ngrx/effects';
+import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
   let fixture: ComponentFixture<PositionsComponent>;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        SharedModule,
-        StoreModule.forRoot({}),
-        EffectsModule.forRoot()
+        ...sharedModuleImportForTests
       ],
       providers: [
         { provide: BlotterService, useClass: MockServiceBlotter }
       ],
-      declarations: [ PositionsComponent ]
+      declarations: [PositionsComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -31,6 +28,8 @@ describe('PositionsComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

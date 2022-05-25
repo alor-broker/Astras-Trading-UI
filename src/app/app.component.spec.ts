@@ -1,18 +1,18 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { SharedModule } from './shared/shared.module';
-import { StoreModule } from "@ngrx/store";
-import { EffectsModule } from '@ngrx/effects';
+import { sharedModuleImportForTests } from './shared/utils/testing';
 
 describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
-        SharedModule,
-        StoreModule.forRoot({}),
-        EffectsModule.forRoot()
+        ...sharedModuleImportForTests
       ],
       declarations: [
         AppComponent
@@ -20,15 +20,19 @@ describe('AppComponent', () => {
     }).compileComponents();
   });
 
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  afterEach(() => fixture?.destroy());
+
   it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(component).toBeTruthy();
   });
 
   it(`should have as title 'astras'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('astras');
+    expect(component.title).toEqual('astras');
   });
 });

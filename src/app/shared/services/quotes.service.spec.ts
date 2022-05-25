@@ -1,11 +1,12 @@
-/* tslint:disable:no-unused-variable */
-
-import { TestBed, async, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { QuotesService } from './quotes.service';
 import { WebsocketService } from './websocket.service';
 
-describe('Service: Quotes', () => {
+describe('QuotesService', () => {
+  let service: QuotesService;
   const spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
+
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -13,9 +14,11 @@ describe('Service: Quotes', () => {
         QuotesService
       ],
     });
+
+    service = TestBed.inject(QuotesService);
   });
 
-  it('should ...', inject([QuotesService], (service: QuotesService) => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
-  }));
+  });
 });

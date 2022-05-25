@@ -11,6 +11,7 @@ describe('SummariesComponent', () => {
   spyBlotter.summary$ = of(null);
   spyBlotter.getSummaries.and.returnValue(of(null));
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ SummariesComponent ],
@@ -27,6 +28,8 @@ describe('SummariesComponent', () => {
     component.resize = jasmine.createSpyObj('resize', ['subscribe']);
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

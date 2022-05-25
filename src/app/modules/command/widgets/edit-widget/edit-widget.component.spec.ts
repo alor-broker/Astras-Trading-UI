@@ -9,18 +9,18 @@ describe('EditWidgetComponent', () => {
   let component: EditWidgetComponent;
   let fixture: ComponentFixture<EditWidgetComponent>;
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     const modalSpy = jasmine.createSpyObj('ModalService', ['editParams$']);
     const commandSpy = jasmine.createSpyObj('CommandsService', ['submitLimitEdit']);
     modalSpy.editParams$ = of();
     await TestBed.configureTestingModule({
-      declarations: [ EditWidgetComponent ],
+      declarations: [EditWidgetComponent],
       providers: [
         { provide: ModalService, useValue: modalSpy },
         { provide: CommandsService, useValue: commandSpy },
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -28,6 +28,8 @@ describe('EditWidgetComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

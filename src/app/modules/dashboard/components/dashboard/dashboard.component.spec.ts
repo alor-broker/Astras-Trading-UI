@@ -10,14 +10,14 @@ describe('DashboardComponent', () => {
   let spy = jasmine.createSpyObj('DashboardService', ['saveDashboard', 'dashboard$']);
   spy.dashboard$ = of([]);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DashboardComponent ],
+      declarations: [DashboardComponent],
       providers: [
         { provide: DashboardService, useValue: spy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -25,6 +25,8 @@ describe('DashboardComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
+  afterEach(() => fixture?.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

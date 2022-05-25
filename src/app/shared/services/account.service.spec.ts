@@ -1,31 +1,33 @@
 /* tslint:disable:no-unused-variable */
 
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { AuthService } from './auth.service';
+import { AccountService } from './account.service';
 
 describe('AccountService', () => {
+  let service: AccountService;
   const spyAuth = jasmine.createSpyObj('AuthService', ['currentUser$']);
   const spyPositions = jasmine.createSpyObj('PositionsService', ['getAllByLogin']);
 
+  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
-    let client: HttpClient;
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule
       ],
       providers: [
+        AccountService,
         { provide: AuthService, useValue: spyAuth },
         { provide: PositionsService, useValue: spyPositions }
       ]
     });
 
-    client = TestBed.inject(HttpClient);
+    service = TestBed.inject(AccountService);
   });
 
-  it('should ...', inject([AuthService], (service: AuthService) => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
-  }));
+  });
 });
