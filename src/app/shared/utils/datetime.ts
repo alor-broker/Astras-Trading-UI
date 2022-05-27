@@ -1,5 +1,11 @@
+export function addMonthsUnix(date: Date, months: number) {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return result;
+}
+
 export function addDays(date: Date, days: number) {
-  var result = new Date(date);
+  const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
 }
@@ -9,7 +15,7 @@ export function addHours(date: Date, hours: number) {
 }
 
 export function addDaysUnix(date: Date, days: number) {
-  var result = new Date(date);
+  const result = new Date(date);
   result.setDate(result.getDate() + days);
   return Math.floor(result.getTime() / 1000);
 }

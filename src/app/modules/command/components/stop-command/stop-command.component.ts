@@ -5,7 +5,7 @@ import { distinctUntilChanged } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { addDays } from 'src/app/shared/utils/datetime';
+import { addDays, addMonthsUnix } from 'src/app/shared/utils/datetime';
 import { StopFormControls, StopFormGroup } from '../../models/command-forms.model';
 import { StopFormData } from '../../models/stop-form-data.model';
 import { CommandsService } from '../../services/commands.service';
@@ -46,7 +46,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         quantity: Number(formValue.quantity),
         triggerPrice: Number(formValue.triggerPrice),
         condition: formValue.condition,
-        stopEndUnixTime: !formValue.stopEndUnixTime ? addDays(new Date(), 30) : formValue.stopEndUnixTime,
+        stopEndUnixTime: formValue.stopEndUnixTime,
         price: formValue.withLimit ? price : null,
         instrument: {
           ...initialParameters.instrument
@@ -96,7 +96,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           Validators.min(0),
         ]
       ),
-      stopEndUnixTime: new FormControl(initialParameters.stopEndUnixTime),
+      stopEndUnixTime: new FormControl(initialParameters.stopEndUnixTime ?? addMonthsUnix(new Date(), 1)),
       condition: new FormControl(StopOrderCondition.More),
       withLimit: new FormControl(false)
     } as StopFormControls) as StopFormGroup;
