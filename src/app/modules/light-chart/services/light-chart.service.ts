@@ -22,7 +22,6 @@ type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 @Injectable()
 export class LightChartService extends BaseWebsocketService<LightChartSettings> {
   private settingsSub?: Subscription;
-  private bars$: Observable<Candle> = new Observable();
 
   constructor(
     ws: WebsocketService,
@@ -44,9 +43,9 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
     }
   }
 
-  getBars(guid: string) {
+  getBars(settings: LightChartSettings) {
     this.settingsSub?.unsubscribe();
-    this.settingsSub = combineLatest([this.store.select(getSelectedInstrument), this.getSettings(guid)]).pipe(
+    this.settingsSub = combineLatest([this.store.select(getSelectedInstrument), this.getSettings(settings.guid)]).pipe(
       map(([i, current]) => {
         if (current && current.linkToActive && !this.isSettingsMatchInstrument(current, i)) {
           this.setSettings({ ...current, ...i });
@@ -54,25 +53,17 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
       })
     ).subscribe();
 
-    this.bars$ = this.getSettings(guid).pipe(
-      filter((s): s is LightChartSettingsExtended => !!s),
-      switchMap(s => this.getLastHistoryPoint(s)
-        .pipe(
-          map(point => ({ lastPoint: point, settings: s }))
-        )
-      ),
-      switchMap(x => {
+    return this.getLastHistoryPoint(settings).pipe(
+      switchMap(lastPoint => {
         return this.getBarsReq(
-          x.settings.symbol,
-          x.settings.exchange,
-          x.settings.timeFrame,
-          x.lastPoint,
-          x.settings.instrumentGroup
+          settings.symbol,
+          settings.exchange,
+          settings.timeFrame,
+          lastPoint,
+          settings.instrumentGroup
         );
       })
     );
-
-    return this.bars$;
   }
 
   getSettings(guid: string): Observable<LightChartSettingsExtended> {
@@ -121,7 +112,7 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
       settings.instrumentGroup == instrument.instrumentGroup;
   }
 
-  private getLastHistoryPoint(settings: LightChartSettingsExtended): Observable<number> {
+  private getLastHistoryPoint(settings: LightChartSettings): Observable<number> {
     const startPoint = Math.floor(new Date().getTime() / 1000);
 
     return this.history.getHistory(TimeframesHelper.getRequest(

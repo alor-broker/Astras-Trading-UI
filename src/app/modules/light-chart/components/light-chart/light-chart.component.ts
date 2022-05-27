@@ -5,20 +5,18 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
-import { LightChartSettings } from '../../../../shared/models/settings/light-chart-settings.model';
-import { BehaviorSubject, Observable, of, Subject, takeUntil} from 'rxjs';
-import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, distinctUntilChanged, Subject, Subscription, takeUntil, tap } from 'rxjs';
+import { filter, map, mergeMap } from 'rxjs/operators';
 import { LightChartService } from '../../services/light-chart.service';
-import { Candle } from '../../../../shared/models/history/candle.model';
 import { LightChart } from '../../utils/light-chart';
 import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
 import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
 import { TimeframesHelper } from '../../utils/timeframes-helper';
+import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 
 @Component({
   selector: 'ats-light-chart[resize][guid][resize]',
@@ -27,7 +25,7 @@ import { TimeframesHelper } from '../../utils/timeframes-helper';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
+export class LightChartComponent implements OnDestroy, AfterViewInit {
   readonly availableTimeFrames = TimeframesHelper.timeFrames;
 
   @Input()
@@ -42,19 +40,14 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
-  bars$: Observable<Candle | null> = of(null);
   activeTimeFrame$ = new BehaviorSubject('D');
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  private prevOptions?: LightChartSettings;
   private isUpdating = false;
   private isEndOfHistory = false;
   private chart?: LightChart;
+  private chartDataSubscription?: Subscription;
 
-  constructor(private service: LightChartService) {
-  }
-
-  ngOnInit(): void {
-    this.bars$ = this.service.getBars(this.guid);
+  constructor(private readonly service: LightChartService, private readonly terminalSettingsService: TerminalSettingsService) {
   }
 
   ngOnDestroy(): void {
@@ -63,6 +56,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.destroy$.next(true);
     this.destroy$.complete();
     this.activeTimeFrame$.complete();
+    this.chartDataSubscription?.unsubscribe();
   }
 
   changeTimeframe(timeframe: string) {
@@ -72,15 +66,6 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     if (this.guid) {
       this.initChart(this.guid);
-
-      this.bars$.pipe(
-        takeUntil(this.destroy$)
-      ).subscribe((candle) => {
-        if (candle && this.chart) {
-          this.chart.update(candle);
-          this.chart.checkMissingVisibleData();
-        }
-      });
 
       this.resize.pipe(
         takeUntil(this.destroy$)
@@ -100,49 +85,62 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initChart(guid: string) {
-    const settings = this.service.getSettingsValue();
-    this.chart = new LightChart(settings?.width ?? 300, (settings?.height ?? 300) - this.heightAdjustment);
-    this.chart.create(guid);
-
-    this.service.getSettings(this.guid).pipe(
+    combineLatest([
+        this.service.getSettings(guid),
+        this.terminalSettingsService.getSettings()
+      ]
+    ).pipe(
+      map(([ws, ts]) => ({
+        widgetSettings: ws,
+        terminalSettings: ts
+      })),
+      filter(x => !!x.terminalSettings && !!x.widgetSettings),
+      distinctUntilChanged((previous, current) =>
+          !previous
+          || (
+            isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
+            && previous.terminalSettings.timezoneDisplayOption === current.terminalSettings.timezoneDisplayOption
+          )
+      ),
       takeUntil(this.destroy$)
     ).subscribe(options => {
-      if (options && !isEqualLightChartSettings(options, this.prevOptions)) {
-        this.prevOptions = options;
-        this.setActiveTimeFrame(options.timeFrame);
-        this.isEndOfHistory = false;
+      this.chartDataSubscription?.unsubscribe();
 
-        this.chart?.prepareSeries(options.minstep);
+      if (!this.chart) {
+        this.chart = new LightChart(options.widgetSettings?.width ?? 300, (options.widgetSettings?.height ?? 300) - this.heightAdjustment);
+        this.chart.create(guid);
       }
-    });
 
-    this.chart.historyItemsCountToLoad$.pipe(
-      filter(count => !this.isUpdating && !this.isEndOfHistory && count > 0),
-      switchMap(count => this.service.getSettings(this.guid)
-        .pipe(
-          map(settings => ({
-            settings,
-            itemsCountToLoad: count
-          }))
-        )
-      ),
-      map(options => {
-        if (options && this.chart) {
-          return this.chart.getRequest(options.settings, options.itemsCountToLoad);
-        }
-        else return null;
-      }),
-      filter((r): r is HistoryRequest => !!r && !this.isUpdating),
-      mergeMap(r => {
-        this.isUpdating = true;
-        return this.service.getHistory(r);
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe(res => {
-      this.isEndOfHistory = res.prev == null;
-      const options = this.service.getSettingsValue();
-      if (options) {
-        this.chart?.setData(res.history, options, res.prev);
+      this.setActiveTimeFrame(options.widgetSettings.timeFrame);
+      const currentTimeframe = TimeframesHelper.getTimeframeByValue(options.widgetSettings.timeFrame).value;
+
+      // clear existing data
+      this.isEndOfHistory = false;
+      this.chart.prepareSeries(currentTimeframe, options.terminalSettings.timezoneDisplayOption, options.widgetSettings.minstep);
+
+      this.chartDataSubscription = this.service.getBars(options.widgetSettings)
+        .subscribe((candle) => {
+          if (candle && this.chart) {
+            this.chart.update(candle);
+            this.chart.checkMissingVisibleData();
+          }
+        });
+
+      const historySubscription = this.chart.historyItemsCountToLoad$.pipe(
+        filter(count => !this.isUpdating && !this.isEndOfHistory && count > 0),
+        map(itemsCountToLoad => {
+          if (this.chart) {
+            return this.chart.getRequest(options.widgetSettings, itemsCountToLoad);
+          }
+
+          else return null;
+        }),
+        filter((r): r is HistoryRequest => !!r && !this.isUpdating),
+        tap(() => this.isUpdating = true),
+        mergeMap(r => this.service.getHistory(r))
+      ).subscribe(res => {
+        this.isEndOfHistory = res.prev == null;
+        this.chart?.setData(res.history, res.prev);
         this.isUpdating = false;
 
         // sometimes the downloaded data is not enough to fill the entire time scale space.
@@ -150,12 +148,14 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
         // All changes were ignored by the filter !this.isUpdating.
         // Therefore after rendering we need to check again
         this.chart?.checkMissingVisibleData();
-      }
+      });
+
+      this.chartDataSubscription.add(historySubscription);
     });
   }
 
   private setActiveTimeFrame(timeFrame: string) {
     // for some reason template is not updated without using setTimeout
-    setTimeout(()=> this.activeTimeFrame$.next(timeFrame));
+    setTimeout(() => this.activeTimeFrame$.next(timeFrame));
   }
 }

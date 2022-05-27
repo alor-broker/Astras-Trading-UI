@@ -11,12 +11,12 @@ export function addHours(date: Date, hours: number) {
 export function addDaysUnix(date: Date, days: number) {
   var result = new Date(date);
   result.setDate(result.getDate() + days);
-  return Math.floor(result.getTime() / 1000);
+  return toUnixTime(result);
 }
 
 export function addHoursUnix(date: Date, hours: number) {
-  const time = new Date(date.setHours(date.getHours() + hours)).getTime() / 1000;
-  return Math.floor(time);
+  const time = new Date(date.setHours(date.getHours() + hours));
+  return toUnixTime(time);
 }
 
 export function toUnixTimestampSeconds(date: Date) : number {
@@ -26,3 +26,12 @@ export function toUnixTimestampSeconds(date: Date) : number {
 export function toUnixTimestampMillies(date: Date) : number {
   return Number(date);
 }
+
+export function toUnixTime(date: Date) : number {
+  return Math.floor(date.getTime() / 1000);
+}
+
+export function fromUnixTime(date: number) : Date {
+  return new Date(date * 1000);
+}
+
