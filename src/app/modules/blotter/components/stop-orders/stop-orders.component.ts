@@ -349,7 +349,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
     if (date.toDateString() == new Date().toDateString()) {
       return date.toLocaleTimeString();
     }
-    else return date.toDateString();
+    else return date.toLocaleDateString();
   }
 
   selectInstrument(symbol: string, exchange: string) {
