@@ -216,7 +216,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
   }
 
   round(number: number) {
-    return MathHelper.round(number, 2);
+    return MathHelper.round(number, 6);
   }
 
   selectInstrument(symbol: string, exchange: string) {
