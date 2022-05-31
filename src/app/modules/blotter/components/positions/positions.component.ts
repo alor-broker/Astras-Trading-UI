@@ -215,8 +215,8 @@ export class PositionsComponent implements OnInit, OnDestroy {
     return this.listOfColumns.map(c => c.id).includes(column);
   }
 
-  round(number: number) {
-    return MathHelper.round(number, 6);
+  round(number: number, decimals: number = 2) {
+    return MathHelper.round(number, decimals);
   }
 
   selectInstrument(symbol: string, exchange: string) {
