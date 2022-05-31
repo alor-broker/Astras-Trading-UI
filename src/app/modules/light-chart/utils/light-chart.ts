@@ -12,7 +12,6 @@ import {
   sellColor,
   sellColorBackground
 } from '../../../shared/models/settings/styles-constants';
-import { TimezoneDisplayOption } from '../../../shared/models/enums/timezone-display-option';
 import { TimezoneConverter } from '../../../shared/utils/timezone-converter';
 import { fromUnixTime, toUnixTime } from '../../../shared/utils/datetime';
 
@@ -36,6 +35,7 @@ export class LightChart {
   private historyPrevTime: number | null = null;
   private timezoneConverter?: TimezoneConverter;
   private currentTimeframe?: TimeframeValue;
+  private maxTimeValue: number | null = null;
 
   constructor(width: number, height: number) {
     this.sizes = {
@@ -125,6 +125,12 @@ export class LightChart {
 
   update(candle: Candle) {
     if (candle) {
+      if(this.maxTimeValue != null && candle.time < this.maxTimeValue) {
+        this.aggregateHistoryData([candle]);
+        return;
+      }
+
+      this.maxTimeValue = Math.max(this.maxTimeValue ?? -1, candle.time);
       const displayCandle = this.toDisplayCandle(candle);
 
       this.series.update(displayCandle as any);
@@ -142,12 +148,13 @@ export class LightChart {
   }
 
   setData(candles: Candle[], historyPrevTime: number | null) {
-    this.aggregateHistoryData(candles, this.currentTimeframe ?? TimeframeValue.M1);
+    this.aggregateHistoryData(candles);
     this.historyPrevTime = historyPrevTime;
   }
 
-  aggregateHistoryData(candles: Candle[], selectedTimeframe: TimeframeValue) {
-    const newBars = TimeframesHelper.aggregateBars(this.bars, candles, selectedTimeframe);
+  aggregateHistoryData(candles: Candle[]) {
+    const newBars = TimeframesHelper.aggregateBars(this.bars, candles, this.currentTimeframe ?? TimeframeValue.M1);
+    this.maxTimeValue = Math.max(...newBars.map(x => x.time));
     const displayBars = newBars.map(candle => this.toDisplayCandle(candle));
 
     this.series.setData(displayBars as any);
@@ -168,14 +175,15 @@ export class LightChart {
     this.chart.remove();
   }
 
-  prepareSeries(timeframe: TimeframeValue, displayTimezone?: TimezoneDisplayOption, minstep?: number) {
+  prepareSeries(timeframe: TimeframeValue, timezoneConverter: TimezoneConverter, minstep?: number) {
     this.historyPrevTime = null;
+    this.maxTimeValue = null;
     this.bars = [];
     this.volumeSeries.setData([]);
     this.series.setData([]);
 
     this.currentTimeframe = timeframe;
-    this.timezoneConverter = new TimezoneConverter(displayTimezone ?? TimezoneDisplayOption.MskTime);
+    this.timezoneConverter = timezoneConverter;
 
     this.series.applyOptions({
       priceFormat: this.getPriceFormat(minstep ?? 1)
@@ -215,7 +223,7 @@ export class LightChart {
 
   private toDisplayCandle(candle: Candle): CandleDisplay {
     const candleDate = !!this.timezoneConverter
-      ? this.timezoneConverter.utcToDisplayDate(fromUnixTime(candle.time))
+      ? this.timezoneConverter.toTerminalUtcDate(candle.time)
       : fromUnixTime(candle.time);
 
     let displayTime: Time = toUnixTime(candleDate) as UTCTimestamp;

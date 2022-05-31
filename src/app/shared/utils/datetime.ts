@@ -1,10 +1,10 @@
-export function addMonthsUnix(date: Date, months: number) {
+export function addMonthsUnix(date: Date, months: number): number {
   const result = new Date(date);
   result.setMonth(result.getMonth() + months);
-  return result;
+  return toUnixTime(result);
 }
 
-export function addDays(date: Date, days: number) {
+export function addDays(date: Date, days: number): Date {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
@@ -39,5 +39,10 @@ export function toUnixTime(date: Date) : number {
 
 export function fromUnixTime(date: number) : Date {
   return new Date(date * 1000);
+}
+
+export function getUtcNow(): Date {
+  const now = new Date();
+  return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
 }
 

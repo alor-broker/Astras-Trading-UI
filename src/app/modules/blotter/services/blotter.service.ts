@@ -172,7 +172,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       map((order: StopOrderData) => {
         const existingOrder = this.orders.get(order.id);
         order.transTime = new Date(order.transTime);
-        order.endTime = new Date(order.endTime);
+        order.endTime = new Date(order.endTime + 'Z');
 
         if (existingOrder) {
           this.notification.notificateOrderChange(order, existingOrder);
@@ -219,7 +219,11 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
     const trades = this.getPortfolioEntity<Trade>(portfolio, exchange, 'TradesGetAndSubscribeV2').pipe(
       map((trade: Trade) => {
-        this.trades.set(trade.id, trade);
+        this.trades.set(trade.id, {
+          ...trade,
+          date: new Date(trade.date)
+        });
+
         return Array.from(this.trades.values());
       })
     );

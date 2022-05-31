@@ -16,7 +16,7 @@ import { LightChart } from '../../utils/light-chart';
 import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
 import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
 import { TimeframesHelper } from '../../utils/timeframes-helper';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
+import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 
 @Component({
   selector: 'ats-light-chart[resize][guid][resize]',
@@ -47,7 +47,7 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
   private chart?: LightChart;
   private chartDataSubscription?: Subscription;
 
-  constructor(private readonly service: LightChartService, private readonly terminalSettingsService: TerminalSettingsService) {
+  constructor(private readonly service: LightChartService, private readonly timezoneConverterService: TimezoneConverterService) {
   }
 
   ngOnDestroy(): void {
@@ -87,19 +87,19 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
   private initChart(guid: string) {
     combineLatest([
         this.service.getSettings(guid),
-        this.terminalSettingsService.getSettings()
+        this.timezoneConverterService.getConverter()
       ]
     ).pipe(
-      map(([ws, ts]) => ({
+      map(([ws, c]) => ({
         widgetSettings: ws,
-        terminalSettings: ts
+        converter: c
       })),
-      filter(x => !!x.terminalSettings && !!x.widgetSettings),
+      filter(x => !!x.converter && !!x.widgetSettings),
       distinctUntilChanged((previous, current) =>
           !previous
           || (
             isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
-            && previous.terminalSettings.timezoneDisplayOption === current.terminalSettings.timezoneDisplayOption
+            && previous.converter === current.converter
           )
       ),
       takeUntil(this.destroy$)
@@ -116,7 +116,7 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
 
       // clear existing data
       this.isEndOfHistory = false;
-      this.chart.prepareSeries(currentTimeframe, options.terminalSettings.timezoneDisplayOption, options.widgetSettings.minstep);
+      this.chart.prepareSeries(currentTimeframe, options.converter, options.widgetSettings.minstep);
 
       this.chartDataSubscription = this.service.getBars(options.widgetSettings)
         .subscribe((candle) => {
