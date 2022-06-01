@@ -12,28 +12,39 @@
       </thead>
       <tbody (click)="newLimitOrder($event, 0)">
         <tr *ngFor='let row of basicTable.data; trackBy: getTrackKey'>
-          <td class='row-cell' [ngStyle]="{background: 'unset'}" (click)="newLimitOrder($event, row.bid ?? 0)">
-            <button *ngIf='row.bidCancels && row.bidOrderVolume' nzSize="small" nz-button nzType="primary"
-                    (click)="cancelOrder($event, row.bidCancels)">
-              <i *ngIf='row.bidOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
-              {{row.bidOrderVolume}}
-            </button>
-            <span class="cell-value">
+          <ng-container *ngIf="row.bid ?? 0 > 0; else zeroBid">
+            <td class='row-cell' [ngStyle]="{background: 'unset'}" (click)="newLimitOrder($event, row.bid ?? 0)">
+              <button *ngIf='row.bidCancels && row.bidOrderVolume' nzSize="small" nz-button nzType="primary"
+                      (click)="cancelOrder($event, row.bidCancels)">
+                <i *ngIf='row.bidOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
+                {{row.bidOrderVolume}}
+              </button>
+              <span class="cell-value">
                 {{row.bidVolume}}
-            </span>
-          </td>
-          <td class='row-cell--bid' (click)="newLimitOrder($event, row.bid ?? 0)" [ngStyle]='getBidStyle(row.bidVolume ?? 0)'>{{row.bid}}</td>
-          <td class='row-cell--ask' (click)="newLimitOrder($event, row.ask ?? 0)" [ngStyle]='getAskStyle(row.askVolume ?? 0)'>{{row.ask}}</td>
-          <td [ngStyle]="{background: 'unset'}" class='row-cell' nzAlign='right' (click)="newLimitOrder($event, row.ask ?? 0)">
-            <span class="cell-value">
+              </span>
+            </td>
+            <td class='row-cell--bid' (click)="newLimitOrder($event, row.bid ?? 0)" [ngStyle]='getBidStyle(row.bidVolume ?? 0)'>{{row.bid}}</td>
+          </ng-container>
+          <ng-template #zeroBid>
+            <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+          </ng-template>
+
+          <ng-container *ngIf="row.ask ?? 0 > 0; else zeroAsk">
+            <td class='row-cell--ask' (click)="newLimitOrder($event, row.ask ?? 0)" [ngStyle]='getAskStyle(row.askVolume ?? 0)'>{{row.ask}}</td>
+            <td [ngStyle]="{background: 'unset'}" class='row-cell' nzAlign='right' (click)="newLimitOrder($event, row.ask ?? 0)">
+              <span class="cell-value">
                 {{row.askVolume}}
-            </span>
-            <button *ngIf='row.askCancels && row.askOrderVolume' nzSize="small" nz-button nzType="primary"
-                    (click)="cancelOrder($event, row.askCancels)">
-              {{row.askOrderVolume}}
-              <i *ngIf='row.askOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
-            </button>
-          </td>
+              </span>
+              <button *ngIf='row.askCancels && row.askOrderVolume' nzSize="small" nz-button nzType="primary"
+                      (click)="cancelOrder($event, row.askCancels)">
+                {{row.askOrderVolume}}
+                <i *ngIf='row.askOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
+              </button>
+            </td>
+          </ng-container>
+          <ng-template #zeroAsk>
+            <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+          </ng-template>
         </tr>
       </tbody>
     </nz-table>
