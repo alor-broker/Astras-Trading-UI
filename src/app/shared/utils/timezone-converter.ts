@@ -5,15 +5,21 @@ export class TimezoneConverter {
   constructor(private readonly displayTimezone: TimezoneDisplayOption) {
   }
 
-  // returns date that will not be converted into local date
-  // this date is used by third party components
-  // such components do not convert date to local date and use only UTC date methods
-  public toTerminalUtcDate(utcDate: number): Date {
-    const convertedDate = this.toTerminalDate(fromUnixTime(utcDate));
+  /**
+   * Returns date that will not be converted into local date.
+   * This date is used by third party components.
+   * Such components do not convert date to local date and use only UTC date methods
+   * @param utcSeconds - utc date in Unix format.
+   */
+  public toTerminalUtcDate(utcSeconds: number): Date {
+    const convertedDate = this.toTerminalDate(fromUnixTime(utcSeconds));
     return this.toUtcCorrectedDate(convertedDate);
   }
 
-  // returns date that can be converted into local date with toLocaleString() method
+  /**
+   * Returns date that can be converted into local date with toLocaleString() method.
+   * @param utcDate - utc date.
+   */
   public toTerminalDate(utcDate: Date): Date {
     if (this.displayTimezone === TimezoneDisplayOption.MskTime) {
       return this.toMskTime(utcDate);
@@ -32,7 +38,7 @@ export class TimezoneConverter {
       convertedDate = new Date(convertedDate.getTime() + correction);
     }
 
-    return new Date(convertedDate.getTime() + convertedDate.getTimezoneOffset());
+    return new Date(convertedDate.getTime());
   }
 
   private toUtcCorrectedDate(date: Date) {

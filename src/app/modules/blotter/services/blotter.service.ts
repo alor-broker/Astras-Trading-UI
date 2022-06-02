@@ -172,7 +172,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       map((order: StopOrderData) => {
         const existingOrder = this.orders.get(order.id);
         order.transTime = new Date(order.transTime);
-        order.endTime = new Date(order.endTime + 'Z');
+        order.endTime = new Date(order.endTime);
 
         if (existingOrder) {
           this.notification.notificateOrderChange(order, existingOrder);
