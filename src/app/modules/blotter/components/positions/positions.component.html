@@ -34,7 +34,7 @@
         {{ ord.symbol }}
       </td>
       <td *ngIf='shouldShow("shortName")'>{{ ord.shortName }}</td>
-      <td *ngIf='shouldShow("avgPrice")'>{{ round(ord.avgPrice, 6) }}</td>
+      <td *ngIf='shouldShow("avgPrice")'>{{ roundPrice(ord.avgPrice) }}</td>
       <td *ngIf='shouldShow("qtyT0")' [class]='ord.qtyT0 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT0) }}</td>
       <td *ngIf='shouldShow("qtyT1")' [class]='ord.qtyT1 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT1) }}</td>
       <td *ngIf='shouldShow("qtyT2")' [class]='ord.qtyT2 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT2) }}</td>

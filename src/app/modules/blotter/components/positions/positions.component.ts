@@ -215,8 +215,14 @@ export class PositionsComponent implements OnInit, OnDestroy {
     return this.listOfColumns.map(c => c.id).includes(column);
   }
 
-  round(number: number, decimals: number = 2) {
-    return MathHelper.round(number, decimals);
+  round(number: number) {
+    return MathHelper.round(number, 2);
+  }
+
+  roundPrice(price: number) {
+    return price > 10
+      ? MathHelper.round(price, 2)
+      : MathHelper.round(price, 6);
   }
 
   selectInstrument(symbol: string, exchange: string) {
