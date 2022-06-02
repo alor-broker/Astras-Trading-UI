@@ -219,6 +219,12 @@ export class PositionsComponent implements OnInit, OnDestroy {
     return MathHelper.round(number, 2);
   }
 
+  roundPrice(price: number) {
+    return price > 10
+      ? MathHelper.round(price, 2)
+      : MathHelper.round(price, 6);
+  }
+
   selectInstrument(symbol: string, exchange: string) {
     this.service.selectNewInstrument(symbol, exchange);
   }
