@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, filter, Observable, of, take } from 'rxjs';
+import { BehaviorSubject, filter, Observable, of, switchMap, take } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { CommandType } from '../../../../shared/models/enums/command-type.model';
 import { NzTabComponent, NzTabSetComponent } from 'ng-zorro-antd/tabs';
+import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
+import { InstrumentsService } from '../../../instruments/services/instruments.service';
 
 @Component({
   selector: 'ats-command-widget',
@@ -23,14 +25,24 @@ export class CommandWidgetComponent implements OnInit {
 
   isVisible$: Observable<boolean> = of(false);
   commandParams$?: Observable<CommandParams>;
+  instrument$?: Observable<Instrument>;
 
   selectedCommandType$ = new BehaviorSubject<CommandType>(CommandType.Limit);
 
-  constructor(public modal: ModalService) { }
+  constructor(private readonly modal: ModalService, private readonly instrumentService: InstrumentsService) { }
 
   ngOnInit(): void {
     this.commandParams$ = this.modal.commandParams$.pipe(
       filter((p): p is CommandParams => !!p)
+    );
+
+    this.instrument$ = this.commandParams$.pipe(
+      switchMap(c => this.instrumentService.getInstrument({
+        symbol: c.instrument.symbol,
+        instrumentGroup: c.instrument.instrumentGroup,
+        exchange: c.instrument.exchange
+      })),
+      filter((i): i is Instrument => !!i)
     );
 
     this.isVisible$ = this.modal.shouldShowCommandModal$;

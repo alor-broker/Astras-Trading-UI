@@ -1,15 +1,15 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
-import { ModalService } from 'src/app/shared/services/modal.service';
-import { addDays, addMonthsUnix } from 'src/app/shared/utils/datetime';
+import { addMonthsUnix } from 'src/app/shared/utils/datetime';
 import { StopFormControls, StopFormGroup } from '../../models/command-forms.model';
 import { StopFormData } from '../../models/stop-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { StopCommand } from '../../models/stop-command.model';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 
 @Component({
   selector: 'ats-stop-command',
@@ -18,17 +18,21 @@ import { StopCommand } from '../../models/stop-command.model';
 })
 export class StopCommandComponent implements OnInit, OnDestroy {
   form!: StopFormGroup;
+  @Input()
+  instrument?: Instrument;
+  @Input()
+  command?: CommandParams;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private modal: ModalService, private service: CommandsService) {
+  constructor(private service: CommandsService) {
   }
 
   ngOnInit() {
-    this.modal.commandParams$.pipe(
-      takeUntil(this.destroy$),
-    ).subscribe(initial => {
-      this.initCommandForm(initial);
-    });
+    if (!this.command || !this.instrument) {
+      throw new Error('Empty command');
+    }
+
+    this.initCommandForm(this.command);
   }
 
   setStopCommand(initialParameters: CommandParams): void {

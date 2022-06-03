@@ -41,7 +41,8 @@ export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
           instrumentGroup: r.board,
           isin: r.ISIN,
           currency: r.currency,
-          minstep: r.minstep ?? 0.01
+          minstep: r.minstep ?? 0.01,
+          lotsize: r.lotsize
         };
         return selected;
       }),

@@ -1,37 +1,45 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
-import { of } from 'rxjs';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
 import { CommandsService } from '../../services/commands.service';
 
 import { LimitCommandComponent } from './limit-command.component';
+import { CommandParams } from '../../../../shared/models/commands/command-params.model';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
 
 describe('LimitCommandComponent', () => {
   let component: LimitCommandComponent;
   let fixture: ComponentFixture<LimitCommandComponent>;
 
-  const spyModal = jasmine.createSpyObj('ModalService', ['shouldShowCommandModal$', 'commandParams$']);
-  spyModal.shouldShowCommandModal$ = of(false);
-  spyModal.commandParams$ = of(null);
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand']);
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LimitCommandComponent ],
+      declarations: [LimitCommandComponent],
       providers: [
-        { provide: ModalService, useValue: spyModal },
         { provide: CommandsService, useValue: spyCommands }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LimitCommandComponent);
     component = fixture.componentInstance;
-    component.form = new FormGroup({ quantity: new FormControl(0), price: new FormControl(0)} as LimitFormControls) as LimitFormGroup;
+
+    component.instrument = {
+      symbol: 'test'
+    } as Instrument;
+
+    component.command = {
+      price: 0,
+      instrument: component.instrument as InstrumentKey,
+      user: {} as PortfolioKey
+    } as CommandParams;
+
     fixture.detectChanges();
   });
 

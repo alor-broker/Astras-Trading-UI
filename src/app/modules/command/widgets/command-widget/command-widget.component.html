@@ -1,46 +1,48 @@
 <div *ngIf="commandParams$ | async as command">
-  <nz-modal nzOkText="Выставить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
-    [nzTitle]="header" (nzOnCancel)="handleCancel()"
-    [nzFooter]='null' [nzMaskClosable]='false'
-            (nzAfterOpen)="setInitialCommandTab()"
-    nzClosable="false">
-    <ng-container *nzModalContent>
-      <ats-command-header [symbol]='command.instrument.symbol' [exchange]='command.instrument.exchange'
-        [instrumentGroup]="command.instrument.instrumentGroup ?? ''"></ats-command-header>
-      <nz-tabset nzTabPosition="top" nzSize="small" class="command-parameters" #commandTabs>
-        <nz-tab nzTitle="Лимитная" #limitTab (nzSelect)="setSelectedCommandType(commandTypes.Limit)">
-          <ats-limit-command></ats-limit-command>
-        </nz-tab>
-        <nz-tab nzTitle="Рыночная" #marketTab (nzSelect)="setSelectedCommandType(commandTypes.Market)">
-          <ats-market-command [activated]="marketTab.isActive"></ats-market-command>
-        </nz-tab>
-        <nz-tab nzTitle="Условная" #stopTab (nzSelect)="setSelectedCommandType(commandTypes.Stop)">
-          <ats-stop-command></ats-stop-command>
-        </nz-tab>
-      </nz-tabset>
-      <ng-container *ngIf="selectedCommandType$ | async as commandType">
-        <ats-command-footer  [activeCommandType]="commandType"></ats-command-footer>
+  <ng-container *ngIf="instrument$ | async as instrument">
+    <nz-modal nzOkText="Выставить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
+      [nzTitle]="header" (nzOnCancel)="handleCancel()"
+      [nzFooter]='null' [nzMaskClosable]='false'
+              (nzAfterOpen)="setInitialCommandTab()"
+      nzClosable="false">
+      <ng-container *nzModalContent>
+        <ats-command-header [symbol]='command.instrument.symbol' [exchange]='command.instrument.exchange'
+          [instrumentGroup]="command.instrument.instrumentGroup ?? ''"></ats-command-header>
+        <nz-tabset nzTabPosition="top" nzSize="small" class="command-parameters" #commandTabs>
+          <nz-tab nzTitle="Лимитная" #limitTab (nzSelect)="setSelectedCommandType(commandTypes.Limit)">
+            <ats-limit-command [instrument]="instrument" [command]="command"></ats-limit-command>
+          </nz-tab>
+          <nz-tab nzTitle="Рыночная" #marketTab (nzSelect)="setSelectedCommandType(commandTypes.Market)">
+            <ats-market-command [activated]="marketTab.isActive" [instrument]="instrument" [command]="command"></ats-market-command>
+          </nz-tab>
+          <nz-tab nzTitle="Условная" #stopTab (nzSelect)="setSelectedCommandType(commandTypes.Stop)">
+            <ats-stop-command [instrument]="instrument" [command]="command"></ats-stop-command>
+          </nz-tab>
+        </nz-tabset>
+        <ng-container *ngIf="selectedCommandType$ | async as commandType">
+          <ats-command-footer  [activeCommandType]="commandType"></ats-command-footer>
+        </ng-container>
       </ng-container>
-    </ng-container>
-  </nz-modal>
+    </nz-modal>
 
-  <ng-template #header>
-  <div class="title">
-    <div class="left">
-      <label>
-        <h2>Выставить заявку<span *ngIf="command?.user as portfolio"> ({{portfolio.portfolio}}:{{portfolio.exchange}})</span></h2>
-      </label>
+    <ng-template #header>
+    <div class="title">
+      <div class="left">
+        <label>
+          <h2>Выставить заявку<span *ngIf="command?.user as portfolio"> ({{portfolio.portfolio}}:{{portfolio.exchange}})</span></h2>
+        </label>
+      </div>
+      <div class="right">
+        <button nz-button (click)="openHelp()" aria-label="Help">
+          <i nz-icon nzType="question-circle"  [nzTheme]="'outline'"></i>
+        </button>
+        <button nz-button (click)="handleCancel()" aria-label="Close">
+          <i nz-icon nzType="close" [nzTheme]="'outline'"></i>
+        </button>
+      </div>
     </div>
-    <div class="right">
-      <button nz-button (click)="openHelp()" aria-label="Help">
-        <i nz-icon nzType="question-circle"  [nzTheme]="'outline'"></i>
-      </button>
-      <button nz-button (click)="handleCancel()" aria-label="Close">
-        <i nz-icon nzType="close" [nzTheme]="'outline'"></i>
-      </button>
-    </div>
-  </div>
-  </ng-template>
+    </ng-template>
+  </ng-container>
 </div>
 
 

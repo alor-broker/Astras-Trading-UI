@@ -13,7 +13,6 @@ import {
   takeUntil
 } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.model';
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
@@ -21,6 +20,7 @@ import { MarketFormData } from '../../models/market-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { MarketCommand } from '../../models/market-command.model';
 import { distinct, finalize } from 'rxjs/operators';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 
 @Component({
   selector: 'ats-market-command',
@@ -30,12 +30,15 @@ import { distinct, finalize } from 'rxjs/operators';
 export class MarketCommandComponent implements OnInit, OnDestroy {
   evaluation$!: Observable<EvaluationBaseProperties | null>;
   form!: MarketFormGroup;
+  @Input()
+  instrument?: Instrument;
+  @Input()
+  command?: CommandParams;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private lastCommand$ = new BehaviorSubject<MarketCommand | null>(null);
   private isActivated$ = new Subject<boolean>();
 
   constructor(
-    private modal: ModalService,
     private service: CommandsService,
     private quoteService: QuotesService) {
   }
@@ -46,12 +49,11 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.modal.commandParams$.pipe(
-      takeUntil(this.destroy$),
-    ).subscribe(initial => {
-      this.initCommandForm(initial);
-    });
+    if (!this.command || !this.instrument) {
+      throw new Error('Empty command');
+    }
 
+    this.initCommandForm(this.command);
     this.initEvaluationUpdates();
   }
 
