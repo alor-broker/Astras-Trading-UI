@@ -3,7 +3,7 @@
   <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Введите портфель">
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="portfolio">Портфель</nz-form-label>
+        <nz-form-label nzRequired nzFor="portfolio">Портфель</nz-form-label>
         <nz-input-group nzPrefixIcon="user">
           <input class='ant-input' formControlName="portfolio" (mousedown)="$event.stopPropagation()" nz-input
             placeholder="Портфель" />
@@ -12,7 +12,7 @@
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Введите биржу">
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="exchange">Биржа</nz-form-label>
+        <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
         <nz-input-group nzPrefixIcon="lock">
           <input class='ant-input' formControlName="exchange" (mousedown)="$event.stopPropagation()"
             placeholder="Биржа" />
@@ -21,7 +21,7 @@
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Выберите колонки">
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="ordersColumns">Колонки заявок</nz-form-label>
+        <nz-form-label nzRequired nzFor="ordersColumns">Колонки заявок</nz-form-label>
         <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
           nzPlaceHolder="Выберите..." formControlName="ordersColumns">
           <nz-option *ngFor="let item of allOrdersColumns" [nzLabel]="item.name" [nzValue]="item.columnId"></nz-option>
@@ -30,7 +30,7 @@
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Выберите колонки">
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="stopOrdersColumns">Колонки стоп-заявок</nz-form-label>
+        <nz-form-label nzRequired nzFor="stopOrdersColumns">Колонки стоп-заявок</nz-form-label>
         <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
           nzPlaceHolder="Выберите..." formControlName="stopOrdersColumns">
           <nz-option *ngFor="let item of allStopOrdersColumns" [nzLabel]="item.name" [nzValue]="item.columnId"></nz-option>
@@ -39,7 +39,7 @@
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Выберите колонки">
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="ordersColumns">Колонки сделок</nz-form-label>
+        <nz-form-label nzRequired nzFor="ordersColumns">Колонки сделок</nz-form-label>
         <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
           nzPlaceHolder="Выберите..." formControlName="tradesColumns">
           <nz-option *ngFor="let item of allTradesColumns" [nzLabel]="item.name" [nzValue]="item.columnId"></nz-option>
@@ -48,7 +48,7 @@
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Выберите колонки">
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="ordersColumns">Колонки позиций</nz-form-label>
+        <nz-form-label nzRequired nzFor="ordersColumns">Колонки позиций</nz-form-label>
         <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
           nzPlaceHolder="Выберите..." formControlName="positionsColumns">
           <nz-option *ngFor="let item of allPositionsColumns" [nzLabel]="item.name" [nzValue]="item.columnId">
@@ -58,7 +58,7 @@
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Выберите валюту">
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="currency">Валюта</nz-form-label>
+        <nz-form-label nzRequired nzFor="currency">Валюта</nz-form-label>
         <nz-select formControlName="currency">
           <nz-option [nzValue]="'RUB'" nzLabel="RUB"></nz-option>
           <nz-option [nzValue]="'USD'" nzLabel="USD"></nz-option>
