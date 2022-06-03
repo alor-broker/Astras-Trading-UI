@@ -3,7 +3,7 @@
   <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Введите инструмент">
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="symbol">Тикер</nz-form-label>
+        <nz-form-label nzRequired nzFor="symbol">Тикер</nz-form-label>
         <nz-input-group nzPrefixIcon="user">
           <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input
             placeholder="Symbol" />
@@ -12,7 +12,7 @@
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Введите биржу">
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="exchange">Биржа</nz-form-label>
+        <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
         <nz-input-group nzPrefixIcon="lock">
           <input class='ant-input' formControlName="exchange" (mousedown)="$event.stopPropagation()"
             placeholder="Биржа" />
@@ -21,7 +21,7 @@
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationOptions.minDepth}} до {{validationOptions.maxDepth}}">
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="depth">Глубина</nz-form-label>
+        <nz-form-label nzRequired nzFor="depth">Глубина</nz-form-label>
         <nz-input-group nzPrefixIcon="lock">
           <input class='ant-input' atsNumerical formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />
         </nz-input-group>
@@ -38,7 +38,7 @@
     <nz-collapse [nzBordered]="false" class="compact">
       <nz-collapse-panel nzHeader="Продвинутые">
         <nz-form-control nzErrorTip="Группа">
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="instrumentGroup">Группа</nz-form-label>
+          <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
           <nz-input-group nzPrefixIcon="lock">
             <input class='ant-input' formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
               placeholder="Режим торгов" />
