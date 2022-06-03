@@ -11,9 +11,6 @@ describe('LimitEditComponent', () => {
   let component: LimitEditComponent;
   let fixture: ComponentFixture<LimitEditComponent>;
 
-  const spyModal = jasmine.createSpyObj('ModalService', ['shouldShowCommandModal$', 'editParams$']);
-  spyModal.shouldShowCommandModal$ = of(false);
-  spyModal.editParams$ = of(null);
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand']);
 
   beforeAll(() => TestBed.resetTestingModule());
@@ -21,7 +18,6 @@ describe('LimitEditComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ LimitEditComponent ],
       providers: [
-        { provide: ModalService, useValue: spyModal },
         { provide: CommandsService, useValue: spyCommands }
       ]
     })

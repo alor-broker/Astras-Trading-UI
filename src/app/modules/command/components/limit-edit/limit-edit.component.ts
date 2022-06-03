@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
@@ -9,6 +9,8 @@ import { EvaluationBaseProperties } from '../../models/evaluation-base-propertie
 import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { LimitEdit } from '../../models/limit-edit.model';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { CommandParams } from '../../../../shared/models/commands/command-params.model';
 
 @Component({
   selector: 'ats-limit-edit',
@@ -20,15 +22,20 @@ export class LimitEditComponent implements OnInit, OnDestroy {
   form!: LimitFormGroup;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private modal: ModalService, private service: CommandsService) {
+  constructor(private service: CommandsService) {
   }
 
+  @Input()
+  instrument?: Instrument;
+  @Input()
+  command?: EditParams;
+
   ngOnInit() {
-    this.modal.editParams$.pipe(
-      takeUntil(this.destroy$),
-    ).subscribe(initial => {
-      this.initCommandForm(initial);
-    });
+    if (!this.command || !this.instrument) {
+      throw new Error('Empty command');
+    }
+
+    this.initCommandForm(this.command);
   }
 
   setLimitEdit(initialParameters: EditParams): void {
