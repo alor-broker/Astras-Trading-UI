@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { CommandResponse } from 'src/app/shared/models/commands/command-response.model';
 import { Side } from 'src/app/shared/models/enums/side.model';
-import { addDays, toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
+import { toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { environment } from 'src/environments/environment';
 import { LimitCommand } from '../models/limit-command.model';

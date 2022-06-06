@@ -1,5 +1,15 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { filter, map, Observable, of, Subject, switchMap, takeUntil} from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  filter,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+  withLatestFrom
+} from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
@@ -9,91 +19,101 @@ import { PositionsService } from 'src/app/shared/services/positions.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Store } from '@ngrx/store';
 import { getSelectedPortfolio } from '../../../../store/portfolios/portfolios.selectors';
+import { Position } from '../../../../shared/models/positions/position.model';
+import { startWith } from 'rxjs/operators';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
 @Component({
-  selector: 'ats-command-header[symbol][exchange]',
+  selector: 'ats-command-header',
   templateUrl: './command-header.component.html',
   styleUrls: ['./command-header.component.less']
 })
 export class CommandHeaderComponent implements OnInit, OnDestroy {
-  @Input()
-  symbol = '';
-  @Input()
-  exchange = '';
-  @Input()
-  instrumentGroup : string = '';
-  priceData$ : Observable<PriceData | null> = of(null);
   colors = {
     buyColor: buyColor,
     sellColor: sellColor
   };
-  position = {
-    abs: 0, quantity: 0
-  };
-  private destroy$ : Subject<boolean> = new Subject<boolean>();
+  viewData$!: Observable<{ instrument: InstrumentKey, position: { abs: number, quantity: number }, priceData: PriceData }>;
+  private readonly commandInstrument$ = new BehaviorSubject<InstrumentKey | null>(null);
 
   constructor(
-    private quoteService : QuotesService,
-    private history : HistoryService,
-    private positionService : PositionsService,
-    private store : Store) {
+    private readonly quoteService: QuotesService,
+    private readonly history: HistoryService,
+    private readonly positionService: PositionsService,
+    private readonly store: Store) {
   }
 
-  ngOnDestroy() : void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
+  @Input()
+  set instrument(value: InstrumentKey) {
+    this.commandInstrument$.next(value);
   }
 
-  ngOnInit() : void {
-    this.store.select(getSelectedPortfolio).pipe(
-      filter((p) : p is PortfolioKey => !!p),
-      switchMap(p => {
-        return this.positionService.getByPortfolio(p.portfolio, p.exchange, this.symbol);
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (p) => {
-        if (p) {
-          this.position = { abs: Math.abs(p.qtyTFutureBatch), quantity: p.qtyTFutureBatch };
-        }
-      }
-    });
+  ngOnDestroy(): void {
+    this.commandInstrument$.complete();
+  }
 
-    this.priceData$ = this.history.getDaysOpen({
-      symbol: this.symbol,
-      exchange: this.exchange,
-      instrumentGroup: this.instrumentGroup
-    }).pipe(
-      switchMap(candle => {
-        return this.quoteService.getQuotes(
-          this.symbol,
-          this.exchange,
-          this.instrumentGroup
-        ).pipe(
-          map(quote => ({ candle, quote }))
-        );
-      }),
-      map((data) : PriceData => ({
-        dayChange: getDayChange(data.quote.last_price, data.candle?.close ?? 0),
-        dayChangePerPrice: getDayChangePerPrice(data.quote.last_price, data.candle?.close ?? 0),
-        high: data.quote.high_price,
-        low: data.quote.low_price,
-        lastPrice: data.quote.last_price,
-        ask: data.quote.ask,
-        bid: data.quote.bid,
-        dayOpen: data.candle?.open ?? 0,
-        prevClose: data.candle?.close ?? 0
+  ngOnInit(): void {
+    const instrument$ = this.commandInstrument$
+      .pipe(
+        filter((i): i is Instrument => !!i),
+        shareReplay()
+      );
+
+    const portfolio$ = this.store.select(getSelectedPortfolio).pipe(
+      filter((p): p is PortfolioKey => !!p)
+    );
+
+    const position$ = instrument$.pipe(
+      withLatestFrom(portfolio$),
+      switchMap(([instrument, portfolio]) => this.positionService.getByPortfolio(portfolio.portfolio, portfolio.exchange, instrument.symbol)),
+      filter((p): p is Position => !!p),
+      map(p => ({
+        abs: Math.abs(p.qtyTFutureBatch),
+        quantity: p.qtyTFutureBatch
+      })),
+      startWith(({
+        abs: 0,
+        quantity: 0
       }))
     );
-/*
-    this.priceData$ = interval(2000)
-      .pipe(
-        withLatestFrom(this.priceData$),
-        filter(([a, x]) => !!x),
-        map(([a, x]) => (<PriceData | null>{
-          ...x,
-          lastPrice: !!x ? ( a%2 ? x.lastPrice + 0.01 : Math.ceil(x.lastPrice)): 0
-        }))
-      );*/
+
+    const priceData$ = instrument$.pipe(
+      switchMap(instrument => combineLatest([
+        of(instrument),
+        this.history.getDaysOpen(instrument),
+      ])),
+      switchMap(([instrument, candle]) => combineLatest([
+        of(candle),
+        this.quoteService.getQuotes(
+          instrument.symbol,
+          instrument.exchange,
+          instrument.instrumentGroup
+        ),
+      ])),
+      map(([candle, quote]) => ({
+        dayChange: getDayChange(quote.last_price, candle?.close ?? 0),
+        dayChangePerPrice: getDayChangePerPrice(quote.last_price, candle?.close ?? 0),
+        high: quote.high_price,
+        low: quote.low_price,
+        lastPrice: quote.last_price,
+        ask: quote.ask,
+        bid: quote.bid,
+        dayOpen: candle?.open ?? 0,
+        prevClose: candle?.close ?? 0
+      }))
+    );
+
+    this.viewData$ = combineLatest([
+      instrument$,
+      position$,
+      priceData$
+    ]).pipe(
+      map(([instrument, position, priceData]) => ({
+        instrument,
+        position,
+        priceData
+      }))
+    );
   }
 }

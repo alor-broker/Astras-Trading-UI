@@ -1,7 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
-import { of } from 'rxjs';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
 import { CommandsService } from '../../services/commands.service';
 
@@ -16,18 +14,21 @@ describe('LimitEditComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LimitEditComponent ],
+      declarations: [LimitEditComponent],
       providers: [
         { provide: CommandsService, useValue: spyCommands }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LimitEditComponent);
     component = fixture.componentInstance;
-    component.form = new FormGroup({ quantity: new FormControl(0), price: new FormControl(0)} as LimitFormControls) as LimitFormGroup;
+    component.form = new FormGroup({
+      quantity: new FormControl(0),
+      price: new FormControl(0)
+    } as LimitFormControls) as LimitFormGroup;
     fixture.detectChanges();
   });
 

@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
@@ -8,7 +8,7 @@ import { EvaluationBaseProperties } from '../../models/evaluation-base-propertie
 import { CommandsService } from '../../services/commands.service';
 import { LimitCommand } from '../../models/limit-command.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
-import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { CommandContextModel } from '../../models/command-context.model';
 
 @Component({
   selector: 'ats-limit-command',
@@ -18,24 +18,35 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 export class LimitCommandComponent implements OnInit, OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   form!: LimitFormGroup;
-  @Input()
-  instrument?: Instrument;
-  @Input()
-  command?: CommandParams;
+  commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private service: CommandsService) {
   }
 
-  ngOnInit() {
-    if (!this.command || !this.instrument) {
-      throw new Error('Empty command');
-    }
-
-    this.initCommandForm(this.command);
+  @Input()
+  set commandContext(value: CommandContextModel<CommandParams>) {
+    this.commandContext$.next(value);
   }
 
-  setLimitCommand(initialParameters: CommandParams): void {
+  ngOnInit() {
+    this.commandContext$.pipe(
+      filter((x): x is CommandContextModel<CommandParams> => !!x),
+      takeUntil(this.destroy$)
+    ).subscribe(context => {
+      this.initCommandForm(context.commandParameters);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+
+    this.commandContext$.complete();
+    this.evaluation$.complete();
+  }
+
+  private setLimitCommand(initialParameters: CommandParams): void {
     if (!this.form.valid) {
       this.service.setLimitCommand(null);
       return;
@@ -61,13 +72,6 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     else {
       throw new Error('Empty command');
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-
-    this.evaluation$.complete();
   }
 
   private buildForm(initialParameters: CommandParams) {

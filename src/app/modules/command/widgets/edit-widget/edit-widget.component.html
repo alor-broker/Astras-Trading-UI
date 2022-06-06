@@ -1,20 +1,17 @@
-<div *ngIf="editParams$ | async as command">
-  <ng-container *ngIf="instrument$ | async as instrument">
-    <nz-modal
-      (nzOnCancel)="handleCancel()"
-      (nzOnOk)='handleOk()'
-      [nzMaskClosable]='false'
-      [nzOkLoading]='isBusy'
-      [nzVisible]='isVisible$ | async'
-      nzCancelText="Отмена"
-      nzOkText="Изменить"
-      nzTitle="Изменить заявку"
-    >
-      <ng-container *nzModalContent>
-        <ats-command-header [exchange]='command.instrument.exchange' [instrumentGroup]="command.instrument.instrumentGroup ?? ''"
-                            [symbol]='command.instrument.symbol'></ats-command-header>
-        <ats-limit-edit *ngIf='command.type === "limit"' [command]="command" [instrument]="instrument"></ats-limit-edit>
-      </ng-container>
-    </nz-modal>
-  </ng-container>
+<div *ngIf="commandContext$ | async as commandContext">
+  <nz-modal
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)='handleOk()'
+    [nzMaskClosable]='false'
+    [nzOkLoading]='isBusy'
+    [nzVisible]='isVisible$ | async'
+    nzCancelText="Отмена"
+    nzOkText="Изменить"
+    nzTitle="Изменить заявку"
+  >
+    <ng-container *nzModalContent>
+      <ats-command-header [instrument]="commandContext.instrument"></ats-command-header>
+      <ats-limit-edit *ngIf='commandContext.commandParameters.type === "limit"' [commandContext]="commandContext"></ats-limit-edit>
+    </ng-container>
+  </nz-modal>
 </div>

@@ -1,10 +1,10 @@
-<div>
+<div *ngIf="commandContext$ | async as commandContext">
   <form [formGroup]="form" nz-form>
     <div [nzGutter]="12" nz-row>
       <div [nzSm]="12" [nzXs]="24" nz-col>
         <nz-form-item class="compact">
           <nz-form-control nzErrorTip="Введите кол-во">
-            <nz-form-label nzFor="quantity" nzRequired>Кол-во лотов <span *ngIf="(instrument?.lotsize ?? -1) > 1">&nbsp;(лотность {{instrument?.lotsize}})</span></nz-form-label>
+            <nz-form-label nzFor="quantity" nzRequired>Кол-во лотов <span *ngIf="(commandContext.instrument?.lotsize ?? -1) > 1">&nbsp;(лотность {{commandContext.instrument?.lotsize}})</span></nz-form-label>
             <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="quantity" placeholder="100"/>
           </nz-form-control>
         </nz-form-item>

@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { filter, Observable, of, Subject, switchMap, take, tap } from 'rxjs';
+import { combineLatest, filter, Observable, of, Subject, switchMap, take } from 'rxjs';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { CommandsService } from '../../services/commands.service';
-import { finalize } from 'rxjs/operators';
+import { finalize, map } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { CommandContextModel } from '../../models/command-context.model';
 
 @Component({
   selector: 'ats-edit-widget',
@@ -16,7 +17,7 @@ import { InstrumentsService } from '../../../instruments/services/instruments.se
 })
 export class EditWidgetComponent implements OnInit, OnDestroy {
   isVisible$: Observable<boolean> = of(false);
-  editParams$?: Observable<EditParams>;
+  commandContext$?: Observable<CommandContextModel<EditParams>>;
   instrument$?: Observable<Instrument>;
   isBusy = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -26,18 +27,20 @@ export class EditWidgetComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.editParams$ = this.modal.editParams$.pipe(
+    this.commandContext$ = this.modal.editParams$.pipe(
       filter((p): p is EditParams => !!p),
-      tap(p => this.params = p)
-    );
-
-    this.instrument$ = this.editParams$.pipe(
-      switchMap(c => this.instrumentService.getInstrument({
-        symbol: c.instrument.symbol,
-        instrumentGroup: c.instrument.instrumentGroup,
-        exchange: c.instrument.exchange
-      })),
-      filter((i): i is Instrument => !!i)
+      switchMap(p => combineLatest([
+          of(p),
+          this.instrumentService.getInstrument(p.instrument)
+            .pipe(
+              filter((i): i is Instrument => !!i)
+            )
+        ]
+      )),
+      map(([params, instrument]) => ({
+        commandParameters: params,
+        instrument: instrument
+      }))
     );
 
     this.isVisible$ = this.modal.shouldShowEditModal$;
