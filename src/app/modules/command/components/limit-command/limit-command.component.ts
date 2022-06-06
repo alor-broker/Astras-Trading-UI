@@ -34,7 +34,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
       filter((x): x is CommandContextModel<CommandParams> => !!x),
       takeUntil(this.destroy$)
     ).subscribe(context => {
-      this.initCommandForm(context.commandParameters);
+      this.initCommandForm(context);
     });
   }
 
@@ -46,7 +46,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     this.evaluation$.complete();
   }
 
-  private setLimitCommand(initialParameters: CommandParams): void {
+  private setLimitCommand(commandContext: CommandContextModel<CommandParams>): void {
     if (!this.form.valid) {
       this.service.setLimitCommand(null);
       return;
@@ -54,19 +54,19 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
     const formValue = this.form.value as LimitFormData;
 
-    if (initialParameters && initialParameters.user) {
+    if (commandContext.commandParameters && commandContext.commandParameters.user) {
       const newCommand: LimitCommand = {
         side: 'buy',
         quantity: Number(formValue.quantity),
         price: Number(formValue.price),
         instrument: {
-          ...initialParameters.instrument,
-          instrumentGroup: formValue.instrumentGroup ?? initialParameters.instrument.instrumentGroup
+          ...commandContext.commandParameters.instrument,
+          instrumentGroup: formValue.instrumentGroup ?? commandContext.commandParameters.instrument.instrumentGroup
         },
-        user: initialParameters.user
+        user: commandContext.commandParameters.user
       };
 
-      this.updateEvaluation(newCommand);
+      this.updateEvaluation(newCommand, commandContext);
       this.service.setLimitCommand(newCommand);
     }
     else {
@@ -96,13 +96,14 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     } as LimitFormControls) as LimitFormGroup;
   }
 
-  private updateEvaluation(command: LimitCommand) {
+  private updateEvaluation(command: LimitCommand, commandContext: CommandContextModel<CommandParams>) {
     const evaluation: EvaluationBaseProperties = {
       price: command.price,
       lotQuantity: command.quantity,
       instrument: {
         ...command.instrument
       },
+      instrumentCurrency: commandContext.instrument?.currency
     };
 
     if (evaluation.price > 0) {
@@ -110,13 +111,9 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     }
   }
 
-  private initCommandForm(initialParameters: CommandParams | null) {
-    if (!initialParameters) {
-      return;
-    }
-
-    this.form = this.buildForm(initialParameters);
-    this.setLimitCommand(initialParameters);
+  private initCommandForm(commandContext: CommandContextModel<CommandParams>) {
+    this.form = this.buildForm(commandContext.commandParameters);
+    this.setLimitCommand(commandContext);
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
@@ -126,7 +123,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         && prev?.instrumentGroup == curr?.instrumentGroup
       )
     ).subscribe(() => {
-      this.setLimitCommand(initialParameters);
+      this.setLimitCommand(commandContext);
     });
   }
 }

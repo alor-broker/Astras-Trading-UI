@@ -41,13 +41,15 @@ import { LoadingIndicatorComponent } from './components/loading-indicator/loadin
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { CurrencyPipe } from './pipes/currency.pipe';
 
 
 @NgModule({
   declarations: [
     PriceTickComponent,
     NumericalDirective,
-    LoadingIndicatorComponent
+    LoadingIndicatorComponent,
+    CurrencyPipe
   ],
   imports: [
     CommonModule,
@@ -128,7 +130,9 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
     PriceTickComponent,
     LoadingIndicatorComponent,
     // directives
-    NumericalDirective
+    NumericalDirective,
+    // pipes
+    CurrencyPipe
   ],
   providers: [
     {

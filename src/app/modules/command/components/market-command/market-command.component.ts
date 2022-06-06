@@ -56,9 +56,8 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(context => {
       this.initCommandForm(context.commandParameters);
+      this.initEvaluationUpdates(context);
     });
-
-    this.initEvaluationUpdates();
   }
 
   ngOnDestroy(): void {
@@ -98,13 +97,14 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     }
   }
 
-  private buildEvaluationProperties(command: MarketCommand | null, price: number): EvaluationBaseProperties {
+  private buildEvaluationProperties(command: MarketCommand | null, commandContext: CommandContextModel<CommandParams>, price: number): EvaluationBaseProperties {
     return {
       price: price,
       lotQuantity: command?.quantity,
       instrument: {
         ...command?.instrument
       },
+      instrumentCurrency: commandContext.instrument.currency
     } as EvaluationBaseProperties;
   }
 
@@ -122,7 +122,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     } as MarketFormControls) as MarketFormGroup;
   }
 
-  private initEvaluationUpdates() {
+  private initEvaluationUpdates(commandContext: CommandContextModel<CommandParams>) {
     const currentInstrumentPrice$ = this.lastCommand$.pipe(
       distinctUntilChanged((previous, current) =>
         previous?.instrument?.symbol == current?.instrument?.symbol
@@ -139,15 +139,12 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       this.isActivated$
     ]).pipe(
       filter(([, , isActivated]) => isActivated),
-      map(([command, price,]) => this.buildEvaluationProperties(command, price)),
+      map(([command, price,]) => this.buildEvaluationProperties(command, commandContext, price)),
       filter(e => e.price > 0)
     );
   }
 
-  private initCommandForm(initialParameters: CommandParams | null) {
-    if (!initialParameters) {
-      return;
-    }
+  private initCommandForm(initialParameters: CommandParams) {
 
     this.form = this.buildForm(initialParameters);
     this.setMarketCommand(initialParameters);

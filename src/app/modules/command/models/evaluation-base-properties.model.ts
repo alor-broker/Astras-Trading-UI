@@ -3,5 +3,6 @@ import { InstrumentKey } from "src/app/shared/models/instruments/instrument-key.
 export interface EvaluationBaseProperties {
   price: number,
   lotQuantity: number,
-  instrument: InstrumentKey
+  instrument: InstrumentKey,
+  instrumentCurrency?: string
 }
