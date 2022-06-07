@@ -4,6 +4,7 @@ import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-s
 import { LightChartService } from '../../services/light-chart.service';
 
 import { LightChartComponent } from './light-chart.component';
+import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
@@ -20,12 +21,15 @@ describe('LightChartComponent', () => {
   };
   spy.settings$ = of(settings);
 
+  const terminalSettingsServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
+
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [LightChartComponent],
       providers: [
-        { provide: LightChartService, useValue: spy }
+        { provide: LightChartService, useValue: spy },
+        { provide: TimezoneConverterService, useValue: terminalSettingsServiceSpy }
       ]
     }).compileComponents();
   });

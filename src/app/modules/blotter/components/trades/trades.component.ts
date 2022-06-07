@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, Subject, takeUntil } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
 import { Column } from '../../models/column.model';
 import { TradeFilter } from '../../models/trade-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { MathHelper } from '../../../../shared/utils/math-helper';
+import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -142,7 +143,7 @@ export class TradesComponent implements OnInit, OnDestroy {
   listOfColumns: Column<DisplayTrade, TradeFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private service: BlotterService) {
+  constructor(private readonly service: BlotterService, private readonly timezoneConverterService: TimezoneConverterService) {
   }
 
   ngOnInit(): void {
@@ -155,10 +156,15 @@ export class TradesComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.displayTrades$ = this.service.getTrades(this.guid).pipe(
-      map(trades => trades.map(t => <DisplayTrade>{
+    this.displayTrades$ = combineLatest([
+        this.service.getTrades(this.guid),
+        this.timezoneConverterService.getConverter()
+      ]
+    ).pipe(
+      map(([trades, converter]) => trades.map(t => <DisplayTrade>{
         ...t,
-        volume: MathHelper.round(t.qtyUnits * t.price, 2)
+        volume: MathHelper.round(t.qtyUnits * t.price, 2),
+        date: converter.toTerminalDate(t.date)
       })),
       mergeMap(trades => this.searchFilter.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))

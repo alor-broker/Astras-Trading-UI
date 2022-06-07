@@ -21,7 +21,6 @@ export class EditWidgetComponent implements OnInit, OnDestroy {
   instrument$?: Observable<Instrument>;
   isBusy = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  private params?: EditParams;
 
   constructor(private command: CommandsService, public modal: ModalService, private readonly instrumentService: InstrumentsService) {
   }
@@ -47,19 +46,23 @@ export class EditWidgetComponent implements OnInit, OnDestroy {
   }
 
   handleOk(): void {
-    let command$ = of({});
-    if (this.params?.type == 'limit') {
-      command$ = this.command.submitLimitEdit();
-    }
-    else if (this.params?.type == 'market') {
-      command$ = this.command.submitMarketEdit();
-    }
+    this.commandContext$?.pipe(
+      take(1)
+    ).subscribe(context => {
+      let command$ = of({});
+      if (context.commandParameters?.type == 'limit') {
+        command$ = this.command.submitLimitEdit();
+      }
+      else if (context.commandParameters?.type == 'market') {
+        command$ = this.command.submitMarketEdit();
+      }
 
-    this.isBusy = true;
-    command$.pipe(
-      take(1),
-      finalize(() => this.isBusy = false)
-    ).subscribe(() => this.modal.closeEditModal());
+      this.isBusy = true;
+      command$.pipe(
+        take(1),
+        finalize(() => this.isBusy = false)
+      ).subscribe(() => this.modal.closeEditModal());
+    });
   }
 
   handleCancel(): void {

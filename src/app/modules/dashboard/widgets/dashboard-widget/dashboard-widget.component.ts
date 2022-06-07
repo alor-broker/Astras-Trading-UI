@@ -20,7 +20,6 @@ export class DashboardWidgetComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe();
     this.onboarding.start();
-    this.modal.openBetaReminderModal();
   }
 
   ngOnDestroy(): void {
