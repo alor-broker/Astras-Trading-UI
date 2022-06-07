@@ -1,10 +1,10 @@
-export function addMonthsUnix(date: Date, months: number) {
+export function addMonthsUnix(date: Date, months: number): number {
   const result = new Date(date);
   result.setMonth(result.getMonth() + months);
-  return result;
+  return toUnixTime(result);
 }
 
-export function addDays(date: Date, days: number) {
+export function addDays(date: Date, days: number): Date {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
@@ -17,12 +17,12 @@ export function addHours(date: Date, hours: number) {
 export function addDaysUnix(date: Date, days: number) {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
-  return Math.floor(result.getTime() / 1000);
+  return toUnixTime(result);
 }
 
 export function addHoursUnix(date: Date, hours: number) {
-  const time = new Date(date.setHours(date.getHours() + hours)).getTime() / 1000;
-  return Math.floor(time);
+  const time = new Date(date.setHours(date.getHours() + hours));
+  return toUnixTime(time);
 }
 
 export function toUnixTimestampSeconds(date: Date) : number {
@@ -32,3 +32,17 @@ export function toUnixTimestampSeconds(date: Date) : number {
 export function toUnixTimestampMillies(date: Date) : number {
   return Number(date);
 }
+
+export function toUnixTime(date: Date) : number {
+  return Math.floor(date.getTime() / 1000);
+}
+
+export function fromUnixTime(date: number) : Date {
+  return new Date(date * 1000);
+}
+
+export function getUtcNow(): Date {
+  const now = new Date();
+  return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+}
+

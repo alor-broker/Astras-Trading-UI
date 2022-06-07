@@ -9,6 +9,7 @@ import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { BlotterService } from '../../services/blotter.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { StopOrder } from 'src/app/shared/models/orders/stop-order.model';
+import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -239,9 +240,13 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   private cancelCommands = new Subject<CancelCommand>();
   private cancels$ = this.cancelCommands.asObservable();
   private orders: StopOrder[] = [];
-  private orders$: Observable<StopOrder[]> = of([]);
 
-  constructor(private service: BlotterService, private cancller: OrderCancellerService, private modal: ModalService) {
+  constructor(
+    private readonly service: BlotterService,
+    private readonly cancller: OrderCancellerService,
+    private readonly modal: ModalService,
+    private readonly timezoneConverterService: TimezoneConverterService
+  ) {
   }
 
   ngOnInit(): void {
@@ -254,13 +259,23 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.orders$ = this.service.getStopOrders(this.guid).pipe(
+    const orders$ = this.service.getStopOrders(this.guid).pipe(
       tap(orders => this.orders = orders)
     );
 
-    this.displayOrders$ = combineLatest([this.orders$, this.searchFilter]).pipe(
-      map(([orders, f]) => orders.slice(0, 10)
-        .map(o => ({ ...o, residue: `0/${o.qty}`, volume: MathHelper.round(o.qtyUnits * o.price, 2) }))
+    this.displayOrders$ = combineLatest([
+      orders$,
+      this.searchFilter,
+      this.timezoneConverterService.getConverter()
+    ]).pipe(
+      map(([orders, f, converter]) => orders.slice(0, 10)
+        .map(o => ({
+          ...o,
+          residue: `0/${o.qty}`,
+          volume: MathHelper.round(o.qtyUnits * o.price, 2),
+          transTime: converter.toTerminalDate(o.transTime),
+          endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime
+        }))
         .filter(o => this.justifyFilter(o, f))
         .sort(this.sortOrders))
     );

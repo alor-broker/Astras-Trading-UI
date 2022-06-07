@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormGroup } from '@angular/forms';
-import { BehaviorSubject, of, Subject } from 'rxjs';
-import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
+import { BehaviorSubject, of } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { StopFormControls, StopFormGroup } from '../../models/command-forms.model';
 import { CommandsService } from '../../services/commands.service';
 
 import { StopCommandComponent } from './stop-command.component';
 import { CommandParams } from '../../../../shared/models/commands/command-params.model';
+import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
+import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
+import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 
 describe('StopCommandComponent', () => {
   let component: StopCommandComponent;
   let fixture: ComponentFixture<StopCommandComponent>;
 
-  const testCommand$ = new BehaviorSubject<CommandParams>(<CommandParams> {
+  const testCommand$ = new BehaviorSubject<CommandParams>(<CommandParams>{
     price: 0
   });
 
@@ -22,13 +22,17 @@ describe('StopCommandComponent', () => {
   spyModal.commandParams$ = testCommand$;
   const spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand']);
 
+  const timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
+  timezoneConverterServiceSpy.getConverter.and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)));
+
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StopCommandComponent ],
+      declarations: [StopCommandComponent],
       providers: [
         { provide: ModalService, useValue: spyModal },
-        { provide: CommandsService, useValue: spyCommands }
+        { provide: CommandsService, useValue: spyCommands },
+        { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy }
       ]
     }).compileComponents();
   });
