@@ -25,7 +25,7 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
 @Component({
-  selector: 'ats-command-header',
+  selector: 'ats-command-header[instrument]',
   templateUrl: './command-header.component.html',
   styleUrls: ['./command-header.component.less']
 })
@@ -64,8 +64,7 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
       filter((p): p is PortfolioKey => !!p)
     );
 
-    const position$ = instrument$.pipe(
-      withLatestFrom(portfolio$),
+    const position$ = combineLatest([instrument$, portfolio$]).pipe(
       switchMap(([instrument, portfolio]) => this.positionService.getByPortfolio(portfolio.portfolio, portfolio.exchange, instrument.symbol)),
       filter((p): p is Position => !!p),
       map(p => ({
