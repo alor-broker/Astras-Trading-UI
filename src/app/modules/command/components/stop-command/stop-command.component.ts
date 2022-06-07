@@ -1,17 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subject, takeUntil, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, filter, Subject, takeUntil, withLatestFrom } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import { addMonthsUnix, getUtcNow } from 'src/app/shared/utils/datetime';
 import { StopFormControls, StopFormGroup } from '../../models/command-forms.model';
 import { StopFormData } from '../../models/stop-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { StopCommand } from '../../models/stop-command.model';
-import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
+import { CommandContextModel } from '../../models/command-context.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
+import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 
 @Component({
   selector: 'ats-stop-command',
@@ -20,27 +20,37 @@ import { TimezoneConverterService } from '../../../../shared/services/timezone-c
 })
 export class StopCommandComponent implements OnInit, OnDestroy {
   form!: StopFormGroup;
+  commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
+  public canSelectNow = true;
   private timezoneConverter!: TimezoneConverter;
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  public canSelectNow = true;
 
-  constructor(
-    private readonly modal: ModalService,
-    private readonly service: CommandsService,
-    private readonly timezoneConverterService: TimezoneConverterService) {
+  constructor(private service: CommandsService, private readonly timezoneConverterService: TimezoneConverterService) {
+  }
+
+  @Input()
+  set commandContext(value: CommandContextModel<CommandParams>) {
+    this.commandContext$.next(value);
   }
 
   ngOnInit() {
-    this.modal.commandParams$.pipe(
+    this.commandContext$.pipe(
+      filter((x): x is CommandContextModel<CommandParams> => !!x),
       withLatestFrom(this.timezoneConverterService.getConverter()),
-      takeUntil(this.destroy$),
-    ).subscribe(([parameters, converter]) => {
-      this.initCommandForm(parameters, converter);
+      takeUntil(this.destroy$)
+    ).subscribe(([context, converter]) => {
+      this.initCommandForm(context.commandParameters, converter);
       this.checkNowTimeSelection(converter);
     });
   }
 
-  private checkNowTimeSelection(converter: TimezoneConverter){
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+    this.commandContext$.complete();
+  }
+
+  private checkNowTimeSelection(converter: TimezoneConverter) {
     // nz-date-picker does not support timezones changing
     // now selection will be available only if time displayed in current timezone
     const now = new Date();
@@ -48,7 +58,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     this.canSelectNow = convertedNow.toUTCString() === now.toUTCString();
   }
 
-  setStopCommand(initialParameters: CommandParams): void {
+  private setStopCommand(initialParameters: CommandParams): void {
     if (!this.form.valid) {
       this.service.setStopCommand(null);
       return;
@@ -78,11 +88,6 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     else {
       throw new Error('Empty command');
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   private buildForm(initialParameters: CommandParams) {

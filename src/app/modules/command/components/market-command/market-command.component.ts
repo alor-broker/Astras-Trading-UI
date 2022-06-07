@@ -13,7 +13,6 @@ import {
   takeUntil
 } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.model';
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
@@ -21,6 +20,7 @@ import { MarketFormData } from '../../models/market-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { MarketCommand } from '../../models/market-command.model';
 import { distinct, finalize } from 'rxjs/operators';
+import { CommandContextModel } from '../../models/command-context.model';
 
 @Component({
   selector: 'ats-market-command',
@@ -30,12 +30,12 @@ import { distinct, finalize } from 'rxjs/operators';
 export class MarketCommandComponent implements OnInit, OnDestroy {
   evaluation$!: Observable<EvaluationBaseProperties | null>;
   form!: MarketFormGroup;
+  commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private lastCommand$ = new BehaviorSubject<MarketCommand | null>(null);
   private isActivated$ = new Subject<boolean>();
 
   constructor(
-    private modal: ModalService,
     private service: CommandsService,
     private quoteService: QuotesService) {
   }
@@ -45,11 +45,17 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     this.isActivated$.next(value);
   }
 
+  @Input()
+  set commandContext(value: CommandContextModel<CommandParams>) {
+    this.commandContext$.next(value);
+  }
+
   ngOnInit(): void {
-    this.modal.commandParams$.pipe(
-      takeUntil(this.destroy$),
-    ).subscribe(initial => {
-      this.initCommandForm(initial);
+    this.commandContext$.pipe(
+      filter((x): x is CommandContextModel<CommandParams> => !!x),
+      takeUntil(this.destroy$)
+    ).subscribe(context => {
+      this.initCommandForm(context.commandParameters);
     });
 
     this.initEvaluationUpdates();
@@ -60,9 +66,10 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
 
     this.lastCommand$.complete();
+    this.commandContext$.complete();
   }
 
-  setMarketCommand(initialParameters: CommandParams): void {
+  private setMarketCommand(initialParameters: CommandParams): void {
     if (!this.form.valid) {
       this.service.setMarketCommand(null);
       return;

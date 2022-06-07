@@ -4,6 +4,8 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { CommandsService } from '../../services/commands.service';
 
 import { EditWidgetComponent } from './edit-widget.component';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { InstrumentsService } from '../../../instruments/services/instruments.service';
 
 describe('EditWidgetComponent', () => {
   let component: EditWidgetComponent;
@@ -14,11 +16,16 @@ describe('EditWidgetComponent', () => {
     const modalSpy = jasmine.createSpyObj('ModalService', ['editParams$']);
     const commandSpy = jasmine.createSpyObj('CommandsService', ['submitLimitEdit']);
     modalSpy.editParams$ = of();
+    const instrumentServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
+    instrumentServiceSpy.getInstrument.and.returnValue(of({} as Instrument));
+
+
     await TestBed.configureTestingModule({
       declarations: [EditWidgetComponent],
       providers: [
         { provide: ModalService, useValue: modalSpy },
         { provide: CommandsService, useValue: commandSpy },
+        { provide: InstrumentsService, useValue: instrumentServiceSpy },
       ]
     }).compileComponents();
   });
