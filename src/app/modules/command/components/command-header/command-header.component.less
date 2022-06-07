@@ -4,16 +4,13 @@
   width: 100%;
   display: inline-flex;
   align-items: baseline;
+  flex-wrap: wrap;
   justify-content: space-between;
-
-  @media (max-width: @screen-xs-max) {
-    flex-wrap: wrap;
-  }
 }
 
 .instrument {
   display: flex;
-  flex-grow: 2;
+
   .badge {
     margin: 3px 10px 3px 0;
     align-self: baseline;
@@ -53,7 +50,6 @@
 
 .dynamic {
   max-width: 300px;
-  flex-grow: 1;
 }
 
 .sell {
