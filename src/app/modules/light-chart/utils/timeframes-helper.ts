@@ -48,13 +48,12 @@ export class TimeframesHelper {
   ]);
 
   // LightCharts library throws errors, when bars is duplicationg or too close to each other
-  static aggregateBars(existing: Candle[], history: Candle[], options: LightChartSettings) {
-    const tf = options.timeFrame;
+  static aggregateBars(existing: Candle[], history: Candle[], selectedTimeframe: TimeframeValue) {
     const getDate = (p: any) => {
       const d = new Date(p * 1000);
       return d.getDate() + '.' + d.getMonth() + '.' + d.getFullYear();
     };
-    switch (tf) {
+    switch (selectedTimeframe) {
       case TimeframeValue.Month:
         return findUniqueElements(
           [...existing, ...history],

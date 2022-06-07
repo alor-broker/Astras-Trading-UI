@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup} from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Observable, of, take } from 'rxjs';
 import { FullName } from '../../../../shared/models/user/full-name.model';
 import { TerminalSettingsService } from '../../services/terminal-settings.service';
+import { TerminalSettingsFormControls, TerminalSettingsFormGroup } from '../../models/terminal-settings-form.model';
+import { Store } from '@ngrx/store';
+import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
+import { updateTerminalSettings } from '../../../../store/terminal-settings/terminal-settings.actions';
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -10,8 +15,9 @@ import { TerminalSettingsService } from '../../services/terminal-settings.servic
   styleUrls: ['./terminal-settings.component.less']
 })
 export class TerminalSettingsComponent implements OnInit {
+  timezoneDisplayOption = TimezoneDisplayOption;
 
-  constructor(private service: TerminalSettingsService) { }
+  settingsForm!: TerminalSettingsFormGroup;
 
   fullName$: Observable<FullName> = of({
     firstName: '',
@@ -19,16 +25,35 @@ export class TerminalSettingsComponent implements OnInit {
     secondName: ''
   });
 
-  form!: FormGroup;
+  constructor(private readonly service: TerminalSettingsService, private readonly store: Store) {
+  }
 
   ngOnInit(): void {
     this.fullName$ = this.service.getFullName();
-    this.form = new FormGroup({
-      hasVerticalScroll: new FormControl(false),
+    this.initForm();
+  }
+
+  saveSettingsChanges() {
+    if (this.settingsForm?.valid) {
+      this.store.dispatch(updateTerminalSettings({
+        updates: this.settingsForm.value as TerminalSettings
+      }));
+    }
+  }
+
+  private initForm() {
+    this.service.getSettings()
+      .pipe(
+        take(1)
+      ).subscribe(settings => {
+      this.settingsForm = this.buildForm(settings);
     });
   }
 
-  submitForm(): void {
-
+  private buildForm(currentSettings: TerminalSettings): TerminalSettingsFormGroup {
+    return new FormGroup({
+        timezoneDisplayOption: new FormControl(currentSettings.timezoneDisplayOption, Validators.required)
+      } as TerminalSettingsFormControls
+    ) as TerminalSettingsFormGroup;
   }
 }

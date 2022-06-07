@@ -9,6 +9,7 @@ import { Column } from '../../models/column.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { BlotterService } from '../../services/blotter.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
+import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -211,7 +212,11 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private orders: Order[] = [];
   private orders$: Observable<Order[]> = of([]);
 
-  constructor(private service: BlotterService, private canceller: OrderCancellerService, private modal: ModalService) {
+  constructor(
+    private readonly service: BlotterService,
+    private readonly canceller: OrderCancellerService,
+    private readonly modal: ModalService,
+    private readonly timezoneConverterService: TimezoneConverterService) {
   }
 
   ngOnInit(): void {
@@ -228,9 +233,19 @@ export class OrdersComponent implements OnInit, OnDestroy {
       tap(orders => this.orders = orders)
     );
 
-    this.displayOrders$ = combineLatest([this.orders$, this.searchFilter]).pipe(
-      map(([orders, f]) => orders
-        .map(o => ({ ...o, residue: `${o.filled}/${o.qty}`, volume: MathHelper.round(o.qtyUnits * o.price, 2) }))
+    this.displayOrders$ = combineLatest([
+      this.orders$,
+      this.searchFilter,
+      this.timezoneConverterService.getConverter()
+    ]).pipe(
+      map(([orders, f, converter]) => orders
+        .map(o => ({
+          ...o,
+          residue: `${o.filled}/${o.qty}`,
+          volume: MathHelper.round(o.qtyUnits * o.price, 2),
+          transTime: converter.toTerminalDate(o.transTime),
+          endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime
+        }))
         .filter(o => this.justifyFilter(o, f))
         .sort(this.sortOrders))
     );

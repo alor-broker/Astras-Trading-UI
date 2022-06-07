@@ -219,7 +219,11 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
     const trades = this.getPortfolioEntity<Trade>(portfolio, exchange, 'TradesGetAndSubscribeV2').pipe(
       map((trade: Trade) => {
-        this.trades.set(trade.id, trade);
+        this.trades.set(trade.id, {
+          ...trade,
+          date: new Date(trade.date)
+        });
+
         return Array.from(this.trades.values());
       })
     );
