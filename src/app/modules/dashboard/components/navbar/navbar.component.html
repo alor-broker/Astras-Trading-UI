@@ -65,11 +65,14 @@
     <li nz-menu-item (click)="addItem(names.lightChart)">
       <span><i nz-icon nzType="sliders" nzTheme="outline"></i><label>&nbsp;График</label></span>
     </li>
-    <li nz-menu-item (click)="addItem('blotter')">
+    <li nz-menu-item (click)="addItem(names.blotter)">
       <span><i nz-icon nzType="table" nzTheme="outline"></i><label>&nbsp;Блоттер</label></span>
     </li>
-    <li nz-menu-item (click)="addItem('instrument-info')">
+    <li nz-menu-item (click)="addItem(names.instrumentInfo)">
       <span><i nz-icon nzType="info" nzTheme="outline"></i><label>&nbsp;Инфо</label></span>
+    </li>
+    <li nz-menu-item (click)="addItem(names.news)">
+      <span><i nz-icon nzType="read" nzTheme="outline"></i><label> Новости</label></span>
     </li>
   </ul>
 </nz-dropdown-menu>

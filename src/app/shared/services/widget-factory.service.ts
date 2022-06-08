@@ -23,6 +23,7 @@ import { Store } from '@ngrx/store';
 import { getSelectedInstrument } from '../../store/instruments/instruments.selectors';
 import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
 import { defaultInstrument } from '../../store/instruments/instruments.reducer';
+import { NewsSettings } from "../models/settings/news-settings.model";
 
 @Injectable({
   providedIn: 'root',
@@ -65,6 +66,9 @@ export class WidgetFactoryService {
         break;
       case WidgetNames.instrumentInfo:
         settings = this.createInfo(newWidget);
+        break;
+      case WidgetNames.news:
+        settings = this.createNews(newWidget);
         break;
     }
     if (settings) {
@@ -160,5 +164,18 @@ export class WidgetFactoryService {
     };
 
     return settings;
+  }
+
+  private createNews(newWidget: NewWidget | Widget): NewsSettings {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+
+    return {
+      guid: newWidget.gridItem.label,
+      hasSettings: false,
+      hasHelp: false,
+      title: 'Новости'
+    };
   }
 }

@@ -17,6 +17,7 @@ import { TerminalSettingsModule } from '../terminal-settings/terminal-settings.m
 import { JoyrideModule } from 'ngx-joyride';
 import { OnboardingService } from './services/onboarding.service';
 import { BetaReminderModule } from '../beta-reminder/beta-reminder.module';
+import { NewsModule } from "../news/news.module";
 
 @NgModule({
   declarations: [
@@ -39,10 +40,12 @@ import { BetaReminderModule } from '../beta-reminder/beta-reminder.module';
     BetaReminderModule,
     TerminalSettingsModule,
     JoyrideModule.forRoot(),
+    NewsModule,
     // components
   ],
   providers: [
     OnboardingService
   ]
 })
-export class DashboardModule { }
+export class DashboardModule {
+}

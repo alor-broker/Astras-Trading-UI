@@ -25,6 +25,9 @@ export class ModalService {
 
   private shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
 
+  private newsId = new BehaviorSubject<number | null>(null);
+  private shouldShowNewsModal = new BehaviorSubject<boolean>(false);
+
   shouldShowBetaReminderModal$ = this.shouldShowBetaReminderModal.asObservable();
 
   shouldShowCommandModal$ = this.shouldShowCommandModal.asObservable();
@@ -37,6 +40,9 @@ export class ModalService {
   shouldShowHelpModal$ = this.shouldShowHelpModal.asObservable();
 
   shouldShowTerminalSettingsModal$ = this.shouldShowTerminalSettingsModal.asObservable();
+
+  newsId$ = this.newsId.asObservable();
+  shouldShowNewsModal$ = this.shouldShowNewsModal.asObservable();
 
   constructor(private store: Store) {
     this.store.select(getSelectedPortfolio).subscribe(p => {
@@ -82,6 +88,11 @@ export class ModalService {
     this.shouldShowTerminalSettingsModal.next(true);
   }
 
+  openNewsModal(newsId: number) {
+    this.shouldShowNewsModal.next(true);
+    this.newsId.next(newsId);
+  }
+
   closeTerminalSettingsModal() {
     this.shouldShowTerminalSettingsModal.next(false);
   }
@@ -96,5 +107,9 @@ export class ModalService {
 
   closeHelpModal() {
     this.shouldShowHelpModal.next(false);
+  }
+
+  closeNewsModal() {
+    this.shouldShowNewsModal.next(false);
   }
 }

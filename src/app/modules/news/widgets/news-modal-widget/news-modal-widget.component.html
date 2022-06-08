@@ -1,0 +1,14 @@
+<div *ngIf="newsInfo$ | async as newsInfo">
+  <nz-modal
+    [nzTitle]="newsInfo.title"
+    nzClosable="true"
+    [nzVisible]='isVisible$ | async'
+    [nzFooter]='null'
+    [nzMaskClosable]='true'
+    (nzOnCancel)="handleCancel()"
+  >
+    <ng-container *nzModalContent>
+      {{newsInfo.desc}}
+    </ng-container>
+  </nz-modal>
+</div>
