@@ -56,7 +56,7 @@ export class NewsService {
       .pipe(map(() => ({id: this.id++, title: 'Some news ' + this.id, pubDate: new Date().toString()})));
   }
 
-  public getNewsItemInfo(newsId: number): Observable<NewsItemInfo> {
+  public getNewsItemInfo(newsId: number | null): Observable<NewsItemInfo> {
     return of({
       id: this.id++,
       title: 'Some news ' + this.id,
