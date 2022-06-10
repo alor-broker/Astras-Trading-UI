@@ -1,1 +1,26 @@
-<p>instrument-select-settings works!</p>
+<div>
+  <nz-tabset>
+    <nz-tab nzTitle="Настройки">
+      <div>
+        <form (ngSubmit)="saveSettings()" [formGroup]="settingsForm" [nzLayout]="'horizontal'" nz-form>
+          <nz-form-item>
+            <nz-form-control *ngIf="collection$ | async as collection" nzErrorTip="Выберите отображаемый список">
+              <nz-form-label nzFor="activeListId" nzRequired>Список инструментов</nz-form-label>
+              <nz-select formControlName='activeListId'>
+                <nz-option *ngFor="let list of collection.collection" [nzValue]="list.id" [nzLabel]="list.title"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-control>
+              <button type='submit' nz-button nzType="primary" [disabled]="!settingsForm.valid">Сохранить</button>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </div>
+    </nz-tab>
+    <nz-tab nzTitle="Списки инструментов">
+      <ats-watchlist-collection-edit></ats-watchlist-collection-edit>
+    </nz-tab>
+  </nz-tabset>
+</div>

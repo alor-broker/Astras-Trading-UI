@@ -2,12 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
-import { InstrumentSelectSettings } from 'src/app/shared/models/settings/instrument-select-settings.model';
 import { environment } from 'src/environments/environment';
 import { InstrumentSearchResponse } from '../../../shared/models/instruments/instrument-search-response.model';
 import { SearchFilter } from '../models/search-filter.model';
-import { DashboardService } from 'src/app/shared/services/dashboard.service';
-import { BaseService } from 'src/app/shared/services/base.service';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
@@ -16,15 +13,13 @@ import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 @Injectable({
   providedIn: 'root'
 })
-export class InstrumentsService extends BaseService<InstrumentSelectSettings> {
+export class InstrumentsService {
   private url = environment.apiUrl + '/md/v2/Securities';
 
   constructor(
-    settingsService: DashboardService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService
     ) {
-    super(settingsService);
   }
 
   getInstrument(instrument: InstrumentKey): Observable<Instrument | null> {

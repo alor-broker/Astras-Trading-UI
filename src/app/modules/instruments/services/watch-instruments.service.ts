@@ -1,18 +1,23 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, Observable, Subscription, take } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, take, tap } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
-import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { WatchedInstrument } from '../models/watched-instrument.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
 import { GuidGenerator } from '../../../shared/utils/guid';
+import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
+import { WatchlistCollectionService } from './watchlist-collection.service';
+import { BaseService } from '../../../shared/services/base.service';
+import { InstrumentSelectSettings } from '../../../shared/models/settings/instrument-select-settings.model';
+import { DashboardService } from '../../../shared/services/dashboard.service';
 
 @Injectable()
-export class WatchInstrumentsService {
+export class WatchInstrumentsService extends BaseService<InstrumentSelectSettings> {
   private readonly quitesSubscriptionId = GuidGenerator.newGuid();
-  private readonly watchlistStorage = 'watchlist';
+  private listId?: string;
+
 
   private watchListState: WatchedInstrument[] = [];
   private readonly watchListStateSubj = new BehaviorSubject<WatchedInstrument[]>(this.watchListState);
@@ -21,47 +26,18 @@ export class WatchInstrumentsService {
       map(x => x.sort((a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol)))
     );
 
-  private readonly instrumentsToWatch$: BehaviorSubject<Instrument[]>;
-  private instrumentsToWatchSubscription?: Subscription;
+  private readonly instrumentsToWatch$ = new BehaviorSubject<InstrumentKey[]>([]);
   private readonly quotesSubsByKey = new Map<string, Subscription>();
+  private instrumentsToWatchSubscription?: Subscription;
+  private collectionChangeSubscription?: Subscription;
 
-  constructor(private history: HistoryService, private ws: WebsocketService) {
-    this.instrumentsToWatch$ = new BehaviorSubject<Instrument[]>(this.getSavedWatchList());
 
-    this.instrumentsToWatch$.subscribe(instruments => {
-      this.saveWatchlist(instruments);
-    });
-  }
-
-  private static getKey(instrument: Instrument) {
-    return `${instrument.exchange}.${instrument.instrumentGroup}.${instrument.symbol}`;
-  }
-
-  add(instr: Instrument) {
-    const instrumentKey = WatchInstrumentsService.getKey(instr);
-    this.instrumentsToWatch$.pipe(
-      take(1),
-      filter(i => !i.find(x => instrumentKey === WatchInstrumentsService.getKey(x)))
-    ).subscribe(instruments => {
-      const instrumentsToWatch = [...instruments, { ...instr }];
-      this.instrumentsToWatch$.next(instrumentsToWatch);
-    });
-  }
-
-  remove(instr: Instrument) {
-    this.instrumentsToWatch$.pipe(
-      take(1),
-    ).subscribe(instruments => {
-      const instrumentKey = WatchInstrumentsService.getKey(instr);
-      const sub = this.quotesSubsByKey.get(instrumentKey);
-      if (sub) {
-        sub.unsubscribe();
-        this.quotesSubsByKey.delete(instrumentKey);
-      }
-
-      this.updateWatchState(this.watchListState.filter(x => WatchInstrumentsService.getKey(x.instrument) !== instrumentKey));
-      this.instrumentsToWatch$.next(instruments.filter(x => instrumentKey !== WatchInstrumentsService.getKey(x)));
-    });
+  constructor(
+    settingsService: DashboardService,
+    private readonly history: HistoryService,
+    private readonly ws: WebsocketService,
+    private readonly watchlistCollectionService: WatchlistCollectionService) {
+    super(settingsService);
   }
 
   unsubscribe() {
@@ -70,39 +46,83 @@ export class WatchInstrumentsService {
       this.quotesSubsByKey.delete(key);
     });
 
+    this.collectionChangeSubscription?.unsubscribe();
+    this.instrumentsToWatchSubscription?.unsubscribe();
     this.updateWatchState([]);
   }
 
-  getWatched(): Observable<WatchedInstrument[]> {
+  getWatched(settings: InstrumentSelectSettings): Observable<WatchedInstrument[]> {
+    this.listId = settings.activeListId;
+    const collection = this.watchlistCollectionService.getWatchlistCollection();
+    if (!this.listId) {
+      const defaultList = collection.collection.find(x => x.isDefault);
+      this.listId = defaultList?.id;
+    }
+
+    if (!this.listId) {
+      throw new Error('Watchlist missing');
+    }
+
+    this.unsubscribe();
+    this.refreshWatchItems();
+    this.collectionChangeSubscription = this.watchlistCollectionService.collectionChanged$.subscribe(() => this.refreshWatchItems());
     this.initInstrumentsWatch();
+
     return this.watchListUpdates$;
   }
 
-  private initInstrumentsWatch() {
-    if (!!this.instrumentsToWatchSubscription) {
-      this.instrumentsToWatchSubscription.unsubscribe();
+  getSettings(guid: string): Observable<InstrumentSelectSettings> {
+    return super.getSettings(guid).pipe(
+      tap(s => this.settings = {
+        ...s,
+        // need to specify properties below for backward compatibility
+        // linkToActive and activeListId are missing by default so equal function do not process them correctly
+        linkToActive: s.linkToActive,
+        activeListId: s.activeListId
+      } as InstrumentSelectSettings)
+    );
+  }
+
+  private refreshWatchItems() {
+    if (!this.listId) {
+      return;
     }
 
+    const items = this.watchlistCollectionService.getListItems(this.listId);
+
+    if (!items) {
+      return;
+    }
+
+    const itemKeys = new Set(items.map(x => WatchlistCollectionService.getInstrumentKey(x)));
+    for (let [key, sub] of this.quotesSubsByKey) {
+      if (!itemKeys.has(key)) {
+        sub.unsubscribe();
+        this.quotesSubsByKey.delete(key);
+        this.removeItemFromState(key);
+      }
+    }
+
+    this.instrumentsToWatch$.next(items);
+  }
+
+  private initInstrumentsWatch() {
     this.instrumentsToWatchSubscription = this.instrumentsToWatch$
       .subscribe(instrumentsToWatch => {
-          const notSubscribedInstruments = instrumentsToWatch.filter(instrument => !this.quotesSubsByKey.has(WatchInstrumentsService.getKey(instrument)));
+          const notSubscribedInstruments = instrumentsToWatch.filter(instrument => !this.quotesSubsByKey.has(WatchlistCollectionService.getInstrumentKey(instrument)));
 
           if (notSubscribedInstruments.length === 0) {
             return;
           }
 
           notSubscribedInstruments.forEach(instrument => {
-            if (this.quotesSubsByKey.has(WatchInstrumentsService.getKey(instrument))) {
-              return;
-            }
-
             this.initInstrumentSubscription(instrument);
           });
         }
       );
   }
 
-  private initInstrumentSubscription(instrument: Instrument) {
+  private initInstrumentSubscription(instrument: InstrumentKey) {
     this.history.getDaysOpen(instrument)
       .pipe(
         map(candle => <WatchedInstrument>{
@@ -121,7 +141,7 @@ export class WatchInstrumentsService {
   }
 
   private setupInstrumentQuotesSubscription(wi: WatchedInstrument) {
-    const key = WatchInstrumentsService.getKey(wi.instrument);
+    const key = WatchlistCollectionService.getInstrumentKey(wi.instrument);
 
     const service = new QuotesService(this.ws);
     const sub = service.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup, this.quitesSubscriptionId)
@@ -146,28 +166,21 @@ export class WatchInstrumentsService {
   }
 
   private updateWatchStateItem(wi: WatchedInstrument) {
-    const key = WatchInstrumentsService.getKey(wi.instrument);
+    const key = WatchlistCollectionService.getInstrumentKey(wi.instrument);
     this.updateWatchState([
-      ...this.watchListState.filter(x => WatchInstrumentsService.getKey(x.instrument) !== key),
+      ...this.watchListState.filter(x => WatchlistCollectionService.getInstrumentKey(x.instrument) !== key),
       wi
+    ]);
+  }
+
+  private removeItemFromState(key: string) {
+    this.updateWatchState([
+      ...this.watchListState.filter(x => WatchlistCollectionService.getInstrumentKey(x.instrument) !== key),
     ]);
   }
 
   private updateWatchState(watchList: WatchedInstrument[]) {
     this.watchListState = watchList;
     this.watchListStateSubj.next(this.watchListState);
-  }
-
-  private saveWatchlist(instruments: Instrument[]) {
-    localStorage.setItem(this.watchlistStorage, JSON.stringify(instruments));
-  }
-
-  private getSavedWatchList(): Instrument[] {
-    const json = localStorage.getItem(this.watchlistStorage);
-    let existingList: Instrument[] = [];
-    if (json) {
-      existingList = JSON.parse(json);
-    }
-    return existingList;
   }
 }

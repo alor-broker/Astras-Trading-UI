@@ -59,7 +59,7 @@ export class DashboardService {
     const widget = {
       guid: newWidget.gridItem.label,
       gridItem: newWidget.gridItem,
-      hasSettings: newWidget.gridItem.type != WidgetNames.instrumentSelect && newWidget.gridItem.type != WidgetNames.instrumentInfo,
+      hasSettings: newWidget.gridItem.type != WidgetNames.instrumentInfo,
       hasHelp: true
     };
     const guid = widget.gridItem.label;

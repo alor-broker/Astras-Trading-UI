@@ -95,7 +95,7 @@ export function isInstrumentSelectSettings(
 ): settings is InstrumentSelectSettings {
   return (
     settings &&
-    'linkToActive' in settings
+    'activeListId' in settings
   );
 }
 
@@ -196,7 +196,8 @@ export function isEqualInstrumentSelectSettings(
   if (settings1 && settings2) {
     return (
       settings1.linkToActive == settings2.linkToActive &&
-      settings1.guid == settings2.guid
+      settings1.guid == settings2.guid &&
+      settings1.activeListId == settings2.activeListId
     );
   } else return false;
 }
