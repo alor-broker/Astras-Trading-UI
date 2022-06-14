@@ -61,9 +61,7 @@ describe('WatchInstrumentsService', () => {
   });
 
   it('#getWatched should read collection', () => {
-    let callsCounter = 0;
     watchlistCollectionServiceSpy.getWatchlistCollection.and.callFake(() => {
-      callsCounter++;
       return {
         collection: [{
           id: '123',
@@ -76,7 +74,7 @@ describe('WatchInstrumentsService', () => {
 
     service.getWatched({ guid: 'guid', activeListId: '123' });
 
-    expect(callsCounter).toEqual(1);
+    expect(watchlistCollectionServiceSpy.getWatchlistCollection).toHaveBeenCalledTimes(1);
   });
 
   it('#getWatched should use default list', () => {
@@ -118,14 +116,11 @@ describe('WatchInstrumentsService', () => {
       items: TestData.instruments.map(x => ({ ...x }))
     };
 
-    let callsCounter = 0;
-
     watchlistCollectionServiceSpy.getWatchlistCollection.and.returnValue(() => ({
       collection: [list]
     }));
 
     watchlistCollectionServiceSpy.getListItems.and.callFake(() => {
-      callsCounter++;
       return list.items;
     });
 
@@ -134,6 +129,6 @@ describe('WatchInstrumentsService', () => {
 
     // first call when we start watching
     // second call when collection changed
-    expect(callsCounter).toEqual(2);
+    expect(watchlistCollectionServiceSpy.getListItems).toHaveBeenCalledTimes(2);
   });
 });

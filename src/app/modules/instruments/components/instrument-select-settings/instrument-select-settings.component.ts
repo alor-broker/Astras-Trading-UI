@@ -36,7 +36,7 @@ export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.prevSettings = settings;
-      this.buildSettingsForm(settings);
+      this.buildSettingsForm();
     });
   }
 
@@ -56,9 +56,9 @@ export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private buildSettingsForm(settings: InstrumentSelectSettings) {
+  private buildSettingsForm() {
     this.settingsForm = new FormGroup({
-      activeListId: new FormControl(settings.activeListId, [Validators.required,])
+      activeListId: new FormControl(this.prevSettings?.activeListId, [Validators.required])
     });
   }
 }
