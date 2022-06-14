@@ -36,7 +36,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   public isLoading = false;
 
   public columns: ColumnsSettings[] = [
-    {name: 'orderno', displayName: 'Номер заявки'},
     {name: 'symbol', displayName: 'Тикер'},
     {name: 'qty', displayName: 'Кол-во', classFn: data => data.side},
     {name: 'price', displayName: 'Цена'},
