@@ -2,9 +2,16 @@ import { TestBed } from '@angular/core/testing';
 
 import { WatchlistCollectionService } from './watchlist-collection.service';
 import { TestData } from '../../../shared/utils/testing';
-import { WatchListCollection } from '../models/watch-list.model';
+import { WatchlistCollection } from '../models/watchlist.model';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClient } from '@angular/common/http';
+import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 
 describe('WatchListCollectionService', () => {
+  let httpController: HttpTestingController;
+  let httpClient: HttpClient;
+  const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
+
   let service: WatchlistCollectionService;
   const watchlistCollectionStorage = 'watchlistCollection';
 
@@ -21,11 +28,20 @@ describe('WatchListCollectionService', () => {
         isDefault: true,
         items: TestData.instruments.map(x => ({ ...x }))
       }]
-  } as WatchListCollection;
+  } as WatchlistCollection;
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports: [
+        HttpClientTestingModule
+      ],
+      providers: [
+        WatchlistCollectionService,
+        { provide: ErrorHandlerService, useValue: errorHandlerSpy }
+      ]
+    });
+
     service = TestBed.inject(WatchlistCollectionService);
   });
 

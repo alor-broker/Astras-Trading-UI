@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { WatchList } from '../../models/watch-list.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { map, startWith } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { filter, Observable, shareReplay } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { PresetWatchlist, PresetWatchlistCollection, Watchlist } from '../../models/watchlist.model';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
 @Component({
   selector: 'ats-watchlist-collection-edit',
@@ -12,7 +13,9 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class WatchlistCollectionEditComponent implements OnInit {
   newListForm!: FormGroup;
-  collection$?: Observable<WatchList[]>;
+  collection$?: Observable<Watchlist[]>;
+  presetCollection$?: Observable<PresetWatchlist[]>;
+  selectedPresetWatchlist?: PresetWatchlist | null = null;
 
   constructor(private readonly watchlistCollectionService: WatchlistCollectionService) {
   }
@@ -24,10 +27,19 @@ export class WatchlistCollectionEditComponent implements OnInit {
       map(x => x.collection)
     );
 
+    this.presetCollection$ = this.watchlistCollectionService.getPresetCollection()
+      .pipe(
+        filter((x): x is  PresetWatchlistCollection => !!x),
+        filter(x => x.list?.length > 0),
+        map(x => x.list),
+        map(x => x.filter(list => list.papers?.length > 0)),
+        shareReplay()
+      );
+
     this.buildNewListForm();
   }
 
-  changeListTitle(newTitle: string, targetList: WatchList) {
+  changeListTitle(newTitle: string, targetList: Watchlist) {
     if (newTitle?.length > 0) {
       this.watchlistCollectionService.updateListMeta(targetList.id, { title: newTitle });
     }
@@ -40,6 +52,21 @@ export class WatchlistCollectionEditComponent implements OnInit {
 
     this.watchlistCollectionService.createNewList(this.newListForm.value.title, []);
     this.newListForm.reset();
+  }
+
+  addPresetList() {
+    if (this.selectedPresetWatchlist != null) {
+      this.watchlistCollectionService.createNewList(
+        this.selectedPresetWatchlist.name,
+        this.selectedPresetWatchlist.papers.map(x => ({
+          symbol: x.symbol,
+          exchange: x.exchange,
+          instrumentGroup: x.board
+        } as InstrumentKey))
+      );
+
+      this.selectedPresetWatchlist = null;
+    }
   }
 
   removeList(listId: string) {
