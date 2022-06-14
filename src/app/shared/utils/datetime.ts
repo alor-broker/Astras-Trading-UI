@@ -33,6 +33,10 @@ export function toUnixTimestampMillies(date: Date) : number {
   return Number(date);
 }
 
+export function startOfDay(date: Date): Date {
+  return new Date(date.setHours(0, 0, 0, 0));
+}
+
 export function toUnixTime(date: Date) : number {
   return Math.floor(date.getTime() / 1000);
 }

@@ -3,5 +3,6 @@ import { InfoSettings } from "./info-settings.model";
 import { InstrumentSelectSettings } from "./instrument-select-settings.model";
 import { LightChartSettings } from "./light-chart-settings.model";
 import { OrderbookSettings } from "./orderbook-settings.model";
+import { AllTradesSettings } from "./all-trades-settings.model";
 
-export type AnySettings = (LightChartSettings | OrderbookSettings | InstrumentSelectSettings | BlotterSettings | InfoSettings);
+export type AnySettings = (LightChartSettings | OrderbookSettings | InstrumentSelectSettings | BlotterSettings | InfoSettings | AllTradesSettings);
