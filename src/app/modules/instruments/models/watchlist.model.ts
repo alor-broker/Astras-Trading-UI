@@ -1,7 +1,7 @@
 ﻿import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 
 export interface WatchlistCollection {
-  collection: Watchlist[];
+  collection: Watchlist[]
 }
 
 export interface Watchlist {
@@ -12,7 +12,7 @@ export interface Watchlist {
 }
 
 export interface PresetWatchlistCollection {
-  list: PresetWatchlist[];
+  list: PresetWatchlist[]
 }
 
 export interface PresetWatchlist {
