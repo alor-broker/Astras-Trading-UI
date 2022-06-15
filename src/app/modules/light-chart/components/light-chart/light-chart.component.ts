@@ -5,12 +5,22 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
+  OnInit,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
-import { BehaviorSubject, combineLatest, distinctUntilChanged, Subject, Subscription, takeUntil, tap } from 'rxjs';
-import { filter, map, mergeMap } from 'rxjs/operators';
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  Subject,
+  Subscription,
+  switchMap,
+  takeUntil,
+  tap
+} from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { LightChartService } from '../../services/light-chart.service';
 import { LightChart } from '../../utils/light-chart';
 import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
@@ -25,7 +35,7 @@ import { TimezoneConverterService } from '../../../../shared/services/timezone-c
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LightChartComponent implements OnDestroy, AfterViewInit {
+export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly availableTimeFrames = TimeframesHelper.timeFrames;
 
   @Input()
@@ -84,6 +94,10 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
     }
   }
 
+  ngOnInit(): void {
+    this.service.initSettingsUpdates(this.guid)
+  }
+
   private initChart(guid: string) {
     combineLatest([
         this.service.getSettings(guid),
@@ -105,6 +119,7 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
       takeUntil(this.destroy$)
     ).subscribe(options => {
       this.chartDataSubscription?.unsubscribe();
+      this.service.unsubscribe();
 
       if (!this.chart) {
         this.chart = new LightChart(options.widgetSettings?.width ?? 300, (options.widgetSettings?.height ?? 300) - this.heightAdjustment);
@@ -131,13 +146,11 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
         map(itemsCountToLoad => {
           if (this.chart) {
             return this.chart.getRequest(options.widgetSettings, itemsCountToLoad);
-          }
-
-          else return null;
+          } else return null;
         }),
         filter((r): r is HistoryRequest => !!r && !this.isUpdating),
         tap(() => this.isUpdating = true),
-        mergeMap(r => this.service.getHistory(r))
+        switchMap(r => this.service.getHistory(r))
       ).subscribe(res => {
         this.isEndOfHistory = res.prev == null;
         this.chart?.setData(res.history, res.prev);
