@@ -1,0 +1,53 @@
+<div>
+  <nz-list *ngIf="collection$ | async as collection" [nzBordered]="true">
+    <nz-list-item *ngIf="newListForm">
+      <div>
+        <form nz-form [nzLayout]="'inline'" [formGroup]="newListForm">
+          <nz-form-item >
+            <nz-form-control nzErrorTip="Введите имя списка не более 100 символов">
+              <input
+                nz-input
+                type="text"
+                formControlName="title"
+                placeholder="Введите имя списка"
+                nzBorderless
+                [ngStyle]="{'padding-left': 0}"
+                (mousedown)="$event.stopPropagation()"/>
+            </nz-form-control>
+          </nz-form-item >
+        </form>
+      </div>
+      <ul nz-list-item-actions>
+        <nz-list-item-action>
+          <button nz-button
+                  nzSize='small'
+                  nzType="primary"
+                  [disabled]="!newListForm.valid"
+                  [nz-tooltip]="'Добавить новый список'"
+                  (click)="addNewList()"
+          >
+            <i nz-icon nzType="plus"></i>
+          </button>
+        </nz-list-item-action>
+      </ul>
+    </nz-list-item>
+    <nz-list-item *ngFor="let list of collection">
+      <span (nzContentChange)="changeListTitle($event, list)" [nzContent]="list.title" nz-typography nzEditable>{{list.title}}</span>
+      <ul nz-list-item-actions>
+        <nz-list-item-action *ngIf="!list.isDefault">
+          <button nz-button
+                  nzSize='small'
+                  nzDanger
+                  nzType="primary"
+                  nz-popconfirm="Точно удалить?"
+                  nzOkText="Да"
+                  nzCancelText="Нет"
+                  (nzOnConfirm)="removeList(list.id)">
+            <i nz-icon nzType="minus"></i>
+          </button>
+        </nz-list-item-action>
+      </ul>
+    </nz-list-item>
+    <nz-list-empty *ngIf="collection.length === 0"></nz-list-empty>
+  </nz-list>
+</div>
