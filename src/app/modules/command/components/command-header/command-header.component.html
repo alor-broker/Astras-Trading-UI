@@ -30,7 +30,7 @@
       <span><p>{{data.priceData.high}}</p></span>
     </nz-descriptions-item>
     <nz-descriptions-item nzTitle="Ask">
-      <span><p class='sell'>{{data.priceData.ask}}</p></span>
+      <span (click)="selectPrice(data.priceData.ask)"><p class='sell'>{{data.priceData.ask}}</p></span>
     </nz-descriptions-item>
 
     <nz-descriptions-item nzTitle="Дн.%">
@@ -40,7 +40,7 @@
       <span><p>{{data.priceData.low}}</p></span>
     </nz-descriptions-item>
     <nz-descriptions-item nzTitle="Bid">
-      <span><p class='buy'>{{data.priceData.bid}}</p></span>
+      <span (click)="selectPrice(data.priceData.bid)"><p class='buy'>{{data.priceData.bid}}</p></span>
     </nz-descriptions-item>
   </nz-descriptions>
 </div>

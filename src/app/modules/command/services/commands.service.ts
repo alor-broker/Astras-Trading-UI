@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { CommandResponse } from 'src/app/shared/models/commands/command-response.model';
 import { Side } from 'src/app/shared/models/enums/side.model';
@@ -26,6 +26,8 @@ export class CommandsService {
   private limitEdit?: BehaviorSubject<LimitEdit | null>;
   private marketCommand?: BehaviorSubject<MarketCommand | null>;
   private marketEdit?: BehaviorSubject<MarketEdit | null>;
+
+  public priceSelected$ = new Subject<number>();
 
   constructor(private http: HttpClient, private notification: NzNotificationService) { }
 
