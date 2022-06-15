@@ -30,7 +30,7 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
   // as a result the data subscription turns out to be incorrect
   private readonly bars$ = this.barsSettings.pipe(
     filter((x): x is LightChartSettings => !!x),
-    mapWith(settings => this.getLastHistoryPoint(settings), (a, b) => ({ settings: a, lastPoint: b })),
+    mapWith(settings => this.getLastHistoryPoint(settings), (s, hp) => ({ settings: s, lastPoint: hp })),
     switchMap((x) => {
       return this.getBarsReq(
         x.settings.symbol,
