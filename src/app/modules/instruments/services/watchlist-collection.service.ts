@@ -1,25 +1,35 @@
 import { Injectable } from '@angular/core';
-import { WatchList, WatchListCollection } from '../models/watch-list.model';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { GuidGenerator } from '../../../shared/utils/guid';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { PresetWatchlistCollection, Watchlist, WatchlistCollection } from '../models/watchlist.model';
+import { environment } from '../../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
+import { catchHttpError } from '../../../shared/utils/observable-helper';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WatchlistCollectionService {
+  private readonly url = environment.apiUrl + '/astras/watchlist';
   private readonly watchlistStorage = 'watchlist';
   private readonly watchlistCollectionStorage = 'watchlistCollection';
   private readonly collectionChangedSub = new Subject();
-
   public readonly collectionChanged$ = this.collectionChangedSub.asObservable();
+
+  constructor(
+    private readonly http: HttpClient,
+    private readonly errorHandlerService: ErrorHandlerService
+  ) {
+  }
 
   public static getInstrumentKey(instrument: InstrumentKey): string {
     return `${instrument.exchange}.${instrument.instrumentGroup}.${instrument.symbol}`;
   }
 
-  public getWatchlistCollection(): WatchListCollection {
-    const existedCollection = this.readLocalStorage<WatchListCollection>(this.watchlistCollectionStorage);
+  public getWatchlistCollection(): WatchlistCollection {
+    const existedCollection = this.readLocalStorage<WatchlistCollection>(this.watchlistCollectionStorage);
     if (!existedCollection) {
       const defaultCollection = this.createDefaultCollection();
       this.saveCollection(defaultCollection);
@@ -34,7 +44,7 @@ export class WatchlistCollectionService {
       id: GuidGenerator.newGuid(),
       title: title,
       items: items ?? []
-    } as WatchList;
+    } as Watchlist;
 
     const collection = this.getWatchlistCollection();
     collection.collection.unshift(newList);
@@ -68,7 +78,7 @@ export class WatchlistCollectionService {
     collection.collection[listIndex] = {
       ...collection.collection[listIndex],
       ...meta
-    } as WatchList;
+    } as Watchlist;
 
     this.saveCollection(collection);
     this.collectionChangedSub.next(null);
@@ -113,6 +123,13 @@ export class WatchlistCollectionService {
     return list.items;
   }
 
+  public getPresetCollection(): Observable<PresetWatchlistCollection | null> {
+    return this.http.get<PresetWatchlistCollection>(this.url)
+      .pipe(
+        catchHttpError<PresetWatchlistCollection | null>(null, this.errorHandlerService)
+      );
+  }
+
   private readLocalStorage<T>(key: string): T | undefined {
     const json = localStorage.getItem(key);
     if (!json) {
@@ -122,11 +139,11 @@ export class WatchlistCollectionService {
     return JSON.parse(json) as T;
   }
 
-  private saveCollection(collection: WatchListCollection) {
+  private saveCollection(collection: WatchlistCollection) {
     localStorage.setItem(this.watchlistCollectionStorage, JSON.stringify(collection));
   }
 
-  private createDefaultCollection(): WatchListCollection {
+  private createDefaultCollection(): WatchlistCollection {
     const oldWatchlist = this.readLocalStorage<InstrumentKey[]>(this.watchlistStorage) ?? [];
     return {
       collection: [
@@ -135,8 +152,8 @@ export class WatchlistCollectionService {
           title: 'Список по-умолчанию',
           isDefault: true,
           items: oldWatchlist
-        } as WatchList
+        } as Watchlist
       ]
-    } as WatchListCollection;
+    } as WatchlistCollection;
   }
 }

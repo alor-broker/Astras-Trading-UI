@@ -8,11 +8,11 @@ import { TestData } from '../../../shared/utils/testing';
 import { WatchlistCollectionService } from './watchlist-collection.service';
 import { DashboardService } from '../../../shared/services/dashboard.service';
 import { HistoryService } from '../../../shared/services/history.service';
-import { WatchListCollection } from '../models/watch-list.model';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { BaseResponse } from '../../../shared/models/ws/base-response.model';
 import { Quote } from '../../../shared/models/quotes/quote.model';
+import { WatchlistCollection } from '../models/watchlist.model';
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
@@ -69,7 +69,7 @@ describe('WatchInstrumentsService', () => {
           isDefault: false,
           items: TestData.instruments.map(x => ({ ...x }))
         }]
-      } as WatchListCollection;
+      } as WatchlistCollection;
     });
 
     service.getWatched({ guid: 'guid', activeListId: '123' });
@@ -94,7 +94,7 @@ describe('WatchInstrumentsService', () => {
           items: TestData.instruments.map(x => ({ ...x }))
         },
           defaultList]
-      } as WatchListCollection;
+      } as WatchlistCollection;
     });
 
     let requestedListId: string | undefined;

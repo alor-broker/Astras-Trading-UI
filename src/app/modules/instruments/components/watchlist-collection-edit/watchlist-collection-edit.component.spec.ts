@@ -2,15 +2,25 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WatchlistCollectionEditComponent } from './watchlist-collection-edit.component';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 describe('WatchlistCollectionEditComponent', () => {
   let component: WatchlistCollectionEditComponent;
   let fixture: ComponentFixture<WatchlistCollectionEditComponent>;
-  const watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['collectionChanged$', 'getWatchlistCollection', 'updateListMeta', 'createNewList', 'removeList']);
+  const watchlistCollectionServiceSpy = jasmine.createSpyObj(
+    'WatchlistCollectionService',
+    [
+      'collectionChanged$',
+      'getWatchlistCollection',
+      'updateListMeta',
+      'createNewList',
+      'removeList',
+      'getPresetCollection'
+    ]);
 
   const collectionChangedMock = new Subject();
   watchlistCollectionServiceSpy.collectionChanged$ = collectionChangedMock.asObservable();
+  watchlistCollectionServiceSpy.getPresetCollection.and.returnValue(of(null));
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

@@ -4,8 +4,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { filter, Observable, Subject, takeUntil } from 'rxjs';
-import { WatchListCollection } from '../../models/watch-list.model';
 import { map, startWith } from 'rxjs/operators';
+import { WatchlistCollection } from '../../models/watchlist.model';
 
 @Component({
   selector: 'ats-instrument-select-settings[guid]',
@@ -15,7 +15,7 @@ import { map, startWith } from 'rxjs/operators';
 export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
   settingsForm!: FormGroup;
   prevSettings?: InstrumentSelectSettings;
-  collection$?: Observable<WatchListCollection>;
+  collection$?: Observable<WatchlistCollection>;
   @Input()
   guid!: string;
   @Output()
