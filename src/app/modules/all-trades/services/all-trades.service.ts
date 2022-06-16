@@ -13,7 +13,7 @@ import { BaseWebsocketService } from "../../../shared/services/base-websocket.se
 import { WebsocketService } from "../../../shared/services/websocket.service";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { sortByTimestamp } from "../utils/all-trades.utils";
-import { delay, distinct } from "rxjs/operators";
+import { distinct } from "rxjs/operators";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 
 @Injectable()
@@ -68,7 +68,6 @@ export class AllTradesService extends BaseWebsocketService<AllTradesSettings>{
       params: {from, to, take, descending: true}
     })
       .pipe(
-        delay(300),
         map(res => res.sort(sortByTimestamp)),
         catchHttpError<Array<AllTradesItem>>([], this.errorHandlerService),
       );
