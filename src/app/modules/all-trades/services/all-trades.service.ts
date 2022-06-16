@@ -13,15 +13,14 @@ import { BaseWebsocketService } from "../../../shared/services/base-websocket.se
 import { WebsocketService } from "../../../shared/services/websocket.service";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { sortByTimestamp } from "../utils/all-trades.utils";
-import { distinct } from "rxjs/operators";
+import { delay, distinct } from "rxjs/operators";
+import { catchHttpError } from "../../../shared/utils/observable-helper";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AllTradesService extends BaseWebsocketService<AllTradesSettings>{
   private allTradesUrl = environment.apiUrl + '/md/v2/Securities';
 
-  private settings$?: Observable<AllTradesSettings>;
+  public settings$?: Observable<AllTradesSettings>;
 
   constructor(
     ws: WebsocketService,
@@ -57,13 +56,9 @@ export class AllTradesService extends BaseWebsocketService<AllTradesSettings>{
           this.setSettings({ ...settings, ...i });
         }
         return settings;
-      })
+      }),
+      distinct()
     );
-  }
-
-  public getSettingsSub(): Observable<AllTradesSettings> {
-    return this.settings$!
-      .pipe(distinct());
   }
 
   public getTradesList(req: GetAllTradesRequest): Observable<Array<AllTradesItem>> {
@@ -72,10 +67,14 @@ export class AllTradesService extends BaseWebsocketService<AllTradesSettings>{
     return this.http.get<Array<AllTradesItem>>(`${this.allTradesUrl}/${exchange}/${symbol}/alltrades`, {
       params: {from, to, take, descending: true}
     })
-      .pipe(map(res => res.sort(sortByTimestamp)));
+      .pipe(
+        delay(300),
+        map(res => res.sort(sortByTimestamp)),
+        catchHttpError<Array<AllTradesItem>>([], this.errorHandlerService),
+      );
   }
 
-  public getAllTradesSub(req: AllTradesSettings): Observable<AllTradesItem> {
+  public getNewTrades(req: AllTradesSettings): Observable<AllTradesItem> {
     const request: AllTradesSubRequest = {
       opcode: 'AllTradesSubscribe',
       code: req.symbol,

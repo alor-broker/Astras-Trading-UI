@@ -13,16 +13,18 @@ import { DatePipe } from "@angular/common";
 import { startOfDay, toUnixTimestampSeconds } from "../../../../shared/utils/datetime";
 import { AllTradesSettings } from "../../../../shared/models/settings/all-trades-settings.model";
 import { switchMap, tap } from "rxjs/operators";
-import { Subject, takeUntil } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
+import { AllTradesItem } from "../../models/all-trades.model";
 
 @Component({
   selector: 'ats-all-trades',
   templateUrl: './all-trades.component.html',
-  styleUrls: ['./all-trades.component.less']
+  styleUrls: ['./all-trades.component.less'],
 })
 export class AllTradesComponent implements OnInit, OnDestroy {
 
   @Input() public resize!: EventEmitter<DashboardItem>;
+  @Input() public heightAdjustment!: number;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private settings: AllTradesSettings | null = null;
@@ -57,9 +59,9 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.allTradesService.getSettingsSub()
-      .pipe(takeUntil(this.destroy$))
-      ?.subscribe(settings => {
+    this.allTradesService.settings$
+      ?.pipe(takeUntil(this.destroy$))
+      .subscribe(settings => {
         this.settings = settings;
         this.settingsChange();
       });
@@ -67,7 +69,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     this.resize
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
-        this.tableContainerHeight = data.height! - 37.5;
+        this.tableContainerHeight = data.height! - this.heightAdjustment;
         this.tableContainerWidth = data.width!;
         this.cdr.markForCheck();
       });
@@ -76,16 +78,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   public scrolled(): void {
     if (!this.settings || this.isEndOfList || this.isLoading) return;
 
-    this.isLoading = true;
-    this.cdr.markForCheck();
-    this.allTradesService.getTradesList({
-      exchange: this.settings.exchange,
-      symbol: this.settings.symbol,
-      from: toUnixTimestampSeconds(startOfDay(new Date())),
-      to: toUnixTimestampSeconds(new Date(this.tradesList[this.tradesList.length - 1].timestamp)),
-      take: this.take
-    })
-      .pipe(takeUntil(this.destroy$))
+    this.getTradesListReq(toUnixTimestampSeconds(new Date(this.tradesList[this.tradesList.length - 1].timestamp)))
       .subscribe(res => {
         const lastItemIndex = res.findIndex(item => JSON.stringify(item) === JSON.stringify(this.tradesList[this.tradesList.length - 1]));
         this.isEndOfList = lastItemIndex === res.length - 1;
@@ -104,29 +97,36 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   private settingsChange(): void {
     if (!this.settings) return;
 
-    this.isLoading = true;
-    this.cdr.markForCheck();
-    this.allTradesService.getTradesList({
-      exchange: this.settings.exchange,
-      symbol: this.settings.symbol,
-      from: toUnixTimestampSeconds(startOfDay(new Date())),
-      to: toUnixTimestampSeconds(new Date()),
-      take: this.take
-    })
+    this.getTradesListReq(toUnixTimestampSeconds(new Date()))
       .pipe(
         tap(res => {
           this.tradesList = res;
-          this.isLoading = false;
           this.isEndOfList = false;
           this.cdr.markForCheck();
         }),
-        switchMap(() => this.allTradesService.getAllTradesSub(this.settings!)),
-        takeUntil(this.destroy$)
+        switchMap(() => this.allTradesService.getNewTrades(this.settings!)),
       )
       .subscribe((res) => {
         this.tradesList = [res, ...this.tradesList];
         this.cdr.markForCheck();
       });
+  }
+
+  private getTradesListReq(to: number): Observable<AllTradesItem[]> {
+    this.isLoading = true;
+    return this.allTradesService.getTradesList({
+      exchange: this.settings!.exchange,
+      symbol: this.settings!.symbol,
+      from: toUnixTimestampSeconds(startOfDay(new Date())),
+      to,
+      take: this.take
+    })
+      .pipe(
+        takeUntil(this.destroy$),
+        tap(() => {
+          this.isLoading = false;
+        })
+      );
   }
 
   public ngOnDestroy(): void {

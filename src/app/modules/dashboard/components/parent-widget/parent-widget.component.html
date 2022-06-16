@@ -33,6 +33,7 @@
       [resize]="widgetResize"></ats-info-widget>
     <ats-all-trades-widget *ngSwitchCase="'all-trades'"
       [guid]="getGuid()"
+      [heightAdjustment]="contentHeightAdjustment"
       [(shouldShowSettings)]="shouldShowSettings"
       [resize]="widgetResize"
     ></ats-all-trades-widget>

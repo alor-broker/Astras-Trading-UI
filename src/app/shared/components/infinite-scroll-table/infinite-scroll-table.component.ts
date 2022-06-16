@@ -12,6 +12,7 @@ import {
 import { ColumnsSettings } from "../../models/columns-settings.model";
 import { NzTableComponent } from "ng-zorro-antd/table";
 import { Subject, takeUntil } from "rxjs";
+import { ITEM_HEIGHT } from "../../../modules/all-trades/utils/all-trades.utils";
 
 @Component({
   selector: 'ats-infinite-scroll-table',
@@ -31,11 +32,11 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   @Output() public scrolled = new EventEmitter();
 
   @ViewChild('dataTable', {static: false}) public dataTable!: NzTableComponent<any>;
-  @ViewChild('tableRow') headerEl!: ElementRef;
+  @ViewChild('tableRow') headerRowEl!: ElementRef;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private visibleItemsCount = 1;
-  public itemHeight = 29;
+  public itemHeight = ITEM_HEIGHT;
   public scrollHeight = 0;
 
   constructor() {
@@ -43,7 +44,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   public ngOnChanges(changes: SimpleChanges) {
     if (changes.tableContainerHeight || changes.tableContainerWidth) {
-      this.scrollHeight = this.tableContainerHeight - this.headerEl?.nativeElement?.clientHeight;
+      this.scrollHeight = this.tableContainerHeight - this.headerRowEl?.nativeElement?.clientHeight;
       this.visibleItemsCount = Math.ceil(this.scrollHeight / this.itemHeight);
     }
   }
@@ -52,9 +53,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
     this.dataTable?.cdkVirtualScrollViewport?.scrolledIndexChange
       .pipe(takeUntil(this.destroy$))
       .subscribe((upperItemIndex: number) => {
-        if (
-          upperItemIndex >= this.data.length - this.visibleItemsCount - 1
-        ) {
+        if (upperItemIndex >= this.data.length - this.visibleItemsCount - 1) {
           this.scrolled.emit();
         }
       });

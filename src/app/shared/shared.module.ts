@@ -129,9 +129,9 @@ import { InfiniteScrollTableComponent } from './components/infinite-scroll-table
         // components
         PriceTickComponent,
         LoadingIndicatorComponent,
-        // directives
+        InfiniteScrollTableComponent,
+      // directives
         NumericalDirective,
-        InfiniteScrollTableComponent
     ],
   providers: [
     {
