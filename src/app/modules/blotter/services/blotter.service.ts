@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
+import { combineLatest, merge, Observable, of, pipe, Subscription, tap } from 'rxjs';
 import { filter, map, startWith, switchMap } from 'rxjs/operators';
 import { CurrencyCode, CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
@@ -68,47 +68,47 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   getPositions(guid: string) {
     this.position$ = this.getSettings(guid).pipe(
-      filter((s, i): s is BlotterSettings => !!s && (!!s.linkToActive || !i)),
+      filter((s): s is BlotterSettings => !!s),
       switchMap((settings) =>
         this.getPositionsReq(settings.portfolio, settings.exchange).pipe(
           map(poses => settings.isSoldPositionsHidden ? poses.filter(p => p.qtyTFuture !== 0) : poses)
         )
       ),
     );
-    this.linkToPortfolio();
+    this.linkToPortfolio(guid);
     return this.position$;
   }
 
   getTrades(guid: string) {
     this.trade$ = this.getSettings(guid).pipe(
-      filter((s, i): s is BlotterSettings => !!s && (!!s.linkToActive || !i)),
+      filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => this.getTradesReq(settings.portfolio, settings.exchange))
     );
-    this.linkToPortfolio();
+    this.linkToPortfolio(guid);
     return this.trade$;
   }
 
   getOrders(guid: string) {
     this.order$ = this.getSettings(guid).pipe(
-      filter((s, i): s is BlotterSettings => !!s && (!!s.linkToActive || !i)),
+      filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => this.getOrdersReq(settings.portfolio, settings.exchange))
     );
-    this.linkToPortfolio();
+    this.linkToPortfolio(guid);
     return this.order$;
   }
 
   getStopOrders(guid: string) {
     this.stopOrder$ = this.getSettings(guid).pipe(
-      filter((s, i): s is BlotterSettings => !!s && (!!s.linkToActive || !i)),
+      filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => this.getStopOrdersReq(settings.portfolio, settings.exchange))
     );
-    this.linkToPortfolio();
+    this.linkToPortfolio(guid);
     return this.stopOrder$;
   }
 
   getSummaries(guid: string) : Observable<SummaryView> {
     this.summary$ = this.getSettings(guid).pipe(
-      filter((s, i): s is BlotterSettings => !!s && (!!s.linkToActive || !i)),
+      filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => {
         if (settings.currency != CurrencyInstrument.RUB) {
           return combineLatest([
@@ -125,7 +125,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         }
       })
     );
-    this.linkToPortfolio();
+    this.linkToPortfolio(guid);
     return this.summary$;
   }
 
@@ -230,19 +230,21 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     return merge(trades, of([]));
   }
 
-  private linkToPortfolio() {
+  private linkToPortfolio(guid: string) {
     if (!this.portfolioSub) {
-      this.portfolioSub = this.store.select(getSelectedPortfolio).pipe(
-        filter((p): p is PortfolioKey => !!p),
-        map((p) => {
-          const current = this.getSettingsValue();
-          if (current &&
-              !(current.portfolio == p.portfolio &&
-              current.exchange == p.exchange)) {
-            this.setSettings({ ...current, ...p });
+      this.portfolioSub = combineLatest([
+        this.getSettings(guid).pipe(filter((s): s is BlotterSettings => !!s)),
+        this.store.select(getSelectedPortfolio).pipe(filter((p): p is PortfolioKey => !!p))
+      ])
+        .pipe(filter(([s, p]) =>
+          !!s.linkToActive &&
+          !(s.portfolio == p.portfolio && s.exchange == p.exchange))
+        )
+        .subscribe(
+          ([s, p]) => {
+            this.setSettings({...s, ...p});
           }
-        })
-      ).subscribe();
+        );
     }
   }
 }
