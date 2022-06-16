@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { JoyrideService } from 'ngx-joyride';
 import { buyColor } from 'src/app/shared/models/settings/styles-constants';
+import { LocalStorageService } from "../../../shared/services/local-storage.service";
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,10 @@ export class OnboardingService {
   private profileStorage = 'profile';
   private isCompleted = false;
 
-  constructor(private readonly joyride: JoyrideService) {
+  constructor(
+    private readonly joyride: JoyrideService,
+    private readonly localStorage: LocalStorageService
+  ) {
     this.isCompleted = this.getIsCompleted();
   }
 
@@ -27,12 +31,7 @@ export class OnboardingService {
   }
 
   private getProfile() {
-    const json = localStorage.getItem(this.profileStorage);
-    if (json) {
-      let profile = JSON.parse(json);
-      return profile;
-    }
-    return null;
+    return this.localStorage.getItem<any>(this.profileStorage);
   }
 
   private getIsCompleted() : boolean {
@@ -49,6 +48,6 @@ export class OnboardingService {
       isCompleted
     };
 
-    localStorage.setItem(this.profileStorage, JSON.stringify(profile));
+    this.localStorage.setItem(this.profileStorage, profile);
   }
 }
