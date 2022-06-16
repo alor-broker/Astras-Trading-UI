@@ -3,14 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { WatchlistCollectionService } from './watchlist-collection.service';
 import { TestData } from '../../../shared/utils/testing';
 import { WatchlistCollection } from '../models/watchlist.model';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
+import { LocalStorageService } from "../../../shared/services/local-storage.service";
 
 describe('WatchListCollectionService', () => {
-  let httpController: HttpTestingController;
-  let httpClient: HttpClient;
   const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
+  let localStorageServiceSpy: any;
 
   let service: WatchlistCollectionService;
   const watchlistCollectionStorage = 'watchlistCollection';
@@ -30,14 +29,27 @@ describe('WatchListCollectionService', () => {
       }]
   } as WatchlistCollection;
 
+  const setupGetItemMock = (returnValue: WatchlistCollection | null = null) => {
+    localStorageServiceSpy.getItem.and.callFake((key: string) => {
+      if (key !== watchlistCollectionStorage) {
+        return null;
+      }
+
+      return JSON.parse(JSON.stringify(returnValue)) as WatchlistCollection;
+    });
+  };
+
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
+    localStorageServiceSpy = jasmine.createSpyObj('LocalStorageService', ['getItem', 'setItem']);
+
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule
       ],
       providers: [
         WatchlistCollectionService,
+        { provide: LocalStorageService, useValue: localStorageServiceSpy },
         { provide: ErrorHandlerService, useValue: errorHandlerSpy }
       ]
     });
@@ -50,35 +62,21 @@ describe('WatchListCollectionService', () => {
   });
 
   it('#getWatchlistCollection should read value from localStorage', () => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
-
-      return JSON.stringify(testCollection);
-    });
+    setupGetItemMock(testCollection);
 
     const value = JSON.stringify(service.getWatchlistCollection());
     expect(value).toEqual(JSON.stringify(testCollection));
   });
 
   it('#getWatchlistCollection should return default collection if missing', () => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      return null;
-    });
+    setupGetItemMock(null);
 
     const value = service.getWatchlistCollection();
     expect(value.collection.find(x => x.isDefault)).toBeDefined();
   });
 
   it('#getListItems should return list for correct listId', () => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
-
-      return JSON.stringify(testCollection);
-    });
+    setupGetItemMock(testCollection);
 
     const targetListId = testCollection.collection[0].id;
     const value = JSON.stringify(service.getListItems(targetListId));
@@ -87,13 +85,7 @@ describe('WatchListCollectionService', () => {
   });
 
   it('#getListItems should return undefined for incorrect listId', () => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
-
-      return JSON.stringify(testCollection);
-    });
+    setupGetItemMock(testCollection);
 
     const value = service.getListItems('-1');
 
@@ -101,21 +93,12 @@ describe('WatchListCollectionService', () => {
   });
 
   it('#createNewList should update localStorage', () => {
-    let isUpdated = false;
-    spyOn(localStorage, 'setItem').and.callFake((key: string) => {
-      if (key === watchlistCollectionStorage) {
-        isUpdated = true;
-      }
-    });
-
     service.createNewList('test list', []);
 
-    expect(isUpdated).toBeTrue();
+    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(watchlistCollectionStorage, jasmine.anything());
   });
 
   it('#createNewList should notify about changes', (done) => {
-    spyOn(localStorage, 'setItem');
-
     service.collectionChanged$.subscribe(() => {
       expect().nothing();
       done();
@@ -125,36 +108,15 @@ describe('WatchListCollectionService', () => {
   });
 
   it('#removeList should update localStorage', () => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
-
-      return JSON.stringify(testCollection);
-    });
-
-    let isUpdated = false;
-    spyOn(localStorage, 'setItem').and.callFake((key: string) => {
-      if (key === watchlistCollectionStorage) {
-        isUpdated = true;
-      }
-    });
+    setupGetItemMock(testCollection);
 
     service.removeList(testCollection.collection[0].id);
 
-    expect(isUpdated).toBeTrue();
+    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(watchlistCollectionStorage, jasmine.anything());
   });
 
   it('#removeList should notify about changes', (done) => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
-
-      return JSON.stringify(testCollection);
-    });
-
-    spyOn(localStorage, 'setItem');
+    setupGetItemMock(testCollection);
 
     service.collectionChanged$.subscribe(() => {
       expect().nothing();
@@ -165,36 +127,15 @@ describe('WatchListCollectionService', () => {
   });
 
   it('#updateListMeta should update localStorage', () => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
-
-      return JSON.stringify(testCollection);
-    });
-
-    let isUpdated = false;
-    spyOn(localStorage, 'setItem').and.callFake((key: string) => {
-      if (key === watchlistCollectionStorage) {
-        isUpdated = true;
-      }
-    });
+    setupGetItemMock(testCollection);
 
     service.updateListMeta(testCollection.collection[0].id, { title: 'new title' });
 
-    expect(isUpdated).toBeTrue();
+    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(watchlistCollectionStorage, jasmine.anything());
   });
 
   it('#updateListMeta should notify about changes', (done) => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
-
-      return JSON.stringify(testCollection);
-    });
-
-    spyOn(localStorage, 'setItem');
+    setupGetItemMock(testCollection);
 
     service.collectionChanged$.subscribe(() => {
       expect().nothing();
@@ -205,76 +146,40 @@ describe('WatchListCollectionService', () => {
   });
 
   it('#addItemsToList should update localStorage', () => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
+    setupGetItemMock(testCollection);
 
-      return JSON.stringify(testCollection);
-    });
+    service.addItemsToList(testCollection.collection[0].id, [{
+      symbol: 'symbol',
+      exchange: 'SPB'
+    }]);
 
-    let isUpdated = false;
-    spyOn(localStorage, 'setItem').and.callFake((key: string) => {
-      if (key === watchlistCollectionStorage) {
-        isUpdated = true;
-      }
-    });
-
-    service.addItemsToList(testCollection.collection[0].id, [{ symbol: 'symbol', exchange: 'SPB' }]);
-
-    expect(isUpdated).toBeTrue();
+    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(watchlistCollectionStorage, jasmine.anything());
   });
 
   it('#addItemsToList should notify about changes', (done) => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
-
-      return JSON.stringify(testCollection);
-    });
-
-    spyOn(localStorage, 'setItem');
+    setupGetItemMock(testCollection);
 
     service.collectionChanged$.subscribe(() => {
       expect().nothing();
       done();
     });
 
-    service.addItemsToList(testCollection.collection[0].id, [{ symbol: 'symbol', exchange: 'SPB' }]);
+    service.addItemsToList(testCollection.collection[0].id, [{
+      symbol: 'symbol',
+      exchange: 'SPB'
+    }]);
   });
 
   it('#removeItemsFromList should update localStorage', () => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
-
-      return JSON.stringify(testCollection);
-    });
-
-    let isUpdated = false;
-    spyOn(localStorage, 'setItem').and.callFake((key: string) => {
-      if (key === watchlistCollectionStorage) {
-        isUpdated = true;
-      }
-    });
+    setupGetItemMock(testCollection);
 
     service.removeItemsFromList(testCollection.collection[0].id, testCollection.collection[0].items);
 
-    expect(isUpdated).toBeTrue();
+    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(watchlistCollectionStorage, jasmine.anything());
   });
 
   it('#removeItemsFromList should notify about changes', (done) => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
-
-      return JSON.stringify(testCollection);
-    });
-
-    spyOn(localStorage, 'setItem');
+    setupGetItemMock(testCollection);
 
     service.collectionChanged$.subscribe(() => {
       expect().nothing();

@@ -10,11 +10,13 @@ import { Credentials } from '../models/user/credentials.model';
 import { RefreshTokenResponse } from '../models/user/refresh-token-response.model';
 import { JwtBody } from '../models/user/jwt.model';
 import { BaseUser } from '../models/user/base-user.model';
+import { LocalStorageService } from "./local-storage.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  private readonly userStorage = 'user';
   private accountUrl = environment.clientDataUrl + '/auth/actions';
   private ssoUrl = environment.ssoUrl;
   private currentUser = new BehaviorSubject<User>({
@@ -40,9 +42,14 @@ export class AuthService {
   );
   accessToken$ = this.getAccessToken();
 
-  constructor(private http: HttpClient) {
-    const user: User = JSON.parse(localStorage.getItem('user')!);
-    this.setCurrentUser(user);
+  constructor(
+    private readonly http: HttpClient,
+    private readonly localStorage: LocalStorageService
+  ) {
+    const user = localStorage.getItem<User>(this.userStorage);
+    if(user) {
+      this.setCurrentUser(user);
+    }
   }
 
   public setUser(baseUser: BaseUser) {
@@ -53,7 +60,8 @@ export class AuthService {
       clientId,
       portfolios
     };
-    localStorage.setItem('user', JSON.stringify(user));
+
+    this.localStorage.setItem(this.userStorage, user);
     this.setCurrentUser(user);
   }
 

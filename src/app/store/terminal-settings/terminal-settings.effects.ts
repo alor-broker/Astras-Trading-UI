@@ -1,14 +1,23 @@
 import { Injectable } from '@angular/core';
-import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import {
+  Actions,
+  concatLatestFrom,
+  createEffect,
+  ofType
+} from '@ngrx/effects';
 
 import * as TerminalSettingsActions from './terminal-settings.actions';
 import { initTerminalSettingsSuccess } from './terminal-settings.actions';
 import { TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
 import { TimezoneDisplayOption } from '../../shared/models/enums/timezone-display-option';
-import { map, tap } from 'rxjs/operators';
+import {
+  map,
+  tap
+} from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { selectTerminalSettingsState } from './terminal-settings.selectors';
 import { filter } from 'rxjs';
+import { LocalStorageService } from "../../shared/services/local-storage.service";
 
 @Injectable()
 export class TerminalSettingsEffects {
@@ -44,22 +53,18 @@ export class TerminalSettingsEffects {
 
   private readonly settingsStorageKey = 'terminalSettings';
 
-  constructor(private readonly actions$: Actions, private readonly store: Store) {
+  constructor(
+    private readonly actions$: Actions,
+    private readonly store: Store,
+    private readonly localStorage: LocalStorageService) {
   }
 
-  private readSettingsFromLocalStorage(): TerminalSettings | null {
-    // TODO: replace in https://github.com/alor-broker/Astras-Trading-UI/issues/152
-    const json = localStorage.getItem(this.settingsStorageKey);
-    if (!!json) {
-      return JSON.parse(json) as TerminalSettings;
-    }
-
-    return null;
+  private readSettingsFromLocalStorage(): TerminalSettings | undefined {
+    return this.localStorage.getItem<TerminalSettings>(this.settingsStorageKey);
   }
 
   private saveSettingsToLocalStorage(settings: TerminalSettings) {
-    // TODO: replace in https://github.com/alor-broker/Astras-Trading-UI/issues/152
-    localStorage.setItem(this.settingsStorageKey, JSON.stringify(settings));
+    this.localStorage.setItem(this.settingsStorageKey, settings);
   }
 
   private getDefaultSettings(): TerminalSettings {

@@ -1,12 +1,20 @@
 import { Injectable } from '@angular/core';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { GuidGenerator } from '../../../shared/utils/guid';
-import { Observable, Subject } from 'rxjs';
-import { PresetWatchlistCollection, Watchlist, WatchlistCollection } from '../models/watchlist.model';
+import {
+  Observable,
+  Subject
+} from 'rxjs';
+import {
+  PresetWatchlistCollection,
+  Watchlist,
+  WatchlistCollection
+} from '../models/watchlist.model';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
+import { LocalStorageService } from "../../../shared/services/local-storage.service";
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +28,7 @@ export class WatchlistCollectionService {
 
   constructor(
     private readonly http: HttpClient,
+    private readonly localStorage: LocalStorageService,
     private readonly errorHandlerService: ErrorHandlerService
   ) {
   }
@@ -29,7 +38,7 @@ export class WatchlistCollectionService {
   }
 
   public getWatchlistCollection(): WatchlistCollection {
-    const existedCollection = this.readLocalStorage<WatchlistCollection>(this.watchlistCollectionStorage);
+    const existedCollection = this.localStorage.getItem<WatchlistCollection>(this.watchlistCollectionStorage);
     if (!existedCollection) {
       const defaultCollection = this.createDefaultCollection();
       this.saveCollection(defaultCollection);
@@ -130,21 +139,12 @@ export class WatchlistCollectionService {
       );
   }
 
-  private readLocalStorage<T>(key: string): T | undefined {
-    const json = localStorage.getItem(key);
-    if (!json) {
-      return undefined;
-    }
-
-    return JSON.parse(json) as T;
-  }
-
   private saveCollection(collection: WatchlistCollection) {
-    localStorage.setItem(this.watchlistCollectionStorage, JSON.stringify(collection));
+    this.localStorage.setItem(this.watchlistCollectionStorage, collection);
   }
 
   private createDefaultCollection(): WatchlistCollection {
-    const oldWatchlist = this.readLocalStorage<InstrumentKey[]>(this.watchlistStorage) ?? [];
+    const oldWatchlist = this.localStorage.getItem<InstrumentKey[]>(this.watchlistStorage) ?? [];
     return {
       collection: [
         {
