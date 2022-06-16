@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, Subscription, tap } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -16,12 +16,31 @@ import { getSelectedInstrument } from '../../../store/instruments/instruments.se
 import { TimeframesHelper } from '../utils/timeframes-helper';
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../instruments/services/instruments.service';
+import { mapWith } from "../../../shared/utils/observable-helper";
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
 @Injectable()
 export class LightChartService extends BaseWebsocketService<LightChartSettings> {
   private settingsSub?: Subscription;
+
+  private readonly barsSettings = new BehaviorSubject<LightChartSettings | null>(null);
+  // bars have to be piped with getLastHistoryPoint method
+  // otherwise, a situation is possible when the request for the last point does not keep up with the change in settings
+  // as a result the data subscription turns out to be incorrect
+  private readonly bars$ = this.barsSettings.pipe(
+    filter((x): x is LightChartSettings => !!x),
+    mapWith(settings => this.getLastHistoryPoint(settings), (s, hp) => ({ settings: s, lastPoint: hp })),
+    switchMap((x) => {
+      return this.getBarsReq(
+        x.settings.symbol,
+        x.settings.exchange,
+        x.settings.timeFrame,
+        x.lastPoint,
+        x.settings.instrumentGroup
+      );
+    })
+  );
 
   constructor(
     ws: WebsocketService,
@@ -43,27 +62,20 @@ export class LightChartService extends BaseWebsocketService<LightChartSettings> 
     }
   }
 
-  getBars(settings: LightChartSettings) {
+  initSettingsUpdates(guid: string) {
     this.settingsSub?.unsubscribe();
-    this.settingsSub = combineLatest([this.store.select(getSelectedInstrument), this.getSettings(settings.guid)]).pipe(
-      map(([i, current]) => {
+    this.settingsSub = combineLatest([this.store.select(getSelectedInstrument), this.getSettings(guid)]).pipe(
+      tap(([i, current]) => {
         if (current && current.linkToActive && !this.isSettingsMatchInstrument(current, i)) {
           this.setSettings({ ...current, ...i });
         }
       })
     ).subscribe();
+  }
 
-    return this.getLastHistoryPoint(settings).pipe(
-      switchMap(lastPoint => {
-        return this.getBarsReq(
-          settings.symbol,
-          settings.exchange,
-          settings.timeFrame,
-          lastPoint,
-          settings.instrumentGroup
-        );
-      })
-    );
+  getBars(settings: LightChartSettings) {
+    this.barsSettings.next(settings);
+    return this.bars$;
   }
 
   getSettings(guid: string): Observable<LightChartSettingsExtended> {
