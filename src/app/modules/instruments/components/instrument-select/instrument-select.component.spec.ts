@@ -3,13 +3,19 @@ import { InstrumentsService } from '../../services/instruments.service';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { InstrumentSelectComponent } from './instrument-select.component';
 import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
+import { BehaviorSubject } from 'rxjs';
+import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
 
 describe('InstrumentSelectComponent', () => {
   let component: InstrumentSelectComponent;
   let fixture: ComponentFixture<InstrumentSelectComponent>;
-  const spyInstrs = jasmine.createSpyObj('InstrumentsService', ['getInstruments', 'unsubscribe']);
-  const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['add', 'unsubscribe']);
-  spyWatcher.add.and.returnValue();
+  const spyInstrs = jasmine.createSpyObj('InstrumentsService', ['getInstruments']);
+  const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['getSettings']);
+  const watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['addItemsToList']);
+
+  const getSettingsMock = new BehaviorSubject({} as InstrumentSelectSettings);
+  spyWatcher.getSettings.and.returnValue(getSettingsMock.asObservable());
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
@@ -18,16 +24,11 @@ describe('InstrumentSelectComponent', () => {
       declarations: [InstrumentSelectComponent],
       providers: [
         { provide: InstrumentsService, useValue: spyInstrs },
+        { provide: WatchInstrumentsService, useValue: spyWatcher },
+        { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
       ]
     }).compileComponents();
 
-    TestBed.overrideComponent(InstrumentSelectComponent, {
-      set: {
-        providers: [
-          { provide: WatchInstrumentsService, useValue: spyWatcher },
-        ]
-      }
-    });
   });
 
   beforeEach(() => {

@@ -14,8 +14,8 @@ import {
 } from '../../../shared/models/settings/styles-constants';
 import { TimezoneConverter } from '../../../shared/utils/timezone-converter';
 import { fromUnixTime, toUnixTime } from '../../../shared/utils/datetime';
+import { PriceFormatHelper } from "./price-format-helper";
 
-type ShortPriceFormat = { minMove: number; precision: number; };
 type CandleDisplay = Candle & { time: Time };
 
 export class LightChart {
@@ -186,7 +186,7 @@ export class LightChart {
     this.timezoneConverter = timezoneConverter;
 
     this.series.applyOptions({
-      priceFormat: this.getPriceFormat(minstep ?? 1)
+      priceFormat: PriceFormatHelper.getPriceFormat(minstep ?? 1)
     });
 
     this.chart.priceScale().applyOptions({
@@ -242,29 +242,4 @@ export class LightChart {
   }
 
   private getMinTime = () => Math.min(...this.bars.map(b => b.time));
-
-  /**
-   * Returns price format for light-charts
-   *
-   * @param {number} minstep Minimum value the price can change. It can be like 0.01 or 0.0005. 0.07 is not the case thanks god.
-   * @return {ShortPriceFormat} Price format, to be assigned to lightcharts.
-   */
-  private getPriceFormat(minstep: number): ShortPriceFormat {
-    if (minstep >= 1) {
-      return {
-        minMove: 1,
-        precision: 0
-      };
-    }
-    const log10 = -Math.log10(minstep);
-    const isHalf = (log10 % 1) !== 0;
-    const minMove = isHalf ? minstep / 5 : minstep;
-    const roundedLog10 = Math.floor(log10);
-    const priceFormat = {
-      minMove: Number(minMove.toFixed(roundedLog10 + 1)),
-      precision: isHalf ? roundedLog10 + 1 : (log10 < 0) ? -roundedLog10 : roundedLog10
-    };
-    return priceFormat;
-  }
-
 }

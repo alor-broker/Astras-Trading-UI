@@ -5,26 +5,50 @@ import { WebsocketService } from 'src/app/shared/services/websocket.service';
 
 import { WatchInstrumentsService } from './watch-instruments.service';
 import { TestData } from '../../../shared/utils/testing';
-import { Instrument } from '../../../shared/models/instruments/instrument.model';
+import { WatchlistCollectionService } from './watchlist-collection.service';
+import { DashboardService } from '../../../shared/services/dashboard.service';
+import { HistoryService } from '../../../shared/services/history.service';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { Candle } from '../../../shared/models/history/candle.model';
+import { BaseResponse } from '../../../shared/models/ws/base-response.model';
+import { Quote } from '../../../shared/models/quotes/quote.model';
+import { WatchlistCollection } from '../models/watchlist.model';
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
   let httpController: HttpTestingController;
   let httpClient: HttpClient;
 
-  const spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
+  let spy: any;
+  let dashboardServiceSpy: any;
+  let historyServiceSpy: any;
+  let watchlistCollectionServiceSpy: any;
 
-  const toInstrumentsArray = (s: string) => !!s ? <Instrument[]> JSON.parse(s) : [];
+  const collectionChangedMock = new Subject();
+  const daysOpenMock = new BehaviorSubject<Candle | null>(null);
+  const messagesMock = new Subject<BaseResponse<Quote>>();
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
+    spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
+    dashboardServiceSpy = jasmine.createSpyObj('DashboardService', ['getSettings']);
+    historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getDaysOpen']);
+    watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['getWatchlistCollection', 'collectionChanged$', 'getListItems',]);
+
+    watchlistCollectionServiceSpy.collectionChanged$ = collectionChangedMock.asObservable();
+    historyServiceSpy.getDaysOpen.and.returnValue(daysOpenMock.asObservable());
+    spy.messages$ = messagesMock.asObservable();
+
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
       ],
       providers: [
         WatchInstrumentsService,
+        { provide: DashboardService, useValue: dashboardServiceSpy },
+        { provide: HistoryService, useValue: historyServiceSpy },
         { provide: WebsocketService, useValue: spy },
+        { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy }
       ]
     });
     service = TestBed.inject(WatchInstrumentsService);
@@ -36,37 +60,75 @@ describe('WatchInstrumentsService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('#add should update localStorage', (done) => {
-    const newInstrument = TestData.instruments[0];
+  it('#getWatched should read collection', () => {
+    watchlistCollectionServiceSpy.getWatchlistCollection.and.callFake(() => {
+      return {
+        collection: [{
+          id: '123',
+          title: 'Test List',
+          isDefault: false,
+          items: TestData.instruments.map(x => ({ ...x }))
+        }]
+      } as WatchlistCollection;
+    });
 
-    spyOn(localStorage, 'setItem').and.callFake((key, value) => {
-      const savedInstruments = toInstrumentsArray(value);
+    service.getWatched({ guid: 'guid', activeListId: '123' });
 
-      expect(savedInstruments.length).toBeGreaterThan(0);
-      expect(savedInstruments.find(x => x.isin === newInstrument.isin)).toBeDefined();
-      done();
-    }
-    );
-
-     service.add(newInstrument);
+    expect(watchlistCollectionServiceSpy.getWatchlistCollection).toHaveBeenCalledTimes(1);
   });
 
-  it('#remove should update localStorage', (done) => {
-    const allInstruments = TestData.instruments;
-    const instrumentToRemove = allInstruments[0];
+  it('#getWatched should use default list', () => {
+    const defaultList = {
+      id: '321',
+      title: 'Test List',
+      isDefault: true,
+      items: TestData.instruments.map(x => ({ ...x }))
+    };
 
-    allInstruments.forEach(i => service.add(i));
+    watchlistCollectionServiceSpy.getWatchlistCollection.and.callFake(() => {
+      return {
+        collection: [{
+          id: '123',
+          title: 'Test List',
+          isDefault: false,
+          items: TestData.instruments.map(x => ({ ...x }))
+        },
+          defaultList]
+      } as WatchlistCollection;
+    });
 
-    spyOn(localStorage, 'setItem').and.callFake((key, value) => {
-      const updatedInstruments = toInstrumentsArray(value);
+    let requestedListId: string | undefined;
+    watchlistCollectionServiceSpy.getListItems.and.callFake((listId: string) => {
+      requestedListId = listId;
+      return defaultList.items;
+    });
 
-        expect(updatedInstruments.length).toEqual(allInstruments.length - 1);
-        expect(updatedInstruments.find(x => x.isin === instrumentToRemove.isin)).toBeUndefined();
+    service.getWatched({ guid: 'guid', activeListId: undefined });
 
-        done();
-      }
-    );
+    expect(requestedListId).toEqual(defaultList.id);
+  });
 
-    service.remove(instrumentToRemove);
+  it('should reread collection when changed', () => {
+    const list = {
+      id: '123',
+      title: 'Test List',
+      isDefault: false,
+      items: TestData.instruments.map(x => ({ ...x }))
+    };
+
+    watchlistCollectionServiceSpy.getWatchlistCollection.and.returnValue(() => ({
+      collection: [list]
+    }));
+
+    watchlistCollectionServiceSpy.getListItems.and.callFake(() => {
+      return list.items;
+    });
+
+    service.getWatched({ guid: 'guid', activeListId: '123' });
+    collectionChangedMock.next(null);
+
+    // first call when we start watching
+    // second call when collection changed
+    expect(watchlistCollectionServiceSpy.getListItems).toHaveBeenCalledTimes(2);
   });
 });
