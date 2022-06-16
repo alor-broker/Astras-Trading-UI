@@ -68,7 +68,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   getPositions(guid: string) {
     this.position$ = this.getSettings(guid).pipe(
-      filter((s): s is BlotterSettings => !!s),
+      filter((s, i): s is BlotterSettings => !!s && (!!s.linkToActive || !i)),
       switchMap((settings) =>
         this.getPositionsReq(settings.portfolio, settings.exchange).pipe(
           map(poses => settings.isSoldPositionsHidden ? poses.filter(p => p.qtyTFuture !== 0) : poses)
@@ -81,7 +81,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   getTrades(guid: string) {
     this.trade$ = this.getSettings(guid).pipe(
-      filter((s): s is BlotterSettings => !!s),
+      filter((s, i): s is BlotterSettings => !!s && (!!s.linkToActive || !i)),
       switchMap((settings) => this.getTradesReq(settings.portfolio, settings.exchange))
     );
     this.linkToPortfolio();
@@ -90,7 +90,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   getOrders(guid: string) {
     this.order$ = this.getSettings(guid).pipe(
-      filter((s): s is BlotterSettings => !!s),
+      filter((s, i): s is BlotterSettings => !!s && (!!s.linkToActive || !i)),
       switchMap((settings) => this.getOrdersReq(settings.portfolio, settings.exchange))
     );
     this.linkToPortfolio();
@@ -99,7 +99,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   getStopOrders(guid: string) {
     this.stopOrder$ = this.getSettings(guid).pipe(
-      filter((s): s is BlotterSettings => !!s),
+      filter((s, i): s is BlotterSettings => !!s && (!!s.linkToActive || !i)),
       switchMap((settings) => this.getStopOrdersReq(settings.portfolio, settings.exchange))
     );
     this.linkToPortfolio();
@@ -108,7 +108,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
   getSummaries(guid: string) : Observable<SummaryView> {
     this.summary$ = this.getSettings(guid).pipe(
-      filter((s): s is BlotterSettings => !!s),
+      filter((s, i): s is BlotterSettings => !!s && (!!s.linkToActive || !i)),
       switchMap((settings) => {
         if (settings.currency != CurrencyInstrument.RUB) {
           return combineLatest([
@@ -236,7 +236,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         filter((p): p is PortfolioKey => !!p),
         map((p) => {
           const current = this.getSettingsValue();
-          if (current && current.linkToActive &&
+          if (current &&
               !(current.portfolio == p.portfolio &&
               current.exchange == p.exchange)) {
             this.setSettings({ ...current, ...p });
