@@ -6,28 +6,36 @@
     [hasSettings]="hasSettings()"
     [shouldShowSettings]="shouldShowSettings"
     [hasHelp]="hasHelp()"></ats-widget-header>
-  <ats-orderbook-widget *ngIf="widget.gridItem.type === 'order-book'"
-    [guid]="getGuid()"
-    [resize]="widgetResize"
-    [(shouldShowSettings)]="shouldShowSettings"
-    [linkedToActive]="isLinked"></ats-orderbook-widget>
-  <ats-light-chart-widget *ngIf="widget.gridItem.type === 'light-chart'"
-    [guid]="getGuid()"
-    [resize]="widgetResize"
-    [heightAdjustment]="contentHeightAdjustment"
-    [(shouldShowSettings)]="shouldShowSettings"
-    [linkedToActive]="isLinked"></ats-light-chart-widget>
-  <ats-instrument-select-widget *ngIf="widget.gridItem.type === 'instrument-select'"
-    [guid]="getGuid()"
-    [(shouldShowSettings)]="shouldShowSettings"></ats-instrument-select-widget>
-  <ats-blotter-widget *ngIf="widget.gridItem.type === 'blotter'"
-    [guid]="getGuid()"
-    [(shouldShowSettings)]="shouldShowSettings"
-    [linkedToActive]="isLinked"
-    [resize]="widgetResize"></ats-blotter-widget>
-  <ats-info-widget *ngIf="widget.gridItem.type === 'instrument-info'"
-    [guid]="getGuid()"
-    [(shouldShowSettings)]="shouldShowSettings"
-    [linkedToActive]="isLinked"
-    [resize]="widgetResize"></ats-info-widget>
+  <ng-container [ngSwitch]="widget.gridItem.type">
+    <ats-orderbook-widget *ngSwitchCase="'order-book'"
+      [guid]="getGuid()"
+      [resize]="widgetResize"
+      [(shouldShowSettings)]="shouldShowSettings"
+      [linkedToActive]="isLinked"></ats-orderbook-widget>
+    <ats-light-chart-widget *ngSwitchCase="'light-chart'"
+      [guid]="getGuid()"
+      [resize]="widgetResize"
+      [heightAdjustment]="contentHeightAdjustment"
+      [(shouldShowSettings)]="shouldShowSettings"
+      [linkedToActive]="isLinked"></ats-light-chart-widget>
+    <ats-instrument-select-widget *ngSwitchCase="'instrument-select'"
+      [guid]="getGuid()"
+      [(shouldShowSettings)]="shouldShowSettings"></ats-instrument-select-widget>
+    <ats-blotter-widget *ngSwitchCase="'blotter'"
+      [guid]="getGuid()"
+      [(shouldShowSettings)]="shouldShowSettings"
+      [linkedToActive]="isLinked"
+      [resize]="widgetResize"></ats-blotter-widget>
+    <ats-info-widget *ngSwitchCase="'instrument-info'"
+      [guid]="getGuid()"
+      [(shouldShowSettings)]="shouldShowSettings"
+      [linkedToActive]="isLinked"
+      [resize]="widgetResize"></ats-info-widget>
+    <ats-all-trades-widget *ngSwitchCase="'all-trades'"
+      [guid]="getGuid()"
+      [heightAdjustment]="contentHeightAdjustment"
+      [(shouldShowSettings)]="shouldShowSettings"
+      [resize]="widgetResize"
+    ></ats-all-trades-widget>
+  </ng-container>
 </div>
