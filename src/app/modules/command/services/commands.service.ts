@@ -26,8 +26,9 @@ export class CommandsService {
   private limitEdit?: BehaviorSubject<LimitEdit | null>;
   private marketCommand?: BehaviorSubject<MarketCommand | null>;
   private marketEdit?: BehaviorSubject<MarketEdit | null>;
+  private priceSelectedSubject$ = new Subject<number>();
+  public priceSelected$ = this.priceSelectedSubject$.asObservable();
 
-  public priceSelected$ = new Subject<number>();
 
   constructor(private http: HttpClient, private notification: NzNotificationService) { }
 
@@ -64,6 +65,10 @@ export class CommandsService {
       this.marketEdit = new BehaviorSubject<MarketEdit | null>(command);
     }
     this.marketEdit?.next(command);
+  }
+
+  setPriceSelected(price: number) {
+    this.priceSelectedSubject$.next(price);
   }
 
   submitStop(side: Side) {
