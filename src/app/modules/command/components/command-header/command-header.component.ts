@@ -8,7 +8,6 @@ import {
   of,
   shareReplay,
   switchMap,
-  withLatestFrom
 } from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
@@ -23,6 +22,7 @@ import { Position } from '../../../../shared/models/positions/position.model';
 import { startWith } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { CommandsService } from "../../services/commands.service";
 
 @Component({
   selector: 'ats-command-header[instrument]',
@@ -39,6 +39,7 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly quoteService: QuotesService,
+    private readonly commandsService: CommandsService,
     private readonly history: HistoryService,
     private readonly positionService: PositionsService,
     private readonly store: Store) {
@@ -114,5 +115,9 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
         priceData
       }))
     );
+  }
+
+  public selectPrice(price: number): void {
+    this.commandsService.setPriceSelected(price);
   }
 }
