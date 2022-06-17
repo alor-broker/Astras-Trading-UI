@@ -38,14 +38,12 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   public isLoading = false;
 
   public columns: ColumnsSettings[] = [
-    {name: 'symbol', displayName: 'Тикер'},
     {name: 'qty', displayName: 'Кол-во', classFn: data => data.side},
     {name: 'price', displayName: 'Цена'},
     {name: 'timestamp', displayName: 'Время', transformFn: (data: number) => this.datePipe.transform(data, 'HH:mm:ss')},
     {
       name: 'side',
       displayName: 'Сторона',
-      transformFn: (data: 'buy' | 'sell') => data === 'buy' ? 'Покупка' : 'Продажа',
       classFn: data => data.side
     },
     {name: 'oi', displayName: 'Откр. интерес'},

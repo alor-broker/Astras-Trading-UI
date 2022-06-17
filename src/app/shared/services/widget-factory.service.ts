@@ -177,7 +177,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       hasSettings: false,
       hasHelp: false,
-      title: `Все сделки ${this.selectedInstrument.symbol}`
+      title: `Все сделки ${this.selectedInstrument.symbol}`
     };
   }
 }
