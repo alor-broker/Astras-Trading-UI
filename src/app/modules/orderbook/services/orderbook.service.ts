@@ -58,21 +58,17 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
       this.getSettings(guid),
     ])
       .pipe(
-        map(([i, settings]) => {
-          const shouldUpdate =
-            settings &&
-            settings.linkToActive &&
-            !(
-              settings.symbol == i.symbol &&
-              settings.exchange == i.exchange &&
-              settings.instrumentGroup == i.instrumentGroup
-            );
-          if (shouldUpdate) {
-            this.setSettings({ ...settings, ...i });
-          }
-        })
+        filter(([i, settings]) => !!settings &&
+          !!settings.linkToActive &&
+          !(
+            settings.symbol == i.symbol &&
+            settings.exchange == i.exchange &&
+            settings.instrumentGroup == i.instrumentGroup
+          ))
       )
-      .subscribe();
+      .subscribe(([i, settings]) => {
+        this.setSettings({...settings, ...i});
+      });
 
     const obData$ = this.getSettings(guid).pipe(
       filter((s): s is OrderbookSettings => !!s),
