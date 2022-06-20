@@ -1,7 +1,7 @@
-import { Instrument } from "src/app/shared/models/instruments/instrument.model";
+import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 
 export interface WatchedInstrument {
-  instrument: Instrument,
+  instrument: InstrumentKey,
   price: number,
   prevTickPrice: number,
   dayChange: number,

@@ -1,0 +1,72 @@
+<div>
+  <nz-list *ngIf="collection$ | async as collection" [nzBordered]="true">
+    <nz-list-item *ngIf="newListForm">
+        <form [formGroup]="newListForm" [nzLayout]="'inline'" nz-form>
+          <nz-form-item>
+            <nz-form-control nzErrorTip="Введите название списка не более 100 символов">
+              <input
+                (mousedown)="$event.stopPropagation()"
+                formControlName="title"
+                nz-input
+                nzBorderless
+                placeholder="Название нового списка"
+                type="text"/>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      <ul nz-list-item-actions>
+        <nz-list-item-action>
+          <button (click)="addNewList()"
+                  [disabled]="!newListForm.valid"
+                  [nz-tooltip]="'Добавить новый список'"
+                  nz-button
+                  nzSize='small'
+                  nzType="primary"
+          >
+            <i nz-icon nzType="plus"></i>
+          </button>
+        </nz-list-item-action>
+      </ul>
+    </nz-list-item>
+    <nz-list-item *ngIf="presetCollection$ | async as presetLists">
+        <nz-select
+          nzPlaceHolder="Выберите стандартный список"
+          nzBorderless
+          nzShowSearch
+          [(ngModel)]="selectedPresetWatchlist">
+          <nz-option *ngFor="let list of presetLists" [nzLabel]="list.name" [nzValue]="list"></nz-option>
+        </nz-select>
+      <ul nz-list-item-actions>
+        <nz-list-item-action>
+          <button (click)="addPresetList()"
+                  [disabled]="!selectedPresetWatchlist"
+                  [nz-tooltip]="'Добавить новый список'"
+                  nz-button
+                  nzSize='small'
+                  nzType="primary"
+          >
+            <i nz-icon nzType="plus"></i>
+          </button>
+        </nz-list-item-action>
+      </ul>
+    </nz-list-item>
+    <nz-list-item *ngFor="let list of collection">
+      <span (nzContentChange)="changeListTitle($event, list)" [nzContent]="list.title" nz-typography nzEditable>{{list.title}}</span>
+      <ul nz-list-item-actions>
+        <nz-list-item-action *ngIf="!list.isDefault">
+          <button (nzOnConfirm)="removeList(list.id)"
+                  nz-button
+                  nzDanger
+                  nz-popconfirm="Точно удалить?"
+                  nzCancelText="Нет"
+                  nzOkText="Да"
+                  nzSize='small'
+                  nzType="primary">
+            <i nz-icon nzType="minus"></i>
+          </button>
+        </nz-list-item-action>
+      </ul>
+    </nz-list-item>
+    <nz-list-empty *ngIf="collection.length === 0"></nz-list-empty>
+  </nz-list>
+</div>

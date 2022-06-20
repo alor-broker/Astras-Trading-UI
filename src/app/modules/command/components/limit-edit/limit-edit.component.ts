@@ -1,14 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { LimitEdit } from '../../models/limit-edit.model';
+import { CommandContextModel } from '../../models/command-context.model';
 
 @Component({
   selector: 'ats-limit-edit',
@@ -18,16 +18,23 @@ import { LimitEdit } from '../../models/limit-edit.model';
 export class LimitEditComponent implements OnInit, OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   form!: LimitFormGroup;
+  commandContext$ = new BehaviorSubject<CommandContextModel<EditParams> | null>(null);
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private modal: ModalService, private service: CommandsService) {
+  constructor(private service: CommandsService) {
+  }
+
+  @Input()
+  set commandContext(value: CommandContextModel<EditParams>) {
+    this.commandContext$.next(value);
   }
 
   ngOnInit() {
-    this.modal.editParams$.pipe(
-      takeUntil(this.destroy$),
-    ).subscribe(initial => {
-      this.initCommandForm(initial);
+    this.commandContext$.pipe(
+      filter((x): x is CommandContextModel<EditParams> => !!x),
+      takeUntil(this.destroy$)
+    ).subscribe(context => {
+      this.initCommandForm(context.commandParameters);
     });
   }
 
@@ -62,6 +69,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     this.destroy$.next(true);
     this.destroy$.complete();
 
+    this.commandContext$.complete();
     this.evaluation$.complete();
   }
 

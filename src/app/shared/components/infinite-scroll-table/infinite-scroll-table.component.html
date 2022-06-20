@@ -1,0 +1,33 @@
+<nz-table
+  #dataTable
+  nzSize="small"
+  nzTableLayout="fixed"
+  [nzVirtualItemSize]="itemHeight"
+  [nzVirtualForTrackBy]="trackByFn"
+  [nzVirtualMinBufferPx]="scrollHeight"
+  [nzVirtualMaxBufferPx]="scrollHeight"
+  [nzData]="data"
+  [nzShowPagination]="false"
+  [nzFrontPagination]="false"
+  [nzScroll]="{y: scrollHeight + 'px'}"
+  [nzWidthConfig]="['auto']"
+  [nzLoading]="isLoading"
+>
+  <thead>
+  <tr #tableRow>
+    <th nzWidth="" *ngFor="let column of columns">
+      {{column.displayName}}
+    </th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <ng-template nz-virtual-scroll let-data>
+    <tr (click)="rowClick.emit(data)">
+      <td *ngFor="let column of columns" [class]="column.classFn && column.classFn(data)">
+        {{column.transformFn && column.transformFn(data[column.name]) || data[column.name]}}
+      </td>
+    </tr>
+  </ng-template>
+  </tbody>
+</nz-table>

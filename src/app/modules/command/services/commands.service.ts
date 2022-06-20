@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { CommandResponse } from 'src/app/shared/models/commands/command-response.model';
 import { Side } from 'src/app/shared/models/enums/side.model';
-import { addDays, toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
+import { toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
 import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { environment } from 'src/environments/environment';
 import { LimitCommand } from '../models/limit-command.model';
@@ -26,6 +26,9 @@ export class CommandsService {
   private limitEdit?: BehaviorSubject<LimitEdit | null>;
   private marketCommand?: BehaviorSubject<MarketCommand | null>;
   private marketEdit?: BehaviorSubject<MarketEdit | null>;
+  private priceSelectedSubject$ = new Subject<number>();
+  public priceSelected$ = this.priceSelectedSubject$.asObservable();
+
 
   constructor(private http: HttpClient, private notification: NzNotificationService) { }
 
@@ -62,6 +65,10 @@ export class CommandsService {
       this.marketEdit = new BehaviorSubject<MarketEdit | null>(command);
     }
     this.marketEdit?.next(command);
+  }
+
+  setPriceSelected(price: number) {
+    this.priceSelectedSubject$.next(price);
   }
 
   submitStop(side: Side) {

@@ -10,6 +10,7 @@ import { Widget } from 'src/app/shared/models/widget.model';
 import { WidgetNames } from '../models/enums/widget-names';
 import { AnySettings } from '../models/settings/any-settings.model';
 import { WidgetFactoryService } from './widget-factory.service';
+import { LocalStorageService } from "./local-storage.service";
 
 
 @Injectable({
@@ -28,20 +29,23 @@ export class DashboardService {
   private settingsSource: BehaviorSubject<Map<string, AnySettings>>;
   settingsByGuid$ : Observable<Map<string, AnySettings>>;
 
-  constructor(private factory: WidgetFactoryService) {
+  constructor(
+    private readonly factory: WidgetFactoryService,
+    private readonly localStorage: LocalStorageService
+    ) {
     let firstOpen = false;
-    const existingDashboardJson = localStorage.getItem(this.dashboardsStorage);
-    const settingsJson = localStorage.getItem(this.settingsStorage);
+    const existingDashboardItems = localStorage.getItem<[string, Widget][]>(this.dashboardsStorage);
+    const settingItems = localStorage.getItem<[string, AnySettings][]>(this.settingsStorage);
     let existingDashboard : Map<string, Widget> = new Map();
-    if (existingDashboardJson) {
-      existingDashboard = new Map(JSON.parse(existingDashboardJson));
+    if (existingDashboardItems) {
+      existingDashboard = new Map(existingDashboardItems);
     }
     else {
       firstOpen = true;
     }
     let existingSettings : Map<string, AnySettings> = new Map();
-    if (settingsJson) {
-      existingSettings = new Map(JSON.parse(settingsJson));
+    if (settingItems) {
+      existingSettings = new Map(settingItems);
     }
 
     this.dashboardSource = new BehaviorSubject<Map<string, Widget>>(existingDashboard);
@@ -59,8 +63,8 @@ export class DashboardService {
     const widget = {
       guid: newWidget.gridItem.label,
       gridItem: newWidget.gridItem,
-      hasSettings: newWidget.gridItem.type != WidgetNames.instrumentSelect &&
-        newWidget.gridItem.type != WidgetNames.instrumentInfo &&
+      hasSettings: newWidget.gridItem.type != WidgetNames.instrumentInfo &&
+        newWidget.gridItem.type != WidgetNames.allTrades &&
         newWidget.gridItem.type != WidgetNames.news,
       hasHelp: true
     };
@@ -93,9 +97,9 @@ export class DashboardService {
 
   clearDashboard() {
     this.setDashboard(new Map());
-    localStorage.removeItem(this.dashboardsStorage);
-    localStorage.removeItem(this.settingsStorage);
-    localStorage.removeItem(this.profileStorage);
+    this.localStorage.removeItem(this.dashboardsStorage);
+    this.localStorage.removeItem(this.settingsStorage);
+    this.localStorage.removeItem(this.profileStorage);
   }
 
 
@@ -141,12 +145,12 @@ export class DashboardService {
 
   private storeDashboard() {
     const dashboard = this.getDashboardValue();
-    localStorage.setItem(this.dashboardsStorage, JSON.stringify(Array.from(dashboard.entries())));
+    this.localStorage.setItem(this.dashboardsStorage, Array.from(dashboard.entries()));
   }
 
   private storeSettings() {
     const settings = this.getSettingsValue();
-    localStorage.setItem(this.settingsStorage, JSON.stringify(Array.from(settings.entries())));
+    this.localStorage.setItem(this.settingsStorage, Array.from(settings.entries()));
   }
 
   private createDefaultDashboard() {

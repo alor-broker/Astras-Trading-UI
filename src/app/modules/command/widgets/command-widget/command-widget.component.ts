@@ -1,36 +1,54 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, filter, Observable, of, take } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, Observable, of, switchMap, take } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { CommandType } from '../../../../shared/models/enums/command-type.model';
 import { NzTabComponent, NzTabSetComponent } from 'ng-zorro-antd/tabs';
+import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
+import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { map } from 'rxjs/operators';
+import { CommandContextModel } from '../../models/command-context.model';
 
 @Component({
   selector: 'ats-command-widget',
   templateUrl: './command-widget.component.html',
   styleUrls: ['./command-widget.component.less'],
-  providers: [ QuotesService ],
+  providers: [QuotesService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CommandWidgetComponent implements OnInit {
   readonly commandTypes = CommandType;
 
-  @ViewChild('commandTabs', {static: false}) commandTabs?: NzTabSetComponent;
-  @ViewChild('limitTab', {static: false}) limitTab?: NzTabComponent;
-  @ViewChild('marketTab', {static: false}) marketTab?: NzTabComponent;
-  @ViewChild('stopTab', {static: false}) stopTab?: NzTabComponent;
+  @ViewChild('commandTabs', { static: false }) commandTabs?: NzTabSetComponent;
+  @ViewChild('limitTab', { static: false }) limitTab?: NzTabComponent;
+  @ViewChild('marketTab', { static: false }) marketTab?: NzTabComponent;
+  @ViewChild('stopTab', { static: false }) stopTab?: NzTabComponent;
 
   isVisible$: Observable<boolean> = of(false);
-  commandParams$?: Observable<CommandParams>;
-
+  commandContext$?: Observable<CommandContextModel<CommandParams>>;
   selectedCommandType$ = new BehaviorSubject<CommandType>(CommandType.Limit);
 
-  constructor(public modal: ModalService) { }
+  constructor(
+    private readonly modal: ModalService,
+    private readonly instrumentService: InstrumentsService) {
+  }
 
   ngOnInit(): void {
-    this.commandParams$ = this.modal.commandParams$.pipe(
-      filter((p): p is CommandParams => !!p)
+    this.commandContext$ = this.modal.commandParams$.pipe(
+      filter((p): p is CommandParams => !!p),
+      switchMap(p => combineLatest([
+          of(p),
+          this.instrumentService.getInstrument(p.instrument)
+            .pipe(
+              filter((i): i is Instrument => !!i)
+            )
+        ]
+      )),
+      map(([params, instrument]) => ({
+        commandParameters: params,
+        instrument: instrument
+      }))
     );
 
     this.isVisible$ = this.modal.shouldShowCommandModal$;
@@ -50,10 +68,10 @@ export class CommandWidgetComponent implements OnInit {
   }
 
   public setInitialCommandTab() {
-    this.commandParams$?.pipe(
-        take(1)
-      ).subscribe(params => {
-      switch (params.type){
+    this.commandContext$?.pipe(
+      take(1)
+    ).subscribe(context => {
+      switch (context.commandParameters.type) {
         case CommandType.Limit:
           this.activateCommandTab(this.limitTab);
           break;
@@ -64,15 +82,15 @@ export class CommandWidgetComponent implements OnInit {
           this.activateCommandTab(this.stopTab);
           break;
         default:
-          throw new Error(`Unknown command type ${params.type}`);
+          throw new Error(`Unknown command type ${context.commandParameters.type}`);
       }
 
-      this.setSelectedCommandType(params.type);
+      this.setSelectedCommandType(context.commandParameters.type);
     });
   }
 
   private activateCommandTab(targetTab?: NzTabComponent) {
-    if(!targetTab || targetTab.position == null) {
+    if (!targetTab || targetTab.position == null) {
       return;
     }
 

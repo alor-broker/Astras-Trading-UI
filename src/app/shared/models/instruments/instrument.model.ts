@@ -5,7 +5,8 @@ export interface Instrument extends InstrumentKey {
   shortName: string,
   description: string,
   currency: string,
-  minstep: number
+  minstep: number,
+  lotsize?: number
 }
 
 export class InstrumentIsinEqualityComparer {

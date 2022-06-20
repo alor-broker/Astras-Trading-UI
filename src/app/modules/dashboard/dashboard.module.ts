@@ -16,7 +16,7 @@ import { InfoModule } from '../info/info.module';
 import { TerminalSettingsModule } from '../terminal-settings/terminal-settings.module';
 import { JoyrideModule } from 'ngx-joyride';
 import { OnboardingService } from './services/onboarding.service';
-import { BetaReminderModule } from '../beta-reminder/beta-reminder.module';
+import { AllTradesModule } from "../all-trades/all-trades.module";
 import { NewsModule } from "../news/news.module";
 
 @NgModule({
@@ -37,9 +37,9 @@ import { NewsModule } from "../news/news.module";
     CommandModule,
     HelpModule,
     InfoModule,
-    BetaReminderModule,
     TerminalSettingsModule,
     JoyrideModule.forRoot(),
+    AllTradesModule,
     NewsModule,
     // components
   ],
@@ -47,5 +47,4 @@ import { NewsModule } from "../news/news.module";
     OnboardingService
   ]
 })
-export class DashboardModule {
-}
+export class DashboardModule { }

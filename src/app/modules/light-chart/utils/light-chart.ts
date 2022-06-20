@@ -1,13 +1,22 @@
 import * as LightweightCharts from 'lightweight-charts';
+import { BusinessDay, LogicalRange, Time, UTCTimestamp } from 'lightweight-charts';
 import { Observable, Subject } from 'rxjs';
 import { distinct, map } from 'rxjs/operators';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { Candle } from '../../../shared/models/history/candle.model';
-import { TimeframesHelper } from './timeframes-helper';
-import { buyColor, sellColor, buyColorBackground, sellColorBackground, componentBackgound } from '../../../shared/models/settings/styles-constants';
-import { LogicalRange } from 'lightweight-charts';
+import { TimeframesHelper, TimeframeValue } from './timeframes-helper';
+import {
+  buyColor,
+  buyColorBackground,
+  componentBackgound,
+  sellColor,
+  sellColorBackground
+} from '../../../shared/models/settings/styles-constants';
+import { TimezoneConverter } from '../../../shared/utils/timezone-converter';
+import { fromUnixTime, toUnixTime } from '../../../shared/utils/datetime';
+import { PriceFormatHelper } from "./price-format-helper";
 
-type ShortPriceFormat = { minMove: number; precision: number; };
+type CandleDisplay = Candle & { time: Time };
 
 export class LightChart {
   chart!: LightweightCharts.IChartApi;
@@ -19,13 +28,14 @@ export class LightChart {
   private readonly logicalRange$ = new Subject<LogicalRange | null>();
 
   private bars: Candle[] = [];
-  private getMinTime = () => Math.min(...this.bars.map(b => b.time));
   private sizes: {
     width: number,
     height: number
   };
-
   private historyPrevTime: number | null = null;
+  private timezoneConverter?: TimezoneConverter;
+  private currentTimeframe?: TimeframeValue;
+  private maxTimeValue: number | null = null;
 
   constructor(width: number, height: number) {
     this.sizes = {
@@ -95,18 +105,18 @@ export class LightChart {
     chart.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => this.logicalRange$.next(logicalRange));
 
     this.historyItemsCountToLoad$ = this.logicalRange$.pipe(
-        distinct(),
-        map(logicalRange => {
-          if (logicalRange !== null) {
-            const barsInfo = series.barsInLogicalRange(logicalRange as any);
-            if (barsInfo !== null && barsInfo.barsBefore < 0) {
-              return Math.ceil(Math.abs(barsInfo.barsBefore));
-            }
+      distinct(),
+      map(logicalRange => {
+        if (logicalRange !== null) {
+          const barsInfo = series.barsInLogicalRange(logicalRange as any);
+          if (barsInfo !== null && barsInfo.barsBefore < 0) {
+            return Math.ceil(Math.abs(barsInfo.barsBefore));
           }
+        }
 
-          return 0;
-        })
-      );
+        return 0;
+      })
+    );
 
     this.series = series;
     this.volumeSeries = volumeSeries;
@@ -115,49 +125,68 @@ export class LightChart {
 
   update(candle: Candle) {
     if (candle) {
-      this.series.update(candle as any);
-      this.bars.push(candle);
+      if(this.maxTimeValue != null && candle.time < this.maxTimeValue) {
+        this.aggregateHistoryData([candle]);
+        return;
+      }
 
+      this.maxTimeValue = Math.max(this.maxTimeValue ?? -1, candle.time);
+      const displayCandle = this.toDisplayCandle(candle);
+
+      this.series.update(displayCandle as any);
       this.volumeSeries.update({
-        time: candle.time,
-        value: candle.volume,
+        time: displayCandle.time,
+        value: displayCandle.volume,
         color:
-          candle.close > candle.open
+          displayCandle.close > displayCandle.open
             ? buyColor
             : sellColor,
       } as any);
+
+      this.bars.push(candle);
     }
   }
 
-  setData(candles: Candle[], options: LightChartSettings, historyPrevTime: number | null) {
-  const newBars = TimeframesHelper.aggregateBars(this.bars, candles, options);
-  this.series.setData(newBars as any);
-  const volumes = newBars.map(candle => ({
-    time: candle.time,
-    value: candle.volume,
-    color:
-      candle.close > candle.open
-        ? buyColor
-        : sellColor,
-  }));
-  this.volumeSeries.setData(volumes as any);
-  this.bars = newBars;
-  this.historyPrevTime = historyPrevTime;
-}
+  setData(candles: Candle[], historyPrevTime: number | null) {
+    this.aggregateHistoryData(candles);
+    this.historyPrevTime = historyPrevTime;
+  }
 
+  aggregateHistoryData(candles: Candle[]) {
+    const newBars = TimeframesHelper.aggregateBars(this.bars, candles, this.currentTimeframe ?? TimeframeValue.M1);
+    this.maxTimeValue = Math.max(...newBars.map(x => x.time));
+    const displayBars = newBars.map(candle => this.toDisplayCandle(candle));
+
+    this.series.setData(displayBars as any);
+    const volumes = displayBars.map(candle => ({
+      time: candle.time,
+      value: candle.volume,
+      color:
+        candle.close > candle.open
+          ? buyColor
+          : sellColor,
+    }));
+    this.volumeSeries.setData(volumes as any);
+
+    this.bars = newBars;
+  }
 
   clear() {
     this.chart.remove();
   }
 
-  prepareSeries(minstep?: number) {
+  prepareSeries(timeframe: TimeframeValue, timezoneConverter: TimezoneConverter, minstep?: number) {
     this.historyPrevTime = null;
+    this.maxTimeValue = null;
     this.bars = [];
-    this.series.setData([]);
     this.volumeSeries.setData([]);
+    this.series.setData([]);
+
+    this.currentTimeframe = timeframe;
+    this.timezoneConverter = timezoneConverter;
 
     this.series.applyOptions({
-      priceFormat: this.getPriceFormat(minstep ?? 1)
+      priceFormat: PriceFormatHelper.getPriceFormat(minstep ?? 1)
     });
 
     this.chart.priceScale().applyOptions({
@@ -171,7 +200,7 @@ export class LightChart {
     this.chart.timeScale().fitContent();
   }
 
-  checkMissingVisibleData(){
+  checkMissingVisibleData() {
     this.logicalRange$.next(this.chart.timeScale().getVisibleLogicalRange());
   }
 
@@ -185,35 +214,32 @@ export class LightChart {
 
   getRequest(options: LightChartSettings, itemsCountToLoad: number) {
     const minTime = this.getMinTime();
-    if(!options || minTime == Infinity) {
+    if (!options || minTime == Infinity) {
       return null;
     }
 
     return TimeframesHelper.getRequest(minTime, options, itemsCountToLoad, this.historyPrevTime);
   }
 
-  /**
-   * Returns price format for light-charts
-   *
-   * @param {number} minstep Minimum value the price can change. It can be like 0.01 or 0.0005. 0.07 is not the case thanks god.
-   * @return {ShortPriceFormat} Price format, to be assigned to lightcharts.
-   */
-  private getPriceFormat(minstep: number): ShortPriceFormat {
-    if (minstep >= 1) {
-      return {
-        minMove: 1,
-        precision: 0
-      };
+  private toDisplayCandle(candle: Candle): CandleDisplay {
+    const candleDate = !!this.timezoneConverter
+      ? this.timezoneConverter.toTerminalUtcDate(candle.time)
+      : fromUnixTime(candle.time);
+
+    let displayTime: Time = toUnixTime(candleDate) as UTCTimestamp;
+    if (this.currentTimeframe === TimeframeValue.Month || this.currentTimeframe === TimeframeValue.Day) {
+      displayTime = {
+        year: candleDate.getFullYear(),
+        month: candleDate.getMonth() + 1,
+        day: candleDate.getDate()
+      } as BusinessDay;
     }
-    const log10 = -Math.log10(minstep);
-    const isHalf = (log10 % 1) !== 0;
-    const minMove = isHalf ? minstep / 5 : minstep;
-    const roundedLog10 = Math.floor(log10);
-    const priceFormat = {
-      minMove: Number(minMove.toFixed(roundedLog10  + 1)),
-      precision: isHalf ? roundedLog10 + 1 : (log10 < 0) ? -roundedLog10 : roundedLog10
-    };
-    return priceFormat;
+
+    return {
+      ...candle,
+      time: displayTime
+    } as CandleDisplay;
   }
 
-  }
+  private getMinTime = () => Math.min(...this.bars.map(b => b.time));
+}

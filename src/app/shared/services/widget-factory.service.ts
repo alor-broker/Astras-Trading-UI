@@ -23,6 +23,7 @@ import { Store } from '@ngrx/store';
 import { getSelectedInstrument } from '../../store/instruments/instruments.selectors';
 import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
 import { defaultInstrument } from '../../store/instruments/instruments.reducer';
+import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { NewsSettings } from "../models/settings/news-settings.model";
 
 @Injectable({
@@ -66,6 +67,9 @@ export class WidgetFactoryService {
         break;
       case WidgetNames.instrumentInfo:
         settings = this.createInfo(newWidget);
+        break;
+      case WidgetNames.allTrades:
+        settings = this.createAllTrades(newWidget);
         break;
       case WidgetNames.news:
         settings = this.createNews(newWidget);
@@ -164,6 +168,21 @@ export class WidgetFactoryService {
     };
 
     return settings;
+  }
+
+  private createAllTrades(newWidget: NewWidget | Widget): AllTradesSettings {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+
+    return {
+      ...this.selectedInstrument,
+      linkToActive: true,
+      guid: newWidget.gridItem.label,
+      hasSettings: false,
+      hasHelp: false,
+      title: `Все сделки ${this.selectedInstrument.symbol}`
+    };
   }
 
   private createNews(newWidget: NewWidget | Widget): NewsSettings {

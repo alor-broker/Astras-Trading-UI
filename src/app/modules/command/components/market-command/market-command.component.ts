@@ -13,7 +13,6 @@ import {
   takeUntil
 } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.model';
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
@@ -21,6 +20,7 @@ import { MarketFormData } from '../../models/market-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { MarketCommand } from '../../models/market-command.model';
 import { distinct, finalize } from 'rxjs/operators';
+import { CommandContextModel } from '../../models/command-context.model';
 
 @Component({
   selector: 'ats-market-command',
@@ -30,12 +30,12 @@ import { distinct, finalize } from 'rxjs/operators';
 export class MarketCommandComponent implements OnInit, OnDestroy {
   evaluation$!: Observable<EvaluationBaseProperties | null>;
   form!: MarketFormGroup;
+  commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private lastCommand$ = new BehaviorSubject<MarketCommand | null>(null);
   private isActivated$ = new Subject<boolean>();
 
   constructor(
-    private modal: ModalService,
     private service: CommandsService,
     private quoteService: QuotesService) {
   }
@@ -45,14 +45,19 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     this.isActivated$.next(value);
   }
 
-  ngOnInit(): void {
-    this.modal.commandParams$.pipe(
-      takeUntil(this.destroy$),
-    ).subscribe(initial => {
-      this.initCommandForm(initial);
-    });
+  @Input()
+  set commandContext(value: CommandContextModel<CommandParams>) {
+    this.commandContext$.next(value);
+  }
 
-    this.initEvaluationUpdates();
+  ngOnInit(): void {
+    this.commandContext$.pipe(
+      filter((x): x is CommandContextModel<CommandParams> => !!x),
+      takeUntil(this.destroy$)
+    ).subscribe(context => {
+      this.initCommandForm(context.commandParameters);
+      this.initEvaluationUpdates(context);
+    });
   }
 
   ngOnDestroy(): void {
@@ -60,9 +65,10 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
 
     this.lastCommand$.complete();
+    this.commandContext$.complete();
   }
 
-  setMarketCommand(initialParameters: CommandParams): void {
+  private setMarketCommand(initialParameters: CommandParams): void {
     if (!this.form.valid) {
       this.service.setMarketCommand(null);
       return;
@@ -91,13 +97,14 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     }
   }
 
-  private buildEvaluationProperties(command: MarketCommand | null, price: number): EvaluationBaseProperties {
+  private buildEvaluationProperties(command: MarketCommand | null, commandContext: CommandContextModel<CommandParams>, price: number): EvaluationBaseProperties {
     return {
       price: price,
       lotQuantity: command?.quantity,
       instrument: {
         ...command?.instrument
       },
+      instrumentCurrency: commandContext.instrument.currency
     } as EvaluationBaseProperties;
   }
 
@@ -115,7 +122,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     } as MarketFormControls) as MarketFormGroup;
   }
 
-  private initEvaluationUpdates() {
+  private initEvaluationUpdates(commandContext: CommandContextModel<CommandParams>) {
     const currentInstrumentPrice$ = this.lastCommand$.pipe(
       distinctUntilChanged((previous, current) =>
         previous?.instrument?.symbol == current?.instrument?.symbol
@@ -132,15 +139,12 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       this.isActivated$
     ]).pipe(
       filter(([, , isActivated]) => isActivated),
-      map(([command, price,]) => this.buildEvaluationProperties(command, price)),
+      map(([command, price,]) => this.buildEvaluationProperties(command, commandContext, price)),
       filter(e => e.price > 0)
     );
   }
 
-  private initCommandForm(initialParameters: CommandParams | null) {
-    if (!initialParameters) {
-      return;
-    }
+  private initCommandForm(initialParameters: CommandParams) {
 
     this.form = this.buildForm(initialParameters);
     this.setMarketCommand(initialParameters);

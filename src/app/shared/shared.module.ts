@@ -41,13 +41,15 @@ import { LoadingIndicatorComponent } from './components/loading-indicator/loadin
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { InfiniteScrollTableComponent } from './components/infinite-scroll-table/infinite-scroll-table.component';
 
 
 @NgModule({
   declarations: [
     PriceTickComponent,
     NumericalDirective,
-    LoadingIndicatorComponent
+    LoadingIndicatorComponent,
+    InfiniteScrollTableComponent
   ],
   imports: [
     CommonModule,
@@ -88,48 +90,49 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
     NzTypographyModule,
     NzRadioModule
   ],
-  exports: [
-    // Ng zorro
-    NzTableModule,
-    NzButtonModule,
-    NzIconModule,
-    NzLayoutModule,
-    NzFormModule,
-    NzSelectModule,
-    NzCollapseModule,
-    NzAutocompleteModule,
-    NzTagModule,
-    NzCardModule,
-    NzTabsModule,
-    NzMenuModule,
-    NzDropDownModule,
-    NzModalModule,
-    NzToolTipModule,
-    NzSwitchModule,
-    NzImageModule,
-    NzAvatarModule,
-    NzBadgeModule,
-    NzNotificationModule,
-    NzPopconfirmModule,
-    NzDescriptionsModule,
-    NzEmptyModule,
-    NzCheckboxModule,
-    ScrollingModule,
-    NzDatePickerModule,
-    NzTypographyModule,
-    NzRadioModule,
-    // modules
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    GridsterModule,
-    NgChartsModule,
-    // components
-    PriceTickComponent,
-    LoadingIndicatorComponent,
-    // directives
-    NumericalDirective
-  ],
+    exports: [
+        // Ng zorro
+        NzTableModule,
+        NzButtonModule,
+        NzIconModule,
+        NzLayoutModule,
+        NzFormModule,
+        NzSelectModule,
+        NzCollapseModule,
+        NzAutocompleteModule,
+        NzTagModule,
+        NzCardModule,
+        NzTabsModule,
+        NzMenuModule,
+        NzDropDownModule,
+        NzModalModule,
+        NzToolTipModule,
+        NzSwitchModule,
+        NzImageModule,
+        NzAvatarModule,
+        NzBadgeModule,
+        NzNotificationModule,
+        NzPopconfirmModule,
+        NzDescriptionsModule,
+        NzEmptyModule,
+        NzCheckboxModule,
+        ScrollingModule,
+        NzDatePickerModule,
+        NzTypographyModule,
+        NzRadioModule,
+        // modules
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        GridsterModule,
+        NgChartsModule,
+        // components
+        PriceTickComponent,
+        LoadingIndicatorComponent,
+        InfiniteScrollTableComponent,
+      // directives
+        NumericalDirective,
+    ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,

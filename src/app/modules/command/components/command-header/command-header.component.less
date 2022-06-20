@@ -5,12 +5,11 @@
   display: inline-flex;
   align-items: baseline;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .instrument {
   display: flex;
-  flex-grow: 1;
 
   .badge {
     margin: 3px 10px 3px 0;
@@ -67,4 +66,9 @@
 
 .position-short {
   background: @sell-color
+}
+
+.selectable {
+  cursor: pointer;
+  text-decoration: underline;
 }

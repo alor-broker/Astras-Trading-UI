@@ -31,10 +31,16 @@
       [(shouldShowSettings)]="shouldShowSettings"
       [linkedToActive]="isLinked"
       [resize]="widgetResize"></ats-info-widget>
-    <ats-news-widget *ngSwitchCase="'news'"
+    <ats-all-trades-widget *ngSwitchCase="'all-trades'"
       [guid]="getGuid()"
+      [heightAdjustment]="contentHeightAdjustment"
       [(shouldShowSettings)]="shouldShowSettings"
       [resize]="widgetResize"
+    ></ats-all-trades-widget>
+    <ats-news-widget *ngSwitchCase="'news'"
+                     [guid]="getGuid()"
+                     [(shouldShowSettings)]="shouldShowSettings"
+                     [resize]="widgetResize"
     ></ats-news-widget>
   </ng-container>
 </div>

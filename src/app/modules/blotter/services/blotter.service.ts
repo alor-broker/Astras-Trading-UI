@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
+import { combineLatest, merge, Observable, of, pipe, Subscription, tap } from 'rxjs';
 import { filter, map, startWith, switchMap } from 'rxjs/operators';
 import { CurrencyCode, CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
@@ -75,7 +75,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         )
       ),
     );
-    this.linkToPortfolio();
+    this.linkToPortfolio(guid);
     return this.position$;
   }
 
@@ -84,7 +84,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => this.getTradesReq(settings.portfolio, settings.exchange))
     );
-    this.linkToPortfolio();
+    this.linkToPortfolio(guid);
     return this.trade$;
   }
 
@@ -93,7 +93,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => this.getOrdersReq(settings.portfolio, settings.exchange))
     );
-    this.linkToPortfolio();
+    this.linkToPortfolio(guid);
     return this.order$;
   }
 
@@ -102,7 +102,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
       filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => this.getStopOrdersReq(settings.portfolio, settings.exchange))
     );
-    this.linkToPortfolio();
+    this.linkToPortfolio(guid);
     return this.stopOrder$;
   }
 
@@ -125,7 +125,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         }
       })
     );
-    this.linkToPortfolio();
+    this.linkToPortfolio(guid);
     return this.summary$;
   }
 
@@ -219,26 +219,32 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
 
     const trades = this.getPortfolioEntity<Trade>(portfolio, exchange, 'TradesGetAndSubscribeV2').pipe(
       map((trade: Trade) => {
-        this.trades.set(trade.id, trade);
+        this.trades.set(trade.id, {
+          ...trade,
+          date: new Date(trade.date)
+        });
+
         return Array.from(this.trades.values());
       })
     );
     return merge(trades, of([]));
   }
 
-  private linkToPortfolio() {
+  private linkToPortfolio(guid: string) {
     if (!this.portfolioSub) {
-      this.portfolioSub = this.store.select(getSelectedPortfolio).pipe(
-        filter((p): p is PortfolioKey => !!p),
-        map((p) => {
-          const current = this.getSettingsValue();
-          if (current && current.linkToActive &&
-              !(current.portfolio == p.portfolio &&
-              current.exchange == p.exchange)) {
-            this.setSettings({ ...current, ...p });
+      this.portfolioSub = combineLatest([
+        this.getSettings(guid).pipe(filter((s): s is BlotterSettings => !!s)),
+        this.store.select(getSelectedPortfolio).pipe(filter((p): p is PortfolioKey => !!p))
+      ])
+        .pipe(filter(([s, p]) =>
+          !!s.linkToActive &&
+          !(s.portfolio == p.portfolio && s.exchange == p.exchange))
+        )
+        .subscribe(
+          ([s, p]) => {
+            this.setSettings({...s, ...p});
           }
-        })
-      ).subscribe();
+        );
     }
   }
 }

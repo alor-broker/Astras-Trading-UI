@@ -1,35 +1,52 @@
-import {Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
-import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
+import { Observable, of, switchMap, take } from 'rxjs';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { selectNewInstrument } from '../../../../store/instruments/instruments.actions';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
+import { filter, map } from 'rxjs/operators';
 
 @Component({
-  selector: 'ats-watchlist-table',
+  selector: 'ats-watchlist-table[guid]',
   templateUrl: './watchlist-table.component.html',
   styleUrls: ['./watchlist-table.component.less']
 })
 export class WatchlistTableComponent implements OnInit {
+  @Input()
+  guid!: string;
 
   watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
 
-  constructor(private store: Store, private service: WatchInstrumentsService) { }
-
-  ngOnInit(): void {
-    this.watchedInstruments$ = this.service.getWatched();
+  constructor(
+    private readonly store: Store,
+    private readonly watchInstrumentsService: WatchInstrumentsService,
+    private readonly watchlistCollectionService: WatchlistCollectionService
+  ) {
   }
 
-  makeActive(instrument: Instrument) {
+  ngOnInit(): void {
+    this.watchedInstruments$ = this.watchInstrumentsService.getSettings(this.guid).pipe(
+      switchMap(settings => this.watchInstrumentsService.getWatched(settings))
+    );
+  }
+
+  makeActive(instrument: InstrumentKey) {
     this.store.dispatch(selectNewInstrument({ instrument }));
   }
 
-  remove(instr: Instrument) {
-    this.service.remove(instr);
+  remove(instr: InstrumentKey) {
+    this.watchInstrumentsService.getSettings(this.guid).pipe(
+      map(s => s.activeListId),
+      filter((id): id is string => !!id),
+      take(1)
+    ).subscribe(activeListId => {
+      this.watchlistCollectionService.removeItemsFromList(activeListId, [instr]);
+    });
   }
 
   getTrackKey(index: number, item: WatchedInstrument): string {
-    return `${item.instrument.exchange}.${item.instrument.instrumentGroup}.${item.instrument.symbol}`;
+    return WatchlistCollectionService.getInstrumentKey(item.instrument);
   }
 }
