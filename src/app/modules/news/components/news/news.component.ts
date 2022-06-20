@@ -1,24 +1,37 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit } from '@angular/core';
 import { NewsService } from "../../services/news.service";
-import { NzTableComponent } from "ng-zorro-antd/table";
 import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { NewsListItem } from "../../models/news.model";
+import { Subject, takeUntil } from "rxjs";
+import { DatePipe } from "@angular/common";
+import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 
 @Component({
   selector: 'ats-news',
   templateUrl: './news.component.html',
   styleUrls: ['./news.component.less']
 })
-export class NewsComponent implements OnInit, AfterViewInit {
+export class NewsComponent implements OnInit, OnDestroy {
 
-  @ViewChild('newsTable', {static: false}) newsTable!: NzTableComponent<NewsListItem>;
   @Input() public resize!: EventEmitter<DashboardItem>;
+  @Input() public heightAdjustment!: number;
 
-  private visibleItemsCount = 0;
-  public newsList: NewsListItem[] = [];
-  public scrollHeight = 0;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private datePipe = new DatePipe('ru-RU');
+  private take = 50;
+  private isEndOfList = false;
+  private pageNumber = 1;
+
+  public tableContainerHeight: number = 0;
+  public tableContainerWidth: number = 0;
+  public newsList: Array<NewsListItem> = [];
   public isLoading = false;
+
+  public columns: ColumnsSettings[] = [
+    {name: 'publishDate', displayName: 'Время', transformFn: (data: string) => this.datePipe.transform(data, 'HH:mm:ss'), width: '20%'},
+    {name: 'header', displayName: 'Новость', width: '80%'},
+  ];
 
   constructor(
     private newsService: NewsService,
@@ -28,45 +41,51 @@ export class NewsComponent implements OnInit, AfterViewInit {
 
   public ngOnInit(): void {
     this.loadNews();
-    this.resize.subscribe(data => {
-      this.scrollHeight = data.height! - 66.5;
-      this.visibleItemsCount = Math.ceil(this.scrollHeight / 29);
+    this.resize
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+      this.tableContainerHeight = data.height! - this.heightAdjustment;
+      this.tableContainerWidth = data.width!;
       this.cdr.markForCheck();
     });
 
-    this.newsService.getNewsSub()
-      .subscribe(res => {
-        this.newsList = [res, ...this.newsList];
-        this.cdr.markForCheck();
-      });
+    // this.newsService.getNewNews()
+    //   .subscribe(res => {
+    //     this.newsList = [res, ...this.newsList];
+    //     this.cdr.markForCheck();
+    //   });
   }
 
-  public ngAfterViewInit(): void {
-    this.newsTable?.cdkVirtualScrollViewport?.scrolledIndexChange
-      .subscribe((upperItemIndex: number) => {
-        if (
-          !this.isLoading &&
-          upperItemIndex >= this.newsList.length - this.visibleItemsCount - 1
-        ) {
-          this.loadNews();
-        }
-      });
+  public openNewsModal(newsItem: NewsListItem): void {
+    this.modalService.openNewsModal(newsItem);
   }
 
-  public openNewsModal(newsId: number): void {
-    this.modalService.openNewsModal(newsId);
+  public scrolled() {
+    this.pageNumber++;
+    this.loadNews();
   }
 
-  public trackById(index: number, data: NewsListItem): number {
-    return data.id;
+  public ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   private loadNews(): void {
+    if (this.isEndOfList) return;
+
     this.isLoading = true;
     this.cdr.markForCheck();
-    this.newsService.getNews()
+    this.newsService.getNews({
+      limit: this.take,
+      offset: (this.pageNumber - 1) * this.take
+    })
+      .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        this.newsList = this.newsList.concat(res.list);
+        if (res.length) {
+          this.newsList = this.newsList.concat(res);
+        } else {
+          this.isEndOfList = true;
+        }
         this.isLoading = false;
         this.cdr.markForCheck();
       });

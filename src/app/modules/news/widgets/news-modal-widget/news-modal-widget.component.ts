@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, of, switchMap } from "rxjs";
+import { Observable, of } from "rxjs";
 import { ModalService } from "../../../../shared/services/modal.service";
-import { NewsService } from "../../services/news.service";
-import { NewsItemInfo } from "../../models/news.model";
+import { NewsListItem } from "../../models/news.model";
 
 @Component({
   selector: 'ats-news-modal-widget',
@@ -12,19 +11,16 @@ import { NewsItemInfo } from "../../models/news.model";
 export class NewsModalWidgetComponent implements OnInit {
 
   isVisible$: Observable<boolean> = of(false);
-  newsInfo$: Observable<NewsItemInfo | null> = of(null);
+  newsInfo$: Observable<NewsListItem | null> = of(null);
 
   constructor(
     private modalService: ModalService,
-    private newsService: NewsService
   ) {
   }
 
   ngOnInit(): void {
     this.isVisible$ = this.modalService.shouldShowNewsModal$;
-    this.newsInfo$ = this.modalService.newsId$.pipe(
-      switchMap(id => this.newsService.getNewsItemInfo(id))
-    );
+    this.newsInfo$ = this.modalService.newsItem$;
   }
 
   handleCancel() {

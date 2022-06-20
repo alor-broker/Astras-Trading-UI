@@ -5,6 +5,7 @@ import { CommandParams } from '../models/commands/command-params.model';
 import { EditParams } from '../models/commands/edit-params.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
+import { NewsListItem } from "../../modules/news/models/news.model";
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ export class ModalService {
 
   private shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
 
-  private newsId = new BehaviorSubject<number | null>(null);
+  private newsItem = new BehaviorSubject<NewsListItem | null>(null);
   private shouldShowNewsModal = new BehaviorSubject<boolean>(false);
 
   shouldShowCommandModal$ = this.shouldShowCommandModal.asObservable();
@@ -37,7 +38,7 @@ export class ModalService {
 
   shouldShowTerminalSettingsModal$ = this.shouldShowTerminalSettingsModal.asObservable();
 
-  newsId$ = this.newsId.asObservable();
+  newsItem$ = this.newsItem.asObservable();
   shouldShowNewsModal$ = this.shouldShowNewsModal.asObservable();
 
   constructor(private store: Store) {
@@ -73,9 +74,9 @@ export class ModalService {
     this.shouldShowTerminalSettingsModal.next(true);
   }
 
-  openNewsModal(newsId: number) {
+  openNewsModal(newsItem: NewsListItem) {
     this.shouldShowNewsModal.next(true);
-    this.newsId.next(newsId);
+    this.newsItem.next(newsItem);
   }
 
   closeTerminalSettingsModal() {

@@ -1,12 +1,14 @@
-export interface NewsList {
-  list: NewsListItem[];
-  total: number;
-}
-
 export interface NewsListItem {
-  id: number;
-  title: string;
-  pubDate: string;
+  "id": number,
+  sourceId: string,
+  header: string,
+  publishDate: string,
+  newsType: number,
+  content:  string,
+  countryCodes: Array<string>,
+  rubricCodes: Array<string>,
+  symbols: Array<string>,
+  mt: null
 }
 
 export interface NewsItemInfo {

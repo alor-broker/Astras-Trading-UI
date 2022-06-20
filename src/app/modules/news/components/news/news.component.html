@@ -1,32 +1,9 @@
-<nz-table
-  #newsTable
-  nzSize="small"
-  nzTableLayout="fixed"
-  class="show-scroll"
-  [nzVirtualItemSize]="29"
-  [nzVirtualForTrackBy]="trackById"
-  [nzVirtualMinBufferPx]="scrollHeight"
-  [nzVirtualMaxBufferPx]="scrollHeight"
-  [nzData]="newsList"
-  [nzShowPagination]="false"
-  [nzFrontPagination]="false"
-  [nzScroll]="{y: scrollHeight + 'px'}"
-  [nzWidthConfig]="['130px', 'auto']"
-  [nzLoading]="isLoading"
->
-  <thead>
-  <tr>
-    <th nzWidth="130px">Дата</th>
-    <th>Новость</th>
-  </tr>
-  </thead>
-
-  <tbody>
-  <ng-template nz-virtual-scroll let-data>
-    <tr (click)="openNewsModal(data.id)">
-      <td>{{data.pubDate | date}}</td>
-      <td>{{data.title}}</td>
-    </tr>
-  </ng-template>
-  </tbody>
-</nz-table>
+<ats-infinite-scroll-table
+  [tableContainerHeight]="tableContainerHeight"
+  [tableContainerWidth]="tableContainerWidth"
+  [data]="newsList"
+  [isLoading]="isLoading"
+  [columns]="columns"
+  (scrolled)="scrolled()"
+  (rowClick)="openNewsModal($event)"
+></ats-infinite-scroll-table>

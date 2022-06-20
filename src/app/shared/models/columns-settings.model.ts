@@ -7,4 +7,6 @@ export interface ColumnsSettings {
   transformFn?: (data: any) => string | null;
   // Применяемые классы
   classFn?: (data: any) => string | null;
+  // Ширина столбца
+  width?: string;
 }

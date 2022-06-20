@@ -1,6 +1,6 @@
 <div *ngIf="newsInfo$ | async as newsInfo">
   <nz-modal
-    [nzTitle]="newsInfo.title"
+    [nzTitle]="newsInfo.header"
     nzClosable="true"
     [nzVisible]='isVisible$ | async'
     [nzFooter]='null'
@@ -8,7 +8,7 @@
     (nzOnCancel)="handleCancel()"
   >
     <ng-container *nzModalContent>
-      {{newsInfo.desc}}
+      <div [innerHTML]="newsInfo.content"></div>
     </ng-container>
   </nz-modal>
 </div>

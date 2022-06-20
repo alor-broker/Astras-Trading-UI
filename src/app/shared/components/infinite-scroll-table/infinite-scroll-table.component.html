@@ -10,12 +10,12 @@
   [nzShowPagination]="false"
   [nzFrontPagination]="false"
   [nzScroll]="{y: scrollHeight + 'px'}"
-  [nzWidthConfig]="['auto']"
+  [nzWidthConfig]="getWidthArr()"
   [nzLoading]="isLoading"
 >
   <thead>
   <tr #tableRow>
-    <th nzWidth="" *ngFor="let column of columns">
+    <th *ngFor="let column of columns">
       {{column.displayName}}
     </th>
   </tr>
