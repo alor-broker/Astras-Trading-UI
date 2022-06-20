@@ -8,7 +8,7 @@
     (nzOnCancel)="handleCancel()"
   >
     <ng-container *nzModalContent>
-      <div [innerHTML]="newsInfo.content"></div>
+      <div class="scrollable" [innerHTML]="newsInfo.content"></div>
     </ng-container>
   </nz-modal>
 </div>

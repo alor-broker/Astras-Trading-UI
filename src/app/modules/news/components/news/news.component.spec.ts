@@ -23,11 +23,8 @@ describe('NewsComponent', () => {
         {
           provide: NewsService,
           useValue: {
-            getNewsSub: jasmine.createSpy('getNewsSub').and.returnValue(of(testNewsItem)),
-            getNews: jasmine.createSpy('getNews').and.returnValue(of({
-              list: [testNewsItem],
-              total: 1
-            }))
+            getNewNews: jasmine.createSpy('getNewsSub').and.returnValue(of([testNewsItem])),
+            getNews: jasmine.createSpy('getNews').and.returnValue(of([testNewsItem]))
           }
         },
         {

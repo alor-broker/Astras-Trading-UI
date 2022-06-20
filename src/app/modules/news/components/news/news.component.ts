@@ -3,7 +3,7 @@ import { NewsService } from "../../services/news.service";
 import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { NewsListItem } from "../../models/news.model";
-import { Subject, takeUntil } from "rxjs";
+import { map, pipe, Subject, takeUntil } from "rxjs";
 import { DatePipe } from "@angular/common";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 
@@ -29,8 +29,13 @@ export class NewsComponent implements OnInit, OnDestroy {
   public isLoading = false;
 
   public columns: ColumnsSettings[] = [
-    {name: 'publishDate', displayName: 'Время', transformFn: (data: string) => this.datePipe.transform(data, 'HH:mm:ss'), width: '20%'},
-    {name: 'header', displayName: 'Новость', width: '80%'},
+    {
+      name: 'publishDate',
+      displayName: 'Время',
+      transformFn: (data: string) => this.datePipe.transform(data, 'dd.MM.yyyy HH:mm:ss'),
+      width: '135px'
+    },
+    {name: 'header', displayName: 'Новость'},
   ];
 
   constructor(
@@ -49,11 +54,18 @@ export class NewsComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     });
 
-    // this.newsService.getNewNews()
-    //   .subscribe(res => {
-    //     this.newsList = [res, ...this.newsList];
-    //     this.cdr.markForCheck();
-    //   });
+    this.newsService.getNewNews()
+      .pipe(
+        takeUntil(this.destroy$),
+        map((data: NewsListItem[]) => {
+          const existingNewsItemIndex = data.findIndex(item => item.id === this.newsList[0]?.id);
+          return existingNewsItemIndex === -1 ? data : data.slice(0, existingNewsItemIndex);
+        })
+      )
+      .subscribe(res => {
+        this.newsList = [...res, ...this.newsList];
+        this.cdr.markForCheck();
+      });
   }
 
   public openNewsModal(newsItem: NewsListItem): void {

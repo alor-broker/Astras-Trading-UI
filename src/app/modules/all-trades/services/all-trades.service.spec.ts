@@ -13,6 +13,7 @@ describe('AllTradesService', () => {
         HttpClientTestingModule,
         ...sharedModuleImportForTests
       ],
+      providers: [AllTradesService]
     });
     service = TestBed.inject(AllTradesService);
   });

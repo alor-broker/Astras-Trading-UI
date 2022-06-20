@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
-import { Observable } from "rxjs";
+import { interval, map, Observable, switchMap } from "rxjs";
 import { NewsListItem } from "../models/news.model";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
@@ -31,6 +31,23 @@ export class NewsService {
       }
     })
       .pipe(
+        catchHttpError<Array<NewsListItem>>([], this.errorHandlerService)
+      );
+  }
+
+  public getNewNews(): Observable<NewsListItem[]> {
+    return interval(60_000)
+      .pipe(
+        switchMap(() => this.http.get<NewsListItem[]>(`${this.newsUrl}`, {
+          params: {
+            limit: 10,
+            offset: 0,
+            sortDesc: true
+          }
+        })),
+        // map((data: NewsListItem[]) => {
+        //   const existingNewsItemIndex = data.findIndex(item => item.id = lastNewsItemId);
+        // }),
         catchHttpError<Array<NewsListItem>>([], this.errorHandlerService)
       );
   }
