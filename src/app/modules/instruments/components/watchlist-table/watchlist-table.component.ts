@@ -7,6 +7,7 @@ import { selectNewInstrument } from '../../../../store/instruments/instruments.a
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { filter, map } from 'rxjs/operators';
+import { getPropertyFromPath } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-watchlist-table[guid]',
@@ -18,6 +19,13 @@ export class WatchlistTableComponent implements OnInit {
   guid!: string;
 
   watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
+
+  sortFns = {
+    symbol: this.getSortFn('instrument.symbol'),
+    price: this.getSortFn('price'),
+    dayChange: this.getSortFn('dayChange'),
+    dayChangePerPrice: this.getSortFn('dayChangePerPrice'),
+  };
 
   constructor(
     private readonly store: Store,
@@ -49,4 +57,10 @@ export class WatchlistTableComponent implements OnInit {
   getTrackKey(index: number, item: WatchedInstrument): string {
     return WatchlistCollectionService.getInstrumentKey(item.instrument);
   }
+
+  private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {
+    return (a: any, b: any) => {
+      return getPropertyFromPath(a, propName) > getPropertyFromPath(b, propName) ? 1 : -1;
+    };
+  };
 }

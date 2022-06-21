@@ -6,15 +6,15 @@
   [nzShowPagination]="false">
   <thead>
     <tr>
-      <th><span nz-tooltip nzTooltipTitle="Биржевой идентификатор ценной бумаги">Тикер</span> </th>
-      <th><span nz-tooltip nzTooltipTitle="Цена последней сделки">Цена</span> </th>
-      <th><span nz-tooltip nzTooltipTitle="Изменение за день">Д.изм.</span> </th>
-      <th><span nz-tooltip nzTooltipTitle="Изменение за день в %">Д.изм.,%</span></th>
+      <th [nzSortFn]="sortFns.symbol"><span nz-tooltip nzTooltipTitle="Биржевой идентификатор ценной бумаги">Тикер</span> </th>
+      <th [nzSortFn]="sortFns.price"><span nz-tooltip nzTooltipTitle="Цена последней сделки">Цена</span> </th>
+      <th [nzSortFn]="sortFns.dayChange"><span nz-tooltip nzTooltipTitle="Изменение за день">Д.изм.</span> </th>
+      <th [nzSortFn]="sortFns.dayChangePerPrice"><span nz-tooltip nzTooltipTitle="Изменение за день в %">Д.изм.,%</span></th>
       <th><span nz-tooltip nzTooltipTitle="Убрать из наблюдения">Удл.</span></th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let inst of nzTable.data; trackBy: getTrackKey" (click)='makeActive(inst.instrument)'>
+    <tr *ngFor="let inst of nzTableComponent.data; trackBy: getTrackKey" (click)='makeActive(inst.instrument)'>
       <td class="ticker">{{ inst.instrument.symbol }}</td>
       <td><ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'></ats-price-tick></td>
       <td [ngClass]="inst.dayChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.dayChange }}</td>
