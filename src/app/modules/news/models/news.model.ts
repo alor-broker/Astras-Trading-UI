@@ -1,5 +1,5 @@
 export interface NewsListItem {
-  "id": number,
+  id: number,
   sourceId: string,
   header: string,
   publishDate: string,

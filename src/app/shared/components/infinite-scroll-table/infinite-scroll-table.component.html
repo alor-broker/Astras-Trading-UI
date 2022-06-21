@@ -15,7 +15,7 @@
 >
   <thead>
   <tr #tableRow>
-    <th *ngFor="let column of columns">
+    <th *ngFor="let column of columns" [nzWidth]="column.width ?? null">
       {{column.displayName}}
     </th>
   </tr>

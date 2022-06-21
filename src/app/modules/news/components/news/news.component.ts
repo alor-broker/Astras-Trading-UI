@@ -3,7 +3,7 @@ import { NewsService } from "../../services/news.service";
 import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { NewsListItem } from "../../models/news.model";
-import { map, pipe, Subject, takeUntil } from "rxjs";
+import { map, Subject, takeUntil } from "rxjs";
 import { DatePipe } from "@angular/common";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 
@@ -19,7 +19,7 @@ export class NewsComponent implements OnInit, OnDestroy {
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private datePipe = new DatePipe('ru-RU');
-  private take = 50;
+  private limit = 50;
   private isEndOfList = false;
   private pageNumber = 1;
 
@@ -88,8 +88,8 @@ export class NewsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.cdr.markForCheck();
     this.newsService.getNews({
-      limit: this.take,
-      offset: (this.pageNumber - 1) * this.take
+      limit: this.limit,
+      offset: (this.pageNumber - 1) * this.limit
     })
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
