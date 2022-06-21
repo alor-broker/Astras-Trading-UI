@@ -7,6 +7,7 @@ import { LightChartSettings } from '../models/settings/light-chart-settings.mode
 import { OrderbookSettings } from '../models/settings/orderbook-settings.model';
 import { scalarArrayEqual } from './collections';
 import { NewsSettings } from "../models/settings/news-settings.model";
+import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 
 export type InstrumentDependentSettings = AnySettings & {
   symbol: string;
@@ -95,6 +96,10 @@ export function isNewsSettings(settings: AnySettings): settings is NewsSettings 
   return settings && settings.title === 'Новости';
 }
 
+export function isAllTradesSettings(settings: AnySettings): settings is AllTradesSettings {
+  return settings && !!settings.title?.includes('Все сделки');
+}
+
 export function isInstrumentSelectSettings(
   settings: AnySettings
 ): settings is InstrumentSelectSettings {
@@ -135,6 +140,9 @@ export function getTypeBySettings(settings: AnySettings) {
   }
   if (isBlotterSettings(settings)) {
     return WidgetNames.blotter;
+  }
+  if (isAllTradesSettings(settings)) {
+    return WidgetNames.allTrades;
   }
   if (isInfoSettings(settings)) {
     return WidgetNames.instrumentInfo;
