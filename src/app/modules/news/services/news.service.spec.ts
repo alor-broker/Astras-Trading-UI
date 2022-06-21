@@ -1,21 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AllTradesService } from './all-trades.service';
+import { NewsService } from './news.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { sharedModuleImportForTests } from "../../../shared/utils/testing";
 
-describe('AllTradesService', () => {
-  let service: AllTradesService;
+describe('NewsService', () => {
+  let service: NewsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        ...sharedModuleImportForTests
-      ],
-      providers: [AllTradesService]
+      imports: [HttpClientTestingModule, ...sharedModuleImportForTests]
     });
-    service = TestBed.inject(AllTradesService);
+    service = TestBed.inject(NewsService);
   });
 
   it('should be created', () => {

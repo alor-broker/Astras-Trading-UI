@@ -5,6 +5,7 @@ import { CommandParams } from '../models/commands/command-params.model';
 import { EditParams } from '../models/commands/edit-params.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
+import { NewsListItem } from "../../modules/news/models/news.model";
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,9 @@ export class ModalService {
 
   private shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
 
+  private newsItem = new BehaviorSubject<NewsListItem | null>(null);
+  private shouldShowNewsModal = new BehaviorSubject<boolean>(false);
+
   shouldShowCommandModal$ = this.shouldShowCommandModal.asObservable();
   commandParams$ = this.commandParams.asObservable();
 
@@ -33,6 +37,9 @@ export class ModalService {
   shouldShowHelpModal$ = this.shouldShowHelpModal.asObservable();
 
   shouldShowTerminalSettingsModal$ = this.shouldShowTerminalSettingsModal.asObservable();
+
+  newsItem$ = this.newsItem.asObservable();
+  shouldShowNewsModal$ = this.shouldShowNewsModal.asObservable();
 
   constructor(private store: Store) {
     this.store.select(getSelectedPortfolio).subscribe(p => {
@@ -67,6 +74,11 @@ export class ModalService {
     this.shouldShowTerminalSettingsModal.next(true);
   }
 
+  openNewsModal(newsItem: NewsListItem) {
+    this.shouldShowNewsModal.next(true);
+    this.newsItem.next(newsItem);
+  }
+
   closeTerminalSettingsModal() {
     this.shouldShowTerminalSettingsModal.next(false);
   }
@@ -81,5 +93,9 @@ export class ModalService {
 
   closeHelpModal() {
     this.shouldShowHelpModal.next(false);
+  }
+
+  closeNewsModal() {
+    this.shouldShowNewsModal.next(false);
   }
 }

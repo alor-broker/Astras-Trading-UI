@@ -6,6 +6,7 @@ import { InstrumentSelectSettings } from '../models/settings/instrument-select-s
 import { LightChartSettings } from '../models/settings/light-chart-settings.model';
 import { OrderbookSettings } from '../models/settings/orderbook-settings.model';
 import { scalarArrayEqual } from './collections';
+import { NewsSettings } from "../models/settings/news-settings.model";
 
 export type InstrumentDependentSettings = AnySettings & {
   symbol: string;
@@ -90,6 +91,10 @@ export function isInfoSettings(
   );
 }
 
+export function isNewsSettings(settings: AnySettings): settings is NewsSettings {
+  return settings && settings.title === 'Новости';
+}
+
 export function isInstrumentSelectSettings(
   settings: AnySettings
 ): settings is InstrumentSelectSettings {
@@ -133,6 +138,9 @@ export function getTypeBySettings(settings: AnySettings) {
   }
   if (isInfoSettings(settings)) {
     return WidgetNames.instrumentInfo;
+  }
+  if (isNewsSettings(settings)) {
+    return WidgetNames.news;
   }
   return WidgetNames.instrumentSelect;
 }

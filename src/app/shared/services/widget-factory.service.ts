@@ -24,6 +24,7 @@ import { getSelectedInstrument } from '../../store/instruments/instruments.selec
 import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
 import { defaultInstrument } from '../../store/instruments/instruments.reducer';
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
+import { NewsSettings } from "../models/settings/news-settings.model";
 
 @Injectable({
   providedIn: 'root',
@@ -69,6 +70,9 @@ export class WidgetFactoryService {
         break;
       case WidgetNames.allTrades:
         settings = this.createAllTrades(newWidget);
+        break;
+      case WidgetNames.news:
+        settings = this.createNews(newWidget);
         break;
     }
     if (settings) {
@@ -178,6 +182,19 @@ export class WidgetFactoryService {
       hasSettings: false,
       hasHelp: false,
       title: `Все сделки ${this.selectedInstrument.symbol}`
+    };
+  }
+
+  private createNews(newWidget: NewWidget | Widget): NewsSettings {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+
+    return {
+      guid: newWidget.gridItem.label,
+      hasSettings: false,
+      hasHelp: false,
+      title: 'Новости'
     };
   }
 }

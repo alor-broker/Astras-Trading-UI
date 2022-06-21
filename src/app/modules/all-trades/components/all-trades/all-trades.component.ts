@@ -34,7 +34,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
 
   public tableContainerHeight: number = 0;
   public tableContainerWidth: number = 0;
-  public tradesList: Array<any> = [];
+  public tradesList: Array<AllTradesItem> = [];
   public isLoading = false;
 
   public columns: ColumnsSettings[] = [
