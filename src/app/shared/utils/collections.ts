@@ -14,8 +14,8 @@ export function findUnique<T, P>(array: Array<T>, selector: (element: T) => P) :
  * @param {Array<T>} array Provided array with duplicates.
  * @param {(e1: T, e2: T) => number} sorter A usual function for sorting which you provide to array.sort()
  * @param {(first: T, second: T) => boolean} comparer A comparer function
- * @returns
- */
+ * @returns array of unique and sorted elements
+ * */
 export function findUniqueElements<T>(
     array: Array<T>,
     sorter: (e1: T, e2: T) => number,

@@ -1,15 +1,16 @@
-<nz-table *ngIf="watchedInstruments$ | async as instruments" #nzTable [nzData]="instruments"
-  #nzTableComponent
+<nz-table *ngIf="watchedInstruments$ | async as instruments"
+  #nzTable
+  [nzData]="instruments"
   nzTableLayout="fixed"
   nzSize="small"
   [nzFrontPagination]="false"
   [nzShowPagination]="false">
   <thead>
     <tr>
-      <th><span nz-tooltip nzTooltipTitle="Биржевой идентификатор ценной бумаги">Тикер</span> </th>
-      <th><span nz-tooltip nzTooltipTitle="Цена последней сделки">Цена</span> </th>
-      <th><span nz-tooltip nzTooltipTitle="Изменение за день">Д.изм.</span> </th>
-      <th><span nz-tooltip nzTooltipTitle="Изменение за день в %">Д.изм.,%</span></th>
+      <th [nzSortFn]="sortFns.symbol"><span nz-tooltip nzTooltipTitle="Биржевой идентификатор ценной бумаги">Тикер</span> </th>
+      <th [nzSortFn]="sortFns.price"><span nz-tooltip nzTooltipTitle="Цена последней сделки">Цена</span> </th>
+      <th [nzSortFn]="sortFns.dayChange"><span nz-tooltip nzTooltipTitle="Изменение за день">Д.изм.</span> </th>
+      <th [nzSortFn]="sortFns.dayChangePerPrice"><span nz-tooltip nzTooltipTitle="Изменение за день в %">Д.изм.,%</span></th>
       <th><span nz-tooltip nzTooltipTitle="Убрать из наблюдения">Удл.</span></th>
     </tr>
   </thead>
