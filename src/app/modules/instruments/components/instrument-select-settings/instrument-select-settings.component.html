@@ -11,6 +11,15 @@
               </nz-select>
             </nz-form-control>
           </nz-form-item>
+          <nz-form-item class="compact">
+            <nz-form-control nzErrorTip="Выберите колонки">
+              <nz-form-label nzRequired nzFor="instrumentColumns">Колонки инструментов</nz-form-label>
+              <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
+                         nzPlaceHolder="Выберите..." formControlName="instrumentColumns">
+                <nz-option *ngFor="let item of allInstrumentColumns" [nzLabel]="item.name" [nzValue]="item.columnId"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
           <nz-form-item>
             <nz-form-control>
               <button type='submit' nz-button nzType="primary" [disabled]="!settingsForm.valid">Сохранить</button>
@@ -24,3 +33,5 @@
     </nz-tab>
   </nz-tabset>
 </div>
+
+<ng-template #tagPlaceHolder let-selectedList>and {{ selectedList.length }} more selected</ng-template>
