@@ -7,4 +7,8 @@ export interface WatchedInstrument {
   dayChange: number,
   dayChangePerPrice: number,
   closePrice: number,
+  maxPrice: number;
+  minPrice: number;
+  volume: number;
+  openPrice: number;
 }

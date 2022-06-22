@@ -25,6 +25,11 @@ export class WatchlistTableComponent implements OnInit {
     price: this.getSortFn('price'),
     dayChange: this.getSortFn('dayChange'),
     dayChangePerPrice: this.getSortFn('dayChangePerPrice'),
+    maxPrice: this.getSortFn('maxPrice'),
+    minPrice: this.getSortFn('minPrice'),
+    volume: this.getSortFn('volume'),
+    openPrice: this.getSortFn('openPrice'),
+    closePrice: this.getSortFn('closePrice'),
   };
 
   constructor(
@@ -36,7 +41,7 @@ export class WatchlistTableComponent implements OnInit {
 
   ngOnInit(): void {
     this.watchedInstruments$ = this.watchInstrumentsService.getSettings(this.guid).pipe(
-      switchMap(settings => this.watchInstrumentsService.getWatched(settings))
+      switchMap(settings => this.watchInstrumentsService.getWatched(settings)),
     );
   }
 

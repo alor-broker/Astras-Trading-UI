@@ -11,6 +11,11 @@
       <th [nzSortFn]="sortFns.price"><span nz-tooltip nzTooltipTitle="Цена последней сделки">Цена</span> </th>
       <th [nzSortFn]="sortFns.dayChange"><span nz-tooltip nzTooltipTitle="Изменение за день">Д.изм.</span> </th>
       <th [nzSortFn]="sortFns.dayChangePerPrice"><span nz-tooltip nzTooltipTitle="Изменение за день в %">Д.изм.,%</span></th>
+      <th [nzSortFn]="sortFns.maxPrice"><span nz-tooltip nzTooltipTitle="Максимальная цена за день">Д.макс.</span></th>
+      <th [nzSortFn]="sortFns.minPrice"><span nz-tooltip nzTooltipTitle="Минимальная цена за день">Д.мин.</span></th>
+      <th [nzSortFn]="sortFns.volume"><span nz-tooltip nzTooltipTitle="Объём">Объём</span></th>
+      <th [nzSortFn]="sortFns.openPrice"><span nz-tooltip nzTooltipTitle="Цена на начало дня">Откр.</span></th>
+      <th [nzSortFn]="sortFns.closePrice"><span nz-tooltip nzTooltipTitle="Цена на конец предыдущего дня">Закр.</span></th>
       <th><span nz-tooltip nzTooltipTitle="Убрать из наблюдения">Удл.</span></th>
     </tr>
   </thead>
@@ -20,6 +25,11 @@
       <td><ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'></ats-price-tick></td>
       <td [ngClass]="inst.dayChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.dayChange }}</td>
       <td [ngClass]="inst.dayChangePerPrice < 0 ? 'sellCell' : 'buyCell'">{{ inst.dayChangePerPrice + '%' }}</td>
+      <td>{{ inst.maxPrice }}</td>
+      <td>{{ inst.minPrice }}</td>
+      <td>{{ inst.volume }}</td>
+      <td>{{ inst.openPrice }}</td>
+      <td>{{ inst.closePrice }}</td>
       <td>
         <button nzDanger nzSize='small' nz-button nzType="primary" (click)="remove(inst.instrument)"><i nz-icon nzType="minus"></i></button>
       </td>
