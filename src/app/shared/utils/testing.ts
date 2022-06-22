@@ -5,12 +5,17 @@ import { SharedModule } from '../shared.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 
-/** Create async observable that emits-once and completes
- *  after a JS engine turn */
+/**
+ * Create async observable that emits-once and completes  after a JS engine turn
+ * @param data any data
+ * @returns Observable with completed promise
+ */
 export function asyncData<T>(data: T) {
   return defer(() => Promise.resolve(data));
 }
-
+/**
+ * A class with a bunch of data for tests
+ */
 export class TestData {
   public static get instruments(): Instrument[] {
     return [
@@ -58,7 +63,9 @@ export class TestData {
   }
 }
 
-// SharedModule requires store module registered for root
+/**
+ *  SharedModule requires store module registered for root
+ */
 export const sharedModuleImportForTests: Array<Type<any> | ModuleWithProviders<{}> | any[]> = [
   StoreModule.forRoot({}),
   EffectsModule.forRoot(),

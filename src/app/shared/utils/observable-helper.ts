@@ -12,7 +12,12 @@ import {
 } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandlerService } from '../services/handle-error/error-handler.service';
-
+/**
+ *
+ * @param valueToReturn
+ * @param errorHandler
+ * @returns
+ */
 export function catchHttpError<T>(valueToReturn: T, errorHandler?: ErrorHandlerService): MonoTypeOperatorFunction<T> {
   return pipe(
     catchError(err => {
