@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { combineLatest, distinctUntilChanged, map, Observable, shareReplay, switchMap } from 'rxjs';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
-import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
 import { InfoSettings } from 'src/app/shared/models/settings/info-settings.model';
@@ -21,6 +20,7 @@ import { InstrumentIsinEqualityComparer } from '../../../shared/models/instrumen
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { distinct } from 'rxjs/operators';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
+import { getTypeByCfi } from 'src/app/shared/utils/instruments';
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,
@@ -150,33 +150,11 @@ export class InfoService extends BaseService<InfoSettings>{
           instrumentGroup: r.board,
           isin: r.ISIN,
           currency: r.currency,
-          type: this.getTypeByCfi(r.cfiCode),
+          type: getTypeByCfi(r.cfiCode),
           lotsize: r.lotsize ?? 1
         };
         return info;
       })
     );
-  }
-
-  private getTypeByCfi(cfi: string | undefined) {
-    if (!cfi) {
-      return InstrumentType.Other;
-    }
-    if (cfi.startsWith('DB')) {
-      return InstrumentType.Bond;
-    }
-    else if (cfi.startsWith('E')) {
-      return InstrumentType.Stock;
-    }
-    else if (cfi.startsWith('MRC')) {
-      return InstrumentType.CurrencyInstrument;
-    }
-    else if (cfi.startsWith('F')) {
-      return InstrumentType.Futures;
-    }
-    else if (cfi.startsWith('O')) {
-      return InstrumentType.Options;
-    }
-    return InstrumentType.Other;
   }
 }

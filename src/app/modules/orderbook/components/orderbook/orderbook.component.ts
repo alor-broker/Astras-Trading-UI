@@ -8,7 +8,7 @@ import {
   Output,
   ViewEncapsulation
 } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, Subject, takeUntil } from 'rxjs';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import { ChartData, OrderBook } from '../../models/orderbook.model';
@@ -18,6 +18,10 @@ import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { buyColorBackground, sellColorBackground, } from '../../../../shared/models/settings/styles-constants';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
+import { getSelectedInstrument } from "../../../../store/instruments/instruments.selectors";
+import { select, Store } from '@ngrx/store';
+import { getTypeByCfi } from 'src/app/shared/utils/instruments';
+import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 
 interface Size {
   width: string;
@@ -41,6 +45,7 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
+  shouldShowYield$: Observable<boolean> = of(false);
   shouldShowTable$: Observable<boolean> = of(true);
   ob$: Observable<OrderBook | null> = of(null);
   maxVolume: number = 1;
@@ -50,12 +55,18 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   });
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private service: OrderbookService, private modal: ModalService) {
+  constructor(private service: OrderbookService, private modal: ModalService, private readonly store: Store) {
   }
 
   ngOnInit(): void {
     this.shouldShowTable$ = this.service.getSettings(this.guid).pipe(
       map((s) => s.showTable)
+    );
+
+    this.shouldShowYield$ = combineLatest([
+      this.service.getSettings(this.guid),
+      this.store.pipe(select(getSelectedInstrument))]).pipe(
+        map(([settings, instrument]) => getTypeByCfi(instrument.cfiCode) === InstrumentType.Bond && settings.showYieldForBonds)
     );
 
     this.ob$ = this.service.getOrderbook(this.guid).pipe(

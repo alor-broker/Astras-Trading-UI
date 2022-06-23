@@ -37,7 +37,8 @@ export class InstrumentsService {
           isin: r.ISIN,
           currency: r.currency,
           minstep: r.minstep ?? 0.01,
-          lotsize: r.lotsize
+          lotsize: r.lotsize,
+          cfiCode: r.cfiCode
         };
         return selected;
       }),

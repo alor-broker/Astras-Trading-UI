@@ -1,4 +1,14 @@
 export interface OrderbookDataRow {
-  volume: number,
-  price: number,
+  /**
+   * Volume
+   */
+  v: number,
+  /**
+   * price
+   */
+  p: number,
+  /**
+   * bond yield
+  */
+  y: number,
 }

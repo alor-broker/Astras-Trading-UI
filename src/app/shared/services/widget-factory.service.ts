@@ -95,6 +95,7 @@ export class WidgetFactoryService {
       title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
       showChart: true,
       showTable: true,
+      showYieldForBonds: false
     };
 
     return settings;
