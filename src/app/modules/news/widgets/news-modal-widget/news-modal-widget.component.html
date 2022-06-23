@@ -1,0 +1,17 @@
+<div *ngIf="newsInfo$ | async as newsInfo">
+  <nz-modal
+    [nzTitle]="header"
+    nzClosable="true"
+    [nzVisible]='isVisible$ | async'
+    [nzFooter]='null'
+    [nzMaskClosable]='true'
+    (nzOnCancel)="handleCancel()"
+  >
+    <ng-template #header>
+      <div class="header">{{newsInfo.header}}</div>
+    </ng-template>
+    <ng-container *nzModalContent>
+      <div class="scrollable" [innerHTML]="newsInfo.content"></div>
+    </ng-container>
+  </nz-modal>
+</div>

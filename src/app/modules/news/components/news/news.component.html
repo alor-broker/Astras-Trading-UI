@@ -1,0 +1,9 @@
+<ats-infinite-scroll-table
+  [tableContainerHeight]="tableContainerHeight"
+  [tableContainerWidth]="tableContainerWidth"
+  [data]="newsList"
+  [isLoading]="isLoading"
+  [columns]="columns"
+  (scrolled)="scrolled()"
+  (rowClick)="openNewsModal($event)"
+></ats-infinite-scroll-table>

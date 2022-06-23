@@ -59,6 +59,10 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
       });
   }
 
+  public getWidthArr() {
+    return this.columns.map(col => col.width || 'auto');
+  }
+
   public ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();

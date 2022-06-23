@@ -17,6 +17,7 @@ import { TerminalSettingsModule } from '../terminal-settings/terminal-settings.m
 import { JoyrideModule } from 'ngx-joyride';
 import { OnboardingService } from './services/onboarding.service';
 import { AllTradesModule } from "../all-trades/all-trades.module";
+import { NewsModule } from "../news/news.module";
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { AllTradesModule } from "../all-trades/all-trades.module";
     TerminalSettingsModule,
     JoyrideModule.forRoot(),
     AllTradesModule,
+    NewsModule,
     // components
   ],
   providers: [
