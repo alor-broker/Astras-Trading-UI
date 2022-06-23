@@ -1,14 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { sharedModuleImportForTests } from './shared/utils/testing';
+import { SessionTrackService } from "./shared/services/session/session-track.service";
 
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
+  let sessionTrackServiceSpy: any;
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
+    sessionTrackServiceSpy = jasmine.createSpyObj('SessionTrackService', ['startTracking', 'stopTracking']);
+
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
@@ -16,6 +23,9 @@ describe('AppComponent', () => {
       ],
       declarations: [
         AppComponent
+      ],
+      providers: [
+        { provide: SessionTrackService, useValue: sessionTrackServiceSpy }
       ]
     }).compileComponents();
   });

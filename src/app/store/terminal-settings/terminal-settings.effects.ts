@@ -69,7 +69,8 @@ export class TerminalSettingsEffects {
 
   private getDefaultSettings(): TerminalSettings {
     return {
-      timezoneDisplayOption: TimezoneDisplayOption.MskTime
+      timezoneDisplayOption: TimezoneDisplayOption.MskTime,
+      userIdleDurationMin: 5
     } as TerminalSettings;
   }
 }
