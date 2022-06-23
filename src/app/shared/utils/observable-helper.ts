@@ -18,6 +18,11 @@ import { ErrorHandlerService } from '../services/handle-error/error-handler.serv
  * @param errorHandler
  * @returns
  */
+/**
+ * Allows to catch http error and provide default value.
+ * @param valueToReturn - A default value that will be returned in case of error.
+ * @param errorHandler - An application error handler. Can be provided to follow common error handling approach. Optional
+ */
 export function catchHttpError<T>(valueToReturn: T, errorHandler?: ErrorHandlerService): MonoTypeOperatorFunction<T> {
   return pipe(
     catchError(err => {

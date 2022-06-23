@@ -32,12 +32,13 @@ export class TimezoneConverter {
   }
 
   /**
+   * Converts terminal date (the date that is displayed in the terminal, taking into account the selected time zone) to utc date
+   * @param {Date} dateWithTimezone -  terminal date.
    *
-   * @param {Date} date - utc date.
-   * @returns
+   * @returns {Date} utc date
    */
-  public terminalToUtc0Date(date: Date): Date {
-    let convertedDate = date;
+  public terminalToUtc0Date(dateWithTimezone: Date): Date {
+    let convertedDate = dateWithTimezone;
     if (this.displayTimezone === TimezoneDisplayOption.MskTime) {
       const localTime = new Date();
       const mskTime = this.toMskTime(localTime);
