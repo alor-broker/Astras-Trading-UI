@@ -20,6 +20,8 @@ import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.mod
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { getSelectedInstrument } from "../../../../store/instruments/instruments.selectors";
 import { select, Store } from '@ngrx/store';
+import { getTypeByCfi } from 'src/app/shared/utils/instruments';
+import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 
 interface Size {
   width: string;
@@ -64,7 +66,7 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     this.shouldShowYield$ = combineLatest([
       this.service.getSettings(this.guid),
       this.store.pipe(select(getSelectedInstrument))]).pipe(
-        map(([settings, instrument]) => (instrument.cfiCode?.startsWith("D") && settings.showYieldForBonds) ?? false)
+        map(([settings, instrument]) => getTypeByCfi(instrument.cfiCode) === InstrumentType.Bond && settings.showYieldForBonds)
     );
 
     this.ob$ = this.service.getOrderbook(this.guid).pipe(
