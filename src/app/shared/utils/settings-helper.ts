@@ -284,7 +284,8 @@ export function isEqualInstrumentSelectSettings(
     return (
       settings1.linkToActive == settings2.linkToActive &&
       settings1.guid == settings2.guid &&
-      settings1.activeListId == settings2.activeListId
+      settings1.activeListId == settings2.activeListId &&
+      settings1.instrumentColumns == settings2.instrumentColumns
     );
   } else return false;
 }

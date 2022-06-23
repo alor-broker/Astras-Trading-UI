@@ -1,5 +1,9 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { InstrumentSelectSettings } from 'src/app/shared/models/settings/instrument-select-settings.model';
+import {
+  allInstrumentsColumns,
+  ColumnIds,
+  InstrumentSelectSettings
+} from 'src/app/shared/models/settings/instrument-select-settings.model';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
@@ -15,6 +19,7 @@ import { WatchlistCollection } from '../../models/watchlist.model';
 export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
   settingsForm!: FormGroup;
   prevSettings?: InstrumentSelectSettings;
+  allInstrumentColumns: ColumnIds[] = allInstrumentsColumns;
   collection$?: Observable<WatchlistCollection>;
   @Input()
   guid!: string;
@@ -58,7 +63,8 @@ export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
 
   private buildSettingsForm() {
     this.settingsForm = new FormGroup({
-      activeListId: new FormControl(this.prevSettings?.activeListId, [Validators.required])
+      activeListId: new FormControl(this.prevSettings?.activeListId, [Validators.required]),
+      instrumentColumns: new FormControl(this.prevSettings?.instrumentColumns)
     });
   }
 }
