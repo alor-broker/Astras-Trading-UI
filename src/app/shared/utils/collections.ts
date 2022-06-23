@@ -1,12 +1,25 @@
+/**
+ * Find unique elements and applies a selector, which can create a new object from provided one
+ * @param array array
+ * @param selector a function with gets an element of array and returns same or diffrent object, constructed from this element
+ * @returns array of unique objects
+ */
 export function findUnique<T, P>(array: Array<T>, selector: (element: T) => P) : P[] {
   const selected = array.map(element => JSON.stringify(selector(element)));
   return [...new Set(selected)].map(j => JSON.parse(j));
 }
 
+/**
+ * Function that removes all duplicates in provided array and also sort it
+ * @param {Array<T>} array Provided array with duplicates.
+ * @param {(e1: T, e2: T) => number} sorter A usual function for sorting which you provide to array.sort()
+ * @param {(first: T, second: T) => boolean} comparer A comparer function
+ * @returns array of unique and sorted elements
+ * */
 export function findUniqueElements<T>(
     array: Array<T>,
     sorter: (e1: T, e2: T) => number,
-    comparer: (first: T, seconds: T) => boolean) : T[]
+    comparer: (first: T, second: T) => boolean) : T[]
 {
   array.sort(sorter);
   let dupes = 0;
@@ -63,6 +76,12 @@ export function byPropertiesOf<T extends object> (sortBy: Array<sortArg<T>>) {
     };
 }
 
-export function scalarArrayEqual<T>(array1: Array<T>, array2: Array<T>) {
-  array1.length === array2.length && array1.every((value, index) => value === array2[index]);
+/**
+ * Check if 2 arrays are equal, not by references, but by elements
+ * @param array1 first array
+ * @param array2 second array *
+ * @returns true if equal
+ */
+export function scalarArrayEqual<T>(array1: Array<T>, array2: Array<T>) : boolean {
+  return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 }

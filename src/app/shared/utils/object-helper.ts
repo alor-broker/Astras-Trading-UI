@@ -1,4 +1,5 @@
-/* gets object property by path
+/**
+ * gets object property by path
  * ```typescript
  *  const a = {b: { c: 1}};
  *  getProperty(a, 'b.c') // 1
@@ -8,7 +9,7 @@
  * @param path property path through '.'
  *
  * @returns object property value
-*/
+ */
 export function getPropertyFromPath(obj: any, path: string): any {
   const pathArr = path.split('.');
 
