@@ -70,6 +70,7 @@ export function isOrderbookSettings(
     'exchange' in settings &&
     'depth' in settings &&
     'showChart' in settings &&
+    'showYieldForBonds' in settings &&
     'showTable' in settings
   );
 }
@@ -217,7 +218,8 @@ export function isEqualOrderbookSettings(
       settings1.exchange == settings2.exchange &&
       settings1.depth == settings2.depth &&
       settings1.showChart == settings2.showChart &&
-      settings1.showTable == settings2.showTable
+      settings1.showTable == settings2.showTable &&
+      settings1.showYieldForBonds == settings2.showYieldForBonds
     );
   } else return false;
 }

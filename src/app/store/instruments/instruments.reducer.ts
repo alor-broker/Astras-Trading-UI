@@ -16,7 +16,8 @@ export const defaultInstrument: Instrument = {
   shortName: "Сбербанк АО",
   description: "Сбербанк АО",
   currency: "RUB",
-  minstep: 0.01
+  minstep: 0.01,
+  cfiCode: "ESXXXX"
 };
 
 export const initialState: InstrumentsState = {

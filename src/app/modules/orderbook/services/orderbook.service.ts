@@ -139,7 +139,7 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
       code: symbol,
       exchange: exchange,
       depth: depth ?? 10,
-      format: 'simple',
+      format: 'slim',
       guid: '',
       instrumentGroup: instrumentGroup,
     };
@@ -148,12 +148,14 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
 
     const orderbook$ = messages$.pipe(
       map((r) => {
-        const rows = r.asks.map((a, i) => {
+        const rows = r.a.map((a, i) => {
           const obr: OrderBookViewRow = {
-            ask: a.price,
-            askVolume: a.volume,
-            bid: r.bids[i]?.price ?? 0,
-            bidVolume: r.bids[i]?.volume ?? 0,
+            ask: a.p,
+            askVolume: a.v,
+            yieldAsk: a.y,
+            yieldBid: r.b[i]?.y ?? 0,
+            bid: r.b[i]?.p ?? 0,
+            bidVolume: r.b[i]?.v ?? 0,
           };
           return obr;
         });
