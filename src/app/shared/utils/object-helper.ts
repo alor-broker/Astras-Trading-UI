@@ -1,4 +1,5 @@
-/* gets object property by path
+/**
+ * gets object property by path
  * ```typescript
  *  const a = {b: { c: 1}};
  *  getProperty(a, 'b.c') // 1
