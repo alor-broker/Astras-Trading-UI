@@ -26,7 +26,7 @@
         {{ inst.dayChange }}
       </td>
       <td *ngIf="isVisibleColumn('dayChangePerPrice')" [ngClass]="inst.dayChangePerPrice < 0 ? 'sellCell' : 'buyCell'">
-        {{ inst.dayChangePerPrice + '%' }}
+        {{ inst.dayChangePerPrice }}
       </td>
       <td *ngIf="isVisibleColumn('maxPrice')">{{ inst.maxPrice }}</td>
       <td *ngIf="isVisibleColumn('minPrice')">{{ inst.minPrice }}</td>
