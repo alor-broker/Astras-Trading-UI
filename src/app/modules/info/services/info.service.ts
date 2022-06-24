@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { combineLatest, distinctUntilChanged, map, Observable, shareReplay, switchMap } from 'rxjs';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
-import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
 import { InfoSettings } from 'src/app/shared/models/settings/info-settings.model';

@@ -2,4 +2,5 @@
 
 export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption
+  userIdleDurationMin?: number;
 }
