@@ -70,7 +70,7 @@ export class TerminalSettingsEffects {
   private getDefaultSettings(): TerminalSettings {
     return {
       timezoneDisplayOption: TimezoneDisplayOption.MskTime,
-      userIdleDurationMin: 5
+      userIdleDurationMin: 15
     } as TerminalSettings;
   }
 }

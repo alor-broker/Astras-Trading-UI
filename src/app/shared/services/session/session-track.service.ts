@@ -39,7 +39,7 @@ export class SessionTrackService {
     this.activityTrackerService.startTracking();
 
     const userIdleDuration$ = this.terminalSettingsService.getSettings().pipe(
-      map(settings => Math.round((settings.userIdleDurationMin ?? 5) * 60 * 1000)),
+      map(settings => Math.round((settings.userIdleDurationMin ?? 15) * 60 * 1000)),
       shareReplay()
     );
 
