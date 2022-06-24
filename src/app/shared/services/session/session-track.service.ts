@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ActivityTrackerService } from "./activity-tracker.service";
 import {
+  combineLatest,
   filter,
   Observable,
   shareReplay,
   Subject,
   Subscription,
   take,
+  tap,
   timer,
   withLatestFrom
 } from "rxjs";
@@ -37,7 +39,7 @@ export class SessionTrackService {
     this.activityTrackerService.startTracking();
 
     const userIdleDuration$ = this.terminalSettingsService.getSettings().pipe(
-      map(settings => (settings.userIdleDurationMin ?? 5) * 60 * 1000),
+      map(settings => Math.round((settings.userIdleDurationMin ?? 5) * 60 * 1000)),
       shareReplay()
     );
 
@@ -52,27 +54,35 @@ export class SessionTrackService {
 
   private setupSessionCheck(userIdleDuration$: Observable<number>): Subscription {
     const nextSessionCheckMoment$ = new Subject<number | null>();
-    const subscription = this.getTimeTrackPipe(userIdleDuration$, nextSessionCheckMoment$)
-      .subscribe(track => {
-        if (this.isNeedToCompleteSession(track.checkPeriod, track.lastActivityUnixTime)) {
-          this.authService.logout();
-          return;
-        }
 
-        nextSessionCheckMoment$.next(this.getNextCheckPeriod(track.checkPeriod, track.lastActivityUnixTime));
-      });
+    const subscription = this.getTimeTrackPipe(
+      userIdleDuration$.pipe(
+        tap(() => nextSessionCheckMoment$.next(null))
+      ),
+      nextSessionCheckMoment$
+    ).subscribe(track => {
+      if (this.isNeedToCompleteSession(track.checkPeriod, track.lastActivityUnixTime)) {
+        this.authService.logout();
+        return;
+      }
+
+      nextSessionCheckMoment$.next(this.getNextCheckPeriod(track.checkPeriod, track.lastActivityUnixTime));
+    });
 
     nextSessionCheckMoment$.next(null);
+
     return subscription;
   }
 
   private setupWarningCheck(userIdleDuration$: Observable<number>): Subscription {
+    const nextWarningCheckMoment$ = new Subject<number | null>();
+
     const warningPeriod$ = userIdleDuration$.pipe(
       map(userIdleDuration => userIdleDuration - this.getWarningPeriod(userIdleDuration)),
-      map(warningPeriod => warningPeriod < 1000 ? 1000 : warningPeriod)
+      map(warningPeriod => warningPeriod < 1000 ? 1000 : warningPeriod),
+      tap(() => nextWarningCheckMoment$.next(null))
     );
 
-    const nextWarningCheckMoment$ = new Subject<number | null>();
     const subscription = this.getTimeTrackPipe(
       warningPeriod$,
       nextWarningCheckMoment$
@@ -95,14 +105,15 @@ export class SessionTrackService {
     });
 
     nextWarningCheckMoment$.next(null);
+
     return subscription;
   }
 
   private getTimeTrackPipe(defaultCheckPeriod$: Observable<number>, nextCheckPeriod$: Observable<number | null>): Observable<{ checkPeriod: number, lastActivityUnixTime: number | null }> {
-    return defaultCheckPeriod$.pipe(
-      mapWith(() => nextCheckPeriod$, (defaultCheckPeriod, nextCheckPeriod) => ({
-        defaultCheckPeriod,
-        nextCheckPeriod
+    return combineLatest([defaultCheckPeriod$, nextCheckPeriod$]).pipe(
+      map(([defaultCheckPeriod, nextCheckPeriod]) => ({
+        nextCheckPeriod,
+        defaultCheckPeriod
       })),
       mapWith(periods => timer(periods.nextCheckPeriod ?? periods.defaultCheckPeriod), periods => periods.defaultCheckPeriod),
       withLatestFrom(this.activityTrackerService.lastActivityUnixTime$),

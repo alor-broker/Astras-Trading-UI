@@ -57,7 +57,10 @@ export class TerminalSettingsComponent implements OnInit {
   saveSettingsChanges() {
     if (this.settingsForm?.valid) {
       this.store.dispatch(updateTerminalSettings({
-        updates: this.settingsForm.value as TerminalSettings
+        updates: {
+          ...this.settingsForm.value,
+          userIdleDurationMin: Number(this.settingsForm.value.userIdleDurationMin)
+        } as TerminalSettings
       }));
     }
   }
