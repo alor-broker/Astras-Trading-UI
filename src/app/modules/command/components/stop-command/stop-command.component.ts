@@ -49,8 +49,10 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       )
       .subscribe(isErr => {
         if (isErr) {
-          this.form.get('triggerPrice')!.markAsDirty();
-          this.form.get('triggerPrice')!.updateValueAndValidity();
+          Object.values(this.form.controls).forEach(c => {
+            c.markAsDirty();
+            c.updateValueAndValidity({onlySelf: false});
+          });
         }
       });
   }
