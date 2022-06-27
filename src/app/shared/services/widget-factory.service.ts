@@ -25,6 +25,7 @@ import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selector
 import { defaultInstrument } from '../../store/instruments/instruments.reducer';
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { NewsSettings } from "../models/settings/news-settings.model";
+import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
 
 @Injectable({
   providedIn: 'root',
@@ -73,6 +74,9 @@ export class WidgetFactoryService {
         break;
       case WidgetNames.news:
         settings = this.createNews(newWidget);
+        break;
+      case WidgetNames.exchangeRate:
+        settings = this.createExchangeRate(newWidget);
         break;
     }
     if (settings) {
@@ -195,6 +199,18 @@ export class WidgetFactoryService {
       hasSettings: false,
       hasHelp: false,
       title: 'Новости'
+    };
+  }
+
+  private createExchangeRate(newWidget: NewWidget | Widget): ExchangeRateSettings {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+
+    return {
+      guid: newWidget.gridItem.label,
+      hasSettings: false,
+      title: 'Курс валют'
     };
   }
 }

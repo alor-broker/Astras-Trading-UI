@@ -6,4 +6,5 @@ export class WidgetNames {
   static readonly instrumentInfo = 'instrument-info';
   static readonly allTrades = 'all-trades';
   static readonly news = 'news';
+  static readonly exchangeRate = 'exchange-rate';
 }

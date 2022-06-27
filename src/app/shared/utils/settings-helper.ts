@@ -8,6 +8,7 @@ import { OrderbookSettings } from '../models/settings/orderbook-settings.model';
 import { scalarArrayEqual } from './collections';
 import { NewsSettings } from "../models/settings/news-settings.model";
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
+import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
 
 export type InstrumentDependentSettings = AnySettings & {
   symbol: string;
@@ -100,6 +101,10 @@ export function isAllTradesSettings(settings: AnySettings): settings is AllTrade
   return settings && !!settings.title?.includes('Все сделки');
 }
 
+export function isExchangeRateSettings(settings: AnySettings): settings is ExchangeRateSettings {
+  return settings && !!settings.title?.includes('Курс валют');
+}
+
 export function isInstrumentSelectSettings(
   settings: AnySettings
 ): settings is InstrumentSelectSettings {
@@ -143,6 +148,9 @@ export function getTypeBySettings(settings: AnySettings) {
   }
   if (isAllTradesSettings(settings)) {
     return WidgetNames.allTrades;
+  }
+  if (isExchangeRateSettings(settings)) {
+    return WidgetNames.exchangeRate;
   }
   if (isInfoSettings(settings)) {
     return WidgetNames.instrumentInfo;
