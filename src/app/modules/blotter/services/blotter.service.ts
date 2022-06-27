@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { combineLatest, merge, Observable, of, pipe, Subscription, tap } from 'rxjs';
+import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
 import { filter, map, startWith, switchMap } from 'rxjs/operators';
 import { CurrencyCode, CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';

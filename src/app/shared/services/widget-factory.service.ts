@@ -6,7 +6,7 @@ import { NewWidget } from '../models/new-widget.model';
 import { Widget } from '../models/widget.model';
 import { LightChartSettings } from '../models/settings/light-chart-settings.model';
 import { TimeframesHelper, TimeframeValue } from 'src/app/modules/light-chart/utils/timeframes-helper';
-import { InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
+import { allInstrumentsColumns, InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
 import { Instrument } from '../models/instruments/instrument.model';
 import {
   allOrdersColumns,
@@ -99,6 +99,7 @@ export class WidgetFactoryService {
       title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
       showChart: true,
       showTable: true,
+      showYieldForBonds: false
     };
 
     return settings;
@@ -110,7 +111,8 @@ export class WidgetFactoryService {
     }
     const settings: InstrumentSelectSettings = {
       guid: newWidget.gridItem.label,
-      title: `Выбор инструмента`
+      title: `Выбор инструмента`,
+      instrumentColumns: allInstrumentsColumns.filter(c => c.isDefault).map(c => c.columnId)
     };
 
     return settings;

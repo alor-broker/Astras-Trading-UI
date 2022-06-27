@@ -5,4 +5,5 @@ export interface OrderbookSettings extends WidgetSettings, InstrumentKey {
   depth?: number,
   showChart: boolean,
   showTable: boolean
+  showYieldForBonds: boolean
 }

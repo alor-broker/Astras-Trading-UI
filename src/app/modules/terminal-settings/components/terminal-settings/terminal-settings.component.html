@@ -12,12 +12,18 @@
           <form nz-form [nzLayout]="'vertical'" [formGroup]="settingsForm" *ngIf="settingsForm" (ngSubmit)="saveSettingsChanges()">
             <nz-form-item>
               <nz-form-label nzRequired nzFor="timezoneDisplayOption">Часовой пояс отображения времени</nz-form-label>
-              <nz-input-group>
+              <nz-form-control>
                 <nz-select formControlName='timezoneDisplayOption'>
                   <nz-option  [nzValue]="timezoneDisplayOption.MskTime" nzLabel="Москва (MSK)"></nz-option>
                   <nz-option  [nzValue]="timezoneDisplayOption.LocalTime" nzLabel="Локальное время"></nz-option>
                 </nz-select>
-              </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="userIdleDurationMin">Время бездействия до приостановки сеанса, мин.</nz-form-label>
+              <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.userIdleDurationMin.min}} до {{validationSettings.userIdleDurationMin.max}}">
+                <input class='ant-input' atsNumerical formControlName="userIdleDurationMin" (mousedown)="$event.stopPropagation()" nz-input/>
+              </nz-form-control>
             </nz-form-item>
             <nz-form-item>
               <nz-form-control>

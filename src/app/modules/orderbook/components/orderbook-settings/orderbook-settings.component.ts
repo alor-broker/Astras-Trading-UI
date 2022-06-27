@@ -8,7 +8,8 @@ interface SettingsFormData {
   symbol: string,
   instrumentGroup: string,
   showChart: boolean,
-  showTable: boolean
+  showTable: boolean,
+  showYieldForBonds: boolean,
 }
 
 type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
@@ -45,7 +46,8 @@ export class OrderbookSettingsComponent implements OnInit {
           depth: new FormControl(settings.depth, [Validators.required, Validators.min(this.validationOptions.minDepth), Validators.max(this.validationOptions.maxDepth)]),
           instrumentGroup: new FormControl(settings.instrumentGroup),
           showChart: new FormControl(settings.showChart),
-          showTable: new FormControl(settings.showTable)
+          showTable: new FormControl(settings.showTable),
+          showYieldForBonds: new FormControl(settings.showYieldForBonds)
         } as SettingsFormControls) as SettingsFormGroup;
       }
     });

@@ -9,7 +9,7 @@ import { TimezoneConverterService } from '../../../../shared/services/timezone-c
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
   let fixture: ComponentFixture<LightChartComponent>;
-  const spy = jasmine.createSpyObj('LightChartService', ['settings$', 'resize', 'unsubscribe', 'getBars']);
+  const spy = jasmine.createSpyObj('LightChartService', ['settings$', 'resize', 'unsubscribe', 'getBars', 'initSettingsUpdates']);
   spy.getBars.and.returnValue(of([]));
   const settings: LightChartSettings = {
     timeFrame: 'D',

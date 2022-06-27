@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
+import { sharedModuleImportForTests } from 'src/app/shared/utils/testing';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookService } from '../../services/orderbook.service';
 
@@ -35,6 +36,9 @@ describe('OrderBookComponent', () => {
       providers: [
         { provide: OrderbookService, useValue: spyOb },
         { provide: ModalService, useValue: modalSync },
+      ],
+      imports: [
+        ...sharedModuleImportForTests
       ]
     })
       .compileComponents();

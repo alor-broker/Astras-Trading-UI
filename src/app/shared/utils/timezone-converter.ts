@@ -1,6 +1,9 @@
 ﻿import { TimezoneDisplayOption } from '../models/enums/timezone-display-option';
 import { fromUnixTime } from './datetime';
 
+/**
+ * Responsible for converting time with different timezones
+ */
 export class TimezoneConverter {
   constructor(private readonly displayTimezone: TimezoneDisplayOption) {
   }
@@ -28,8 +31,14 @@ export class TimezoneConverter {
     return utcDate;
   }
 
-  public terminalToUtc0Date(date: Date): Date {
-    let convertedDate = date;
+  /**
+   * Converts terminal date (the date that is displayed in the terminal, taking into account the selected time zone) to utc date
+   * @param {Date} dateWithTimezone -  terminal date.
+   *
+   * @returns {Date} utc date
+   */
+  public terminalToUtc0Date(dateWithTimezone: Date): Date {
+    let convertedDate = dateWithTimezone;
     if (this.displayTimezone === TimezoneDisplayOption.MskTime) {
       const localTime = new Date();
       const mskTime = this.toMskTime(localTime);

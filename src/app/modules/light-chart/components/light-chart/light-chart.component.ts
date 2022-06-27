@@ -95,7 +95,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.service.initSettingsUpdates(this.guid)
+    this.service.initSettingsUpdates(this.guid);
   }
 
   private initChart(guid: string) {

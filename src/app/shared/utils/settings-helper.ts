@@ -10,6 +10,9 @@ import { NewsSettings } from "../models/settings/news-settings.model";
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
 
+/**
+ * A type with describes settings with depends on an instrument
+ */
 export type InstrumentDependentSettings = AnySettings & {
   symbol: string;
   exchange: string;
@@ -17,12 +20,19 @@ export type InstrumentDependentSettings = AnySettings & {
   linkedToActive: boolean;
 };
 
+/**
+ * A type with describes settings with depends on a portfolio
+ */
 export type PortfolioDependentSettings = AnySettings & {
   portfolio: string;
   exchange: string;
   linkedToActive: boolean;
 };
 
+/**
+ * A guard which checks if settings depends on an instrument
+ * @param settings Settings to check
+ */
 export function isInstrumentDependent(
   settings: AnySettings
 ): settings is InstrumentDependentSettings {
@@ -33,7 +43,10 @@ export function isInstrumentDependent(
     'exchange' in settings
   );
 }
-
+/**
+ * A guard which checks if settings depends on a portfolio
+ * @param settings Settings to check
+ */
 export function isPortfolioDependent(
   settings: AnySettings
 ): settings is PortfolioDependentSettings {
@@ -44,7 +57,10 @@ export function isPortfolioDependent(
     'exchange' in settings
   );
 }
-
+/**
+ * A guard which checks if settings depends is an orderbook settings
+ * @param settings Settings to check
+ */
 export function isOrderbookSettings(
   settings: AnySettings
 ): settings is OrderbookSettings {
@@ -55,10 +71,14 @@ export function isOrderbookSettings(
     'exchange' in settings &&
     'depth' in settings &&
     'showChart' in settings &&
+    'showYieldForBonds' in settings &&
     'showTable' in settings
   );
 }
-
+/**
+ * A guard which checks if settings depends is an lightchart settings
+ * @param settings Settings to check
+ */
 export function isLightChartSettings(
   settings: AnySettings
 ): settings is LightChartSettings {
@@ -70,7 +90,10 @@ export function isLightChartSettings(
     'timeFrame' in settings
   );
 }
-
+/**
+ * A guard which checks if settings depends is a blotter settings
+ * @param settings Settings to check
+ */
 export function isBlotterSettings(
   settings: AnySettings
 ): settings is BlotterSettings {
@@ -82,7 +105,10 @@ export function isBlotterSettings(
     'activeTabIndex' in settings
   );
 }
-
+/**
+ * A guard which checks if settings depends is an info settings
+ * @param settings Settings to check
+ */
 export function isInfoSettings(
   settings: AnySettings
 ): settings is InfoSettings {
@@ -92,19 +118,26 @@ export function isInfoSettings(
     'isin' in settings
   );
 }
-
+/**
+ * A guard which checks if settings depends is news settings
+ * @param settings Settings to check
+ */
 export function isNewsSettings(settings: AnySettings): settings is NewsSettings {
   return settings && settings.title === 'Новости';
 }
 
+/**
+ * A guard which checks if settings depends is all-trades settings
+ * @param settings Settings to check
+ */
 export function isAllTradesSettings(settings: AnySettings): settings is AllTradesSettings {
   return settings && !!settings.title?.includes('Все сделки');
 }
 
-export function isExchangeRateSettings(settings: AnySettings): settings is ExchangeRateSettings {
-  return settings && !!settings.title?.includes('Курс валют');
-}
-
+/**
+ * A guard which checks if settings depends is instrument-select settings
+ * @param settings Settings to check
+ */
 export function isInstrumentSelectSettings(
   settings: AnySettings
 ): settings is InstrumentSelectSettings {
@@ -114,7 +147,21 @@ export function isInstrumentSelectSettings(
   );
 }
 
-export function isEqual(settings1: AnySettings, settings2: AnySettings) {
+/**
+ * A guard which checks if settings depends is echange-rate settings
+ * @param settings Settings to check
+ */
+export function isExchangeRateSettings(settings: AnySettings): settings is ExchangeRateSettings {
+  return settings && !!settings.title?.includes('Курс валют');
+}
+
+/**
+ * Checks the equality of settings by value
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true if they are equal, false if not
+ */
+export function isEqual(settings1: AnySettings, settings2: AnySettings) : boolean {
   if (isOrderbookSettings(settings1) && isOrderbookSettings(settings2)) {
     return isEqualOrderbookSettings(settings1, settings2);
   }
@@ -135,7 +182,11 @@ export function isEqual(settings1: AnySettings, settings2: AnySettings) {
     settings1.guid == settings2.guid && settings1.title == settings2.title
   );
 }
-
+/**
+ * Returns a widget name by settings type
+ * @param settings Settings
+ * @returns widget name
+ */
 export function getTypeBySettings(settings: AnySettings) {
   if (isOrderbookSettings(settings)) {
     return WidgetNames.orderBook;
@@ -161,10 +212,16 @@ export function getTypeBySettings(settings: AnySettings) {
   return WidgetNames.instrumentSelect;
 }
 
+/**
+ * Checks if orderbook settings are equal
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true is equal, false if not
+ */
 export function isEqualOrderbookSettings(
   settings1: OrderbookSettings,
   settings2: OrderbookSettings
-) {
+) : boolean {
   if (settings1 && settings2) {
     return (
       settings1.guid == settings2.guid &&
@@ -174,11 +231,18 @@ export function isEqualOrderbookSettings(
       settings1.exchange == settings2.exchange &&
       settings1.depth == settings2.depth &&
       settings1.showChart == settings2.showChart &&
-      settings1.showTable == settings2.showTable
+      settings1.showTable == settings2.showTable &&
+      settings1.showYieldForBonds == settings2.showYieldForBonds
     );
   } else return false;
 }
 
+/**
+ * Checks if lightchart settings are equal
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true is equal, false if not
+ */
 export function isEqualLightChartSettings(
   settings1?: LightChartSettings,
   settings2?: LightChartSettings
@@ -197,6 +261,12 @@ export function isEqualLightChartSettings(
   } else return false;
 }
 
+/**
+ * Checks if blotter settings are equal
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true is equal, false if not
+ */
 export function isEqualBlotterSettings(
   settings1?: BlotterSettings,
   settings2?: BlotterSettings
@@ -213,6 +283,12 @@ export function isEqualBlotterSettings(
   } else return false;
 }
 
+/**
+ * Checks if instrument-select settings are equal
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true is equal, false if not
+ */
 export function isEqualInstrumentSelectSettings(
   settings1?: InstrumentSelectSettings,
   settings2?: InstrumentSelectSettings
@@ -221,11 +297,18 @@ export function isEqualInstrumentSelectSettings(
     return (
       settings1.linkToActive == settings2.linkToActive &&
       settings1.guid == settings2.guid &&
-      settings1.activeListId == settings2.activeListId
+      settings1.activeListId == settings2.activeListId &&
+      settings1.instrumentColumns == settings2.instrumentColumns
     );
   } else return false;
 }
 
+/**
+ * Checks if info settings are equal
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true is equal, false if not
+ */
 export function isEqualInfoSettings(
   settings1?: InfoSettings,
   settings2?: InfoSettings

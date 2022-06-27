@@ -7,19 +7,32 @@
   [nzShowPagination]="false">
   <thead>
     <tr>
-      <th [nzSortFn]="sortFns.symbol"><span nz-tooltip nzTooltipTitle="Биржевой идентификатор ценной бумаги">Тикер</span> </th>
-      <th [nzSortFn]="sortFns.price"><span nz-tooltip nzTooltipTitle="Цена последней сделки">Цена</span> </th>
-      <th [nzSortFn]="sortFns.dayChange"><span nz-tooltip nzTooltipTitle="Изменение за день">Д.изм.</span> </th>
-      <th [nzSortFn]="sortFns.dayChangePerPrice"><span nz-tooltip nzTooltipTitle="Изменение за день в %">Д.изм.,%</span></th>
+      <th [nzSortFn]="sortFns[col.columnId]" *ngFor="let col of displayedColumns">
+        <span nz-tooltip [nzTooltipTitle]="col.tooltip">
+          {{col.name}}
+        </span>
+      </th>
       <th><span nz-tooltip nzTooltipTitle="Убрать из наблюдения">Удл.</span></th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let inst of nzTable.data; trackBy: getTrackKey" (click)='makeActive(inst.instrument)'>
-      <td class="ticker">{{ inst.instrument.symbol }}</td>
-      <td><ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'></ats-price-tick></td>
-      <td [ngClass]="inst.dayChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.dayChange }}</td>
-      <td [ngClass]="inst.dayChangePerPrice < 0 ? 'sellCell' : 'buyCell'">{{ inst.dayChangePerPrice + '%' }}</td>
+      <td *ngIf="isVisibleColumn('symbol')" class="ticker">{{ inst.instrument.symbol }}</td>
+      <td *ngIf="isVisibleColumn('price')">
+        <ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'>
+        </ats-price-tick>
+      </td>
+      <td *ngIf="isVisibleColumn('dayChange')" [ngClass]="inst.dayChange < 0 ? 'sellCell' : 'buyCell'">
+        {{ inst.dayChange }}
+      </td>
+      <td *ngIf="isVisibleColumn('dayChangePerPrice')" [ngClass]="inst.dayChangePerPrice < 0 ? 'sellCell' : 'buyCell'">
+        {{ inst.dayChangePerPrice }}
+      </td>
+      <td *ngIf="isVisibleColumn('maxPrice')">{{ inst.maxPrice }}</td>
+      <td *ngIf="isVisibleColumn('minPrice')">{{ inst.minPrice }}</td>
+      <td *ngIf="isVisibleColumn('volume')">{{ inst.volume }}</td>
+      <td *ngIf="isVisibleColumn('openPrice')">{{ inst.openPrice }}</td>
+      <td *ngIf="isVisibleColumn('closePrice')">{{ inst.closePrice }}</td>
       <td>
         <button nzDanger nzSize='small' nz-button nzType="primary" (click)="remove(inst.instrument)"><i nz-icon nzType="minus"></i></button>
       </td>
