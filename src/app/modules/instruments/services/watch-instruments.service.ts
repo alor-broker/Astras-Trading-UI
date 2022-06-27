@@ -132,9 +132,9 @@ export class WatchInstrumentsService extends BaseService<InstrumentSelectSetting
           prevTickPrice: 0,
           dayChange: 0,
           price: 0,
-          minPrice: candle.low,
-          maxPrice: candle.high,
-          volume: candle.volume,
+          minPrice: candle?.low,
+          maxPrice: candle?.high,
+          volume: candle?.volume,
           dayChangePerPrice: 0,
         }),
         take(1)

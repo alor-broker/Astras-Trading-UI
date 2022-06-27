@@ -72,7 +72,7 @@ describe('WatchInstrumentsService', () => {
       } as WatchlistCollection;
     });
 
-    service.getWatched({ guid: 'guid', activeListId: '123' });
+    service.getWatched({ guid: 'guid', activeListId: '123', instrumentColumns: [] });
 
     expect(watchlistCollectionServiceSpy.getWatchlistCollection).toHaveBeenCalledTimes(1);
   });
@@ -103,7 +103,7 @@ describe('WatchInstrumentsService', () => {
       return defaultList.items;
     });
 
-    service.getWatched({ guid: 'guid', activeListId: undefined });
+    service.getWatched({ guid: 'guid', activeListId: undefined, instrumentColumns: [] });
 
     expect(requestedListId).toEqual(defaultList.id);
   });
@@ -124,7 +124,7 @@ describe('WatchInstrumentsService', () => {
       return list.items;
     });
 
-    service.getWatched({ guid: 'guid', activeListId: '123' });
+    service.getWatched({ guid: 'guid', activeListId: '123', instrumentColumns: [] });
     collectionChangedMock.next(null);
 
     // first call when we start watching
