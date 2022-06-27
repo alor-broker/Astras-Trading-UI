@@ -42,6 +42,17 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       this.initCommandForm(context.commandParameters, converter);
       this.checkNowTimeSelection(converter);
     });
+
+    this.service.stopCommandErr$
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe(isErr => {
+        if (isErr) {
+          this.form.get('triggerPrice')!.markAsDirty();
+          this.form.get('triggerPrice')!.updateValueAndValidity();
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -114,7 +125,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         ]
       ),
       triggerPrice: new FormControl(
-        0,
+        null,
         [
           Validators.required,
           Validators.min(0),

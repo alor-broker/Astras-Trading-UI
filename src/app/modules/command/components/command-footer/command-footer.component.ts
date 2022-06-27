@@ -46,7 +46,10 @@ export class CommandFooterComponent {
     command$.pipe(
       take(1),
       finalize(() => this.executeAndDetectChanges(() => this.isBuyButtonLoading = false))
-    ).subscribe(() => this.closeModal());
+    ).subscribe({
+      complete: () => this.closeModal(),
+      error: () => null
+    });
   }
 
   sell() {
