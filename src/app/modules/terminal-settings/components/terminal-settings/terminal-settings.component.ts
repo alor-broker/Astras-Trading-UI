@@ -1,11 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable, of, take } from 'rxjs';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
+import {
+  Observable,
+  of,
+  take
+} from 'rxjs';
 import { FullName } from '../../../../shared/models/user/full-name.model';
 import { TerminalSettingsService } from '../../services/terminal-settings.service';
-import { TerminalSettingsFormControls, TerminalSettingsFormGroup } from '../../models/terminal-settings-form.model';
+import {
+  TerminalSettingsFormControls,
+  TerminalSettingsFormGroup
+} from '../../models/terminal-settings-form.model';
 import { Store } from '@ngrx/store';
 import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { updateTerminalSettings } from '../../../../store/terminal-settings/terminal-settings.actions';
 
@@ -15,6 +29,13 @@ import { updateTerminalSettings } from '../../../../store/terminal-settings/term
   styleUrls: ['./terminal-settings.component.less']
 })
 export class TerminalSettingsComponent implements OnInit {
+  readonly validationSettings = {
+    userIdleDurationMin: {
+      min: 1,
+      max: 1140
+    }
+  };
+
   timezoneDisplayOption = TimezoneDisplayOption;
 
   settingsForm!: TerminalSettingsFormGroup;
@@ -36,7 +57,10 @@ export class TerminalSettingsComponent implements OnInit {
   saveSettingsChanges() {
     if (this.settingsForm?.valid) {
       this.store.dispatch(updateTerminalSettings({
-        updates: this.settingsForm.value as TerminalSettings
+        updates: {
+          ...this.settingsForm.value,
+          userIdleDurationMin: Number(this.settingsForm.value.userIdleDurationMin)
+        } as TerminalSettings
       }));
     }
   }
@@ -52,7 +76,14 @@ export class TerminalSettingsComponent implements OnInit {
 
   private buildForm(currentSettings: TerminalSettings): TerminalSettingsFormGroup {
     return new FormGroup({
-        timezoneDisplayOption: new FormControl(currentSettings.timezoneDisplayOption, Validators.required)
+        timezoneDisplayOption: new FormControl(currentSettings.timezoneDisplayOption, Validators.required),
+        userIdleDurationMin: new FormControl(
+          currentSettings.userIdleDurationMin,
+          [
+            Validators.required,
+            Validators.min(this.validationSettings.userIdleDurationMin.min),
+            Validators.max(this.validationSettings.userIdleDurationMin.max)
+          ]),
       } as TerminalSettingsFormControls
     ) as TerminalSettingsFormGroup;
   }

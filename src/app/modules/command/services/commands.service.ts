@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { CommandResponse } from 'src/app/shared/models/commands/command-response.model';
 import { Side } from 'src/app/shared/models/enums/side.model';
@@ -28,6 +28,8 @@ export class CommandsService {
   private marketEdit?: BehaviorSubject<MarketEdit | null>;
   private priceSelectedSubject$ = new Subject<number>();
   public priceSelected$ = this.priceSelectedSubject$.asObservable();
+  private stopCommandErrSubject$ = new Subject<boolean| null>();
+  public stopCommandErr$ = this.stopCommandErrSubject$.asObservable();
 
 
   constructor(private http: HttpClient, private notification: NzNotificationService) { }
@@ -77,7 +79,8 @@ export class CommandsService {
       return this.placeOrder(command.price ? 'stopLimit' : 'stop', side, command);
     }
     else {
-      throw new Error('Empty command');
+      this.stopCommandErrSubject$.next(true);
+      return throwError(() => new Error('Empty command'));
     }
   }
 
