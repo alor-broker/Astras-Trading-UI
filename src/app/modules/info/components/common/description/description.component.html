@@ -7,6 +7,8 @@
     <nz-descriptions-item *ngIf="description.baseCurrency" nzTitle="Базовая валюта">{{description.baseCurrency}}</nz-descriptions-item>
     <nz-descriptions-item *ngIf="description.securityType" nzTitle="Тип">{{description.securityType}}</nz-descriptions-item>
     <nz-descriptions-item *ngIf="description.lotsize" nzTitle="Размер лота">{{description.lotsize}}</nz-descriptions-item>
+    <nz-descriptions-item *ngIf="description.marginbuy" nzTitle="Маржинальная покупка">{{description.marginbuy}}</nz-descriptions-item>
+    <nz-descriptions-item *ngIf="description.marginsell" nzTitle="Маржинальная продажа">{{description.marginsell}}</nz-descriptions-item>
   </nz-descriptions>
 </ng-container>
 <ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>

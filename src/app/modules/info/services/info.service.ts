@@ -98,7 +98,11 @@ export class InfoService extends BaseService<InfoSettings>{
         if (d.securityType == 'unknown') {
           d.securityType = exchangeInfo.type;
         }
-        return d;
+        return {
+          ...d,
+          marginbuy: exchangeInfo?.marginbuy,
+          marginsell: exchangeInfo?.marginsell
+        };
       })
     );
   }
@@ -151,7 +155,9 @@ export class InfoService extends BaseService<InfoSettings>{
           isin: r.ISIN,
           currency: r.currency,
           type: getTypeByCfi(r.cfiCode),
-          lotsize: r.lotsize ?? 1
+          lotsize: r.lotsize ?? 1,
+          marginbuy: r.marginbuy,
+          marginsell: r.marginsell
         };
         return info;
       })
