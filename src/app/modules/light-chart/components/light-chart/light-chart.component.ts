@@ -5,7 +5,6 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
@@ -27,6 +26,7 @@ import { HistoryRequest } from 'src/app/shared/models/history/history-request.mo
 import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
 import { TimeframesHelper } from '../../utils/timeframes-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 @Component({
   selector: 'ats-light-chart[resize][guid][resize]',
@@ -35,7 +35,7 @@ import { TimezoneConverterService } from '../../../../shared/services/timezone-c
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
+export class LightChartComponent implements OnDestroy, AfterViewInit {
   readonly availableTimeFrames = TimeframesHelper.timeFrames;
 
   @Input()
@@ -57,7 +57,10 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private chart?: LightChart;
   private chartDataSubscription?: Subscription;
 
-  constructor(private readonly service: LightChartService, private readonly timezoneConverterService: TimezoneConverterService) {
+  constructor(
+    private readonly settingService: WidgetSettingsService,
+    private readonly service: LightChartService,
+    private readonly timezoneConverterService: TimezoneConverterService) {
   }
 
   ngOnDestroy(): void {
@@ -70,7 +73,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   changeTimeframe(timeframe: string) {
-    this.service.changeTimeframe(timeframe);
+    this.service.changeTimeframe(this.guid, timeframe);
   }
 
   ngAfterViewInit() {
@@ -84,23 +87,21 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
           this.chart.resize(
             item.width ?? 0,
             !!item.height ? item.height - this.heightAdjustment : 0);
-          const oldSettings = this.service.getSettingsValue();
-          if (oldSettings) {
-            const newSettings = { ...oldSettings, width: item.width ?? 300, height: item.height ?? 300 };
-            this.service.setSettings(newSettings);
-          }
+
+          this.settingService.updateSettings(
+            this.guid,
+            {
+              width: item.width ?? 300,
+              height: item.height ?? 300
+            });
         }
       });
     }
   }
 
-  ngOnInit(): void {
-    this.service.initSettingsUpdates(this.guid);
-  }
-
   private initChart(guid: string) {
     combineLatest([
-        this.service.getSettings(guid),
+        this.service.getExtendedSettings(guid),
         this.timezoneConverterService.getConverter()
       ]
     ).pipe(

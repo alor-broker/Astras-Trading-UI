@@ -1,11 +1,21 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  takeUntil
+} from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { Column } from '../../models/column.model';
 import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 
 interface PositionDisplay extends Position {
   volume: number
@@ -165,11 +175,15 @@ export class PositionsComponent implements OnInit, OnDestroy {
   listOfColumns: Column<PositionDisplay, PositionFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private service: BlotterService) {
+  constructor(private readonly service: BlotterService, private readonly settingService: WidgetSettingsService) {
   }
 
   ngOnInit(): void {
-    this.service.getSettings(this.guid).pipe(
+    const settings$ = this.settingService.getSettings<BlotterSettings>(this.guid).pipe(
+      shareReplay()
+    );
+
+    settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(s => {
         if (s.positionsColumns) {
@@ -179,14 +193,15 @@ export class PositionsComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.displayPositions$ = this.service.getPositions(this.guid).pipe(
+    this.displayPositions$ = settings$.pipe(
+      switchMap(settings => this.service.getPositions(settings)),
       map(positions => positions.map(p => <PositionDisplay>{
         ...p,
         volume: this.round(Number(p.avgPrice) * Math.abs(Number(p.qtyUnits)))
       })),
       mergeMap(positions => this.searchFilter.pipe(
         map(f => positions.filter(o => this.justifyFilter(o, f)))
-      )),
+      ))
     );
   }
 

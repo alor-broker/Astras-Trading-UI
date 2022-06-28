@@ -1,8 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { OrderbookChartComponent } from './orderbook-chart.component';
-import { OrderbookService } from '../../services/orderbook.service';
 import { of } from 'rxjs';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('OrderbookChartComponent', () => {
   let component: OrderbookChartComponent;
@@ -10,16 +13,19 @@ describe('OrderbookChartComponent', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach((async () => {
-    const spyOb = jasmine.createSpyObj('OrderbookService', ['getSettings']);
-    spyOb.getSettings.and.returnValue(of({
+    const settingsMock = {
       symbol: 'SBER',
       exchange: 'MOEX',
       showTable: true
-    }));
+    };
+
     await TestBed.configureTestingModule({
       declarations: [OrderbookChartComponent],
       providers: [
-        { provide: OrderbookService, useValue: spyOb },
+        {
+          provide: WidgetSettingsService,
+          useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
+        },
       ]
     }).compileComponents();
   }));

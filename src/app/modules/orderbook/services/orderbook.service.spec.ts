@@ -1,6 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
@@ -10,16 +8,11 @@ import { sharedModuleImportForTests } from '../../../shared/utils/testing';
 
 describe('OrderbookService', () => {
   let service: OrderbookService;
-  const dashboardSpy = jasmine.createSpyObj('DashboardService', ['getSettings']);
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
-    const spy = jasmine.createSpyObj('WebsocketService', ['settings$']);
+    const spy = jasmine.createSpyObj('WebsocketService', ['connect']);
     const cancellerSpy = jasmine.createSpyObj('OrderCancellerService', ['cancelOrder']);
-    spy.settings$ = of({
-      exchange: 'MOEX',
-      Symbol: 'SBER'
-    });
 
     TestBed.configureTestingModule({
       imports: [...sharedModuleImportForTests],
@@ -27,7 +20,6 @@ describe('OrderbookService', () => {
         OrderbookService,
         { provide: WebsocketService, useValue: spy },
         { provide: OrderCancellerService, useValue: cancellerSpy },
-        { provide: DashboardService, useValue: dashboardSpy },
         OrderbookService
       ]
     });

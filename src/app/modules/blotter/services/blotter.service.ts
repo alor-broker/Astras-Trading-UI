@@ -1,17 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { combineLatest, merge, Observable, of, pipe, Subscription, tap } from 'rxjs';
-import { filter, map, startWith, switchMap } from 'rxjs/operators';
+import { combineLatest, merge, Observable, of } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { CurrencyCode, CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { StopOrder, StopOrderData } from 'src/app/shared/models/orders/stop-order.model';
-import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
-import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { OrdersNotificationsService } from 'src/app/shared/services/orders-notifications.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -19,32 +17,23 @@ import { formatCurrency } from 'src/app/shared/utils/formatters';
 import { SummaryView } from '../models/summary-view.model';
 import { Summary } from '../models/summary.model';
 import { selectNewInstrument } from '../../../store/instruments/instruments.actions';
-import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
+import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 
 @Injectable({
   providedIn: 'root'
 })
-export class BlotterService extends BaseWebsocketService<BlotterSettings> {
+export class BlotterService extends BaseWebsocketService {
   private trades: Map<string, Trade> = new Map<string, Trade>();
   private positions: Map<string, Position> = new Map<string, Position>();
   private orders: Map<string, Order> = new Map<string, Order>();
   private stopOrders: Map<string, StopOrder> = new Map<string, StopOrder>();
 
-  private portfolioSub?: Subscription;
-
-  order$: Observable<Order[]> = of([]);
-  stopOrder$: Observable<StopOrder[]> = of([]);
-  trade$: Observable<Trade[]> = of([]);
-  position$: Observable<Position[]> = of([]);
-  summary$: Observable<SummaryView> = of();
-
   constructor(
     ws: WebsocketService,
-    settingsService: DashboardService,
-    private notification: OrdersNotificationsService,
-    private store: Store,
-    private quotes: QuotesService) {
-    super(ws, settingsService);
+    private readonly notification: OrdersNotificationsService,
+    private readonly store: Store,
+    private readonly quotes: QuotesService) {
+    super(ws);
   }
 
   selectNewInstrument(symbol: string, exchange: string) {
@@ -59,74 +48,38 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     this.store.dispatch(selectNewInstrument({ instrument }));
   }
 
-  setTabIndex(index: number) {
-    const settings = this.getSettingsValue();
-    if (settings) {
-      this.setSettings( {...settings, activeTabIndex: index });
+  getPositions(settings: BlotterSettings) {
+    return this.getPositionsReq(settings.portfolio, settings.exchange).pipe(
+      map(poses => settings.isSoldPositionsHidden ? poses.filter(p => p.qtyTFuture !== 0) : poses)
+    );
+  }
+
+  getTrades(portfolioKey: PortfolioKey) {
+    return this.getTradesReq(portfolioKey.portfolio, portfolioKey.exchange);
+  }
+
+  getOrders(portfolioKey: PortfolioKey) {
+    return this.getOrdersReq(portfolioKey.portfolio, portfolioKey.exchange);
+  }
+
+  getStopOrders(portfolioKey: PortfolioKey) {
+    return  this.getStopOrdersReq(portfolioKey.portfolio, portfolioKey.exchange);
+  }
+
+  getSummaries(settings: BlotterSettings) : Observable<SummaryView> {
+    if (settings.currency != CurrencyInstrument.RUB) {
+      return combineLatest([
+        this.getSummariesReq(settings.portfolio, settings.exchange),
+        this.quotes.getQuotes(settings.currency, 'MOEX')
+      ]).pipe(
+        map(([summary, quote]) => this.formatSummary(summary, settings.currency, quote.last_price))
+      );
     }
-  }
-
-  getPositions(guid: string) {
-    this.position$ = this.getSettings(guid).pipe(
-      filter((s): s is BlotterSettings => !!s),
-      switchMap((settings) =>
-        this.getPositionsReq(settings.portfolio, settings.exchange).pipe(
-          map(poses => settings.isSoldPositionsHidden ? poses.filter(p => p.qtyTFuture !== 0) : poses)
-        )
-      ),
-    );
-    this.linkToPortfolio(guid);
-    return this.position$;
-  }
-
-  getTrades(guid: string) {
-    this.trade$ = this.getSettings(guid).pipe(
-      filter((s): s is BlotterSettings => !!s),
-      switchMap((settings) => this.getTradesReq(settings.portfolio, settings.exchange))
-    );
-    this.linkToPortfolio(guid);
-    return this.trade$;
-  }
-
-  getOrders(guid: string) {
-    this.order$ = this.getSettings(guid).pipe(
-      filter((s): s is BlotterSettings => !!s),
-      switchMap((settings) => this.getOrdersReq(settings.portfolio, settings.exchange))
-    );
-    this.linkToPortfolio(guid);
-    return this.order$;
-  }
-
-  getStopOrders(guid: string) {
-    this.stopOrder$ = this.getSettings(guid).pipe(
-      filter((s): s is BlotterSettings => !!s),
-      switchMap((settings) => this.getStopOrdersReq(settings.portfolio, settings.exchange))
-    );
-    this.linkToPortfolio(guid);
-    return this.stopOrder$;
-  }
-
-  getSummaries(guid: string) : Observable<SummaryView> {
-    this.summary$ = this.getSettings(guid).pipe(
-      filter((s): s is BlotterSettings => !!s),
-      switchMap((settings) => {
-        if (settings.currency != CurrencyInstrument.RUB) {
-          return combineLatest([
-            this.getSummariesReq(settings.portfolio, settings.exchange),
-            this.quotes.getQuotes(settings.currency, 'MOEX')
-          ]).pipe(
-            map(([summary, quote]) => this.formatSummary(summary, settings.currency, quote.last_price))
-          );
-        }
-        else {
-          return this.getSummariesReq(settings.portfolio, settings.exchange).pipe(
-            map(summary => this.formatSummary(summary, CurrencyInstrument.RUB, 1))
-          );
-        }
-      })
-    );
-    this.linkToPortfolio(guid);
-    return this.summary$;
+    else {
+      return this.getSummariesReq(settings.portfolio, settings.exchange).pipe(
+        map(summary => this.formatSummary(summary, CurrencyInstrument.RUB, 1))
+      );
+    }
   }
 
   private formatSummary(summary: Summary, currency: string, exchangeRate: number) : SummaryView {
@@ -144,8 +97,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   }
 
   private getSummariesReq(portfolio: string, exchange: string) {
-    const summary$ = this.getPortfolioEntity<Summary>(portfolio, exchange, "SummariesGetAndSubscribeV2");
-    return summary$;
+    return  this.getPortfolioEntity<Summary>(portfolio, exchange, "SummariesGetAndSubscribeV2");
   }
 
   private getPositionsReq(portfolio: string, exchange: string) {
@@ -227,24 +179,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
         return Array.from(this.trades.values());
       })
     );
-    return merge(trades, of([]));
-  }
 
-  private linkToPortfolio(guid: string) {
-    if (!this.portfolioSub) {
-      this.portfolioSub = combineLatest([
-        this.getSettings(guid).pipe(filter((s): s is BlotterSettings => !!s)),
-        this.store.select(getSelectedPortfolio).pipe(filter((p): p is PortfolioKey => !!p))
-      ])
-        .pipe(filter(([s, p]) =>
-          !!s.linkToActive &&
-          !(s.portfolio == p.portfolio && s.exchange == p.exchange))
-        )
-        .subscribe(
-          ([s, p]) => {
-            this.setSettings({...s, ...p});
-          }
-        );
-    }
+    return merge(trades, of([]));
   }
 }

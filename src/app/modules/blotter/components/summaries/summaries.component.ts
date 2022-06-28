@@ -1,8 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable, of, Subscription } from 'rxjs';
+import {
+  Observable,
+  of,
+  Subscription,
+  switchMap
+} from 'rxjs';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { SummaryView } from '../../models/summary-view.model';
 import { BlotterService } from '../../services/blotter.service';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 
 @Component({
   selector: 'ats-summaries[guid][resize]',
@@ -24,10 +31,14 @@ export class SummariesComponent implements OnInit {
   columns: number = 1;
 
   private resizeSub?: Subscription;
-  constructor(private service: BlotterService) { }
+
+  constructor(private readonly settingsService: WidgetSettingsService, private readonly service: BlotterService) { }
 
   ngOnInit(): void {
-    this.summary$ = this.service.getSummaries(this.guid);
+    this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      switchMap(settings => this.service.getSummaries(settings))
+    );
+
     this.resizeSub = this.resize.subscribe(i => {
       if (i.width) {
         if (i.width <= 600) {

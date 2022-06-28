@@ -1,10 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BehaviorSubject, of } from 'rxjs';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
+import {
+  BehaviorSubject,
+  of
+} from 'rxjs';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { WatchlistTableComponent } from './watchlist-table.component';
 import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
@@ -13,10 +20,9 @@ describe('WatchlistTableComponent', () => {
   const spySync = jasmine.createSpyObj('SyncService', ['selectNewInstrument']);
   spySync.selectedInstrument$ = of(null);
 
-  const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['getWatched', 'getSettings']);
+  const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['getWatched']);
   spyWatcher.getWatched.and.returnValue(of([]));
   const getSettingsMock = new BehaviorSubject({} as InstrumentSelectSettings);
-  spyWatcher.getSettings.and.returnValue(getSettingsMock.asObservable());
 
   const watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['removeItemsFromList']);
 
@@ -26,6 +32,10 @@ describe('WatchlistTableComponent', () => {
       imports: [...sharedModuleImportForTests],
       declarations: [WatchlistTableComponent],
       providers: [
+        {
+          provide: WidgetSettingsService,
+          useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(getSettingsMock) }
+        },
         { provide: WatchInstrumentsService, useValue: spyWatcher },
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy }
       ]

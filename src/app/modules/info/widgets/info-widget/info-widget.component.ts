@@ -3,6 +3,7 @@ import { Observable} from 'rxjs';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { ExchangeInfo } from '../../models/exchange-info.model';
 import { InfoService } from '../../services/info.service';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 @Component({
   selector: 'ats-info-widget',
@@ -15,7 +16,7 @@ export class InfoWidgetComponent implements OnInit {
   shouldShowSettings!: boolean;
   @Input()
   set linkedToActive(linkedToActive: boolean) {
-    this.service.setLinked(linkedToActive);
+    this.settingsService.updateIsLinked(this.guid, linkedToActive);
   }
   @Input()
   guid!: string;
@@ -27,7 +28,7 @@ export class InfoWidgetComponent implements OnInit {
 
   info$?: Observable<ExchangeInfo | null>;
 
-  constructor(private service: InfoService) { }
+  constructor(private readonly service: InfoService, private readonly settingsService: WidgetSettingsService) { }
 
   ngOnInit(): void {
     this.service.init(this.guid);

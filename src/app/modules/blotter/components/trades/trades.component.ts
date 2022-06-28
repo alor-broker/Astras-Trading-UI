@@ -1,5 +1,14 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of, Subject, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  takeUntil
+} from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
 import { Column } from '../../models/column.model';
@@ -7,6 +16,8 @@ import { TradeFilter } from '../../models/trade-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { MathHelper } from '../../../../shared/utils/math-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -143,11 +154,18 @@ export class TradesComponent implements OnInit, OnDestroy {
   listOfColumns: Column<DisplayTrade, TradeFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly service: BlotterService, private readonly timezoneConverterService: TimezoneConverterService) {
+  constructor(
+    private readonly settingService: WidgetSettingsService,
+    private readonly service: BlotterService,
+    private readonly timezoneConverterService: TimezoneConverterService) {
   }
 
   ngOnInit(): void {
-    this.service.getSettings(this.guid).pipe(
+    const settings$ = this.settingService.getSettings<BlotterSettings>(this.guid).pipe(
+      shareReplay()
+    );
+
+    settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(s => {
       if (s.ordersColumns) {
@@ -156,9 +174,13 @@ export class TradesComponent implements OnInit, OnDestroy {
       }
     });
 
+    const trades$ = settings$.pipe(
+      switchMap(settings => this.service.getTrades(settings))
+    );
+
     this.displayTrades$ = combineLatest([
-        this.service.getTrades(this.guid),
-        this.timezoneConverterService.getConverter()
+      trades$,
+      this.timezoneConverterService.getConverter()
       ]
     ).pipe(
       map(([trades, converter]) => trades.map(t => <DisplayTrade>{

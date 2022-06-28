@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { initTerminalSettings } from './store/terminal-settings/terminal-settings.actions';
+import { initWidgetSettings } from "./store/widget-settings/widget-settings.actions";
 
 @Component({
   selector: 'ats-app-root',
@@ -17,5 +21,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(initTerminalSettings());
+    this.store.dispatch(initWidgetSettings());
   }
 }

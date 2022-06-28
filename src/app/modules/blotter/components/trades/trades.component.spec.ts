@@ -1,4 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
@@ -8,10 +11,19 @@ import { TimezoneConverterService } from '../../../../shared/services/timezone-c
 import { of } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('TradesComponent', () => {
   let component: TradesComponent;
   let fixture: ComponentFixture<TradesComponent>;
+  const settingsMock = {
+    exchange: 'MOEX',
+    portfolio: 'D39004',
+    guid: '1230',
+    ordersColumns: ['ticker'],
+    tradesColumns: ['ticker'],
+    positionsColumns: ['ticker'],
+  };
 
   const timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
   timezoneConverterServiceSpy.getConverter.and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)));
@@ -23,6 +35,10 @@ describe('TradesComponent', () => {
         ...sharedModuleImportForTests
       ],
       providers: [
+        {
+          provide: WidgetSettingsService,
+          useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
+        },
         { provide: BlotterService, useClass: MockServiceBlotter },
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy }
       ],

@@ -1,11 +1,31 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { BehaviorSubject, map, Observable } from 'rxjs';
-import { OrderbookService } from '../../services/orderbook.service';
-import { ChartDataset, ChartOptions } from 'chart.js';
-import { buyColorBackground, sellColorBackground, buyColor, sellColor } from 'src/app/shared/models/settings/styles-constants';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  map,
+  Observable
+} from 'rxjs';
+import {
+  ChartDataset,
+  ChartOptions
+} from 'chart.js';
+import {
+  buyColor,
+  buyColorBackground,
+  sellColor,
+  sellColorBackground
+} from 'src/app/shared/models/settings/styles-constants';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { ChartData } from '../../models/orderbook.model';
 import { BaseChartDirective } from 'ng2-charts';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
 
 @Component({
   selector: 'ats-orderbook-chart[guid][chartData]',
@@ -85,18 +105,21 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
               } else {
                 return value;
               }
-            } else return value;
+            } else {
+              return value;
+            }
           },
         },
       },
     },
   };
 
-  constructor(private service: OrderbookService) {}
+  constructor(private readonly settingsSettings: WidgetSettingsService) {
+  }
 
   ngOnInit() {
-    this.shouldShowChart$ = this.service
-      .getSettings(this.guid)
+    this.shouldShowChart$ = this.settingsSettings
+      .getSettings<OrderbookSettings>(this.guid)
       .pipe(map((s) => s.showChart));
   }
 

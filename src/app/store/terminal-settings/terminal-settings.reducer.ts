@@ -1,4 +1,7 @@
-import { createReducer, on } from '@ngrx/store';
+import {
+  createReducer,
+  on
+} from '@ngrx/store';
 import * as TerminalSettingsActions from './terminal-settings.actions';
 import { EntityStatus } from '../../shared/models/enums/entity-status';
 import { TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
@@ -10,7 +13,7 @@ export interface State {
   settings?: TerminalSettings
 }
 
-export const initialState: State = {
+const initialState: State = {
   status: EntityStatus.Initial,
   settings: undefined
 };

@@ -1,7 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 import { InfoService } from '../../services/info.service';
 
 import { InfoWidgetComponent } from './info-widget.component';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('InfoWidgetComponent', () => {
   let component: InfoWidgetComponent;
@@ -12,14 +16,18 @@ describe('InfoWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InfoWidgetComponent ],
+      declarations: [InfoWidgetComponent],
     })
-    .compileComponents();
+      .compileComponents();
 
     TestBed.overrideComponent(InfoWidgetComponent, {
       set: {
         providers: [
-          { provide: InfoService, useValue: infoSpy }
+          { provide: InfoService, useValue: infoSpy },
+          {
+            provide: WidgetSettingsService,
+            useValue: { updateSettings: jasmine.createSpy('updateSettings').and.callThrough() }
+          },
         ]
       }
     });

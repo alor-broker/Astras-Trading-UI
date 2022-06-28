@@ -8,20 +8,40 @@ import {
   Output,
   ViewEncapsulation
 } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of, Subject, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  take,
+  takeUntil
+} from 'rxjs';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
-import { ChartData, OrderBook } from '../../models/orderbook.model';
-import { map, startWith, tap } from 'rxjs/operators';
+import {
+  ChartData,
+  OrderBook
+} from '../../models/orderbook.model';
+import {
+  map,
+  startWith,
+  tap
+} from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
-import { buyColorBackground, sellColorBackground, } from '../../../../shared/models/settings/styles-constants';
+import {
+  buyColorBackground,
+  sellColorBackground,
+} from '../../../../shared/models/settings/styles-constants';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { getSelectedInstrument } from "../../../../store/instruments/instruments.selectors";
-import { select, Store } from '@ngrx/store';
 import { getTypeByCfi } from 'src/app/shared/utils/instruments';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
 
 interface Size {
   width: string;
@@ -55,34 +75,52 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   });
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private service: OrderbookService, private modal: ModalService, private readonly store: Store) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly instrumentsService: InstrumentsService,
+    private readonly service: OrderbookService,
+    private readonly modal: ModalService) {
   }
 
   ngOnInit(): void {
-    this.shouldShowTable$ = this.service.getSettings(this.guid).pipe(
+    const settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
+      shareReplay()
+    );
+
+    this.shouldShowTable$ = settings$.pipe(
       map((s) => s.showTable)
     );
 
-    this.shouldShowYield$ = combineLatest([
-      this.service.getSettings(this.guid),
-      this.store.pipe(select(getSelectedInstrument))]).pipe(
-        map(([settings, instrument]) => getTypeByCfi(instrument.cfiCode) === InstrumentType.Bond && settings.showYieldForBonds)
+    this.shouldShowYield$ = settings$.pipe(
+      switchMap(settings => {
+        if (!settings.showYieldForBonds) {
+          return of(false);
+        }
+
+        return this.instrumentsService.getInstrument({
+          symbol: settings.symbol,
+          exchange: settings.exchange,
+          instrumentGroup: settings.instrumentGroup
+        }).pipe(
+          map(x => !!x && getTypeByCfi(x.cfiCode) === InstrumentType.Bond)
+        );
+      })
     );
 
-    this.ob$ = this.service.getOrderbook(this.guid).pipe(
+    this.ob$ = settings$.pipe(
+      switchMap(settings => this.service.getOrderbook(settings)),
       tap((ob) => (this.maxVolume = ob?.maxVolume ?? 1)),
       startWith(<OrderBook>{
-          rows: [],
-          maxVolume: 1,
-          chartData: <ChartData>{
-            asks: [],
-            bids: [],
-            minPrice: 0,
-            maxPrice: 0
-          }
+        rows: [],
+        maxVolume: 1,
+        chartData: <ChartData>{
+          asks: [],
+          bids: [],
+          minPrice: 0,
+          maxPrice: 0
         }
-      )
-    );
+      }
+    ));
 
     this.resize.pipe(
       takeUntil(this.destroy$)
@@ -123,8 +161,9 @@ export class OrderBookComponent implements OnInit, OnDestroy {
 
   newLimitOrder(event: MouseEvent, price: number, quantity?: number) {
     event.stopPropagation();
-    const settings = this.service.getSettingsValue();
-    if (settings) {
+    this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
+      take(1)
+    ).subscribe(settings => {
       const params: CommandParams = {
         instrument: { ...settings },
         price,
@@ -132,7 +171,7 @@ export class OrderBookComponent implements OnInit, OnDestroy {
         type: CommandType.Limit,
       };
       this.modal.openCommandModal(params);
-    }
+    });
   }
 
   getTrackKey(index: number): number {

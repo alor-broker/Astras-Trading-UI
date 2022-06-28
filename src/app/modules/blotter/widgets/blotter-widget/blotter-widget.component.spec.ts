@@ -1,10 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 import { CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
-import { BlotterService } from '../../services/blotter.service';
-import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { BlotterWidgetComponent } from './blotter-widget.component';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { of } from "rxjs";
 
 const settings: BlotterSettings = {
   exchange: 'MOEX',
@@ -23,8 +26,13 @@ describe('BlotterWidgetComponent', () => {
   let component: BlotterWidgetComponent;
   let fixture: ComponentFixture<BlotterWidgetComponent>;
 
+  let widgetSettingsServiceSpy: any;
+
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
+    widgetSettingsServiceSpy = jasmine.createSpyObj('WidgetSettingsService', ['updateIsLinked', 'getSettings', 'updateSettings']);
+    widgetSettingsServiceSpy.getSettings.and.returnValue(of({ activeTabIndex: 0 } as BlotterSettings));
+
     await TestBed.configureTestingModule({
       declarations: [BlotterWidgetComponent],
       imports: []
@@ -33,7 +41,7 @@ describe('BlotterWidgetComponent', () => {
     TestBed.overrideComponent(BlotterWidgetComponent, {
       set: {
         providers: [
-          { provide: BlotterService, useClass: MockServiceBlotter },
+          { provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy },
         ]
       }
     });

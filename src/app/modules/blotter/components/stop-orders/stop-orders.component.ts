@@ -1,5 +1,15 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of, Subject, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  take,
+  takeUntil
+} from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
@@ -10,6 +20,8 @@ import { BlotterService } from '../../services/blotter.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { StopOrder } from 'src/app/shared/models/orders/stop-order.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -243,14 +255,19 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly service: BlotterService,
-    private readonly cancller: OrderCancellerService,
+    private readonly settingsService: WidgetSettingsService,
+    private readonly canceller: OrderCancellerService,
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService
   ) {
   }
 
   ngOnInit(): void {
-    this.service.getSettings(this.guid).pipe(
+    const settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      shareReplay()
+    );
+
+    settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(s => {
       if (s.stopOrdersColumns) {
@@ -259,7 +276,8 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       }
     });
 
-    const orders$ = this.service.getStopOrders(this.guid).pipe(
+    const orders$ = settings$.pipe(
+      switchMap(settings => this.service.getStopOrders(settings)),
       tap(orders => this.orders = orders)
     );
 
@@ -281,7 +299,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
     );
 
     this.cancels$.pipe(
-      mergeMap((command) => this.cancller.cancelOrder(command)),
+      mergeMap((command) => this.canceller.cancelOrder(command)),
       catchError((_, caught) => caught),
       takeUntil(this.destroy$)
     ).subscribe();
@@ -309,15 +327,16 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   }
 
   cancelOrder(orderId: string) {
-    const settings = this.service.getSettingsValue();
-    if (settings) {
+    this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      take(1)
+    ).subscribe(settings => {
       this.cancelCommands?.next({
         portfolio: settings.portfolio,
         exchange: settings.exchange,
         orderid: orderId,
         stop: true
       });
-    }
+    });
   }
 
   editOrder(order: StopOrder) {

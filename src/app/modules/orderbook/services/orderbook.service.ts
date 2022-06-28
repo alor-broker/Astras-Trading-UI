@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, Subscription } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import {
   catchError,
-  filter,
   map,
   startWith,
   switchMap,
@@ -14,27 +13,23 @@ import { OrderbookSettings } from '../../../shared/models/settings/orderbook-set
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import { ChartData, ChartPoint, OrderBook } from '../models/orderbook.model';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
-import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
-import { select, Store } from '@ngrx/store';
-import { getSelectedInstrument } from '../../../store/instruments/instruments.selectors';
+import { Store } from '@ngrx/store';
 import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
 
 @Injectable()
-export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
+export class OrderbookService extends BaseWebsocketService {
   private orderbook$: Observable<OrderBook> = new Observable();
-  private instrumentSub?: Subscription;
   private ordersById: Map<string, Order> = new Map<string, Order>();
 
   constructor(
     ws: WebsocketService,
-    settingsService: DashboardService,
-    private store: Store,
-    private canceller: OrderCancellerService
+    private readonly store: Store,
+    private readonly canceller: OrderCancellerService
   ) {
-    super(ws, settingsService);
+    super(ws);
   }
 
   generateNewGuid(request: OrderbookRequest): string {
@@ -49,32 +44,8 @@ export class OrderbookService extends BaseWebsocketService<OrderbookSettings> {
     );
   }
 
-  getOrderbook(guid: string) {
-    this.instrumentSub?.unsubscribe();
-    this.instrumentSub = combineLatest([
-      this.store.pipe(
-        select(getSelectedInstrument),
-      ),
-      this.getSettings(guid),
-    ])
-      .pipe(
-        filter(([i, settings]) => !!settings &&
-          !!settings.linkToActive &&
-          !(
-            settings.symbol == i.symbol &&
-            settings.exchange == i.exchange &&
-            settings.instrumentGroup == i.instrumentGroup
-          ))
-      )
-      .subscribe(([i, settings]) => {
-        this.setSettings({...settings, ...i});
-      });
-
-    const obData$ = this.getSettings(guid).pipe(
-      filter((s): s is OrderbookSettings => !!s),
-      switchMap((s) =>
-        this.getOrderbookReq(s.symbol, s.exchange, s.instrumentGroup, s.depth)
-      ),
+  getOrderbook(settings: OrderbookSettings) {
+    const obData$ = this.getOrderbookReq(settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
       catchError((e,) => {
         throw e;
       })
