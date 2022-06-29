@@ -5,7 +5,6 @@ import {
 import { InfoService } from '../../services/info.service';
 
 import { InfoWidgetComponent } from './info-widget.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('InfoWidgetComponent', () => {
   let component: InfoWidgetComponent;
@@ -23,11 +22,7 @@ describe('InfoWidgetComponent', () => {
     TestBed.overrideComponent(InfoWidgetComponent, {
       set: {
         providers: [
-          { provide: InfoService, useValue: infoSpy },
-          {
-            provide: WidgetSettingsService,
-            useValue: { updateSettings: jasmine.createSpy('updateSettings').and.callThrough() }
-          },
+          { provide: InfoService, useValue: infoSpy }
         ]
       }
     });

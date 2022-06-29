@@ -44,11 +44,11 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   prevSettings?: BlotterSettings;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly settingService: WidgetSettingsService) {
+  constructor(private readonly settingsService: WidgetSettingsService) {
   }
 
   ngOnInit() {
-    this.settingService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       if (settings) {
@@ -94,7 +94,7 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
 
   submitForm(): void {
     this.form.value.currency = this.codeToCurrency(this.form.value.currency);
-    this.settingService.updateSettings(
+    this.settingsService.updateSettings(
       this.guid,
       {
         ...this.form.value,

@@ -40,7 +40,7 @@ export class LightChartService extends BaseWebsocketService {
 
   constructor(
     ws: WebsocketService,
-    private readonly settingService: WidgetSettingsService,
+    private readonly settingsService: WidgetSettingsService,
     private readonly history: HistoryService,
     private readonly instrumentsService: InstrumentsService) {
     super(ws);
@@ -51,7 +51,7 @@ export class LightChartService extends BaseWebsocketService {
   }
 
   changeTimeframe(guid: string, timeFrame: string) {
-    this.settingService.updateSettings(guid, {timeFrame});
+    this.settingsService.updateSettings(guid, {timeFrame});
   }
 
   getBars(settings: LightChartSettings) {
@@ -60,7 +60,7 @@ export class LightChartService extends BaseWebsocketService {
   }
 
   getExtendedSettings(guid: string): Observable<LightChartSettingsExtended> {
-    return this.settingService.getSettings<LightChartSettings>(guid).pipe(
+    return this.settingsService.getSettings<LightChartSettings>(guid).pipe(
       map(x => x as LightChartSettingsExtended),
       switchMap(settings => {
         if (settings.minstep == null) {

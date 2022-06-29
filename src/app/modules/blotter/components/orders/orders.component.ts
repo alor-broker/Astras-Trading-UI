@@ -225,7 +225,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private orders$: Observable<Order[]> = of([]);
 
   constructor(
-    private readonly settingService: WidgetSettingsService,
+    private readonly settingsService: WidgetSettingsService,
     private readonly service: BlotterService,
     private readonly canceller: OrderCancellerService,
     private readonly modal: ModalService,
@@ -233,7 +233,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const settings$ = this.settingService.getSettings<BlotterSettings>(this.guid).pipe(
+    const settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       shareReplay()
     );
 
@@ -297,7 +297,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   cancelOrder(orderId: string) {
-    this.settingService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       take(1)
     ).subscribe(settings => {
       this.cancelCommands?.next({

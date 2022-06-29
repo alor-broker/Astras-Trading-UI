@@ -104,7 +104,8 @@ export class OrderBookComponent implements OnInit, OnDestroy {
         }).pipe(
           map(x => !!x && getTypeByCfi(x.cfiCode) === InstrumentType.Bond)
         );
-      })
+      }),
+      shareReplay()
     );
 
     this.ob$ = settings$.pipe(

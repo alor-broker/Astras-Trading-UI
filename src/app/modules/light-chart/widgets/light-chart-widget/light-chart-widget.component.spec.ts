@@ -1,11 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { LightChartService } from '../../services/light-chart.service';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { LightChartWidgetComponent } from './light-chart-widget.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
-import { LightChartSettings } from "../../../../shared/models/settings/light-chart-settings.model";
 
 describe('LightChartWidgetComponent', () => {
   let component: LightChartWidgetComponent;
@@ -15,14 +13,7 @@ describe('LightChartWidgetComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [LightChartWidgetComponent],
-      providers: [
-        {
-          provide: WidgetSettingsService,
-          useValue: {
-            updateIsLinked: jasmine.createSpy('updateIsLinked').and.callThrough()
-          }
-        },
-      ]
+      providers: []
     })
       .compileComponents();
 

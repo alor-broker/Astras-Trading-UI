@@ -155,13 +155,13 @@ export class TradesComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
-    private readonly settingService: WidgetSettingsService,
+    private readonly settingsService: WidgetSettingsService,
     private readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService) {
   }
 
   ngOnInit(): void {
-    const settings$ = this.settingService.getSettings<BlotterSettings>(this.guid).pipe(
+    const settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       shareReplay()
     );
 

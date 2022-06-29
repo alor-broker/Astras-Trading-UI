@@ -37,7 +37,7 @@ export class InfoService {
   private settings$?: Observable<SettingsWithExchangeInfo>;
 
   constructor(
-    private readonly settingService: WidgetSettingsService,
+    private readonly settingsService: WidgetSettingsService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService) {
   }
@@ -54,7 +54,7 @@ export class InfoService {
       );
     };
 
-    this.settings$ = this.settingService.getSettings<InfoSettings>(guid).pipe(
+    this.settings$ = this.settingsService.getSettings<InfoSettings>(guid).pipe(
       switchMap(settings => getExchangeInfo(settings)),
       shareReplay()
     );

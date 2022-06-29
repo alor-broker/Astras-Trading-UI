@@ -36,12 +36,12 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   timeFrames: Timeframe[];
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly settingService: WidgetSettingsService) {
+  constructor(private readonly settingsService: WidgetSettingsService) {
     this.timeFrames = TimeframesHelper.timeFrames;
   }
 
   ngOnInit() {
-    this.settingService.getSettings<LightChartSettings>(this.guid).pipe(
+    this.settingsService.getSettings<LightChartSettings>(this.guid).pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.form = new FormGroup({
@@ -57,7 +57,7 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   }
 
   submitForm(): void {
-    this.settingService.updateSettings(
+    this.settingsService.updateSettings(
       this.guid,
       {
         ...this.form.value,

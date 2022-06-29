@@ -58,7 +58,7 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
   private chartDataSubscription?: Subscription;
 
   constructor(
-    private readonly settingService: WidgetSettingsService,
+    private readonly settingsService: WidgetSettingsService,
     private readonly service: LightChartService,
     private readonly timezoneConverterService: TimezoneConverterService) {
   }
@@ -88,7 +88,7 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
             item.width ?? 0,
             !!item.height ? item.height - this.heightAdjustment : 0);
 
-          this.settingService.updateSettings(
+          this.settingsService.updateSettings(
             this.guid,
             {
               width: item.width ?? 300,

@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { LightChartService } from '../../services/light-chart.service';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 @Component({
   selector: 'ats-light-chart-widget[shouldShowSettings][guid][resize]',
@@ -26,13 +25,9 @@ export class LightChartWidgetComponent {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
-  constructor(private readonly settingsService: WidgetSettingsService) {
+  constructor() {
   }
 
-  @Input()
-  set linkedToActive(linkedToActive: boolean) {
-    this.settingsService.updateIsLinked(this.guid, linkedToActive);
-  }
 
   onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);

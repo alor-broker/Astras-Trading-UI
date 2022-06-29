@@ -175,11 +175,11 @@ export class PositionsComponent implements OnInit, OnDestroy {
   listOfColumns: Column<PositionDisplay, PositionFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly service: BlotterService, private readonly settingService: WidgetSettingsService) {
+  constructor(private readonly service: BlotterService, private readonly settingsService: WidgetSettingsService) {
   }
 
   ngOnInit(): void {
-    const settings$ = this.settingService.getSettings<BlotterSettings>(this.guid).pipe(
+    const settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       shareReplay()
     );
 
