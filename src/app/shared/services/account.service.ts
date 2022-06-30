@@ -10,6 +10,7 @@ import { FullName } from 'src/app/shared/models/user/full-name.model';
 import { environment } from 'src/environments/environment';
 import { PortfolioMeta } from 'src/app/shared/models/user/portfolio-meta.model';
 import { PortfolioExtended } from '../models/user/portfolio-extended.model';
+import { getMarketTypeByPortfolio } from "../utils/portfolios";
 
 @Injectable({
   providedIn: 'root',
@@ -79,14 +80,16 @@ export class AccountService {
           extendedPortfoliosByAgreement.set(meta.agreement, [{
             ...meta,
             ...portfolio,
-            market: formatMarket(meta.market, portfolio.exchange)
+            market: formatMarket(meta.market, portfolio.exchange),
+            marketType: getMarketTypeByPortfolio(portfolio.portfolio)
           }]);
         }
         else {
           existing.push({
             ...meta,
             ...portfolio,
-            market: formatMarket(meta.market, portfolio.exchange)
+            market: formatMarket(meta.market, portfolio.exchange),
+            marketType: getMarketTypeByPortfolio(portfolio.portfolio)
           });
         }
       }
