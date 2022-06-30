@@ -39,7 +39,7 @@ export class ParentWidgetComponent implements OnInit, OnDestroy {
   }
 
   get contentHeightAdjustment(): number {
-    // TODO: need to calculate this value. Now it depends on styles
+    // This value depends on styles. It is mainly based on the height of the widget's title.
     return 40;
   }
 

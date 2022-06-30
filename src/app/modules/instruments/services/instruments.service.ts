@@ -23,8 +23,6 @@ export class InstrumentsService {
   }
 
   getInstrument(instrument: InstrumentKey): Observable<Instrument | null> {
-    // TODO: this method is called from several widgets with the same parameters.
-    // need to implement reading from cache
     const instrumentGroup = instrument.instrumentGroup ?? "";
     return this.http.get<InstrumentSearchResponse>(`${this.url}/${instrument.exchange}/${instrument.symbol}`, {
       params: { instrumentGroup: instrumentGroup }

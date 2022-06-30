@@ -61,7 +61,8 @@ export const reducer = createReducer(
           ...state.entities[s],
           symbol: newInstrumentKey.symbol,
           exchange: newInstrumentKey.exchange,
-          instrumentGroup: newInstrumentKey.instrumentGroup
+          instrumentGroup: newInstrumentKey.instrumentGroup,
+          isin: newInstrumentKey.isin
         }
       }));
 
