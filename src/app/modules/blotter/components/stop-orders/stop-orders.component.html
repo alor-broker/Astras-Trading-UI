@@ -41,7 +41,10 @@
   <tbody>
     <tr *ngFor="let ord of nzTable.data" (click)="selectInstrument(ord.symbol, ord.exchange)">
       <td nzWidth='5px'>
-        <span [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'>&nbsp;</span>
+        <span
+          [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'
+          [class.cancelled-status]="ord.status.toString() === 'canceled'"
+        >&nbsp;</span>
       </td>
       <td *ngIf='shouldShow("id")'>{{ ord.id }}</td>
       <td class='bold' *ngIf='shouldShow("symbol")'>{{ ord.symbol }}</td>
