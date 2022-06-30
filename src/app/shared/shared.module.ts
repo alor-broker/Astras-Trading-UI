@@ -132,9 +132,9 @@ import { WidgetMenuComponent } from './components/widget-menu/widget-menu.compon
         PriceTickComponent,
         LoadingIndicatorComponent,
         InfiniteScrollTableComponent,
+        WidgetMenuComponent,
         // directives
         NumericalDirective,
-        WidgetMenuComponent,
     ],
   providers: [
     {
