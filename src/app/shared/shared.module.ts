@@ -42,6 +42,7 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { InfiniteScrollTableComponent } from './components/infinite-scroll-table/infinite-scroll-table.component';
+import { WidgetMenuComponent } from './components/widget-menu/widget-menu.component';
 
 
 @NgModule({
@@ -49,7 +50,8 @@ import { InfiniteScrollTableComponent } from './components/infinite-scroll-table
     PriceTickComponent,
     NumericalDirective,
     LoadingIndicatorComponent,
-    InfiniteScrollTableComponent
+    InfiniteScrollTableComponent,
+    WidgetMenuComponent
   ],
   imports: [
     CommonModule,
@@ -130,8 +132,9 @@ import { InfiniteScrollTableComponent } from './components/infinite-scroll-table
         PriceTickComponent,
         LoadingIndicatorComponent,
         InfiniteScrollTableComponent,
-      // directives
+        // directives
         NumericalDirective,
+        WidgetMenuComponent,
     ],
   providers: [
     {

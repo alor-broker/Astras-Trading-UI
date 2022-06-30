@@ -55,29 +55,7 @@
 
 
 <nz-dropdown-menu #widgetsMenu="nzDropdownMenu">
-  <ul nz-menu>
-    <li nz-menu-item (click)="addItem(names.instrumentSelect)">
-      <span><i nz-icon nzType="eye" nzTheme="outline"></i> <label><strong>&nbsp;Инструменты</strong></label></span>
-    </li>
-    <li nz-menu-item (click)="addItem(names.orderBook)">
-      <span><i nz-icon nzType="ordered-list" nzTheme="outline"></i> <label>&nbsp;Стакан</label></span>
-    </li>
-    <li nz-menu-item (click)="addItem(names.lightChart)">
-      <span><i nz-icon nzType="sliders" nzTheme="outline"></i><label>&nbsp;График</label></span>
-    </li>
-    <li nz-menu-item (click)="addItem(names.blotter)">
-      <span><i nz-icon nzType="table" nzTheme="outline"></i><label>&nbsp;Блоттер</label></span>
-    </li>
-    <li nz-menu-item (click)="addItem(names.instrumentInfo)">
-      <span><i nz-icon nzType="info" nzTheme="outline"></i><label>&nbsp;Инфо</label></span>
-    </li>
-    <li nz-menu-item (click)="addItem(names.news)">
-      <span><i nz-icon nzType="read" nzTheme="outline"></i><label> Новости</label></span>
-    </li>
-    <li nz-menu-item (click)="addItem(names.allTrades)">
-      <span><i nz-icon nzType="unordered-list" nzTheme="outline"></i><label> Все сделки</label></span>
-    </li>
-  </ul>
+  <ats-widget-menu (selected)="addItem($event)"></ats-widget-menu>
 </nz-dropdown-menu>
 
 <nz-dropdown-menu #rightMenu="nzDropdownMenu">
