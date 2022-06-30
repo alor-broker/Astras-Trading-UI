@@ -16,7 +16,11 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let inst of nzTable.data; trackBy: getTrackKey" (click)='makeActive(inst.instrument)'>
+    <tr
+      *ngFor="let inst of nzTable.data; trackBy: getTrackKey"
+      (click)='makeActive(inst.instrument)'
+      (contextmenu)="contextMenu($event, menu, inst.instrument)"
+    >
       <td *ngIf="isVisibleColumn('symbol')" class="ticker">{{ inst.instrument.symbol }}</td>
       <td *ngIf="isVisibleColumn('price')">
         <ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'>
@@ -39,3 +43,7 @@
     </tr>
   </tbody>
 </nz-table>
+
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <ats-widget-menu [showedWidgets]="showedWidgetNames" (selected)="addWidget($event)"></ats-widget-menu>
+</nz-dropdown-menu>

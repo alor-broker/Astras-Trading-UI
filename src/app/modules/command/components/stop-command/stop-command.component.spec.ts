@@ -11,7 +11,11 @@ describe('StopCommandComponent', () => {
   let component: StopCommandComponent;
   let fixture: ComponentFixture<StopCommandComponent>;
 
-  const spyCommands = jasmine.createSpyObj('CommandsService', ['setStopCommand']);
+  const spyCommands = jasmine.createSpyObj(
+    'CommandsService',
+    ['setStopCommand'],
+    {stopCommandErr$: of(null)}
+    );
 
   const timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
   timezoneConverterServiceSpy.getConverter.and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)));
