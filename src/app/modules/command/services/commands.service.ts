@@ -1,8 +1,19 @@
-import { HttpClient } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, Subject, throwError } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import {
+  BehaviorSubject,
+  of,
+  Subject,
+  throwError
+} from 'rxjs';
+import {
+  catchError,
+  tap
+} from 'rxjs/operators';
 import { CommandResponse } from 'src/app/shared/models/commands/command-response.model';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
@@ -14,7 +25,7 @@ import { MarketCommand } from '../models/market-command.model';
 import { MarketEdit } from '../models/market-edit.model';
 import { StopCommand } from '../models/stop-command.model';
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
-import { catchHttpError } from "../../../shared/utils/observable-helper";
+import { httpLinkRegexp } from "../../../shared/utils/regexps";
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +48,7 @@ export class CommandsService {
   constructor(
     private http: HttpClient,
     private notification: NzNotificationService,
-    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly errorHandlerService: ErrorHandlerService
   ) { }
 
   setStopCommand(command: StopCommand | null) {
@@ -179,8 +190,33 @@ export class CommandsService {
           this.notification.success(`Заявка выставлена`, `Заявка успешно выставлена, её номер на бирже: \n ${resp.orderNumber}`);
         }
       }),
-      catchHttpError<CommandResponse | null>(null, this.errorHandlerService)
+      catchError(err => {
+        if (!(err instanceof HttpErrorResponse)) {
+          this.errorHandlerService.handleError(err);
+          return of(null);
+        }
+
+        this.handleCommandError(err);
+        return of(null);
+      }),
     );
+  }
+
+  private handleCommandError(error: HttpErrorResponse){
+    const errorTitle = 'Заявка не выставлена';
+    const errorMessage = !!error.error.code && !!error.error.message
+      ?`Ошибка ${error.error.code} <br/> ${error.error.message}`
+      : error.message;
+    this.notification.error(errorTitle, this.prepareErrorMessage(errorMessage));
+  }
+
+  private prepareErrorMessage(message: string): string {
+    const links = new RegExp(httpLinkRegexp, 'im').exec(message);
+    if(!links?.length) {
+      return message;
+    }
+
+    return  links!.reduce((result, link) => result.replace(link, `<a href="${link}" target="_blank">${link}</a>`), message);
   }
 }
 
