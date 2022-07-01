@@ -9,10 +9,6 @@ interface CommandError {
   message: string
 }
 
-const isCommandError = (e: any): e is CommandError => {
-  return typeof (e) === 'object' && e && 'code' in e && 'message' in e;
-};
-
 @Injectable()
 export class HttpErrorHandler implements ApplicationErrorHandler {
   private readonly apiAccessibilityErrorStatusCodes: number[] = [
@@ -36,10 +32,6 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
       if (error.error instanceof ErrorEvent) {
         // Other errors go here
         errorMessage = `Произошла ошибка: ${error?.message}`;
-      }
-      else if (isCommandError(error.error)) {
-        errorTitle = 'Заявка не выставлена';
-        errorMessage = `Ошибка ${error.error.code} \n ${error.error.message}`;
       }
       else {
         // Backend error goes here
