@@ -14,7 +14,6 @@ import { Store } from "@ngrx/store";
 import { getSelectedInstrument } from "../instruments/instruments.selectors";
 import { map } from "rxjs/operators";
 import {
-  InstrumentEqualityComparer,
   InstrumentKey
 } from "../../shared/models/instruments/instrument-key.model";
 import {
@@ -32,6 +31,7 @@ import {
   PortfolioKey,
   PortfolioKeyEqualityComparer
 } from "../../shared/models/portfolio-key.model";
+import { InstrumentEqualityComparer } from "../../shared/utils/instruments";
 
 @Injectable()
 export class WidgetSettingsBridgeEffects {
