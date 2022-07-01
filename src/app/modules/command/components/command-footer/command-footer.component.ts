@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { of, take } from 'rxjs';
+import { Observable, of, take } from 'rxjs';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { CommandsService } from '../../services/commands.service';
 import { CommandType } from '../../../../shared/models/enums/command-type.model';
 import { finalize } from 'rxjs/operators';
+import { CommandResponse } from "../../../../shared/models/commands/command-response.model";
 
 @Component({
   selector: 'ats-command-footer[activeCommandType]',
@@ -30,7 +31,7 @@ export class CommandFooterComponent {
   }
 
   buy() {
-    let command$ = of({});
+    let command$: Observable<CommandResponse | null> = of(null);
     if (this.activeCommandType === CommandType.Limit) {
       command$ = this.command.submitLimit(Side.Buy);
     }
@@ -45,15 +46,19 @@ export class CommandFooterComponent {
 
     command$.pipe(
       take(1),
-      finalize(() => this.executeAndDetectChanges(() => this.isBuyButtonLoading = false))
+      finalize(() => this.executeAndDetectChanges(() => this.isBuyButtonLoading = false)),
     ).subscribe({
-      complete: () => this.closeModal(),
+      next: (res?: any) => {
+        if (res) {
+          this.closeModal();
+        }
+      },
       error: () => null
     });
   }
 
   sell() {
-    let command$ = of({});
+    let command$: Observable<CommandResponse | null> = of(null);
     if (this.activeCommandType === CommandType.Limit) {
       command$ = this.command.submitLimit(Side.Sell);
     }
@@ -70,7 +75,11 @@ export class CommandFooterComponent {
       take(1),
       finalize(() => this.executeAndDetectChanges(() => this.isSellButtonLoading = false))
     ).subscribe({
-      complete: () => this.closeModal(),
+      next: (res?: any) => {
+        if (res) {
+          this.closeModal();
+        }
+      },
       error: () => null
     });
   }
