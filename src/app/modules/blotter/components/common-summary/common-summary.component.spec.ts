@@ -1,16 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 import { of } from 'rxjs';
 import { BlotterService } from '../../services/blotter.service';
 
-import { SummariesComponent } from './summaries.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { CommonSummaryComponent } from './common-summary.component';
 
-describe('SummariesComponent', () => {
-  let component: SummariesComponent;
-  let fixture: ComponentFixture<SummariesComponent>;
-  const spyBlotter = jasmine.createSpyObj('BlotterService', ['summary$', 'getSummaries']);
-  spyBlotter.summary$ = of(null);
-  spyBlotter.getSummaries.and.returnValue(of(null));
+describe('CommonSummaryComponent', () => {
+  let component: CommonSummaryComponent;
+  let fixture: ComponentFixture<CommonSummaryComponent>;
+  const spyBlotter = jasmine.createSpyObj('BlotterService', ['getCommonSummary']);
+  spyBlotter.getCommonSummary.and.returnValue(of(null));
+
   const settingsMock = {
     exchange: 'MOEX',
     portfolio: 'D39004',
@@ -23,7 +26,7 @@ describe('SummariesComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SummariesComponent ],
+      declarations: [CommonSummaryComponent],
       providers: [
         { provide: BlotterService, useValue: spyBlotter },
         {
@@ -31,12 +34,11 @@ describe('SummariesComponent', () => {
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
         }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SummariesComponent);
+    fixture = TestBed.createComponent(CommonSummaryComponent);
     component = fixture.componentInstance;
     component.resize = jasmine.createSpyObj('resize', ['subscribe']);
     fixture.detectChanges();

@@ -5,11 +5,16 @@
   (mousedown)='$event.stopPropagation()' [nzSelectedIndex]="activeTabIndex$ | async"
   (nzSelectChange)="onIndexChange($event)"
   [nzAnimated]="false">
-  <nz-tab nzTitle="О портфеле" nzForceRender>
-    <ats-summaries
+  <nz-tab nzTitle="О портфеле" nzForceRender *ngIf="marketType$ | async as marketType">
+    <ats-common-summary
+      *ngIf="!marketType || marketType !== marketTypes.Forward"
       [guid]="guid"
       [(shouldShowSettings)]="shouldShowSettings"
-      [resize]="resize"></ats-summaries>
+      [resize]="resize"></ats-common-summary>
+    <ats-forward-summary
+      *ngIf="marketType === marketTypes.Forward"
+      [guid]="guid"
+      [resize]="resize"></ats-forward-summary>
   </nz-tab>
   <nz-tab nzTitle="Заявки" nzForceRender>
     <ats-orders

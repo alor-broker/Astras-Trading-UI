@@ -8,6 +8,7 @@ import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings
 import { BlotterWidgetComponent } from './blotter-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
+import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
 
 const settings: BlotterSettings = {
   exchange: 'MOEX',
@@ -35,7 +36,9 @@ describe('BlotterWidgetComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [BlotterWidgetComponent],
-      imports: []
+      imports: [
+        ...sharedModuleImportForTests
+      ]
     }).compileComponents();
 
     TestBed.overrideComponent(BlotterWidgetComponent, {

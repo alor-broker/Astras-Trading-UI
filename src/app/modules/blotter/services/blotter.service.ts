@@ -1,11 +1,25 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { combineLatest, merge, Observable, of } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
-import { CurrencyCode, CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
+import {
+  combineLatest,
+  merge,
+  Observable,
+  of
+} from 'rxjs';
+import {
+  map,
+  startWith
+} from 'rxjs/operators';
+import {
+  CurrencyCode,
+  CurrencyInstrument
+} from 'src/app/shared/models/enums/currencies.model';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { Order } from 'src/app/shared/models/orders/order.model';
-import { StopOrder, StopOrderData } from 'src/app/shared/models/orders/stop-order.model';
+import {
+  StopOrder,
+  StopOrderData
+} from 'src/app/shared/models/orders/stop-order.model';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
@@ -14,9 +28,11 @@ import { OrdersNotificationsService } from 'src/app/shared/services/orders-notif
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { formatCurrency } from 'src/app/shared/utils/formatters';
-import { SummaryView } from '../models/summary-view.model';
-import { Summary } from '../models/summary.model';
+import { CommonSummaryView } from '../models/common-summary-view.model';
+import { CommonSummaryModel } from '../models/common-summary.model';
 import { selectNewInstrument } from '../../../store/instruments/instruments.actions';
+import { ForwardRisks } from "../models/forward-risks.model";
+import { ForwardRisksView } from "../models/forward-risks-view.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 
 @Injectable({
@@ -44,7 +60,7 @@ export class BlotterService extends BaseWebsocketService {
       symbol = CurrencyCode.toInstrument(symbol);
       exchange = Exchanges.MOEX;
     }
-    const instrument = { symbol, exchange, instrumentGroup: undefined};
+    const instrument = { symbol, exchange, instrumentGroup: undefined };
     this.store.dispatch(selectNewInstrument({ instrument }));
   }
 
@@ -63,41 +79,76 @@ export class BlotterService extends BaseWebsocketService {
   }
 
   getStopOrders(portfolioKey: PortfolioKey) {
-    return  this.getStopOrdersReq(portfolioKey.portfolio, portfolioKey.exchange);
+    return this.getStopOrdersReq(portfolioKey.portfolio, portfolioKey.exchange);
   }
 
-  getSummaries(settings: BlotterSettings) : Observable<SummaryView> {
+  getCommonSummary(settings: BlotterSettings): Observable<CommonSummaryView> {
     if (settings.currency != CurrencyInstrument.RUB) {
       return combineLatest([
-        this.getSummariesReq(settings.portfolio, settings.exchange),
+        this.getCommonSummaryReq(settings.portfolio, settings.exchange),
         this.quotes.getQuotes(settings.currency, 'MOEX')
       ]).pipe(
-        map(([summary, quote]) => this.formatSummary(summary, settings.currency, quote.last_price))
+        map(([summary, quote]) => this.formatCommonSummary(summary, settings.currency, quote.last_price))
       );
-    }
-    else {
-      return this.getSummariesReq(settings.portfolio, settings.exchange).pipe(
-        map(summary => this.formatSummary(summary, CurrencyInstrument.RUB, 1))
+    } else {
+      return this.getCommonSummaryReq(settings.portfolio, settings.exchange).pipe(
+        map(summary => this.formatCommonSummary(summary, CurrencyInstrument.RUB, 1))
       );
     }
   }
 
-  private formatSummary(summary: Summary, currency: string, exchangeRate: number) : SummaryView {
+  getForwardRisks(settings: BlotterSettings): Observable<ForwardRisksView> {
+    if (settings.currency != CurrencyInstrument.RUB) {
+      return combineLatest([
+        this.getForwardRisksReq(settings.portfolio, settings.exchange),
+        this.quotes.getQuotes(settings.currency, 'MOEX')
+      ]).pipe(
+        map(([risks, quote]) => this.formatForwardRisks(risks, settings.currency, quote.last_price))
+      );
+    } else {
+      return this.getForwardRisksReq(settings.portfolio, settings.exchange).pipe(
+        map(risks => this.formatForwardRisks(risks, CurrencyInstrument.RUB, 1))
+      );
+    }
+  }
+
+  private formatCommonSummary(summary: CommonSummaryModel, currency: string, exchangeRate: number): CommonSummaryView {
     return ({
       buyingPowerAtMorning: formatCurrency(summary.buyingPowerAtMorning / exchangeRate, currency),
       buyingPower: formatCurrency(summary.buyingPower / exchangeRate, currency),
       profit: formatCurrency(summary.profit / exchangeRate, currency),
       profitRate: summary.profitRate,
       portfolioEvaluation: formatCurrency(summary.portfolioEvaluation / exchangeRate, currency),
-      portfolioLiquidationValue: formatCurrency(summary.portfolioLiquidationValue / exchangeRate, currency ),
+      portfolioLiquidationValue: formatCurrency(summary.portfolioLiquidationValue / exchangeRate, currency),
       initialMargin: formatCurrency(summary.initialMargin / exchangeRate, currency),
       riskBeforeForcePositionClosing: formatCurrency(summary.riskBeforeForcePositionClosing / exchangeRate, currency),
       commission: formatCurrency(summary.commission / exchangeRate, currency),
     });
   }
 
-  private getSummariesReq(portfolio: string, exchange: string) {
-    return  this.getPortfolioEntity<Summary>(portfolio, exchange, "SummariesGetAndSubscribeV2");
+  private formatForwardRisks(risks: ForwardRisks, currency: string, exchangeRate: number): ForwardRisksView {
+    return {
+      moneyFree: formatCurrency(risks.moneyFree / exchangeRate, currency),
+      moneyBlocked: formatCurrency(risks.moneyBlocked / exchangeRate, currency),
+      fee: formatCurrency(risks.fee / exchangeRate, currency),
+      moneyOld: formatCurrency(risks.moneyOld / exchangeRate, currency),
+      moneyAmount: formatCurrency(risks.moneyAmount / exchangeRate, currency),
+      moneyPledgeAmount: formatCurrency(risks.moneyPledgeAmount / exchangeRate, currency),
+      vmInterCl: formatCurrency(risks.vmInterCl / exchangeRate, currency),
+      vmCurrentPositions: formatCurrency(risks.vmCurrentPositions / exchangeRate, currency),
+      varMargin: formatCurrency(risks.varMargin / exchangeRate, currency),
+      isLimitsSet: risks.isLimitsSet
+    } as ForwardRisksView;
+  }
+
+  private getCommonSummaryReq(portfolio: string, exchange: string) {
+    const summary$ = this.getPortfolioEntity<CommonSummaryModel>(portfolio, exchange, "SummariesGetAndSubscribeV2");
+    return summary$;
+  }
+
+  private getForwardRisksReq(portfolio: string, exchange: string) {
+    const summary$ = this.getPortfolioEntity<ForwardRisks>(portfolio, exchange, "SpectraRisksGetAndSubscribe");
+    return summary$;
   }
 
   private getPositionsReq(portfolio: string, exchange: string) {
@@ -117,7 +168,7 @@ export class BlotterService extends BaseWebsocketService {
     return position.qtyT0 === 0 && position.qtyT1 === 0 && position.qtyT2 === 0 && position.qtyTFuture === 0;
   }
 
-  private getStopOrdersReq(portfolio: string, exchange: string) : Observable<StopOrder[]> {
+  private getStopOrdersReq(portfolio: string, exchange: string): Observable<StopOrder[]> {
     this.orders = new Map<string, StopOrder>();
     const opcode = 'StopOrdersGetAndSubscribeV2';
     const stopOrders = this.getPortfolioEntity<StopOrderData>(portfolio, exchange, opcode, true).pipe(
@@ -128,8 +179,7 @@ export class BlotterService extends BaseWebsocketService {
 
         if (existingOrder) {
           this.notification.notificateOrderChange(order, existingOrder);
-        }
-        else {
+        } else {
           this.notification.notificateAboutNewOrder(order);
         }
         const stopOrder = {
@@ -155,8 +205,7 @@ export class BlotterService extends BaseWebsocketService {
 
         if (existingOrder) {
           this.notification.notificateOrderChange(order, existingOrder);
-        }
-        else {
+        } else {
           this.notification.notificateAboutNewOrder(order);
         }
         this.orders.set(order.id, order);
@@ -166,7 +215,7 @@ export class BlotterService extends BaseWebsocketService {
     return orders.pipe(startWith([]));
   }
 
-  private getTradesReq(portfolio: string, exchange: string) : Observable<Trade[]> {
+  private getTradesReq(portfolio: string, exchange: string): Observable<Trade[]> {
     this.trades = new Map<string, Trade>();
 
     const trades = this.getPortfolioEntity<Trade>(portfolio, exchange, 'TradesGetAndSubscribeV2').pipe(

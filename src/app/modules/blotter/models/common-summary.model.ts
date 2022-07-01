@@ -1,7 +1,7 @@
 /**
  * Агрегированные данные по портфелю
  */
-export interface Summary {
+export interface CommonSummaryModel {
   /** покупательная способности на утро **/
   buyingPowerAtMorning: number,
   /** покупательная способность **/
