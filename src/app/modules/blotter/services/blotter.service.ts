@@ -16,10 +16,12 @@ import { OrdersNotificationsService } from 'src/app/shared/services/orders-notif
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { formatCurrency } from 'src/app/shared/utils/formatters';
-import { SummaryView } from '../models/summary-view.model';
-import { Summary } from '../models/summary.model';
+import { CommonSummaryView } from '../models/common-summary-view.model';
+import { CommonSummaryModel } from '../models/common-summary.model';
 import { selectNewInstrument } from '../../../store/instruments/instruments.actions';
 import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
+import { ForwardRisks } from "../models/forward-risks.model";
+import { ForwardRisksView } from "../models/forward-risks-view.model";
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +38,7 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
   stopOrder$: Observable<StopOrder[]> = of([]);
   trade$: Observable<Trade[]> = of([]);
   position$: Observable<Position[]> = of([]);
-  summary$: Observable<SummaryView> = of();
+  summary$: Observable<CommonSummaryView> = of();
 
   constructor(
     ws: WebsocketService,
@@ -106,21 +108,21 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     return this.stopOrder$;
   }
 
-  getSummaries(guid: string) : Observable<SummaryView> {
+  getCommonSummary(guid: string) : Observable<CommonSummaryView> {
     this.summary$ = this.getSettings(guid).pipe(
       filter((s): s is BlotterSettings => !!s),
       switchMap((settings) => {
         if (settings.currency != CurrencyInstrument.RUB) {
           return combineLatest([
-            this.getSummariesReq(settings.portfolio, settings.exchange),
+            this.getCommonSummaryReq(settings.portfolio, settings.exchange),
             this.quotes.getQuotes(settings.currency, 'MOEX')
           ]).pipe(
-            map(([summary, quote]) => this.formatSummary(summary, settings.currency, quote.last_price))
+            map(([summary, quote]) => this.formatCommonSummary(summary, settings.currency, quote.last_price))
           );
         }
         else {
-          return this.getSummariesReq(settings.portfolio, settings.exchange).pipe(
-            map(summary => this.formatSummary(summary, CurrencyInstrument.RUB, 1))
+          return this.getCommonSummaryReq(settings.portfolio, settings.exchange).pipe(
+            map(summary => this.formatCommonSummary(summary, CurrencyInstrument.RUB, 1))
           );
         }
       })
@@ -129,7 +131,31 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     return this.summary$;
   }
 
-  private formatSummary(summary: Summary, currency: string, exchangeRate: number) : SummaryView {
+  getForwardRisks(guid: string) : Observable<ForwardRisksView> {
+    const risks$ = this.getSettings(guid).pipe(
+      filter((s): s is BlotterSettings => !!s),
+      switchMap((settings) => {
+        if (settings.currency != CurrencyInstrument.RUB) {
+          return combineLatest([
+            this.getForwardRisksReq(settings.portfolio, settings.exchange),
+            this.quotes.getQuotes(settings.currency, 'MOEX')
+          ]).pipe(
+            map(([risks, quote]) => this.formatForwardRisks(risks, settings.currency, quote.last_price))
+          );
+        }
+        else {
+          return this.getForwardRisksReq(settings.portfolio, settings.exchange).pipe(
+            map(risks => this.formatForwardRisks(risks, CurrencyInstrument.RUB, 1))
+          );
+        }
+      })
+    );
+
+    this.linkToPortfolio(guid);
+    return risks$;
+  }
+
+  private formatCommonSummary(summary: CommonSummaryModel, currency: string, exchangeRate: number) : CommonSummaryView {
     return ({
       buyingPowerAtMorning: formatCurrency(summary.buyingPowerAtMorning / exchangeRate, currency),
       buyingPower: formatCurrency(summary.buyingPower / exchangeRate, currency),
@@ -143,8 +169,28 @@ export class BlotterService extends BaseWebsocketService<BlotterSettings> {
     });
   }
 
-  private getSummariesReq(portfolio: string, exchange: string) {
-    const summary$ = this.getPortfolioEntity<Summary>(portfolio, exchange, "SummariesGetAndSubscribeV2");
+  private formatForwardRisks(risks: ForwardRisks, currency: string, exchangeRate: number) : ForwardRisksView {
+    return {
+      moneyFree: formatCurrency(risks.moneyFree / exchangeRate, currency),
+      moneyBlocked: formatCurrency(risks.moneyBlocked / exchangeRate, currency),
+      fee: formatCurrency(risks.fee / exchangeRate, currency),
+      moneyOld: formatCurrency(risks.moneyOld / exchangeRate, currency),
+      moneyAmount: formatCurrency(risks.moneyAmount / exchangeRate, currency),
+      moneyPledgeAmount: formatCurrency(risks.moneyPledgeAmount / exchangeRate, currency),
+      vmInterCl: formatCurrency(risks.vmInterCl / exchangeRate, currency),
+      vmCurrentPositions: formatCurrency(risks.vmCurrentPositions / exchangeRate, currency),
+      varMargin: formatCurrency(risks.varMargin / exchangeRate, currency),
+      isLimitsSet: risks.isLimitsSet
+    } as ForwardRisksView;
+  }
+
+  private getCommonSummaryReq(portfolio: string, exchange: string) {
+    const summary$ = this.getPortfolioEntity<CommonSummaryModel>(portfolio, exchange, "SummariesGetAndSubscribeV2");
+    return summary$;
+  }
+
+  private getForwardRisksReq(portfolio: string, exchange: string) {
+    const summary$ = this.getPortfolioEntity<ForwardRisks>(portfolio, exchange, "SpectraRisksGetAndSubscribe");
     return summary$;
   }
 

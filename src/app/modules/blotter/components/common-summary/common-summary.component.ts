@@ -1,15 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
-import { SummaryView } from '../../models/summary-view.model';
+import { CommonSummaryView } from '../../models/common-summary-view.model';
 import { BlotterService } from '../../services/blotter.service';
 
 @Component({
-  selector: 'ats-summaries[guid][resize]',
-  templateUrl: './summaries.component.html',
-  styleUrls: ['./summaries.component.less']
+  selector: 'ats-common-summary[guid][resize]',
+  templateUrl: './common-summary.component.html',
+  styleUrls: ['./common-summary.component.less']
 })
-export class SummariesComponent implements OnInit {
+export class CommonSummaryComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -19,7 +19,7 @@ export class SummariesComponent implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
-  summary$: Observable<SummaryView> = of();
+  summary$: Observable<CommonSummaryView> = of();
 
   columns: number = 1;
 
@@ -27,7 +27,7 @@ export class SummariesComponent implements OnInit {
   constructor(private service: BlotterService) { }
 
   ngOnInit(): void {
-    this.summary$ = this.service.getSummaries(this.guid);
+    this.summary$ = this.service.getCommonSummary(this.guid);
     this.resizeSub = this.resize.subscribe(i => {
       if (i.width) {
         if (i.width <= 600) {

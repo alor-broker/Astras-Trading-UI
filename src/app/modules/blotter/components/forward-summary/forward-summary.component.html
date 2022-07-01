@@ -1,0 +1,17 @@
+<nz-descriptions
+  *ngIf="summary$ | async as summary"
+  nzBordered
+  [nzColumn]="columns"
+  [nzSize]="columns === 1 ? 'small' : 'default'"
+>
+  <nz-descriptions-item nzTitle="Свободные ДС">{{summary.moneyFree}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="ГО">{{summary.moneyBlocked}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Комиссия">{{summary.fee}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Всего ДС">{{summary.moneyOld}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Текущий лимит">{{summary.moneyAmount}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Залоги">{{summary.moneyPledgeAmount}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Вар. маржа">{{summary.vmInterCl}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Вар. маржа по позициям">{{summary.vmCurrentPositions}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Итоговая вар. маржа">{{summary.varMargin}}</nz-descriptions-item>
+  <nz-descriptions-item nzTitle="Денежные и залоговые лимиты">{{summary.isLimitsSet ? 'Да' : 'Нет'}}</nz-descriptions-item>
+</nz-descriptions>
