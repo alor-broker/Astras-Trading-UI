@@ -27,6 +27,9 @@ import {
   InstrumentSelectSettings
 } from "../../../../shared/models/settings/instrument-select-settings.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
+import { WidgetNames } from "../../../../shared/models/enums/widget-names";
+import { DashboardService } from "../../../../shared/services/dashboard.service";
 
 @Component({
   selector: 'ats-watchlist-table[guid]',
@@ -51,12 +54,22 @@ export class WatchlistTableComponent implements OnInit {
     openPrice: this.getSortFn('openPrice'),
     closePrice: this.getSortFn('closePrice'),
   };
+  showedWidgetNames = [
+    WidgetNames.lightChart,
+    WidgetNames.orderBook,
+    WidgetNames.allTrades,
+    WidgetNames.instrumentInfo
+  ];
+
+  private selectedInstrument: InstrumentKey | null = null;
 
   constructor(
     private readonly store: Store,
     private readonly settingsService: WidgetSettingsService,
     private readonly watchInstrumentsService: WatchInstrumentsService,
-    private readonly watchlistCollectionService: WatchlistCollectionService
+    private readonly watchlistCollectionService: WatchlistCollectionService,
+    private readonly nzContextMenuService: NzContextMenuService,
+    private readonly dashBoardService: DashboardService
   ) {
   }
 
@@ -89,6 +102,30 @@ export class WatchlistTableComponent implements OnInit {
 
   isVisibleColumn(colName: string): boolean {
     return this.displayedColumns.map(c => c.columnId).includes(colName);
+  }
+
+  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedInstrument: InstrumentKey): void {
+    this.selectedInstrument = selectedInstrument;
+    this.nzContextMenuService.create($event, menu);
+  }
+
+  addWidget(type: WidgetNames): void {
+    const settings = {
+      gridItem: {
+        x: 0,
+        y: 0,
+        cols: 1,
+        rows: 1,
+        type: type,
+      },
+    };
+
+    const additionalSettings = {
+        linkToActive: false,
+        ...this.selectedInstrument
+      };
+
+    this.dashBoardService.addWidget(settings, additionalSettings);
   }
 
   private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {

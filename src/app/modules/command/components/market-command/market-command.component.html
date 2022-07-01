@@ -1,12 +1,17 @@
 <div *ngIf="commandContext$ | async as commandContext">
 <form nz-form [nzLayout]="'horizontal'" [formGroup]="form">
   <nz-form-item class="compact">
-    <nz-form-control nzErrorTip="Введите кол-во">
+    <nz-form-control [nzErrorTip]="quantityError">
       <nz-form-label nzRequired nzFor="quantity" >Кол-во лотов <span *ngIf="(commandContext.instrument?.lotsize ?? -1) !== 1">&nbsp;(лотность {{commandContext.instrument?.lotsize}})</span></nz-form-label>
       <nz-input-group nzPrefixIcon="user">
         <input class='ant-input' atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="100" />
       </nz-input-group>
     </nz-form-control>
+    <ng-template #quantityError>
+      <span *ngIf="form.get('quantity')?.errors?.required">Введите кол-во</span>
+      <span *ngIf="form.get('quantity')?.errors?.min">Слишком мало</span>
+      <span *ngIf="form.get('quantity')?.errors?.max">Слишком много</span>
+    </ng-template>
   </nz-form-item>
   <nz-collapse nzGhost [nzBordered]="false" class="compact">
     <nz-collapse-panel nzHeader="Продвинутые">

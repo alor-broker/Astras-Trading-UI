@@ -13,6 +13,8 @@ import { LimitEdit } from '../models/limit-edit.model';
 import { MarketCommand } from '../models/market-command.model';
 import { MarketEdit } from '../models/market-edit.model';
 import { StopCommand } from '../models/stop-command.model';
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import { catchHttpError } from "../../../shared/utils/observable-helper";
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +34,11 @@ export class CommandsService {
   public stopCommandErr$ = this.stopCommandErrSubject$.asObservable();
 
 
-  constructor(private http: HttpClient, private notification: NzNotificationService) { }
+  constructor(
+    private http: HttpClient,
+    private notification: NzNotificationService,
+    private readonly errorHandlerService: ErrorHandlerService,
+  ) { }
 
   setStopCommand(command: StopCommand | null) {
     if (!this.stopCommand) {
@@ -172,7 +178,8 @@ export class CommandsService {
         if (resp.orderNumber) {
           this.notification.success(`Заявка выставлена`, `Заявка успешно выставлена, её номер на бирже: \n ${resp.orderNumber}`);
         }
-      })
+      }),
+      catchHttpError<CommandResponse | null>(null, this.errorHandlerService)
     );
   }
 }
