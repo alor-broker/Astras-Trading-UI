@@ -8,6 +8,7 @@ import { OrderbookSettings } from '../models/settings/orderbook-settings.model';
 import { scalarArrayEqual } from './collections';
 import { NewsSettings } from "../models/settings/news-settings.model";
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
+import { VerticalOrderBookSettings } from "../models/settings/vertical-order-book-settings.model";
 
 /**
  * A type with describes settings with depends on an instrument
@@ -57,7 +58,7 @@ export function isPortfolioDependent(
   );
 }
 /**
- * A guard which checks if settings depends is an orderbook settings
+ * A guard which checks if settings depends on an orderbook settings
  * @param settings Settings to check
  */
 export function isOrderbookSettings(
@@ -72,6 +73,22 @@ export function isOrderbookSettings(
     'showChart' in settings &&
     'showYieldForBonds' in settings &&
     'showTable' in settings
+  );
+}
+/**
+ * A guard which checks if settings depends on a vertical orderbook settings
+ * @param settings Settings to check
+ */
+export function isVerticalOrderBookSettings(
+  settings: AnySettings
+): settings is VerticalOrderBookSettings {
+  return (
+    settings &&
+    settings.settingsType === 'VerticalOrderBookSettings' &&
+    'linkToActive' in settings &&
+    'symbol' in settings &&
+    'exchange' in settings &&
+    'depth' in settings
   );
 }
 /**
@@ -155,6 +172,9 @@ export function isEqual(settings1: AnySettings, settings2: AnySettings) : boolea
   if (isOrderbookSettings(settings1) && isOrderbookSettings(settings2)) {
     return isEqualOrderbookSettings(settings1, settings2);
   }
+  if (isVerticalOrderBookSettings(settings1) && isVerticalOrderBookSettings(settings2)) {
+    return isEqualVerticalOrderKookSettings(settings1, settings2);
+  }
   if (isLightChartSettings(settings1) && isLightChartSettings(settings2)) {
     return isEqualLightChartSettings(settings1, settings2);
   }
@@ -180,6 +200,9 @@ export function isEqual(settings1: AnySettings, settings2: AnySettings) : boolea
 export function getTypeBySettings(settings: AnySettings) {
   if (isOrderbookSettings(settings)) {
     return WidgetNames.orderBook;
+  }
+  if (isVerticalOrderBookSettings(settings)) {
+    return WidgetNames.verticalOrderBook;
   }
   if (isLightChartSettings(settings)) {
     return WidgetNames.lightChart;
@@ -220,6 +243,28 @@ export function isEqualOrderbookSettings(
       settings1.showChart == settings2.showChart &&
       settings1.showTable == settings2.showTable &&
       settings1.showYieldForBonds == settings2.showYieldForBonds
+    );
+  } else return false;
+}
+
+/**
+ * Checks if vertical orderbook settings are equal
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true is equal, false if not
+ */
+export function isEqualVerticalOrderKookSettings(
+  settings1: VerticalOrderBookSettings,
+  settings2: VerticalOrderBookSettings
+) : boolean {
+  if (settings1 && settings2) {
+    return (
+      settings1.guid == settings2.guid &&
+      settings1.symbol == settings2.symbol &&
+      settings1.instrumentGroup == settings2.instrumentGroup &&
+      settings1.linkToActive == settings2.linkToActive &&
+      settings1.exchange == settings2.exchange &&
+      settings1.depth == settings2.depth
     );
   } else return false;
 }
