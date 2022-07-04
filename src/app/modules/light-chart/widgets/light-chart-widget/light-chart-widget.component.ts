@@ -1,4 +1,9 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output
+} from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { LightChartService } from '../../services/light-chart.service';
 
@@ -6,15 +11,11 @@ import { LightChartService } from '../../services/light-chart.service';
   selector: 'ats-light-chart-widget[shouldShowSettings][guid][resize]',
   templateUrl: './light-chart-widget.component.html',
   styleUrls: ['./light-chart-widget.component.less'],
-  providers: [ LightChartService ]
+  providers: [LightChartService]
 })
 export class LightChartWidgetComponent {
   @Input()
   shouldShowSettings!: boolean;
-  @Input()
-  set linkedToActive(linkedToActive: boolean) {
-    this.service.setLinked(linkedToActive);
-  }
   @Input()
   guid!: string;
   @Input()
@@ -24,7 +25,9 @@ export class LightChartWidgetComponent {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
-  constructor(private service: LightChartService) { }
+  constructor() {
+  }
+
 
   onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);

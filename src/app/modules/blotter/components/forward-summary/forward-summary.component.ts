@@ -7,10 +7,13 @@ import {
 import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import {
   Observable,
-  Subscription
+  Subscription,
+  switchMap
 } from "rxjs";
 import { BlotterService } from "../../services/blotter.service";
 import { ForwardRisksView } from "../../models/forward-risks-view.model";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 
 @Component({
   selector: 'ats-forward-summary[guid][resize]',
@@ -31,11 +34,13 @@ export class ForwardSummaryComponent implements OnInit {
 
   private resizeSub?: Subscription;
 
-  constructor(private service: BlotterService) {
+  constructor(private readonly settingsService: WidgetSettingsService, private readonly service: BlotterService) {
   }
 
   ngOnInit(): void {
-    this.summary$ = this.service.getForwardRisks(this.guid);
+    this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      switchMap(settings => this.service.getForwardRisks(settings))
+    );
 
     this.resizeSub = this.resize.subscribe(i => {
       if (i.width) {

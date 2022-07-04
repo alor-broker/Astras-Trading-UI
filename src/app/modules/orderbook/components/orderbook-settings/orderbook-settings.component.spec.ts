@@ -1,24 +1,31 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { OrderbookSettingsComponent } from './orderbook-settings.component';
 import { of } from 'rxjs';
-import { OrderbookService } from '../../services/orderbook.service';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('OrderbookSettingsComponent', () => {
   let component: OrderbookSettingsComponent;
   let fixture: ComponentFixture<OrderbookSettingsComponent>;
-  const spy = jasmine.createSpyObj('OrderbookService', ['getSettings']);
-  spy.getSettings.and.returnValue(of({
-    symbol: 'SBER',
-    exchange: 'MOEX'
-  }));
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach((async () => {
     await TestBed.configureTestingModule({
       declarations: [OrderbookSettingsComponent],
       providers: [
-        { provide: OrderbookService, useValue: spy }
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({
+              symbol: 'SBER',
+              exchange: 'MOEX'
+            })),
+            updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
+          }
+        }
       ]
     }).compileComponents();
   }));

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { AllTradesService } from './all-trades.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { sharedModuleImportForTests } from "../../../shared/utils/testing";
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 
 describe('AllTradesService', () => {
   let service: AllTradesService;
@@ -10,10 +10,17 @@ describe('AllTradesService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
-        ...sharedModuleImportForTests
+        HttpClientTestingModule
       ],
-      providers: [AllTradesService]
+      providers: [
+        AllTradesService,
+        {
+          provide: ErrorHandlerService,
+          useValue: {
+            handleError: jasmine.createSpy('handleError').and.callThrough()
+          }
+        }
+      ]
     });
     service = TestBed.inject(AllTradesService);
   });

@@ -1,5 +1,7 @@
-/* tslint:disable:no-unused-variable */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { LightChartSettingsComponent } from './light-chart-settings.component';
 import { LightChartService } from '../../services/light-chart.service';
@@ -7,12 +9,14 @@ import { of } from 'rxjs';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { AppModule } from 'src/app/app.module';
 import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('LightChartSettingsComponent', () => {
   let component: LightChartSettingsComponent;
   let fixture: ComponentFixture<LightChartSettingsComponent>;
-  const spy = jasmine.createSpyObj('LightChartService', ['getBars', 'getSettings']);
+  const spy = jasmine.createSpyObj('LightChartService', ['getBars']);
   spy.getBars.and.returnValue(of([]));
+
   const settings: LightChartSettings = {
     timeFrame: 'D',
     symbol: 'SBER',
@@ -21,7 +25,6 @@ describe('LightChartSettingsComponent', () => {
     width: 300,
     height: 300
   };
-  spy.getSettings.and.returnValue(of(settings));
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach((async () => {
@@ -29,7 +32,14 @@ describe('LightChartSettingsComponent', () => {
       declarations: [LightChartSettingsComponent],
       imports: [...sharedModuleImportForTests, AppModule],
       providers: [
-        { provide: LightChartService, useValue: spy }
+        { provide: LightChartService, useValue: spy },
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settings)),
+            updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
+          }
+        }
       ]
     })
       .compileComponents();

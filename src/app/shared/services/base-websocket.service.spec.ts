@@ -1,25 +1,29 @@
 import { TestBed } from '@angular/core/testing';
-import { AnySettings } from '../models/settings/any-settings.model';
 import { BaseWebsocketService } from './base-websocket.service';
-import { DashboardService } from './dashboard.service';
 import { WebsocketService } from './websocket.service';
+import { Injectable } from "@angular/core";
+
+@Injectable()
+class BaseWebsocketServiceTest extends BaseWebsocketService {
+  constructor(ws: WebsocketService) {
+    super(ws);
+  }
+}
 
 describe('BaseWebsocketService', () => {
-  let service: BaseWebsocketService<AnySettings>;
+  let service: BaseWebsocketServiceTest;
   const wsSpy = jasmine.createSpyObj('WebsocketService', ['connect']);
-  const dashSpy = jasmine.createSpyObj('DashboardService', ['getSettings', 'updateSettings']);
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         { provide: WebsocketService, useValue: wsSpy },
-        { provide: DashboardService, useValue: dashSpy },
-        BaseWebsocketService,
+        BaseWebsocketServiceTest,
       ]
     });
 
-    service = TestBed.inject(BaseWebsocketService);
+    service = TestBed.inject(BaseWebsocketServiceTest);
   });
 
   it('should be created', () => {

@@ -10,22 +10,8 @@ export class MockServiceBlotter {
   trade$: Observable<Trade[]> = of([]);
   position$: Observable<Position[]> = of([]);
 
-  setSettings(settings: BlotterSettings): void {
-
-  }
   unsubscribe(): void {
 
-  }
-
-  getSettings(guid: string) {
-    return  of({
-      exchange: 'MOEX',
-      portfolio: 'D39004',
-      guid: '1230',
-      ordersColumns: ['ticker'],
-      tradesColumns: ['ticker'],
-      positionsColumns: ['ticker'],
-    });
   }
 
   getTrades(portfolio: string, exchange: string): Observable<Trade[]> {

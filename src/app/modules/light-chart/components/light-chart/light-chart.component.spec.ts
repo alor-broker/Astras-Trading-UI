@@ -5,6 +5,7 @@ import { LightChartService } from '../../services/light-chart.service';
 
 import { LightChartComponent } from './light-chart.component';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
@@ -28,6 +29,13 @@ describe('LightChartComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [LightChartComponent],
       providers: [
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+            updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
+          }
+        },
         { provide: LightChartService, useValue: spy },
         { provide: TimezoneConverterService, useValue: terminalSettingsServiceSpy }
       ]

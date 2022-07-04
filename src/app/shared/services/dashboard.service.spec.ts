@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { DashboardService } from './dashboard.service';
 import { WidgetFactoryService } from './widget-factory.service';
 import { LocalStorageService } from "./local-storage.service";
+import { WidgetSettingsService } from "./widget-settings.service";
 
 describe('DashboardService', () => {
   let service: DashboardService;
@@ -16,6 +17,14 @@ describe('DashboardService', () => {
     TestBed.configureTestingModule({
       providers: [
         DashboardService,
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            addSettings: jasmine.createSpy('addSettings').and.callThrough(),
+            removeSettings: jasmine.createSpy('removeSettings').and.callThrough(),
+            removeAllSettings: jasmine.createSpy('removeAllSettings').and.callThrough()
+          }
+        },
         { provide: WidgetFactoryService, useValue: factorySpy },
         { provide: LocalStorageService, useValue: localStorageServiceSpy },
       ]

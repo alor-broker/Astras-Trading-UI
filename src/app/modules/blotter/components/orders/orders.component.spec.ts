@@ -10,6 +10,7 @@ import { TimezoneConverterService } from '../../../../shared/services/timezone-c
 import { of } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('OrdersComponent', () => {
   let component: OrdersComponent;
@@ -21,12 +22,24 @@ describe('OrdersComponent', () => {
     const cancelSpy = jasmine.createSpyObj('OrderCancellerService', ['cancelOrder']);
     const timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)));
+    const settingsMock = {
+      exchange: 'MOEX',
+      portfolio: 'D39004',
+      guid: '1230',
+      ordersColumns: ['ticker'],
+      tradesColumns: ['ticker'],
+      positionsColumns: ['ticker'],
+    };
 
     await TestBed.configureTestingModule({
       imports: [
         ...sharedModuleImportForTests
       ],
       providers: [
+        {
+          provide: WidgetSettingsService,
+          useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
+        },
         { provide: BlotterService, useClass: MockServiceBlotter },
         { provide: ModalService, useValue: modalSpy },
         { provide: OrderCancellerService, useValue: cancelSpy },

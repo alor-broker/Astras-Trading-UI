@@ -1,35 +1,61 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import {
+  distinct,
+  filter,
+  Observable
+} from 'rxjs';
 import { AnySettings } from '../models/settings/any-settings.model';
-import { DashboardService } from './dashboard.service';
+import { Store } from "@ngrx/store";
+import { getSettingsByGuid } from "../../store/widget-settings/widget-settings.selectors";
+import {
+  addWidgetSettings,
+  removeAllWidgetSettings,
+  removeWidgetSettings,
+  updateWidgetSettings
+} from "../../store/widget-settings/widget-settings.actions";
+import { LoggerService } from "./logger.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class WidgetSettingsService {
+  constructor(private readonly store: Store, private readonly logger: LoggerService) {
+  }
 
-private settingsByGuid = new BehaviorSubject<Map<string, AnySettings>>(new Map());
+  getSettings<T extends AnySettings>(guid: string): Observable<T> {
+    return this.store.select(getSettingsByGuid(guid)).pipe(
+      filter((s): s is T => !!s),
+      distinct()
+    );
+  }
 
-constructor(private dashboard: DashboardService) { }
+  addSettings(settings: AnySettings[]) {
+    this.store.dispatch(addWidgetSettings({ settings }));
+  }
 
-getSettings(guid: string) : Observable<AnySettings | null> {
-  const settings$  = this.settingsByGuid.pipe(
-    map((map) : AnySettings | null => {
-      const settings = map.get(guid);
-      if (settings) {
-        return settings;
-      }
-      return null;
-    })
-  );
-  return settings$;
-}
+  updateSettings(guid: string, changes: Partial<AnySettings>) {
+    if (!guid) {
+      this.logger.warn('WidgetSettingsService', 'updateSettings', 'GUID is empty');
+      return;
+    }
 
-setSettings(guid: string, settings: AnySettings) {
-  const map = this.settingsByGuid.getValue();
-  map.set(guid, settings);
-  this.settingsByGuid.next(map);
-  this.dashboard.updateSettings(guid, settings);
-}
+    this.store.dispatch(updateWidgetSettings({ settingGuid: guid, changes }));
+  }
 
+  updateIsLinked(guid: string, isLinked: boolean) {
+    if (!guid) {
+      this.logger.warn('WidgetSettingsService', 'updateIsLinked', 'GUID is empty');
+      return;
+    }
+
+    this.store.dispatch(updateWidgetSettings({ settingGuid: guid, changes: { linkToActive: isLinked } }));
+  }
+
+  removeSettings(guid: string) {
+    this.store.dispatch(removeWidgetSettings({ settingGuid: guid }));
+  }
+
+  removeAllSettings() {
+    this.store.dispatch(removeAllWidgetSettings());
+  }
 }

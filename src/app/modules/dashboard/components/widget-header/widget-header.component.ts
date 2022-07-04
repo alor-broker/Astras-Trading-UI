@@ -1,11 +1,26 @@
-import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
+import {
+  Observable,
+  shareReplay,
+  take
+} from 'rxjs';
+import { map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { getTypeBySettings, isInstrumentDependent, isPortfolioDependent } from 'src/app/shared/utils/settings-helper';
+import {
+  getTypeBySettings,
+  isInstrumentDependent,
+  isPortfolioDependent
+} from 'src/app/shared/utils/settings-helper';
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
 import { joyrideContent } from '../../models/joyride';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 
 @Component({
@@ -28,26 +43,32 @@ export class WidgetHeaderComponent implements OnInit {
   linkChangedEvent = new EventEmitter<boolean>();
 
   joyrideContent = joyrideContent;
-  settings$?: Observable<AnySettings>;
-  private settings?: AnySettings;
+  settings$!: Observable<AnySettings>;
 
-  constructor(private dashboard: DashboardService, private modal: ModalService) { }
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly dashboardService: DashboardService,
+    private readonly modal: ModalService) {
+  }
 
   ngOnInit() {
-    this.settings$ = this.dashboard.getSettings(this.guid).pipe(
-      filter((s) : s is AnySettings => !!s),
+    this.settings$ = this.settingsService.getSettings(this.guid).pipe(
       map(s => {
-        this.settings = s;
+        const settings = {
+          ...s
+        };
+
         const prefix = s.title?.split(' ')[0] ?? '';
         if (isInstrumentDependent(s)) {
           const group = s.instrumentGroup;
-          s.title = `${prefix} ${s.symbol} ${group ? '(' + group + ')' : ''}`;
+          settings.title = `${prefix} ${s.symbol} ${group ? '(' + group + ')' : ''}`;
+        } else if (isPortfolioDependent(s)) {
+          settings.title = `${prefix} ${s.portfolio} (${s.exchange})`;
         }
-        else if (isPortfolioDependent(s)) {
-          s.title = `${prefix} ${s.portfolio} (${s.exchange})`;
-        }
-        return s;
+
+        return settings;
       }),
+      shareReplay()
     );
   }
 
@@ -61,21 +82,22 @@ export class WidgetHeaderComponent implements OnInit {
   removeItem($event: MouseEvent | TouchEvent): void {
     $event.preventDefault();
     $event.stopPropagation();
-    this.dashboard.removeWidget(this.guid);
+    this.dashboardService.removeWidget(this.guid);
   }
 
-  linkToActive($event: MouseEvent | TouchEvent, linkToActive: boolean) : void {
+  linkToActive($event: MouseEvent | TouchEvent, linkToActive: boolean): void {
     $event.preventDefault();
     $event.stopPropagation();
-    if (this.settings) {
-      this.dashboard.updateSettings(this.guid, { ...this.settings, linkToActive: linkToActive });
-    }
+
+    this.settingsService.updateIsLinked(this.guid, linkToActive);
   }
 
   openHelp() {
-    if (this.settings) {
-      const name = getTypeBySettings(this.settings);
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      const name = getTypeBySettings(settings);
       this.modal.openHelpModal(name);
-    }
+    });
   }
 }

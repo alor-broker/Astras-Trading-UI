@@ -1,4 +1,7 @@
-import { createFeatureSelector, createSelector } from '@ngrx/store';
+import {
+  createFeatureSelector,
+  createSelector
+} from '@ngrx/store';
 import * as fromPortfolios from './portfolios.reducer';
 
 export const selectPortfoliosState = createFeatureSelector<fromPortfolios.PortfoliosState>(

@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { OrderbookService } from '../../services/orderbook.service';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { OrderbookWidgetComponent } from './orderbook-widget.component';
 
@@ -12,8 +13,6 @@ const settings = {
 describe('OrderbookWidgetComponent', () => {
   let component: OrderbookWidgetComponent;
   let fixture: ComponentFixture<OrderbookWidgetComponent>;
-  const spyOb = jasmine.createSpyObj('OrderbookService', ['settings$', 'setSettings']);
-  spyOb.settings$ = of(settings);
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
@@ -23,9 +22,7 @@ describe('OrderbookWidgetComponent', () => {
 
     TestBed.overrideComponent(OrderbookWidgetComponent, {
       set: {
-        providers: [
-          { provide: OrderbookService, useValue: spyOb }
-        ]
+        providers: []
       }
     });
   });

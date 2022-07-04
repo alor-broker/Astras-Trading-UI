@@ -1,15 +1,33 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
 import {
   allInstrumentsColumns,
   ColumnIds,
   InstrumentSelectSettings
 } from 'src/app/shared/models/settings/instrument-select-settings.model';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { WatchInstrumentsService } from '../../services/watch-instruments.service';
+import {
+  FormControl,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
-import { filter, Observable, Subject, takeUntil } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import {
+  Observable,
+  Subject,
+  takeUntil
+} from 'rxjs';
+import {
+  map,
+  startWith
+} from 'rxjs/operators';
 import { WatchlistCollection } from '../../models/watchlist.model';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 @Component({
   selector: 'ats-instrument-select-settings[guid]',
@@ -18,7 +36,6 @@ import { WatchlistCollection } from '../../models/watchlist.model';
 })
 export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
   settingsForm!: FormGroup;
-  prevSettings?: InstrumentSelectSettings;
   allInstrumentColumns: ColumnIds[] = allInstrumentsColumns;
   collection$?: Observable<WatchlistCollection>;
   @Input()
@@ -27,7 +44,9 @@ export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
   settingsChange: EventEmitter<InstrumentSelectSettings> = new EventEmitter<InstrumentSelectSettings>();
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly watchInstrumentsService: WatchInstrumentsService, private readonly watchlistCollectionService: WatchlistCollectionService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly watchlistCollectionService: WatchlistCollectionService) {
   }
 
   ngOnInit(): void {
@@ -36,21 +55,21 @@ export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
       map(() => this.watchlistCollectionService.getWatchlistCollection()),
     );
 
-    this.watchInstrumentsService.getSettings(this.guid).pipe(
-      filter(x => !!x),
+    this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
-      this.prevSettings = settings;
-      this.buildSettingsForm();
+      this.buildSettingsForm(settings);
     });
   }
 
   saveSettings() {
     if (this.settingsForm?.valid) {
-      this.watchInstrumentsService.setSettings({
-        ...this.prevSettings,
-        ...this.settingsForm.value
-      });
+      this.settingsService.updateSettings(
+        this.guid,
+        {
+          ...this.settingsForm.value
+        }
+      );
 
       this.settingsChange.emit();
     }
@@ -61,10 +80,10 @@ export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private buildSettingsForm() {
+  private buildSettingsForm(currentSettings: InstrumentSelectSettings) {
     this.settingsForm = new FormGroup({
-      activeListId: new FormControl(this.prevSettings?.activeListId, [Validators.required]),
-      instrumentColumns: new FormControl(this.prevSettings?.instrumentColumns)
+      activeListId: new FormControl(currentSettings.activeListId, [Validators.required]),
+      instrumentColumns: new FormControl(currentSettings.instrumentColumns)
     });
   }
 }

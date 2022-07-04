@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import { NzTabChangeEvent } from 'ng-zorro-antd/tabs';
 import {
   Observable,
@@ -11,6 +17,8 @@ import {
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { BlotterService } from '../../services/blotter.service';
 import { QuotesService } from '../../../../shared/services/quotes.service';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import {
   MarketType,
   PortfolioKey
@@ -19,7 +27,7 @@ import { Store } from "@ngrx/store";
 import { getSelectedPortfolio } from "../../../../store/portfolios/portfolios.selectors";
 
 @Component({
-  selector: 'ats-blotter-widget[shouldShowSettings][guid][linkedToActive][resize]',
+  selector: 'ats-blotter-widget[shouldShowSettings][guid][resize]',
   templateUrl: './blotter-widget.component.html',
   styleUrls: ['./blotter-widget.component.less'],
   providers: [
@@ -32,25 +40,20 @@ export class BlotterWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
-  set linkedToActive(linkedToActive: boolean) {
-    this.service.setLinked(linkedToActive);
-  }
-  @Input()
   guid!: string;
   @Input()
   resize!: EventEmitter<DashboardItem>;
-
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-
   activeTabIndex$ = of(0);
 
   marketType$?: Observable<MarketType | undefined>;
 
-  constructor(private readonly service: BlotterService, private readonly store: Store) { }
+  constructor(private readonly settingsService: WidgetSettingsService, private readonly store: Store) {
+  }
 
   ngOnInit(): void {
-    this.activeTabIndex$ = this.service.getSettings(this.guid).pipe(
+    this.activeTabIndex$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       map(s => s.activeTabIndex)
     );
 
@@ -65,6 +68,6 @@ export class BlotterWidgetComponent implements OnInit {
   }
 
   onIndexChange(event: NzTabChangeEvent) {
-    this.service.setTabIndex(event.index ?? 0);
+    this.settingsService.updateSettings(this.guid, { activeTabIndex: event.index ?? 0 });
   }
 }
