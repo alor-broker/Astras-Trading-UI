@@ -1,0 +1,36 @@
+@import (reference) '/src/styles.less';
+
+.order-book-table {
+  display: flex;
+  justify-content: center;
+}
+
+.order-book-rows {
+  .ask-row {
+    &.trade-row {
+      .price-cell {
+        color: @sell-color;
+      }
+
+      &.best-row {
+        .price-cell {
+          background-color: @sell-color-background;
+        }
+      }
+    }
+  }
+
+  .bid-row {
+    &.trade-row {
+      .price-cell {
+        color: @buy-color;
+      }
+
+      &.best-row {
+        .price-cell {
+          background-color: @buy-color-background;
+        }
+      }
+    }
+  }
+}

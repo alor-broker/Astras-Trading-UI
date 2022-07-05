@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of } from 'rxjs';
+import {
+  combineLatest,
+  Observable,
+  of
+} from 'rxjs';
 import {
   catchError,
   map,
@@ -11,17 +15,25 @@ import { OrderbookData } from '../models/orderbook-data.model';
 import { OrderbookRequest } from '../models/orderbook-request.model';
 import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
-import { ChartData, ChartPoint, OrderBook } from '../models/orderbook.model';
+import {
+  ChartData,
+  ChartPoint,
+  OrderBook
+} from '../models/orderbook.model';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { Store } from '@ngrx/store';
 import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
+import { VerticalOrderBookSettings } from "../../../shared/models/settings/vertical-order-book-settings.model";
+import {
+  OrderBookItem,
+  VerticalOrderBook
+} from "../models/vertical-order-book.model";
 
 @Injectable()
 export class OrderbookService extends BaseWebsocketService {
-  private orderbook$: Observable<OrderBook> = new Observable();
   private ordersById: Map<string, Order> = new Map<string, Order>();
 
   constructor(
@@ -44,14 +56,15 @@ export class OrderbookService extends BaseWebsocketService {
     );
   }
 
-  getOrderbook(settings: OrderbookSettings) {
-    const obData$ = this.getOrderbookReq(settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
+  getHorizontalOrderBook(settings: OrderbookSettings): Observable<OrderBook> {
+    const obData$ = this.getOrderBookReq(settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
       catchError((e,) => {
         throw e;
-      })
+      }),
+      map(ob => this.toOrderBook(ob))
     );
 
-    this.orderbook$ = combineLatest([obData$, this.getOrders()]).pipe(
+    return combineLatest([obData$, this.getOrders()]).pipe(
       map(([ob, orders]) => {
         const withOrdersRows = ob.rows.map((row) => {
           const askOrders = orders.filter(
@@ -92,19 +105,59 @@ export class OrderbookService extends BaseWebsocketService {
         return { ...ob, rows: withOrdersRows };
       })
     );
-    return this.orderbook$;
+  }
+
+  getVerticalOrderBook(settings: VerticalOrderBookSettings): Observable<VerticalOrderBook> {
+    return this.getOrderBookReq(settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
+      catchError((e,) => {
+        throw e;
+      }),
+      map(ob => ({
+        asks: ob.a.map(x => ({ price: x.p, volume: x.v } as OrderBookItem)),
+        bids: ob.b.map(x => ({ price: x.p, volume: x.v } as OrderBookItem))
+      } as VerticalOrderBook))
+    );
   }
 
   cancelOrder(cancel: CancelCommand) {
     this.canceller.cancelOrder(cancel).subscribe();
   }
 
-  private getOrderbookReq(
+  private toOrderBookRows(orderBookData: OrderbookData): OrderBookViewRow[] {
+    return orderBookData.a.map((a, i) => {
+      const obr: OrderBookViewRow = {
+        ask: a.p,
+        askVolume: a.v,
+        yieldAsk: a.y,
+        yieldBid: orderBookData.b[i]?.y ?? 0,
+        bid: orderBookData.b[i]?.p ?? 0,
+        bidVolume: orderBookData.b[i]?.v ?? 0,
+      };
+
+      return obr;
+    });
+  }
+
+  private toOrderBook(orderBookData: OrderbookData): OrderBook {
+    const rows = this.toOrderBookRows(orderBookData);
+    const volumes = [
+      ...rows.map((p) => p?.askVolume ?? 0),
+      ...rows.map((p) => p?.bidVolume ?? 0),
+    ];
+
+    return {
+      maxVolume: Math.max(...volumes),
+      rows: rows,
+      chartData: this.makeChartData(rows),
+    } as OrderBook;
+  }
+
+  private getOrderBookReq(
     symbol: string,
     exchange: string,
     instrumentGroup?: string,
     depth?: number
-  ) {
+  ): Observable<OrderbookData> {
     const request: OrderbookRequest = {
       opcode: 'OrderBookGetAndSubscribe',
       code: symbol,
@@ -115,35 +168,7 @@ export class OrderbookService extends BaseWebsocketService {
       instrumentGroup: instrumentGroup,
     };
     request.guid = this.generateNewGuid(request);
-    const messages$ = this.getEntity<OrderbookData>(request);
-
-    const orderbook$ = messages$.pipe(
-      map((r) => {
-        const rows = r.a.map((a, i) => {
-          const obr: OrderBookViewRow = {
-            ask: a.p,
-            askVolume: a.v,
-            yieldAsk: a.y,
-            yieldBid: r.b[i]?.y ?? 0,
-            bid: r.b[i]?.p ?? 0,
-            bidVolume: r.b[i]?.v ?? 0,
-          };
-          return obr;
-        });
-        const volumes = [
-          ...rows.map((p) => p?.askVolume ?? 0),
-          ...rows.map((p) => p?.bidVolume ?? 0),
-        ];
-        const ob: OrderBook = {
-          maxVolume: Math.max(...volumes),
-          rows: rows,
-          chartData: this.makeChartData(rows),
-        };
-        return ob;
-      })
-    );
-
-    return orderbook$;
+    return this.getEntity<OrderbookData>(request);
   }
 
   private makeChartData(rows: OrderBookViewRow[]): ChartData {

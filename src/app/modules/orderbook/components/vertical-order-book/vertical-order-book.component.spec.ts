@@ -1,6 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { VerticalOrderBookComponent } from './vertical-order-book.component';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { of } from "rxjs";
+import { OrderbookService } from "../../services/orderbook.service";
+import { VerticalOrderBook } from "../../models/vertical-order-book.model";
 
 describe('VerticalOrderBookComponent', () => {
   let component: VerticalOrderBookComponent;
@@ -8,9 +15,23 @@ describe('VerticalOrderBookComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ VerticalOrderBookComponent ]
+      declarations: [VerticalOrderBookComponent], providers: [{
+        provide: WidgetSettingsService, useValue: {
+          getSettings: jasmine.createSpy('getSettings').and.returnValue(of({
+            symbol: 'SBER', exchange: 'MOEX', showTable: true
+          }))
+        }
+      }, {
+        provide: OrderbookService,
+        useValue: {
+          getVerticalOrderBook: jasmine.createSpy('getVerticalOrderBook').and.returnValue(of({
+            asks: [],
+            bids: []
+          } as VerticalOrderBook))
+        }
+      }],
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

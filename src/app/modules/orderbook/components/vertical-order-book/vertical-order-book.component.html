@@ -1,1 +1,22 @@
-<p>vertical-order-book works!</p>
+<div *ngIf="!shouldShowSettings">
+  <div *ngIf="(orderBookRows$ | async) as orderBookRows" class="order-book-table">
+    <nz-table nzSize="small" nzTemplateMode nzBordered>
+      <tbody class="order-book-rows">
+      <tr *ngFor='let row of orderBookRows; trackBy: getTrackKey'
+          [ngClass]="{
+          'row': true,
+          'ask-row': row.rowType === rowTypes.Ask,
+          'bid-row': row.rowType === rowTypes.Bid,
+          'best-row': row.isBest,
+          'trade-row': (row.volume ?? 0) > 0
+          }"
+      >
+        <td class="volume-cell" [ngStyle]='getVolumeStyle(row.rowType, row.volume ?? 0)'>{{row.volume}}</td>
+        <td class="price-cell">{{row.price}}</td>
+        <td></td>
+      </tr>
+      </tbody>
+    </nz-table>
+    <nz-empty *ngIf="orderBookRows.length === 0" nzNotFoundImage="simple"></nz-empty>
+  </div>
+</div>
