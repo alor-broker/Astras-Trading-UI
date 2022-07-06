@@ -31,6 +31,11 @@ import {
   OrderBookItem,
   VerticalOrderBook
 } from "../models/vertical-order-book.model";
+import { Instrument } from "../../../shared/models/instruments/instrument.model";
+import { OrderbookDataRow } from "../models/orderbook-data-row.model";
+import { getTypeByCfi } from "../../../shared/utils/instruments";
+import { InstrumentType } from "../../../shared/models/enums/instrument-type.model";
+import { MathHelper } from "../../../shared/utils/math-helper";
 
 @Injectable()
 export class OrderbookService extends BaseWebsocketService {
@@ -95,20 +100,98 @@ export class OrderbookService extends BaseWebsocketService {
     );
   }
 
-  getVerticalOrderBook(settings: VerticalOrderBookSettings): Observable<VerticalOrderBook> {
-    return this.getOrderBookReq(settings.guid, settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
+  getVerticalOrderBook(settings: VerticalOrderBookSettings, instrument: Instrument): Observable<VerticalOrderBook> {
+    return this.getOrderBookReq(settings.guid, instrument.symbol, instrument.exchange, instrument.instrumentGroup, settings.depth).pipe(
       catchError((e,) => {
         throw e;
       }),
-      map(ob => ({
-        asks: ob.a.map(x => ({ price: x.p, volume: x.v, yield: x.y } as OrderBookItem)),
-        bids: ob.b.map(x => ({ price: x.p, volume: x.v, yield: x.y } as OrderBookItem))
-      } as VerticalOrderBook))
+      map(ob => this.toVerticalOrderBook(settings, instrument, ob))
     );
   }
 
   cancelOrder(cancel: CancelCommand) {
     this.canceller.cancelOrder(cancel).subscribe();
+  }
+
+  private toVerticalOrderBook(settings: VerticalOrderBookSettings, instrument: Instrument, orderBookData: OrderbookData) {
+    const toOrderBookItems = (dataRows: OrderbookDataRow[]) => dataRows.map(x => ({
+      price: x.p,
+      volume: x.v,
+      yield: x.y
+    } as OrderBookItem));
+
+    let asks = toOrderBookItems(orderBookData.a).sort((a, b) => a.price - b.price);
+    let bids = toOrderBookItems(orderBookData.b).sort((a, b) => b.price - a.price);
+
+    if (getTypeByCfi(instrument.cfiCode) === InstrumentType.Bond || !instrument.minstep) {
+      return {
+        asks,
+        bids,
+        spreadItems: []
+      } as VerticalOrderBook;
+    }
+
+    if (settings.showZeroVolumeItems && !!settings.depth) {
+      asks = this.generateSequentialItems(asks, settings.depth, instrument.minstep);
+      bids = this.generateSequentialItems(bids, settings.depth, -instrument.minstep);
+    }
+
+    let spreadItems: OrderBookItem[] = [];
+    if (settings.showSpreadItems && asks.length > 0 && bids.length > 0) {
+      spreadItems = this.generateSpread(
+        Math.min(asks[0].price, bids[0].price),
+        Math.max(asks[0].price, bids[0].price),
+        instrument.minstep
+      );
+    }
+
+    return {
+      asks,
+      bids,
+      spreadItems
+    } as VerticalOrderBook;
+  }
+
+  private generatePriceSequence(startValue: number, length: number, step: number) {
+    const pricePrecision = MathHelper.getPrecision(step);
+    return [...Array(length).keys()]
+      .map(i => startValue + (i * step))
+      .map(x => MathHelper.round(x, pricePrecision));
+  }
+
+  private generateSpread(startValue: number, endValue: number, step: number): OrderBookItem[] {
+    if (startValue === endValue) {
+      return [];
+    }
+
+    const pricePrecision = MathHelper.getPrecision(step);
+    const itemsCountToGenerate = Math.round((endValue - startValue) / step) - 1;
+    if (itemsCountToGenerate <= 0) {
+      return [];
+    }
+
+    return [...Array(itemsCountToGenerate).keys()]
+      .map(i => startValue + ((i + 1) * step))
+      .map(x => MathHelper.round(x, pricePrecision))
+      .map(x => ({
+        price: x
+      } as OrderBookItem));
+  }
+
+  private generateSequentialItems(items: OrderBookItem[], count: number, step: number) {
+    if (items.length === 0) {
+      return [];
+    }
+
+    return this.generatePriceSequence(items[0].price, count, step)
+      .map(x => {
+        const existedItem = items.find(i => i.price === x);
+        return {
+          price: x,
+          volume: undefined,
+          ...existedItem
+        } as OrderBookItem;
+      });
   }
 
   private toOrderBookRows(orderBookData: OrderbookData): OrderBookViewRow[] {

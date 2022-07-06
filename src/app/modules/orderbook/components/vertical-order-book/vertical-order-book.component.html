@@ -7,6 +7,7 @@
           'row': true,
           'ask-row': row.rowType === rowTypes.Ask,
           'bid-row': row.rowType === rowTypes.Bid,
+          'spread-row': row.rowType === rowTypes.Spread,
           'best-row': row.isBest,
           'trade-row': (row.volume ?? 0) > 0
           }"
