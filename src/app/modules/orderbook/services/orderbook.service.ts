@@ -28,9 +28,11 @@ import { Store } from '@ngrx/store';
 import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
 import { VerticalOrderBookSettings } from "../../../shared/models/settings/vertical-order-book-settings.model";
 import {
+  CurrentOrder,
   OrderBookItem,
   VerticalOrderBook
 } from "../models/vertical-order-book.model";
+import { Side } from "../../../shared/models/enums/side.model";
 
 @Injectable()
 export class OrderbookService extends BaseWebsocketService {
@@ -67,35 +69,34 @@ export class OrderbookService extends BaseWebsocketService {
     return combineLatest([obData$, this.getOrders()]).pipe(
       map(([ob, orders]) => {
         const withOrdersRows = ob.rows.map((row) => {
-          const askOrders = orders.filter(
-            (o) => o.price == row.ask && o.status == 'working'
-          );
+          const askOrders = !!row.ask ? this.getCurrentOrdersForItem(row.ask, Side.Sell, orders) : [];
+
           const sumAsk = askOrders
-            .map((o) => o.qty)
+            .map((o) => o.volume)
             .reduce((prev, curr) => prev + curr, 0);
           const askCancels = askOrders.map(
             (o): CancelCommand => ({
-              orderid: o.id,
+              orderid: o.orderId,
               exchange: o.exchange,
               portfolio: o.portfolio,
               stop: false,
             })
           );
 
-          const bidOrders = orders.filter(
-            (o) => o.price == row.bid && o.status == 'working'
-          );
+          const bidOrders = !!row.bid ? this.getCurrentOrdersForItem(row.bid, Side.Buy, orders) : [];
           const sumBid = bidOrders
-            .map((o) => o.qty)
+            .map((o) => o.volume)
             .reduce((prev, curr) => prev + curr, 0);
+
           const bidCancels = bidOrders.map(
             (o): CancelCommand => ({
-              orderid: o.id,
+              orderid: o.orderId,
               exchange: o.exchange,
               portfolio: o.portfolio,
               stop: false,
             })
           );
+
           row.askOrderVolume = sumAsk;
           row.askCancels = askCancels;
           row.bidOrderVolume = sumBid;
@@ -108,19 +109,51 @@ export class OrderbookService extends BaseWebsocketService {
   }
 
   getVerticalOrderBook(settings: VerticalOrderBookSettings): Observable<VerticalOrderBook> {
-    return this.getOrderBookReq(settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
+    const obData$ = this.getOrderBookReq(settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
       catchError((e,) => {
         throw e;
-      }),
-      map(ob => ({
-        asks: ob.a.map(x => ({ price: x.p, volume: x.v } as OrderBookItem)),
-        bids: ob.b.map(x => ({ price: x.p, volume: x.v } as OrderBookItem))
-      } as VerticalOrderBook))
+      })
+    );
+
+    return combineLatest([obData$, this.getOrders()]).pipe(
+      map(([ob, orders]) => {
+        const asks = ob.a.map(x => ({
+          price: x.p,
+          volume: x.v,
+          currentOrders: this.getCurrentOrdersForItem(x.p, Side.Sell, orders)
+        } as OrderBookItem));
+
+        const bids = ob.b.map(x => ({
+          price: x.p,
+          volume: x.v,
+          currentOrders: this.getCurrentOrdersForItem(x.p, Side.Buy, orders)
+        } as OrderBookItem));
+
+        return {
+          asks,
+          bids
+        } as VerticalOrderBook;
+      })
     );
   }
 
   cancelOrder(cancel: CancelCommand) {
     this.canceller.cancelOrder(cancel).subscribe();
+  }
+
+  private getCurrentOrdersForItem(itemPrice: number, side: Side, orders: Order[]): CurrentOrder[] {
+    const currentOrders = orders.filter(
+      (o) => o.side === side
+        && o.price === itemPrice
+        && o.status === 'working'
+    );
+
+    return currentOrders.map(o => ({
+      orderId: o.id,
+      exchange: o.exchange,
+      portfolio: o.portfolio,
+      volume: o.qty
+    } as CurrentOrder));
   }
 
   private toOrderBookRows(orderBookData: OrderbookData): OrderBookViewRow[] {
@@ -167,6 +200,7 @@ export class OrderbookService extends BaseWebsocketService {
       guid: '',
       instrumentGroup: instrumentGroup,
     };
+
     request.guid = this.generateNewGuid(request);
     return this.getEntity<OrderbookData>(request);
   }
@@ -217,6 +251,7 @@ export class OrderbookService extends BaseWebsocketService {
             })
           );
         }
+
         return of([]);
       }),
       startWith([])

@@ -1,11 +1,13 @@
 @import (reference) '/src/styles.less';
 
-.order-book-table {
-  display: flex;
-  justify-content: center;
-}
-
 .order-book-rows {
+  .row {
+    td {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+  }
+
   .ask-row {
     &.trade-row {
       .price-cell {
@@ -32,5 +34,9 @@
         }
       }
     }
+  }
+
+  .cancel-order-btn {
+    margin-left: 0.5em;
   }
 }
