@@ -113,8 +113,8 @@ export class OrderbookService extends BaseWebsocketService {
         throw e;
       }),
       map(ob => ({
-        asks: ob.a.map(x => ({ price: x.p, volume: x.v } as OrderBookItem)),
-        bids: ob.b.map(x => ({ price: x.p, volume: x.v } as OrderBookItem))
+        asks: ob.a.map(x => ({ price: x.p, volume: x.v, yield: x.y } as OrderBookItem)),
+        bids: ob.b.map(x => ({ price: x.p, volume: x.v, yield: x.y } as OrderBookItem))
       } as VerticalOrderBook))
     );
   }

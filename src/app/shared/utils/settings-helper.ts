@@ -88,7 +88,8 @@ export function isVerticalOrderBookSettings(
     'linkToActive' in settings &&
     'symbol' in settings &&
     'exchange' in settings &&
-    'depth' in settings
+    'depth' in settings &&
+    'showYieldForBonds' in settings
   );
 }
 /**
@@ -264,7 +265,8 @@ export function isEqualVerticalOrderKookSettings(
       settings1.instrumentGroup == settings2.instrumentGroup &&
       settings1.linkToActive == settings2.linkToActive &&
       settings1.exchange == settings2.exchange &&
-      settings1.depth == settings2.depth
+      settings1.depth == settings2.depth &&
+      settings1.showYieldForBonds == settings2.showYieldForBonds
     );
   } else return false;
 }

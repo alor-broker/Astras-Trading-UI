@@ -120,6 +120,7 @@ export class WidgetFactoryService {
       exchange: this.selectedInstrument.exchange,
       instrumentGroup: this.selectedInstrument.instrumentGroup,
       isin: this.selectedInstrument.isin,
+      showYieldForBonds: false,
       title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`
     };
 

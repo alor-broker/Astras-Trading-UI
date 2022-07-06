@@ -12,7 +12,7 @@
           }"
       >
         <td class="volume-cell" [ngStyle]='getVolumeStyle(row.rowType, row.volume ?? 0)'>{{row.volume}}</td>
-        <td class="price-cell">{{row.price}}</td>
+        <td class="price-cell">{{row.displayValue}}</td>
         <td></td>
       </tr>
       </tbody>

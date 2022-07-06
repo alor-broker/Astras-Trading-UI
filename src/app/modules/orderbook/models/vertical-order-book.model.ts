@@ -1,7 +1,7 @@
 export interface OrderBookItem {
   price: number;
   volume?: number;
-  // This model is expected to be extended with orders fields
+  yield?: number;
 }
 
 export interface VerticalOrderBook {
@@ -16,6 +16,7 @@ export enum VerticalOrderBookRowType {
 }
 
 export interface VerticalOrderBookRowView extends OrderBookItem{
+  displayValue: number;
   rowType: VerticalOrderBookRowType;
   isBest?: boolean;
 }
