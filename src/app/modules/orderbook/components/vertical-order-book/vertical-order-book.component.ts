@@ -6,13 +6,16 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderbookService } from "../../services/orderbook.service";
 import {
+  filter,
   Observable,
   shareReplay,
   switchMap,
-  tap
+  tap,
+  withLatestFrom
 } from "rxjs";
 import {
   CurrentOrder,
+  VerticalOrderBook,
   VerticalOrderBookRowType,
   VerticalOrderBookRowView
 } from "../../models/vertical-order-book.model";
@@ -23,6 +26,11 @@ import {
   sellColorBackground
 } from "../../../../shared/models/settings/styles-constants";
 import { CancelCommand } from "../../../../shared/models/commands/cancel-command.model";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
+import { Instrument } from "../../../../shared/models/instruments/instrument.model";
+import { getTypeByCfi } from "../../../../shared/utils/instruments";
+import { InstrumentType } from "../../../../shared/models/enums/instrument-type.model";
 
 @Component({
   selector: 'ats-vertical-order-book[guid][shouldShowSettings]',
@@ -38,33 +46,27 @@ export class VerticalOrderBookComponent implements OnInit {
 
   orderBookRows$!: Observable<VerticalOrderBookRowView[]>;
 
-  constructor(private readonly settingsService: WidgetSettingsService, private readonly orderBookService: OrderbookService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly orderBookService: OrderbookService,
+    private readonly instrumentsService: InstrumentsService) {
   }
 
   ngOnInit(): void {
     const settings$ = this.settingsService.getSettings<VerticalOrderBookSettings>(this.guid).pipe(shareReplay());
+    const instrumentInfo$ = settings$.pipe(
+      switchMap(settings => this.instrumentsService.getInstrument(settings)),
+      filter((x): x is Instrument => !!x),
+      shareReplay()
+    );
 
     this.orderBookRows$ = settings$.pipe(
-      switchMap(settings => this.orderBookService.getVerticalOrderBook(settings)),
-      map(orderBook => {
-        const asks = orderBook.asks.map(x => ({
-          ...x, rowType: VerticalOrderBookRowType.Ask
-        } as VerticalOrderBookRowView)).sort((a, b) => b.price - a.price);
-
-        if (asks.length > 0) {
-          asks[asks.length - 1].isBest = true;
-        }
-
-        const bids = orderBook.bids.map(x => ({
-          ...x, rowType: VerticalOrderBookRowType.Bid
-        } as VerticalOrderBookRowView)).sort((a, b) => b.price - a.price);
-
-        if (bids.length > 0) {
-          bids[0].isBest = true;
-        }
-
-        return [...asks, ...bids];
-      }),
+      mapWith(settings => this.orderBookService.getVerticalOrderBook(settings), (settings, orderBook) => ({
+        settings,
+        orderBook
+      })),
+      withLatestFrom(instrumentInfo$),
+      map(([x, instrumentInfo]) => this.toViewModel(x.settings, instrumentInfo, x.orderBook)),
       tap(orderBookRows => {
         this.maxVolume = Math.max(...orderBookRows.map(x => x.volume ?? 0));
       })
@@ -105,5 +107,33 @@ export class VerticalOrderBookComponent implements OnInit {
         stop: false
       } as CancelCommand);
     }
+  }
+
+  private toViewModel(settings: VerticalOrderBookSettings, instrumentInfo: Instrument, orderBook: VerticalOrderBook): VerticalOrderBookRowView[] {
+    const displayYield = settings.showYieldForBonds && getTypeByCfi(instrumentInfo.cfiCode) === InstrumentType.Bond;
+
+    const asks = orderBook.asks.map(x => ({
+        ...x,
+        rowType: VerticalOrderBookRowType.Ask,
+        displayValue: displayYield ? x.yield : x.price
+      } as VerticalOrderBookRowView)
+    ).sort((a, b) => b.displayValue - a.displayValue);
+
+    if (asks.length > 0) {
+      asks[asks.length - 1].isBest = true;
+    }
+
+    const bids = orderBook.bids.map(x => ({
+        ...x,
+        rowType: VerticalOrderBookRowType.Bid,
+        displayValue: displayYield ? x.yield : x.price
+      } as VerticalOrderBookRowView)
+    ).sort((a, b) => b.displayValue - a.displayValue);
+
+    if (bids.length > 0) {
+      bids[0].isBest = true;
+    }
+
+    return [...asks, ...bids];
   }
 }

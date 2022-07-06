@@ -8,6 +8,7 @@ export interface CurrentOrder {
 export interface OrderBookItem {
   price: number;
   volume?: number;
+  yield?: number;
   currentOrders: CurrentOrder[];
 }
 
@@ -23,6 +24,7 @@ export enum VerticalOrderBookRowType {
 }
 
 export interface VerticalOrderBookRowView extends OrderBookItem {
+  displayValue: number;
   rowType: VerticalOrderBookRowType;
   isBest?: boolean;
 }

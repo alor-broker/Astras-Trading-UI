@@ -8,6 +8,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { of } from "rxjs";
 import { OrderbookService } from "../../services/orderbook.service";
 import { VerticalOrderBook } from "../../models/vertical-order-book.model";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
 
 describe('VerticalOrderBookComponent', () => {
   let component: VerticalOrderBookComponent;
@@ -29,7 +30,11 @@ describe('VerticalOrderBookComponent', () => {
             bids: []
           } as VerticalOrderBook))
         }
-      }],
+      },
+        {
+          provide: InstrumentsService,
+          useValue: { getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({})) }
+        },],
     })
       .compileComponents();
   });

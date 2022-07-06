@@ -120,12 +120,14 @@ export class OrderbookService extends BaseWebsocketService {
         const asks = ob.a.map(x => ({
           price: x.p,
           volume: x.v,
+          yield: x.y,
           currentOrders: this.getCurrentOrdersForItem(x.p, Side.Sell, orders)
         } as OrderBookItem));
 
         const bids = ob.b.map(x => ({
           price: x.p,
           volume: x.v,
+          yield: x.y,
           currentOrders: this.getCurrentOrdersForItem(x.p, Side.Buy, orders)
         } as OrderBookItem));
 
