@@ -44,20 +44,8 @@ export class OrderbookService extends BaseWebsocketService {
     super(ws);
   }
 
-  generateNewGuid(request: OrderbookRequest): string {
-    const group = request.instrumentGroup ? request.instrumentGroup : '';
-    return (
-      request.opcode +
-      request.code +
-      request.exchange +
-      group +
-      request.depth +
-      request.format
-    );
-  }
-
   getHorizontalOrderBook(settings: OrderbookSettings): Observable<OrderBook> {
-    const obData$ = this.getOrderBookReq(settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
+    const obData$ = this.getOrderBookReq(settings.guid, settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
       catchError((e,) => {
         throw e;
       }),
@@ -108,7 +96,7 @@ export class OrderbookService extends BaseWebsocketService {
   }
 
   getVerticalOrderBook(settings: VerticalOrderBookSettings): Observable<VerticalOrderBook> {
-    return this.getOrderBookReq(settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
+    return this.getOrderBookReq(settings.guid, settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
       catchError((e,) => {
         throw e;
       }),
@@ -153,6 +141,7 @@ export class OrderbookService extends BaseWebsocketService {
   }
 
   private getOrderBookReq(
+    trackId: string,
     symbol: string,
     exchange: string,
     instrumentGroup?: string,
@@ -167,7 +156,7 @@ export class OrderbookService extends BaseWebsocketService {
       guid: '',
       instrumentGroup: instrumentGroup,
     };
-    request.guid = this.generateNewGuid(request);
+    request.guid = trackId;
     return this.getEntity<OrderbookData>(request);
   }
 
