@@ -37,6 +37,46 @@
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
+              <nz-form-label nzRequired nzFor="cancelOrdersKey">Горячая клавиша снятия лимитных заявок</nz-form-label>
+              <nz-form-control nzErrorTip="Введите значение">
+                <input
+                  class='ant-input'
+                  formControlName="cancelOrdersKey"
+                  (mousedown)="$event.stopPropagation()"
+                  readonly
+                  nz-input
+                  (keydown)="hotkeyChange($event, 'cancelOrdersKey')"
+                />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="closePositionsKey">Горячая клавиша закрытия всех позиций по рынку</nz-form-label>
+              <nz-form-control nzErrorTip="Введите значение">
+                <input
+                  class='ant-input'
+                  formControlName="closePositionsKey"
+                  (mousedown)="$event.stopPropagation()"
+                  readonly
+                  nz-input
+                  (keydown)="hotkeyChange($event, 'closePositionsKey')"
+                />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="centerOrderbookKey">Горячая клавиша центровки всех стаканов по спреду</nz-form-label>
+              <nz-form-control nzErrorTip="Введите значение">
+                <input
+                  class='ant-input'
+                  formControlName="centerOrderbookKey"
+                  (mousedown)="$event.stopPropagation()"
+                  readonly
+                  nz-input
+                  (keydown)="hotkeyChange($event, 'centerOrderbookKey')"
+                />
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
               <nz-form-control>
                 <button type='submit' nz-button nzType="primary" [disabled]="!settingsForm.valid">Сохранить</button>
               </nz-form-control>

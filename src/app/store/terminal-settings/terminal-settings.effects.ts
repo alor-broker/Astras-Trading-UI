@@ -70,7 +70,10 @@ export class TerminalSettingsEffects {
   private getDefaultSettings(): TerminalSettings {
     return {
       timezoneDisplayOption: TimezoneDisplayOption.MskTime,
-      userIdleDurationMin: 15
+      userIdleDurationMin: 15,
+      cancelOrdersKey: '~',
+      closePositionsKey: 'Escape',
+      centerOrderbookKey: ' ',
     } as TerminalSettings;
   }
 }

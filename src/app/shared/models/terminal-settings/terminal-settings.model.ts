@@ -3,4 +3,7 @@
 export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption
   userIdleDurationMin?: number;
+  cancelOrdersKey?: string;
+  closePositionsKey?: string;
+  centerOrderbookKey?: string;
 }

@@ -65,6 +65,11 @@ export class TerminalSettingsComponent implements OnInit {
     }
   }
 
+  hotkeyChange(e: KeyboardEvent, controlName: string) {
+    e.stopPropagation();
+    this.settingsForm.get(controlName)?.setValue(e.key);
+  }
+
   private initForm() {
     this.service.getSettings()
       .pipe(
@@ -84,6 +89,9 @@ export class TerminalSettingsComponent implements OnInit {
             Validators.min(this.validationSettings.userIdleDurationMin.min),
             Validators.max(this.validationSettings.userIdleDurationMin.max)
           ]),
+      cancelOrdersKey: new FormControl(currentSettings.cancelOrdersKey, Validators.required),
+      closePositionsKey: new FormControl(currentSettings.closePositionsKey, Validators.required),
+      centerOrderbookKey: new FormControl(currentSettings.centerOrderbookKey, Validators.required),
       } as TerminalSettingsFormControls
     ) as TerminalSettingsFormGroup;
   }
