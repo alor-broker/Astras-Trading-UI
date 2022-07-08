@@ -7,6 +7,7 @@ export interface OrderBookItem {
 export interface VerticalOrderBook {
   asks: OrderBookItem[];
   bids: OrderBookItem[];
+  spreadItems: OrderBookItem[];
 }
 
 export enum VerticalOrderBookRowType {

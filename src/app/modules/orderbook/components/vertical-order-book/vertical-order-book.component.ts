@@ -9,9 +9,7 @@ import {
   filter,
   Observable,
   shareReplay,
-  switchMap,
-  tap,
-  withLatestFrom
+  tap
 } from "rxjs";
 import {
   VerticalOrderBook,
@@ -52,19 +50,20 @@ export class VerticalOrderBookComponent implements OnInit {
 
   ngOnInit(): void {
     const settings$ = this.settingsService.getSettings<VerticalOrderBookSettings>(this.guid).pipe(shareReplay());
-    const instrumentInfo$ = settings$.pipe(
-      switchMap(settings => this.instrumentsService.getInstrument(settings)),
-      filter((x): x is Instrument => !!x),
-      shareReplay()
+    const getInstrumentInfo = (settings: VerticalOrderBookSettings) => this.instrumentsService.getInstrument(settings).pipe(
+      filter((x): x is Instrument => !!x)
     );
 
     this.orderBookRows$ = settings$.pipe(
-      mapWith(settings => this.orderBookService.getVerticalOrderBook(settings), (settings, orderBook) => ({
-        settings,
-        orderBook
-      })),
-      withLatestFrom(instrumentInfo$),
-      map(([x, instrumentInfo]) => this.toViewModel(x.settings, instrumentInfo, x.orderBook)),
+      mapWith(
+        settings => getInstrumentInfo(settings),
+        (settings, instrument) => ({ settings, instrument })
+      ),
+      mapWith(
+        ({ settings, instrument }) => this.orderBookService.getVerticalOrderBook(settings, instrument),
+        ({ settings, instrument }, orderBook) => ({ settings, instrument, orderBook })
+      ),
+      map(x => this.toViewModel(x.settings, x.instrument, x.orderBook)),
       tap(orderBookRows => {
         this.maxVolume = Math.max(...orderBookRows.map(x => x.volume ?? 0));
       })
@@ -115,6 +114,13 @@ export class VerticalOrderBookComponent implements OnInit {
       bids[0].isBest = true;
     }
 
-    return [...asks, ...bids];
+    const spreadItems = orderBook.spreadItems.map(x => ({
+        ...x,
+        rowType: VerticalOrderBookRowType.Spread,
+        displayValue: x.price
+      } as VerticalOrderBookRowView)
+    ).sort((a, b) => b.displayValue - a.displayValue);
+
+    return [...asks, ...spreadItems, ...bids];
   }
 }
