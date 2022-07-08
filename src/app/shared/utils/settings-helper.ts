@@ -5,7 +5,7 @@ import { InfoSettings } from '../models/settings/info-settings.model';
 import { InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
 import { LightChartSettings } from '../models/settings/light-chart-settings.model';
 import { OrderbookSettings } from '../models/settings/orderbook-settings.model';
-import { scalarArrayEqual } from './collections';
+import { isArrayEqual } from './collections';
 import { NewsSettings } from "../models/settings/news-settings.model";
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { VerticalOrderBookSettings } from "../models/settings/vertical-order-book-settings.model";
@@ -89,7 +89,9 @@ export function isVerticalOrderBookSettings(
     'symbol' in settings &&
     'exchange' in settings &&
     'depth' in settings &&
-    'showYieldForBonds' in settings
+    'showYieldForBonds' in settings &&
+    'highlightHighVolume' in settings &&
+    'volumeHighlightOptions' in settings
   );
 }
 /**
@@ -266,7 +268,13 @@ export function isEqualVerticalOrderKookSettings(
       settings1.linkToActive == settings2.linkToActive &&
       settings1.exchange == settings2.exchange &&
       settings1.depth == settings2.depth &&
-      settings1.showYieldForBonds == settings2.showYieldForBonds
+      settings1.showYieldForBonds == settings2.showYieldForBonds &&
+      settings1.highlightHighVolume == settings2.highlightHighVolume &&
+      isArrayEqual(
+        settings1.volumeHighlightOptions,
+        settings2.volumeHighlightOptions,
+        (a, b) => a.boundary === b.boundary && a.color === b.color
+      )
     );
   } else return false;
 }
@@ -312,7 +320,7 @@ export function isEqualBlotterSettings(
       settings1.portfolio == settings2.portfolio &&
       settings1.guid == settings2.guid &&
       settings1.activeTabIndex == settings2.activeTabIndex &&
-      scalarArrayEqual(settings1.ordersColumns, settings2.ordersColumns)
+      isArrayEqual(settings1.ordersColumns, settings2.ordersColumns, (a, b) => a === b)
     );
   } else return false;
 }

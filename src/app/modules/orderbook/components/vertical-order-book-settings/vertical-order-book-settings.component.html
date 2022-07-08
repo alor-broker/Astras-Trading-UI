@@ -19,7 +19,7 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationOptions.minDepth}} до {{validationOptions.maxDepth}}">
+      <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationSettings.depth.min}} до {{validationSettings.depth.max}}">
         <nz-form-label nzRequired nzFor="depth">Глубина</nz-form-label>
         <nz-input-group>
           <input class='ant-input' atsNumerical formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />
@@ -29,6 +29,33 @@
     <nz-form-item>
       <nz-form-label nzFor="showYieldForBonds">Показывать дох. облигаций</nz-form-label>
       <nz-switch formControlName='showYieldForBonds'></nz-switch>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="highlightHighVolume">Выделять цветом большие объемы</nz-form-label>
+      <nz-switch formControlName='highlightHighVolume'></nz-switch>
+    </nz-form-item>
+    <nz-form-item *ngIf="form.value.highlightHighVolume">
+      <ng-container *ngFor="let optionForm of volumeHighlightOptions.controls; index as i">
+        <div [formGroup]="asFormGroup(optionForm)" class="volume-highlight-options">
+          <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.volumeHighlightOption.boundary.min}} до {{validationSettings.volumeHighlightOption.boundary.max}}">
+            <nz-form-label nzRequired nzFor="boundary" nzRequired>Объем</nz-form-label>
+            <input class='ant-input' atsNumerical formControlName="boundary" (mousedown)="$event.stopPropagation()"/>
+          </nz-form-control>
+          <nz-form-control nzErrorTip="Выберите цвет">
+            <nz-form-label nzRequired nzFor="color" nzRequired>Цвет выделения</nz-form-label>
+            <ats-color-picker-input [value]="optionForm.value.color" (colorChangeComplete)="setVolumeHighlightOptionColor(i, $event)"></ats-color-picker-input>
+          </nz-form-control>
+          <button (click)="removeVolumeHighlightOption($event, i)"
+                  nz-button
+                  nzType="dashed"
+                  class="volume-highlight-options-remove-btn">
+            <i nz-icon nzType="minus"></i>
+          </button>
+        </div>
+      </ng-container>
+      <button nz-button class="add-volume-highlight-option-btn" nzType="dashed" (click)="addVolumeHighlightOption($event)" [disabled]="!volumeHighlightOptions.valid">
+        <i nz-icon nzType="plus"></i>
+      </button>
     </nz-form-item>
     <nz-collapse [nzBordered]="false" class="compact">
       <nz-collapse-panel nzHeader="Продвинутые">
@@ -49,3 +76,4 @@
     </nz-form-item>
   </form>
 </div>
+

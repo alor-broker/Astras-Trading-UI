@@ -43,6 +43,9 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { InfiniteScrollTableComponent } from './components/infinite-scroll-table/infinite-scroll-table.component';
 import { WidgetMenuComponent } from './components/widget-menu/widget-menu.component';
+import { ColorPickerInputComponent } from './components/color-picker-input/color-picker-input.component';
+import { ColorChromeModule } from "ngx-color/chrome";
+import { NzPopoverModule } from "ng-zorro-antd/popover";
 
 
 @NgModule({
@@ -51,7 +54,8 @@ import { WidgetMenuComponent } from './components/widget-menu/widget-menu.compon
     NumericalDirective,
     LoadingIndicatorComponent,
     InfiniteScrollTableComponent,
-    WidgetMenuComponent
+    WidgetMenuComponent,
+    ColorPickerInputComponent
   ],
   imports: [
     CommonModule,
@@ -90,52 +94,55 @@ import { WidgetMenuComponent } from './components/widget-menu/widget-menu.compon
     AtsStoreModule,
     NzSpinModule,
     NzTypographyModule,
-    NzRadioModule
+    NzRadioModule,
+    ColorChromeModule,
+    NzPopoverModule
   ],
-    exports: [
-        // Ng zorro
-        NzTableModule,
-        NzButtonModule,
-        NzIconModule,
-        NzLayoutModule,
-        NzFormModule,
-        NzSelectModule,
-        NzCollapseModule,
-        NzAutocompleteModule,
-        NzTagModule,
-        NzCardModule,
-        NzTabsModule,
-        NzMenuModule,
-        NzDropDownModule,
-        NzModalModule,
-        NzToolTipModule,
-        NzSwitchModule,
-        NzImageModule,
-        NzAvatarModule,
-        NzBadgeModule,
-        NzNotificationModule,
-        NzPopconfirmModule,
-        NzDescriptionsModule,
-        NzEmptyModule,
-        NzCheckboxModule,
-        ScrollingModule,
-        NzDatePickerModule,
-        NzTypographyModule,
-        NzRadioModule,
-        // modules
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        GridsterModule,
-        NgChartsModule,
-        // components
-        PriceTickComponent,
-        LoadingIndicatorComponent,
-        InfiniteScrollTableComponent,
-        WidgetMenuComponent,
-        // directives
-        NumericalDirective,
-    ],
+  exports: [
+    // Ng zorro
+    NzTableModule,
+    NzButtonModule,
+    NzIconModule,
+    NzLayoutModule,
+    NzFormModule,
+    NzSelectModule,
+    NzCollapseModule,
+    NzAutocompleteModule,
+    NzTagModule,
+    NzCardModule,
+    NzTabsModule,
+    NzMenuModule,
+    NzDropDownModule,
+    NzModalModule,
+    NzToolTipModule,
+    NzSwitchModule,
+    NzImageModule,
+    NzAvatarModule,
+    NzBadgeModule,
+    NzNotificationModule,
+    NzPopconfirmModule,
+    NzDescriptionsModule,
+    NzEmptyModule,
+    NzCheckboxModule,
+    ScrollingModule,
+    NzDatePickerModule,
+    NzTypographyModule,
+    NzRadioModule,
+    // modules
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    GridsterModule,
+    NgChartsModule,
+    // components
+    PriceTickComponent,
+    LoadingIndicatorComponent,
+    InfiniteScrollTableComponent,
+    WidgetMenuComponent,
+    ColorPickerInputComponent,
+    // directives
+    NumericalDirective,
+  ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,

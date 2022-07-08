@@ -19,7 +19,10 @@ import {
   VerticalOrderBookRowView
 } from "../../models/vertical-order-book.model";
 import { VerticalOrderBookSettings } from "../../../../shared/models/settings/vertical-order-book-settings.model";
-import { map } from "rxjs/operators";
+import {
+  map,
+  startWith
+} from "rxjs/operators";
 import {
   buyColorBackground,
   sellColorBackground
@@ -67,7 +70,8 @@ export class VerticalOrderBookComponent implements OnInit {
       map(([x, instrumentInfo]) => this.toViewModel(x.settings, instrumentInfo, x.orderBook)),
       tap(orderBookRows => {
         this.maxVolume = Math.max(...orderBookRows.map(x => x.volume ?? 0));
-      })
+      }),
+      startWith([])
     );
   }
 
