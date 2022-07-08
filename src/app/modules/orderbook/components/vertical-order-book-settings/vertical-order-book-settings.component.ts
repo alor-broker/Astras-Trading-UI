@@ -24,11 +24,13 @@ import {
 } from "../../../../shared/models/settings/vertical-order-book-settings.model";
 
 interface SettingsFormData {
-  depth: number;
-  exchange: string;
-  symbol: string;
-  instrumentGroup: string;
-  showYieldForBonds: boolean;
+    depth: number;
+    exchange: string;
+    symbol: string;
+    instrumentGroup: string;
+    showYieldForBonds: boolean;
+    showZeroVolumeItems: boolean;
+    showSpreadItems: boolean;
   highlightHighVolume: boolean;
   volumeHighlightOptions: VolumeHighlightOption[];
 }
@@ -85,6 +87,8 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
           Validators.max(this.validationSettings.depth.max)]),
         instrumentGroup: new FormControl(settings.instrumentGroup),
         showYieldForBonds: new FormControl(settings.showYieldForBonds),
+        showZeroVolumeItems: new FormControl(settings.showZeroVolumeItems),
+        showSpreadItems: new FormControl(settings.showSpreadItems),
         highlightHighVolume: new FormControl(settings.highlightHighVolume),
         volumeHighlightOptions: new FormArray(
           [...settings.volumeHighlightOptions]
@@ -104,6 +108,7 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
       this.guid,
       {
         ...this.form.value,
+        depth: Number(this.form.value.depth),
         volumeHighlightOptions: this.form.value.volumeHighlightOptions.map((x: VolumeHighlightOption) => ({
             ...x,
             boundary: Number(x.boundary)

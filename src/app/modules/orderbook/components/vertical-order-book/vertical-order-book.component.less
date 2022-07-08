@@ -1,11 +1,13 @@
 @import (reference) '/src/styles.less';
 
-.order-book-table {
-  display: flex;
-  justify-content: center;
-}
-
 .order-book-rows {
+  .row {
+    td {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+  }
+
   .ask-row {
     &.trade-row {
       .price-cell {
@@ -13,9 +15,7 @@
       }
 
       &.best-row {
-        .price-cell {
-          background-color: @sell-color-background;
-        }
+        background-color: fade(@sell-color, 20%);
       }
     }
   }
@@ -27,10 +27,16 @@
       }
 
       &.best-row {
-        .price-cell {
-          background-color: @buy-color-background;
-        }
+        background-color: fade(@buy-color, 20%);
       }
     }
+  }
+
+  .spread-row {
+    background-color: fade(@disabled-color, 7%);
+  }
+
+  .cancel-order-btn {
+    margin-left: 0.5em;
   }
 }

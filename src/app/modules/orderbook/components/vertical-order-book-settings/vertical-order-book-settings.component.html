@@ -1,6 +1,6 @@
 <p>Настройки</p>
 <div>
-  <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
+  <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="submitForm()">
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Введите инструмент">
         <nz-form-label nzRequired nzFor="symbol">Тикер</nz-form-label>
@@ -29,6 +29,14 @@
     <nz-form-item>
       <nz-form-label nzFor="showYieldForBonds">Показывать дох. облигаций</nz-form-label>
       <nz-switch formControlName='showYieldForBonds'></nz-switch>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="showZeroVolumeItems">Показывать цены сделок с нулевым объемом</nz-form-label>
+      <nz-switch formControlName='showZeroVolumeItems'></nz-switch>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="showSpreadItems">Показывать цены между лучшими ценами покупки/продажи</nz-form-label>
+      <nz-switch formControlName='showSpreadItems'></nz-switch>
     </nz-form-item>
     <nz-form-item>
       <nz-form-label nzFor="highlightHighVolume">Выделять цветом большие объемы</nz-form-label>

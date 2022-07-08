@@ -90,6 +90,8 @@ export function isVerticalOrderBookSettings(
     'exchange' in settings &&
     'depth' in settings &&
     'showYieldForBonds' in settings &&
+    'showZeroVolumeItems' in settings &&
+    'showSpreadItems' in settings &&
     'highlightHighVolume' in settings &&
     'volumeHighlightOptions' in settings
   );
@@ -269,6 +271,8 @@ export function isEqualVerticalOrderKookSettings(
       settings1.exchange == settings2.exchange &&
       settings1.depth == settings2.depth &&
       settings1.showYieldForBonds == settings2.showYieldForBonds &&
+      settings1.showZeroVolumeItems == settings2.showZeroVolumeItems &&
+      settings1.showSpreadItems == settings2.showSpreadItems &&
       settings1.highlightHighVolume == settings2.highlightHighVolume &&
       isArrayEqual(
         settings1.volumeHighlightOptions,

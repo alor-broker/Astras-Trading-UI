@@ -7,8 +7,10 @@ export interface VolumeHighlightOption {
 }
 
 export interface VerticalOrderBookSettings extends WidgetSettings, InstrumentKey {
-  depth?: number;
-  showYieldForBonds: boolean;
+    depth?: number;
+    showYieldForBonds: boolean;
+    showZeroVolumeItems: boolean;
+    showSpreadItems: boolean;
   highlightHighVolume: boolean;
   volumeHighlightOptions: VolumeHighlightOption[];
 }
