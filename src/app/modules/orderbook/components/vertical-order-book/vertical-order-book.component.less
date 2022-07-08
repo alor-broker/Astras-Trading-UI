@@ -15,9 +15,7 @@
       }
 
       &.best-row {
-        .price-cell {
-          background-color: @sell-color-background;
-        }
+        background-color: fade(@sell-color, 20%);
       }
     }
   }
@@ -29,11 +27,13 @@
       }
 
       &.best-row {
-        .price-cell {
-          background-color: @buy-color-background;
-        }
+        background-color: fade(@buy-color, 20%);
       }
     }
+  }
+
+  .spread-row {
+    background-color: fade(@disabled-color, 7%);
   }
 
   .cancel-order-btn {

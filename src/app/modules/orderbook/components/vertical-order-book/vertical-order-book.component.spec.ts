@@ -27,7 +27,8 @@ describe('VerticalOrderBookComponent', () => {
         useValue: {
           getVerticalOrderBook: jasmine.createSpy('getVerticalOrderBook').and.returnValue(of({
             asks: [],
-            bids: []
+            bids: [],
+            spreadItems: []
           } as VerticalOrderBook))
         }
       },

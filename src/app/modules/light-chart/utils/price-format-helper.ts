@@ -1,3 +1,5 @@
+import { MathHelper } from "../../../shared/utils/math-helper";
+
 type ShortPriceFormat = { minMove: number; precision: number; };
 
 export class PriceFormatHelper {
@@ -15,23 +17,10 @@ export class PriceFormatHelper {
       };
     }
 
-    const precision = this.getPrecision(minstep);
+    const precision = MathHelper.getPrecision(minstep);
     return {
       precision: precision,
       minMove: Number((10 ** -precision).toFixed(precision))
     } as ShortPriceFormat;
-  }
-
-  private static getPrecision(a: number): number {
-    if (!isFinite(a)) return 0;
-    let e = 1;
-    let p = 0;
-
-    while (Math.round(a * e) / e !== a) {
-      e *= 10;
-      p++;
-    }
-
-    return p;
   }
 }
