@@ -12,6 +12,7 @@ import {
   tap
 } from "rxjs";
 import {
+  CurrentOrder,
   VerticalOrderBook,
   VerticalOrderBookRowType,
   VerticalOrderBookRowView
@@ -22,6 +23,7 @@ import {
   buyColorBackground,
   sellColorBackground
 } from "../../../../shared/models/settings/styles-constants";
+import { CancelCommand } from "../../../../shared/models/commands/cancel-command.model";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
@@ -74,19 +76,36 @@ export class VerticalOrderBookComponent implements OnInit {
     return index;
   }
 
+  getCurrentOrdersVolume(orders: CurrentOrder[]): number | null {
+    return orders.length === 0
+      ? null
+      : orders.reduce((previousValue, currentValue) => previousValue + currentValue.volume, 0);
+  }
+
   getVolumeStyle(rowType: VerticalOrderBookRowType, volume: number) {
-    const size = 100 * (volume / this.maxVolume);
-    if (rowType === VerticalOrderBookRowType.Bid) {
-      return {
-        background: `linear-gradient(90deg, ${buyColorBackground} ${size}% , rgba(0,0,0,0) ${size}%)`,
-      };
-    } else if (rowType === VerticalOrderBookRowType.Ask) {
-      return {
-        background: `linear-gradient(90deg, ${sellColorBackground} ${size}%, rgba(0,0,0,0) ${size}%)`,
-      };
+    if (rowType !== VerticalOrderBookRowType.Ask && rowType !== VerticalOrderBookRowType.Bid) {
+      return null;
     }
 
-    return null;
+    const size = 100 * (volume / this.maxVolume);
+    const color = rowType === VerticalOrderBookRowType.Bid
+      ? buyColorBackground
+      : sellColorBackground;
+
+    return {
+      background: `linear-gradient(90deg, ${color} ${size}% , rgba(0,0,0,0) ${size}%)`,
+    };
+  }
+
+  cancelOrders(orders: CurrentOrder[]) {
+    for (const order of orders) {
+      this.orderBookService.cancelOrder({
+        orderid: order.orderId,
+        exchange: order.exchange,
+        portfolio: order.portfolio,
+        stop: false
+      } as CancelCommand);
+    }
   }
 
   private toViewModel(settings: VerticalOrderBookSettings, instrumentInfo: Instrument, orderBook: VerticalOrderBook): VerticalOrderBookRowView[] {

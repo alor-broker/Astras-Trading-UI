@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   combineLatest,
+  filter,
   Observable,
   of
 } from 'rxjs';
@@ -28,6 +29,7 @@ import { Store } from '@ngrx/store';
 import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
 import { VerticalOrderBookSettings } from "../../../shared/models/settings/vertical-order-book-settings.model";
 import {
+  CurrentOrder,
   OrderBookItem,
   VerticalOrderBook
 } from "../models/vertical-order-book.model";
@@ -36,6 +38,8 @@ import { OrderbookDataRow } from "../models/orderbook-data-row.model";
 import { getTypeByCfi } from "../../../shared/utils/instruments";
 import { InstrumentType } from "../../../shared/models/enums/instrument-type.model";
 import { MathHelper } from "../../../shared/utils/math-helper";
+import { Side } from "../../../shared/models/enums/side.model";
+import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 
 @Injectable()
 export class OrderbookService extends BaseWebsocketService {
@@ -57,38 +61,37 @@ export class OrderbookService extends BaseWebsocketService {
       map(ob => this.toOrderBook(ob))
     );
 
-    return combineLatest([obData$, this.getOrders()]).pipe(
+    return combineLatest([obData$, this.getOrders(settings)]).pipe(
       map(([ob, orders]) => {
         const withOrdersRows = ob.rows.map((row) => {
-          const askOrders = orders.filter(
-            (o) => o.price == row.ask && o.status == 'working'
-          );
+          const askOrders = !!row.ask ? this.getCurrentOrdersForItem(row.ask, Side.Sell, orders) : [];
+
           const sumAsk = askOrders
-            .map((o) => o.qty)
+            .map((o) => o.volume)
             .reduce((prev, curr) => prev + curr, 0);
           const askCancels = askOrders.map(
             (o): CancelCommand => ({
-              orderid: o.id,
+              orderid: o.orderId,
               exchange: o.exchange,
               portfolio: o.portfolio,
               stop: false,
             })
           );
 
-          const bidOrders = orders.filter(
-            (o) => o.price == row.bid && o.status == 'working'
-          );
+          const bidOrders = !!row.bid ? this.getCurrentOrdersForItem(row.bid, Side.Buy, orders) : [];
           const sumBid = bidOrders
-            .map((o) => o.qty)
+            .map((o) => o.volume)
             .reduce((prev, curr) => prev + curr, 0);
+
           const bidCancels = bidOrders.map(
             (o): CancelCommand => ({
-              orderid: o.id,
+              orderid: o.orderId,
               exchange: o.exchange,
               portfolio: o.portfolio,
               stop: false,
             })
           );
+
           row.askOrderVolume = sumAsk;
           row.askCancels = askCancels;
           row.bidOrderVolume = sumBid;
@@ -101,11 +104,10 @@ export class OrderbookService extends BaseWebsocketService {
   }
 
   getVerticalOrderBook(settings: VerticalOrderBookSettings, instrument: Instrument): Observable<VerticalOrderBook> {
-    return this.getOrderBookReq(settings.guid, instrument.symbol, instrument.exchange, instrument.instrumentGroup, settings.depth).pipe(
-      catchError((e,) => {
-        throw e;
-      }),
-      map(ob => this.toVerticalOrderBook(settings, instrument, ob))
+    const obData$ = this.getOrderBookReq(settings.guid, instrument.symbol, instrument.exchange, instrument.instrumentGroup, settings.depth);
+
+    return combineLatest([obData$, this.getOrders(settings)]).pipe(
+      map(([ob, orders]) => this.toVerticalOrderBook(settings, instrument, ob, orders))
     );
   }
 
@@ -113,15 +115,21 @@ export class OrderbookService extends BaseWebsocketService {
     this.canceller.cancelOrder(cancel).subscribe();
   }
 
-  private toVerticalOrderBook(settings: VerticalOrderBookSettings, instrument: Instrument, orderBookData: OrderbookData) {
-    const toOrderBookItems = (dataRows: OrderbookDataRow[]) => dataRows.map(x => ({
+  private toVerticalOrderBook(
+    settings: VerticalOrderBookSettings,
+    instrument: Instrument,
+    orderBookData: OrderbookData,
+    currentOrders: Order[]) {
+
+    const toOrderBookItems = (dataRows: OrderbookDataRow[], side: Side) => dataRows.map(x => ({
       price: x.p,
       volume: x.v,
-      yield: x.y
+      yield: x.y,
+      currentOrders: this.getCurrentOrdersForItem(x.p, side, currentOrders)
     } as OrderBookItem));
 
-    let asks = toOrderBookItems(orderBookData.a).sort((a, b) => a.price - b.price);
-    let bids = toOrderBookItems(orderBookData.b).sort((a, b) => b.price - a.price);
+    let asks = toOrderBookItems(orderBookData.a, Side.Sell).sort((a, b) => a.price - b.price);
+    let bids = toOrderBookItems(orderBookData.b, Side.Buy).sort((a, b) => b.price - a.price);
 
     if (getTypeByCfi(instrument.cfiCode) === InstrumentType.Bond || !instrument.minstep) {
       return {
@@ -174,7 +182,8 @@ export class OrderbookService extends BaseWebsocketService {
       .map(i => startValue + ((i + 1) * step))
       .map(x => MathHelper.round(x, pricePrecision))
       .map(x => ({
-        price: x
+        price: x,
+        currentOrders: []
       } as OrderBookItem));
   }
 
@@ -189,6 +198,7 @@ export class OrderbookService extends BaseWebsocketService {
         return {
           price: x,
           volume: undefined,
+          currentOrders: [],
           ...existedItem
         } as OrderBookItem;
       });
@@ -271,7 +281,7 @@ export class OrderbookService extends BaseWebsocketService {
     };
   }
 
-  private getOrders() {
+  private getOrders(instrument: InstrumentKey) {
     const orders$ = this.store.select(getSelectedPortfolio).pipe(
       switchMap((p) => {
         if (p) {
@@ -281,6 +291,7 @@ export class OrderbookService extends BaseWebsocketService {
             'OrdersGetAndSubscribeV2',
             true
           ).pipe(
+            filter(order => order.symbol === instrument.symbol),
             map((order: Order) => {
               this.ordersById.set(order.id, order);
               return Array.from(this.ordersById.values()).sort((o1, o2) =>
@@ -289,10 +300,26 @@ export class OrderbookService extends BaseWebsocketService {
             })
           );
         }
+
         return of([]);
       }),
       startWith([])
     );
     return orders$;
+  }
+
+  private getCurrentOrdersForItem(itemPrice: number, side: Side, orders: Order[]): CurrentOrder[] {
+    const currentOrders = orders.filter(
+      (o) => o.side === side
+        && o.price === itemPrice
+        && o.status === 'working'
+    );
+
+    return currentOrders.map(o => ({
+      orderId: o.id,
+      exchange: o.exchange,
+      portfolio: o.portfolio,
+      volume: o.qty
+    } as CurrentOrder));
   }
 }

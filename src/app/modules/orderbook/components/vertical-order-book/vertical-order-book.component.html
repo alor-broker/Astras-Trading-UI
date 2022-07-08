@@ -1,6 +1,6 @@
 <div *ngIf="!shouldShowSettings">
   <div *ngIf="(orderBookRows$ | async) as orderBookRows" class="order-book-table">
-    <nz-table nzSize="small" nzTemplateMode nzBordered>
+    <nz-table nzBordered nzSize="small" nzTableLayout="fixed" nzTemplateMode>
       <tbody class="order-book-rows">
       <tr *ngFor='let row of orderBookRows; trackBy: getTrackKey'
           [ngClass]="{
@@ -12,9 +12,17 @@
           'trade-row': (row.volume ?? 0) > 0
           }"
       >
-        <td class="volume-cell" [ngStyle]='getVolumeStyle(row.rowType, row.volume ?? 0)'>{{row.volume}}</td>
-        <td class="price-cell">{{row.displayValue}}</td>
-        <td></td>
+        <td [ngStyle]='getVolumeStyle(row.rowType, row.volume ?? 0)' class="volume-cell"
+            nzAlign="center">{{row.volume}}</td>
+        <td class="price-cell" nzAlign="center">{{row.displayValue}}</td>
+        <td nzAlign="right">
+          <span>{{getCurrentOrdersVolume(row.currentOrders)}}</span>
+          <button (click)="cancelOrders(row.currentOrders)" *ngIf='row.currentOrders.length > 0'
+                  class="cancel-order-btn" nz-button
+                  nzSize="small" nzType="primary">
+            <i nz-icon nzType="close-square"></i>
+          </button>
+        </td>
       </tr>
       </tbody>
     </nz-table>
