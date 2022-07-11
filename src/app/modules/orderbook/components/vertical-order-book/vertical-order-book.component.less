@@ -1,0 +1,42 @@
+@import (reference) '/src/styles.less';
+
+.order-book-rows {
+  .row {
+    td {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+  }
+
+  .ask-row {
+    &.trade-row {
+      .price-cell {
+        color: @sell-color;
+      }
+
+      &.best-row {
+        background-color: fade(@sell-color, 20%);
+      }
+    }
+  }
+
+  .bid-row {
+    &.trade-row {
+      .price-cell {
+        color: @buy-color;
+      }
+
+      &.best-row {
+        background-color: fade(@buy-color, 20%);
+      }
+    }
+  }
+
+  .spread-row {
+    background-color: fade(@disabled-color, 7%);
+  }
+
+  .cancel-order-btn {
+    margin-left: 0.5em;
+  }
+}

@@ -1,0 +1,9 @@
+<ats-vertical-order-book *ngIf="!shouldShowSettings"
+                         [guid]="guid"
+                         [shouldShowSettings]="shouldShowSettings">
+
+</ats-vertical-order-book>
+<ats-vertical-order-book-settings (settingsChange)="onSettingsChange()" *ngIf="shouldShowSettings"
+                                  [guid]="guid">
+
+</ats-vertical-order-book-settings>

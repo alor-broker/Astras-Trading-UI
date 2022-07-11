@@ -25,6 +25,7 @@ import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selector
 import { defaultInstrument } from '../../store/instruments/instruments.reducer';
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { NewsSettings } from "../models/settings/news-settings.model";
+import { VerticalOrderBookSettings } from "../models/settings/vertical-order-book-settings.model";
 
 @Injectable({
   providedIn: 'root',
@@ -55,6 +56,9 @@ export class WidgetFactoryService {
     switch (newWidget.gridItem.type) {
       case WidgetNames.orderBook:
         settings = this.createOrderbook(newWidget);
+        break;
+      case WidgetNames.verticalOrderBook:
+        settings = this.createVerticalOrderBook(newWidget);
         break;
       case WidgetNames.lightChart:
         settings = this.createLightChartWidget(newWidget);
@@ -96,6 +100,30 @@ export class WidgetFactoryService {
       showChart: true,
       showTable: true,
       showYieldForBonds: false
+    };
+
+    return settings;
+  }
+
+  private createVerticalOrderBook(newWidget: NewWidget | Widget): VerticalOrderBookSettings {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+    const group = this.selectedInstrument.instrumentGroup;
+
+    const settings: VerticalOrderBookSettings = {
+      guid: newWidget.gridItem.label,
+      settingsType: 'VerticalOrderBookSettings',
+      linkToActive: true,
+      depth: 10,
+      symbol: this.selectedInstrument.symbol,
+      exchange: this.selectedInstrument.exchange,
+      instrumentGroup: this.selectedInstrument.instrumentGroup,
+      isin: this.selectedInstrument.isin,
+      showYieldForBonds: false,
+      showZeroVolumeItems: false,
+      showSpreadItems: false,
+      title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`
     };
 
     return settings;

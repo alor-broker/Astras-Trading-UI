@@ -13,7 +13,7 @@
       <tbody (click)="newLimitOrder($event, 0)">
         <tr *ngFor='let row of basicTable.data; trackBy: getTrackKey'>
           <ng-container *ngIf="row.bid ?? 0 > 0; else zeroBid">
-            <td class='row-cell' [ngStyle]="{background: 'unset'}" (click)="newLimitOrder($event, row.bid ?? 0)">
+            <td  class='row-cell' [ngStyle]="{background: 'unset'}" (click)="newLimitOrder($event, row.bid ?? 0)">
               <button *ngIf='row.bidCancels && row.bidOrderVolume' nzSize="small" nz-button nzType="primary"
                       (click)="cancelOrder($event, row.bidCancels)">
                 <i *ngIf='row.bidOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
