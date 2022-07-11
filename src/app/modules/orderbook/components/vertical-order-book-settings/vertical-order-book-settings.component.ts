@@ -24,13 +24,13 @@ import {
 } from "../../../../shared/models/settings/vertical-order-book-settings.model";
 
 interface SettingsFormData {
-    depth: number;
-    exchange: string;
-    symbol: string;
-    instrumentGroup: string;
-    showYieldForBonds: boolean;
-    showZeroVolumeItems: boolean;
-    showSpreadItems: boolean;
+  depth: number;
+  exchange: string;
+  symbol: string;
+  instrumentGroup: string;
+  showYieldForBonds: boolean;
+  showZeroVolumeItems: boolean;
+  showSpreadItems: boolean;
   highlightHighVolume: boolean;
   volumeHighlightOptions: VolumeHighlightOption[];
 }

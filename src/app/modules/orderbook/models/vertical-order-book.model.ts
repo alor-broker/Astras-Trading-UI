@@ -28,4 +28,5 @@ export interface VerticalOrderBookRowView extends OrderBookItem {
   displayValue: number;
   rowType: VerticalOrderBookRowType;
   isBest?: boolean;
+  getVolumeStyle : () => { [key: string]: any; } | null;
 }

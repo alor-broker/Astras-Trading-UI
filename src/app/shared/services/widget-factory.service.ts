@@ -124,7 +124,7 @@ export class WidgetFactoryService {
       showZeroVolumeItems: false,
       showSpreadItems: false,
       highlightHighVolume: false,
-      volumeHighlightOptions: [{boundary: 1000, color:'#FFFD7C'}],
+      volumeHighlightOptions: [{boundary: 10000, color:'#CC0099'}],
       title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`
     };
 

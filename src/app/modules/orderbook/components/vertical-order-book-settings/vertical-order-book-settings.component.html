@@ -1,5 +1,5 @@
 <p>Настройки</p>
-<div>
+<div *ngIf="form">
   <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="submitForm()">
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Введите инструмент">
