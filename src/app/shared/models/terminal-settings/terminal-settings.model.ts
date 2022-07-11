@@ -6,4 +6,9 @@ export interface TerminalSettings {
   cancelOrdersKey?: string;
   closePositionsKey?: string;
   centerOrderbookKey?: string;
+  cancelOrderbookOrders?: string;
+  closeOrderbookPositions?: string;
+  reverseOrderbookPositions?: string;
+  buyMarket?: string;
+  sellMarket?: string;
 }

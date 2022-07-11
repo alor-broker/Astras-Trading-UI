@@ -74,6 +74,11 @@ export class TerminalSettingsEffects {
       cancelOrdersKey: '~',
       closePositionsKey: 'Escape',
       centerOrderbookKey: ' ',
+      cancelOrderbookOrders: 'E',
+      closeOrderbookPositions: 'R',
+      reverseOrderbookPositions: 'T',
+      buyMarket: 'S',
+      sellMarket: 'A',
     } as TerminalSettings;
   }
 }

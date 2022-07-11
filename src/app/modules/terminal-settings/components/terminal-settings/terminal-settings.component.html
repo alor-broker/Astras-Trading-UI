@@ -20,7 +20,10 @@
         </div>
       </nz-tab>
       <nz-tab nzTitle="Настройки">
-          <form nz-form [nzLayout]="'vertical'" [formGroup]="settingsForm" *ngIf="settingsForm" (ngSubmit)="saveSettingsChanges()">
+
+        <h2>Общие</h2>
+
+        <form nz-form [nzLayout]="'vertical'" [formGroup]="settingsForm" *ngIf="settingsForm" (ngSubmit)="saveSettingsChanges()">
             <nz-form-item>
               <nz-form-label nzRequired nzFor="timezoneDisplayOption">Часовой пояс отображения времени</nz-form-label>
               <nz-form-control>
@@ -36,8 +39,12 @@
                 <input class='ant-input' atsNumerical formControlName="userIdleDurationMin" (mousedown)="$event.stopPropagation()" nz-input/>
               </nz-form-control>
             </nz-form-item>
+
+            <h2>Горячие клавиши</h2>
+            <h3>Общие для всех открытых стаканов</h3>
+
             <nz-form-item>
-              <nz-form-label nzRequired nzFor="cancelOrdersKey">Горячая клавиша снятия лимитных заявок</nz-form-label>
+              <nz-form-label nzRequired nzFor="cancelOrdersKey">Снять лимитные заявки</nz-form-label>
               <nz-form-control nzErrorTip="Введите значение">
                 <input
                   class='ant-input'
@@ -50,7 +57,7 @@
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-              <nz-form-label nzRequired nzFor="closePositionsKey">Горячая клавиша закрытия всех позиций по рынку</nz-form-label>
+              <nz-form-label nzRequired nzFor="closePositionsKey">Зкрыть позиции по рынку</nz-form-label>
               <nz-form-control nzErrorTip="Введите значение">
                 <input
                   class='ant-input'
@@ -63,7 +70,7 @@
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-              <nz-form-label nzRequired nzFor="centerOrderbookKey">Горячая клавиша центровки всех стаканов по спреду</nz-form-label>
+              <nz-form-label nzRequired nzFor="centerOrderbookKey">Отцентровать стаканы по спреду</nz-form-label>
               <nz-form-control nzErrorTip="Введите значение">
                 <input
                   class='ant-input'
@@ -72,6 +79,74 @@
                   readonly
                   nz-input
                   (keydown)="hotkeyChange($event, 'centerOrderbookKey')"
+                />
+              </nz-form-control>
+            </nz-form-item>
+
+            <h3>Для стакана, на который наведена мышь</h3>
+
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="cancelOrderbookOrders">Снять лимитные заявки</nz-form-label>
+              <nz-form-control nzErrorTip="Введите значение">
+                <input
+                  class='ant-input'
+                  formControlName="cancelOrderbookOrders"
+                  (mousedown)="$event.stopPropagation()"
+                  readonly
+                  nz-input
+                  (keydown)="hotkeyChange($event, 'cancelOrderbookOrders')"
+                />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="closeOrderbookPositions">Закрыть позицию по рынку</nz-form-label>
+              <nz-form-control nzErrorTip="Введите значение">
+                <input
+                  class='ant-input'
+                  formControlName="closeOrderbookPositions"
+                  (mousedown)="$event.stopPropagation()"
+                  readonly
+                  nz-input
+                  (keydown)="hotkeyChange($event, 'closeOrderbookPositions')"
+                />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="reverseOrderbookPositions">Переворот позиции по рынку</nz-form-label>
+              <nz-form-control nzErrorTip="Введите значение">
+                <input
+                  class='ant-input'
+                  formControlName="reverseOrderbookPositions"
+                  (mousedown)="$event.stopPropagation()"
+                  readonly
+                  nz-input
+                  (keydown)="hotkeyChange($event, 'reverseOrderbookPositions')"
+                />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="buyMarket">Купить по рынку</nz-form-label>
+              <nz-form-control nzErrorTip="Введите значение">
+                <input
+                  class='ant-input'
+                  formControlName="buyMarket"
+                  (mousedown)="$event.stopPropagation()"
+                  readonly
+                  nz-input
+                  (keydown)="hotkeyChange($event, 'buyMarket')"
+                />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="sellMarket">Продать по рынку</nz-form-label>
+              <nz-form-control nzErrorTip="Введите значение">
+                <input
+                  class='ant-input'
+                  formControlName="sellMarket"
+                  (mousedown)="$event.stopPropagation()"
+                  readonly
+                  nz-input
+                  (keydown)="hotkeyChange($event, 'sellMarket')"
                 />
               </nz-form-control>
             </nz-form-item>

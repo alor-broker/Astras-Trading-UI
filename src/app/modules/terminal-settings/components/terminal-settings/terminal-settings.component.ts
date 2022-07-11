@@ -92,6 +92,11 @@ export class TerminalSettingsComponent implements OnInit {
       cancelOrdersKey: new FormControl(currentSettings.cancelOrdersKey, Validators.required),
       closePositionsKey: new FormControl(currentSettings.closePositionsKey, Validators.required),
       centerOrderbookKey: new FormControl(currentSettings.centerOrderbookKey, Validators.required),
+      cancelOrderbookOrders: new FormControl(currentSettings.cancelOrderbookOrders, Validators.required),
+      closeOrderbookPositions: new FormControl(currentSettings.closeOrderbookPositions, Validators.required),
+      reverseOrderbookPositions: new FormControl(currentSettings.reverseOrderbookPositions, Validators.required),
+      buyMarket: new FormControl(currentSettings.buyMarket, Validators.required),
+      sellMarket: new FormControl(currentSettings.sellMarket, Validators.required),
       } as TerminalSettingsFormControls
     ) as TerminalSettingsFormGroup;
   }
