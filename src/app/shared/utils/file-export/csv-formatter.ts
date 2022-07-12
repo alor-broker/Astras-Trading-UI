@@ -47,7 +47,7 @@ export class CsvFormatter {
 
     let quoted = false;
 
-    if (sanitizedValue.includes(config.fieldSeparator)) {
+    if (sanitizedValue.includes('"')) {
       sanitizedValue = `"${sanitizedValue.replace('"', '""')}"`;
       quoted = true;
     }
