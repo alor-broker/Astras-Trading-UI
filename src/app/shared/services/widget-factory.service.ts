@@ -99,7 +99,7 @@ export class WidgetFactoryService {
       title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
       showChart: true,
       showTable: true,
-      showYieldForBonds: false
+      showYieldForBonds: false,
     };
 
     return settings;
@@ -123,6 +123,8 @@ export class WidgetFactoryService {
       showYieldForBonds: false,
       showZeroVolumeItems: false,
       showSpreadItems: false,
+      highlightHighVolume: false,
+      volumeHighlightOptions: [{boundary: 10000, color:'#CC0099'}],
       title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`
     };
 
