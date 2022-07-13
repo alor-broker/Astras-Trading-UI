@@ -19,12 +19,19 @@ import {
 } from "rxjs";
 import {
   CurrentOrder,
+  OrderBookItem,
   VerticalOrderBook,
   VerticalOrderBookRowType,
   VerticalOrderBookRowView
 } from "../../models/vertical-order-book.model";
-import { VerticalOrderBookSettings } from "../../../../shared/models/settings/vertical-order-book-settings.model";
-import { map } from "rxjs/operators";
+import {
+  VerticalOrderBookSettings,
+  VolumeHighlightOption
+} from "../../../../shared/models/settings/vertical-order-book-settings.model";
+import {
+  map,
+  startWith
+} from "rxjs/operators";
 import { buyColorBackground, sellColorBackground } from "../../../../shared/models/settings/styles-constants";
 import { CancelCommand } from "../../../../shared/models/commands/cancel-command.model";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
@@ -93,7 +100,8 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
       map(x => this.toViewModel(x.settings, x.instrument, x.orderBook)),
       tap(orderBookRows => {
         this.maxVolume = Math.max(...orderBookRows.map(x => x.volume ?? 0));
-      })
+      }),
+      startWith([])
     );
 
     this.hotkeysService.orderBookEventSub
@@ -128,19 +136,34 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
       : orders.reduce((previousValue, currentValue) => previousValue + currentValue.volume, 0);
   }
 
-  getVolumeStyle(rowType: VerticalOrderBookRowType, volume: number) {
-    if (rowType !== VerticalOrderBookRowType.Ask && rowType !== VerticalOrderBookRowType.Bid) {
+  getVolumeStyle(rowType: VerticalOrderBookRowType, volume: number, settings: VerticalOrderBookSettings) {
+    if (rowType !== VerticalOrderBookRowType.Ask && rowType !== VerticalOrderBookRowType.Bid || !volume) {
       return null;
     }
 
-    const size = 100 * (volume / this.maxVolume);
-    const color = rowType === VerticalOrderBookRowType.Bid
-      ? buyColorBackground
-      : sellColorBackground;
+    if (!settings.highlightHighVolume) {
+      const size = 100 * (volume / this.maxVolume);
+      const color = rowType === VerticalOrderBookRowType.Bid
+        ? buyColorBackground
+        : sellColorBackground;
+
+      return {
+        background: `linear-gradient(90deg, ${color} ${size}% , rgba(0,0,0,0) ${size}%)`,
+      };
+    }
+
+    const volumeHighlightOption = this.getVolumeHighlightOption(settings, volume);
+    if(!volumeHighlightOption) {
+      return null;
+    }
+
+    const size = 100 * (volume / volumeHighlightOption.boundary);
 
     return {
-      background: `linear-gradient(90deg, ${color} ${size}% , rgba(0,0,0,0) ${size}%)`,
+      background: `linear-gradient(90deg, ${volumeHighlightOption.color}BF ${size}% , rgba(0,0,0,0) ${size}%)`
     };
+
+    return null;
   }
 
   cancelOrders(orders: CurrentOrder[]) {
@@ -152,6 +175,12 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
         stop: false
       } as CancelCommand);
     }
+  }
+
+  private getVolumeHighlightOption(settings: VerticalOrderBookSettings, volume: number): VolumeHighlightOption | undefined {
+    return [...settings.volumeHighlightOptions]
+      .sort((a, b) => a.boundary - b.boundary)
+      .find(x => volume <= x.boundary);
   }
 
   ngOnDestroy() {
@@ -288,6 +317,12 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     this.commandsService.submitMarket(e.options.side === 'sell' ? Side.Sell : Side.Buy).subscribe();
   }
 
+  private getVolumeHighlightOption(settings: VerticalOrderBookSettings, volume: number): VolumeHighlightOption | undefined {
+    return [...settings.volumeHighlightOptions]
+      .sort((a, b) => a.boundary - b.boundary)
+      .find(x => volume <= x.boundary);
+  }
+
   private toViewModel(settings: VerticalOrderBookSettings, instrumentInfo: Instrument, orderBook: VerticalOrderBook): VerticalOrderBookRowView[] {
     this.workingVolumes = settings.workingVolumes;
 
@@ -297,35 +332,51 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
 
     const displayYield = settings.showYieldForBonds && getTypeByCfi(instrumentInfo.cfiCode) === InstrumentType.Bond;
 
-    const asks = orderBook.asks.map(x => ({
-        ...x,
-        rowType: VerticalOrderBookRowType.Ask,
-        displayValue: displayYield ? x.yield : x.price
-      } as VerticalOrderBookRowView)
-    ).sort((a, b) => b.displayValue - a.displayValue);
+    const asks = this.toVerticalOrderBookRowView(
+      orderBook.asks,
+      VerticalOrderBookRowType.Ask,
+      item => displayYield ? item.yield : item.price,
+      settings
+    );
 
     if (asks.length > 0) {
       asks[asks.length - 1].isBest = true;
     }
 
-    const bids = orderBook.bids.map(x => ({
-        ...x,
-        rowType: VerticalOrderBookRowType.Bid,
-        displayValue: displayYield ? x.yield : x.price
-      } as VerticalOrderBookRowView)
-    ).sort((a, b) => b.displayValue - a.displayValue);
+    const bids = this.toVerticalOrderBookRowView(
+      orderBook.bids,
+      VerticalOrderBookRowType.Bid,
+      item => displayYield ? item.yield : item.price,
+      settings
+    );
 
     if (bids.length > 0) {
       bids[0].isBest = true;
     }
 
-    const spreadItems = orderBook.spreadItems.map(x => ({
-        ...x,
-        rowType: VerticalOrderBookRowType.Spread,
-        displayValue: x.price
-      } as VerticalOrderBookRowView)
-    ).sort((a, b) => b.displayValue - a.displayValue);
+    const spreadItems = this.toVerticalOrderBookRowView(
+      orderBook.spreadItems ?? [],
+      VerticalOrderBookRowType.Spread,
+      item => item.price,
+      settings
+    );
+
 
     return [...asks, ...spreadItems, ...bids];
+  }
+
+  private toVerticalOrderBookRowView(
+    items: OrderBookItem[],
+    rowType: VerticalOrderBookRowType,
+    displayValueSelector: (item: OrderBookItem) => number | undefined,
+    settings: VerticalOrderBookSettings): VerticalOrderBookRowView[] {
+    return items.map(x => ({
+        ...x,
+        currentOrders: x.currentOrders ?? [],
+        rowType: rowType,
+        displayValue: displayValueSelector(x),
+        getVolumeStyle: () => this.getVolumeStyle(rowType, x.volume ?? 0, settings)
+      } as VerticalOrderBookRowView)
+    ).sort((a, b) => b.displayValue - a.displayValue);
   }
 }

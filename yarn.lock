@@ -1275,7 +1275,7 @@
   resolved "https://registry.yarnpkg.com/@csstools/selector-specificity/-/selector-specificity-2.0.1.tgz#b6b8d81780b9a9f6459f4bfe9226ac6aefaefe87"
   integrity sha512-aG20vknL4/YjQF9BSV7ts4EWm/yrjagAN7OWBNmlbEOUiu0llj4OGrFoOKK3g2vey4/p2omKCoHrWtPxSwV3HA==
 
-"@ctrl/tinycolor@^3.3.1":
+"@ctrl/tinycolor@^3.3.1", "@ctrl/tinycolor@^3.4.0":
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.1.tgz#75b4c27948c81e88ccd3a8902047bcd797f38d32"
   integrity sha512-ej5oVy6lykXsvieQtqZxCOaLT+xD4+QNarq78cIYISHmZXshCvROLudpQN3lfL8G0NL7plMSSK+zlyvCaIJ4Iw==
@@ -4901,6 +4901,11 @@ marked@^4.0.10:
   resolved "https://registry.yarnpkg.com/marked/-/marked-4.0.17.tgz#1186193d85bb7882159cdcfc57d1dfccaffb3fe9"
   integrity sha512-Wfk0ATOK5iPxM4ptrORkFemqroz0ZDxp5MWfYA7H/F+wO17NRWV5Ypxi6p3g2Xmw2bKeiYOl6oVnLHKxBA0VhA==
 
+material-colors@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/material-colors/-/material-colors-1.2.6.tgz#6d1958871126992ceecc72f4bcc4d8f010865f46"
+  integrity sha512-6qE4B9deFBIa9YSpOc9O0Sgc43zTeVYbgDT5veRKSlB2+ZuHNoVVxA1L/ckMUayV9Ay9y7Z/SZCLcGteW9i7bg==
+
 media-typer@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
@@ -5176,6 +5181,15 @@ ng2-charts@^3.0.8:
   integrity sha512-HHy188JIGt48tbww8MhT9PYGcFNCMeQCzVbQoezmunKxQcjg3dBatLov+qoLXbSQvhRYbYVowthTtY7/7ZsiSg==
   dependencies:
     lodash-es "^4.17.15"
+    tslib "^2.3.0"
+
+ngx-color@7.3.3:
+  version "7.3.3"
+  resolved "https://registry.yarnpkg.com/ngx-color/-/ngx-color-7.3.3.tgz#e328290244eb302fa8a12474f578ace02d82a148"
+  integrity sha512-RyMIFMC5/aYYD/jkfStOUjr3gQfTGhgiiMxuZEfxt2o4GYmb3C/06C1o0S6Mj9qHAcKlG6soioq2MzdhtIswHw==
+  dependencies:
+    "@ctrl/tinycolor" "^3.4.0"
+    material-colors "^1.2.6"
     tslib "^2.3.0"
 
 ngx-joyride@^2.5.0:

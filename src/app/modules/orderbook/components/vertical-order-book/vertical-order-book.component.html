@@ -27,7 +27,7 @@
           }"
           (click)="addStopOrder($event, row)"
       >
-        <td [ngStyle]='getVolumeStyle(row.rowType, row.volume ?? 0)' class="volume-cell"
+        <td [ngStyle]='row.getVolumeStyle()' class="volume-cell"
             nzAlign="center">{{row.volume}}</td>
         <td class="price-cell" nzAlign="center">{{row.displayValue}}</td>
         <td nzAlign="right">
