@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type ConvertF = ((k: string) => string | boolean);
 
 export class CurrencyInstrument {

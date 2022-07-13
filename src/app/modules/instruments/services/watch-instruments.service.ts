@@ -1,20 +1,29 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, take, tap } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import {
+  BehaviorSubject,
+  Observable,
+  Subscription,
+  take
+} from 'rxjs';
+import {
+  finalize,
+  map
+} from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { WatchedInstrument } from '../models/watched-instrument.model';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
-import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
+import {
+  getDayChange,
+  getDayChangePerPrice
+} from 'src/app/shared/utils/price';
 import { GuidGenerator } from '../../../shared/utils/guid';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from './watchlist-collection.service';
-import { BaseService } from '../../../shared/services/base.service';
 import { InstrumentSelectSettings } from '../../../shared/models/settings/instrument-select-settings.model';
-import { DashboardService } from '../../../shared/services/dashboard.service';
 
 @Injectable()
-export class WatchInstrumentsService extends BaseService<InstrumentSelectSettings> {
+export class WatchInstrumentsService {
   private readonly quitesSubscriptionId = GuidGenerator.newGuid();
   private listId?: string;
 
@@ -33,11 +42,9 @@ export class WatchInstrumentsService extends BaseService<InstrumentSelectSetting
 
 
   constructor(
-    settingsService: DashboardService,
     private readonly history: HistoryService,
     private readonly ws: WebsocketService,
     private readonly watchlistCollectionService: WatchlistCollectionService) {
-    super(settingsService);
   }
 
   unsubscribe() {
@@ -69,18 +76,6 @@ export class WatchInstrumentsService extends BaseService<InstrumentSelectSetting
     this.initInstrumentsWatch();
 
     return this.watchListUpdates$;
-  }
-
-  getSettings(guid: string): Observable<InstrumentSelectSettings> {
-    return super.getSettings(guid).pipe(
-      tap(s => this.settings = {
-        ...s,
-        // need to specify properties below for backward compatibility
-        // linkToActive and activeListId are missing by default so equal function do not process them correctly
-        linkToActive: s.linkToActive,
-        activeListId: s.activeListId
-      } as InstrumentSelectSettings)
-    );
   }
 
   private refreshWatchItems() {

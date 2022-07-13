@@ -1,14 +1,19 @@
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 
 import { WatchInstrumentsService } from './watch-instruments.service';
 import { TestData } from '../../../shared/utils/testing';
 import { WatchlistCollectionService } from './watchlist-collection.service';
-import { DashboardService } from '../../../shared/services/dashboard.service';
 import { HistoryService } from '../../../shared/services/history.service';
-import { BehaviorSubject, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject
+} from 'rxjs';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { BaseResponse } from '../../../shared/models/ws/base-response.model';
 import { Quote } from '../../../shared/models/quotes/quote.model';
@@ -20,18 +25,18 @@ describe('WatchInstrumentsService', () => {
   let httpClient: HttpClient;
 
   let spy: any;
-  let dashboardServiceSpy: any;
   let historyServiceSpy: any;
   let watchlistCollectionServiceSpy: any;
 
   const collectionChangedMock = new Subject();
-  const daysOpenMock = new BehaviorSubject<Candle | null>(null);
+  const daysOpenMock = new BehaviorSubject<Candle | null>({
+    low: 0
+  } as Candle);
   const messagesMock = new Subject<BaseResponse<Quote>>();
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
-    dashboardServiceSpy = jasmine.createSpyObj('DashboardService', ['getSettings']);
     historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getDaysOpen']);
     watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['getWatchlistCollection', 'collectionChanged$', 'getListItems',]);
 
@@ -45,7 +50,6 @@ describe('WatchInstrumentsService', () => {
       ],
       providers: [
         WatchInstrumentsService,
-        { provide: DashboardService, useValue: dashboardServiceSpy },
         { provide: HistoryService, useValue: historyServiceSpy },
         { provide: WebsocketService, useValue: spy },
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy }

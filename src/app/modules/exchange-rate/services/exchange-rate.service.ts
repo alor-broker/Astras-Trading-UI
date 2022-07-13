@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { ExchangeRate } from "../models/exchange-rate.model";
 import { WebsocketService } from "../../../shared/services/websocket.service";
 import { Quote } from "../../../shared/models/quotes/quote.model";

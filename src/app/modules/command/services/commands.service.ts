@@ -1,8 +1,19 @@
-import { HttpClient } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import {
+  BehaviorSubject,
+  of,
+  Subject,
+  throwError
+} from 'rxjs';
+import {
+  catchError,
+  tap
+} from 'rxjs/operators';
 import { CommandResponse } from 'src/app/shared/models/commands/command-response.model';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
@@ -13,6 +24,8 @@ import { LimitEdit } from '../models/limit-edit.model';
 import { MarketCommand } from '../models/market-command.model';
 import { MarketEdit } from '../models/market-edit.model';
 import { StopCommand } from '../models/stop-command.model';
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import { httpLinkRegexp } from "../../../shared/utils/regexps";
 
 @Injectable({
   providedIn: 'root'
@@ -28,9 +41,15 @@ export class CommandsService {
   private marketEdit?: BehaviorSubject<MarketEdit | null>;
   private priceSelectedSubject$ = new Subject<number>();
   public priceSelected$ = this.priceSelectedSubject$.asObservable();
+  private stopCommandErrSubject$ = new Subject<boolean| null>();
+  public stopCommandErr$ = this.stopCommandErrSubject$.asObservable();
 
 
-  constructor(private http: HttpClient, private notification: NzNotificationService) { }
+  constructor(
+    private http: HttpClient,
+    private notification: NzNotificationService,
+    private readonly errorHandlerService: ErrorHandlerService
+  ) { }
 
   setStopCommand(command: StopCommand | null) {
     if (!this.stopCommand) {
@@ -77,7 +96,8 @@ export class CommandsService {
       return this.placeOrder(command.price ? 'stopLimit' : 'stop', side, command);
     }
     else {
-      throw new Error('Empty command');
+      this.stopCommandErrSubject$.next(true);
+      return throwError(() => new Error('Empty command'));
     }
   }
 
@@ -169,8 +189,34 @@ export class CommandsService {
         if (resp.orderNumber) {
           this.notification.success(`Заявка выставлена`, `Заявка успешно выставлена, её номер на бирже: \n ${resp.orderNumber}`);
         }
-      })
+      }),
+      catchError(err => {
+        if (!(err instanceof HttpErrorResponse)) {
+          this.errorHandlerService.handleError(err);
+          return of(null);
+        }
+
+        this.handleCommandError(err);
+        return of(null);
+      }),
     );
+  }
+
+  private handleCommandError(error: HttpErrorResponse){
+    const errorTitle = 'Заявка не выставлена';
+    const errorMessage = !!error.error.code && !!error.error.message
+      ?`Ошибка ${error.error.code} <br/> ${error.error.message}`
+      : error.message;
+    this.notification.error(errorTitle, this.prepareErrorMessage(errorMessage));
+  }
+
+  private prepareErrorMessage(message: string): string {
+    const links = new RegExp(httpLinkRegexp, 'im').exec(message);
+    if(!links?.length) {
+      return message;
+    }
+
+    return  links!.reduce((result, link) => result.replace(link, `<a href="${link}" target="_blank">${link}</a>`), message);
   }
 }
 

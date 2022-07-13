@@ -1,9 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 import { CommandsService } from './commands.service';
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 
 describe('CommandsService', () => {
   let service: CommandsService;
@@ -20,7 +24,8 @@ describe('CommandsService', () => {
       ],
       providers: [
         CommandsService,
-        { provide: NzNotificationService, useValue: notificationSpy }
+        { provide: NzNotificationService, useValue: notificationSpy },
+        { provide: ErrorHandlerService, useValue: jasmine.createSpyObj('ErrorHandlerService', ['handleError']) }
       ]
     });
     service = TestBed.inject(CommandsService);

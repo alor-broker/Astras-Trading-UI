@@ -1,5 +1,6 @@
 export interface InstrumentKey {
   instrumentGroup?: string,
   symbol: string,
-  exchange: string
+  exchange: string,
+  isin?: string,
 }

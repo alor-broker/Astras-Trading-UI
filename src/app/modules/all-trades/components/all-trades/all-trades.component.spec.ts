@@ -4,6 +4,7 @@ import { AllTradesComponent } from './all-trades.component';
 import { AllTradesService } from "../../services/all-trades.service";
 import { of } from "rxjs";
 import { EventEmitter } from "@angular/core";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('AllTradesComponent', () => {
   let component: AllTradesComponent;
@@ -16,9 +17,14 @@ describe('AllTradesComponent', () => {
       declarations: [ AllTradesComponent ],
       providers: [
         {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock))
+          }
+        },
+        {
           provide: AllTradesService,
           useValue: {
-            getSettingsSub: jasmine.createSpy('getSettingsSub').and.returnValue(of(settingsMock)),
             getTradesList: jasmine.createSpy('getTradesList').and.returnValue(of([])),
             getAllTradesSub: jasmine.createSpy('getAllTradesSub').and.returnValue(of({})),
           }

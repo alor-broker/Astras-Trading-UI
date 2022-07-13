@@ -1,13 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 
 import { LightChartService } from './light-chart.service';
 import { sharedModuleImportForTests } from '../../../shared/utils/testing';
 import { InstrumentsService } from '../../instruments/services/instruments.service';
+import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
+import { of } from "rxjs";
 
 describe('LightChartService', () => {
   let service: LightChartService;
@@ -16,7 +20,6 @@ describe('LightChartService', () => {
 
   const spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
   const spyHistory = jasmine.createSpyObj('HistoryService', ['getHistory']);
-  const dashboardSpy = jasmine.createSpyObj('DashboardService', ['getSettings']);
   const instrumentsSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
 
   beforeAll(() => TestBed.resetTestingModule());
@@ -27,9 +30,15 @@ describe('LightChartService', () => {
         ...sharedModuleImportForTests
       ],
       providers: [
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+            updateIsLinked: jasmine.createSpy('updateSettings').and.callThrough()
+          }
+        },
         { provide: WebsocketService, useValue: spy },
         { provide: HistoryService, useValue: spyHistory },
-        { provide: DashboardService, useValue: dashboardSpy },
         { provide: InstrumentsService, useValue: instrumentsSpy },
         LightChartService
       ]

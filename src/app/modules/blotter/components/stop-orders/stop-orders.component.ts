@@ -1,5 +1,23 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of, Subject, takeUntil } from 'rxjs';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  take,
+  takeUntil
+} from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
@@ -10,6 +28,10 @@ import { BlotterService } from '../../services/blotter.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { StopOrder } from 'src/app/shared/models/orders/stop-order.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
+import { NzTableComponent } from 'ng-zorro-antd/table';
+import { ExportHelper } from "../../utils/export-helper";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -22,6 +44,8 @@ interface DisplayOrder extends StopOrder {
   styleUrls: ['./stop-orders.component.less'],
 })
 export class StopOrdersComponent implements OnInit, OnDestroy {
+  @ViewChild('nzTable')
+  table?: NzTableComponent<DisplayOrder>;
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -240,17 +264,23 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   private cancelCommands = new Subject<CancelCommand>();
   private cancels$ = this.cancelCommands.asObservable();
   private orders: StopOrder[] = [];
+  private settings$!: Observable<BlotterSettings>;
 
   constructor(
     private readonly service: BlotterService,
-    private readonly cancller: OrderCancellerService,
+    private readonly settingsService: WidgetSettingsService,
+    private readonly canceller: OrderCancellerService,
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService
   ) {
   }
 
   ngOnInit(): void {
-    this.service.getSettings(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      shareReplay()
+    );
+
+    this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(s => {
       if (s.stopOrdersColumns) {
@@ -259,7 +289,8 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       }
     });
 
-    const orders$ = this.service.getStopOrders(this.guid).pipe(
+    const orders$ = this.settings$.pipe(
+      switchMap(settings => this.service.getStopOrders(settings)),
       tap(orders => this.orders = orders)
     );
 
@@ -281,7 +312,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
     );
 
     this.cancels$.pipe(
-      mergeMap((command) => this.cancller.cancelOrder(command)),
+      mergeMap((command) => this.canceller.cancelOrder(command)),
       catchError((_, caught) => caught),
       takeUntil(this.destroy$)
     ).subscribe();
@@ -309,15 +340,16 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   }
 
   cancelOrder(orderId: string) {
-    const settings = this.service.getSettingsValue();
-    if (settings) {
+    this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      take(1)
+    ).subscribe(settings => {
       this.cancelCommands?.next({
         portfolio: settings.portfolio,
         exchange: settings.exchange,
         orderid: orderId,
         stop: true
       });
-    }
+    });
   }
 
   editOrder(order: StopOrder) {
@@ -374,6 +406,28 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   isFilterApplied(column: Column<DisplayOrder, OrderFilter>) {
     const filter = this.searchFilter.getValue();
     return column.id in filter && filter[column.id] !== '';
+  }
+
+  get canExport(): boolean {
+    return !!this.table?.data && this.table.data.length > 0;
+  }
+
+  exportToFile() {
+    const valueTranslators = new Map<string, (value: any) => string>([
+      ['status', value => this.translateStatus(value)],
+      ['transTime', value => this.formatDate(value)],
+      ['endTime', value => this.formatDate(value)],
+    ]);
+
+    this.settings$.pipe(take(1)).subscribe(settings => {
+      ExportHelper.exportToCsv(
+        'Стопы',
+        settings,
+        [...this.table?.data ?? []],
+        this.listOfColumns,
+        valueTranslators
+      );
+    });
   }
 
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {

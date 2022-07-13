@@ -3,10 +3,15 @@
     <div [nzGutter]="12" nz-row>
       <div [nzSm]="12" [nzXs]="24" nz-col>
         <nz-form-item class="compact">
-          <nz-form-control nzErrorTip="Введите кол-во">
+          <nz-form-control [nzErrorTip]="quantityError">
             <nz-form-label nzFor="quantity" nzRequired>Кол-во лотов <span *ngIf="(commandContext.instrument?.lotsize ?? -1) !== 1">&nbsp;(лотность {{commandContext.instrument?.lotsize}})</span></nz-form-label>
-            <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="quantity" placeholder="100"/>
+            <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="quantity" placeholder="0"/>
           </nz-form-control>
+          <ng-template #quantityError>
+            <span *ngIf="form.get('quantity')?.errors?.required">Введите кол-во</span>
+            <span *ngIf="form.get('quantity')?.errors?.min">Слишком мало</span>
+            <span *ngIf="form.get('quantity')?.errors?.max">Слишком много</span>
+          </ng-template>
         </nz-form-item>
       </div>
       <div [nzSm]="12" [nzXs]="24" nz-col>
@@ -22,11 +27,15 @@
       </div>
       <div [nzSm]="12" [nzXs]="24" nz-col>
         <nz-form-item class="compact">
-          <nz-form-control nzErrorTip="Введите сигн. цену">
+          <nz-form-control [nzErrorTip]="triggerPriceError">
             <nz-form-label nzFor="triggerPrice" nzRequired>Сигнальная цена</nz-form-label>
             <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input'
-                   formControlName="triggerPrice" placeholder="1"/>
+                   formControlName="triggerPrice" placeholder="0"/>
           </nz-form-control>
+          <ng-template #triggerPriceError>
+            <span *ngIf="form.get('triggerPrice')?.errors?.required">Введите кол-во</span>
+            <span *ngIf="form.get('triggerPrice')?.errors?.min">Слишком мало</span>
+          </ng-template>
         </nz-form-item>
       </div>
       <div [nzSm]="12" [nzXs]="24" nz-col>
@@ -60,10 +69,15 @@
     <div nz-row *ngIf="form.value.withLimit">
       <div nz-col [nzSpan]="24">
         <nz-form-item class="compact">
-          <nz-form-control nzErrorTip="Введите цену">
+          <nz-form-control [nzErrorTip]="priceError">
             <nz-form-label nzFor="price" nzRequired>Цена</nz-form-label>
             <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="price" placeholder="0"/>
           </nz-form-control>
+          <ng-template #priceError>
+            <span *ngIf="form.get('price')?.errors?.required">Введите кол-во</span>
+            <span *ngIf="form.get('price')?.errors?.min">Слишком мало</span>
+            <span *ngIf="form.get('price')?.errors?.max">Слишком мало</span>
+          </ng-template>
         </nz-form-item>
       </div>
     </div>

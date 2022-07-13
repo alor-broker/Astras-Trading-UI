@@ -1,4 +1,4 @@
-export interface SummaryView {
+export interface CommonSummaryView {
     /** покупательная способности на утро **/
     buyingPowerAtMorning: string,
     /** покупательная способность **/

@@ -1,5 +1,23 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of, Subject, takeUntil } from 'rxjs';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  take,
+  takeUntil
+} from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
@@ -10,6 +28,10 @@ import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { BlotterService } from '../../services/blotter.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
+import { ExportHelper } from "../../utils/export-helper";
+import { NzTableComponent } from 'ng-zorro-antd/table';
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -22,6 +44,9 @@ interface DisplayOrder extends Order {
   styleUrls: ['./orders.component.less'],
 })
 export class OrdersComponent implements OnInit, OnDestroy {
+  @ViewChild('nzTable')
+  table?: NzTableComponent<DisplayOrder>;
+
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -211,8 +236,10 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private cancels$ = this.cancelCommands.asObservable();
   private orders: Order[] = [];
   private orders$: Observable<Order[]> = of([]);
+  private settings$!: Observable<BlotterSettings>;
 
   constructor(
+    private readonly settingsService: WidgetSettingsService,
     private readonly service: BlotterService,
     private readonly canceller: OrderCancellerService,
     private readonly modal: ModalService,
@@ -220,7 +247,11 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.service.getSettings(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      shareReplay()
+    );
+
+    this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(s => {
       if (s.ordersColumns) {
@@ -229,7 +260,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.orders$ = this.service.getOrders(this.guid).pipe(
+    this.orders$ = this.settings$.pipe(
+      switchMap(settings=>this.service.getOrders(settings)),
       tap(orders => this.orders = orders)
     );
 
@@ -279,15 +311,16 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   cancelOrder(orderId: string) {
-    const settings = this.service.getSettingsValue();
-    if (settings) {
+    this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      take(1)
+    ).subscribe(settings => {
       this.cancelCommands?.next({
         portfolio: settings.portfolio,
         exchange: settings.exchange,
         orderid: orderId,
         stop: false
       });
-    }
+    });
   }
 
   editOrder(order: Order) {
@@ -341,6 +374,28 @@ export class OrdersComponent implements OnInit, OnDestroy {
   isFilterApplied(column: Column<DisplayOrder, OrderFilter>) {
     const filter = this.searchFilter.getValue();
     return column.id in filter && filter[column.id] !== '';
+  }
+
+  get canExport(): boolean {
+    return !!this.table?.data && this.table.data.length > 0;
+  }
+
+  exportToFile() {
+    const valueTranslators = new Map<string, (value: any) => string>([
+      ['status', value => this.translateStatus(value)],
+      ['transTime', value => this.formatDate(value)],
+      ['endTime', value => this.formatDate(value)],
+    ]);
+
+    this.settings$.pipe(take(1)).subscribe(settings => {
+      ExportHelper.exportToCsv(
+        'Заявки',
+        settings,
+        [...this.table?.data ?? []],
+        this.listOfColumns,
+        valueTranslators
+      );
+    });
   }
 
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {

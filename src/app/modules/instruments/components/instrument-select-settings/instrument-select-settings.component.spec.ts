@@ -1,31 +1,40 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { InstrumentSelectSettingsComponent } from './instrument-select-settings.component';
-import { InstrumentsService } from '../../services/instruments.service';
-import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
-import { BehaviorSubject, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject
+} from 'rxjs';
 import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('InstrumentSelectSettingsComponent', () => {
   let component: InstrumentSelectSettingsComponent;
   let fixture: ComponentFixture<InstrumentSelectSettingsComponent>;
 
-  const watchInstrumentsServiceSpy = jasmine.createSpyObj('WatchInstrumentsService', ['getSettings']);
   const watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['collectionChanged$', 'getWatchlistCollection']);
 
   const collectionChangedMock = new Subject();
   watchlistCollectionServiceSpy.collectionChanged$ = collectionChangedMock.asObservable();
 
   const getSettingsMock = new BehaviorSubject({} as InstrumentSelectSettings);
-  watchInstrumentsServiceSpy.getSettings.and.returnValue(getSettingsMock.asObservable());
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [InstrumentSelectSettingsComponent],
       providers: [
-        { provide: WatchInstrumentsService, useValue: watchInstrumentsServiceSpy },
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(getSettingsMock),
+            updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
+          }
+        },
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
       ]
     }).compileComponents();

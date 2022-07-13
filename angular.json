@@ -88,7 +88,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumError": "9kb"
                 }
               ],
               "fileReplacements": [
@@ -114,6 +114,9 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
+              "browserTarget": "astras:build:production"
+            },
+            "devContour": {
               "browserTarget": "astras:build:production"
             },
             "development": {

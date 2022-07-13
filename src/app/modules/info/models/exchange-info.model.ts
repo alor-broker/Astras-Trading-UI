@@ -7,5 +7,7 @@ export interface ExchangeInfo {
   isin: string,
   currency: string,
   type: string,
-  lotsize: number
+  lotsize: number;
+  marginbuy?: number;
+  marginsell?: number;
 }

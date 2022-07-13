@@ -1,0 +1,57 @@
+<ul nz-menu>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.instrumentSelect)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.instrumentSelect)"
+  >
+    <span><i nz-icon nzType="eye" nzTheme="outline"></i> <label><strong>&nbsp;Инструменты</strong></label></span>
+  </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.orderBook)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.orderBook)"
+  >
+    <span><i nz-icon nzType="ordered-list" nzTheme="outline"></i> <label>&nbsp;Стакан</label></span>
+  </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.lightChart)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.lightChart)"
+  >
+    <span><i nz-icon nzType="sliders" nzTheme="outline"></i><label>&nbsp;График</label></span>
+  </li>
+  <li nz-menu-item
+      (click)="selected.emit(widgetNames.blotter)"
+      *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.blotter)"
+  >
+    <span><i nz-icon nzType="table" nzTheme="outline"></i><label>&nbsp;Блоттер</label></span>
+  </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.instrumentInfo)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.instrumentInfo)"
+  >
+    <span><i nz-icon nzType="info" nzTheme="outline"></i><label>&nbsp;Инфо</label></span>
+  </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.news)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.news)"
+  >
+    <span><i nz-icon nzType="read" nzTheme="outline"></i><label> Новости</label></span>
+  </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.allTrades)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.allTrades)"
+  >
+    <span><i nz-icon nzType="unordered-list" nzTheme="outline"></i><label> Все сделки</label></span>
+  </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.exchangeRate)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.exchangeRate)"
+  >
+    <span><i nz-icon nzType="line-chart" nzTheme="outline"></i><label> Курсы валют</label></span>
+  </li>
+</ul>

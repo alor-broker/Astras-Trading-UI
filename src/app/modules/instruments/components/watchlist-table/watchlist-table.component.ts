@@ -1,14 +1,35 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit
+} from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, of, switchMap, take, tap } from 'rxjs';
+import {
+  Observable,
+  of,
+  switchMap,
+  take,
+  tap
+} from 'rxjs';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { selectNewInstrument } from '../../../../store/instruments/instruments.actions';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
-import { filter, map } from 'rxjs/operators';
+import {
+  filter,
+  map
+} from 'rxjs/operators';
 import { getPropertyFromPath } from "../../../../shared/utils/object-helper";
-import { allInstrumentsColumns, ColumnIds } from "../../../../shared/models/settings/instrument-select-settings.model";
+import {
+  allInstrumentsColumns,
+  ColumnIds,
+  InstrumentSelectSettings
+} from "../../../../shared/models/settings/instrument-select-settings.model";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
+import { WidgetNames } from "../../../../shared/models/enums/widget-names";
+import { DashboardService } from "../../../../shared/services/dashboard.service";
 
 @Component({
   selector: 'ats-watchlist-table[guid]',
@@ -33,16 +54,27 @@ export class WatchlistTableComponent implements OnInit {
     openPrice: this.getSortFn('openPrice'),
     closePrice: this.getSortFn('closePrice'),
   };
+  showedWidgetNames = [
+    WidgetNames.lightChart,
+    WidgetNames.orderBook,
+    WidgetNames.allTrades,
+    WidgetNames.instrumentInfo
+  ];
+
+  private selectedInstrument: InstrumentKey | null = null;
 
   constructor(
     private readonly store: Store,
+    private readonly settingsService: WidgetSettingsService,
     private readonly watchInstrumentsService: WatchInstrumentsService,
-    private readonly watchlistCollectionService: WatchlistCollectionService
+    private readonly watchlistCollectionService: WatchlistCollectionService,
+    private readonly nzContextMenuService: NzContextMenuService,
+    private readonly dashBoardService: DashboardService
   ) {
   }
 
   ngOnInit(): void {
-    this.watchedInstruments$ = this.watchInstrumentsService.getSettings(this.guid).pipe(
+    this.watchedInstruments$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
       tap(settings => {
         this.displayedColumns = allInstrumentsColumns.filter(c => settings.instrumentColumns.includes(c.columnId));
       }),
@@ -55,7 +87,7 @@ export class WatchlistTableComponent implements OnInit {
   }
 
   remove(instr: InstrumentKey) {
-    this.watchInstrumentsService.getSettings(this.guid).pipe(
+    this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
       map(s => s.activeListId),
       filter((id): id is string => !!id),
       take(1)
@@ -70,6 +102,30 @@ export class WatchlistTableComponent implements OnInit {
 
   isVisibleColumn(colName: string): boolean {
     return this.displayedColumns.map(c => c.columnId).includes(colName);
+  }
+
+  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedInstrument: InstrumentKey): void {
+    this.selectedInstrument = selectedInstrument;
+    this.nzContextMenuService.create($event, menu);
+  }
+
+  addWidget(type: WidgetNames): void {
+    const settings = {
+      gridItem: {
+        x: 0,
+        y: 0,
+        cols: 1,
+        rows: 1,
+        type: type,
+      },
+    };
+
+    const additionalSettings = {
+        linkToActive: false,
+        ...this.selectedInstrument
+      };
+
+    this.dashBoardService.addWidget(settings, additionalSettings);
   }
 
   private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {

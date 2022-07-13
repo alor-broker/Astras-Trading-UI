@@ -15,14 +15,15 @@ import { AllTradesSettings } from "../../../../shared/models/settings/all-trades
 import { switchMap, tap } from "rxjs/operators";
 import { Observable, Subject, takeUntil } from "rxjs";
 import { AllTradesItem } from "../../models/all-trades.model";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 @Component({
-  selector: 'ats-all-trades',
+  selector: 'ats-all-trades[guid]',
   templateUrl: './all-trades.component.html',
   styleUrls: ['./all-trades.component.less'],
 })
 export class AllTradesComponent implements OnInit, OnDestroy {
-
+  @Input() guid!: string;
   @Input() public resize!: EventEmitter<DashboardItem>;
   @Input() public heightAdjustment!: number;
 
@@ -51,15 +52,16 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   ];
 
   constructor(
-    private allTradesService: AllTradesService,
-    private cdr: ChangeDetectorRef
+    private readonly allTradesService: AllTradesService,
+    private readonly settingsService: WidgetSettingsService,
+    private readonly cdr: ChangeDetectorRef
   ) {
   }
 
   ngOnInit(): void {
-    this.allTradesService.settings$
-      ?.pipe(takeUntil(this.destroy$))
-      .subscribe(settings => {
+    this.settingsService.getSettings<AllTradesSettings>(this.guid).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(settings => {
         this.settings = settings;
         this.settingsChange();
       });
