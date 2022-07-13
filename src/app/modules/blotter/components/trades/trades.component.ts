@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -8,6 +16,7 @@ import {
   shareReplay,
   Subject,
   switchMap,
+  take,
   takeUntil
 } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
@@ -19,6 +28,8 @@ import { MathHelper } from '../../../../shared/utils/math-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
+import { NzTableComponent } from 'ng-zorro-antd/table';
+import { ExportHelper } from "../../utils/export-helper";
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 
 interface DisplayTrade extends Trade {
@@ -31,6 +42,9 @@ interface DisplayTrade extends Trade {
   styleUrls: ['./trades.component.less']
 })
 export class TradesComponent implements OnInit, OnDestroy {
+  @ViewChild('nzTable')
+  table?: NzTableComponent<DisplayTrade>;
+
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -155,6 +169,7 @@ export class TradesComponent implements OnInit, OnDestroy {
   ];
   listOfColumns: Column<DisplayTrade, TradeFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
+  private settings$!: Observable<BlotterSettings>;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -163,12 +178,12 @@ export class TradesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
       shareReplay()
     );
 
-    settings$.pipe(
+    this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(s => {
       if (s.ordersColumns) {
@@ -177,7 +192,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       }
     });
 
-    const trades$ = settings$.pipe(
+    const trades$ = this.settings$.pipe(
       switchMap(settings => this.service.getTrades(settings))
     );
 
@@ -229,6 +244,26 @@ export class TradesComponent implements OnInit, OnDestroy {
   isFilterApplied(column: Column<DisplayTrade, TradeFilter>) {
     const filter = this.searchFilter.getValue();
     return column.id in filter && filter[column.id] !== '';
+  }
+
+  get canExport(): boolean {
+    return !!this.table?.data && this.table.data.length > 0;
+  }
+
+  exportToFile() {
+    const valueTranslators = new Map<string, (value: any) => string>([
+      ['date', value => this.formatDate(value)]
+    ]);
+
+    this.settings$.pipe(take(1)).subscribe(settings => {
+      ExportHelper.exportToCsv(
+        'Сделки',
+        settings,
+        [...this.table?.data ?? []],
+        this.listOfColumns,
+        valueTranslators
+      );
+    });
   }
 
   private justifyFilter(trade: DisplayTrade, filter: TradeFilter): boolean {

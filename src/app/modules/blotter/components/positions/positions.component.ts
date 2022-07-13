@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -7,9 +15,13 @@ import {
   shareReplay,
   Subject,
   switchMap,
+  take,
   takeUntil
 } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import {
+  map,
+  mergeMap
+} from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { Column } from '../../models/column.model';
@@ -17,6 +29,8 @@ import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
+import { NzTableComponent } from 'ng-zorro-antd/table';
+import { ExportHelper } from "../../utils/export-helper";
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 
 interface PositionDisplay extends Position {
@@ -29,6 +43,8 @@ interface PositionDisplay extends Position {
   styleUrls: ['./positions.component.less']
 })
 export class PositionsComponent implements OnInit, OnDestroy {
+  @ViewChild('nzTable')
+  table?: NzTableComponent<PositionDisplay>;
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -39,6 +55,8 @@ export class PositionsComponent implements OnInit, OnDestroy {
   displayPositions$: Observable<PositionDisplay[]> = of([]);
   searchFilter = new BehaviorSubject<PositionFilter>({});
   isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
+
+  private settings$!: Observable<BlotterSettings>;
 
   allColumns: Column<PositionDisplay, PositionFilter>[] = [
     {
@@ -181,12 +199,12 @@ export class PositionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
       shareReplay()
     );
 
-    settings$.pipe(
+    this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(s => {
         if (s.positionsColumns) {
@@ -196,7 +214,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.displayPositions$ = settings$.pipe(
+    this.displayPositions$ = this.settings$.pipe(
       switchMap(settings => this.service.getPositions(settings)),
       map(positions => positions.map(p => <PositionDisplay>{
         ...p,
@@ -250,6 +268,21 @@ export class PositionsComponent implements OnInit, OnDestroy {
   isFilterApplied(column: Column<PositionDisplay, PositionFilter>) {
     const filter = this.searchFilter.getValue();
     return column.id in filter && filter[column.id] !== '';
+  }
+
+  get canExport(): boolean {
+    return !!this.table?.data && this.table.data.length > 0;
+  }
+
+  exportToFile() {
+    this.settings$.pipe(take(1)).subscribe(settings => {
+      ExportHelper.exportToCsv(
+        'Позиции',
+        settings,
+        [...this.table?.data ?? []],
+        this.listOfColumns
+      );
+    });
   }
 
   private justifyFilter(position: PositionDisplay, filter: PositionFilter): boolean {

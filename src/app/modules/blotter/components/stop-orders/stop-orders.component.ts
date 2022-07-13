@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -23,6 +31,8 @@ import { StopOrder } from 'src/app/shared/models/orders/stop-order.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
+import { NzTableComponent } from 'ng-zorro-antd/table';
+import { ExportHelper } from "../../utils/export-helper";
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 
 interface DisplayOrder extends StopOrder {
@@ -36,6 +46,8 @@ interface DisplayOrder extends StopOrder {
   styleUrls: ['./stop-orders.component.less'],
 })
 export class StopOrdersComponent implements OnInit, OnDestroy {
+  @ViewChild('nzTable')
+  table?: NzTableComponent<DisplayOrder>;
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -254,6 +266,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   private cancelCommands = new Subject<CancelCommand>();
   private cancels$ = this.cancelCommands.asObservable();
   private orders: StopOrder[] = [];
+  private settings$!: Observable<BlotterSettings>;
 
   constructor(
     private readonly service: BlotterService,
@@ -265,12 +278,12 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
       shareReplay()
     );
 
-    settings$.pipe(
+    this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(s => {
       if (s.stopOrdersColumns) {
@@ -279,7 +292,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       }
     });
 
-    const orders$ = settings$.pipe(
+    const orders$ = this.settings$.pipe(
       switchMap(settings => this.service.getStopOrders(settings)),
       tap(orders => this.orders = orders)
     );
@@ -396,6 +409,28 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   isFilterApplied(column: Column<DisplayOrder, OrderFilter>) {
     const filter = this.searchFilter.getValue();
     return column.id in filter && filter[column.id] !== '';
+  }
+
+  get canExport(): boolean {
+    return !!this.table?.data && this.table.data.length > 0;
+  }
+
+  exportToFile() {
+    const valueTranslators = new Map<string, (value: any) => string>([
+      ['status', value => this.translateStatus(value)],
+      ['transTime', value => this.formatDate(value)],
+      ['endTime', value => this.formatDate(value)],
+    ]);
+
+    this.settings$.pipe(take(1)).subscribe(settings => {
+      ExportHelper.exportToCsv(
+        'Стопы',
+        settings,
+        [...this.table?.data ?? []],
+        this.listOfColumns,
+        valueTranslators
+      );
+    });
   }
 
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {
