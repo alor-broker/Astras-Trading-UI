@@ -264,8 +264,10 @@ export function isEqualBlotterSettings(
       settings1.exchange == settings2.exchange &&
       settings1.portfolio == settings2.portfolio &&
       settings1.guid == settings2.guid &&
-      settings1.activeTabIndex == settings2.activeTabIndex &&
-      scalarArrayEqual(settings1.ordersColumns, settings2.ordersColumns)
+      scalarArrayEqual(settings1.ordersColumns, settings2.ordersColumns) &&
+      scalarArrayEqual(settings1.stopOrdersColumns, settings2.stopOrdersColumns) &&
+      scalarArrayEqual(settings1.positionsColumns, settings2.positionsColumns) &&
+      scalarArrayEqual(settings1.tradesColumns, settings2.tradesColumns)
     );
   } else return false;
 }

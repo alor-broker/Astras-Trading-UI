@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import {
   BehaviorSubject,
   combineLatest,
+  distinctUntilChanged,
   Observable,
   of,
   shareReplay,
@@ -18,6 +19,7 @@ import { MathHelper } from '../../../../shared/utils/math-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
+import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -162,6 +164,7 @@ export class TradesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
       shareReplay()
     );
 

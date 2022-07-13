@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import {
   BehaviorSubject,
   combineLatest,
+  distinctUntilChanged,
   Observable,
   of,
   shareReplay,
@@ -22,6 +23,7 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
+import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -234,6 +236,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
       shareReplay()
     );
 

@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import {
+  distinctUntilChanged,
   Observable,
   Subscription,
   switchMap
@@ -14,6 +15,7 @@ import { BlotterService } from "../../services/blotter.service";
 import { ForwardRisksView } from "../../models/forward-risks-view.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
+import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 
 @Component({
   selector: 'ats-forward-summary[guid][resize]',
@@ -39,6 +41,7 @@ export class ForwardSummaryComponent implements OnInit {
 
   ngOnInit(): void {
     this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
       switchMap(settings => this.service.getForwardRisks(settings))
     );
 

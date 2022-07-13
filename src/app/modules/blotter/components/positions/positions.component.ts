@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import {
   BehaviorSubject,
+  distinctUntilChanged,
   Observable,
   of,
   shareReplay,
@@ -16,6 +17,7 @@ import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
+import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 
 interface PositionDisplay extends Position {
   volume: number
@@ -180,6 +182,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
       shareReplay()
     );
 

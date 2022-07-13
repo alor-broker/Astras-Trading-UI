@@ -8,7 +8,8 @@ import {
 import { NzTabChangeEvent } from 'ng-zorro-antd/tabs';
 import {
   Observable,
-  of
+  of,
+  take
 } from 'rxjs';
 import {
   filter,
@@ -54,7 +55,8 @@ export class BlotterWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     this.activeTabIndex$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      map(s => s.activeTabIndex)
+      map(s => s.activeTabIndex),
+      take(1)
     );
 
     this.marketType$ = this.store.select(getSelectedPortfolio).pipe(
