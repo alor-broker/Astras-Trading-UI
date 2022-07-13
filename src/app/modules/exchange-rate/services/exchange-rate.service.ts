@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { Observable, of } from "rxjs";
+import { Observable } from "rxjs";
 import { ExchangeRate } from "../models/exchange-rate.model";
 import { WebsocketService } from "../../../shared/services/websocket.service";
 import { Quote } from "../../../shared/models/quotes/quote.model";
 import { QuotesRequest } from "../../../shared/models/quotes/quotes-request.model";
 import { filter, map } from "rxjs/operators";
 import { BaseResponse } from "../../../shared/models/ws/base-response.model";
+import { environment } from "../../../../environments/environment";
 
 @Injectable()
 export class ExchangeRateService {
+  private baseUrl = environment.apiUrl + '/md/v2/Securities';
 
   private guids: string[] = [];
 
@@ -19,29 +21,7 @@ export class ExchangeRateService {
   ) {}
 
   getCurrencies(): Observable<ExchangeRate[]> {
-    return of([
-      {
-        cur1: 'EUR',
-        cur2: 'RUB',
-        symbol: 'EUR_RUB__TOM',
-        exchange: 'MOEX',
-        instrumentGroup: 'CETS',
-      },
-      {
-        cur1: 'USD',
-        cur2: 'RUB',
-        symbol: 'USD000UTSTOM',
-        exchange: 'MOEX',
-        instrumentGroup: 'CETS',
-      },
-      {
-        cur1: 'EUR',
-        cur2: 'USD',
-        symbol: 'EURUSD000TOM',
-        exchange: 'MOEX',
-        instrumentGroup: 'CETS',
-      }
-    ]);
+    return this.http.get<ExchangeRate[]>(`${this.baseUrl}/currencyPairs`);
   }
 
   getQuotes(symbol: string, exchange: string, instrumentGroup?: string): Observable<Quote> {
