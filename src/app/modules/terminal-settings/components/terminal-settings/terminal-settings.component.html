@@ -150,6 +150,84 @@
                 />
               </nz-form-control>
             </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="selectWorkingVolume1">Выбрать рабочий объём 1</nz-form-label>
+            <nz-form-control nzErrorTip="Введите значение">
+              <input
+                class='ant-input'
+                formControlName="selectWorkingVolume1"
+                (mousedown)="$event.stopPropagation()"
+                readonly
+                nz-input
+                (keydown)="hotkeyChange($event, 'selectWorkingVolume1')"
+              />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="selectWorkingVolume2">Выбрать рабочий объём 2</nz-form-label>
+            <nz-form-control nzErrorTip="Введите значение">
+              <input
+                class='ant-input'
+                formControlName="selectWorkingVolume2"
+                (mousedown)="$event.stopPropagation()"
+                readonly
+                nz-input
+                (keydown)="hotkeyChange($event, 'selectWorkingVolume2')"
+              />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="selectWorkingVolume3">Выбрать рабочий объём 3</nz-form-label>
+            <nz-form-control nzErrorTip="Введите значение">
+              <input
+                class='ant-input'
+                formControlName="selectWorkingVolume3"
+                (mousedown)="$event.stopPropagation()"
+                readonly
+                nz-input
+                (keydown)="hotkeyChange($event, 'selectWorkingVolume3')"
+              />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="selectWorkingVolume4">Выбрать рабочий объём 4</nz-form-label>
+            <nz-form-control nzErrorTip="Введите значение">
+              <input
+                class='ant-input'
+                formControlName="selectWorkingVolume4"
+                (mousedown)="$event.stopPropagation()"
+                readonly
+                nz-input
+                (keydown)="hotkeyChange($event, 'selectWorkingVolume4')"
+              />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="sellBestOrder">Выставить лучшую заявку на продажу</nz-form-label>
+            <nz-form-control nzErrorTip="Введите значение">
+              <input
+                class='ant-input'
+                formControlName="sellBestOrder"
+                (mousedown)="$event.stopPropagation()"
+                readonly
+                nz-input
+                (keydown)="hotkeyChange($event, 'sellBestOrder')"
+              />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="buyBestOrder">Выставить лучшую заявку на покупку</nz-form-label>
+            <nz-form-control nzErrorTip="Введите значение">
+              <input
+                class='ant-input'
+                formControlName="buyBestOrder"
+                (mousedown)="$event.stopPropagation()"
+                readonly
+                nz-input
+                (keydown)="hotkeyChange($event, 'buyBestOrder')"
+              />
+            </nz-form-control>
+          </nz-form-item>
 
             <nz-form-item>
               <nz-form-control>

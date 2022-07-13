@@ -79,6 +79,12 @@ export class TerminalSettingsEffects {
       reverseOrderbookPositions: 'T',
       buyMarket: 'S',
       sellMarket: 'A',
+      selectWorkingVolume1: '1',
+      selectWorkingVolume2: '2',
+      selectWorkingVolume3: '3',
+      selectWorkingVolume4: '4',
+      sellBestOrder: 'W',
+      buyBestOrder: 'Q',
     } as TerminalSettings;
   }
 }

@@ -1,7 +1,17 @@
 import { Inject, Injectable } from '@angular/core';
 import { EventManager } from "@angular/platform-browser";
 import { DOCUMENT } from "@angular/common";
-import { distinctUntilChanged, forkJoin, map, Observable, Subscription, switchMap, take } from "rxjs";
+import {
+  BehaviorSubject,
+  distinctUntilChanged,
+  forkJoin,
+  map,
+  Observable,
+  Subject,
+  Subscription,
+  switchMap,
+  take
+} from "rxjs";
 import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
 import { OrderCancellerService } from "./order-canceller.service";
 import { PositionsService } from "./positions.service";
@@ -11,17 +21,23 @@ import { PortfolioKey } from "../models/portfolio-key.model";
 import { Order } from "../models/orders/order.model";
 import { environment } from "../../../environments/environment";
 import { HttpClient } from "@angular/common/http";
-import { getAllSettings, getSettingsByGuid } from "../../store/widget-settings/widget-settings.selectors";
-import { OrderbookSettings } from "../models/settings/orderbook-settings.model";
+import { getAllSettings } from "../../store/widget-settings/widget-settings.selectors";
 import { getSelectedPortfolio } from "../../store/portfolios/portfolios.selectors";
 import { User } from "../models/user/user.model";
 import { Position } from "../models/positions/position.model";
 import { CommandsService } from "../../modules/command/services/commands.service";
 import { Side } from "../models/enums/side.model";
+import { VerticalOrderBookSettings } from "../models/settings/vertical-order-book-settings.model";
+import { mapWith } from "../utils/observable-helper";
 
 @Injectable({providedIn: 'root'})
 export class HotKeysService {
   private hotkeysSub: Subscription = new Subscription();
+
+  private orderBookEvent$ = new Subject<{ event: string, guid: string, options?: any }>();
+  public orderBookEventSub = this.orderBookEvent$.asObservable();
+
+  private activeOrderBookGuid$ = new BehaviorSubject<string | null>(null);
 
   constructor(
     private readonly eventManager: EventManager,
@@ -36,19 +52,24 @@ export class HotKeysService {
   ) {
   }
 
-  addShortcut(): Observable<{ guid: string | null | undefined, key: string }> {
+  activeOrderbookChange(guid: string | null) {
+    this.activeOrderBookGuid$.next(guid);
+  }
+
+  addShortcut(): Observable<{ settings: VerticalOrderBookSettings | null, key: string }> {
     return new Observable(observer => {
       const handler = (e: KeyboardEvent) => {
-        const focusedOrderbookEl = this.document.querySelector('ats-order-book:hover');
-        const orderbookGuid = focusedOrderbookEl?.getAttribute(
-          focusedOrderbookEl?.getAttributeNames().find(name => name.includes('guid')) || ''
-        );
 
-        e.preventDefault();
-        observer.next({
-          guid: orderbookGuid,
-          key: e.key
-        });
+        this.store.select(getAllSettings)
+          .pipe(take(1))
+          .subscribe(settings => {
+            observer.next({
+              settings: this.activeOrderBookGuid$.getValue()
+                ? settings.find(s => s.guid === this.activeOrderBookGuid$.getValue()) as VerticalOrderBookSettings
+                : null,
+              key: e.key
+            });
+          });
       };
 
       const dispose = this.eventManager.addEventListener(
@@ -68,6 +89,17 @@ export class HotKeysService {
           prev.cancelOrdersKey === curr.cancelOrdersKey
           && prev.closePositionsKey === curr.closePositionsKey
           && prev.centerOrderbookKey === curr.centerOrderbookKey
+          && prev.cancelOrderbookOrders === curr.cancelOrderbookOrders
+          && prev.closeOrderbookPositions === curr.closeOrderbookPositions
+          && prev.reverseOrderbookPositions === curr.reverseOrderbookPositions
+          && prev.buyMarket === curr.buyMarket
+          && prev.sellMarket === curr.sellMarket
+          && prev.selectWorkingVolume1 === curr.selectWorkingVolume1
+          && prev.selectWorkingVolume2 === curr.selectWorkingVolume2
+          && prev.selectWorkingVolume3 === curr.selectWorkingVolume3
+          && prev.selectWorkingVolume4 === curr.selectWorkingVolume4
+          && prev.sellBestOrder === curr.sellBestOrder
+          && prev.buyBestOrder === curr.buyBestOrder
         )
       )
       .subscribe(s => {
@@ -87,25 +119,43 @@ export class HotKeysService {
                 break;
               }
               case s.cancelOrderbookOrders: {
-                this.cancelOrderbookOrders(e.guid);
+                this.cancelOrderbookOrders(e.settings);
                 break;
               }
               case s.closeOrderbookPositions: {
-                this.closeOrderbookPositions(e.guid);
+                this.closeOrderbookPositions(e.settings);
                 break;
               }
               case s.reverseOrderbookPositions: {
-                this.closeOrderbookPositions(e.guid, true);
+                this.closeOrderbookPositions(e.settings, true);
                 break;
               }
               case s.buyMarket: {
-                this.placeMarketOrder(e.guid, 'buy');
+                this.placeMarketOrder(e.settings, 'buy');
                 break;
               }
               case s.sellMarket: {
-                this.placeMarketOrder(e.guid, 'sell');
+                this.placeMarketOrder(e.settings, 'sell');
                 break;
               }
+              case s.selectWorkingVolume1:
+                this.selectWorkingVolume(e.settings, 1);
+                break;
+              case s.selectWorkingVolume2:
+                this.selectWorkingVolume(e.settings, 2);
+                break;
+              case s.selectWorkingVolume3:
+                this.selectWorkingVolume(e.settings, 3);
+                break;
+              case s.selectWorkingVolume4:
+                this.selectWorkingVolume(e.settings, 4);
+                break;
+              case s.sellBestOrder:
+                this.sellOrBuyBestOrder(e.settings, 'sell');
+                break;
+              case s.buyBestOrder:
+                this.sellOrBuyBestOrder(e.settings, 'buy');
+                break;
             }
           });
       });
@@ -116,7 +166,7 @@ export class HotKeysService {
       take(1),
       map(
         settings => settings
-          .filter(s => s.title?.includes('Стакан')) as OrderbookSettings[]
+          .filter(s => 'showSpreadItems' in s) as VerticalOrderBookSettings[]
       ),
       switchMap(
         settings => this.store.select(getSelectedPortfolio)
@@ -158,21 +208,19 @@ export class HotKeysService {
           [positions, p]: [Position[], PortfolioKey | null]) =>
           positions.filter(pos => pos.portfolio === p?.portfolio)
         ),
-        switchMap(positions => this.store.select(getAllSettings)
-          .pipe(
+        mapWith(
+          () => this.store.select(getAllSettings).pipe(
             take(1),
             map(
               settings => settings
-                .filter(s => s.title?.includes('Стакан')) as OrderbookSettings[]
-            ),
-            map(
-              settings => positions
-                .filter(
-                  pos =>
-                    settings.map(s => s.exchange).includes(pos.exchange) && settings.map(s => s.symbol).includes(pos.symbol)
-                )
+                .filter(s => 'showSpreadItems' in s) as VerticalOrderBookSettings[]
             )
           ),
+          (positions, settings) => positions
+            .filter(
+              pos =>
+                settings.map(s => s.exchange).includes(pos.exchange) && settings.map(s => s.symbol).includes(pos.symbol)
+            )
         )
       )
       .subscribe((positions: Position[]) => {
@@ -192,19 +240,15 @@ export class HotKeysService {
       });
   }
 
-  private cancelOrderbookOrders(guid: string | null | undefined) {
-    if (!guid) {
+  private cancelOrderbookOrders(settings: VerticalOrderBookSettings | null) {
+    if (!settings) {
       return;
     }
 
-    this.store.select(getSettingsByGuid(guid))
+    this.store.select(getSelectedPortfolio)
       .pipe(
         take(1),
-        switchMap(
-          s => this.store.select(getSelectedPortfolio)
-            .pipe(map(p => ({exchange: (s as OrderbookSettings).exchange, portfolio: p?.portfolio})))
-        ),
-        switchMap(req => this.getAllOrders(req as PortfolioKey))
+        switchMap(p => this.getAllOrders({portfolio: p!.portfolio, exchange: settings.exchange}))
       )
       .subscribe(
         orders => orders
@@ -223,8 +267,8 @@ export class HotKeysService {
       );
   }
 
-  private closeOrderbookPositions(guid: string | null | undefined, isReversePosition = false) {
-    if (!guid) {
+  private closeOrderbookPositions(settings: VerticalOrderBookSettings | null, isReversePosition = false) {
+    if (!settings) {
       return;
     }
 
@@ -237,16 +281,12 @@ export class HotKeysService {
         ])),
         map((
           [positions, p]: [Position[], PortfolioKey | null]) =>
-          positions.filter(pos => pos.portfolio === p?.portfolio)
-        ),
-        switchMap(positions => this.store.select(getSettingsByGuid(guid))
-          .pipe(
-            take(1),
-            map(
-              s => positions.filter(pos =>
-                pos.exchange === (s as OrderbookSettings).exchange && pos.symbol === (s as OrderbookSettings).symbol)
-            )
-          ))
+          positions.filter(
+            pos => pos.portfolio === p?.portfolio &&
+              pos.exchange === settings.exchange &&
+              pos.symbol === settings.symbol
+          )
+        )
       )
       .subscribe((positions: Position[]) => {
         positions.forEach(pos => {
@@ -265,25 +305,50 @@ export class HotKeysService {
       });
   }
 
-  private placeMarketOrder(guid: string | null | undefined, side: string) {
-    if (!guid) {
+  private placeMarketOrder(settings: VerticalOrderBookSettings | null, side: string) {
+    if (!settings) {
       return;
     }
 
-    const workVol = 10;
-
-    forkJoin([
-      this.store.select(getSelectedPortfolio).pipe(take(1)),
-      this.store.select(getSettingsByGuid(guid)).pipe(take(1))
-    ])
-      .subscribe(([p, s]) => {
-        this.commandsService.setMarketCommand({
-          side,
-          quantity: workVol,
-          instrument: {symbol: (s as OrderbookSettings).symbol, exchange: (s as OrderbookSettings).exchange},
-          user: {portfolio: p!.portfolio, exchange: (s as OrderbookSettings).exchange}
+    this.store.select(getSelectedPortfolio).pipe(take(1))
+      .subscribe(p => {
+        this.orderBookEvent$.next({
+          event: 'placeMarketOrder',
+          guid: settings.guid,
+          options: {
+            symbol: settings.symbol,
+            exchange: settings.exchange,
+            portfolio: p!.portfolio,
+            side
+          }
         });
-        this.commandsService.submitMarket(side === 'sell' ? Side.Sell : Side.Buy).subscribe();
+      });
+  }
+
+  private selectWorkingVolume(settings: VerticalOrderBookSettings | null, workingVolumeNum: number) {
+    if (!settings) {
+      return;
+    }
+
+    this.orderBookEvent$.next({event: 'selectWorkingVolume', guid: settings.guid, options: workingVolumeNum});
+  }
+
+  private sellOrBuyBestOrder(settings: VerticalOrderBookSettings | null, side: string) {
+    if (!settings) {
+      return;
+    }
+
+    this.store.select(getSelectedPortfolio)
+      .pipe(take(1))
+      .subscribe(p => {
+        this.orderBookEvent$.next({
+          event: side,
+          guid: settings.guid,
+          options: {
+            portfolio: p,
+            settings: settings
+          }
+        });
       });
   }
 

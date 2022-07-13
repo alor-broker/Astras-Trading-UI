@@ -1,5 +1,19 @@
-<div *ngIf="!shouldShowSettings">
+<div
+  *ngIf="!shouldShowSettings"
+  (mouseenter)="activeOrderbookChanged(true)"
+  (mouseleave)="activeOrderbookChanged(false)"
+>
   <div *ngIf="(orderBookRows$ | async) as orderBookRows" class="order-book-table">
+    <div class="working-volumes">
+      <nz-tag
+        class="working-volume"
+        [class.working-volume_active]="(activeWorkingVolume$ | async) === vol"
+        *ngFor="let vol of workingVolumes"
+        (click)="selectVol(vol)"
+      >
+        {{vol}}
+      </nz-tag>
+    </div>
     <nz-table nzBordered nzSize="small" nzTableLayout="fixed" nzTemplateMode>
       <tbody class="order-book-rows">
       <tr *ngFor='let row of orderBookRows; trackBy: getTrackKey'
@@ -11,6 +25,7 @@
           'best-row': row.isBest,
           'trade-row': (row.volume ?? 0) > 0
           }"
+          (click)="addStopOrder($event, row)"
       >
         <td [ngStyle]='getVolumeStyle(row.rowType, row.volume ?? 0)' class="volume-cell"
             nzAlign="center">{{row.volume}}</td>

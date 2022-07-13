@@ -67,7 +67,11 @@ export class TerminalSettingsComponent implements OnInit {
 
   hotkeyChange(e: KeyboardEvent, controlName: string) {
     e.stopPropagation();
-    this.settingsForm.get(controlName)?.setValue(e.key);
+    if (e.key === 'Backspace') {
+      this.settingsForm.get(controlName)?.reset();
+    } else {
+      this.settingsForm.get(controlName)?.setValue(e.key);
+    }
   }
 
   private initForm() {
@@ -97,6 +101,12 @@ export class TerminalSettingsComponent implements OnInit {
       reverseOrderbookPositions: new FormControl(currentSettings.reverseOrderbookPositions, Validators.required),
       buyMarket: new FormControl(currentSettings.buyMarket, Validators.required),
       sellMarket: new FormControl(currentSettings.sellMarket, Validators.required),
+      selectWorkingVolume1: new FormControl(currentSettings.selectWorkingVolume1, Validators.required),
+      selectWorkingVolume2: new FormControl(currentSettings.selectWorkingVolume2, Validators.required),
+      selectWorkingVolume3: new FormControl(currentSettings.selectWorkingVolume3, Validators.required),
+      selectWorkingVolume4: new FormControl(currentSettings.selectWorkingVolume4, Validators.required),
+      sellBestOrder: new FormControl(currentSettings.sellBestOrder, Validators.required),
+      buyBestOrder: new FormControl(currentSettings.buyBestOrder, Validators.required),
       } as TerminalSettingsFormControls
     ) as TerminalSettingsFormGroup;
   }

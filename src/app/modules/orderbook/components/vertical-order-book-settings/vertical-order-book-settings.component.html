@@ -26,6 +26,40 @@
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
+
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите значение">
+        <nz-form-label nzRequired nzFor="workingVolume1">Рабочий объём 1</nz-form-label>
+        <nz-input-group>
+          <input class='ant-input' atsNumerical formControlName="workingVolume1" (mousedown)="$event.stopPropagation()" placeholder="7" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите значение">
+        <nz-form-label nzRequired nzFor="workingVolume2">Рабочий объём 2</nz-form-label>
+        <nz-input-group>
+          <input class='ant-input' atsNumerical formControlName="workingVolume2" (mousedown)="$event.stopPropagation()" placeholder="7" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите значение">
+        <nz-form-label nzRequired nzFor="workingVolume3">Рабочий объём 3</nz-form-label>
+        <nz-input-group>
+          <input class='ant-input' atsNumerical formControlName="workingVolume3" (mousedown)="$event.stopPropagation()" placeholder="7" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите значение">
+        <nz-form-label nzRequired nzFor="workingVolume4">Рабочий объём 4</nz-form-label>
+        <nz-input-group>
+          <input class='ant-input' atsNumerical formControlName="workingVolume4" (mousedown)="$event.stopPropagation()" placeholder="7" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
     <nz-form-item>
       <nz-form-label nzFor="showYieldForBonds">Показывать дох. облигаций</nz-form-label>
       <nz-switch formControlName='showYieldForBonds'></nz-switch>

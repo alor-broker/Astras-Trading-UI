@@ -26,7 +26,11 @@ interface SettingsFormData {
   instrumentGroup: string,
   showYieldForBonds: boolean,
   showZeroVolumeItems: boolean,
-  showSpreadItems: boolean
+  showSpreadItems: boolean,
+  workingVolume1: number,
+  workingVolume2: number,
+  workingVolume3: number,
+  workingVolume4: number,
 }
 
 type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
@@ -69,7 +73,11 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
         instrumentGroup: new FormControl(settings.instrumentGroup),
         showYieldForBonds: new FormControl(settings.showYieldForBonds),
         showZeroVolumeItems: new FormControl(settings.showZeroVolumeItems),
-        showSpreadItems: new FormControl(settings.showSpreadItems)
+        showSpreadItems: new FormControl(settings.showSpreadItems),
+        workingVolume1: new FormControl(settings.workingVolumes[0]),
+        workingVolume2: new FormControl(settings.workingVolumes[1]),
+        workingVolume3: new FormControl(settings.workingVolumes[2]),
+        workingVolume4: new FormControl(settings.workingVolumes[3]),
       } as SettingsFormControls) as SettingsFormGroup;
     });
   }
@@ -80,6 +88,12 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
       {
         ...this.form.value,
         depth: Number(this.form.value.depth),
+        workingVolumes: [
+          Number(this.form.value.workingVolume1),
+          Number(this.form.value.workingVolume2),
+          Number(this.form.value.workingVolume3),
+          Number(this.form.value.workingVolume4)
+        ],
         linkToActive: false
       });
 

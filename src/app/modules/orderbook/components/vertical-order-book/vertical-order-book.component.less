@@ -1,5 +1,17 @@
 @import (reference) '/src/styles.less';
 
+.working-volumes {
+  margin-bottom: 10px;
+
+  .working-volume {
+    cursor: pointer;
+
+    &_active {
+      background-color: @disabled-color;
+    }
+  }
+}
+
 .order-book-rows {
   .row {
     td {

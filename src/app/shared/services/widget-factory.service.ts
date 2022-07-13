@@ -123,7 +123,8 @@ export class WidgetFactoryService {
       showYieldForBonds: false,
       showZeroVolumeItems: false,
       showSpreadItems: false,
-      title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`
+      title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
+      workingVolumes: [1, 10, 100, 1000],
     };
 
     return settings;
