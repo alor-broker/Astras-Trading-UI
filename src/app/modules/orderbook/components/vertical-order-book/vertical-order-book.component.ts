@@ -162,8 +162,6 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     return {
       background: `linear-gradient(90deg, ${volumeHighlightOption.color}BF ${size}% , rgba(0,0,0,0) ${size}%)`
     };
-
-    return null;
   }
 
   cancelOrders(orders: CurrentOrder[]) {
@@ -175,12 +173,6 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
         stop: false
       } as CancelCommand);
     }
-  }
-
-  private getVolumeHighlightOption(settings: VerticalOrderBookSettings, volume: number): VolumeHighlightOption | undefined {
-    return [...settings.volumeHighlightOptions]
-      .sort((a, b) => a.boundary - b.boundary)
-      .find(x => volume <= x.boundary);
   }
 
   ngOnDestroy() {
