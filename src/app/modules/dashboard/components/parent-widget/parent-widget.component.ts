@@ -40,7 +40,14 @@ export class ParentWidgetComponent implements OnInit, OnDestroy {
 
   get contentHeightAdjustment(): number {
     // This value depends on styles. It is mainly based on the height of the widget's title.
+    // 28px - header, 10px - padding (top 5px + bottom 5px), 2px - extra space
     return 40;
+  }
+
+  get contentWidthAdjustment(): number {
+    // This value depends on styles.
+    // 10px - left padding, 10px - right padding
+    return 20;
   }
 
   ngOnInit(): void {
