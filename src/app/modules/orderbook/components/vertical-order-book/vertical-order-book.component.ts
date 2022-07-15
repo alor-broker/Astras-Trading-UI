@@ -1,14 +1,17 @@
 import {
   Component,
+  ElementRef,
   Input,
-  OnInit
+  OnInit,
 } from '@angular/core';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderbookService } from "../../services/orderbook.service";
 import {
+  delay,
   filter,
   Observable,
   shareReplay,
+  take,
   tap
 } from "rxjs";
 import {
@@ -54,7 +57,8 @@ export class VerticalOrderBookComponent implements OnInit {
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly orderBookService: OrderbookService,
-    private readonly instrumentsService: InstrumentsService) {
+    private readonly instrumentsService: InstrumentsService,
+    private readonly elementRef: ElementRef<HTMLElement>) {
   }
 
   ngOnInit(): void {
@@ -76,8 +80,14 @@ export class VerticalOrderBookComponent implements OnInit {
       tap(orderBookRows => {
         this.maxVolume = Math.max(...orderBookRows.map(x => x.volume ?? 0));
       }),
-      startWith([])
+      startWith([]),
+      shareReplay()
     );
+
+    this.orderBookRows$.pipe(
+      take(2),
+      delay(1000)
+    ).subscribe(() => this.alignBySpread());
   }
 
   getTrackKey(index: number): number {
@@ -116,8 +126,6 @@ export class VerticalOrderBookComponent implements OnInit {
     return {
       background: `linear-gradient(90deg, ${volumeHighlightOption.color}BF ${size}% , rgba(0,0,0,0) ${size}%)`
     };
-
-    return null;
   }
 
   cancelOrders(orders: CurrentOrder[]) {
@@ -128,6 +136,20 @@ export class VerticalOrderBookComponent implements OnInit {
         portfolio: order.portfolio,
         stop: false
       } as CancelCommand);
+    }
+  }
+
+  alignBySpread() {
+    let targetElement: Element | null = null;
+    const spreadElements = this.elementRef.nativeElement.querySelectorAll('.spread-row');
+    if(spreadElements.length > 0) {
+      targetElement = spreadElements.item(Math.floor(spreadElements.length / 2));
+    } else {
+      targetElement = this.elementRef.nativeElement.querySelector('.best-row');
+    }
+
+    if(!!targetElement) {
+      targetElement.scrollIntoView({block: 'center', inline: 'center', behavior: 'smooth'});
     }
   }
 
