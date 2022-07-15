@@ -356,16 +356,18 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  private placeMarketOrder(e: {options: {side: string, symbol: string, portfolio: string, exchange: string}}) {
-    this.commandsService.placeOrder('market', e.options.side === 'sell' ? Side.Sell : Side.Buy,{
-      side: e.options.side,
-      quantity: this.activeWorkingVolume$.getValue() || 1,
-      instrument: {
-        symbol: e.options.symbol,
-        exchange: e.options.exchange
-      },
-      user: {portfolio: e.options.portfolio, exchange: e.options.exchange}
-    }).subscribe();
+  private placeMarketOrder(e: { options: { side: string } }) {
+    this.settings$!
+      .pipe(switchMap(s =>
+        this.commandsService.placeOrder('market', e.options.side === 'sell' ? Side.Sell : Side.Buy, {
+          side: e.options.side,
+          quantity: this.activeWorkingVolume$.getValue() || 1,
+          instrument: {
+            symbol: s.symbol,
+            exchange: s.exchange
+          },
+        })
+      )).subscribe();
   }
 
   alignBySpread() {
