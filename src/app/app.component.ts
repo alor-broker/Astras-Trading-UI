@@ -7,7 +7,7 @@ import { Store } from '@ngrx/store';
 import { initTerminalSettings } from './store/terminal-settings/terminal-settings.actions';
 import { initWidgetSettings } from "./store/widget-settings/widget-settings.actions";
 import { SessionTrackService } from "./shared/services/session/session-track.service";
-import { HotKeysService } from "./shared/services/hot-keys.service";
+import { OrderbookHotKeysService } from "./shared/services/orderbook-hot-keys.service";
 
 @Component({
   selector: 'ats-app-root',
@@ -20,7 +20,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private readonly store: Store,
     private readonly sessionTrackService: SessionTrackService,
-    private readonly hotKeysService: HotKeysService,
+    private readonly hotKeysService: OrderbookHotKeysService,
   ) {
   }
 

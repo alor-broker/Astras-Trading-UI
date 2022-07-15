@@ -16,6 +16,8 @@ import {
 import { Store } from '@ngrx/store';
 import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import {
+  AbstractControl,
+  FormArray,
   FormControl,
   FormGroup,
   Validators
@@ -46,6 +48,14 @@ export class TerminalSettingsComponent implements OnInit {
     secondName: ''
   });
 
+  get hotKeysForm(): FormGroup {
+    return this.settingsForm.get('hotKeysSettings') as FormGroup;
+  }
+
+  get workingVolumes(): FormArray {
+    return this.hotKeysForm.get('workingVolumes') as FormArray;
+  }
+
   constructor(private readonly service: TerminalSettingsService, private readonly store: Store) {
   }
 
@@ -65,13 +75,27 @@ export class TerminalSettingsComponent implements OnInit {
     }
   }
 
-  hotkeyChange(e: KeyboardEvent, controlName: string) {
+  hotkeyChange(e: KeyboardEvent, control: AbstractControl | null) {
     e.stopPropagation();
     if (e.key === 'Backspace') {
-      this.settingsForm.get(controlName)?.reset();
+      control?.reset();
     } else {
-      this.settingsForm.get(controlName)?.setValue(e.key);
+      control?.setValue(e.key);
     }
+  }
+
+  addWorkingVolume(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.workingVolumes.push(new FormControl(null, Validators.required));
+  }
+
+  removeWorkingVolume(e: MouseEvent, index: number) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.workingVolumes.removeAt(index);
   }
 
   private initForm() {
@@ -85,28 +109,30 @@ export class TerminalSettingsComponent implements OnInit {
 
   private buildForm(currentSettings: TerminalSettings): TerminalSettingsFormGroup {
     return new FormGroup({
-        timezoneDisplayOption: new FormControl(currentSettings.timezoneDisplayOption, Validators.required),
-        userIdleDurationMin: new FormControl(
-          currentSettings.userIdleDurationMin,
-          [
-            Validators.required,
-            Validators.min(this.validationSettings.userIdleDurationMin.min),
-            Validators.max(this.validationSettings.userIdleDurationMin.max)
-          ]),
-      cancelOrdersKey: new FormControl(currentSettings.cancelOrdersKey, Validators.required),
-      closePositionsKey: new FormControl(currentSettings.closePositionsKey, Validators.required),
-      centerOrderbookKey: new FormControl(currentSettings.centerOrderbookKey, Validators.required),
-      cancelOrderbookOrders: new FormControl(currentSettings.cancelOrderbookOrders, Validators.required),
-      closeOrderbookPositions: new FormControl(currentSettings.closeOrderbookPositions, Validators.required),
-      reverseOrderbookPositions: new FormControl(currentSettings.reverseOrderbookPositions, Validators.required),
-      buyMarket: new FormControl(currentSettings.buyMarket, Validators.required),
-      sellMarket: new FormControl(currentSettings.sellMarket, Validators.required),
-      selectWorkingVolume1: new FormControl(currentSettings.selectWorkingVolume1, Validators.required),
-      selectWorkingVolume2: new FormControl(currentSettings.selectWorkingVolume2, Validators.required),
-      selectWorkingVolume3: new FormControl(currentSettings.selectWorkingVolume3, Validators.required),
-      selectWorkingVolume4: new FormControl(currentSettings.selectWorkingVolume4, Validators.required),
-      sellBestOrder: new FormControl(currentSettings.sellBestOrder, Validators.required),
-      buyBestOrder: new FormControl(currentSettings.buyBestOrder, Validators.required),
+      timezoneDisplayOption: new FormControl(currentSettings.timezoneDisplayOption, Validators.required),
+      userIdleDurationMin: new FormControl(
+        currentSettings.userIdleDurationMin,
+        [
+          Validators.required,
+          Validators.min(this.validationSettings.userIdleDurationMin.min),
+          Validators.max(this.validationSettings.userIdleDurationMin.max)
+        ]),
+      hotKeysSettings: new FormGroup({
+        cancelOrdersKey: new FormControl(currentSettings.hotKeysSettings?.cancelOrdersKey),
+        closePositionsKey: new FormControl(currentSettings.hotKeysSettings?.closePositionsKey),
+        centerOrderbookKey: new FormControl(currentSettings.hotKeysSettings?.centerOrderbookKey),
+        cancelOrderbookOrders: new FormControl(currentSettings.hotKeysSettings?.cancelOrderbookOrders),
+        closeOrderbookPositions: new FormControl(currentSettings.hotKeysSettings?.closeOrderbookPositions),
+        reverseOrderbookPositions: new FormControl(currentSettings.hotKeysSettings?.reverseOrderbookPositions),
+        buyMarket: new FormControl(currentSettings.hotKeysSettings?.buyMarket),
+        sellMarket: new FormControl(currentSettings.hotKeysSettings?.sellMarket),
+        workingVolumes: new FormArray(
+          currentSettings.hotKeysSettings?.workingVolumes?.map(wv => new FormControl(wv, Validators.required))
+          || []
+        ),
+        sellBestOrder: new FormControl(currentSettings.hotKeysSettings?.sellBestOrder),
+        buyBestOrder: new FormControl(currentSettings.hotKeysSettings?.buyBestOrder),
+      })
       } as TerminalSettingsFormControls
     ) as TerminalSettingsFormGroup;
   }

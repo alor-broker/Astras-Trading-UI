@@ -7,7 +7,7 @@ export interface StopCommand {
   quantity: number, //2,
   price: number | null, // 190.97,
   instrument: InstrumentKey,
-  user: PortfolioKey,
+  user?: PortfolioKey,
   triggerPrice: number,
   condition: StopOrderCondition,
   stopEndUnixTime?: Date | number

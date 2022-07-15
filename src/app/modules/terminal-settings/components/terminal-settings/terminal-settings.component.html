@@ -43,6 +43,7 @@
             <h2>Горячие клавиши</h2>
             <h3>Общие для всех открытых стаканов</h3>
 
+          <div formGroupName="hotKeysSettings">
             <nz-form-item>
               <nz-form-label nzRequired nzFor="cancelOrdersKey">Снять лимитные заявки</nz-form-label>
               <nz-form-control nzErrorTip="Введите значение">
@@ -52,7 +53,7 @@
                   (mousedown)="$event.stopPropagation()"
                   readonly
                   nz-input
-                  (keydown)="hotkeyChange($event, 'cancelOrdersKey')"
+                  (keydown)="hotkeyChange($event, hotKeysForm.get('cancelOrdersKey'))"
                 />
               </nz-form-control>
             </nz-form-item>
@@ -65,7 +66,7 @@
                   (mousedown)="$event.stopPropagation()"
                   readonly
                   nz-input
-                  (keydown)="hotkeyChange($event, 'closePositionsKey')"
+                  (keydown)="hotkeyChange($event, hotKeysForm.get('closePositionsKey'))"
                 />
               </nz-form-control>
             </nz-form-item>
@@ -78,7 +79,7 @@
                   (mousedown)="$event.stopPropagation()"
                   readonly
                   nz-input
-                  (keydown)="hotkeyChange($event, 'centerOrderbookKey')"
+                  (keydown)="hotkeyChange($event, hotKeysForm.get('centerOrderbookKey'))"
                 />
               </nz-form-control>
             </nz-form-item>
@@ -94,7 +95,7 @@
                   (mousedown)="$event.stopPropagation()"
                   readonly
                   nz-input
-                  (keydown)="hotkeyChange($event, 'cancelOrderbookOrders')"
+                  (keydown)="hotkeyChange($event, hotKeysForm.get('cancelOrderbookOrders'))"
                 />
               </nz-form-control>
             </nz-form-item>
@@ -107,7 +108,7 @@
                   (mousedown)="$event.stopPropagation()"
                   readonly
                   nz-input
-                  (keydown)="hotkeyChange($event, 'closeOrderbookPositions')"
+                  (keydown)="hotkeyChange($event, hotKeysForm.get('closeOrderbookPositions'))"
                 />
               </nz-form-control>
             </nz-form-item>
@@ -120,7 +121,7 @@
                   (mousedown)="$event.stopPropagation()"
                   readonly
                   nz-input
-                  (keydown)="hotkeyChange($event, 'reverseOrderbookPositions')"
+                  (keydown)="hotkeyChange($event, hotKeysForm.get('reverseOrderbookPositions'))"
                 />
               </nz-form-control>
             </nz-form-item>
@@ -133,7 +134,7 @@
                   (mousedown)="$event.stopPropagation()"
                   readonly
                   nz-input
-                  (keydown)="hotkeyChange($event, 'buyMarket')"
+                  (keydown)="hotkeyChange($event, hotKeysForm.get('buyMarket'))"
                 />
               </nz-form-control>
             </nz-form-item>
@@ -146,88 +147,68 @@
                   (mousedown)="$event.stopPropagation()"
                   readonly
                   nz-input
-                  (keydown)="hotkeyChange($event, 'sellMarket')"
+                  (keydown)="hotkeyChange($event, hotKeysForm.get('sellMarket'))"
                 />
               </nz-form-control>
             </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzRequired nzFor="selectWorkingVolume1">Выбрать рабочий объём 1</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
-              <input
-                class='ant-input'
-                formControlName="selectWorkingVolume1"
-                (mousedown)="$event.stopPropagation()"
-                readonly
-                nz-input
-                (keydown)="hotkeyChange($event, 'selectWorkingVolume1')"
-              />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzRequired nzFor="selectWorkingVolume2">Выбрать рабочий объём 2</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
-              <input
-                class='ant-input'
-                formControlName="selectWorkingVolume2"
-                (mousedown)="$event.stopPropagation()"
-                readonly
-                nz-input
-                (keydown)="hotkeyChange($event, 'selectWorkingVolume2')"
-              />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzRequired nzFor="selectWorkingVolume3">Выбрать рабочий объём 3</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
-              <input
-                class='ant-input'
-                formControlName="selectWorkingVolume3"
-                (mousedown)="$event.stopPropagation()"
-                readonly
-                nz-input
-                (keydown)="hotkeyChange($event, 'selectWorkingVolume3')"
-              />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzRequired nzFor="selectWorkingVolume4">Выбрать рабочий объём 4</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
-              <input
-                class='ant-input'
-                formControlName="selectWorkingVolume4"
-                (mousedown)="$event.stopPropagation()"
-                readonly
-                nz-input
-                (keydown)="hotkeyChange($event, 'selectWorkingVolume4')"
-              />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzRequired nzFor="sellBestOrder">Выставить лучшую заявку на продажу</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
-              <input
-                class='ant-input'
-                formControlName="sellBestOrder"
-                (mousedown)="$event.stopPropagation()"
-                readonly
-                nz-input
-                (keydown)="hotkeyChange($event, 'sellBestOrder')"
-              />
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label nzRequired nzFor="buyBestOrder">Выставить лучшую заявку на покупку</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
-              <input
-                class='ant-input'
-                formControlName="buyBestOrder"
-                (mousedown)="$event.stopPropagation()"
-                readonly
-                nz-input
-                (keydown)="hotkeyChange($event, 'buyBestOrder')"
-              />
-            </nz-form-control>
-          </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="sellBestOrder">Выставить лучшую заявку на продажу</nz-form-label>
+              <nz-form-control nzErrorTip="Введите значение">
+                <input
+                  class='ant-input'
+                  formControlName="sellBestOrder"
+                  (mousedown)="$event.stopPropagation()"
+                  readonly
+                  nz-input
+                  (keydown)="hotkeyChange($event, hotKeysForm.get('sellBestOrder'))"
+                />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="buyBestOrder">Выставить лучшую заявку на покупку</nz-form-label>
+              <nz-form-control nzErrorTip="Введите значение">
+                <input
+                  class='ant-input'
+                  formControlName="buyBestOrder"
+                  (mousedown)="$event.stopPropagation()"
+                  readonly
+                  nz-input
+                  (keydown)="hotkeyChange($event, hotKeysForm.get('buyBestOrder'))"
+                />
+              </nz-form-control>
+            </nz-form-item>
+
+            <h3>Рабочие объёмы</h3>
+
+            <ng-container *ngIf="hotKeysForm.value.workingVolumes">
+              <div class="working-volume" *ngFor="let ctrl of workingVolumes.controls; let i = index">
+                <nz-form-item class="form-item">
+                  <nz-form-label nzRequired nzFor="selectWorkingVolume1">Выбрать рабочий объём {{i + 1}}</nz-form-label>
+                  <nz-form-control nzErrorTip="Введите значение">
+                    <input
+                      class='ant-input'
+                      (mousedown)="$event.stopPropagation()"
+                      readonly
+                      nz-input
+                      (keydown)="hotkeyChange($event, ctrl)"
+                      [value]="workingVolumes.at(i)?.value"
+                    />
+                  </nz-form-control>
+                </nz-form-item>
+                <button (click)="removeWorkingVolume($event, i)"
+                        nz-button
+                        nzType="dashed"
+                        class="working-volume-remove-btn">
+                  <i nz-icon nzType="minus"></i>
+                </button>
+              </div>
+            </ng-container>
+            <button nz-button class="add-working-volume-btn" nzType="dashed" (click)="addWorkingVolume($event)"
+                    [disabled]="!workingVolumes.valid">
+              <i nz-icon nzType="plus"></i>
+            </button>
+          </div>
 
             <nz-form-item>
               <nz-form-control>

@@ -1,7 +1,7 @@
 <div
   *ngIf="!shouldShowSettings"
-  (mouseenter)="activeOrderbookChanged(true)"
-  (mouseleave)="activeOrderbookChanged(false)"
+  (mouseenter)="isActiveOrderBook = true"
+  (mouseleave)="isActiveOrderBook = false"
 >
   <div *ngIf="(orderBookRows$ | async) as orderBookRows" class="order-book-table">
     <div class="working-volumes">

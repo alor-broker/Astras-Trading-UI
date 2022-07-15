@@ -33,10 +33,7 @@ interface SettingsFormData {
   showSpreadItems: boolean;
   highlightHighVolume: boolean;
   volumeHighlightOptions: VolumeHighlightOption[];
-  workingVolume1: number;
-  workingVolume2: number;
-  workingVolume3: number;
-  workingVolume4: number;
+  workingVolumes: number[];
 }
 
 type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
@@ -76,6 +73,14 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
     return this.form.controls.volumeHighlightOptions as FormArray;
   }
 
+  get workingVolumes(): FormArray {
+    return this.form.controls.workingVolumes as FormArray;
+  }
+
+  workingVolumeCtrl(index: number): FormControl {
+    return this.workingVolumes.at(index) as FormControl;
+  }
+
   ngOnInit() {
     this.settingsService.getSettings<VerticalOrderBookSettings>(this.guid).pipe(
       takeUntil(this.destroy$)
@@ -99,10 +104,9 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
             .sort((a, b) => a.boundary - b.boundary)
             .map(x => this.createVolumeHighlightOptionsControl(x))
         ),
-        workingVolume1: new FormControl(settings.workingVolumes[0]),
-        workingVolume2: new FormControl(settings.workingVolumes[1]),
-        workingVolume3: new FormControl(settings.workingVolumes[2]),
-        workingVolume4: new FormControl(settings.workingVolumes[3]),
+        workingVolumes: new FormArray(settings.workingVolumes.map(
+          wv => new FormControl(wv, [Validators.required, Validators.min(1)])
+        )),
       } as SettingsFormControls) as SettingsFormGroup;
     });
   }
@@ -122,12 +126,7 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
             boundary: Number(x.boundary)
           } as VolumeHighlightOption)
         ),
-        workingVolumes: [
-          Number(this.form.value.workingVolume1),
-          Number(this.form.value.workingVolume2),
-          Number(this.form.value.workingVolume3),
-          Number(this.form.value.workingVolume4)
-        ],
+        workingVolumes: this.form.value.workingVolumes.map((wv: string) => Number(wv)),
         linkToActive: false
       });
 

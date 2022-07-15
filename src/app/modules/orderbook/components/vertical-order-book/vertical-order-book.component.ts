@@ -1,21 +1,19 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderbookService } from "../../services/orderbook.service";
 import {
   BehaviorSubject,
   filter,
+  forkJoin,
   Observable,
-  shareReplay,
+  of,
+  shareReplay, skip,
   Subject,
   switchMap,
   take,
   takeUntil,
-  tap
+  tap,
+  distinctUntilChanged
 } from "rxjs";
 import {
   CurrentOrder,
@@ -28,10 +26,7 @@ import {
   VerticalOrderBookSettings,
   VolumeHighlightOption
 } from "../../../../shared/models/settings/vertical-order-book-settings.model";
-import {
-  map,
-  startWith
-} from "rxjs/operators";
+import { map, startWith } from "rxjs/operators";
 import { buyColorBackground, sellColorBackground } from "../../../../shared/models/settings/styles-constants";
 import { CancelCommand } from "../../../../shared/models/commands/cancel-command.model";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
@@ -39,7 +34,7 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { getTypeByCfi } from "../../../../shared/utils/instruments";
 import { InstrumentType } from "../../../../shared/models/enums/instrument-type.model";
-import { HotKeysService } from "../../../../shared/services/hot-keys.service";
+import { OrderbookHotKeysService } from "../../../../shared/services/orderbook-hot-keys.service";
 import { CommandsService } from "../../../command/services/commands.service";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { getSelectedPortfolio } from "../../../../store/portfolios/portfolios.selectors";
@@ -49,7 +44,8 @@ import { AuthService } from "../../../../shared/services/auth.service";
 import { User } from "../../../../shared/models/user/user.model";
 import { PositionsService } from "../../../../shared/services/positions.service";
 import { NzNotificationService } from "ng-zorro-antd/notification";
-import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
+import { Position } from "../../../../shared/models/positions/position.model";
+import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-vertical-order-book[guid][shouldShowSettings]',
@@ -62,33 +58,38 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
   workingVolumes: number[] = [];
   activeWorkingVolume$ = new BehaviorSubject<number | null>(null);
 
+  isActiveOrderBook = false;
+
   @Input() shouldShowSettings!: boolean;
   @Input() guid!: string;
 
   orderBookRows$!: Observable<VerticalOrderBookRowView[]>;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
+  private settings$: Observable<VerticalOrderBookSettings> | null = null;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly orderBookService: OrderbookService,
     private readonly instrumentsService: InstrumentsService,
-    private readonly hotkeysService: HotKeysService,
+    private readonly hotkeysService: OrderbookHotKeysService,
     private readonly commandsService: CommandsService,
     private readonly store: Store,
     private readonly authService: AuthService,
     private readonly positionsService: PositionsService,
-    private readonly notification: NzNotificationService
+    private readonly notification: NzNotificationService,
+    private readonly terminalSettingsService: TerminalSettingsService
   ) {
   }
 
   ngOnInit(): void {
-    const settings$ = this.settingsService.getSettings<VerticalOrderBookSettings>(this.guid).pipe(shareReplay());
+    this.settings$ = this.settingsService.getSettings<VerticalOrderBookSettings>(this.guid).pipe(shareReplay());
     const getInstrumentInfo = (settings: VerticalOrderBookSettings) => this.instrumentsService.getInstrument(settings).pipe(
       filter((x): x is Instrument => !!x)
     );
 
-    this.orderBookRows$ = settings$.pipe(
+    this.orderBookRows$ = this.settings$.pipe(
+      take(1),
       mapWith(
         settings => getInstrumentInfo(settings),
         (settings, instrument) => ({ settings, instrument })
@@ -106,18 +107,62 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
 
     this.hotkeysService.orderBookEventSub
       .pipe(
-        filter(e => e.guid === this.guid),
+        tap(e => {
+          switch (e.event) {
+            case 'cancelAllOrders':
+              this.cancelAllOrders();
+              break;
+            case 'closeAllPositions':
+              this.closePositions(e.options);
+              break;
+          }
+        }),
+        filter(() => this.isActiveOrderBook),
         takeUntil(this.destroy$)
       )
       .subscribe(e => {
+        if (e.event === 'cancelOrderbookOrders') {
+          this.cancelAllOrders();
+        }
+        if (e.event === 'closeOrderbookPositions') {
+          this.closePositions(e.options);
+        }
+        if (e.event === 'reverseOrderbookPositions') {
+          this.closePositions(e.options, true);
+        }
         if (e.event.includes('selectWorkingVolume')) {
-          this.selectVol(this.workingVolumes[e.options - 1]);
+          this.selectVol(this.workingVolumes[e.options]);
         }
         if (e.event === 'sell' || e.event === 'buy') {
             this.sellOrBuyBestOrder(e as any);
         }
         if (e.event === 'placeMarketOrder') {
           this.placeMarketOrder(e as any);
+        }
+      });
+
+      this.terminalSettingsService.getSettings()
+        .pipe(
+          takeUntil(this.destroy$),
+          distinctUntilChanged((prev, curr) =>
+            prev.hotKeysSettings?.workingVolumes?.length === curr.hotKeysSettings?.workingVolumes?.length),
+          mapWith(
+            () => this.settings$!.pipe(take(1)),
+            (terminalSettings, settings) => ({terminalSettings, settings})
+            )
+        )
+      .subscribe(({terminalSettings, settings}) => {
+        this.settingsService.updateSettings(this.guid, {
+          workingVolumes: terminalSettings.hotKeysSettings?.workingVolumes
+            ?.map((wv, i) => settings.workingVolumes[i] || 10**i)
+        });
+      });
+
+      this.settings$.subscribe(settings => {
+        this.workingVolumes = settings.workingVolumes;
+
+        if (!this.activeWorkingVolume$.getValue()) {
+          this.activeWorkingVolume$.next(this.workingVolumes[0]);
         }
       });
   }
@@ -164,6 +209,16 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     };
   }
 
+  cancelAllOrders() {
+    this.orderBookRows$
+      .pipe(skip(1), take(1))
+      .subscribe(rows =>
+        rows
+          .filter(row => row.currentOrders.length)
+          .forEach(row => this.cancelOrders(row.currentOrders))
+      );
+  }
+
   cancelOrders(orders: CurrentOrder[]) {
     for (const order of orders) {
       this.orderBookService.cancelOrder({
@@ -175,42 +230,91 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     }
   }
 
+  closeOrderBookPositions(positions: Position[]) {
+    this.settings$!
+      .pipe(
+        take(1),
+        map(s => positions.filter(
+          pos => s.exchange === pos.exchange && s.symbol === pos.symbol
+        ))
+      )
+      .subscribe((positions: Position[]) =>
+        positions.forEach(pos => {
+          if (!pos.qtyTFuture) {
+            return;
+          }
+
+          this.commandsService.placeOrder('market', pos.qtyTFuture > 0 ? Side.Sell : Side.Buy, {
+            side: pos.qtyTFuture > 0 ? 'sell' : 'buy',
+            quantity: Math.abs(pos.qtyTFuture),
+            instrument: {symbol: pos.symbol, exchange: pos.exchange},
+            user: {portfolio: pos.portfolio, exchange: pos.exchange}
+          }).subscribe();
+        })
+      );
+  }
+
+  closePositions(positions: Position[], isReversePosition = false) {
+    this.settings$!
+      .pipe(
+        take(1),
+        map(s => ({
+            positions: positions.filter(
+              pos => s.exchange === pos.exchange && s.symbol === pos.symbol
+            ),
+            isReversePosition: isReversePosition
+          })
+        )
+      )
+      .subscribe((options: {positions: Position[], isReversePosition: boolean}) =>
+        options.positions.forEach(pos => {
+          if (!pos.qtyTFuture) {
+            return;
+          }
+
+          this.commandsService.placeOrder('market', pos.qtyTFuture > 0 ? Side.Sell : Side.Buy, {
+            side: pos.qtyTFuture > 0 ? 'sell' : 'buy',
+            quantity: Math.abs(options.isReversePosition ? pos.qtyTFuture * 2 : pos.qtyTFuture),
+            instrument: {symbol: pos.symbol, exchange: pos.exchange},
+            user: {portfolio: pos.portfolio, exchange: pos.exchange}
+          }).subscribe();
+        })
+      );
+  }
+
   ngOnDestroy() {
     this.destroy$.next(true);
     this.destroy$.complete();
+    this.activeWorkingVolume$.complete();
   }
 
   addStopOrder(e: MouseEvent, row: VerticalOrderBookRowView) {
     if (e.ctrlKey && row.rowType !== this.rowTypes.Spread) {
-      this.settingsService.getSettings(this.guid)
+      this.settings$!
         .pipe(
           take(1),
-          mapWith(
-            () => this.store.select(getSelectedPortfolio).pipe(take(1)),
-            (settings, portfolio) => ({settings, portfolio})
+          switchMap(settings =>
+            this.commandsService.placeOrder(
+              'stopLimit',
+              row.rowType === this.rowTypes.Ask ? Side.Sell : Side.Buy,
+              {
+                side: row.rowType === this.rowTypes.Ask
+                  ? 'sell'
+                  : 'buy',
+                quantity: this.activeWorkingVolume$.getValue() || 1,
+                price: row.price,
+                instrument: {
+                  symbol: (settings as VerticalOrderBookSettings).symbol,
+                  exchange: (settings as VerticalOrderBookSettings).exchange,
+                  instrumentGroup: (settings as VerticalOrderBookSettings).instrumentGroup,
+                },
+                triggerPrice: row.price,
+                condition: row.rowType === this.rowTypes.Ask ? StopOrderCondition.More : StopOrderCondition.Less,
+              }
+            )
           )
         )
-        .subscribe(({settings, portfolio}) => {
-          this.commandsService.setStopCommand({
-            side: row.rowType === this.rowTypes.Ask
-              ? 'sell'
-              : 'buy',
-            quantity: this.activeWorkingVolume$.getValue() || 1,
-            price: row.price,
-            instrument: {
-              symbol: (settings as VerticalOrderBookSettings).symbol,
-              exchange: (settings as VerticalOrderBookSettings).exchange,
-              instrumentGroup: (settings as VerticalOrderBookSettings).instrumentGroup,
-            },
-            user: {
-              portfolio: portfolio!.portfolio,
-              exchange: (settings as VerticalOrderBookSettings).exchange,
-            },
-            triggerPrice: row.price,
-            condition: row.rowType === this.rowTypes.Ask ? StopOrderCondition.More : StopOrderCondition.Less,
-          });
-          this.commandsService.submitStop(row.rowType === this.rowTypes.Ask ? Side.Sell : Side.Buy);
-        });
+        .subscribe();
     }
 
     if (e.shiftKey && row.rowType === this.rowTypes.Ask) {
@@ -219,7 +323,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
           map((user: User) => user.login),
           switchMap(login => this.positionsService.getAllByLogin(login).pipe(take(1))),
           mapWith(() =>
-              this.settingsService.getSettings(this.guid)
+              this.settings$!
                 .pipe(
                   take(1),
                   mapWith(
@@ -238,66 +342,69 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
               settings,
               portfolio
             })
-          )
+          ),
+          switchMap(({quantity, settings, portfolio}) => {
+            if (!quantity) {
+              this.notification.error('Нет позиций', 'Позиции с данным тикером отсутствуют');
+              return of({});
+            }
+            return this.commandsService.placeOrder('stop',Side.Sell, {
+              side: 'sell',
+              quantity,
+              price: null,
+              instrument: {
+                symbol: (settings as VerticalOrderBookSettings).symbol,
+                exchange: (settings as VerticalOrderBookSettings).exchange,
+                instrumentGroup: (settings as VerticalOrderBookSettings).instrumentGroup,
+              },
+              user: {
+                portfolio: portfolio!.portfolio,
+                exchange: (settings as VerticalOrderBookSettings).exchange,
+              },
+              triggerPrice: row.price,
+              condition: StopOrderCondition.More,
+            });
+          })
         )
-        .subscribe(({quantity, settings, portfolio}) => {
-          if (!quantity) {
-            this.notification.error('Нет позиций', 'Позиции с данным тикером отсутствуют');
-            return;
-          }
-          this.commandsService.setStopCommand({
-            side: 'sell',
-            quantity,
-            price: null,
-            instrument: {
-              symbol: (settings as VerticalOrderBookSettings).symbol,
-              exchange: (settings as VerticalOrderBookSettings).exchange,
-              instrumentGroup: (settings as VerticalOrderBookSettings).instrumentGroup,
-            },
-            user: {
-              portfolio: portfolio!.portfolio,
-              exchange: (settings as VerticalOrderBookSettings).exchange,
-            },
-            triggerPrice: row.price,
-            condition: StopOrderCondition.More,
-          });
-          this.commandsService.submitStop(Side.Sell).subscribe();
-        });
+        .subscribe();
     }
   }
 
-  activeOrderbookChanged(isActive: boolean) {
-    this.hotkeysService.activeOrderbookChange(isActive ? this.guid : null);
-  }
-
-  private sellOrBuyBestOrder(e: {options: {settings: VerticalOrderBookSettings, portfolio: PortfolioKey}, event: string}) {
-    this.orderBookRows$.pipe(take(1))
+  private sellOrBuyBestOrder(e: {event: string}) {
+    forkJoin([
+      this.orderBookRows$.pipe(skip(1), take(1)),
+      this.settings$!.pipe(take(1))
+    ])
       .pipe(
-        switchMap((rows) => {
-          const bestRows = rows.filter(r => r.isBest).map(r => r.price);
-          const price = e.event === 'sell'
-            ? bestRows[0] > bestRows[1] ? bestRows[0] : bestRows[1]
-            : bestRows[0] < bestRows[1] ? bestRows[0] : bestRows[1];
+        switchMap(([rows, settings]) => {
+          const spreadRows = rows.filter(r => r.rowType === this.rowTypes.Spread).map(r => r.price);
+          let price: number;
 
-          this.commandsService.setLimitCommand({
+          if (spreadRows.length) {
+            price = e.event === 'sell' ? <number>spreadRows.shift() : <number>spreadRows.pop();
+          } else {
+            price = e.event === 'sell'
+              ? <number>rows.filter(r => r.rowType === this.rowTypes.Ask).map(r => r.price).pop()
+              : <number>rows.filter(r => r.rowType === this.rowTypes.Bid).map(r => r.price).shift();
+          }
+
+          return this.commandsService.placeOrder('limit', e.event === 'sell' ? Side.Sell : Side.Buy,{
             side: e.event,
             quantity: this.activeWorkingVolume$.getValue() || 1,
             price,
             instrument: {
-              symbol: (e.options.settings as VerticalOrderBookSettings).symbol,
-              exchange: (e.options.settings as VerticalOrderBookSettings).exchange,
-              instrumentGroup: (e.options.settings as VerticalOrderBookSettings).instrumentGroup,
+              symbol: settings.symbol,
+              exchange: settings.exchange,
+              instrumentGroup: settings.instrumentGroup,
             },
-            user: e.options.portfolio
           });
-          return this.commandsService.submitLimit(e.event === 'sell' ? Side.Sell : Side.Buy);
         })
       )
       .subscribe();
   }
 
   private placeMarketOrder(e: {options: {side: string, symbol: string, portfolio: string, exchange: string}}) {
-    this.commandsService.setMarketCommand({
+    this.commandsService.placeOrder('market', e.options.side === 'sell' ? Side.Sell : Side.Buy,{
       side: e.options.side,
       quantity: this.activeWorkingVolume$.getValue() || 1,
       instrument: {
@@ -305,8 +412,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
         exchange: e.options.exchange
       },
       user: {portfolio: e.options.portfolio, exchange: e.options.exchange}
-    });
-    this.commandsService.submitMarket(e.options.side === 'sell' ? Side.Sell : Side.Buy).subscribe();
+    }).subscribe();
   }
 
   private getVolumeHighlightOption(settings: VerticalOrderBookSettings, volume: number): VolumeHighlightOption | undefined {
@@ -316,12 +422,6 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
   }
 
   private toViewModel(settings: VerticalOrderBookSettings, instrumentInfo: Instrument, orderBook: VerticalOrderBook): VerticalOrderBookRowView[] {
-    this.workingVolumes = settings.workingVolumes;
-
-    if (!this.activeWorkingVolume$.getValue()) {
-      this.activeWorkingVolume$.next(this.workingVolumes[0]);
-    }
-
     const displayYield = settings.showYieldForBonds && getTypeByCfi(instrumentInfo.cfiCode) === InstrumentType.Bond;
 
     const asks = this.toVerticalOrderBookRowView(

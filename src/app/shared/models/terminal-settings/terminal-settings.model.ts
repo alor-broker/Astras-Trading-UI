@@ -1,8 +1,6 @@
 ﻿import { TimezoneDisplayOption } from '../enums/timezone-display-option';
 
-export interface TerminalSettings {
-  timezoneDisplayOption?: TimezoneDisplayOption
-  userIdleDurationMin?: number;
+export interface HotKeysSettings {
   cancelOrdersKey?: string;
   closePositionsKey?: string;
   centerOrderbookKey?: string;
@@ -11,10 +9,13 @@ export interface TerminalSettings {
   reverseOrderbookPositions?: string;
   buyMarket?: string;
   sellMarket?: string;
-  selectWorkingVolume1?: string;
-  selectWorkingVolume2?: string;
-  selectWorkingVolume3?: string;
-  selectWorkingVolume4?: string;
+  workingVolumes?: string[];
   sellBestOrder?: string;
   buyBestOrder?: string;
+}
+
+export interface TerminalSettings {
+  timezoneDisplayOption?: TimezoneDisplayOption;
+  userIdleDurationMin?: number;
+  hotKeysSettings?: HotKeysSettings;
 }

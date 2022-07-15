@@ -8,7 +8,7 @@ import {
 
 import * as TerminalSettingsActions from './terminal-settings.actions';
 import { initTerminalSettingsSuccess } from './terminal-settings.actions';
-import { TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
+import { HotKeysSettings, TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
 import { TimezoneDisplayOption } from '../../shared/models/enums/timezone-display-option';
 import {
   map,
@@ -71,6 +71,12 @@ export class TerminalSettingsEffects {
     return {
       timezoneDisplayOption: TimezoneDisplayOption.MskTime,
       userIdleDurationMin: 15,
+      hotKeysSettings: this.getDefaultHotkeys(),
+    } as TerminalSettings;
+  }
+
+  private getDefaultHotkeys(): HotKeysSettings {
+    return {
       cancelOrdersKey: '~',
       closePositionsKey: 'Escape',
       centerOrderbookKey: ' ',
@@ -79,12 +85,9 @@ export class TerminalSettingsEffects {
       reverseOrderbookPositions: 'T',
       buyMarket: 'S',
       sellMarket: 'A',
-      selectWorkingVolume1: '1',
-      selectWorkingVolume2: '2',
-      selectWorkingVolume3: '3',
-      selectWorkingVolume4: '4',
+      workingVolumes: ['1', '2', '3', '4'],
       sellBestOrder: 'W',
       buyBestOrder: 'Q',
-    } as TerminalSettings;
+    };
   }
 }

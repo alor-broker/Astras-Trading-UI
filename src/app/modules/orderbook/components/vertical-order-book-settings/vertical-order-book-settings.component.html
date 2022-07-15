@@ -27,37 +27,24 @@
       </nz-form-control>
     </nz-form-item>
 
-    <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Введите значение">
-        <nz-form-label nzRequired nzFor="workingVolume1">Рабочий объём 1</nz-form-label>
+    <nz-form-item class="compact" *ngFor="let ctrl of workingVolumes.controls; let i = index">
+      <nz-form-control [nzErrorTip]="workingVolumeError">
+        <nz-form-label nzRequired nzFor="workingVolume1">Рабочий объём {{i + 1}}</nz-form-label>
         <nz-input-group>
-          <input class='ant-input' atsNumerical formControlName="workingVolume1" (mousedown)="$event.stopPropagation()" placeholder="7" />
+          <input
+            class='ant-input'
+            [formControl]="workingVolumeCtrl(i)"
+            atsNumerical
+            (mousedown)="$event.stopPropagation()"
+            placeholder="7"
+          />
         </nz-input-group>
       </nz-form-control>
-    </nz-form-item>
-    <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Введите значение">
-        <nz-form-label nzRequired nzFor="workingVolume2">Рабочий объём 2</nz-form-label>
-        <nz-input-group>
-          <input class='ant-input' atsNumerical formControlName="workingVolume2" (mousedown)="$event.stopPropagation()" placeholder="7" />
-        </nz-input-group>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Введите значение">
-        <nz-form-label nzRequired nzFor="workingVolume3">Рабочий объём 3</nz-form-label>
-        <nz-input-group>
-          <input class='ant-input' atsNumerical formControlName="workingVolume3" (mousedown)="$event.stopPropagation()" placeholder="7" />
-        </nz-input-group>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Введите значение">
-        <nz-form-label nzRequired nzFor="workingVolume4">Рабочий объём 4</nz-form-label>
-        <nz-input-group>
-          <input class='ant-input' atsNumerical formControlName="workingVolume4" (mousedown)="$event.stopPropagation()" placeholder="7" />
-        </nz-input-group>
-      </nz-form-control>
+
+      <ng-template #workingVolumeError>
+        <span *ngIf="ctrl.errors?.required">Введите значение</span>
+        <span *ngIf="ctrl.errors?.min">Значение должно быть больше нуля</span>
+      </ng-template>
     </nz-form-item>
 
     <nz-form-item>
