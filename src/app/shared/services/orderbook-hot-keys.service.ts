@@ -11,7 +11,6 @@ import {
   take
 } from "rxjs";
 import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
-import { OrderCancellerService } from "./order-canceller.service";
 import { PositionsService } from "./positions.service";
 import { AuthService } from "./auth.service";
 import { Store } from "@ngrx/store";
@@ -32,7 +31,6 @@ export class OrderbookHotKeysService {
     @Inject(DOCUMENT) private document: Document,
     private readonly store: Store,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly orderCancellerService: OrderCancellerService,
     private readonly positionsService: PositionsService,
     private readonly authService: AuthService,
   ) {
