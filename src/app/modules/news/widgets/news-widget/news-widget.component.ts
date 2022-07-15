@@ -11,7 +11,6 @@ export class NewsWidgetComponent {
   @Input() public shouldShowSettings!: boolean;
   @Input() public guid!: string;
   @Input() public resize!: EventEmitter<DashboardItem>;
-  @Input() public heightAdjustment!: number;
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
 
   constructor() { }
