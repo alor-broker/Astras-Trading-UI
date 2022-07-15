@@ -11,7 +11,6 @@ import {
   BehaviorSubject,
   delay,
   filter,
-  forkJoin,
   Observable,
   of,
   shareReplay,
@@ -189,7 +188,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     this.activeWorkingVolume$.complete();
   }
 
-  addStopOrder(e: MouseEvent, row: VerticalOrderBookRowView) {
+  onRowClick(e: MouseEvent, row: VerticalOrderBookRowView) {
     if (e.ctrlKey && row.rowType !== this.rowTypes.Spread) {
       this.settings$!
         .pipe(
@@ -253,6 +252,26 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe();
+    }
+
+    if (!e.shiftKey && !e.ctrlKey) {
+      if (row.rowType === this.rowTypes.Ask) {
+        this.placeMarketOrder({options: {side: 'buy'}});
+      }
+      if (row.rowType === this.rowTypes.Bid) {
+        this.placeLimitOrder('buy', row.price);
+      }
+    }
+  }
+
+  onRowRightClick(event: MouseEvent, row: VerticalOrderBookRowView) {
+    event.preventDefault();
+
+    if (row.rowType === this.rowTypes.Ask) {
+      this.placeLimitOrder('sell', row.price);
+    }
+    if (row.rowType === this.rowTypes.Bid) {
+      this.placeMarketOrder({options: {side: 'sell'}});
     }
   }
 
@@ -326,37 +345,26 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     });
   }
 
-  private sellOrBuyBestOrder(e: {event: string}) {
-    forkJoin([
-      this.orderBookRows$.pipe(skip(1), take(1)),
-      this.settings$!.pipe(take(1))
-    ])
+  private sellOrBuyBestOrder(e: { event: string }) {
+    this.orderBookRows$
       .pipe(
-        switchMap(([rows, settings]) => {
-          const spreadRows = rows.filter(r => r.rowType === this.rowTypes.Spread).map(r => r.price);
-          let price: number;
-
-          if (spreadRows.length) {
-            price = e.event === 'sell' ? <number>spreadRows.shift() : <number>spreadRows.pop();
-          } else {
-            price = e.event === 'sell'
-              ? <number>rows.filter(r => r.rowType === this.rowTypes.Ask).map(r => r.price).pop()
-              : <number>rows.filter(r => r.rowType === this.rowTypes.Bid).map(r => r.price).shift();
-          }
-
-          return this.commandsService.placeOrder('limit', e.event === 'sell' ? Side.Sell : Side.Buy,{
-            side: e.event,
-            quantity: this.activeWorkingVolume$.getValue() || 1,
-            price,
-            instrument: {
-              symbol: settings.symbol,
-              exchange: settings.exchange,
-              instrumentGroup: settings.instrumentGroup,
-            },
-          });
-        })
+        skip(1),
+        take(1),
       )
-      .subscribe();
+      .subscribe((rows) => {
+        const spreadRows = rows.filter(r => r.rowType === this.rowTypes.Spread).map(r => r.price);
+        let price: number;
+
+        if (spreadRows.length) {
+          price = e.event === 'sell' ? <number>spreadRows.shift() : <number>spreadRows.pop();
+        } else {
+          price = e.event === 'sell'
+            ? <number>rows.filter(r => r.rowType === this.rowTypes.Ask).map(r => r.price).pop()
+            : <number>rows.filter(r => r.rowType === this.rowTypes.Bid).map(r => r.price).shift();
+        }
+
+        this.placeLimitOrder(e.event, price);
+      });
   }
 
   private placeMarketOrder(e: { options: { side: string } }) {
@@ -365,6 +373,21 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
         this.commandsService.placeOrder('market', e.options.side === 'sell' ? Side.Sell : Side.Buy, {
           side: e.options.side,
           quantity: this.activeWorkingVolume$.getValue() || 1,
+          instrument: {
+            symbol: s.symbol,
+            exchange: s.exchange
+          },
+        })
+      )).subscribe();
+  }
+
+  private placeLimitOrder(side: string, price: number) {
+    this.settings$!
+      .pipe(switchMap(s =>
+        this.commandsService.placeOrder('limit', side === 'sell' ? Side.Sell : Side.Buy, {
+          side,
+          quantity: this.activeWorkingVolume$.getValue() || 1,
+          price,
           instrument: {
             symbol: s.symbol,
             exchange: s.exchange

@@ -25,7 +25,8 @@
           'best-row': row.isBest,
           'trade-row': (row.volume ?? 0) > 0
           }"
-          (click)="addStopOrder($event, row)"
+          (contextmenu)="onRowRightClick($event, row)"
+          (click)="onRowClick($event, row)"
       >
         <td [ngStyle]='row.getVolumeStyle()' class="volume-cell"
             nzAlign="center">{{row.volume}}</td>
