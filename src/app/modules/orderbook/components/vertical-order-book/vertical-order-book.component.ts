@@ -269,6 +269,9 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
           case 'closeAllPositions':
             this.closePositions();
             break;
+          case 'centerOrderbookKey':
+            setTimeout(() => this.alignBySpread(), 0);
+            break;
         }
 
         if (!this.isActiveOrderBook) {

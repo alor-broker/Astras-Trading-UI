@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { EventManager } from "@angular/platform-browser";
 import { DOCUMENT } from "@angular/common";
 import {
+  fromEvent,
   map,
   Observable,
   Subject,
@@ -24,21 +25,8 @@ export class OrderbookHotKeysService {
   }
 
   addShortcut(): Observable<{ key: string }> {
-    return new Observable(observer => {
-      const handler = (e: KeyboardEvent) => {
-        observer.next({
-          key: e.key
-        });
-      };
-
-      const dispose = this.eventManager.addEventListener(
-        this.document.body, 'keydown', handler
-      );
-
-      return () => {
-        dispose();
-      };
-    });
+    return fromEvent<KeyboardEvent>(this.document, 'keydown')
+      .pipe(map((e: KeyboardEvent) => ({key: e.key})));
   }
 
   bindShortCuts() {
@@ -58,6 +46,10 @@ export class OrderbookHotKeysService {
               }
               case s.closePositionsKey: {
                 this.closeAllPositions();
+                break;
+              }
+              case s.centerOrderbookKey: {
+                this.centerOrderbookKey();
                 break;
               }
               case s.cancelOrderbookOrders: {
@@ -98,6 +90,10 @@ export class OrderbookHotKeysService {
 
   private cancelAllOrders() {
     this.orderBookEvent$.next({event: 'cancelAllOrders'});
+  }
+
+  private centerOrderbookKey() {
+    this.orderBookEvent$.next({event: 'centerOrderbookKey'});
   }
 
   private closeAllPositions() {
