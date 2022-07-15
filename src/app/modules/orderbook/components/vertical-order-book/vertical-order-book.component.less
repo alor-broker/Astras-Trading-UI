@@ -1,14 +1,14 @@
 @import (reference) '/src/styles.less';
 
 .working-volumes {
-  margin-bottom: 10px;
+  padding-bottom: 10px;
+  position: sticky;
+  top: 0;
+  background-color: #141414;
+  z-index: 5;
 
   .working-volume {
     cursor: pointer;
-
-    &_active {
-      background-color: @disabled-color;
-    }
   }
 }
 

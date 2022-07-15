@@ -7,7 +7,7 @@
     <div class="working-volumes">
       <nz-tag
         class="working-volume"
-        [class.working-volume_active]="(activeWorkingVolume$ | async) === vol"
+        [nzColor]="(activeWorkingVolume$ | async) === vol ? 'gold' : 'default'"
         *ngFor="let vol of workingVolumes"
         (click)="selectVol(vol)"
       >

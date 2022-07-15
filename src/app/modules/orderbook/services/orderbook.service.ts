@@ -47,6 +47,7 @@ import { User } from "../../../shared/models/user/user.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { PositionsService } from "../../../shared/services/positions.service";
 import { AuthService } from "../../../shared/services/auth.service";
+import { CommandsService } from "../../command/services/commands.service";
 
 @Injectable()
 export class OrderbookService extends BaseWebsocketService {
@@ -58,6 +59,7 @@ export class OrderbookService extends BaseWebsocketService {
     private readonly canceller: OrderCancellerService,
     private readonly positionsService: PositionsService,
     private readonly authService: AuthService,
+    private readonly commandsService: CommandsService,
   ) {
     super(ws);
   }
@@ -122,6 +124,24 @@ export class OrderbookService extends BaseWebsocketService {
 
   cancelOrder(cancel: CancelCommand) {
     this.canceller.cancelOrder(cancel).subscribe();
+  }
+
+  closeOrderBookPositions(settings: VerticalOrderBookSettings, isReversePosition = false) {
+    this.getOrderBookPositions(settings)
+      .subscribe((positions: Position[]) =>
+        positions.forEach(pos => {
+          if (!pos.qtyTFuture) {
+            return;
+          }
+
+          this.commandsService.placeOrder('market', pos.qtyTFuture > 0 ? Side.Sell : Side.Buy, {
+            side: pos.qtyTFuture > 0 ? 'sell' : 'buy',
+            quantity: Math.abs(isReversePosition ? pos.qtyTFuture * 2 : pos.qtyTFuture),
+            instrument: {symbol: pos.symbol, exchange: pos.exchange},
+            user: {portfolio: pos.portfolio, exchange: pos.exchange}
+          }).subscribe();
+        })
+      );
   }
 
   getOrderBookPositions(settings: VerticalOrderBookSettings): Observable<Position[]> {

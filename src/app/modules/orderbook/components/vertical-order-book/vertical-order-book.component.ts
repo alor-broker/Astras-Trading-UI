@@ -39,7 +39,6 @@ import { CommandsService } from "../../../command/services/commands.service";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { NzNotificationService } from "ng-zorro-antd/notification";
-import { Position } from "../../../../shared/models/positions/position.model";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
 @Component({
@@ -97,66 +96,8 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
       startWith([])
     );
 
-    this.hotkeysService.orderBookEventSub
-      .pipe(
-        tap(e => {
-          switch (e.event) {
-            case 'cancelAllOrders':
-              this.cancelAllOrders();
-              break;
-            case 'closeAllPositions':
-              this.closePositions();
-              break;
-          }
-        }),
-        filter(() => this.isActiveOrderBook),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(e => {
-        if (e.event === 'cancelOrderbookOrders') {
-          this.cancelAllOrders();
-        }
-        if (e.event === 'closeOrderbookPositions') {
-          this.closePositions();
-        }
-        if (e.event === 'reverseOrderbookPositions') {
-          this.closePositions(true);
-        }
-        if (e.event.includes('selectWorkingVolume')) {
-          this.selectVol(this.workingVolumes[e.options]);
-        }
-        if (e.event === 'sell' || e.event === 'buy') {
-            this.sellOrBuyBestOrder(e as any);
-        }
-        if (e.event === 'placeMarketOrder') {
-          this.placeMarketOrder(e as any);
-        }
-      });
-
-      this.terminalSettingsService.getSettings()
-        .pipe(
-          takeUntil(this.destroy$),
-          distinctUntilChanged((prev, curr) =>
-            prev.hotKeysSettings?.workingVolumes?.length === curr.hotKeysSettings?.workingVolumes?.length),
-          mapWith(
-            () => this.settings$!.pipe(take(1)),
-            (terminalSettings, settings) => ({terminalSettings, settings})
-            )
-        )
-      .subscribe(({terminalSettings, settings}) => {
-        this.settingsService.updateSettings(this.guid, {
-          workingVolumes: terminalSettings.hotKeysSettings?.workingVolumes
-            ?.map((wv, i) => settings.workingVolumes[i] || 10**i)
-        });
-      });
-
-      this.settings$.subscribe(settings => {
-        this.workingVolumes = settings.workingVolumes;
-
-        if (!this.activeWorkingVolume$.getValue()) {
-          this.activeWorkingVolume$.next(this.workingVolumes[0]);
-        }
-      });
+    this.subscribeToHotkeys();
+    this.susbscribeToWorkingVolumesChange();
   }
 
   selectVol(vol: number) {
@@ -222,50 +163,9 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     }
   }
 
-  closeOrderBookPositions(positions: Position[]) {
-    this.settings$!
-      .pipe(
-        take(1),
-        map(s => positions.filter(
-          pos => s.exchange === pos.exchange && s.symbol === pos.symbol
-        ))
-      )
-      .subscribe((positions: Position[]) =>
-        positions.forEach(pos => {
-          if (!pos.qtyTFuture) {
-            return;
-          }
-
-          this.commandsService.placeOrder('market', pos.qtyTFuture > 0 ? Side.Sell : Side.Buy, {
-            side: pos.qtyTFuture > 0 ? 'sell' : 'buy',
-            quantity: Math.abs(pos.qtyTFuture),
-            instrument: {symbol: pos.symbol, exchange: pos.exchange},
-            user: {portfolio: pos.portfolio, exchange: pos.exchange}
-          }).subscribe();
-        })
-      );
-  }
-
   closePositions(isReversePosition = false) {
-    this.settings$!
-      .pipe(
-        take(1),
-        switchMap(s => this.orderBookService.getOrderBookPositions(s)),
-      )
-      .subscribe((positions: Position[]) =>
-        positions.forEach(pos => {
-          if (!pos.qtyTFuture) {
-            return;
-          }
-
-          this.commandsService.placeOrder('market', pos.qtyTFuture > 0 ? Side.Sell : Side.Buy, {
-            side: pos.qtyTFuture > 0 ? 'sell' : 'buy',
-            quantity: Math.abs(isReversePosition ? pos.qtyTFuture * 2 : pos.qtyTFuture),
-            instrument: {symbol: pos.symbol, exchange: pos.exchange},
-            user: {portfolio: pos.portfolio, exchange: pos.exchange}
-          }).subscribe();
-        })
-      );
+    this.settings$!.pipe(take(1))
+      .subscribe(s => this.orderBookService.closeOrderBookPositions(s, isReversePosition));
   }
 
   ngOnDestroy() {
@@ -290,9 +190,9 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
                 quantity: this.activeWorkingVolume$.getValue() || 1,
                 price: row.price,
                 instrument: {
-                  symbol: (settings as VerticalOrderBookSettings).symbol,
-                  exchange: (settings as VerticalOrderBookSettings).exchange,
-                  instrumentGroup: (settings as VerticalOrderBookSettings).instrumentGroup,
+                  symbol: settings.symbol,
+                  exchange: settings.exchange,
+                  instrumentGroup: settings.instrumentGroup,
                 },
                 triggerPrice: row.price,
                 condition: row.rowType === this.rowTypes.Ask ? StopOrderCondition.More : StopOrderCondition.Less,
@@ -328,9 +228,9 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
               quantity,
               price: null,
               instrument: {
-                symbol: (settings as VerticalOrderBookSettings).symbol,
-                exchange: (settings as VerticalOrderBookSettings).exchange,
-                instrumentGroup: (settings as VerticalOrderBookSettings).instrumentGroup,
+                symbol: settings.symbol,
+                exchange: settings.exchange,
+                instrumentGroup: settings.instrumentGroup,
               },
               triggerPrice: row.price,
               condition: StopOrderCondition.More,
@@ -339,6 +239,73 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
         )
         .subscribe();
     }
+  }
+
+  private subscribeToHotkeys() {
+    this.hotkeysService.orderBookEventSub
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe(e => {
+        switch (e.event) {
+          case 'cancelAllOrders':
+            this.cancelAllOrders();
+            break;
+          case 'closeAllPositions':
+            this.closePositions();
+            break;
+        }
+
+        if (!this.isActiveOrderBook) {
+          return;
+        }
+
+        if (e.event === 'cancelOrderbookOrders') {
+          this.cancelAllOrders();
+        }
+        if (e.event === 'closeOrderbookPositions') {
+          this.closePositions();
+        }
+        if (e.event === 'reverseOrderbookPositions') {
+          this.closePositions(true);
+        }
+        if (e.event.includes('selectWorkingVolume')) {
+          this.selectVol(this.workingVolumes[e.options]);
+        }
+        if (e.event === 'sell' || e.event === 'buy') {
+          this.sellOrBuyBestOrder(e as any);
+        }
+        if (e.event === 'placeMarketOrder') {
+          this.placeMarketOrder(e as any);
+        }
+      });
+  }
+
+  private susbscribeToWorkingVolumesChange() {
+    this.terminalSettingsService.getSettings()
+      .pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged((prev, curr) =>
+          prev.hotKeysSettings?.workingVolumes?.length === curr.hotKeysSettings?.workingVolumes?.length),
+        mapWith(
+          () => this.settings$!.pipe(take(1)),
+          (terminalSettings, settings) => ({terminalSettings, settings})
+        )
+      )
+      .subscribe(({terminalSettings, settings}) => {
+        this.settingsService.updateSettings(this.guid, {
+          workingVolumes: terminalSettings.hotKeysSettings?.workingVolumes
+            ?.map((wv, i) => settings.workingVolumes[i] || 10 ** i)
+        });
+      });
+
+    this.settings$!.subscribe(settings => {
+      this.workingVolumes = settings.workingVolumes;
+
+      if (!this.activeWorkingVolume$.getValue()) {
+        this.activeWorkingVolume$.next(this.workingVolumes[0]);
+      }
+    });
   }
 
   private sellOrBuyBestOrder(e: {event: string}) {
