@@ -383,7 +383,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     }
 
     if(!!targetElement) {
-      targetElement.scrollIntoView({block: 'center', inline: 'center', behavior: 'smooth'});
+      targetElement.scrollIntoView({block: 'center', inline: 'center'});
     }
   }
 
