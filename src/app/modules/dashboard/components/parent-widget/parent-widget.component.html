@@ -8,7 +8,7 @@
       [shouldShowSettings]="shouldShowSettings"
       [hasHelp]="hasHelp()"></ats-widget-header>
   </div>
-  <div class="widget-content show-scroll">
+  <div class="widget-content show-scroll" #widgetContent>
     <ng-container [ngSwitch]="widget.gridItem.type">
       <ats-orderbook-widget *ngSwitchCase="'order-book'"
                             [guid]="getGuid()"
@@ -21,8 +21,6 @@
       <ats-light-chart-widget *ngSwitchCase="'light-chart'"
                               [guid]="getGuid()"
                               [resize]="widgetResize"
-                              [heightAdjustment]="contentHeightAdjustment"
-                              [widthAdjustment]="contentWidthAdjustment"
                               [(shouldShowSettings)]="shouldShowSettings"
       ></ats-light-chart-widget>
       <ats-instrument-select-widget *ngSwitchCase="'instrument-select'"
@@ -38,13 +36,11 @@
                        [resize]="widgetResize"></ats-info-widget>
       <ats-all-trades-widget *ngSwitchCase="'all-trades'"
                              [guid]="getGuid()"
-                             [heightAdjustment]="contentHeightAdjustment"
                              [(shouldShowSettings)]="shouldShowSettings"
                              [resize]="widgetResize"
       ></ats-all-trades-widget>
       <ats-news-widget *ngSwitchCase="'news'"
                        [guid]="getGuid()"
-                       [heightAdjustment]="contentHeightAdjustment"
                        [(shouldShowSettings)]="shouldShowSettings"
                        [resize]="widgetResize"
       ></ats-news-widget>

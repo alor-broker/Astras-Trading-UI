@@ -25,7 +25,6 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 export class AllTradesComponent implements OnInit, OnDestroy {
   @Input() guid!: string;
   @Input() public resize!: EventEmitter<DashboardItem>;
-  @Input() public heightAdjustment!: number;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private settings: AllTradesSettings | null = null;
@@ -69,7 +68,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     this.resize
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
-        this.tableContainerHeight = data.height! - this.heightAdjustment;
+        this.tableContainerHeight = data.height ?? 0;
         this.tableContainerWidth = data.width!;
         this.cdr.markForCheck();
       });

@@ -20,10 +20,6 @@ export class LightChartWidgetComponent {
   guid!: string;
   @Input()
   resize!: EventEmitter<DashboardItem>;
-  @Input()
-  heightAdjustment: number = 0;
-  @Input()
-  widthAdjustment: number = 0;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 

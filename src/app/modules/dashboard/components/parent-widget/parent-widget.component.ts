@@ -1,11 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnDestroy,
   OnInit,
   Output,
+  ViewChild,
 } from '@angular/core';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { Widget } from 'src/app/shared/models/widget.model';
@@ -25,6 +27,9 @@ import { map } from "rxjs/operators";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ParentWidgetComponent implements OnInit, OnDestroy {
+  @ViewChild('widgetContent')
+  widgetContent?: ElementRef<HTMLElement>;
+
   @Input()
   widget!: Widget;
   @Input()
@@ -35,16 +40,18 @@ export class ParentWidgetComponent implements OnInit, OnDestroy {
   isLinked$?: Observable<boolean>;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly settingsService: WidgetSettingsService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService
+  ) {
   }
 
-  get contentHeightAdjustment(): number {
+  private get contentHeightAdjustment(): number {
     // This value depends on styles. It is mainly based on the height of the widget's title.
     // 28px - header, 10px - padding (top 5px + bottom 5px), 2px - extra space
     return 40;
   }
 
-  get contentWidthAdjustment(): number {
+  private get contentWidthAdjustment(): number {
     // This value depends on styles.
     // 10px - left padding, 10px - right padding
     return 20;
@@ -55,7 +62,25 @@ export class ParentWidgetComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(i => {
       if (i.label == this.widget.gridItem.label) {
-        this.widgetResize.emit(i);
+        let contentHeight = i.height ?? 0;
+        let contentWidth = i.width ?? 0;
+        let contentHeightAdjustment =  this.contentHeightAdjustment;
+        let contentWidthAdjustment = this.contentWidthAdjustment;
+
+        if(this.widgetContent) {
+          const element = this.widgetContent.nativeElement;
+          contentHeightAdjustment = element.offsetTop;
+          contentWidthAdjustment = element.offsetLeft * 2;
+        }
+
+        contentHeight = contentHeight - contentHeightAdjustment;
+        contentWidth = contentWidth  - contentWidthAdjustment;
+
+        this.widgetResize.emit({
+          ...i,
+          height: contentHeight,
+          width: contentWidth,
+        } as DashboardItem);
       }
     });
 
