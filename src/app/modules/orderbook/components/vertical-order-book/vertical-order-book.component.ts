@@ -1,13 +1,21 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderbookService } from "../../services/orderbook.service";
 import {
   BehaviorSubject,
+  delay,
   filter,
   forkJoin,
   Observable,
   of,
-  shareReplay, skip,
+  shareReplay,
+  skip,
   Subject,
   switchMap,
   take,
@@ -69,7 +77,8 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     private readonly hotkeysService: OrderbookHotKeysService,
     private readonly commandsService: CommandsService,
     private readonly notification: NzNotificationService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly elementRef: ElementRef<HTMLElement>
   ) {
   }
 
@@ -93,11 +102,17 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
       tap(orderBookRows => {
         this.maxVolume = Math.max(...orderBookRows.map(x => x.volume ?? 0));
       }),
-      startWith([])
+      startWith([]),
+      shareReplay()
     );
 
     this.subscribeToHotkeys();
     this.susbscribeToWorkingVolumesChange();
+
+      this.orderBookRows$.pipe(
+        take(2),
+        delay(1000)
+      ).subscribe(() => this.alignBySpread());
   }
 
   selectVol(vol: number) {
@@ -212,7 +227,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
             (settings, positions) => ({ settings, positions })
           ),
           map(({settings, positions}) => ({
-            quantity: positions
+              quantity: positions
                 .map(pos => pos.qtyTFuture)
                 .reduce((acc, curr) => acc + curr, 0),
               settings
@@ -351,6 +366,20 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
       },
       user: {portfolio: e.options.portfolio, exchange: e.options.exchange}
     }).subscribe();
+  }
+
+  alignBySpread() {
+    let targetElement: Element | null = null;
+    const spreadElements = this.elementRef.nativeElement.querySelectorAll('.spread-row');
+    if(spreadElements.length > 0) {
+      targetElement = spreadElements.item(Math.floor(spreadElements.length / 2));
+    } else {
+      targetElement = this.elementRef.nativeElement.querySelector('.best-row');
+    }
+
+    if(!!targetElement) {
+      targetElement.scrollIntoView({block: 'center', inline: 'center', behavior: 'smooth'});
+    }
   }
 
   private getVolumeHighlightOption(settings: VerticalOrderBookSettings, volume: number): VolumeHighlightOption | undefined {

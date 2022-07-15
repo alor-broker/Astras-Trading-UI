@@ -1,5 +1,5 @@
 <div *ngIf="!shouldShowSettings">
-  <div *ngIf="(ob$ | async) as ob" [ngStyle]="sizes | async">
+  <div *ngIf="(ob$ | async) as ob">
     <ats-orderbook-chart [guid]='guid' [chartData]="ob.chartData"></ats-orderbook-chart>
     <nz-table *ngIf="shouldShowTable$ | async" #basicTable [nzData]="ob.rows" nzSize="small" [nzFrontPagination]="false">
       <thead>

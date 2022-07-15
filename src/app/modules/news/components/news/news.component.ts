@@ -15,7 +15,6 @@ import { ColumnsSettings } from "../../../../shared/models/columns-settings.mode
 export class NewsComponent implements OnInit, OnDestroy {
 
   @Input() public resize!: EventEmitter<DashboardItem>;
-  @Input() public heightAdjustment!: number;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private datePipe = new DatePipe('ru-RU');
@@ -49,8 +48,8 @@ export class NewsComponent implements OnInit, OnDestroy {
     this.resize
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
-      this.tableContainerHeight = data.height! - this.heightAdjustment;
-      this.tableContainerWidth = data.width!;
+      this.tableContainerHeight = data.height ?? 0;
+      this.tableContainerWidth = data.width ?? 0;
       this.cdr.markForCheck();
     });
 

@@ -16,7 +16,6 @@ import {
   Subject,
   switchMap,
   take,
-  takeUntil
 } from 'rxjs';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
@@ -122,15 +121,6 @@ export class OrderBookComponent implements OnInit, OnDestroy {
         }
       }
     ));
-
-    this.resize.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe((widget) => {
-      this.sizes.next({
-        width: (widget.width ?? 0) - 20 + 'px',
-        height: ((widget.height ?? 0) - 40) + 'px',
-      });
-    });
   }
 
   ngOnDestroy(): void {

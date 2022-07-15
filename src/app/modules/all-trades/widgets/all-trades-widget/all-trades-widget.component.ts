@@ -17,7 +17,6 @@ export class AllTradesWidgetComponent {
 
   @Input() public shouldShowSettings!: boolean;
   @Input() public guid!: string;
-  @Input() public heightAdjustment!: number;
   @Input() public resize!: EventEmitter<DashboardItem>;
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
 }
