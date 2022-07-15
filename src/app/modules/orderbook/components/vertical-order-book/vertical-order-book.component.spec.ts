@@ -15,8 +15,9 @@ import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { CommandsService } from "../../../command/services/commands.service";
 import { Store, StoreModule } from "@ngrx/store";
+import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
-fdescribe('VerticalOrderBookComponent', () => {
+describe('VerticalOrderBookComponent', () => {
   let component: VerticalOrderBookComponent;
   let fixture: ComponentFixture<VerticalOrderBookComponent>;
 
@@ -64,6 +65,18 @@ fdescribe('VerticalOrderBookComponent', () => {
             submitMarket: jasmine.createSpy('submitMarket').and.returnValue(of({})),
           }
         },
+        {
+          provide: NzNotificationService,
+          useValue: {
+            error: jasmine.createSpy('error')
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))
+          }
+        }
       ],
     })
       .compileComponents();

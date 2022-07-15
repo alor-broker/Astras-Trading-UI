@@ -37,12 +37,7 @@ import { InstrumentType } from "../../../../shared/models/enums/instrument-type.
 import { OrderbookHotKeysService } from "../../../../shared/services/orderbook-hot-keys.service";
 import { CommandsService } from "../../../command/services/commands.service";
 import { Side } from "../../../../shared/models/enums/side.model";
-import { getSelectedPortfolio } from "../../../../store/portfolios/portfolios.selectors";
-import { Store } from "@ngrx/store";
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
-import { AuthService } from "../../../../shared/services/auth.service";
-import { User } from "../../../../shared/models/user/user.model";
-import { PositionsService } from "../../../../shared/services/positions.service";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { Position } from "../../../../shared/models/positions/position.model";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
@@ -74,9 +69,6 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     private readonly instrumentsService: InstrumentsService,
     private readonly hotkeysService: OrderbookHotKeysService,
     private readonly commandsService: CommandsService,
-    private readonly store: Store,
-    private readonly authService: AuthService,
-    private readonly positionsService: PositionsService,
     private readonly notification: NzNotificationService,
     private readonly terminalSettingsService: TerminalSettingsService
   ) {
@@ -312,32 +304,21 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     }
 
     if (e.shiftKey && row.rowType === this.rowTypes.Ask) {
-      this.authService.currentUser$
+      this.settings$!
         .pipe(
-          map((user: User) => user.login),
-          switchMap(login => this.positionsService.getAllByLogin(login).pipe(take(1))),
-          mapWith(() =>
-              this.settings$!
-                .pipe(
-                  take(1),
-                  mapWith(
-                    () => this.store.select(getSelectedPortfolio).pipe(take(1)),
-                    (settings, portfolio) => ({settings, portfolio})
-                  )
-                ),
-            (positions, {settings, portfolio}) => ({
-              quantity: positions
-                .filter(pos =>
-                  pos.symbol === (settings as VerticalOrderBookSettings).symbol &&
-                  pos.exchange === (settings as VerticalOrderBookSettings).exchange &&
-                  pos.portfolio === portfolio!.portfolio)
+          take(1),
+          mapWith(
+            s => this.orderBookService.getOrderBookPositions(s),
+            (settings, positions) => ({ settings, positions })
+          ),
+          map(({settings, positions}) => ({
+            quantity: positions
                 .map(pos => pos.qtyTFuture)
                 .reduce((acc, curr) => acc + curr, 0),
-              settings,
-              portfolio
+              settings
             })
           ),
-          switchMap(({quantity, settings, portfolio}) => {
+          switchMap(({quantity, settings}) => {
             if (!quantity) {
               this.notification.error('Нет позиций', 'Позиции с данным тикером отсутствуют');
               return of({});
@@ -350,10 +331,6 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
                 symbol: (settings as VerticalOrderBookSettings).symbol,
                 exchange: (settings as VerticalOrderBookSettings).exchange,
                 instrumentGroup: (settings as VerticalOrderBookSettings).instrumentGroup,
-              },
-              user: {
-                portfolio: portfolio!.portfolio,
-                exchange: (settings as VerticalOrderBookSettings).exchange,
               },
               triggerPrice: row.price,
               condition: StopOrderCondition.More,
