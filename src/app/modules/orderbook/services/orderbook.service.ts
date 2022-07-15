@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core';
 import {
   combineLatest,
   filter,
+  forkJoin,
   Observable,
-  of
+  of,
+  take
 } from 'rxjs';
 import {
   catchError,
@@ -40,6 +42,11 @@ import { InstrumentType } from "../../../shared/models/enums/instrument-type.mod
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { Side } from "../../../shared/models/enums/side.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
+import { Position } from "../../../shared/models/positions/position.model";
+import { User } from "../../../shared/models/user/user.model";
+import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
+import { PositionsService } from "../../../shared/services/positions.service";
+import { AuthService } from "../../../shared/services/auth.service";
 
 @Injectable()
 export class OrderbookService extends BaseWebsocketService {
@@ -48,7 +55,9 @@ export class OrderbookService extends BaseWebsocketService {
   constructor(
     ws: WebsocketService,
     private readonly store: Store,
-    private readonly canceller: OrderCancellerService
+    private readonly canceller: OrderCancellerService,
+    private readonly positionsService: PositionsService,
+    private readonly authService: AuthService,
   ) {
     super(ws);
   }
@@ -113,6 +122,25 @@ export class OrderbookService extends BaseWebsocketService {
 
   cancelOrder(cancel: CancelCommand) {
     this.canceller.cancelOrder(cancel).subscribe();
+  }
+
+  getOrderBookPositions(settings: VerticalOrderBookSettings): Observable<Position[]> {
+    return this.authService.currentUser$
+      .pipe(
+        map((user: User) => user.login),
+        switchMap((login) => forkJoin([
+          this.positionsService.getAllByLogin(login).pipe(take(1)),
+          this.store.select(getSelectedPortfolio).pipe(take(1))
+        ])),
+        map((
+          [positions, p]: [Position[], PortfolioKey | null]) =>
+          positions.filter(pos =>
+            pos.portfolio === p?.portfolio
+            && settings.exchange === pos.exchange
+            && settings.symbol === pos.symbol
+          )
+        ),
+      );
   }
 
   private toVerticalOrderBook(

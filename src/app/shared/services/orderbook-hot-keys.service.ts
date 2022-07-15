@@ -2,22 +2,12 @@ import { Inject, Injectable } from '@angular/core';
 import { EventManager } from "@angular/platform-browser";
 import { DOCUMENT } from "@angular/common";
 import {
-  forkJoin,
   map,
   Observable,
   Subject,
   Subscription,
-  switchMap,
-  take
 } from "rxjs";
 import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
-import { PositionsService } from "./positions.service";
-import { AuthService } from "./auth.service";
-import { Store } from "@ngrx/store";
-import { PortfolioKey } from "../models/portfolio-key.model";
-import { getSelectedPortfolio } from "../../store/portfolios/portfolios.selectors";
-import { User } from "../models/user/user.model";
-import { Position } from "../models/positions/position.model";
 
 @Injectable({providedIn: 'root'})
 export class OrderbookHotKeysService {
@@ -29,10 +19,7 @@ export class OrderbookHotKeysService {
   constructor(
     private readonly eventManager: EventManager,
     @Inject(DOCUMENT) private document: Document,
-    private readonly store: Store,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly positionsService: PositionsService,
-    private readonly authService: AuthService,
   ) {
   }
 
@@ -114,23 +101,7 @@ export class OrderbookHotKeysService {
   }
 
   private closeAllPositions() {
-    this.getAllPositions()
-      .subscribe(positions => this.orderBookEvent$.next({ event: 'closeAllPositions', options: positions }));
-  }
-
-  private getAllPositions(): Observable<Position[]> {
-    return this.authService.currentUser$
-      .pipe(
-        map((user: User) => user.login),
-        switchMap((login) => forkJoin([
-          this.positionsService.getAllByLogin(login).pipe(take(1)),
-          this.store.select(getSelectedPortfolio).pipe(take(1))
-        ])),
-        map((
-          [positions, p]: [Position[], PortfolioKey | null]) =>
-          positions.filter(pos => pos.portfolio === p?.portfolio)
-        ),
-      );
+    this.orderBookEvent$.next({ event: 'closeAllPositions' });
   }
 
   private cancelOrderbookOrders() {
@@ -138,11 +109,9 @@ export class OrderbookHotKeysService {
   }
 
   private closeOrderbookPositions(isReversePosition = false) {
-    this.getAllPositions()
-      .subscribe(positions => this.orderBookEvent$.next({
-        event: isReversePosition ? 'reverseOrderbookPositions' : 'closeOrderbookPositions',
-        options: { positions }
-      }));
+    this.orderBookEvent$.next({
+      event: isReversePosition ? 'reverseOrderbookPositions' : 'closeOrderbookPositions',
+    });
   }
 
   private placeMarketOrder(side: string) {

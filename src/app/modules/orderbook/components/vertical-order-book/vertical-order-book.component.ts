@@ -113,7 +113,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
               this.cancelAllOrders();
               break;
             case 'closeAllPositions':
-              this.closePositions(e.options);
+              this.closePositions();
               break;
           }
         }),
@@ -125,10 +125,10 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
           this.cancelAllOrders();
         }
         if (e.event === 'closeOrderbookPositions') {
-          this.closePositions(e.options);
+          this.closePositions();
         }
         if (e.event === 'reverseOrderbookPositions') {
-          this.closePositions(e.options, true);
+          this.closePositions(true);
         }
         if (e.event.includes('selectWorkingVolume')) {
           this.selectVol(this.workingVolumes[e.options]);
@@ -254,27 +254,21 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
       );
   }
 
-  closePositions(positions: Position[], isReversePosition = false) {
+  closePositions(isReversePosition = false) {
     this.settings$!
       .pipe(
         take(1),
-        map(s => ({
-            positions: positions.filter(
-              pos => s.exchange === pos.exchange && s.symbol === pos.symbol
-            ),
-            isReversePosition: isReversePosition
-          })
-        )
+        switchMap(s => this.orderBookService.getOrderBookPositions(s)),
       )
-      .subscribe((options: {positions: Position[], isReversePosition: boolean}) =>
-        options.positions.forEach(pos => {
+      .subscribe((positions: Position[]) =>
+        positions.forEach(pos => {
           if (!pos.qtyTFuture) {
             return;
           }
 
           this.commandsService.placeOrder('market', pos.qtyTFuture > 0 ? Side.Sell : Side.Buy, {
             side: pos.qtyTFuture > 0 ? 'sell' : 'buy',
-            quantity: Math.abs(options.isReversePosition ? pos.qtyTFuture * 2 : pos.qtyTFuture),
+            quantity: Math.abs(isReversePosition ? pos.qtyTFuture * 2 : pos.qtyTFuture),
             instrument: {symbol: pos.symbol, exchange: pos.exchange},
             user: {portfolio: pos.portfolio, exchange: pos.exchange}
           }).subscribe();
