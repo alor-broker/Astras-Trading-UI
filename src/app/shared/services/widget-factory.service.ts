@@ -125,7 +125,8 @@ export class WidgetFactoryService {
       showSpreadItems: false,
       highlightHighVolume: false,
       volumeHighlightOptions: [{boundary: 10000, color:'#CC0099'}],
-      title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`
+      title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
+      workingVolumes: [1, 10, 100, 1000],
     };
 
     return settings;

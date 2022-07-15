@@ -5,5 +5,5 @@ export interface MarketCommand {
   side: string,
   quantity: number, //2,
   instrument: InstrumentKey,
-  user: PortfolioKey
+  user?: PortfolioKey
 }

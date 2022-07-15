@@ -33,6 +33,7 @@ interface SettingsFormData {
   showSpreadItems: boolean;
   highlightHighVolume: boolean;
   volumeHighlightOptions: VolumeHighlightOption[];
+  workingVolumes: number[];
 }
 
 type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
@@ -72,6 +73,14 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
     return this.form.controls.volumeHighlightOptions as FormArray;
   }
 
+  get workingVolumes(): FormArray {
+    return this.form.controls.workingVolumes as FormArray;
+  }
+
+  workingVolumeCtrl(index: number): FormControl {
+    return this.workingVolumes.at(index) as FormControl;
+  }
+
   ngOnInit() {
     this.settingsService.getSettings<VerticalOrderBookSettings>(this.guid).pipe(
       takeUntil(this.destroy$)
@@ -94,7 +103,10 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
           [...settings.volumeHighlightOptions]
             .sort((a, b) => a.boundary - b.boundary)
             .map(x => this.createVolumeHighlightOptionsControl(x))
-        )
+        ),
+        workingVolumes: new FormArray(settings.workingVolumes.map(
+          wv => new FormControl(wv, [Validators.required, Validators.min(1)])
+        )),
       } as SettingsFormControls) as SettingsFormGroup;
     });
   }
@@ -114,6 +126,7 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
             boundary: Number(x.boundary)
           } as VolumeHighlightOption)
         ),
+        workingVolumes: this.form.value.workingVolumes.map((wv: string) => Number(wv)),
         linkToActive: false
       });
 
