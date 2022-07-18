@@ -12,9 +12,9 @@
       <tbody>
       <tr *ngFor="let coupon of couponsTable.data">
         <td>{{ coupon.date | date }}</td>
-        <td>{{ coupon.amount | currency: coupon.currency:'symbol-narrow' | slice: 0:-3}}</td>
+        <td>{{ coupon.amount | currency: coupon.currency:'symbol-narrow'}}</td>
         <td>{{ coupon.couponType }}</td>
-        <td>{{ coupon.accruedInterest | currency: coupon.currency:'symbol-narrow' | slice: 0:-3}}</td>
+        <td>{{ coupon.accruedInterest | currency: coupon.currency:'symbol-narrow'}}</td>
       </tr>
       </tbody>
     </nz-table>
@@ -30,7 +30,7 @@
       <tbody>
       <tr *ngFor="let amort of amortizationsTable.data">
         <td>{{ amort.date | date }}</td>
-        <td>{{ amort.amount | currency: amort.currency:'symbol-narrow' | slice: 0:-3}}</td>
+        <td>{{ amort.amount | currency: amort.currency:'symbol-narrow'}}</td>
         <td>{{ amort.parFraction }}</td>
       </tr>
       </tbody>
