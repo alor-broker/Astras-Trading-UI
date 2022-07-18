@@ -242,7 +242,6 @@ export class WidgetFactoryService {
 
     return {
       guid: newWidget.gridItem.label,
-      hasSettings: false,
       title: 'Курс валют'
     };
   }

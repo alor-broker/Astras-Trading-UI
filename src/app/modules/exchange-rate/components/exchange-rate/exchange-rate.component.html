@@ -1,19 +1,21 @@
-<nz-table
-  nzTableLayout="fixed"
-  nzSize="small"
-  [nzData]="currencies"
-  [nzFrontPagination]="false"
-  [nzShowPagination]="false">
-  <thead>
-  <tr>
-    <th></th>
-    <th *ngFor="let cur of currencies">{{cur}}</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let cur1 of currencies">
-    <td class="bold">{{cur1}}</td>
-    <td *ngFor="let cur2 of currencies">{{getRateValue(cur1, cur2)}}</td>
-  </tr>
-  </tbody>
-</nz-table>
+<div *ngIf="exchangeRateData$ | async as exchangeRateData">
+  <nz-table
+    nzTableLayout="fixed"
+    nzSize="small"
+    [nzData]="exchangeRateData.currencies"
+    [nzFrontPagination]="false"
+    [nzShowPagination]="false">
+    <thead>
+    <tr>
+      <th></th>
+      <th *ngFor="let cur of exchangeRateData.currencies">{{cur}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let cur1 of exchangeRateData.currencies">
+      <td class="bold">{{cur1}}</td>
+      <td *ngFor="let cur2 of exchangeRateData.currencies">{{getRateValue(cur1, cur2, exchangeRateData.data)}}</td>
+    </tr>
+    </tbody>
+  </nz-table>
+</div>

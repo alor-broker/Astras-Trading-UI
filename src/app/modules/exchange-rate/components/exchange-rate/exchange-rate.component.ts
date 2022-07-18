@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import { ExchangeRateService } from "../../services/exchange-rate.service";
-import { map, merge, Observable, Subject, switchMap, takeUntil, tap } from "rxjs";
+import { map, Observable, combineLatest } from "rxjs";
 import { ExchangeRate } from "../../models/exchange-rate.model";
-import { finalize } from "rxjs/operators";
+import { finalize, startWith } from "rxjs/operators";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 @Component({
   selector: 'ats-exchange-rate',
@@ -11,54 +12,46 @@ import { finalize } from "rxjs/operators";
   styleUrls: ['./exchange-rate.component.less'],
   providers: [ExchangeRateService]
 })
-export class ExchangeRateComponent implements OnInit, OnDestroy {
+export class ExchangeRateComponent implements OnInit {
 
   @Input() public shouldShowSettings!: boolean;
   @Input() public guid!: string;
   @Input() public resize!: EventEmitter<DashboardItem>;
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
 
-  public exchangeRates: ExchangeRate[] = [];
-  public currencies: string[] = [];
-  public data: { [key: string]: number } = {};
-
-  private destroy$: Subject<boolean> = new Subject<boolean>();
+  public exchangeRateData$!: Observable<{currencies: string[], data: {[key: string]: number}}>;
 
   constructor(
-    private readonly exchangeRateService: ExchangeRateService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly exchangeRateService: ExchangeRateService
   ) {
   }
 
   ngOnInit() {
-    this.exchangeRateService.getCurrencies()
+    this.exchangeRateData$ = this.exchangeRateService.getCurrencies()
       .pipe(
-        tap(res => {
-          this.currencies = Array.from(new Set([...res.map(item => item.firstCode), ...res.map(item => item.secondCode)]));
-        }),
-        switchMap(this.getExchangeRates),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(res => {
-        this.data[`${res.firstCode}_${res.secondCode}`] = res.last_price;
-        this.cdr.detectChanges();
-      });
+        mapWith(
+          this.getExchangeRates,
+            (currencies, rates, ) => ({
+              currencies: Array.from(new Set([...currencies.map(item => item.firstCode), ...currencies.map(item => item.secondCode)])),
+              data: rates.reduce((acc, curr) => {
+                acc[`${curr.firstCode}_${curr.secondCode}`] = curr.last_price;
+                return acc;
+              }, {} as any)
+            })
+        ),
+      );
   }
 
-  valueChanged(value: number, dataProp: string) {
-    this.data[dataProp] = value;
-  }
-
-  getRateValue(firstCode: string, secondCode: string): string {
-    if (firstCode === secondCode || (!this.data[`${firstCode}_${secondCode}`] && !this.data[`${secondCode}_${firstCode}`])) {
+  getRateValue(firstCode: string, secondCode: string, data: {[key: string]: number}): string {
+    if (firstCode === secondCode || (!data[`${firstCode}_${secondCode}`] && !data[`${secondCode}_${firstCode}`])) {
       return '-';
     }
-    return (this.data[`${firstCode}_${secondCode}`] || 1/this.data[`${secondCode}_${firstCode}`])?.toFixed(4);
+    return (data[`${firstCode}_${secondCode}`] || 1/data[`${secondCode}_${firstCode}`])?.toFixed(4);
   }
 
-  private getExchangeRates = (exchangeRates: ExchangeRate[]): Observable<{firstCode: string, secondCode: string, last_price: number}> => {
-    return merge(
-      ...exchangeRates.map(item => this.exchangeRateService.getQuotes(
+  private getExchangeRates = (exchangeRates: ExchangeRate[]): Observable<{firstCode: string, secondCode: string, last_price: number}[]> => {
+    return combineLatest(
+      exchangeRates.map(item => this.exchangeRateService.getQuotes(
           item.symbolTom,
           'MOEX'
         )
@@ -68,15 +61,14 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
             secondCode: item.secondCode,
             last_price: quote.last_price
           })),
-          takeUntil(this.destroy$),
-          finalize(() => this.exchangeRateService.unsubscribe())
+          finalize(() => this.exchangeRateService.unsubscribe()),
+          startWith({
+            firstCode: item.firstCode,
+            secondCode: item.secondCode,
+            last_price: 0
+          })
         )
       )
     );
   };
-
-  ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-  }
 }
