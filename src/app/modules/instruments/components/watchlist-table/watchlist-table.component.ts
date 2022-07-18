@@ -57,6 +57,7 @@ export class WatchlistTableComponent implements OnInit {
   showedWidgetNames = [
     WidgetNames.lightChart,
     WidgetNames.orderBook,
+    WidgetNames.verticalOrderBook,
     WidgetNames.allTrades,
     WidgetNames.instrumentInfo
   ];

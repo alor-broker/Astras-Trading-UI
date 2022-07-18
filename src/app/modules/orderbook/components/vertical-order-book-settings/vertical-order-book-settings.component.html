@@ -1,0 +1,113 @@
+<p>Настройки</p>
+<div *ngIf="form">
+  <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="submitForm()">
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите инструмент">
+        <nz-form-label nzRequired nzFor="symbol">Тикер</nz-form-label>
+        <nz-input-group>
+          <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" placeholder="Symbol" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Введите биржу">
+        <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
+        <nz-input-group>
+          <input class='ant-input' formControlName="exchange" (mousedown)="$event.stopPropagation()"
+                 placeholder="Биржа" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationSettings.depth.min}} до {{validationSettings.depth.max}}">
+        <nz-form-label nzRequired nzFor="depth">Глубина</nz-form-label>
+        <nz-input-group>
+          <input class='ant-input' atsNumerical formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-collapse [nzBordered]="false" class="compact working-volumes">
+      <nz-collapse-panel nzHeader="Рабочие объёмы">
+        <div class="hint">Используются для быстрого выставления заявок с нужным объёмом</div>
+        <nz-form-item class="compact" *ngFor="let ctrl of workingVolumes.controls; let i = index">
+          <nz-form-control [nzErrorTip]="workingVolumeError">
+            <nz-form-label nzRequired nzFor="workingVolume1">Рабочий объём {{i + 1}}</nz-form-label>
+            <nz-input-group>
+              <input
+                class='ant-input'
+                [formControl]="workingVolumeCtrl(i)"
+                atsNumerical
+                (mousedown)="$event.stopPropagation()"
+                placeholder="1"
+              />
+            </nz-input-group>
+          </nz-form-control>
+
+          <ng-template #workingVolumeError>
+            <span *ngIf="ctrl.errors?.required">Введите значение</span>
+            <span *ngIf="ctrl.errors?.min">Значение должно быть больше нуля</span>
+          </ng-template>
+        </nz-form-item>
+      </nz-collapse-panel>
+    </nz-collapse>
+
+    <nz-form-item>
+      <nz-form-label nzFor="showYieldForBonds">Показывать дох. облигаций</nz-form-label>
+      <nz-switch formControlName='showYieldForBonds'></nz-switch>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="showZeroVolumeItems">Показывать цены сделок с нулевым объемом</nz-form-label>
+      <nz-switch formControlName='showZeroVolumeItems'></nz-switch>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="showSpreadItems">Показывать цены между лучшими ценами покупки/продажи</nz-form-label>
+      <nz-switch formControlName='showSpreadItems'></nz-switch>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="highlightHighVolume">Выделять цветом большие объемы</nz-form-label>
+      <nz-switch formControlName='highlightHighVolume'></nz-switch>
+    </nz-form-item>
+    <nz-form-item *ngIf="form.value.highlightHighVolume">
+      <ng-container *ngFor="let optionForm of volumeHighlightOptions.controls; index as i">
+        <div [formGroup]="asFormGroup(optionForm)" class="volume-highlight-options">
+          <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.volumeHighlightOption.boundary.min}} до {{validationSettings.volumeHighlightOption.boundary.max}}">
+            <nz-form-label nzRequired nzFor="boundary" nzRequired>Объем</nz-form-label>
+            <input class='ant-input' atsNumerical formControlName="boundary" (mousedown)="$event.stopPropagation()"/>
+          </nz-form-control>
+          <nz-form-control nzErrorTip="Выберите цвет">
+            <nz-form-label nzRequired nzFor="color" nzRequired>Цвет выделения</nz-form-label>
+            <ats-color-picker-input [value]="optionForm.value.color" (colorChangeComplete)="setVolumeHighlightOptionColor(i, $event)"></ats-color-picker-input>
+          </nz-form-control>
+          <button (click)="removeVolumeHighlightOption($event, i)"
+                  nz-button
+                  nzType="dashed"
+                  class="volume-highlight-options-remove-btn">
+            <i nz-icon nzType="minus"></i>
+          </button>
+        </div>
+      </ng-container>
+      <button nz-button class="add-volume-highlight-option-btn" nzType="dashed" (click)="addVolumeHighlightOption($event)" [disabled]="!volumeHighlightOptions.valid">
+        <i nz-icon nzType="plus"></i>
+      </button>
+    </nz-form-item>
+    <nz-collapse [nzBordered]="false" class="compact">
+      <nz-collapse-panel nzHeader="Продвинутые">
+        <nz-form-control nzErrorTip="Группа">
+          <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
+          <nz-input-group>
+            <input class='ant-input' formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+                   placeholder="Режим торгов" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-collapse-panel>
+    </nz-collapse>
+    <br />
+    <nz-form-item class="compact">
+      <nz-form-control>
+        <button type="submit" nz-button nzType="primary" [disabled]="!form?.valid">Сохранить</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</div>
+

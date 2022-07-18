@@ -1,0 +1,16 @@
+<div
+  class="ant-input preview" [ngStyle]="{'background-color': value}"
+  [nzPopoverContent]="selectVolumeHighlightColor"
+  nz-popover
+  nzPopoverTitle="Выберите цвет"
+  nzPopoverTrigger="click"
+>
+</div>
+
+<ng-template #selectVolumeHighlightColor>
+  <color-chrome (onChangeComplete)="colorChangeComplete.emit($event.color.hex)" [color]="value" [disableAlpha]="true"></color-chrome>
+</ng-template>
+
+<ng-template #selectedColorPreview>
+  <span [ngStyle]="{'background-color': value}" class="preview">&nbsp;</span>
+</ng-template>

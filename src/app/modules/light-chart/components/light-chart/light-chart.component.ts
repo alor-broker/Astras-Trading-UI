@@ -44,8 +44,6 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
   guid!: string;
   @Input()
   resize!: EventEmitter<DashboardItem>;
-  @Input()
-  heightAdjustment: number = 0;
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
@@ -84,9 +82,7 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
         takeUntil(this.destroy$)
       ).subscribe((item) => {
         if (this.chart) {
-          this.chart.resize(
-            item.width ?? 0,
-            !!item.height ? item.height - this.heightAdjustment : 0);
+          this.chart.resize(Math.floor(item.width ?? 0), Math.floor(item.height ?? 0));
 
           this.settingsService.updateSettings(
             this.guid,
@@ -123,7 +119,7 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
       this.service.unsubscribe();
 
       if (!this.chart) {
-        this.chart = new LightChart(options.widgetSettings?.width ?? 300, (options.widgetSettings?.height ?? 300) - this.heightAdjustment);
+        this.chart = new LightChart(options.widgetSettings?.width ?? 300, (options.widgetSettings?.height ?? 300));
         this.chart.create(guid);
       }
 

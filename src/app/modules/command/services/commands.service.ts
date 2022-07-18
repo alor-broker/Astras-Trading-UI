@@ -7,7 +7,7 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {
   BehaviorSubject,
   of,
-  Subject,
+  Subject, switchMap, take,
   throwError
 } from 'rxjs';
 import {
@@ -26,6 +26,8 @@ import { MarketEdit } from '../models/market-edit.model';
 import { StopCommand } from '../models/stop-command.model';
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { httpLinkRegexp } from "../../../shared/utils/regexps";
+import { Store } from "@ngrx/store";
+import { getSelectedPortfolio } from "../../../store/portfolios/portfolios.selectors";
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +50,8 @@ export class CommandsService {
   constructor(
     private http: HttpClient,
     private notification: NzNotificationService,
-    private readonly errorHandlerService: ErrorHandlerService
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly store: Store
   ) { }
 
   setStopCommand(command: StopCommand | null) {
@@ -158,7 +161,7 @@ export class CommandsService {
     );
   }
 
-  private placeOrder(type: string, side: Side, command : LimitCommand | MarketCommand | StopCommand) {
+  placeOrder(type: string, side: Side, command : LimitCommand | MarketCommand | StopCommand) {
     let isStop = false;
     if ((type == 'stop' || type == 'stopLimit') && isStopCommand(command)) {
       isStop = true;
@@ -175,31 +178,36 @@ export class CommandsService {
       }
     }
 
-    return this.http.post<CommandResponse>(`${this.url}/${type.toString()}?stop=${isStop}`, {
-        ...command,
-        type,
-        side
-      }, {
-      headers: {
-        'X-ALOR-REQID': GuidGenerator.newGuid(),
-        'X-ALOR-ORIGINATOR': 'astras'
-      }
-    }).pipe(
-      tap(resp => {
-        if (resp.orderNumber) {
-          this.notification.success(`Заявка выставлена`, `Заявка успешно выставлена, её номер на бирже: \n ${resp.orderNumber}`);
-        }
-      }),
-      catchError(err => {
-        if (!(err instanceof HttpErrorResponse)) {
-          this.errorHandlerService.handleError(err);
-          return of(null);
-        }
+    return this.store.select(getSelectedPortfolio)
+      .pipe(
+        take(1),
+        switchMap(user => this.http.post<CommandResponse>(`${this.url}/${type.toString()}?stop=${isStop}`, {
+            ...command,
+            user,
+            type,
+            side
+          }, {
+            headers: {
+              'X-ALOR-REQID': GuidGenerator.newGuid(),
+              'X-ALOR-ORIGINATOR': 'astras'
+            }
+          })
+        ),
+        tap(resp => {
+          if (resp.orderNumber) {
+            this.notification.success(`Заявка выставлена`, `Заявка успешно выставлена, её номер на бирже: \n ${resp.orderNumber}`);
+          }
+        }),
+        catchError(err => {
+          if (!(err instanceof HttpErrorResponse)) {
+            this.errorHandlerService.handleError(err);
+            return of(null);
+          }
 
-        this.handleCommandError(err);
-        return of(null);
-      }),
-    );
+          this.handleCommandError(err);
+          return of(null);
+        }),
+      );
   }
 
   private handleCommandError(error: HttpErrorResponse){

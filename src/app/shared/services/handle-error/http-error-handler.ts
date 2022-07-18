@@ -4,11 +4,6 @@ import { NzNotificationService } from "ng-zorro-antd/notification";
 import { Injectable } from "@angular/core";
 import { LoggerService } from '../logger.service';
 
-interface CommandError {
-  code: string,
-  message: string
-}
-
 @Injectable()
 export class HttpErrorHandler implements ApplicationErrorHandler {
   private readonly apiAccessibilityErrorStatusCodes: number[] = [

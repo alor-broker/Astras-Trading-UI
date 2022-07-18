@@ -76,6 +76,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
       this.guid,
       {
         ...this.form.value,
+        depth: Number(this.form.value.depth),
         linkToActive: false
       });
 
