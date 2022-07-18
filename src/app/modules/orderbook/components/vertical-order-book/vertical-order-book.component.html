@@ -1,0 +1,47 @@
+<div
+  *ngIf="!shouldShowSettings"
+  (mouseenter)="isActiveOrderBook = true"
+  (mouseleave)="isActiveOrderBook = false"
+>
+  <div *ngIf="(orderBookRows$ | async) as orderBookRows" class="order-book-table">
+    <div class="working-volumes">
+      <nz-tag
+        class="working-volume"
+        [nzColor]="(activeWorkingVolume$ | async) === vol ? 'gold' : 'default'"
+        *ngFor="let vol of workingVolumes"
+        (click)="selectVol(vol)"
+      >
+        {{vol}}
+      </nz-tag>
+    </div>
+    <nz-table nzBordered nzSize="small" nzTableLayout="fixed" nzTemplateMode>
+      <tbody class="order-book-rows">
+      <tr *ngFor='let row of orderBookRows; trackBy: getTrackKey'
+          [ngClass]="{
+          'row': true,
+          'ask-row': row.rowType === rowTypes.Ask,
+          'bid-row': row.rowType === rowTypes.Bid,
+          'spread-row': row.rowType === rowTypes.Spread,
+          'best-row': row.isBest,
+          'trade-row': (row.volume ?? 0) > 0
+          }"
+          (contextmenu)="onRowRightClick($event, row)"
+          (click)="onRowClick($event, row)"
+      >
+        <td [ngStyle]='row.getVolumeStyle()' class="volume-cell"
+            nzAlign="center">{{row.volume}}</td>
+        <td class="price-cell" nzAlign="center">{{row.displayValue}}</td>
+        <td nzAlign="right">
+          <span>{{getCurrentOrdersVolume(row.currentOrders)}}</span>
+          <button (click)="cancelOrders(row.currentOrders)" *ngIf='row.currentOrders.length > 0'
+                  class="cancel-order-btn" nz-button
+                  nzSize="small" nzType="primary">
+            <i nz-icon nzType="close-square"></i>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+    <nz-empty *ngIf="orderBookRows.length === 0" nzNotFoundImage="simple"></nz-empty>
+  </div>
+</div>

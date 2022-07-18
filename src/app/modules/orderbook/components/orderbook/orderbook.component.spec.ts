@@ -18,7 +18,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 describe('OrderBookComponent', () => {
   let component: OrderBookComponent;
   let fixture: ComponentFixture<OrderBookComponent>;
-  const spyOb = jasmine.createSpyObj('OrderbookService', [, 'getOrderbook', 'unsubscribe']);
+  const spyOb = jasmine.createSpyObj('OrderbookService', [, 'getHorizontalOrderBook', 'unsubscribe']);
   const ob: OrderBook = {
     rows: [],
     maxVolume: 10,
@@ -29,7 +29,7 @@ describe('OrderBookComponent', () => {
       maxPrice: 0
     }
   };
-  spyOb.getOrderbook.and.returnValue(of(ob));
+  spyOb.getHorizontalOrderBook.and.returnValue(of(ob));
   const modalSync = jasmine.createSpyObj('ModalService', ['openCommandModal']);
 
   beforeAll(() => TestBed.resetTestingModule());

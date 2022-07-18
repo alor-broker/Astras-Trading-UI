@@ -4,7 +4,7 @@
  * @param selector a function with gets an element of array and returns same or diffrent object, constructed from this element
  * @returns array of unique objects
  */
-export function findUnique<T, P>(array: Array<T>, selector: (element: T) => P) : P[] {
+export function findUnique<T, P>(array: Array<T>, selector: (element: T) => P): P[] {
   const selected = array.map(element => JSON.stringify(selector(element)));
   return [...new Set(selected)].map(j => JSON.parse(j));
 }
@@ -27,9 +27,9 @@ export function findUniqueElements<T>(
   {
       if (comparer(array[i], array[i - 1]))
       {
-          dupes++;
-      }
-      array[i - dupes] = array[i];
+      dupes++;
+    }
+    array[i - dupes] = array[i];
   }
   array.length -= dupes;
   return array;
@@ -44,44 +44,50 @@ type sortArg<T> = keyof T | `-${string & keyof T}`;
  * @param sortBy - the names of the properties to sort by, in precedence order.
  *                 Prefix any name with `-` to sort it in descending order.
  */
-export function byPropertiesOf<T extends object> (sortBy: Array<sortArg<T>>) {
-    function compareByProperty (arg: sortArg<T>) {
-        let key: keyof T;
-        let sortOrder = 1;
-        if (typeof arg === 'string' && arg.startsWith('-')) {
-            sortOrder = -1;
-            // Typescript is not yet smart enough to infer that substring is keyof T
-            key = arg.substr(1) as keyof T;
-        } else {
-            // Likewise it is not yet smart enough to infer that arg is not keyof T
-            key = arg as keyof T;
-        }
-        return function (a: T, b: T) {
-            const result = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
+export function byPropertiesOf<T extends object>(sortBy: Array<sortArg<T>>) {
+  function compareByProperty(arg: sortArg<T>) {
+    let key: keyof T;
+    let sortOrder = 1;
+    if (typeof arg === 'string' && arg.startsWith('-')) {
+      sortOrder = -1;
+      // Typescript is not yet smart enough to infer that substring is keyof T
+      key = arg.substr(1) as keyof T;
+    } else {
+      // Likewise it is not yet smart enough to infer that arg is not keyof T
+      key = arg as keyof T;
+    }
+    return function (a: T, b: T) {
+      const result = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
 
-            return result * sortOrder;
-        };
+      return result * sortOrder;
+    };
+  }
+
+  return function (obj1: T, obj2: T) {
+    let i = 0;
+    let result = 0;
+    const numberOfProperties = sortBy?.length;
+    while (result === 0 && i < numberOfProperties) {
+      result = compareByProperty(sortBy[i])(obj1, obj2);
+      i++;
     }
 
-    return function (obj1: T, obj2: T) {
-        let i = 0;
-        let result = 0;
-        const numberOfProperties = sortBy?.length;
-        while (result === 0 && i < numberOfProperties) {
-            result = compareByProperty(sortBy[i])(obj1, obj2);
-            i++;
-        }
-
-        return result;
-    };
+    return result;
+  };
 }
 
 /**
- * Check if 2 arrays are equal, not by references, but by elements
- * @param array1 first array
- * @param array2 second array *
- * @returns true if equal
+ * Determines if the provided arrays are equal to each other, using the provided equality tester
+ * that is called for all entries in the array.
  */
-export function scalarArrayEqual<T>(array1: Array<T>, array2: Array<T>) : boolean {
-  return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
+export function isArrayEqual<T>(a: readonly T[] | null, b: readonly T[] | null, equalityTester: (a: T, b: T) => boolean): boolean {
+  if (a === null || b === null) {
+    return a === b;
+  }
+
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  return !a.some((item, index) => !equalityTester(item, b[index]));
 }

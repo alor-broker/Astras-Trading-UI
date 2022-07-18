@@ -10,6 +10,7 @@ import {
 import {
   BehaviorSubject,
   combineLatest,
+  distinctUntilChanged,
   Observable,
   of,
   shareReplay,
@@ -32,6 +33,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { ExportHelper } from "../../utils/export-helper";
 import { NzTableComponent } from 'ng-zorro-antd/table';
+import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -248,6 +250,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
       shareReplay()
     );
 

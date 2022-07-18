@@ -5,10 +5,11 @@ import { InfoSettings } from '../models/settings/info-settings.model';
 import { InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
 import { LightChartSettings } from '../models/settings/light-chart-settings.model';
 import { OrderbookSettings } from '../models/settings/orderbook-settings.model';
-import { scalarArrayEqual } from './collections';
+import { isArrayEqual } from './collections';
 import { NewsSettings } from "../models/settings/news-settings.model";
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
+import { VerticalOrderBookSettings } from "../models/settings/vertical-order-book-settings.model";
 
 /**
  * A type with describes settings with depends on an instrument
@@ -58,7 +59,7 @@ export function isPortfolioDependent(
   );
 }
 /**
- * A guard which checks if settings depends is an orderbook settings
+ * A guard which checks if settings depends on an orderbook settings
  * @param settings Settings to check
  */
 export function isOrderbookSettings(
@@ -73,6 +74,27 @@ export function isOrderbookSettings(
     'showChart' in settings &&
     'showYieldForBonds' in settings &&
     'showTable' in settings
+  );
+}
+/**
+ * A guard which checks if settings depends on a vertical orderbook settings
+ * @param settings Settings to check
+ */
+export function isVerticalOrderBookSettings(
+  settings: AnySettings
+): settings is VerticalOrderBookSettings {
+  return (
+    settings &&
+    settings.settingsType === 'VerticalOrderBookSettings' &&
+    'linkToActive' in settings &&
+    'symbol' in settings &&
+    'exchange' in settings &&
+    'depth' in settings &&
+    'showYieldForBonds' in settings &&
+    'showZeroVolumeItems' in settings &&
+    'showSpreadItems' in settings &&
+    'highlightHighVolume' in settings &&
+    'volumeHighlightOptions' in settings
   );
 }
 /**
@@ -165,6 +187,9 @@ export function isEqual(settings1: AnySettings, settings2: AnySettings) : boolea
   if (isOrderbookSettings(settings1) && isOrderbookSettings(settings2)) {
     return isEqualOrderbookSettings(settings1, settings2);
   }
+  if (isVerticalOrderBookSettings(settings1) && isVerticalOrderBookSettings(settings2)) {
+    return isEqualVerticalOrderKookSettings(settings1, settings2);
+  }
   if (isLightChartSettings(settings1) && isLightChartSettings(settings2)) {
     return isEqualLightChartSettings(settings1, settings2);
   }
@@ -190,6 +215,9 @@ export function isEqual(settings1: AnySettings, settings2: AnySettings) : boolea
 export function getTypeBySettings(settings: AnySettings) {
   if (isOrderbookSettings(settings)) {
     return WidgetNames.orderBook;
+  }
+  if (isVerticalOrderBookSettings(settings)) {
+    return WidgetNames.verticalOrderBook;
   }
   if (isLightChartSettings(settings)) {
     return WidgetNames.lightChart;
@@ -238,6 +266,37 @@ export function isEqualOrderbookSettings(
 }
 
 /**
+ * Checks if vertical orderbook settings are equal
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true is equal, false if not
+ */
+export function isEqualVerticalOrderKookSettings(
+  settings1: VerticalOrderBookSettings,
+  settings2: VerticalOrderBookSettings
+) : boolean {
+  if (settings1 && settings2) {
+    return (
+      settings1.guid == settings2.guid &&
+      settings1.symbol == settings2.symbol &&
+      settings1.instrumentGroup == settings2.instrumentGroup &&
+      settings1.linkToActive == settings2.linkToActive &&
+      settings1.exchange == settings2.exchange &&
+      settings1.depth == settings2.depth &&
+      settings1.showYieldForBonds == settings2.showYieldForBonds &&
+      settings1.showZeroVolumeItems == settings2.showZeroVolumeItems &&
+      settings1.showSpreadItems == settings2.showSpreadItems &&
+      settings1.highlightHighVolume == settings2.highlightHighVolume &&
+      isArrayEqual(
+        settings1.volumeHighlightOptions,
+        settings2.volumeHighlightOptions,
+        (a, b) => a.boundary === b.boundary && a.color === b.color
+      )
+    );
+  } else return false;
+}
+
+/**
  * Checks if lightchart settings are equal
  * @param settings1 first settings
  * @param settings2 second settings
@@ -277,8 +336,10 @@ export function isEqualBlotterSettings(
       settings1.exchange == settings2.exchange &&
       settings1.portfolio == settings2.portfolio &&
       settings1.guid == settings2.guid &&
-      settings1.activeTabIndex == settings2.activeTabIndex &&
-      scalarArrayEqual(settings1.ordersColumns, settings2.ordersColumns)
+      isArrayEqual(settings1.ordersColumns, settings2.ordersColumns, (a, b) => a === b) &&
+      isArrayEqual(settings1.stopOrdersColumns, settings2.stopOrdersColumns, (a, b) => a === b) &&
+      isArrayEqual(settings1.positionsColumns, settings2.positionsColumns, (a, b) => a === b) &&
+      isArrayEqual(settings1.tradesColumns, settings2.tradesColumns, (a, b) => a === b)
     );
   } else return false;
 }

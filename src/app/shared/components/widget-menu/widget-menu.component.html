@@ -15,6 +15,13 @@
   </li>
   <li
     nz-menu-item
+    (click)="selected.emit(widgetNames.verticalOrderBook)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.verticalOrderBook)"
+  >
+    <span><i nz-icon nzType="ordered-list" nzTheme="outline"></i> <label>&nbsp;Вертикальный стакан</label></span>
+  </li>
+  <li
+    nz-menu-item
     (click)="selected.emit(widgetNames.lightChart)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.lightChart)"
   >
