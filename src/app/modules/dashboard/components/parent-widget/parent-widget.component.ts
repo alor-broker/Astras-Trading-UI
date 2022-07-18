@@ -69,7 +69,8 @@ export class ParentWidgetComponent implements OnInit, OnDestroy {
 
         if(this.widgetContent) {
           const element = this.widgetContent.nativeElement;
-          contentHeightAdjustment = element.offsetTop;
+          // 5 is padding. Some browsers do not include it when offsetTop is calculated
+          contentHeightAdjustment = element.offsetTop + 5;
           contentWidthAdjustment = element.offsetLeft * 2;
         }
 
