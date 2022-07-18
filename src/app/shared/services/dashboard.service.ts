@@ -49,7 +49,8 @@ export class DashboardService {
       gridItem: newWidget.gridItem,
       hasSettings: newWidget.gridItem.type != WidgetNames.instrumentInfo &&
         newWidget.gridItem.type != WidgetNames.allTrades &&
-        newWidget.gridItem.type != WidgetNames.news,
+        newWidget.gridItem.type != WidgetNames.news &&
+        newWidget.gridItem.type != WidgetNames.exchangeRate,
       hasHelp: true
     };
     const guid = widget.gridItem.label;

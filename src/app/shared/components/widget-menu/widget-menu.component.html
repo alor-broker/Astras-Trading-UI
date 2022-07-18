@@ -54,4 +54,11 @@
   >
     <span><i nz-icon nzType="unordered-list" nzTheme="outline"></i><label> Все сделки</label></span>
   </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.exchangeRate)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.exchangeRate)"
+  >
+    <span><i nz-icon nzType="line-chart" nzTheme="outline"></i><label> Курсы валют</label></span>
+  </li>
 </ul>

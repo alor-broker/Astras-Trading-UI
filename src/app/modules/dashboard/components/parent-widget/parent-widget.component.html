@@ -44,6 +44,11 @@
                        [(shouldShowSettings)]="shouldShowSettings"
                        [resize]="widgetResize"
       ></ats-news-widget>
-    </ng-container>
+    <ats-exchange-rate-widget *ngSwitchCase="'exchange-rate'"
+      [guid]="getGuid()"
+      [(shouldShowSettings)]="shouldShowSettings"
+      [resize]="widgetResize"
+    ></ats-exchange-rate-widget>
+  </ng-container>
   </div>
 </div>

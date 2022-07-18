@@ -18,6 +18,7 @@ import { JoyrideModule } from 'ngx-joyride';
 import { OnboardingService } from './services/onboarding.service';
 import { AllTradesModule } from "../all-trades/all-trades.module";
 import { NewsModule } from "../news/news.module";
+import { ExchangeRateModule } from "../exchange-rate/exchange-rate.module";
 
 @NgModule({
   declarations: [
@@ -27,22 +28,23 @@ import { NewsModule } from "../news/news.module";
     ParentWidgetComponent,
     WidgetHeaderComponent
   ],
-  imports: [
-    DashboardRoutingModule,
-    SharedModule,
-    OrderbookModule,
-    LightChartModule,
-    InstrumentsModule,
-    BlotterModule,
-    CommandModule,
-    HelpModule,
-    InfoModule,
-    TerminalSettingsModule,
-    JoyrideModule.forRoot(),
-    AllTradesModule,
-    NewsModule,
-    // components
-  ],
+    imports: [
+        DashboardRoutingModule,
+        SharedModule,
+        OrderbookModule,
+        LightChartModule,
+        InstrumentsModule,
+        BlotterModule,
+        CommandModule,
+        HelpModule,
+        InfoModule,
+        TerminalSettingsModule,
+        JoyrideModule.forRoot(),
+        AllTradesModule,
+        NewsModule,
+        ExchangeRateModule,
+        // components
+    ],
   providers: [
     OnboardingService
   ]

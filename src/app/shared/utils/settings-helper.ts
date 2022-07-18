@@ -8,6 +8,7 @@ import { OrderbookSettings } from '../models/settings/orderbook-settings.model';
 import { isArrayEqual } from './collections';
 import { NewsSettings } from "../models/settings/news-settings.model";
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
+import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
 import { VerticalOrderBookSettings } from "../models/settings/vertical-order-book-settings.model";
 
 /**
@@ -167,6 +168,15 @@ export function isInstrumentSelectSettings(
     'activeListId' in settings
   );
 }
+
+/**
+ * A guard which checks if settings depends is echange-rate settings
+ * @param settings Settings to check
+ */
+export function isExchangeRateSettings(settings: AnySettings): settings is ExchangeRateSettings {
+  return settings && !!settings.title?.includes('Курс валют');
+}
+
 /**
  * Checks the equality of settings by value
  * @param settings1 first settings
@@ -217,6 +227,9 @@ export function getTypeBySettings(settings: AnySettings) {
   }
   if (isAllTradesSettings(settings)) {
     return WidgetNames.allTrades;
+  }
+  if (isExchangeRateSettings(settings)) {
+    return WidgetNames.exchangeRate;
   }
   if (isInfoSettings(settings)) {
     return WidgetNames.instrumentInfo;
