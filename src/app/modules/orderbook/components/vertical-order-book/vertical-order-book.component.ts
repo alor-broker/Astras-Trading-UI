@@ -14,7 +14,6 @@ import {
   Observable,
   of,
   shareReplay,
-  skip,
   Subject,
   switchMap,
   take,
@@ -82,7 +81,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<VerticalOrderBookSettings>(this.guid).pipe(shareReplay());
+    this.settings$ = this.settingsService.getSettings<VerticalOrderBookSettings>(this.guid).pipe(shareReplay(1));
     const getInstrumentInfo = (settings: VerticalOrderBookSettings) => this.instrumentsService.getInstrument(settings).pipe(
       filter((x): x is Instrument => !!x)
     );
@@ -101,14 +100,14 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
         this.maxVolume = Math.max(...orderBookRows.map(x => x.volume ?? 0));
       }),
       startWith([]),
-      shareReplay()
+      shareReplay(1)
     );
 
     this.subscribeToHotkeys();
     this.susbscribeToWorkingVolumesChange();
 
       this.orderBookRows$.pipe(
-        take(2),
+        take(1),
         delay(1000)
       ).subscribe(() => this.alignBySpread());
   }
@@ -157,7 +156,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
 
   cancelAllOrders() {
     this.orderBookRows$
-      .pipe(skip(1), take(1))
+      .pipe(take(1))
       .subscribe(rows =>
         rows
           .filter(row => row.currentOrders.length)
@@ -347,7 +346,6 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
   private sellOrBuyBestOrder(e: { event: string }) {
     this.orderBookRows$
       .pipe(
-        skip(1),
         take(1),
       )
       .subscribe((rows) => {
