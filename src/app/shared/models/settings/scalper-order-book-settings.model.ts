@@ -14,4 +14,6 @@ export interface ScalperOrderBookSettings extends WidgetSettings, InstrumentKey 
   highlightHighVolume: boolean;
   volumeHighlightOptions: VolumeHighlightOption[];
   workingVolumes: number[];
+  disableHotkeys: boolean;
+  enableMouseClickSilentOrders: boolean;
 }

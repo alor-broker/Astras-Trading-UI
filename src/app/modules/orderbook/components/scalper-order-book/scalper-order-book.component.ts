@@ -10,6 +10,7 @@ import { OrderbookService } from "../../services/orderbook.service";
 import {
   BehaviorSubject,
   delay,
+  distinctUntilChanged,
   filter,
   Observable,
   of,
@@ -19,8 +20,7 @@ import {
   switchMap,
   take,
   takeUntil,
-  tap,
-  distinctUntilChanged
+  tap
 } from "rxjs";
 import {
   CurrentOrder,
@@ -33,8 +33,14 @@ import {
   ScalperOrderBookSettings,
   VolumeHighlightOption
 } from "../../../../shared/models/settings/scalper-order-book-settings.model";
-import { map, startWith } from "rxjs/operators";
-import { buyColorBackground, sellColorBackground } from "../../../../shared/models/settings/styles-constants";
+import {
+  map,
+  startWith
+} from "rxjs/operators";
+import {
+  buyColorBackground,
+  sellColorBackground
+} from "../../../../shared/models/settings/styles-constants";
 import { CancelCommand } from "../../../../shared/models/commands/cancel-command.model";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
@@ -47,6 +53,10 @@ import { Side } from "../../../../shared/models/enums/side.model";
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { ModalService } from "../../../../shared/services/modal.service";
+import { CommandType } from "../../../../shared/models/enums/command-type.model";
+import { StopCommand } from "../../../command/models/stop-command.model";
+import { CommandParams } from "../../../../shared/models/commands/command-params.model";
 
 @Component({
   selector: 'ats-scalper-order-book[guid][shouldShowSettings]',
@@ -77,6 +87,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     private readonly commandsService: CommandsService,
     private readonly notification: NzNotificationService,
     private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly modal: ModalService,
     private readonly elementRef: ElementRef<HTMLElement>
   ) {
   }
@@ -107,10 +118,10 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     this.subscribeToHotkeys();
     this.susbscribeToWorkingVolumesChange();
 
-      this.orderBookRows$.pipe(
-        take(2),
-        delay(1000)
-      ).subscribe(() => this.alignBySpread());
+    this.orderBookRows$.pipe(
+      take(2),
+      delay(1000)
+    ).subscribe(() => this.alignBySpread());
   }
 
   selectVol(vol: number) {
@@ -144,7 +155,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     }
 
     const volumeHighlightOption = this.getVolumeHighlightOption(settings, volume);
-    if(!volumeHighlightOption) {
+    if (!volumeHighlightOption) {
       return null;
     }
 
@@ -165,7 +176,10 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
       );
   }
 
-  cancelOrders(orders: CurrentOrder[]) {
+  cancelOrders(orders: CurrentOrder[], e?: MouseEvent,) {
+    e?.preventDefault();
+    e?.stopPropagation();
+
     for (const order of orders) {
       this.orderBookService.cancelOrder({
         orderid: order.orderId,
@@ -192,14 +206,10 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
       this.settings$!
         .pipe(
           take(1),
-          switchMap(settings =>
-            this.commandsService.placeOrder(
-              'stopLimit',
-              row.rowType === this.rowTypes.Ask ? Side.Sell : Side.Buy,
-              {
-                side: row.rowType === this.rowTypes.Ask
-                  ? 'sell'
-                  : 'buy',
+          switchMap(settings => {
+              const side = row.rowType === this.rowTypes.Ask ? Side.Sell : Side.Buy;
+              const command = {
+                side: side,
                 quantity: this.activeWorkingVolume$.getValue() || 1,
                 price: row.price,
                 instrument: {
@@ -209,8 +219,10 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
                 },
                 triggerPrice: row.price,
                 condition: row.rowType === this.rowTypes.Ask ? StopOrderCondition.More : StopOrderCondition.Less,
-              }
-            )
+              } as StopCommand;
+
+              return this.placeStopLimitOrder(command, settings.enableMouseClickSilentOrders);
+            }
           )
         )
         .subscribe();
@@ -224,22 +236,22 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
             s => this.orderBookService.getOrderBookPositions(s),
             (settings, positions) => ({ settings, positions })
           ),
-          map(({settings, positions}) => ({
+          map(({ settings, positions }) => ({
               quantity: positions
                 .map(pos => pos.qtyTFuture)
                 .reduce((acc, curr) => acc + curr, 0),
               settings
             })
           ),
-          switchMap(({quantity, settings}) => {
+          switchMap(({ quantity, settings }) => {
             if (!quantity) {
               this.notification.error('Нет позиций', 'Позиции с данным тикером отсутствуют');
               return of({});
             }
-            return this.commandsService.placeOrder('stop',Side.Sell, {
-              side: 'sell',
+
+            const command = {
+              side: Side.Sell,
               quantity,
-              price: null,
               instrument: {
                 symbol: settings.symbol,
                 exchange: settings.exchange,
@@ -247,74 +259,95 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
               },
               triggerPrice: row.price,
               condition: StopOrderCondition.More,
-            });
+            } as StopCommand;
+
+            return this.placeStopMarketOrder(command, settings.enableMouseClickSilentOrders);
           })
         )
         .subscribe();
     }
 
     if (!e.shiftKey && !e.ctrlKey) {
-      if (row.rowType === this.rowTypes.Ask) {
-        this.placeMarketOrder({options: {side: 'buy'}});
-      }
-      if (row.rowType === this.rowTypes.Bid) {
-        this.placeLimitOrder('buy', row.price);
-      }
+      this.settings$!
+        .pipe(
+          take(1)
+        ).subscribe(settings => {
+        if (row.rowType === this.rowTypes.Ask) {
+          this.placeMarketOrder(Side.Buy, settings.enableMouseClickSilentOrders);
+        }
+        if (row.rowType === this.rowTypes.Bid) {
+          this.placeLimitOrder(Side.Buy, row.price, settings.enableMouseClickSilentOrders);
+        }
+      });
     }
   }
 
   onRowRightClick(event: MouseEvent, row: ScalperOrderBookRowView) {
     event.preventDefault();
 
-    if (row.rowType === this.rowTypes.Ask) {
-      this.placeLimitOrder('sell', row.price);
-    }
-    if (row.rowType === this.rowTypes.Bid) {
-      this.placeMarketOrder({options: {side: 'sell'}});
-    }
+    this.settings$!.pipe(
+      take(1)
+    ).subscribe(settings => {
+      if (row.rowType === this.rowTypes.Ask) {
+        this.placeLimitOrder(Side.Sell, row.price, settings.enableMouseClickSilentOrders);
+      }
+      if (row.rowType === this.rowTypes.Bid) {
+        this.placeMarketOrder(Side.Sell, settings.enableMouseClickSilentOrders);
+      }
+    });
   }
 
   private subscribeToHotkeys() {
-    this.hotkeysService.orderBookEventSub
-      .pipe(
-        takeUntil(this.destroy$)
-      )
-      .subscribe(e => {
-        switch (e.event) {
-          case 'cancelAllOrders':
-            this.cancelAllOrders();
-            break;
-          case 'closeAllPositions':
-            this.closePositions();
-            break;
-          case 'centerOrderbookKey':
-            setTimeout(() => this.alignBySpread(), 0);
-            break;
-        }
+    this.settings$?.pipe(
+      mapWith(
+        () => this.hotkeysService.orderBookEventSub,
+        (settings, hotkeyEvent) => ({ settings, hotkeyEvent })
+      ),
+      takeUntil(this.destroy$)
+    ).subscribe(x => {
+      const eventKey = x.hotkeyEvent.event;
 
-        if (!this.isActiveOrderBook) {
-          return;
-        }
+      if (eventKey === 'centerOrderbookKey') {
+        setTimeout(() => this.alignBySpread(), 0);
+        return;
+      }
 
-        if (e.event === 'cancelOrderbookOrders') {
+      if (x.settings.disableHotkeys) {
+        return;
+      }
+
+      switch (eventKey) {
+        case 'cancelAllOrders':
           this.cancelAllOrders();
-        }
-        if (e.event === 'closeOrderbookPositions') {
+          break;
+        case 'closeAllPositions':
           this.closePositions();
-        }
-        if (e.event === 'reverseOrderbookPositions') {
-          this.closePositions(true);
-        }
-        if (e.event.includes('selectWorkingVolume')) {
-          this.selectVol(this.workingVolumes[e.options]);
-        }
-        if (e.event === 'sell' || e.event === 'buy') {
-          this.sellOrBuyBestOrder(e as any);
-        }
-        if (e.event === 'placeMarketOrder') {
-          this.placeMarketOrder(e as any);
-        }
-      });
+          break;
+      }
+
+      if (!this.isActiveOrderBook) {
+        return;
+      }
+
+      if (eventKey === 'cancelOrderbookOrders') {
+        this.cancelAllOrders();
+      }
+      if (eventKey === 'closeOrderbookPositions') {
+        this.closePositions();
+      }
+      if (eventKey === 'reverseOrderbookPositions') {
+        this.closePositions(true);
+      }
+      if (eventKey === 'selectWorkingVolume') {
+        this.selectVol(this.workingVolumes[x.hotkeyEvent.options.workingVolumeIndex]);
+      }
+      if (eventKey === 'placeBestOrder') {
+        this.placeBestOrder(x.hotkeyEvent.options.side);
+      }
+      if (eventKey === 'placeMarketOrder') {
+        this.placeMarketOrder(x.hotkeyEvent.options.side, true);
+      }
+    });
   }
 
   private susbscribeToWorkingVolumesChange() {
@@ -325,10 +358,10 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
           prev.hotKeysSettings?.workingVolumes?.length === curr.hotKeysSettings?.workingVolumes?.length),
         mapWith(
           () => this.settings$!.pipe(take(1)),
-          (terminalSettings, settings) => ({terminalSettings, settings})
+          (terminalSettings, settings) => ({ terminalSettings, settings })
         )
       )
-      .subscribe(({terminalSettings, settings}) => {
+      .subscribe(({ terminalSettings, settings }) => {
         this.settingsService.updateSettings(this.guid, {
           workingVolumes: terminalSettings.hotKeysSettings?.workingVolumes
             ?.map((wv, i) => settings.workingVolumes[i] || 10 ** i)
@@ -344,7 +377,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     });
   }
 
-  private sellOrBuyBestOrder(e: { event: string }) {
+  private placeBestOrder(side: Side) {
     this.orderBookRows$
       .pipe(
         skip(1),
@@ -355,57 +388,118 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
         let price: number;
 
         if (spreadRows.length) {
-          price = e.event === 'sell' ? <number>spreadRows.shift() : <number>spreadRows.pop();
+          price = side === Side.Sell ? <number>spreadRows.shift() : <number>spreadRows.pop();
         } else {
-          price = e.event === 'sell'
+          price = side === Side.Sell
             ? <number>rows.filter(r => r.rowType === this.rowTypes.Ask).map(r => r.price).pop()
             : <number>rows.filter(r => r.rowType === this.rowTypes.Bid).map(r => r.price).shift();
         }
 
-        this.placeLimitOrder(e.event, price);
+        this.placeLimitOrder(side, price, true);
       });
   }
 
-  private placeMarketOrder(e: { options: { side: string } }) {
+  private placeMarketOrder(side: Side, isSilent: boolean) {
     this.settings$!
-      .pipe(switchMap(s =>
-        this.commandsService.placeOrder('market', e.options.side === 'sell' ? Side.Sell : Side.Buy, {
-          side: e.options.side,
-          quantity: this.activeWorkingVolume$.getValue() || 1,
-          instrument: {
-            symbol: s.symbol,
-            exchange: s.exchange
-          },
-        })
+      .pipe(switchMap(s => {
+          const command = {
+            side: side,
+            quantity: this.activeWorkingVolume$.getValue() || 1,
+            instrument: {
+              symbol: s.symbol,
+              exchange: s.exchange
+            },
+          };
+
+          if (isSilent) {
+            return this.commandsService.placeOrder('market', side, command);
+          }
+
+          this.modal.openCommandModal({
+            ...command,
+            type: CommandType.Market
+          } as CommandParams);
+
+          return of({});
+        }
       )).subscribe();
   }
 
-  private placeLimitOrder(side: string, price: number) {
+  private placeLimitOrder(side: Side, price: number, isSilent: boolean) {
     this.settings$!
-      .pipe(switchMap(s =>
-        this.commandsService.placeOrder('limit', side === 'sell' ? Side.Sell : Side.Buy, {
-          side,
-          quantity: this.activeWorkingVolume$.getValue() || 1,
-          price,
-          instrument: {
-            symbol: s.symbol,
-            exchange: s.exchange
-          },
-        })
+      .pipe(switchMap(s => {
+          const command = {
+            side,
+            quantity: this.activeWorkingVolume$.getValue() || 1,
+            price,
+            instrument: {
+              symbol: s.symbol,
+              exchange: s.exchange
+            },
+          };
+
+          if (isSilent) {
+            return this.commandsService.placeOrder('limit', side, command);
+          }
+
+          this.modal.openCommandModal({
+            ...command,
+            type: CommandType.Limit
+          });
+
+          return of({});
+        }
       )).subscribe();
   }
 
-  alignBySpread() {
+  private placeStopLimitOrder(command: StopCommand, isSilent: boolean): Observable<any> {
+    if (isSilent) {
+      return this.commandsService.placeOrder(
+        'stopLimit',
+        command.side,
+        command
+      );
+    } else {
+      this.modal.openCommandModal({
+        ...command,
+        type: CommandType.Stop,
+        stopEndUnixTime: undefined
+      });
+
+      return of({});
+    }
+  }
+
+  private placeStopMarketOrder(command: StopCommand, isSilent: boolean): Observable<any> {
+    if (isSilent) {
+      return this.commandsService.placeOrder(
+        'stop',
+        command.side,
+        command
+      );
+    } else {
+      this.modal.openCommandModal({
+        ...command,
+        type: CommandType.Stop,
+        stopEndUnixTime: undefined,
+        price: undefined
+      });
+
+      return of({});
+    }
+  }
+
+  private alignBySpread() {
     let targetElement: Element | null = null;
     const spreadElements = this.elementRef.nativeElement.querySelectorAll('.spread-row');
-    if(spreadElements.length > 0) {
+    if (spreadElements.length > 0) {
       targetElement = spreadElements.item(Math.floor(spreadElements.length / 2));
     } else {
       targetElement = this.elementRef.nativeElement.querySelector('.best-row');
     }
 
-    if(!!targetElement) {
-      targetElement.scrollIntoView({block: 'center', inline: 'center'});
+    if (!!targetElement) {
+      targetElement.scrollIntoView({ block: 'center', inline: 'center' });
     }
   }
 

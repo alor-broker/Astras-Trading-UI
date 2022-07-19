@@ -116,6 +116,7 @@ export class WidgetFactoryService {
     const settings: ScalperOrderBookSettings = {
       guid: newWidget.gridItem.label,
       settingsType: 'ScalperOrderBookSettings',
+      title: `[PRO] Стакан`,
       linkToActive: true,
       depth: 10,
       symbol: this.selectedInstrument.symbol,
@@ -127,8 +128,9 @@ export class WidgetFactoryService {
       showSpreadItems: false,
       highlightHighVolume: false,
       volumeHighlightOptions: [{boundary: 10000, color:'#CC0099'}],
-      title: `[PRO] Стакан`,
       workingVolumes: [1, 10, 100, 1000],
+      disableHotkeys: true,
+      enableMouseClickSilentOrders: false
     };
 
     return settings;

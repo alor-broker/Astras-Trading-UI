@@ -34,6 +34,8 @@ interface SettingsFormData {
   highlightHighVolume: boolean;
   volumeHighlightOptions: VolumeHighlightOption[];
   workingVolumes: number[];
+  disableHotkeys: boolean;
+  enableMouseClickSilentOrders: boolean;
 }
 
 type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
@@ -107,6 +109,8 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         workingVolumes: new FormArray(settings.workingVolumes.map(
           wv => new FormControl(wv, [Validators.required, Validators.min(1)])
         )),
+        disableHotkeys: new FormControl(settings.disableHotkeys),
+        enableMouseClickSilentOrders: new FormControl(settings.enableMouseClickSilentOrders),
       } as SettingsFormControls) as SettingsFormGroup;
     });
   }

@@ -77,7 +77,7 @@ export function isOrderbookSettings(
   );
 }
 /**
- * A guard which checks if settings depends on a vertical orderbook settings
+ * A guard which checks if settings depends on a scalper orderbook settings
  * @param settings Settings to check
  */
 export function isScalperOrderBookSettings(
@@ -94,7 +94,10 @@ export function isScalperOrderBookSettings(
     'showZeroVolumeItems' in settings &&
     'showSpreadItems' in settings &&
     'highlightHighVolume' in settings &&
-    'volumeHighlightOptions' in settings
+    'volumeHighlightOptions' in settings &&
+    'workingVolumes' in settings &&
+    'disableHotkeys' in settings &&
+    'enableMouseClickSilentOrders' in settings
   );
 }
 /**
@@ -291,7 +294,14 @@ export function isEqualScalperOrderBookSettings(
         settings1.volumeHighlightOptions,
         settings2.volumeHighlightOptions,
         (a, b) => a.boundary === b.boundary && a.color === b.color
-      )
+      ) &&
+      isArrayEqual(
+        settings1.workingVolumes,
+        settings2.workingVolumes,
+        (a, b) => a === b
+      ) &&
+      settings1.disableHotkeys == settings2.disableHotkeys &&
+      settings1.enableMouseClickSilentOrders == settings2.enableMouseClickSilentOrders
     );
   } else return false;
 }

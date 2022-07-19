@@ -16,6 +16,7 @@ import { NzNotificationService } from "ng-zorro-antd/notification";
 import { CommandsService } from "../../../command/services/commands.service";
 import { Store, StoreModule } from "@ngrx/store";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { ModalService } from "../../../../shared/services/modal.service";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -76,7 +77,11 @@ describe('ScalperOrderBookComponent', () => {
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))
           }
-        }
+        },
+        {
+          provide: ModalService,
+          useValue:  jasmine.createSpy('openCommandModal').and.callThrough()
+        },
       ],
     })
       .compileComponents();
