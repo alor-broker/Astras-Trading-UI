@@ -2,6 +2,7 @@
   <input class='whole ant-input'
     placeholder='Поиск...'
     nz-input
+    #inputEl
     (mousedown)="$event.stopPropagation()"
     [(ngModel)]="inputValue"
     (ngModelChange)="onChange($event)"
