@@ -1,9 +1,11 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnInit,
-  Output
+  Output,
+  ViewChild
 } from '@angular/core';
 import {
   select,
@@ -39,6 +41,8 @@ import { InstrumentSelectSettings } from "../../../../shared/models/settings/ins
   styleUrls: ['./instrument-select.component.less']
 })
 export class InstrumentSelectComponent implements OnInit {
+
+  @ViewChild('inputEl') inputEl!: ElementRef;
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -94,6 +98,7 @@ export class InstrumentSelectComponent implements OnInit {
   onSelect(event: NzOptionSelectionChange, val: Instrument) {
     if (event.isUserInput) {
       this.store.dispatch(selectNewInstrument({ instrument: val }));
+      setTimeout(() => this.inputEl.nativeElement.blur(), 0);
     }
   }
 
