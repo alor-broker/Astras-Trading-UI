@@ -3,10 +3,10 @@ import {
   TestBed
 } from '@angular/core/testing';
 
-import { VerticalOrderBookComponent } from './vertical-order-book.component';
+import { ScalperOrderBookComponent } from './scalper-order-book.component';
 import { of } from "rxjs";
 import { OrderbookService } from "../../services/orderbook.service";
-import { VerticalOrderBook } from "../../models/vertical-order-book.model";
+import { ScalperOrderBook } from "../../models/scalper-order-book.model";
 import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
@@ -17,13 +17,13 @@ import { CommandsService } from "../../../command/services/commands.service";
 import { Store, StoreModule } from "@ngrx/store";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
-describe('VerticalOrderBookComponent', () => {
-  let component: VerticalOrderBookComponent;
-  let fixture: ComponentFixture<VerticalOrderBookComponent>;
+describe('ScalperOrderBookComponent', () => {
+  let component: ScalperOrderBookComponent;
+  let fixture: ComponentFixture<ScalperOrderBookComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [VerticalOrderBookComponent],
+      declarations: [ScalperOrderBookComponent],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -40,7 +40,7 @@ describe('VerticalOrderBookComponent', () => {
               asks: [],
               bids: [],
               spreadItems: []
-            } as VerticalOrderBook))
+            } as ScalperOrderBook))
           }
         },
         {
@@ -83,7 +83,7 @@ describe('VerticalOrderBookComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VerticalOrderBookComponent);
+    fixture = TestBed.createComponent(ScalperOrderBookComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

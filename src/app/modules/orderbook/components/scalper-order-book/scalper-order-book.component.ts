@@ -25,14 +25,14 @@ import {
 import {
   CurrentOrder,
   OrderBookItem,
-  VerticalOrderBook,
-  VerticalOrderBookRowType,
-  VerticalOrderBookRowView
-} from "../../models/vertical-order-book.model";
+  ScalperOrderBook,
+  ScalperOrderBookRowType,
+  ScalperOrderBookRowView
+} from "../../models/scalper-order-book.model";
 import {
-  VerticalOrderBookSettings,
+  ScalperOrderBookSettings,
   VolumeHighlightOption
-} from "../../../../shared/models/settings/vertical-order-book-settings.model";
+} from "../../../../shared/models/settings/scalper-order-book-settings.model";
 import { map, startWith } from "rxjs/operators";
 import { buyColorBackground, sellColorBackground } from "../../../../shared/models/settings/styles-constants";
 import { CancelCommand } from "../../../../shared/models/commands/cancel-command.model";
@@ -49,12 +49,12 @@ import { NzNotificationService } from "ng-zorro-antd/notification";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
 @Component({
-  selector: 'ats-vertical-order-book[guid][shouldShowSettings]',
-  templateUrl: './vertical-order-book.component.html',
-  styleUrls: ['./vertical-order-book.component.less']
+  selector: 'ats-scalper-order-book[guid][shouldShowSettings]',
+  templateUrl: './scalper-order-book.component.html',
+  styleUrls: ['./scalper-order-book.component.less']
 })
-export class VerticalOrderBookComponent implements OnInit, OnDestroy {
-  rowTypes = VerticalOrderBookRowType;
+export class ScalperOrderBookComponent implements OnInit, OnDestroy {
+  rowTypes = ScalperOrderBookRowType;
   maxVolume: number = 1;
   workingVolumes: number[] = [];
   activeWorkingVolume$ = new BehaviorSubject<number | null>(null);
@@ -64,10 +64,10 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
   @Input() shouldShowSettings!: boolean;
   @Input() guid!: string;
 
-  orderBookRows$!: Observable<VerticalOrderBookRowView[]>;
+  orderBookRows$!: Observable<ScalperOrderBookRowView[]>;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  private settings$: Observable<VerticalOrderBookSettings> | null = null;
+  private settings$: Observable<ScalperOrderBookSettings> | null = null;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -82,8 +82,8 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<VerticalOrderBookSettings>(this.guid).pipe(shareReplay());
-    const getInstrumentInfo = (settings: VerticalOrderBookSettings) => this.instrumentsService.getInstrument(settings).pipe(
+    this.settings$ = this.settingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(shareReplay());
+    const getInstrumentInfo = (settings: ScalperOrderBookSettings) => this.instrumentsService.getInstrument(settings).pipe(
       filter((x): x is Instrument => !!x)
     );
 
@@ -93,7 +93,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
         (settings, instrument) => ({ settings, instrument })
       ),
       mapWith(
-        ({ settings, instrument }) => this.orderBookService.getVerticalOrderBook(settings, instrument),
+        ({ settings, instrument }) => this.orderBookService.getScalperOrderBook(settings, instrument),
         ({ settings, instrument }, orderBook) => ({ settings, instrument, orderBook })
       ),
       map(x => this.toViewModel(x.settings, x.instrument, x.orderBook)),
@@ -127,14 +127,14 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
       : orders.reduce((previousValue, currentValue) => previousValue + currentValue.volume, 0);
   }
 
-  getVolumeStyle(rowType: VerticalOrderBookRowType, volume: number, settings: VerticalOrderBookSettings) {
-    if (rowType !== VerticalOrderBookRowType.Ask && rowType !== VerticalOrderBookRowType.Bid || !volume) {
+  getVolumeStyle(rowType: ScalperOrderBookRowType, volume: number, settings: ScalperOrderBookSettings) {
+    if (rowType !== ScalperOrderBookRowType.Ask && rowType !== ScalperOrderBookRowType.Bid || !volume) {
       return null;
     }
 
     if (!settings.highlightHighVolume) {
       const size = 100 * (volume / this.maxVolume);
-      const color = rowType === VerticalOrderBookRowType.Bid
+      const color = rowType === ScalperOrderBookRowType.Bid
         ? buyColorBackground
         : sellColorBackground;
 
@@ -187,7 +187,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     this.activeWorkingVolume$.complete();
   }
 
-  onRowClick(e: MouseEvent, row: VerticalOrderBookRowView) {
+  onRowClick(e: MouseEvent, row: ScalperOrderBookRowView) {
     if (e.ctrlKey && row.rowType !== this.rowTypes.Spread) {
       this.settings$!
         .pipe(
@@ -263,7 +263,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     }
   }
 
-  onRowRightClick(event: MouseEvent, row: VerticalOrderBookRowView) {
+  onRowRightClick(event: MouseEvent, row: ScalperOrderBookRowView) {
     event.preventDefault();
 
     if (row.rowType === this.rowTypes.Ask) {
@@ -409,18 +409,18 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getVolumeHighlightOption(settings: VerticalOrderBookSettings, volume: number): VolumeHighlightOption | undefined {
+  private getVolumeHighlightOption(settings: ScalperOrderBookSettings, volume: number): VolumeHighlightOption | undefined {
     return [...settings.volumeHighlightOptions]
       .sort((a, b) => a.boundary - b.boundary)
       .find(x => volume <= x.boundary);
   }
 
-  private toViewModel(settings: VerticalOrderBookSettings, instrumentInfo: Instrument, orderBook: VerticalOrderBook): VerticalOrderBookRowView[] {
+  private toViewModel(settings: ScalperOrderBookSettings, instrumentInfo: Instrument, orderBook: ScalperOrderBook): ScalperOrderBookRowView[] {
     const displayYield = settings.showYieldForBonds && getTypeByCfi(instrumentInfo.cfiCode) === InstrumentType.Bond;
 
     const asks = this.toVerticalOrderBookRowView(
       orderBook.asks,
-      VerticalOrderBookRowType.Ask,
+      ScalperOrderBookRowType.Ask,
       item => displayYield ? item.yield : item.price,
       settings
     );
@@ -431,7 +431,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
 
     const bids = this.toVerticalOrderBookRowView(
       orderBook.bids,
-      VerticalOrderBookRowType.Bid,
+      ScalperOrderBookRowType.Bid,
       item => displayYield ? item.yield : item.price,
       settings
     );
@@ -442,7 +442,7 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
 
     const spreadItems = this.toVerticalOrderBookRowView(
       orderBook.spreadItems ?? [],
-      VerticalOrderBookRowType.Spread,
+      ScalperOrderBookRowType.Spread,
       item => item.price,
       settings
     );
@@ -453,16 +453,16 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
 
   private toVerticalOrderBookRowView(
     items: OrderBookItem[],
-    rowType: VerticalOrderBookRowType,
+    rowType: ScalperOrderBookRowType,
     displayValueSelector: (item: OrderBookItem) => number | undefined,
-    settings: VerticalOrderBookSettings): VerticalOrderBookRowView[] {
+    settings: ScalperOrderBookSettings): ScalperOrderBookRowView[] {
     return items.map(x => ({
         ...x,
         currentOrders: x.currentOrders ?? [],
         rowType: rowType,
         displayValue: displayValueSelector(x),
         getVolumeStyle: () => this.getVolumeStyle(rowType, x.volume ?? 0, settings)
-      } as VerticalOrderBookRowView)
+      } as ScalperOrderBookRowView)
     ).sort((a, b) => b.displayValue - a.displayValue);
   }
 }

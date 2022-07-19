@@ -26,7 +26,7 @@ import { defaultInstrument } from '../../store/instruments/instruments.reducer';
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { NewsSettings } from "../models/settings/news-settings.model";
 import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
-import { VerticalOrderBookSettings } from "../models/settings/vertical-order-book-settings.model";
+import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-settings.model";
 
 @Injectable({
   providedIn: 'root',
@@ -58,8 +58,8 @@ export class WidgetFactoryService {
       case WidgetNames.orderBook:
         settings = this.createOrderbook(newWidget);
         break;
-      case WidgetNames.verticalOrderBook:
-        settings = this.createVerticalOrderBook(newWidget);
+      case WidgetNames.scalperOrderBook:
+        settings = this.createScalperOrderBook(newWidget);
         break;
       case WidgetNames.lightChart:
         settings = this.createLightChartWidget(newWidget);
@@ -93,14 +93,13 @@ export class WidgetFactoryService {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
-    const group = this.selectedInstrument.instrumentGroup;
 
     const settings: OrderbookSettings = {
       ...this.selectedInstrument,
       guid: newWidget.gridItem.label,
       linkToActive: true,
       depth: 10,
-      title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
+      title: `Стакан`,
       showChart: true,
       showTable: true,
       showYieldForBonds: false,
@@ -109,15 +108,14 @@ export class WidgetFactoryService {
     return settings;
   }
 
-  private createVerticalOrderBook(newWidget: NewWidget | Widget): VerticalOrderBookSettings {
+  private createScalperOrderBook(newWidget: NewWidget | Widget): ScalperOrderBookSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
-    const group = this.selectedInstrument.instrumentGroup;
 
-    const settings: VerticalOrderBookSettings = {
+    const settings: ScalperOrderBookSettings = {
       guid: newWidget.gridItem.label,
-      settingsType: 'VerticalOrderBookSettings',
+      settingsType: 'ScalperOrderBookSettings',
       linkToActive: true,
       depth: 10,
       symbol: this.selectedInstrument.symbol,
@@ -129,7 +127,7 @@ export class WidgetFactoryService {
       showSpreadItems: false,
       highlightHighVolume: false,
       volumeHighlightOptions: [{boundary: 10000, color:'#CC0099'}],
-      title: `Стакан ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
+      title: `[PRO] Стакан`,
       workingVolumes: [1, 10, 100, 1000],
     };
 
@@ -156,13 +154,12 @@ export class WidgetFactoryService {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
 
-    const group = this.selectedInstrument.instrumentGroup;
     const settings: LightChartSettings = {
       ...this.selectedInstrument,
       linkToActive: true,
       guid: newWidget.gridItem.label,
       timeFrame: TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value,
-      title: `График ${this.selectedInstrument.symbol} ${group ? '(' + group + ')' : ''}`,
+      title: `График`,
       width: 300,
       height: 300
     };
@@ -184,7 +181,7 @@ export class WidgetFactoryService {
       ordersColumns: allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       stopOrdersColumns: allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       linkToActive: true,
-      title: `Блоттер ${this.selectedPortfolio?.portfolio ?? 'D'} ${this.selectedPortfolio?.exchange ?? 'MOEX'}`,
+      title: `Блоттер`,
       isSoldPositionsHidden: true
     };
 
@@ -201,7 +198,7 @@ export class WidgetFactoryService {
       ...this.selectedInstrument,
       linkToActive: true,
       guid: newWidget.gridItem.label,
-      title: `Инфо ${this.selectedInstrument.symbol}`,
+      title: `Инфо`,
     };
 
     return settings;
@@ -218,7 +215,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       hasSettings: false,
       hasHelp: false,
-      title: `Все сделки ${this.selectedInstrument.symbol}`
+      title: `Все сделки`
     };
   }
 

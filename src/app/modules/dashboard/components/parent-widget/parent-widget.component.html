@@ -14,10 +14,10 @@
                             [guid]="getGuid()"
                             [resize]="widgetResize"
                             [(shouldShowSettings)]="shouldShowSettings"></ats-orderbook-widget>
-      <ats-vertical-order-book-widget *ngSwitchCase="'vertical-order-book'"
+      <ats-scalper-order-book-widget *ngSwitchCase="'scalper-order-book'"
                                       [guid]="getGuid()"
                                       [(shouldShowSettings)]="shouldShowSettings"
-      ></ats-vertical-order-book-widget>
+      ></ats-scalper-order-book-widget>
       <ats-light-chart-widget *ngSwitchCase="'light-chart'"
                               [guid]="getGuid()"
                               [resize]="widgetResize"

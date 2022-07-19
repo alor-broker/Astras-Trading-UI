@@ -9,7 +9,7 @@ import { isArrayEqual } from './collections';
 import { NewsSettings } from "../models/settings/news-settings.model";
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
-import { VerticalOrderBookSettings } from "../models/settings/vertical-order-book-settings.model";
+import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-settings.model";
 
 /**
  * A type with describes settings with depends on an instrument
@@ -80,12 +80,12 @@ export function isOrderbookSettings(
  * A guard which checks if settings depends on a vertical orderbook settings
  * @param settings Settings to check
  */
-export function isVerticalOrderBookSettings(
+export function isScalperOrderBookSettings(
   settings: AnySettings
-): settings is VerticalOrderBookSettings {
+): settings is ScalperOrderBookSettings {
   return (
     settings &&
-    settings.settingsType === 'VerticalOrderBookSettings' &&
+    settings.settingsType === 'ScalperOrderBookSettings' &&
     'linkToActive' in settings &&
     'symbol' in settings &&
     'exchange' in settings &&
@@ -187,8 +187,8 @@ export function isEqual(settings1: AnySettings, settings2: AnySettings) : boolea
   if (isOrderbookSettings(settings1) && isOrderbookSettings(settings2)) {
     return isEqualOrderbookSettings(settings1, settings2);
   }
-  if (isVerticalOrderBookSettings(settings1) && isVerticalOrderBookSettings(settings2)) {
-    return isEqualVerticalOrderKookSettings(settings1, settings2);
+  if (isScalperOrderBookSettings(settings1) && isScalperOrderBookSettings(settings2)) {
+    return isEqualScalperOrderBookSettings(settings1, settings2);
   }
   if (isLightChartSettings(settings1) && isLightChartSettings(settings2)) {
     return isEqualLightChartSettings(settings1, settings2);
@@ -216,8 +216,8 @@ export function getTypeBySettings(settings: AnySettings) {
   if (isOrderbookSettings(settings)) {
     return WidgetNames.orderBook;
   }
-  if (isVerticalOrderBookSettings(settings)) {
-    return WidgetNames.verticalOrderBook;
+  if (isScalperOrderBookSettings(settings)) {
+    return WidgetNames.scalperOrderBook;
   }
   if (isLightChartSettings(settings)) {
     return WidgetNames.lightChart;
@@ -266,14 +266,14 @@ export function isEqualOrderbookSettings(
 }
 
 /**
- * Checks if vertical orderbook settings are equal
+ * Checks if scalper orderbook settings are equal
  * @param settings1 first settings
  * @param settings2 second settings
  * @returns true is equal, false if not
  */
-export function isEqualVerticalOrderKookSettings(
-  settings1: VerticalOrderBookSettings,
-  settings2: VerticalOrderBookSettings
+export function isEqualScalperOrderBookSettings(
+  settings1: ScalperOrderBookSettings,
+  settings2: ScalperOrderBookSettings
 ) : boolean {
   if (settings1 && settings2) {
     return (
