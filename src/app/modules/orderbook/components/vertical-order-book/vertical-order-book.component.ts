@@ -88,7 +88,6 @@ export class VerticalOrderBookComponent implements OnInit, OnDestroy {
     );
 
     this.orderBookRows$ = this.settings$.pipe(
-      take(1),
       mapWith(
         settings => getInstrumentInfo(settings),
         (settings, instrument) => ({ settings, instrument })
