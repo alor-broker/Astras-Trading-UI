@@ -15,7 +15,6 @@ import {
   Observable,
   of,
   shareReplay,
-  skip,
   Subject,
   switchMap,
   take,
@@ -93,7 +92,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(shareReplay());
+    this.settings$ = this.settingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(shareReplay(1));
     const getInstrumentInfo = (settings: ScalperOrderBookSettings) => this.instrumentsService.getInstrument(settings).pipe(
       filter((x): x is Instrument => !!x)
     );
@@ -112,16 +111,16 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
         this.maxVolume = Math.max(...orderBookRows.map(x => x.volume ?? 0));
       }),
       startWith([]),
-      shareReplay()
+      shareReplay(1)
     );
 
     this.subscribeToHotkeys();
     this.susbscribeToWorkingVolumesChange();
 
-    this.orderBookRows$.pipe(
-      take(2),
-      delay(1000)
-    ).subscribe(() => this.alignBySpread());
+      this.orderBookRows$.pipe(
+        take(1),
+        delay(1000)
+      ).subscribe(() => this.alignBySpread());
   }
 
   selectVol(vol: number) {
@@ -168,7 +167,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
 
   cancelAllOrders() {
     this.orderBookRows$
-      .pipe(skip(1), take(1))
+      .pipe(take(1))
       .subscribe(rows =>
         rows
           .filter(row => row.currentOrders.length)
@@ -380,7 +379,6 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
   private placeBestOrder(side: Side) {
     this.orderBookRows$
       .pipe(
-        skip(1),
         take(1),
       )
       .subscribe((rows) => {
