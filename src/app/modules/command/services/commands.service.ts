@@ -82,13 +82,6 @@ export class CommandsService {
     this.limitEdit?.next(command);
   }
 
-  setMarketEdit(command: MarketEdit | null) {
-    if (!this.marketEdit) {
-      this.marketEdit = new BehaviorSubject<MarketEdit | null>(command);
-    }
-    this.marketEdit?.next(command);
-  }
-
   setPriceSelected(price: number) {
     this.priceSelectedSubject$.next(price);
   }
