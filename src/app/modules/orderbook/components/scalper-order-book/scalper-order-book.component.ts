@@ -255,8 +255,8 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
           })
         ),
         switchMap(({ quantity, settings }) => {
-          if (!quantity) {
-            this.notification.error('Нет позиций', 'Позиции с данным тикером отсутствуют');
+          if (quantity <= 0) {
+            this.notification.error('Нет позиций', 'Позиции для установки стоп-лосс отсутствуют');
             return of({});
           }
 
