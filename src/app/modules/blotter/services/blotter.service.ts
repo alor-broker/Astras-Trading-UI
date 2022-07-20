@@ -33,7 +33,6 @@ import { CommonSummaryModel } from '../models/common-summary.model';
 import { selectNewInstrument } from '../../../store/instruments/instruments.actions';
 import { ForwardRisks } from "../models/forward-risks.model";
 import { ForwardRisksView } from "../models/forward-risks-view.model";
-import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 
 @Injectable({
   providedIn: 'root'
@@ -65,33 +64,33 @@ export class BlotterService extends BaseWebsocketService {
   }
 
   getPositions(settings: BlotterSettings) {
-    return this.getPositionsReq(settings.portfolio, settings.exchange).pipe(
+    return this.getPositionsReq(settings.portfolio, settings.exchange, settings.guid).pipe(
       map(poses => settings.isSoldPositionsHidden ? poses.filter(p => p.qtyTFuture !== 0) : poses)
     );
   }
 
-  getTrades(portfolioKey: PortfolioKey) {
-    return this.getTradesReq(portfolioKey.portfolio, portfolioKey.exchange);
+  getTrades(settings: BlotterSettings) {
+    return this.getTradesReq(settings.portfolio, settings.exchange, settings.guid);
   }
 
-  getOrders(portfolioKey: PortfolioKey) {
-    return this.getOrdersReq(portfolioKey.portfolio, portfolioKey.exchange);
+  getOrders(settings: BlotterSettings) {
+    return this.getOrdersReq(settings.portfolio, settings.exchange, settings.guid);
   }
 
-  getStopOrders(portfolioKey: PortfolioKey) {
-    return this.getStopOrdersReq(portfolioKey.portfolio, portfolioKey.exchange);
+  getStopOrders(settings: BlotterSettings) {
+    return this.getStopOrdersReq(settings.portfolio, settings.exchange, settings.guid);
   }
 
   getCommonSummary(settings: BlotterSettings): Observable<CommonSummaryView> {
     if (settings.currency != CurrencyInstrument.RUB) {
       return combineLatest([
-        this.getCommonSummaryReq(settings.portfolio, settings.exchange),
+        this.getCommonSummaryReq(settings.portfolio, settings.exchange, settings.guid),
         this.quotes.getQuotes(settings.currency, 'MOEX')
       ]).pipe(
         map(([summary, quote]) => this.formatCommonSummary(summary, settings.currency, quote.last_price))
       );
     } else {
-      return this.getCommonSummaryReq(settings.portfolio, settings.exchange).pipe(
+      return this.getCommonSummaryReq(settings.portfolio, settings.exchange, settings.guid).pipe(
         map(summary => this.formatCommonSummary(summary, CurrencyInstrument.RUB, 1))
       );
     }
@@ -100,13 +99,13 @@ export class BlotterService extends BaseWebsocketService {
   getForwardRisks(settings: BlotterSettings): Observable<ForwardRisksView> {
     if (settings.currency != CurrencyInstrument.RUB) {
       return combineLatest([
-        this.getForwardRisksReq(settings.portfolio, settings.exchange),
+        this.getForwardRisksReq(settings.portfolio, settings.exchange, settings.guid),
         this.quotes.getQuotes(settings.currency, 'MOEX')
       ]).pipe(
         map(([risks, quote]) => this.formatForwardRisks(risks, settings.currency, quote.last_price))
       );
     } else {
-      return this.getForwardRisksReq(settings.portfolio, settings.exchange).pipe(
+      return this.getForwardRisksReq(settings.portfolio, settings.exchange, settings.guid).pipe(
         map(risks => this.formatForwardRisks(risks, CurrencyInstrument.RUB, 1))
       );
     }
@@ -141,19 +140,32 @@ export class BlotterService extends BaseWebsocketService {
     } as ForwardRisksView;
   }
 
-  private getCommonSummaryReq(portfolio: string, exchange: string) {
-    const summary$ = this.getPortfolioEntity<CommonSummaryModel>(portfolio, exchange, "SummariesGetAndSubscribeV2");
-    return summary$;
+  private getCommonSummaryReq(portfolio: string, exchange: string, trackId: string) {
+    return this.getPortfolioEntity<CommonSummaryModel>(
+      portfolio,
+      exchange,
+      "SummariesGetAndSubscribeV2",
+      trackId
+    );
   }
 
-  private getForwardRisksReq(portfolio: string, exchange: string) {
-    const summary$ = this.getPortfolioEntity<ForwardRisks>(portfolio, exchange, "SpectraRisksGetAndSubscribe");
-    return summary$;
+  private getForwardRisksReq(portfolio: string, exchange: string, trackId: string) {
+    return this.getPortfolioEntity<ForwardRisks>(
+      portfolio,
+      exchange,
+      "SpectraRisksGetAndSubscribe",
+      trackId
+    );
   }
 
-  private getPositionsReq(portfolio: string, exchange: string) {
+  private getPositionsReq(portfolio: string, exchange: string, trackId: string) {
     this.positions = new Map<string, Position>();
-    const positions = this.getPortfolioEntity<Position>(portfolio, exchange, 'PositionsGetAndSubscribeV2').pipe(
+    const positions = this.getPortfolioEntity<Position>(
+      portfolio,
+      exchange,
+      'PositionsGetAndSubscribeV2',
+      trackId
+    ).pipe(
       map((position: Position) => {
         if (!this.isEmptyPosition(position)) {
           this.positions.set(position.symbol, position);
@@ -161,6 +173,7 @@ export class BlotterService extends BaseWebsocketService {
         return Array.from(this.positions.values());
       }),
     );
+
     return merge(positions, of([]));
   }
 
@@ -168,10 +181,14 @@ export class BlotterService extends BaseWebsocketService {
     return position.qtyT0 === 0 && position.qtyT1 === 0 && position.qtyT2 === 0 && position.qtyTFuture === 0;
   }
 
-  private getStopOrdersReq(portfolio: string, exchange: string): Observable<StopOrder[]> {
+  private getStopOrdersReq(portfolio: string, exchange: string, trackId: string): Observable<StopOrder[]> {
     this.stopOrders = new Map<string, StopOrder>();
-    const opcode = 'StopOrdersGetAndSubscribeV2';
-    const stopOrders = this.getPortfolioEntity<StopOrderData>(portfolio, exchange, opcode, true).pipe(
+    const stopOrders = this.getPortfolioEntity<StopOrderData>(
+      portfolio,
+      exchange,
+      'StopOrdersGetAndSubscribeV2',
+      trackId
+    ).pipe(
       map((order: StopOrderData) => {
         const existingOrder = this.orders.get(order.id);
         order.transTime = new Date(order.transTime);
@@ -191,13 +208,18 @@ export class BlotterService extends BaseWebsocketService {
         return Array.from(this.stopOrders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
       })
     );
+
     return stopOrders.pipe(startWith([]));
   }
 
-  private getOrdersReq(portfolio: string, exchange: string) {
+  private getOrdersReq(portfolio: string, exchange: string, trackId: string) {
     this.orders = new Map<string, Order>();
-    const opcode = 'OrdersGetAndSubscribeV2';
-    const orders = this.getPortfolioEntity<Order>(portfolio, exchange, opcode, true).pipe(
+    const orders = this.getPortfolioEntity<Order>(
+      portfolio,
+      exchange,
+      'OrdersGetAndSubscribeV2',
+      trackId
+    ).pipe(
       map((order: Order) => {
         const existingOrder = this.orders.get(order.id);
         order.transTime = new Date(order.transTime);
@@ -212,13 +234,18 @@ export class BlotterService extends BaseWebsocketService {
         return Array.from(this.orders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id));
       })
     );
+
     return orders.pipe(startWith([]));
   }
 
-  private getTradesReq(portfolio: string, exchange: string): Observable<Trade[]> {
+  private getTradesReq(portfolio: string, exchange: string, trackId: string): Observable<Trade[]> {
     this.trades = new Map<string, Trade>();
 
-    const trades = this.getPortfolioEntity<Trade>(portfolio, exchange, 'TradesGetAndSubscribeV2').pipe(
+    const trades = this.getPortfolioEntity<Trade>(
+      portfolio,
+      exchange,
+      'TradesGetAndSubscribeV2',
+      trackId).pipe(
       map((trade: Trade) => {
         this.trades.set(trade.id, {
           ...trade,

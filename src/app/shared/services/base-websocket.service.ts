@@ -11,33 +11,27 @@ import { WebsocketService } from './websocket.service';
 
 @Injectable()
 export abstract class BaseWebsocketService {
-  private subGuidByOpCode = new Map<string, string>();
+  private subGuids = new Set<string>();
 
   protected constructor(private readonly ws: WebsocketService) {
   }
 
   unsubscribe() {
-    if (this.subGuidByOpCode) {
-      for (const [guid,] of this.subGuidByOpCode) {
-        this.ws.unsubscribe(guid);
-      }
-    }
+    this.subGuids.forEach(guid => {
+      this.ws.unsubscribe(guid);
+    });
   }
 
   protected getEntity<T>(request: BaseRequest): Observable<T> {
     this.ws.connect();
-    let guid = this.subGuidByOpCode.get(request.opcode);
-    if (guid) {
+    const guid = request.guid ?? GuidGenerator.newGuid();
+
+    if(!this.subGuids.has(guid)) {
+      this.subGuids.add(guid);
+    } else {
       this.ws.unsubscribe(guid);
     }
 
-    if (request.guid) {
-      guid = request.guid;
-    } else {
-      guid = GuidGenerator.newGuid();
-      request.guid = guid;
-    }
-    this.subGuidByOpCode.set(request.opcode, guid);
     this.ws.subscribe(request);
 
     return this.ws.messages$.pipe(
@@ -46,8 +40,8 @@ export abstract class BaseWebsocketService {
       map(r => r.data));
   }
 
-  protected getPortfolioEntity<T>(portfolio: string, exchange: string, opcode: string, isConstructedGuid = false) {
-    const guid = isConstructedGuid ? `${portfolio}${exchange}${opcode}` : '';
+  protected getPortfolioEntity<T>(portfolio: string, exchange: string, opcode: string, trackId: string) {
+    const guid = `${trackId}:${portfolio}${exchange}${opcode}`;
     const request = {
       opcode,
       portfolio,

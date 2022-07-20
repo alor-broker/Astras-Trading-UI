@@ -72,7 +72,7 @@ export class OrderbookService extends BaseWebsocketService {
       map(ob => this.toOrderBook(ob))
     );
 
-    return combineLatest([obData$, this.getOrders(settings)]).pipe(
+    return combineLatest([obData$, this.getOrders(settings, settings.guid)]).pipe(
       map(([ob, orders]) => {
         const withOrdersRows = ob.rows.map((row) => {
           const askOrders = !!row.ask ? this.getCurrentOrdersForItem(row.ask, Side.Sell, orders) : [];
@@ -117,8 +117,8 @@ export class OrderbookService extends BaseWebsocketService {
   getScalperOrderBook(settings: ScalperOrderBookSettings, instrument: Instrument): Observable<ScalperOrderBook> {
     const obData$ = this.getOrderBookReq(settings.guid, instrument.symbol, instrument.exchange, instrument.instrumentGroup, settings.depth);
 
-    return combineLatest([obData$, this.getOrders(settings)]).pipe(
-      map(([ob, orders]) => this.toScalperOrderBook(settings, instrument, ob, orders))
+    return combineLatest([obData$, this.getOrders(settings, settings.guid)]).pipe(
+        map(([ob, orders]) => this.toScalperOrderBook(settings, instrument, ob, orders))
     );
   }
 
@@ -137,8 +137,8 @@ export class OrderbookService extends BaseWebsocketService {
           this.commandsService.placeOrder('market', pos.qtyTFuture > 0 ? Side.Sell : Side.Buy, {
             side: pos.qtyTFuture > 0 ? 'sell' : 'buy',
             quantity: Math.abs(isReversePosition ? pos.qtyTFuture * 2 : pos.qtyTFuture),
-            instrument: {symbol: pos.symbol, exchange: pos.exchange},
-            user: {portfolio: pos.portfolio, exchange: pos.exchange}
+            instrument: { symbol: pos.symbol, exchange: pos.exchange },
+            user: { portfolio: pos.portfolio, exchange: pos.exchange }
           }).subscribe();
         })
       );
@@ -329,15 +329,15 @@ export class OrderbookService extends BaseWebsocketService {
     };
   }
 
-  private getOrders(instrument: InstrumentKey) {
-    const orders$ = this.store.select(getSelectedPortfolio).pipe(
+  private getOrders(instrument: InstrumentKey, trackId: string) {
+    return this.store.select(getSelectedPortfolio).pipe(
       switchMap((p) => {
         if (p) {
           return this.getPortfolioEntity<Order>(
             p.portfolio,
             p.exchange,
             'OrdersGetAndSubscribeV2',
-            true
+            trackId
           ).pipe(
             filter(order => order.symbol === instrument.symbol),
             map((order: Order) => {
@@ -353,7 +353,6 @@ export class OrderbookService extends BaseWebsocketService {
       }),
       startWith([])
     );
-    return orders$;
   }
 
   private getCurrentOrdersForItem(itemPrice: number, side: Side, orders: Order[]): CurrentOrder[] {

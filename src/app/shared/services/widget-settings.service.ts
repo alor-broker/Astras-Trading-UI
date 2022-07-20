@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {
-  distinct,
   filter,
   Observable
 } from 'rxjs';
