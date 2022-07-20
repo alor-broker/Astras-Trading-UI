@@ -182,7 +182,7 @@ export class BlotterService extends BaseWebsocketService {
   }
 
   private getStopOrdersReq(portfolio: string, exchange: string, trackId: string): Observable<StopOrder[]> {
-    this.orders = new Map<string, StopOrder>();
+    this.stopOrders = new Map<string, StopOrder>();
     const stopOrders = this.getPortfolioEntity<StopOrderData>(
       portfolio,
       exchange,
