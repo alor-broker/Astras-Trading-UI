@@ -24,8 +24,7 @@ export class WidgetSettingsService {
 
   getSettings<T extends AnySettings>(guid: string): Observable<T> {
     return this.store.select(getSettingsByGuid(guid)).pipe(
-      filter((s): s is T => !!s),
-      distinct()
+      filter((s): s is T => !!s)
     );
   }
 
