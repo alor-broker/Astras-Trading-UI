@@ -1,17 +1,39 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, filter, Subject, takeUntil, withLatestFrom } from 'rxjs';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  Validators
+} from '@angular/forms';
+import {
+  BehaviorSubject,
+  filter,
+  Subject,
+  takeUntil,
+  withLatestFrom
+} from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
-import { addMonthsUnix, getUtcNow } from 'src/app/shared/utils/datetime';
-import { StopFormControls, StopFormGroup } from '../../models/command-forms.model';
+import {
+  addMonthsUnix,
+  getUtcNow
+} from 'src/app/shared/utils/datetime';
+import {
+  StopFormControls,
+  StopFormGroup
+} from '../../models/command-forms.model';
 import { StopFormData } from '../../models/stop-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { StopCommand } from '../../models/stop-command.model';
 import { CommandContextModel } from '../../models/command-context.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
+import { Side } from "../../../../shared/models/enums/side.model";
 
 @Component({
   selector: 'ats-stop-command',
@@ -82,14 +104,14 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     if (initialParameters && initialParameters.user) {
       const price = Number(formValue.price);
       const newCommand: StopCommand = {
-        side: 'buy',
+        side: Side.Buy,
         quantity: Number(formValue.quantity),
         triggerPrice: Number(formValue.triggerPrice),
         condition: formValue.condition,
         stopEndUnixTime: !!formValue.stopEndUnixTime
           ? this.timezoneConverter.terminalToUtc0Date(formValue.stopEndUnixTime)
           : undefined,
-        price: formValue.withLimit ? price : null,
+        price: formValue.withLimit ? price : undefined,
         instrument: {
           ...initialParameters.instrument
         },

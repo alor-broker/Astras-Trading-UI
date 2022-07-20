@@ -3,17 +3,17 @@ import {
   TestBed
 } from '@angular/core/testing';
 
-import { VerticalOrderBookSettingsComponent } from './vertical-order-book-settings.component';
+import { ScalperOrderBookSettingsComponent } from './scalper-order-book-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 
-describe('VerticalOrderBookSettingsComponent', () => {
-  let component: VerticalOrderBookSettingsComponent;
-  let fixture: ComponentFixture<VerticalOrderBookSettingsComponent>;
+describe('ScalperOrderBookSettingsComponent', () => {
+  let component: ScalperOrderBookSettingsComponent;
+  let fixture: ComponentFixture<ScalperOrderBookSettingsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [VerticalOrderBookSettingsComponent],
+      declarations: [ScalperOrderBookSettingsComponent],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -31,7 +31,7 @@ describe('VerticalOrderBookSettingsComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VerticalOrderBookSettingsComponent);
+    fixture = TestBed.createComponent(ScalperOrderBookSettingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

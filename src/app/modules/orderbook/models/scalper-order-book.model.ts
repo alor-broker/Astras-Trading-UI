@@ -12,21 +12,21 @@ export interface OrderBookItem {
   currentOrders: CurrentOrder[];
 }
 
-export interface VerticalOrderBook {
+export interface ScalperOrderBook {
   asks: OrderBookItem[];
   bids: OrderBookItem[];
   spreadItems: OrderBookItem[];
 }
 
-export enum VerticalOrderBookRowType {
+export enum ScalperOrderBookRowType {
   Ask,
   Bid,
   Spread
 }
 
-export interface VerticalOrderBookRowView extends OrderBookItem {
+export interface ScalperOrderBookRowView extends OrderBookItem {
   displayValue: number;
-  rowType: VerticalOrderBookRowType;
+  rowType: ScalperOrderBookRowType;
   isBest?: boolean;
-  getVolumeStyle : () => { [key: string]: any; } | null;
+  getVolumeStyle: () => { [key: string]: any; } | null;
 }
