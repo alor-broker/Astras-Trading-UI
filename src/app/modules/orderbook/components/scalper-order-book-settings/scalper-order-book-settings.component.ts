@@ -19,9 +19,9 @@ import {
   Validators
 } from "@angular/forms";
 import {
-  VerticalOrderBookSettings,
+  ScalperOrderBookSettings,
   VolumeHighlightOption
-} from "../../../../shared/models/settings/vertical-order-book-settings.model";
+} from "../../../../shared/models/settings/scalper-order-book-settings.model";
 
 interface SettingsFormData {
   depth: number;
@@ -34,17 +34,19 @@ interface SettingsFormData {
   highlightHighVolume: boolean;
   volumeHighlightOptions: VolumeHighlightOption[];
   workingVolumes: number[];
+  disableHotkeys: boolean;
+  enableMouseClickSilentOrders: boolean;
 }
 
 type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
 type SettingsFormGroup = FormGroup & { value: SettingsFormData, controls: SettingsFormControls };
 
 @Component({
-  selector: 'ats-vertical-order-book-settings[settingsChange][guid]',
-  templateUrl: './vertical-order-book-settings.component.html',
-  styleUrls: ['./vertical-order-book-settings.component.less']
+  selector: 'ats-scalper-order-book-settings[settingsChange][guid]',
+  templateUrl: './scalper-order-book-settings.component.html',
+  styleUrls: ['./scalper-order-book-settings.component.less']
 })
-export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
+export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   readonly validationSettings = {
     volumeHighlightOption: {
       boundary: {
@@ -82,7 +84,7 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.settingsService.getSettings<VerticalOrderBookSettings>(this.guid).pipe(
+    this.settingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.form = new FormGroup({
@@ -107,6 +109,8 @@ export class VerticalOrderBookSettingsComponent implements OnInit, OnDestroy {
         workingVolumes: new FormArray(settings.workingVolumes.map(
           wv => new FormControl(wv, [Validators.required, Validators.min(1)])
         )),
+        disableHotkeys: new FormControl(settings.disableHotkeys),
+        enableMouseClickSilentOrders: new FormControl(settings.enableMouseClickSilentOrders),
       } as SettingsFormControls) as SettingsFormGroup;
     });
   }

@@ -7,9 +7,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { OrderbookSettingsComponent } from './components/orderbook-settings/orderbook-settings.component';
 import { OrderbookWidgetComponent } from './widgets/orderbook-widget/orderbook-widget.component';
 import { OrderbookChartComponent } from './components/orderbook-chart/orderbook-chart.component';
-import { VerticalOrderBookWidgetComponent } from './widgets/vertical-order-book-widget/vertical-order-book-widget.component';
-import { VerticalOrderBookComponent } from './components/vertical-order-book/vertical-order-book.component';
-import { VerticalOrderBookSettingsComponent } from './components/vertical-order-book-settings/vertical-order-book-settings.component';
+import { ScalperOrderBookWidgetComponent } from './widgets/scalper-order-book-widget/scalper-order-book-widget.component';
+import { ScalperOrderBookComponent } from './components/scalper-order-book/scalper-order-book.component';
+import { ScalperOrderBookSettingsComponent } from './components/scalper-order-book-settings/scalper-order-book-settings.component';
 
 
 @NgModule({
@@ -18,9 +18,9 @@ import { VerticalOrderBookSettingsComponent } from './components/vertical-order-
     OrderbookSettingsComponent,
     OrderbookWidgetComponent,
     OrderbookChartComponent,
-    VerticalOrderBookWidgetComponent,
-    VerticalOrderBookComponent,
-    VerticalOrderBookSettingsComponent,
+    ScalperOrderBookWidgetComponent,
+    ScalperOrderBookComponent,
+    ScalperOrderBookSettingsComponent,
   ],
   imports: [
     CommonModule,
@@ -29,7 +29,7 @@ import { VerticalOrderBookSettingsComponent } from './components/vertical-order-
   ],
   exports: [
     OrderbookWidgetComponent,
-    VerticalOrderBookWidgetComponent
+    ScalperOrderBookWidgetComponent
   ]
 })
 export class OrderbookModule {

@@ -58,12 +58,11 @@ export class WidgetHeaderComponent implements OnInit {
           ...s
         };
 
-        const prefix = s.title?.split(' ')[0] ?? '';
         if (isInstrumentDependent(s)) {
           const group = s.instrumentGroup;
-          settings.title = `${prefix} ${s.symbol} ${group ? '(' + group + ')' : ''}`;
+          settings.title = `${s.title} ${s.symbol} ${group ? '(' + group + ')' : ''}`;
         } else if (isPortfolioDependent(s)) {
-          settings.title = `${prefix} ${s.portfolio} (${s.exchange})`;
+          settings.title = `${s.title} ${s.portfolio} (${s.exchange})`;
         }
 
         return settings;
