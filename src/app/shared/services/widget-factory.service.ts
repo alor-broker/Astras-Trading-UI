@@ -5,8 +5,14 @@ import { AnySettings } from '../models/settings/any-settings.model';
 import { NewWidget } from '../models/new-widget.model';
 import { Widget } from '../models/widget.model';
 import { LightChartSettings } from '../models/settings/light-chart-settings.model';
-import { TimeframesHelper, TimeframeValue } from 'src/app/modules/light-chart/utils/timeframes-helper';
-import { allInstrumentsColumns, InstrumentSelectSettings } from '../models/settings/instrument-select-settings.model';
+import {
+  TimeframesHelper,
+  TimeframeValue
+} from 'src/app/modules/light-chart/utils/timeframes-helper';
+import {
+  allInstrumentsColumns,
+  InstrumentSelectSettings
+} from '../models/settings/instrument-select-settings.model';
 import { Instrument } from '../models/instruments/instrument.model';
 import {
   allOrdersColumns,
@@ -94,18 +100,17 @@ export class WidgetFactoryService {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
 
-    const settings: OrderbookSettings = {
+    return {
       ...this.selectedInstrument,
       guid: newWidget.gridItem.label,
+      settingsType: 'OrderbookSettings',
       linkToActive: true,
       depth: 10,
       title: `Стакан`,
       showChart: true,
       showTable: true,
       showYieldForBonds: false,
-    };
-
-    return settings;
+    } as OrderbookSettings;
   }
 
   private createScalperOrderBook(newWidget: NewWidget | Widget): ScalperOrderBookSettings {
@@ -113,7 +118,7 @@ export class WidgetFactoryService {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
 
-    const settings: ScalperOrderBookSettings = {
+    return {
       guid: newWidget.gridItem.label,
       settingsType: 'ScalperOrderBookSettings',
       title: `[PRO] Стакан`,
@@ -127,26 +132,24 @@ export class WidgetFactoryService {
       showZeroVolumeItems: false,
       showSpreadItems: false,
       highlightHighVolume: false,
-      volumeHighlightOptions: [{boundary: 10000, color:'#CC0099'}],
+      volumeHighlightOptions: [{ boundary: 10000, color: '#CC0099' }],
       workingVolumes: [1, 10, 100, 1000],
       disableHotkeys: true,
       enableMouseClickSilentOrders: false
-    };
-
-    return settings;
+    } as ScalperOrderBookSettings;
   }
 
   private createInstrumentSelect(newWidget: NewWidget | Widget): InstrumentSelectSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
-    const settings: InstrumentSelectSettings = {
+
+    return {
       guid: newWidget.gridItem.label,
+      settingsType: 'InstrumentSelectSettings',
       title: `Выбор инструмента`,
       instrumentColumns: allInstrumentsColumns.filter(c => c.isDefault).map(c => c.columnId)
-    };
-
-    return settings;
+    } as InstrumentSelectSettings;
   }
 
   private createLightChartWidget(
@@ -156,27 +159,28 @@ export class WidgetFactoryService {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
 
-    const settings: LightChartSettings = {
+    return {
       ...this.selectedInstrument,
       linkToActive: true,
       guid: newWidget.gridItem.label,
+      settingsType: 'LightChartSettings',
       timeFrame: TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value,
       title: `График`,
       width: 300,
       height: 300
-    };
-
-    return settings;
+    } as LightChartSettings;
   }
 
   private createBlotter(newWidget: NewWidget | Widget): BlotterSettings {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
-    const settings: BlotterSettings = {
+
+    return {
       ...(this.selectedPortfolio ?? { portfolio: 'D', exchange: 'MOEX' }),
       activeTabIndex: 0,
       guid: newWidget.gridItem.label,
+      settingsType: 'BlotterSettings',
       currency: CurrencyInstrument.USD,
       tradesColumns: allTradesColumns.filter(c => c.isDefault).map(c => c.columnId),
       positionsColumns: allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId),
@@ -185,9 +189,7 @@ export class WidgetFactoryService {
       linkToActive: true,
       title: `Блоттер`,
       isSoldPositionsHidden: true
-    };
-
-    return settings;
+    } as BlotterSettings;
   }
 
   private createInfo(
@@ -196,14 +198,14 @@ export class WidgetFactoryService {
     if (!newWidget.gridItem.label) {
       newWidget.gridItem.label = GuidGenerator.newGuid();
     }
-    const settings: InfoSettings = {
+
+    return {
       ...this.selectedInstrument,
       linkToActive: true,
       guid: newWidget.gridItem.label,
+      settingsType: 'InfoSettings',
       title: `Инфо`,
-    };
-
-    return settings;
+    } as InfoSettings;
   }
 
   private createAllTrades(newWidget: NewWidget | Widget): AllTradesSettings {
@@ -215,10 +217,9 @@ export class WidgetFactoryService {
       ...this.selectedInstrument,
       linkToActive: true,
       guid: newWidget.gridItem.label,
-      hasSettings: false,
-      hasHelp: false,
+      settingsType: 'AllTradesSettings',
       title: `Все сделки`
-    };
+    } as AllTradesSettings;
   }
 
   private createNews(newWidget: NewWidget | Widget): NewsSettings {
@@ -228,10 +229,9 @@ export class WidgetFactoryService {
 
     return {
       guid: newWidget.gridItem.label,
-      hasSettings: false,
-      hasHelp: false,
+      settingsType: 'NewsSettings',
       title: 'Новости'
-    };
+    } as NewsSettings;
   }
 
   private createExchangeRate(newWidget: NewWidget | Widget): ExchangeRateSettings {
@@ -241,7 +241,8 @@ export class WidgetFactoryService {
 
     return {
       guid: newWidget.gridItem.label,
+      settingsType: 'ExchangeRateSettings',
       title: 'Курс валют'
-    };
+    } as ExchangeRateSettings;
   }
 }
