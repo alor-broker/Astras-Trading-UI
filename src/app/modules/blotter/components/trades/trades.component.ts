@@ -10,6 +10,7 @@ import {
 import {
   BehaviorSubject,
   combineLatest,
+  distinctUntilChanged,
   Observable,
   of,
   shareReplay,
@@ -29,6 +30,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
+import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -177,6 +179,7 @@ export class TradesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
       shareReplay()
     );
 

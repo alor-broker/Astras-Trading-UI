@@ -29,12 +29,12 @@ import { Order } from 'src/app/shared/models/orders/order.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { Store } from '@ngrx/store';
 import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
-import { VerticalOrderBookSettings } from "../../../shared/models/settings/vertical-order-book-settings.model";
+import { ScalperOrderBookSettings } from "../../../shared/models/settings/scalper-order-book-settings.model";
 import {
   CurrentOrder,
   OrderBookItem,
-  VerticalOrderBook
-} from "../models/vertical-order-book.model";
+  ScalperOrderBook
+} from "../models/scalper-order-book.model";
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
 import { OrderbookDataRow } from "../models/orderbook-data-row.model";
 import { getTypeByCfi } from "../../../shared/utils/instruments";
@@ -72,7 +72,7 @@ export class OrderbookService extends BaseWebsocketService {
       map(ob => this.toOrderBook(ob))
     );
 
-    return combineLatest([obData$, this.getOrders(settings)]).pipe(
+    return combineLatest([obData$, this.getOrders(settings, settings.guid)]).pipe(
       map(([ob, orders]) => {
         const withOrdersRows = ob.rows.map((row) => {
           const askOrders = !!row.ask ? this.getCurrentOrdersForItem(row.ask, Side.Sell, orders) : [];
@@ -114,11 +114,11 @@ export class OrderbookService extends BaseWebsocketService {
     );
   }
 
-  getVerticalOrderBook(settings: VerticalOrderBookSettings, instrument: Instrument): Observable<VerticalOrderBook> {
+  getScalperOrderBook(settings: ScalperOrderBookSettings, instrument: Instrument): Observable<ScalperOrderBook> {
     const obData$ = this.getOrderBookReq(settings.guid, instrument.symbol, instrument.exchange, instrument.instrumentGroup, settings.depth);
 
-    return combineLatest([obData$, this.getOrders(settings)]).pipe(
-      map(([ob, orders]) => this.toVerticalOrderBook(settings, instrument, ob, orders))
+    return combineLatest([obData$, this.getOrders(settings, settings.guid)]).pipe(
+        map(([ob, orders]) => this.toScalperOrderBook(settings, instrument, ob, orders))
     );
   }
 
@@ -126,7 +126,7 @@ export class OrderbookService extends BaseWebsocketService {
     this.canceller.cancelOrder(cancel).subscribe();
   }
 
-  closeOrderBookPositions(settings: VerticalOrderBookSettings, isReversePosition = false) {
+  closeOrderBookPositions(settings: ScalperOrderBookSettings, isReversePosition = false) {
     this.getOrderBookPositions(settings)
       .subscribe((positions: Position[]) =>
         positions.forEach(pos => {
@@ -137,14 +137,14 @@ export class OrderbookService extends BaseWebsocketService {
           this.commandsService.placeOrder('market', pos.qtyTFuture > 0 ? Side.Sell : Side.Buy, {
             side: pos.qtyTFuture > 0 ? 'sell' : 'buy',
             quantity: Math.abs(isReversePosition ? pos.qtyTFuture * 2 : pos.qtyTFuture),
-            instrument: {symbol: pos.symbol, exchange: pos.exchange},
-            user: {portfolio: pos.portfolio, exchange: pos.exchange}
+            instrument: { symbol: pos.symbol, exchange: pos.exchange },
+            user: { portfolio: pos.portfolio, exchange: pos.exchange }
           }).subscribe();
         })
       );
   }
 
-  getOrderBookPositions(settings: VerticalOrderBookSettings): Observable<Position[]> {
+  getOrderBookPositions(settings: ScalperOrderBookSettings): Observable<Position[]> {
     return this.authService.currentUser$
       .pipe(
         map((user: User) => user.login),
@@ -163,8 +163,8 @@ export class OrderbookService extends BaseWebsocketService {
       );
   }
 
-  private toVerticalOrderBook(
-    settings: VerticalOrderBookSettings,
+  private toScalperOrderBook(
+    settings: ScalperOrderBookSettings,
     instrument: Instrument,
     orderBookData: OrderbookData,
     currentOrders: Order[]) {
@@ -184,7 +184,7 @@ export class OrderbookService extends BaseWebsocketService {
         asks,
         bids,
         spreadItems: []
-      } as VerticalOrderBook;
+      } as ScalperOrderBook;
     }
 
     if (settings.showZeroVolumeItems && !!settings.depth) {
@@ -205,7 +205,7 @@ export class OrderbookService extends BaseWebsocketService {
       asks,
       bids,
       spreadItems
-    } as VerticalOrderBook;
+    } as ScalperOrderBook;
   }
 
   private generatePriceSequence(startValue: number, length: number, step: number) {
@@ -329,15 +329,15 @@ export class OrderbookService extends BaseWebsocketService {
     };
   }
 
-  private getOrders(instrument: InstrumentKey) {
-    const orders$ = this.store.select(getSelectedPortfolio).pipe(
+  private getOrders(instrument: InstrumentKey, trackId: string) {
+    return this.store.select(getSelectedPortfolio).pipe(
       switchMap((p) => {
         if (p) {
           return this.getPortfolioEntity<Order>(
             p.portfolio,
             p.exchange,
             'OrdersGetAndSubscribeV2',
-            true
+            trackId
           ).pipe(
             filter(order => order.symbol === instrument.symbol),
             map((order: Order) => {
@@ -353,7 +353,6 @@ export class OrderbookService extends BaseWebsocketService {
       }),
       startWith([])
     );
-    return orders$;
   }
 
   private getCurrentOrdersForItem(itemPrice: number, side: Side, orders: Order[]): CurrentOrder[] {

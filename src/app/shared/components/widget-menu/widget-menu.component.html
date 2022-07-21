@@ -15,10 +15,10 @@
   </li>
   <li
     nz-menu-item
-    (click)="selected.emit(widgetNames.verticalOrderBook)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.verticalOrderBook)"
+    (click)="selected.emit(widgetNames.scalperOrderBook)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.scalperOrderBook)"
   >
-    <span><i nz-icon nzType="ordered-list" nzTheme="outline"></i> <label>&nbsp;Вертикальный стакан</label></span>
+    <span><i nz-icon nzType="ordered-list" nzTheme="outline"></i> <label>&nbsp;Скальперский стакан [PRO]</label></span>
   </li>
   <li
     nz-menu-item
@@ -53,5 +53,12 @@
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.allTrades)"
   >
     <span><i nz-icon nzType="unordered-list" nzTheme="outline"></i><label> Все сделки</label></span>
+  </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.exchangeRate)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.exchangeRate)"
+  >
+    <span><i nz-icon nzType="line-chart" nzTheme="outline"></i><label> Курсы валют</label></span>
   </li>
 </ul>

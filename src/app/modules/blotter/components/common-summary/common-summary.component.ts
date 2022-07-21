@@ -6,6 +6,7 @@ import {
   Output
 } from '@angular/core';
 import {
+  distinctUntilChanged,
   Observable,
   of,
   Subscription,
@@ -16,6 +17,7 @@ import { CommonSummaryView } from '../../models/common-summary-view.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
+import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 
 @Component({
   selector: 'ats-common-summary[guid][resize]',
@@ -43,6 +45,7 @@ export class CommonSummaryComponent implements OnInit {
 
   ngOnInit(): void {
     this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
       switchMap(settings => this.service.getCommonSummary(settings))
     );
 

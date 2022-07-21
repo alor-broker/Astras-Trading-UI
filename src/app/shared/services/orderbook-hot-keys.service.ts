@@ -1,4 +1,7 @@
-import { Inject, Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import { EventManager } from "@angular/platform-browser";
 import { DOCUMENT } from "@angular/common";
 import {
@@ -9,8 +12,9 @@ import {
   Subscription,
 } from "rxjs";
 import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
+import { Side } from "../models/enums/side.model";
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class OrderbookHotKeysService {
   private hotkeysSub: Subscription = new Subscription();
 
@@ -26,7 +30,7 @@ export class OrderbookHotKeysService {
 
   addShortcut(): Observable<{ key: string }> {
     return fromEvent<KeyboardEvent>(this.document, 'keydown')
-      .pipe(map((e: KeyboardEvent) => ({key: e.key})));
+      .pipe(map((e: KeyboardEvent) => ({ key: e.key })));
   }
 
   bindShortCuts() {
@@ -65,18 +69,18 @@ export class OrderbookHotKeysService {
                 break;
               }
               case s.buyMarket: {
-                this.placeMarketOrder('buy');
+                this.placeMarketOrder(Side.Buy);
                 break;
               }
               case s.sellMarket: {
-                this.placeMarketOrder('sell');
+                this.placeMarketOrder(Side.Sell);
                 break;
               }
               case s.sellBestOrder:
-                this.sellOrBuyBestOrder('sell');
+                this.placeBestOrder(Side.Sell);
                 break;
               case s.buyBestOrder:
-                this.sellOrBuyBestOrder('buy');
+                this.placeBestOrder(Side.Buy);
                 break;
               default:
                 if (s.workingVolumes?.includes(e.key)) {
@@ -89,11 +93,11 @@ export class OrderbookHotKeysService {
   }
 
   private cancelAllOrders() {
-    this.orderBookEvent$.next({event: 'cancelAllOrders'});
+    this.orderBookEvent$.next({ event: 'cancelAllOrders' });
   }
 
   private centerOrderbookKey() {
-    this.orderBookEvent$.next({event: 'centerOrderbookKey'});
+    this.orderBookEvent$.next({ event: 'centerOrderbookKey' });
   }
 
   private closeAllPositions() {
@@ -101,7 +105,7 @@ export class OrderbookHotKeysService {
   }
 
   private cancelOrderbookOrders() {
-    this.orderBookEvent$.next({event: 'cancelOrderbookOrders'});
+    this.orderBookEvent$.next({ event: 'cancelOrderbookOrders' });
   }
 
   private closeOrderbookPositions(isReversePosition = false) {
@@ -110,15 +114,15 @@ export class OrderbookHotKeysService {
     });
   }
 
-  private placeMarketOrder(side: string) {
-    this.orderBookEvent$.next({event: 'placeMarketOrder', options: side});
+  private placeMarketOrder(side: Side) {
+    this.orderBookEvent$.next({ event: 'placeMarketOrder', options: { side } });
   }
 
   private selectWorkingVolume(workingVolumeIndex: number) {
-    this.orderBookEvent$.next({event: 'selectWorkingVolume', options: workingVolumeIndex});
+    this.orderBookEvent$.next({ event: 'selectWorkingVolume', options: { workingVolumeIndex } });
   }
 
-  private sellOrBuyBestOrder(side: string) {
-    this.orderBookEvent$.next({ event: side });
+  private placeBestOrder(side: Side) {
+    this.orderBookEvent$.next({ event: 'placeBestOrder', options: { side } });
   }
 }
