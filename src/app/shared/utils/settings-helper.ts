@@ -59,12 +59,17 @@ export function isPortfolioDependent(
   );
 }
 /**
- * A guard which checks if settings depends on an orderbook settings
+ * A guard which checks if settings is an orderbook settings
  * @param settings Settings to check
  */
 export function isOrderbookSettings(
   settings: AnySettings
 ): settings is OrderbookSettings {
+  if(!!settings?.settingsType) {
+    return settings.settingsType === 'OrderbookSettings';
+  }
+
+  // code below for backward compatibility only;
   return (
     settings &&
     'linkToActive' in settings &&
@@ -77,12 +82,17 @@ export function isOrderbookSettings(
   );
 }
 /**
- * A guard which checks if settings depends on a scalper orderbook settings
+ * A guard which checks if settings is a scalper orderbook settings
  * @param settings Settings to check
  */
 export function isScalperOrderBookSettings(
   settings: AnySettings
 ): settings is ScalperOrderBookSettings {
+  if(!!settings?.settingsType) {
+    return settings.settingsType === 'ScalperOrderBookSettings';
+  }
+
+  // code below for backward compatibility only;
   return (
     settings &&
     settings.settingsType === 'ScalperOrderBookSettings' &&
@@ -100,13 +110,19 @@ export function isScalperOrderBookSettings(
     'enableMouseClickSilentOrders' in settings
   );
 }
+
 /**
- * A guard which checks if settings depends is an lightchart settings
+ * A guard which checks if settings is a lightchart settings
  * @param settings Settings to check
  */
 export function isLightChartSettings(
   settings: AnySettings
 ): settings is LightChartSettings {
+  if(!!settings?.settingsType) {
+    return settings.settingsType === 'LightChartSettings';
+  }
+
+  // code below for backward compatibility only;
   return (
     settings &&
     'linkToActive' in settings &&
@@ -115,13 +131,19 @@ export function isLightChartSettings(
     'timeFrame' in settings
   );
 }
+
 /**
- * A guard which checks if settings depends is a blotter settings
+ * A guard which checks if settings is a blotter settings
  * @param settings Settings to check
  */
 export function isBlotterSettings(
   settings: AnySettings
 ): settings is BlotterSettings {
+  if(!!settings?.settingsType) {
+    return settings.settingsType === 'BlotterSettings';
+  }
+
+  // code below for backward compatibility only;
   return (
     settings &&
     'linkToActive' in settings &&
@@ -130,42 +152,64 @@ export function isBlotterSettings(
     'activeTabIndex' in settings
   );
 }
+
 /**
- * A guard which checks if settings depends is an info settings
+ * A guard which checks if settings is an info settings
  * @param settings Settings to check
  */
 export function isInfoSettings(
   settings: AnySettings
 ): settings is InfoSettings {
+  if(!!settings?.settingsType) {
+    return settings.settingsType === 'InfoSettings';
+  }
+
+  // code below for backward compatibility only;
   return (
     settings &&
     'linkToActive' in settings &&
     'isin' in settings
   );
 }
+
 /**
- * A guard which checks if settings depends is news settings
+ * A guard which checks if settings is a news settings
  * @param settings Settings to check
  */
 export function isNewsSettings(settings: AnySettings): settings is NewsSettings {
+  if(!!settings?.settingsType) {
+    return settings.settingsType === 'NewsSettings';
+  }
+
+  // code below for backward compatibility only;
   return settings && settings.title === 'Новости';
 }
 
 /**
- * A guard which checks if settings depends is all-trades settings
+ * A guard which checks if settings is an all-trades settings
  * @param settings Settings to check
  */
 export function isAllTradesSettings(settings: AnySettings): settings is AllTradesSettings {
-  return settings && !!settings.title?.includes('Все сделки');
+  if(!!settings?.settingsType) {
+    return settings.settingsType === 'AllTradesSettings';
+  }
+
+  // code below for backward compatibility only;
+  return settings && !!settings.title?.includes('Всe сделки');
 }
 
 /**
- * A guard which checks if settings depends is instrument-select settings
+ * A guard which checks if settings is an instrument-select settings
  * @param settings Settings to check
  */
 export function isInstrumentSelectSettings(
   settings: AnySettings
 ): settings is InstrumentSelectSettings {
+  if(!!settings?.settingsType) {
+    return settings.settingsType === 'InstrumentSelectSettings';
+  }
+
+  // code below for backward compatibility only;
   return (
     settings &&
     'activeListId' in settings
@@ -173,10 +217,15 @@ export function isInstrumentSelectSettings(
 }
 
 /**
- * A guard which checks if settings depends is echange-rate settings
+ * A guard which checks if settings is an exchange-rate settings
  * @param settings Settings to check
  */
 export function isExchangeRateSettings(settings: AnySettings): settings is ExchangeRateSettings {
+  if(!!settings?.settingsType) {
+    return settings.settingsType === 'ExchangeRateSettings';
+  }
+
+  // code below for backward compatibility only;
   return settings && !!settings.title?.includes('Курс валют');
 }
 
