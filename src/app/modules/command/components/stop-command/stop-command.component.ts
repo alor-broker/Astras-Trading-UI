@@ -33,7 +33,6 @@ import { StopCommand } from '../../models/stop-command.model';
 import { CommandContextModel } from '../../models/command-context.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
-import { Side } from "../../../../shared/models/enums/side.model";
 
 @Component({
   selector: 'ats-stop-command',
@@ -65,7 +64,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       this.checkNowTimeSelection(converter);
     });
 
-    this.service.stopCommandErr$
+    this.service.commandError$
       .pipe(
         takeUntil(this.destroy$)
       )
@@ -75,6 +74,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
             c.markAsDirty();
             c.updateValueAndValidity({onlySelf: false});
           });
+
         }
       });
   }
@@ -104,7 +104,6 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     if (initialParameters && initialParameters.user) {
       const price = Number(formValue.price);
       const newCommand: StopCommand = {
-        side: Side.Buy,
         quantity: Number(formValue.quantity),
         triggerPrice: Number(formValue.triggerPrice),
         condition: formValue.condition,

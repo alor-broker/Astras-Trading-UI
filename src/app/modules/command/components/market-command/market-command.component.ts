@@ -79,7 +79,6 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
 
     if (initialParameters && initialParameters.user) {
       const newCommand: MarketCommand = {
-        side: 'buy',
         quantity: Number(quantity),
         instrument: {
           ...initialParameters.instrument,

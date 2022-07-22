@@ -7,12 +7,9 @@ import {
 } from "@angular/common/http";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
-import { sharedModuleImportForTests } from "../utils/testing";
-import { Store } from "@ngrx/store";
-import { selectNewPortfolio } from "../../store/portfolios/portfolios.actions";
-import { PortfolioKey } from "../models/portfolio-key.model";
 import {
   LimitOrder,
+  LimitOrderEdit,
   MarketOrder,
   StopLimitOrder,
   StopMarketOrder,
@@ -20,14 +17,16 @@ import {
   SubmitOrderResult
 } from "../../modules/command/models/order.model";
 import { environment } from "../../../environments/environment";
-import { of } from "rxjs";
+import {
+  of,
+  throwError
+} from "rxjs";
 import { Side } from "../models/enums/side.model";
 import { StopOrderCondition } from "../models/enums/stoporder-conditions";
 import { toUnixTimestampSeconds } from "../utils/datetime";
 
 describe('OrderService', () => {
   let service: OrderService;
-  let store: Store;
 
   let notificationServiceSpy: any;
   let errorHandlerServiceSpy: any;
@@ -46,12 +45,10 @@ describe('OrderService', () => {
   beforeEach(() => {
     notificationServiceSpy = jasmine.createSpyObj('NzNotificationService', ['success', 'error']);
     errorHandlerServiceSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
-    httpSpy = jasmine.createSpyObj<HttpClient>('HttpClient', ['post']);
+    httpSpy = jasmine.createSpyObj<HttpClient>('HttpClient', ['post', 'put']);
 
     TestBed.configureTestingModule({
-      imports: [
-        ...sharedModuleImportForTests
-      ],
+      imports: [],
       providers: [
         {
           provide: HttpClient,
@@ -69,14 +66,6 @@ describe('OrderService', () => {
     });
 
     service = TestBed.inject(OrderService);
-    store = TestBed.inject(Store);
-  });
-
-  beforeEach(() => {
-    store.dispatch(selectNewPortfolio({
-        portfolio: { portfolio: defaultPortfolio } as PortfolioKey
-      })
-    );
   });
 
 
@@ -88,7 +77,7 @@ describe('OrderService', () => {
 
   describe('#submitMarketOrder', () => {
     const submitOrder = (order: MarketOrder, onResult?: (result: SubmitOrderResult) => void) => {
-      service.submitMarketOrder(order)
+      service.submitMarketOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
             onResult(result);
@@ -112,7 +101,7 @@ describe('OrderService', () => {
       httpSpy.post.and.callFake((url: string, body: any, options: any) => {
         done();
 
-        expect(isHeadersCorrect(options.headers)).toBeTruthy();
+        expect(isHeadersCorrect(options.headers)).toBeTrue();
 
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
@@ -162,14 +151,15 @@ describe('OrderService', () => {
     });
 
     it('should notify about http error', (done) => {
-      httpSpy.post.and.callFake(() => {
-        throw new HttpErrorResponse({
-          error: {
-            code: 'CODE',
-            message: 'Message'
-          }
-        });
-      });
+      httpSpy.post.and.returnValue(
+        throwError(() => new HttpErrorResponse({
+            error: {
+              code: 'CODE',
+              message: 'Message'
+            }
+          })
+        )
+      );
 
       submitOrder(
         {} as MarketOrder,
@@ -184,9 +174,7 @@ describe('OrderService', () => {
     });
 
     it('should handle common error', (done) => {
-      httpSpy.post.and.callFake(() => {
-        throw new Error();
-      });
+      httpSpy.post.and.returnValue(throwError(() => Error()));
 
       submitOrder(
         {} as MarketOrder,
@@ -203,7 +191,7 @@ describe('OrderService', () => {
 
   describe('#submitLimitOrder', () => {
     const submitOrder = (order: LimitOrder, onResult?: (result: SubmitOrderResult) => void) => {
-      service.submitLimitOrder(order)
+      service.submitLimitOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
             onResult(result);
@@ -227,7 +215,7 @@ describe('OrderService', () => {
       httpSpy.post.and.callFake((url: string, body: any, options: any) => {
         done();
 
-        expect(isHeadersCorrect(options.headers)).toBeTruthy();
+        expect(isHeadersCorrect(options.headers)).toBeTrue();
 
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
@@ -279,14 +267,15 @@ describe('OrderService', () => {
     });
 
     it('should notify about http error', (done) => {
-      httpSpy.post.and.callFake(() => {
-        throw new HttpErrorResponse({
-          error: {
-            code: 'CODE',
-            message: 'Message'
-          }
-        });
-      });
+      httpSpy.post.and.returnValue(
+        throwError(() => new HttpErrorResponse({
+            error: {
+              code: 'CODE',
+              message: 'Message'
+            }
+          })
+        )
+      );
 
       submitOrder(
         {} as LimitOrder,
@@ -301,9 +290,7 @@ describe('OrderService', () => {
     });
 
     it('should handle common error', (done) => {
-      httpSpy.post.and.callFake(() => {
-        throw new Error();
-      });
+      httpSpy.post.and.returnValue(throwError(() => Error()));
 
       submitOrder(
         {} as LimitOrder,
@@ -320,7 +307,7 @@ describe('OrderService', () => {
 
   describe('#submitStopMarketOrder', () => {
     const submitOrder = (order: StopMarketOrder, onResult?: (result: SubmitOrderResult) => void) => {
-      service.submitStopMarketOrder(order)
+      service.submitStopMarketOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
             onResult(result);
@@ -344,7 +331,7 @@ describe('OrderService', () => {
       httpSpy.post.and.callFake((url: string, body: any, options: any) => {
         done();
 
-        expect(isHeadersCorrect(options.headers)).toBeTruthy();
+        expect(isHeadersCorrect(options.headers)).toBeTrue();
 
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
@@ -400,14 +387,15 @@ describe('OrderService', () => {
     });
 
     it('should notify about http error', (done) => {
-      httpSpy.post.and.callFake(() => {
-        throw new HttpErrorResponse({
-          error: {
-            code: 'CODE',
-            message: 'Message'
-          }
-        });
-      });
+      httpSpy.post.and.returnValue(
+        throwError(() => new HttpErrorResponse({
+            error: {
+              code: 'CODE',
+              message: 'Message'
+            }
+          })
+        )
+      );
 
       submitOrder(
         {} as StopMarketOrder,
@@ -422,9 +410,7 @@ describe('OrderService', () => {
     });
 
     it('should handle common error', (done) => {
-      httpSpy.post.and.callFake(() => {
-        throw new Error();
-      });
+      httpSpy.post.and.returnValue(throwError(() => Error()));
 
       submitOrder(
         {} as StopMarketOrder,
@@ -441,7 +427,7 @@ describe('OrderService', () => {
 
   describe('#submitStopLimitOrder', () => {
     const submitOrder = (order: StopLimitOrder, onResult?: (result: SubmitOrderResult) => void) => {
-      service.submitStopLimitOrder(order)
+      service.submitStopLimitOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
             onResult(result);
@@ -465,7 +451,7 @@ describe('OrderService', () => {
       httpSpy.post.and.callFake((url: string, body: any, options: any) => {
         done();
 
-        expect(isHeadersCorrect(options.headers)).toBeTruthy();
+        expect(isHeadersCorrect(options.headers)).toBeTrue();
 
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
@@ -523,14 +509,15 @@ describe('OrderService', () => {
     });
 
     it('should notify about http error', (done) => {
-      httpSpy.post.and.callFake(() => {
-        throw new HttpErrorResponse({
-          error: {
-            code: 'CODE',
-            message: 'Message'
-          }
-        });
-      });
+      httpSpy.post.and.returnValue(
+        throwError(() => new HttpErrorResponse({
+            error: {
+              code: 'CODE',
+              message: 'Message'
+            }
+          })
+        )
+      );
 
       submitOrder(
         {} as StopLimitOrder,
@@ -546,9 +533,7 @@ describe('OrderService', () => {
     });
 
     it('should handle common error', (done) => {
-      httpSpy.post.and.callFake(() => {
-        throw new Error();
-      });
+      httpSpy.post.and.returnValue(throwError(() => Error()));
 
       submitOrder(
         {} as StopLimitOrder,
@@ -557,6 +542,129 @@ describe('OrderService', () => {
 
           expect(result.isSuccess).toBeFalse();
 
+        }
+      );
+
+      expect(errorHandlerServiceSpy.handleError).toHaveBeenCalled();
+    });
+  });
+
+  describe('#submitLimitOrderEdit', () => {
+    const submitOrder = (order: LimitOrderEdit, onResult?: (result: SubmitOrderResult) => void) => {
+      service.submitLimitOrderEdit(order, defaultPortfolio)
+        .subscribe((result) => {
+          if (onResult) {
+            onResult(result);
+          }
+        });
+    };
+
+    it('correct url should be used', (done) => {
+      const order = {
+        id: '123'
+      } as LimitOrderEdit;
+
+      httpSpy.put.and.callFake((url: string) => {
+        done();
+
+        expect(url).toBe(`${baseApiUrl}/limit/${order.id}`);
+
+        return of({ orderNumber: order.id } as SubmitOrderResponse);
+      });
+
+      submitOrder(order);
+    });
+
+    it('should send correct headers', (done) => {
+      const order = {
+        id: '123'
+      } as LimitOrderEdit;
+
+      httpSpy.put.and.callFake((url: string, body: any, options: any) => {
+        done();
+
+        expect(isHeadersCorrect(options.headers)).toBeTrue();
+
+        return of({ orderNumber: order.id } as SubmitOrderResponse);
+      });
+
+      submitOrder(order);
+    });
+
+    it('all parameters should be provided', (done) => {
+      const order: LimitOrderEdit = {
+        instrument: {
+          symbol: 'ABC',
+          exchange: 'MOEX'
+        },
+        quantity: 100,
+        price: 100,
+        id: '123'
+      };
+
+      httpSpy.put.and.callFake((url: string, body: any) => {
+        done();
+
+        expect(body.user.portfolio).toBe(defaultPortfolio);
+        expect(body.instrument.symbol).toBe(order.instrument.symbol);
+        expect(body.instrument.exchange).toBe(order.instrument.exchange);
+        expect(body.quantity).toBe(order.quantity);
+        expect(body.price).toBe(order.price);
+
+        return of({ orderNumber: order.id } as SubmitOrderResponse);
+      });
+
+      submitOrder(order);
+    });
+
+    it('should notify about success', (done) => {
+      httpSpy.put.and.returnValue(of({ orderNumber: '123' } as SubmitOrderResponse));
+
+      submitOrder(
+        {} as LimitOrderEdit,
+        result => {
+          done();
+
+          expect(result.isSuccess).toBeTrue();
+          expect(result.orderNumber).toBeDefined();
+        }
+      );
+
+      expect(notificationServiceSpy.success).toHaveBeenCalled();
+    });
+
+    it('should notify about http error', (done) => {
+      httpSpy.put.and.returnValue(
+        throwError(() => new HttpErrorResponse({
+            error: {
+              code: 'CODE',
+              message: 'Message'
+            }
+          })
+        )
+      );
+
+      submitOrder(
+        {} as LimitOrderEdit,
+        result => {
+          done();
+
+          expect(result.isSuccess).toBeFalse();
+        }
+      );
+
+      expect(notificationServiceSpy.error).toHaveBeenCalled();
+    });
+
+    it('should handle common error', (done) => {
+      httpSpy.put.and.returnValue(throwError(() => Error()));
+
+      submitOrder(
+        {} as LimitOrderEdit,
+        result => {
+          done();
+
+          expect(result.isSuccess).toBeFalse();
         }
       );
 

@@ -48,7 +48,6 @@ import { Instrument } from "../../../../shared/models/instruments/instrument.mod
 import { getTypeByCfi } from "../../../../shared/utils/instruments";
 import { InstrumentType } from "../../../../shared/models/enums/instrument-type.model";
 import { OrderbookHotKeysService } from "../../../../shared/services/orderbook-hot-keys.service";
-import { CommandsService } from "../../../command/services/commands.service";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { NzNotificationService } from "ng-zorro-antd/notification";
@@ -58,6 +57,7 @@ import { CommandType } from "../../../../shared/models/enums/command-type.model"
 import { StopCommand } from "../../../command/models/stop-command.model";
 import { CommandParams } from "../../../../shared/models/commands/command-params.model";
 import { isEqualScalperOrderBookSettings } from "../../../../shared/utils/settings-helper";
+import { CurrentPortfolioOrderService } from "../../../../shared/services/current-portfolio-order.service";
 
 @Component({
   selector: 'ats-scalper-order-book[guid][shouldShowSettings]',
@@ -85,7 +85,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     private readonly orderBookService: OrderbookService,
     private readonly instrumentsService: InstrumentsService,
     private readonly hotkeysService: OrderbookHotKeysService,
-    private readonly commandsService: CommandsService,
+    private readonly orderService: CurrentPortfolioOrderService,
     private readonly notification: NzNotificationService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly modal: ModalService,
@@ -219,8 +219,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
         take(1),
         switchMap(settings => {
             const side = row.rowType === this.rowTypes.Ask ? Side.Sell : Side.Buy;
-            const command = {
-              side: side,
+            const command: StopCommand = {
               quantity: this.activeWorkingVolume$.getValue() || 1,
               price: row.price,
               instrument: {
@@ -230,9 +229,9 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
               },
               triggerPrice: row.price,
               condition: row.rowType === this.rowTypes.Ask ? StopOrderCondition.More : StopOrderCondition.Less,
-            } as StopCommand;
+            };
 
-            return this.placeStopLimitOrder(command, settings.enableMouseClickSilentOrders);
+            return this.placeStopLimitOrder(command, side, settings.enableMouseClickSilentOrders);
           }
         )
       ).subscribe();
@@ -260,8 +259,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
             return of({});
           }
 
-          const command = {
-            side: Side.Sell,
+          const command: StopCommand = {
             quantity,
             instrument: {
               symbol: settings.symbol,
@@ -270,9 +268,9 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
             },
             triggerPrice: row.price,
             condition: StopOrderCondition.More,
-          } as StopCommand;
+          };
 
-          return this.placeStopMarketOrder(command, settings.enableMouseClickSilentOrders);
+          return this.placeStopMarketOrder(command, Side.Sell, settings.enableMouseClickSilentOrders);
         })
       ).subscribe();
 
@@ -413,7 +411,6 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
       take(1),
       switchMap(s => {
           const command = {
-            side: side,
             quantity: this.activeWorkingVolume$.getValue() || 1,
             instrument: {
               symbol: s.symbol,
@@ -422,7 +419,10 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
           };
 
           if (isSilent) {
-            return this.commandsService.placeOrder('market', side, command);
+            return this.orderService.submitMarketOrder({
+              ...command,
+              side
+            });
           }
 
           this.modal.openCommandModal({
@@ -440,7 +440,6 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
       take(1),
       switchMap(s => {
           const command = {
-            side,
             quantity: this.activeWorkingVolume$.getValue() || 1,
             price,
             instrument: {
@@ -450,7 +449,10 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
           };
 
           if (isSilent) {
-            return this.commandsService.placeOrder('limit', side, command);
+            return this.orderService.submitLimitOrder({
+              ...command,
+              side
+            });
           }
 
           this.modal.openCommandModal({
@@ -463,13 +465,13 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
       )).subscribe();
   }
 
-  private placeStopLimitOrder(command: StopCommand, isSilent: boolean): Observable<any> {
+  private placeStopLimitOrder(command: StopCommand, side: Side, isSilent: boolean): Observable<any> {
     if (isSilent) {
-      return this.commandsService.placeOrder(
-        'stopLimit',
-        command.side,
-        command
-      );
+      return this.orderService.submitStopLimitOrder({
+        ...command,
+        price: command.price ?? 0,
+        side
+      });
     } else {
       this.modal.openCommandModal({
         ...command,
@@ -481,13 +483,12 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     }
   }
 
-  private placeStopMarketOrder(command: StopCommand, isSilent: boolean): Observable<any> {
+  private placeStopMarketOrder(command: StopCommand, side: Side, isSilent: boolean): Observable<any> {
     if (isSilent) {
-      return this.commandsService.placeOrder(
-        'stop',
-        command.side,
-        command
-      );
+      return this.orderService.submitStopMarketOrder({
+        ...command,
+        side
+      });
     } else {
       this.modal.openCommandModal({
         ...command,

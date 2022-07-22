@@ -7,16 +7,14 @@ import { ScalperOrderBookComponent } from './scalper-order-book.component';
 import { of } from "rxjs";
 import { OrderbookService } from "../../services/orderbook.service";
 import { ScalperOrderBook } from "../../models/scalper-order-book.model";
-import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { OrderbookHotKeysService } from "../../../../shared/services/orderbook-hot-keys.service";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { CommandsService } from "../../../command/services/commands.service";
-import { Store, StoreModule } from "@ngrx/store";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { ModalService } from "../../../../shared/services/modal.service";
+import { CurrentPortfolioOrderService } from "../../../../shared/services/current-portfolio-order.service";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -56,14 +54,12 @@ describe('ScalperOrderBookComponent', () => {
           }
         },
         {
-          provide: CommandsService,
+          provide: CurrentPortfolioOrderService,
           useValue: {
-            setStopCommand: jasmine.createSpy('setStopCommand'),
-            submitStop: jasmine.createSpy('submitStop').and.returnValue(of({})),
-            setLimitCommand: jasmine.createSpy('setLimitCommand'),
-            submitLimit: jasmine.createSpy('submitLimit').and.returnValue(of({})),
-            setMarketCommand: jasmine.createSpy('setMarketCommand'),
-            submitMarket: jasmine.createSpy('submitMarket').and.returnValue(of({})),
+            submitMarketOrder: jasmine.createSpy('submitMarketOrder').and.returnValue(of({})),
+            submitLimitOrder: jasmine.createSpy('submitLimitOrder').and.returnValue(of({})),
+            submitStopLimitOrder: jasmine.createSpy('submitStopLimitOrder').and.returnValue(of({})),
+            submitStopMarketOrder: jasmine.createSpy('submitStopMarketOrder').and.returnValue(of({})),
           }
         },
         {

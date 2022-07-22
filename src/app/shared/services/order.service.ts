@@ -4,17 +4,15 @@ import {
   HttpErrorResponse
 } from "@angular/common/http";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
-import { Store } from "@ngrx/store";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import {
   Observable,
   of,
-  switchMap,
-  take,
   tap
 } from "rxjs";
 import {
   LimitOrder,
+  LimitOrderEdit,
   MarketOrder,
   StopLimitOrder,
   StopMarketOrder,
@@ -23,13 +21,10 @@ import {
 } from "../../modules/command/models/order.model";
 import { GuidGenerator } from "../utils/guid";
 import { httpLinkRegexp } from "../utils/regexps";
-import { getSelectedPortfolio } from "../../store/portfolios/portfolios.selectors";
 import {
   catchError,
-  filter,
   map
 } from "rxjs/operators";
-import { PortfolioKey } from "../models/portfolio-key.model";
 import { environment } from "../../../environments/environment";
 import { toUnixTimestampSeconds } from "../utils/datetime";
 
@@ -41,46 +36,70 @@ export class OrderService {
 
   constructor(private readonly httpService: HttpClient,
               private readonly notificationService: NzNotificationService,
-              private readonly errorHandlerService: ErrorHandlerService,
-              private readonly store: Store) {
+              private readonly errorHandlerService: ErrorHandlerService
+  ) {
   }
 
-  submitMarketOrder(order: MarketOrder): Observable<SubmitOrderResult> {
-    return this.submitOrder(() => ({
-      url: `${this.baseApiUrl}/market`,
-      body: {
-        ...order
-      }
-    }));
+  submitMarketOrder(order: MarketOrder, portfolio: string): Observable<SubmitOrderResult> {
+    return this.submitOrder(
+      portfolio,
+      () => ({
+        url: `${this.baseApiUrl}/market`,
+        body: {
+          ...order
+        }
+      })
+    );
   }
 
-  submitLimitOrder(order: LimitOrder): Observable<SubmitOrderResult> {
-    return this.submitOrder(() => ({
-      url: `${this.baseApiUrl}/limit`,
-      body: {
-        ...order
-      }
-    }));
+  submitLimitOrder(order: LimitOrder, portfolio: string): Observable<SubmitOrderResult> {
+    return this.submitOrder(
+      portfolio,
+      () => ({
+        url: `${this.baseApiUrl}/limit`,
+        body: {
+          ...order
+        }
+      })
+    );
   }
 
-  submitStopMarketOrder(order: StopMarketOrder): Observable<SubmitOrderResult> {
-    return this.submitOrder(() => ({
-      url: `${this.baseApiUrl}/stop`,
-      body: {
-        ...order,
-        stopEndUnixTime: this.prepareStopEndUnixTimeValue(order)
-      }
-    }));
+  submitStopMarketOrder(order: StopMarketOrder, portfolio: string): Observable<SubmitOrderResult> {
+    return this.submitOrder(
+      portfolio,
+      () => ({
+        url: `${this.baseApiUrl}/stop`,
+        body: {
+          ...order,
+          stopEndUnixTime: this.prepareStopEndUnixTimeValue(order)
+        }
+      })
+    );
   }
 
-  submitStopLimitOrder(order: StopLimitOrder): Observable<SubmitOrderResult> {
-    return this.submitOrder(() => ({
-      url: `${this.baseApiUrl}/stopLimit`,
-      body: {
-        ...order,
-        stopEndUnixTime: this.prepareStopEndUnixTimeValue(order)
-      }
-    }));
+  submitStopLimitOrder(order: StopLimitOrder, portfolio: string): Observable<SubmitOrderResult> {
+    return this.submitOrder(
+      portfolio,
+      () => ({
+        url: `${this.baseApiUrl}/stopLimit`,
+        body: {
+          ...order,
+          stopEndUnixTime: this.prepareStopEndUnixTimeValue(order)
+        }
+      })
+    );
+  }
+
+  submitLimitOrderEdit(orderEdit: LimitOrderEdit, portfolio: string): Observable<SubmitOrderResult> {
+    return this.submitOrderEdit(
+      portfolio,
+      () => ({
+        url: `${this.baseApiUrl}/limit/${orderEdit.id}`,
+        body: {
+          ...orderEdit
+        }
+      })
+    );
   }
 
   private prepareStopEndUnixTimeValue(order: StopMarketOrder): number | null {
@@ -95,56 +114,91 @@ export class OrderService {
     }
   }
 
-  private submitOrder(prepareOrderRequest: () => { url: string, body: any }): Observable<SubmitOrderResult> {
-    return this.store.select(getSelectedPortfolio)
-      .pipe(
-        filter((x): x is PortfolioKey => !!x),
-        take(1),
-        switchMap(portfolio => {
-          const orderRequest = prepareOrderRequest();
-
-          return this.httpService.post<SubmitOrderResponse>(
-            orderRequest.url,
-            {
-              ...orderRequest.body,
-              user: {
-                portfolio: portfolio.portfolio
-              }
-            },
-            {
-              headers: {
-                'X-ALOR-REQID': GuidGenerator.newGuid(),
-                'X-ALOR-ORIGINATOR': 'astras'
-              }
-            }
+  private submitOrder(portfolio: string, prepareOrderRequest: () => { url: string, body: any }): Observable<SubmitOrderResult> {
+    return this.submitRequest(
+      portfolio,
+      'post',
+      prepareOrderRequest,
+      error => {
+        if (!(error instanceof HttpErrorResponse)) {
+          this.errorHandlerService.handleError(error);
+        } else {
+          this.handleCommandError(error, 'Заявка не выставлена');
+        }
+      }
+    ).pipe(
+      tap(result => {
+        if (result.isSuccess) {
+          this.notificationService.success(
+            `Заявка выставлена`,
+            `Заявка успешно выставлена, её номер на бирже: \n ${result.orderNumber}`
           );
-        }),
-        catchError(err => {
-          if (!(err instanceof HttpErrorResponse)) {
-            this.errorHandlerService.handleError(err);
-            return of(null);
-          }
-
-          this.handleCommandError(err);
-          return of(null);
-        }),
-        map(response => ({
-          isSuccess: !!response?.orderNumber,
-          orderNumber: response?.orderNumber
-        } as SubmitOrderResult)),
-        tap(result => {
-          if (result.isSuccess) {
-            this.notificationService.success(
-              `Заявка выставлена`,
-              `Заявка успешно выставлена, её номер на бирже: \n ${result.orderNumber}`
-            );
-          }
-        })
-      );
+        }
+      })
+    );
   }
 
-  private handleCommandError(error: HttpErrorResponse) {
-    const errorTitle = 'Заявка не выставлена';
+  private submitOrderEdit(portfolio: string, prepareOrderRequest: () => { url: string, body: any }): Observable<SubmitOrderResult> {
+    return this.submitRequest(
+      portfolio,
+      'put',
+      prepareOrderRequest,
+      error => {
+        if (!(error instanceof HttpErrorResponse)) {
+          this.errorHandlerService.handleError(error);
+        } else {
+          this.handleCommandError(error, 'Заявка не изменена');
+        }
+      }
+    ).pipe(
+      tap(result => {
+        if (result.isSuccess) {
+          this.notificationService.success(
+            `Заявка изменена`,
+            `Заявка успешно изменена, её номер на бирже: \n ${result.orderNumber}`
+          );
+        }
+      })
+    );
+  }
+
+  private submitRequest(
+    portfolio: string,
+    method: 'post' | 'put',
+    prepareOrderRequest: () => { url: string, body: any },
+    onError: (error: Error | HttpErrorResponse) => void
+  ): Observable<SubmitOrderResult> {
+    const orderRequest = prepareOrderRequest();
+    const body = {
+      ...orderRequest.body,
+      user: {
+        portfolio: portfolio
+      }
+    };
+    const options = {
+      headers: {
+        'X-ALOR-REQID': GuidGenerator.newGuid(),
+        'X-ALOR-ORIGINATOR': 'astras'
+      }
+    };
+
+    const requestPipe = method === 'post'
+      ? this.httpService.post<SubmitOrderResponse>(orderRequest.url, body, options)
+      : this.httpService.put<SubmitOrderResponse>(orderRequest.url, body, options);
+
+    return requestPipe.pipe(
+      catchError(err => {
+        onError(err);
+        return of(null);
+      }),
+      map(response => ({
+        isSuccess: !!response?.orderNumber,
+        orderNumber: response?.orderNumber
+      } as SubmitOrderResult))
+    );
+  }
+
+  private handleCommandError(error: HttpErrorResponse, errorTitle: string) {
     const errorMessage = !!error.error.code && !!error.error.message
       ? `Ошибка ${error.error.code} <br/> ${error.error.message}`
       : error.message;

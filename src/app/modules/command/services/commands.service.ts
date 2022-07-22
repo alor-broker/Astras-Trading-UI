@@ -1,58 +1,37 @@
-import {
-  HttpClient,
-  HttpErrorResponse
-} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {
   BehaviorSubject,
-  of,
-  Subject, switchMap, take,
+  Observable,
+  Subject,
+  switchMap,
+  take,
+  tap,
   throwError
 } from 'rxjs';
-import {
-  catchError,
-  tap
-} from 'rxjs/operators';
-import { CommandResponse } from 'src/app/shared/models/commands/command-response.model';
 import { Side } from 'src/app/shared/models/enums/side.model';
-import { toUnixTimestampSeconds } from 'src/app/shared/utils/datetime';
-import { GuidGenerator } from 'src/app/shared/utils/guid';
-import { environment } from 'src/environments/environment';
 import { LimitCommand } from '../models/limit-command.model';
 import { LimitEdit } from '../models/limit-edit.model';
 import { MarketCommand } from '../models/market-command.model';
-import { MarketEdit } from '../models/market-edit.model';
 import { StopCommand } from '../models/stop-command.model';
-import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
-import { httpLinkRegexp } from "../../../shared/utils/regexps";
-import { Store } from "@ngrx/store";
-import { getSelectedPortfolio } from "../../../store/portfolios/portfolios.selectors";
+import { OrderService } from "../../../shared/services/order.service";
+import { SubmitOrderResult } from "../models/order.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommandsService {
-
-  private url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
-
   private stopCommand?: BehaviorSubject<StopCommand | null>;
   private limitCommand?: BehaviorSubject<LimitCommand | null>;
   private limitEdit?: BehaviorSubject<LimitEdit | null>;
   private marketCommand?: BehaviorSubject<MarketCommand | null>;
-  private marketEdit?: BehaviorSubject<MarketEdit | null>;
   private priceSelectedSubject$ = new Subject<number>();
   public priceSelected$ = this.priceSelectedSubject$.asObservable();
-  private stopCommandErrSubject$ = new Subject<boolean| null>();
-  public stopCommandErr$ = this.stopCommandErrSubject$.asObservable();
+  private commandErrorSubject$ = new Subject<boolean | null>();
+  public commandError$ = this.commandErrorSubject$.asObservable();
 
 
-  constructor(
-    private http: HttpClient,
-    private notification: NzNotificationService,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly store: Store
-  ) { }
+  constructor(private readonly orderService: OrderService) {
+  }
 
   setStopCommand(command: StopCommand | null) {
     if (!this.stopCommand) {
@@ -86,146 +65,130 @@ export class CommandsService {
     this.priceSelectedSubject$.next(price);
   }
 
-  submitStop(side: Side) {
-    const command = this.stopCommand?.getValue();
-    if (command) {
-      return this.placeOrder(command.price ? 'stopLimit' : 'stop', side, command);
+  submitStop(side: Side): Observable<SubmitOrderResult> {
+    if (!this.stopCommand) {
+      return this.getEmptyCommandError();
     }
-    else {
-      this.stopCommandErrSubject$.next(true);
-      return throwError(() => new Error('Empty command'));
-    }
+
+    return this.extendWithErrorCheck(
+      this.stopCommand.pipe(
+        take(1),
+        switchMap(stopCommand => {
+          if (!stopCommand) {
+            return this.getEmptyCommandError();
+          }
+
+          if (stopCommand.price != null) {
+            return this.orderService.submitStopLimitOrder(
+              {
+                ...stopCommand,
+                price: stopCommand.price,
+                side: side
+              },
+              stopCommand.user?.portfolio ?? ''
+            );
+          } else {
+            return this.orderService.submitStopMarketOrder(
+              {
+                ...stopCommand,
+                side: side
+              },
+              stopCommand.user?.portfolio ?? ''
+            );
+          }
+        })
+      )
+    );
   }
 
-  submitLimit(side: Side) {
-    const command = this.limitCommand?.getValue();
-    if (command) {
-      return this.placeOrder("limit", side, command);
+  submitLimit(side: Side): Observable<SubmitOrderResult> {
+    if (!this.limitCommand) {
+      return this.getEmptyCommandError();
     }
-    else {
-      throw new Error('Empty command');
-    }
+
+    return this.extendWithErrorCheck(
+      this.limitCommand.pipe(
+        take(1),
+        switchMap(limitCommand => {
+          if (!limitCommand) {
+            return this.getEmptyCommandError();
+          }
+
+          return this.orderService.submitLimitOrder(
+            {
+              ...limitCommand,
+              side: side
+            },
+            limitCommand.user?.portfolio ?? ''
+          );
+        }),
+        tap(result => {
+          if (!result.isSuccess) {
+            this.commandErrorSubject$.next(result.isSuccess);
+          }
+        })
+      )
+    );
   }
 
-  submitMarket(side: Side) {
-    const command = this.marketCommand?.getValue();
-    if (command) {
-      return this.placeOrder("market", side, command);
+  submitMarket(side: Side): Observable<SubmitOrderResult> {
+    if (!this.marketCommand) {
+      return this.getEmptyCommandError();
     }
-    else {
-      throw new Error('Empty command');
-    }
+
+    return this.extendWithErrorCheck(
+      this.marketCommand.pipe(
+        take(1),
+        switchMap(marketCommand => {
+          if (!marketCommand) {
+            return this.getEmptyCommandError();
+          }
+
+          return this.orderService.submitMarketOrder(
+            {
+              ...marketCommand,
+              side: side
+            },
+            marketCommand.user?.portfolio ?? ''
+          );
+        })
+      )
+    );
   }
 
-  submitLimitEdit() {
-    const command = this.limitEdit?.getValue();
-    if (command) {
-      return this.editOrder("limit", command);
+  submitLimitEdit(): Observable<SubmitOrderResult> {
+    if (!this.limitEdit) {
+      return this.getEmptyCommandError();
     }
-    else {
-      throw new Error('Empty command');
-    }
+
+    return this.extendWithErrorCheck(
+      this.limitEdit.pipe(
+        take(1),
+        switchMap(limitEdit => {
+          if (!limitEdit) {
+            return this.getEmptyCommandError();
+          }
+
+          return this.orderService.submitLimitOrderEdit(
+            { ...limitEdit },
+            limitEdit.user?.portfolio ?? ''
+          );
+        })
+      )
+    );
   }
 
-  submitMarketEdit() {
-    const command = this.marketEdit?.getValue();
-    if (command) {
-      return this.editOrder("market", command);
-    }
-    else {
-      throw new Error('Empty command');
-    }
+  private getEmptyCommandError(): Observable<never> {
+    return throwError(() => new Error('Empty command'));
   }
 
-  private editOrder(type: string, command : LimitEdit | MarketEdit) {
-    return this.http.put<CommandResponse>(`${this.url}/${type.toString()}/${command.id}`, {
-        ...command
-      }, {
-      headers: {
-        'X-ALOR-REQID': GuidGenerator.newGuid(),
-        'X-ALOR-ORIGINATOR': 'astras'
-      }
-    }).pipe(
-      tap(resp => {
-        if (resp.orderNumber) {
-          this.notification.success(`Заявка изменена`, `Заявка успешно измнена, её номер на бирже: \n ${resp.orderNumber}`);
+  private extendWithErrorCheck(source: Observable<SubmitOrderResult>): Observable<SubmitOrderResult> {
+    return source.pipe(
+      tap(result => {
+        if (!result.isSuccess) {
+          this.commandErrorSubject$.next(result.isSuccess);
         }
       })
     );
   }
-
-  placeOrder(type: string, side: Side, command : LimitCommand | MarketCommand | StopCommand) {
-    let isStop = false;
-    if ((type == 'stop' || type == 'stopLimit') && isStopCommand(command)) {
-      isStop = true;
-
-      if(command.stopEndUnixTime != null) {
-        if (typeof command.stopEndUnixTime === 'number') {
-          command.stopEndUnixTime = Number((command.stopEndUnixTime / 1000).toFixed(0));
-        }
-        else {
-          command.stopEndUnixTime = toUnixTimestampSeconds(command.stopEndUnixTime);
-        }
-      } else {
-        command.stopEndUnixTime = 0;
-      }
-    }
-
-    return this.store.select(getSelectedPortfolio)
-      .pipe(
-        take(1),
-        switchMap(user => this.http.post<CommandResponse>(`${this.url}/${type.toString()}?stop=${isStop}`, {
-            ...command,
-            user,
-            type,
-            side
-          }, {
-            headers: {
-              'X-ALOR-REQID': GuidGenerator.newGuid(),
-              'X-ALOR-ORIGINATOR': 'astras'
-            }
-          })
-        ),
-        tap(resp => {
-          if (resp.orderNumber) {
-            this.notification.success(`Заявка выставлена`, `Заявка успешно выставлена, её номер на бирже: \n ${resp.orderNumber}`);
-          }
-        }),
-        catchError(err => {
-          if (!(err instanceof HttpErrorResponse)) {
-            this.errorHandlerService.handleError(err);
-            return of(null);
-          }
-
-          this.handleCommandError(err);
-          return of(null);
-        }),
-      );
-  }
-
-  private handleCommandError(error: HttpErrorResponse){
-    const errorTitle = 'Заявка не выставлена';
-    const errorMessage = !!error.error.code && !!error.error.message
-      ?`Ошибка ${error.error.code} <br/> ${error.error.message}`
-      : error.message;
-    this.notification.error(errorTitle, this.prepareErrorMessage(errorMessage));
-  }
-
-  private prepareErrorMessage(message: string): string {
-    const links = new RegExp(httpLinkRegexp, 'im').exec(message);
-    if(!links?.length) {
-      return message;
-    }
-
-    return  links!.reduce((result, link) => result.replace(link, `<a href="${link}" target="_blank">${link}</a>`), message);
-  }
-}
-
-function isStopCommand(
-  command: StopCommand | LimitCommand | MarketCommand
-): command is StopCommand {
-  return (
-    command &&
-    'stopEndUnixTime' in command
-  );
 }

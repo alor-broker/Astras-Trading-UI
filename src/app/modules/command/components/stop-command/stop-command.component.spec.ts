@@ -14,7 +14,7 @@ describe('StopCommandComponent', () => {
   const spyCommands = jasmine.createSpyObj(
     'CommandsService',
     ['setStopCommand'],
-    {stopCommandErr$: of(null)}
+    {commandError$: of(null)}
     );
 
   const timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
