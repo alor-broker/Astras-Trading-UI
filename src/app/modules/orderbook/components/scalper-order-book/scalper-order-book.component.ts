@@ -57,7 +57,7 @@ import { CommandType } from "../../../../shared/models/enums/command-type.model"
 import { StopCommand } from "../../../command/models/stop-command.model";
 import { CommandParams } from "../../../../shared/models/commands/command-params.model";
 import { isEqualScalperOrderBookSettings } from "../../../../shared/utils/settings-helper";
-import { CurrentPortfolioOrderService } from "../../../../shared/services/current-portfolio-order.service";
+import { CurrentPortfolioOrderService } from "../../../../shared/services/orders/current-portfolio-order.service";
 
 @Component({
   selector: 'ats-scalper-order-book[guid][shouldShowSettings]',

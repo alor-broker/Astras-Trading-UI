@@ -3,13 +3,18 @@ import {
   HttpClient,
   HttpErrorResponse
 } from "@angular/common/http";
-import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import {
   Observable,
   of,
   tap
 } from "rxjs";
+import {
+  catchError,
+  map
+} from "rxjs/operators";
+import { environment } from "../../../../environments/environment";
+import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import {
   LimitOrder,
   LimitOrderEdit,
@@ -18,15 +23,10 @@ import {
   StopMarketOrder,
   SubmitOrderResponse,
   SubmitOrderResult
-} from "../../modules/command/models/order.model";
-import { GuidGenerator } from "../utils/guid";
-import { httpLinkRegexp } from "../utils/regexps";
-import {
-  catchError,
-  map
-} from "rxjs/operators";
-import { environment } from "../../../environments/environment";
-import { toUnixTimestampSeconds } from "../utils/datetime";
+} from "../../../modules/command/models/order.model";
+import { toUnixTimestampSeconds } from "../../utils/datetime";
+import { GuidGenerator } from "../../utils/guid";
+import { httpLinkRegexp } from "../../utils/regexps";
 
 @Injectable({
   providedIn: 'root'

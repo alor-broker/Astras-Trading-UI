@@ -11,10 +11,9 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { OrderbookHotKeysService } from "../../../../shared/services/orderbook-hot-keys.service";
 import { NzNotificationService } from "ng-zorro-antd/notification";
-import { CommandsService } from "../../../command/services/commands.service";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { ModalService } from "../../../../shared/services/modal.service";
-import { CurrentPortfolioOrderService } from "../../../../shared/services/current-portfolio-order.service";
+import { CurrentPortfolioOrderService } from "../../../../shared/services/orders/current-portfolio-order.service";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;

@@ -44,7 +44,7 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
 import { Position } from "../../../shared/models/positions/position.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { PositionsService } from "../../../shared/services/positions.service";
-import { CurrentPortfolioOrderService } from "../../../shared/services/current-portfolio-order.service";
+import { CurrentPortfolioOrderService } from "../../../shared/services/orders/current-portfolio-order.service";
 
 @Injectable()
 export class OrderbookService extends BaseWebsocketService {

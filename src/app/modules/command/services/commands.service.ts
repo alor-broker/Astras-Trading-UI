@@ -13,8 +13,8 @@ import { LimitCommand } from '../models/limit-command.model';
 import { LimitEdit } from '../models/limit-edit.model';
 import { MarketCommand } from '../models/market-command.model';
 import { StopCommand } from '../models/stop-command.model';
-import { OrderService } from "../../../shared/services/order.service";
 import { SubmitOrderResult } from "../models/order.model";
+import { OrderService } from "../../../shared/services/orders/order.service";
 
 @Injectable({
   providedIn: 'root'

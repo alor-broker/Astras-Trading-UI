@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 
 import { CurrentPortfolioOrderService } from './current-portfolio-order.service';
-import { sharedModuleImportForTests } from "../utils/testing";
 import { Store } from "@ngrx/store";
 import { OrderService } from "./order.service";
+import { sharedModuleImportForTests } from "../../utils/testing";
 
 describe('CurrentPortfolioOrderService', () => {
   let service: CurrentPortfolioOrderService;

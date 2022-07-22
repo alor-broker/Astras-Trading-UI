@@ -1,12 +1,12 @@
-import { TestBed } from '@angular/core/testing';
-
-import { OrderService } from './order.service';
+import { OrderService } from "./order.service";
+import { environment } from "../../../../environments/environment";
 import {
   HttpClient,
   HttpErrorResponse
 } from "@angular/common/http";
+import { TestBed } from "@angular/core/testing";
 import { NzNotificationService } from "ng-zorro-antd/notification";
-import { ErrorHandlerService } from "./handle-error/error-handler.service";
+import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import {
   LimitOrder,
   LimitOrderEdit,
@@ -15,15 +15,15 @@ import {
   StopMarketOrder,
   SubmitOrderResponse,
   SubmitOrderResult
-} from "../../modules/command/models/order.model";
-import { environment } from "../../../environments/environment";
+} from "../../../modules/command/models/order.model";
 import {
   of,
   throwError
 } from "rxjs";
-import { Side } from "../models/enums/side.model";
-import { StopOrderCondition } from "../models/enums/stoporder-conditions";
-import { toUnixTimestampSeconds } from "../utils/datetime";
+import { Side } from "../../models/enums/side.model";
+import { StopOrderCondition } from "../../models/enums/stoporder-conditions";
+import { toUnixTimestampSeconds } from "../../utils/datetime";
+
 
 describe('OrderService', () => {
   let service: OrderService;
