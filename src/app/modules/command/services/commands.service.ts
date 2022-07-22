@@ -121,11 +121,6 @@ export class CommandsService {
             },
             limitCommand.user?.portfolio ?? ''
           );
-        }),
-        tap(result => {
-          if (!result.isSuccess) {
-            this.commandErrorSubject$.next(result.isSuccess);
-          }
         })
       )
     );
@@ -186,7 +181,7 @@ export class CommandsService {
     return source.pipe(
       tap(result => {
         if (!result.isSuccess) {
-          this.commandErrorSubject$.next(result.isSuccess);
+          this.commandErrorSubject$.next(true);
         }
       })
     );
