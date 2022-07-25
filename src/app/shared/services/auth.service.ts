@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable, of, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
@@ -44,7 +44,8 @@ export class AuthService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly localStorage: LocalStorageService
+    private readonly localStorage: LocalStorageService,
+    @Inject('Window') private readonly window: Window
   ) {
     const user = localStorage.getItem<User>(this.userStorage);
     if(user) {
@@ -66,7 +67,7 @@ export class AuthService {
   }
 
   public login(credentials: Credentials) {
-    const request : Login = {
+    const request: Login = {
       credentials: credentials,
       requiredServices: this.requiredServices,
     };
@@ -84,7 +85,7 @@ export class AuthService {
   }
 
   public logout() {
-    localStorage.removeItem('user');
+    this.localStorage.removeItem('user');
     this.currentUser.next({
       login: '',
       jwt: '',
@@ -159,7 +160,7 @@ export class AuthService {
   }
 
   private redirectToSso() {
-    window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
+    this.window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
   }
 
   private extractPortfolios(jwt: string) : string[] {

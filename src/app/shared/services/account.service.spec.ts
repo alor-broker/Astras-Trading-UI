@@ -1,15 +1,28 @@
-/* tslint:disable:no-unused-variable */
-
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { AuthService } from './auth.service';
 import { AccountService } from './account.service';
+import { of } from "rxjs";
+import { environment } from "../../../environments/environment";
+import { MarketType } from "../models/portfolio-key.model";
 
 describe('AccountService', () => {
   let service: AccountService;
   const spyAuth = jasmine.createSpyObj('AuthService', ['currentUser$']);
-  const spyPositions = jasmine.createSpyObj('PositionsService', ['getAllByLogin']);
+  const spyPositions = {
+    getAllByLogin: jasmine.createSpy('getAllByLogin').and.returnValue(of([
+      {
+        portfolio: 'DtestPortfolio1',
+        exchange: 'testExchange1'
+      },
+      {
+        portfolio: 'GtestPortfolio2',
+        exchange: 'testExchange2'
+      }
+    ]))
+  };
+  let httpTestingController: HttpTestingController;
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
@@ -25,9 +38,70 @@ describe('AccountService', () => {
     });
 
     service = TestBed.inject(AccountService);
+    httpTestingController = TestBed.inject(HttpTestingController);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+
+  it('should get full name', fakeAsync(() => {
+    spyAuth.currentUser$ = of({ login: 'testLogin' });
+
+    const fullNameRes = {
+      firstName: 'firstNameTest',
+      lastName: 'lastNameTest',
+      secondName: 'secondNameTest'
+    };
+
+    service.getFullName()
+      .subscribe(res => expect(res).toEqual(fullNameRes));
+    tick();
+
+    const req = httpTestingController.expectOne(`${environment.clientDataUrl}/client/v1.0/users/testLogin/full-name`);
+
+    expect(req.request.method).toEqual('GET');
+
+    req.flush(fullNameRes);
+  }));
+
+  it('should get active portfolios', fakeAsync(() => {
+    const portfoliosMetaRes = [
+      {
+        portfolio: 'DtestPortfolio1',
+        tks: 'testTks1',
+        market: 'test Market1',
+        agreement: 'testAgreement1',
+      },
+      {
+        portfolio: 'GtestPortfolio2',
+        tks: 'testTks2',
+        market: 'test Market2',
+        agreement: 'testAgreement2',
+      },
+      {
+        portfolio: 'DtestPortfolio3',
+        tks: 'testTks3',
+        market: 'test Market3',
+        agreement: 'testAgreement3',
+      },
+    ];
+    spyAuth.currentUser$ = of({ clientId: 'testClientId' });
+
+    const expectedPortfolios = new Map([
+      ['testAgreement1', [{...portfoliosMetaRes[0], market: 'test', exchange: 'testExchange1', marketType: MarketType.Stock}]],
+      ['testAgreement2', [{...portfoliosMetaRes[1], market: 'test', exchange: 'testExchange2', marketType: MarketType.ForeignExchange}]],
+    ]);
+
+    service.getActivePortfolios()
+      .subscribe(res => expect(res).toEqual(expectedPortfolios));
+
+    tick();
+
+    const req = httpTestingController.expectOne(`${environment.clientDataUrl}/client/v1.0/users/testClientId/all-portfolios`);
+
+    expect(req.request.method).toEqual('GET');
+
+    req.flush(portfoliosMetaRes);
+  }));
 });

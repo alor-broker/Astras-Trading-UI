@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from "rxjs";
 
 @Injectable({
@@ -9,7 +9,9 @@ export class ActivityTrackerService implements EventListenerObject {
   private readonly lastActivityTimeSub = new BehaviorSubject<number | null>(new Date().getTime());
   public readonly lastActivityUnixTime$ = this.lastActivityTimeSub.asObservable();
 
-  constructor() {
+  constructor(
+    @Inject('Window') private readonly window: Window
+  ) {
   }
 
   handleEvent(): void {
@@ -27,13 +29,13 @@ export class ActivityTrackerService implements EventListenerObject {
 
   private setupEventListeners() {
     this.eventsToTrack.forEach(event => {
-      window.addEventListener(event, this);
+      this.window.addEventListener(event, this);
     });
   }
 
   private clearEventListeners() {
     this.eventsToTrack.forEach(event => {
-      window.removeEventListener(event, this);
+      this.window.removeEventListener(event, this);
     });
 
     this.lastActivityTimeSub.next(null);
