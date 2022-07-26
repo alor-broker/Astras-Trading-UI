@@ -174,6 +174,7 @@ export class CommandsService {
   }
 
   private getEmptyCommandError(): Observable<never> {
+    this.commandErrorSubject$.next(true);
     return throwError(() => new Error('Empty command'));
   }
 

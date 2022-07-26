@@ -74,7 +74,6 @@ export class StopCommandComponent implements OnInit, OnDestroy {
             c.markAsDirty();
             c.updateValueAndValidity({onlySelf: false});
           });
-
         }
       });
   }

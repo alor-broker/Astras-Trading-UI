@@ -41,6 +41,9 @@ export class TimezoneConverter {
     let convertedDate = dateWithTimezone;
     if (this.displayTimezone === TimezoneDisplayOption.MskTime) {
       const localTime = new Date();
+      localTime.setMilliseconds(dateWithTimezone.getMilliseconds());
+      localTime.setSeconds(dateWithTimezone.getSeconds());
+
       const mskTime = this.toMskTime(localTime);
       const correction = localTime.getTime() - mskTime.getTime();
 

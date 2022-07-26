@@ -241,14 +241,12 @@ describe('MarketCommandComponent', () => {
   );
 
   it('should NOT update evaluation if not activated', () => {
-
-      const commandContext = getDefaultCommandContext();
-      component.commandContext = commandContext;
+      component.commandContext = getDefaultCommandContext();
       component.activated = false;
       fixture.detectChanges();
 
       let isUpdated = false;
-      component.evaluation$.subscribe(x => {
+      component.evaluation$.subscribe(() => {
         isUpdated = true;
       });
 
