@@ -5,6 +5,7 @@ import { NewsService } from "../../services/news.service";
 import { of } from "rxjs";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { EventEmitter } from "@angular/core";
+import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('NewsComponent', () => {
   const testNewsItem = {
@@ -18,7 +19,13 @@ describe('NewsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [NewsComponent],
+      declarations: [
+        NewsComponent,
+        mockComponent({
+          selector: 'ats-infinite-scroll-table',
+          inputs: ['data', 'isLoading', 'columns', 'tableContainerHeight', 'tableContainerWidth']
+        })
+      ],
       providers: [
         {
           provide: NewsService,

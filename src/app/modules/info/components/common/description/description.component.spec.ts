@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InfoService } from '../../../services/info.service';
 
 import { DescriptionComponent } from './description.component';
+import { mockComponent } from "../../../../../shared/utils/testing";
 
 describe('DescriptionComponent', () => {
   let component: DescriptionComponent;
@@ -13,7 +14,13 @@ describe('DescriptionComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DescriptionComponent],
+      declarations: [
+        DescriptionComponent,
+        mockComponent({
+          selector: 'ats-loading-indicator',
+          inputs: ['isLoading']
+        })
+      ],
       providers: [
         { provide: InfoService, useValue: infoSpy }
       ]

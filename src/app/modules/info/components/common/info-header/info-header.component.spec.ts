@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ExchangeInfo } from '../../../models/exchange-info.model';
 
 import { InfoHeaderComponent } from './info-header.component';
+import { ngZorroMockComponents } from "../../../../../shared/utils/testing";
 
 describe('InfoHeaderComponent', () => {
   let component: InfoHeaderComponent;
@@ -20,7 +21,10 @@ describe('InfoHeaderComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InfoHeaderComponent ]
+      declarations: [
+        InfoHeaderComponent,
+        ...ngZorroMockComponents
+      ]
     })
     .compileComponents();
   });

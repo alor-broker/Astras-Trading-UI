@@ -7,8 +7,7 @@ import {
   combineLatest,
   distinctUntilChanged,
   filter,
-  first,
-  switchMap
+  switchMap, take
 } from "rxjs";
 import { Store } from "@ngrx/store";
 import { getSelectedInstrument } from "../instruments/instruments.selectors";
@@ -45,7 +44,8 @@ export class WidgetSettingsBridgeEffects {
     const linkedWidgetSettings$ = this.store.select(getInstrumentLinkedSettings);
 
     return this.store.select(selectWidgetSettingsState).pipe(
-      first(x => x.status === EntityStatus.Success),
+      filter(x => x.status === EntityStatus.Success),
+      take(1),
       switchMap(() => combineLatest([newInstrumentSelected$, linkedWidgetSettings$])),
       map(([instrumentKey, settings]) => {
         const settingsToUpdate = settings.filter(s => !InstrumentEqualityComparer.equals(instrumentKey, s as InstrumentKey));
@@ -72,7 +72,8 @@ export class WidgetSettingsBridgeEffects {
     const linkedWidgetSettings$ = this.store.select(getPortfolioLinkedSettings);
 
     return this.store.select(selectWidgetSettingsState).pipe(
-      first(x => x.status === EntityStatus.Success),
+      filter(x => x.status === EntityStatus.Success),
+      take(1),
       switchMap(() => combineLatest([newPortfolioSelected$, linkedWidgetSettings$])),
       map(([portfolioKey, settings]) => {
         const settingsToUpdate = settings.filter(s => !PortfolioKeyEqualityComparer.equals(portfolioKey, s as PortfolioKey));

@@ -3,6 +3,7 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { CommandsService } from '../../services/commands.service';
 
 import { CommandFooterComponent } from './command-footer.component';
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('CommandFooterComponent', () => {
   let component: CommandFooterComponent;
@@ -13,7 +14,10 @@ describe('CommandFooterComponent', () => {
     const commandSpy = jasmine.createSpyObj('CommandsService', ['submitMarket', 'submitLimit']);
     const modalSpy = jasmine.createSpyObj('ModalService', ['closeCommandModal']);
     await TestBed.configureTestingModule({
-      declarations: [ CommandFooterComponent ],
+      declarations: [
+        CommandFooterComponent,
+        ...ngZorroMockComponents
+      ],
       providers: [
         { provide: CommandsService, useValue: commandSpy },
         { provide: ModalService, useValue: modalSpy },

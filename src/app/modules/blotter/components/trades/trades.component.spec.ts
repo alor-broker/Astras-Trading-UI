@@ -6,12 +6,12 @@ import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { TradesComponent } from './trades.component';
-import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { of } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('TradesComponent', () => {
   let component: TradesComponent;
@@ -31,9 +31,6 @@ describe('TradesComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        ...sharedModuleImportForTests
-      ],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -42,7 +39,10 @@ describe('TradesComponent', () => {
         { provide: BlotterService, useClass: MockServiceBlotter },
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy }
       ],
-      declarations: [TradesComponent]
+      declarations: [
+        TradesComponent,
+        ...ngZorroMockComponents
+      ]
     }).compileComponents();
   });
 

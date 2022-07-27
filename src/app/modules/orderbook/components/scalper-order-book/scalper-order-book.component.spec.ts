@@ -7,16 +7,14 @@ import { ScalperOrderBookComponent } from './scalper-order-book.component';
 import { of } from "rxjs";
 import { OrderbookService } from "../../services/orderbook.service";
 import { ScalperOrderBook } from "../../models/scalper-order-book.model";
-import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { OrderbookHotKeysService } from "../../../../shared/services/orderbook-hot-keys.service";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { CommandsService } from "../../../command/services/commands.service";
-import { Store, StoreModule } from "@ngrx/store";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { ModalService } from "../../../../shared/services/modal.service";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -24,7 +22,10 @@ describe('ScalperOrderBookComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ScalperOrderBookComponent],
+      declarations: [
+        ScalperOrderBookComponent,
+        ...ngZorroMockComponents
+      ],
       providers: [
         {
           provide: WidgetSettingsService,
