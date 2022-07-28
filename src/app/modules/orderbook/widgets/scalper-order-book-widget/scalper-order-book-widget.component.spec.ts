@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ScalperOrderBookWidgetComponent } from './scalper-order-book-widget.component';
+import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('ScalperOrderBookWidgetComponent', () => {
   let component: ScalperOrderBookWidgetComponent;
@@ -8,7 +9,13 @@ describe('ScalperOrderBookWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ScalperOrderBookWidgetComponent ]
+      declarations: [
+        ScalperOrderBookWidgetComponent,
+        mockComponent({
+          selector: 'ats-scalper-order-book',
+          inputs: ['guid', 'shouldShowSettings']
+        })
+      ]
     })
     .compileComponents();
   });

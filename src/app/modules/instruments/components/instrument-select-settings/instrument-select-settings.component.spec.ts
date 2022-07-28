@@ -11,6 +11,10 @@ import {
 } from 'rxjs';
 import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { mockComponent, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { NzSelectModule } from "ng-zorro-antd/select";
+import { ReactiveFormsModule } from "@angular/forms";
 
 describe('InstrumentSelectSettingsComponent', () => {
   let component: InstrumentSelectSettingsComponent;
@@ -26,7 +30,18 @@ describe('InstrumentSelectSettingsComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [InstrumentSelectSettingsComponent],
+      declarations: [
+        InstrumentSelectSettingsComponent,
+        ...ngZorroMockComponents,
+        mockComponent({
+          selector: 'ats-watchlist-collection-edit'
+        })
+      ],
+      imports: [
+        NoopAnimationsModule,
+        NzSelectModule,
+        ReactiveFormsModule
+      ],
       providers: [
         {
           provide: WidgetSettingsService,

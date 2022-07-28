@@ -4,7 +4,7 @@ import {
 } from '@angular/core/testing';
 import { InstrumentsService } from '../../services/instruments.service';
 import { InstrumentSelectComponent } from './instrument-select.component';
-import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import { mockComponent, sharedModuleImportForTests } from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
   BehaviorSubject,
@@ -25,7 +25,13 @@ describe('InstrumentSelectComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [...sharedModuleImportForTests],
-      declarations: [InstrumentSelectComponent],
+      declarations: [
+        InstrumentSelectComponent,
+        mockComponent({
+          selector: 'ats-watchlist-table',
+          inputs: ['guid']
+        })
+      ],
       providers: [
         {
           provide: WidgetSettingsService,

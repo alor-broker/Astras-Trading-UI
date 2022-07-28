@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { InfoService } from '../../../services/info.service';
 
 import { DividendsComponent } from './dividends.component';
+import { mockComponent } from "../../../../../shared/utils/testing";
 
 describe('DividendsComponent', () => {
   let component: DividendsComponent;
@@ -14,7 +15,13 @@ describe('DividendsComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DividendsComponent],
+      declarations: [
+        DividendsComponent,
+        mockComponent({
+          selector: 'ats-loading-indicator',
+          inputs: ['isLoading']
+        })
+      ],
       providers: [
         { provide: InfoService, useValue: infoSpy }
       ]

@@ -7,6 +7,7 @@ import { ParentWidgetComponent } from './parent-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { EventEmitter } from "@angular/core";
+import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('ParentWidgetComponent', () => {
   let component: ParentWidgetComponent;
@@ -15,7 +16,13 @@ describe('ParentWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ParentWidgetComponent],
+      declarations: [
+        ParentWidgetComponent,
+        mockComponent({
+          selector: 'ats-widget-header',
+          inputs: ['guid', 'hasSettings', 'shouldShowSettings', 'hasHelp']
+        })
+      ],
       providers: [
         {
           provide: WidgetSettingsService,

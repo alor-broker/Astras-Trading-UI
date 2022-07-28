@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 
 import { DashboardComponent } from './dashboard.component';
+import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -13,7 +14,13 @@ describe('DashboardComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DashboardComponent],
+      declarations: [
+        DashboardComponent,
+        mockComponent({
+          selector: 'gridster',
+          inputs: ['options']
+        })
+      ],
       providers: [
         { provide: DashboardService, useValue: spy }
       ]

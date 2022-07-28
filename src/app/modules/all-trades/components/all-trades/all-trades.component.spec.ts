@@ -5,6 +5,7 @@ import { AllTradesService } from "../../services/all-trades.service";
 import { of } from "rxjs";
 import { EventEmitter } from "@angular/core";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('AllTradesComponent', () => {
   let component: AllTradesComponent;
@@ -14,7 +15,13 @@ describe('AllTradesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AllTradesComponent ],
+      declarations: [
+        AllTradesComponent,
+        mockComponent({
+          selector: 'ats-infinite-scroll-table',
+          inputs: ['tableContainerHeight', 'tableContainerWidth', 'data', 'isLoading', 'columns']
+        })
+      ],
       providers: [
         {
           provide: WidgetSettingsService,

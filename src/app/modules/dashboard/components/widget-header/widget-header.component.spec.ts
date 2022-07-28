@@ -8,6 +8,7 @@ import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { of } from 'rxjs';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('WidgetHeaderComponent', () => {
   let component: WidgetHeaderComponent;
@@ -18,7 +19,10 @@ describe('WidgetHeaderComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [WidgetHeaderComponent],
+      declarations: [
+        WidgetHeaderComponent,
+        ...ngZorroMockComponents
+      ],
       providers: [
         {
           provide: WidgetSettingsService,

@@ -5,7 +5,7 @@ import {
 
 import { AllTradesWidgetComponent } from './all-trades-widget.component';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('AllTradesWidgetComponent', () => {
   let component: AllTradesWidgetComponent;
@@ -13,8 +13,14 @@ describe('AllTradesWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ...sharedModuleImportForTests],
-      declarations: [AllTradesWidgetComponent],
+      imports: [HttpClientTestingModule],
+      declarations: [
+        AllTradesWidgetComponent,
+        mockComponent({
+          selector: 'ats-all-trades',
+          inputs: ['guid', 'resize']
+        })
+      ],
     })
       .compileComponents();
   });

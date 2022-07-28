@@ -6,6 +6,7 @@ import { CommandsService } from '../../services/commands.service';
 
 import { CommandContextModel } from "../../models/command-context.model";
 import {
+  mockComponent,
   sharedModuleImportForTests,
   TestData
 } from "../../../../shared/utils/testing";
@@ -74,7 +75,13 @@ describe('LimitEditComponent', () => {
         ...sharedModuleImportForTests,
         BrowserAnimationsModule
       ],
-      declarations: [LimitEditComponent],
+      declarations: [
+        LimitEditComponent,
+        mockComponent({
+          selector: 'ats-evaluation',
+          inputs: ['evaluationProperties']
+        })
+      ],
       providers: [
         { provide: CommandsService, useValue: spyCommands }
       ]

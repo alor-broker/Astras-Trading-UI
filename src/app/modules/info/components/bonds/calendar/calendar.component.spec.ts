@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InfoService } from '../../../services/info.service';
 
 import { CalendarComponent } from './calendar.component';
+import { mockComponent } from "../../../../../shared/utils/testing";
 
 describe('CalendarComponent', () => {
   let component: CalendarComponent;
@@ -12,7 +13,13 @@ describe('CalendarComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CalendarComponent ],
+      declarations: [
+        CalendarComponent,
+        mockComponent({
+          selector: 'ats-loading-indicator',
+          inputs: ['isLoading']
+        })
+      ],
       providers: [
         { provide: InfoService, useValue: infoSpy}
       ]

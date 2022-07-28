@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Finance } from '../../../models/finance.model';
 
 import { FinanceBarChartComponent } from './finance-bar-chart.component';
 

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ColorPickerInputComponent } from './color-picker-input.component';
+import { ngZorroMockComponents } from "../../utils/testing";
 
 describe('ColorPickerInputComponent', () => {
   let component: ColorPickerInputComponent;
@@ -8,7 +9,10 @@ describe('ColorPickerInputComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ColorPickerInputComponent ]
+      declarations: [
+        ColorPickerInputComponent,
+        ...ngZorroMockComponents
+      ]
     })
     .compileComponents();
   });

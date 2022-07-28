@@ -7,6 +7,7 @@ import { CommandsService } from '../../services/commands.service';
 import { CommandContextModel } from "../../models/command-context.model";
 import { CommandParams } from "../../../../shared/models/commands/command-params.model";
 import {
+  mockComponent,
   sharedModuleImportForTests,
   TestData
 } from "../../../../shared/utils/testing";
@@ -78,7 +79,13 @@ describe('MarketCommandComponent', () => {
         ...sharedModuleImportForTests,
         BrowserAnimationsModule
       ],
-      declarations: [MarketCommandComponent],
+      declarations: [
+        MarketCommandComponent,
+        mockComponent({
+          selector: 'ats-evaluation',
+          inputs: ['evaluationProperties']
+        })
+      ],
       providers: [
         { provide: CommandsService, useValue: spyCommands },
         {

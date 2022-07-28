@@ -6,6 +6,9 @@ import {
 import { OrderbookSettingsComponent } from './orderbook-settings.component';
 import { of } from 'rxjs';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { ReactiveFormsModule } from "@angular/forms";
+import { NzSwitchModule } from "ng-zorro-antd/switch";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('OrderbookSettingsComponent', () => {
   let component: OrderbookSettingsComponent;
@@ -14,7 +17,14 @@ describe('OrderbookSettingsComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach((async () => {
     await TestBed.configureTestingModule({
-      declarations: [OrderbookSettingsComponent],
+      declarations: [
+        OrderbookSettingsComponent,
+        ...ngZorroMockComponents
+      ],
+      imports: [
+        ReactiveFormsModule,
+        NzSwitchModule
+      ],
       providers: [
         {
           provide: WidgetSettingsService,

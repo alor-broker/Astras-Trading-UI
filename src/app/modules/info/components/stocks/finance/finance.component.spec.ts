@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { InfoService } from '../../../services/info.service';
 
 import { FinanceComponent } from './finance.component';
+import { mockComponent } from "../../../../../shared/utils/testing";
 
 describe('FinanceComponent', () => {
   let component: FinanceComponent;
@@ -14,7 +15,13 @@ describe('FinanceComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FinanceComponent],
+      declarations: [
+        FinanceComponent,
+        mockComponent({
+          selector: 'ats-loading-indicator',
+          inputs: ['isLoading']
+        })
+      ],
       providers: [
         { provide: InfoService, useValue: infoSpy }
       ]

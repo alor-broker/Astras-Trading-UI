@@ -7,7 +7,7 @@ import {
   Subject
 } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { sharedModuleImportForTests } from 'src/app/shared/utils/testing';
+import { mockComponent, sharedModuleImportForTests } from 'src/app/shared/utils/testing';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookService } from '../../services/orderbook.service';
 
@@ -35,7 +35,13 @@ describe('OrderBookComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [OrderBookComponent],
+      declarations: [
+        OrderBookComponent,
+        mockComponent({
+          selector: 'ats-orderbook-chart',
+          inputs: ['guid', 'chartData']
+        })
+      ],
       providers: [
         {
           provide: WidgetSettingsService,
