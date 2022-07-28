@@ -7,7 +7,6 @@ import {
   take
 } from "rxjs";
 import { defaultInstrument } from "./instruments.reducer";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { selectNewInstrument } from "./instruments.actions";
 import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
 import { InstrumentsService } from "../../modules/instruments/services/instruments.service";
