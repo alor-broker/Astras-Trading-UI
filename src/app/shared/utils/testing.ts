@@ -4,8 +4,6 @@ import { Component, Directive, EventEmitter, ModuleWithProviders, Type } from '@
 import { SharedModule } from '../shared.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-import { NzSelectComponent } from "ng-zorro-antd/select";
-import { NzSwitchComponent } from "ng-zorro-antd/switch";
 
 /**
  * Create async observable that emits-once and completes  after a JS engine turn
