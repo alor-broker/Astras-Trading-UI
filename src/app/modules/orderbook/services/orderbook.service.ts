@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {
   combineLatest,
   filter,
-  forkJoin,
   Observable,
   of,
   take
@@ -43,11 +42,9 @@ import { MathHelper } from "../../../shared/utils/math-helper";
 import { Side } from "../../../shared/models/enums/side.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Position } from "../../../shared/models/positions/position.model";
-import { User } from "../../../shared/models/user/user.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { PositionsService } from "../../../shared/services/positions.service";
-import { AuthService } from "../../../shared/services/auth.service";
-import { CommandsService } from "../../command/services/commands.service";
+import { CurrentPortfolioOrderService } from "../../../shared/services/orders/current-portfolio-order.service";
 
 @Injectable()
 export class OrderbookService extends BaseWebsocketService {
@@ -58,8 +55,7 @@ export class OrderbookService extends BaseWebsocketService {
     private readonly store: Store,
     private readonly canceller: OrderCancellerService,
     private readonly positionsService: PositionsService,
-    private readonly authService: AuthService,
-    private readonly commandsService: CommandsService,
+    private readonly orderService: CurrentPortfolioOrderService,
   ) {
     super(ws);
   }
@@ -118,7 +114,7 @@ export class OrderbookService extends BaseWebsocketService {
     const obData$ = this.getOrderBookReq(settings.guid, instrument.symbol, instrument.exchange, instrument.instrumentGroup, settings.depth);
 
     return combineLatest([obData$, this.getOrders(settings, settings.guid)]).pipe(
-        map(([ob, orders]) => this.toScalperOrderBook(settings, instrument, ob, orders))
+      map(([ob, orders]) => this.toScalperOrderBook(settings, instrument, ob, orders))
     );
   }
 
@@ -134,33 +130,23 @@ export class OrderbookService extends BaseWebsocketService {
             return;
           }
 
-          this.commandsService.placeOrder('market', pos.qtyTFuture > 0 ? Side.Sell : Side.Buy, {
-            side: pos.qtyTFuture > 0 ? 'sell' : 'buy',
+          this.orderService.submitMarketOrder({
+            side: pos.qtyTFuture > 0 ? Side.Sell : Side.Buy,
             quantity: Math.abs(isReversePosition ? pos.qtyTFuture * 2 : pos.qtyTFuture),
             instrument: { symbol: pos.symbol, exchange: pos.exchange },
-            user: { portfolio: pos.portfolio, exchange: pos.exchange }
           }).subscribe();
         })
       );
   }
 
   getOrderBookPositions(settings: ScalperOrderBookSettings): Observable<Position[]> {
-    return this.authService.currentUser$
-      .pipe(
-        map((user: User) => user.login),
-        switchMap((login) => forkJoin([
-          this.positionsService.getAllByLogin(login).pipe(take(1)),
-          this.store.select(getSelectedPortfolio).pipe(take(1))
-        ])),
-        map((
-          [positions, p]: [Position[], PortfolioKey | null]) =>
-          positions.filter(pos =>
-            pos.portfolio === p?.portfolio
-            && settings.exchange === pos.exchange
-            && settings.symbol === pos.symbol
-          )
-        ),
-      );
+    return this.store.select(getSelectedPortfolio).pipe(
+      take(1),
+      filter((p): p is PortfolioKey => !!p),
+      switchMap(p => this.positionsService.getAllByPortfolio(p.portfolio, p.exchange)),
+      map(positions => positions.filter(pos => pos.symbol === settings.symbol)
+      )
+    );
   }
 
   private toScalperOrderBook(

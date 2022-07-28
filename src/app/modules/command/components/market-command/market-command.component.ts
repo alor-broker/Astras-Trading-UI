@@ -33,7 +33,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
   commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private lastCommand$ = new BehaviorSubject<MarketCommand | null>(null);
-  private isActivated$ = new Subject<boolean>();
+  private isActivated$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private service: CommandsService,
@@ -66,6 +66,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
 
     this.lastCommand$.complete();
     this.commandContext$.complete();
+    this.isActivated$.complete();
   }
 
   private setMarketCommand(initialParameters: CommandParams): void {
@@ -79,7 +80,6 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
 
     if (initialParameters && initialParameters.user) {
       const newCommand: MarketCommand = {
-        side: 'buy',
         quantity: Number(quantity),
         instrument: {
           ...initialParameters.instrument,

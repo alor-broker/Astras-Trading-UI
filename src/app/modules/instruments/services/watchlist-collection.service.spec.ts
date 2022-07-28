@@ -64,8 +64,8 @@ describe('WatchListCollectionService', () => {
   it('#getWatchlistCollection should read value from localStorage', () => {
     setupGetItemMock(testCollection);
 
-    const value = JSON.stringify(service.getWatchlistCollection());
-    expect(value).toEqual(JSON.stringify(testCollection));
+    const value = service.getWatchlistCollection();
+    expect(value).toEqual(testCollection);
   });
 
   it('#getWatchlistCollection should return default collection if missing', () => {
@@ -79,9 +79,9 @@ describe('WatchListCollectionService', () => {
     setupGetItemMock(testCollection);
 
     const targetListId = testCollection.collection[0].id;
-    const value = JSON.stringify(service.getListItems(targetListId));
+    const value = service.getListItems(targetListId);
 
-    expect(value).toEqual(JSON.stringify(testCollection.collection[0].items));
+    expect(value).toEqual(testCollection.collection[0].items);
   });
 
   it('#getListItems should return undefined for incorrect listId', () => {

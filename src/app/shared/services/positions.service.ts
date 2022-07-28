@@ -19,7 +19,7 @@ export class PositionsService {
   }
 
   getAllByPortfolio(portfolio: string, exchange: string) : Observable<Position[]> {
-    return this.http.get<Position[]>(`${this.url}/${portfolio}/${exchange}/positions`);
+    return this.http.get<Position[]>(`${this.url}/${exchange}/${portfolio}/positions`);
   }
 
   getByPortfolio(portfolio: string, exchange: string, ticker: string) : Observable<Position | null> {

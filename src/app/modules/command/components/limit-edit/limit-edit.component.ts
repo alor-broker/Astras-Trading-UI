@@ -1,9 +1,26 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  Validators
+} from '@angular/forms';
+import {
+  BehaviorSubject,
+  filter,
+  Subject,
+  takeUntil
+} from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
-import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
+import {
+  LimitFormControls,
+  LimitFormGroup
+} from '../../models/command-forms.model';
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandsService } from '../../services/commands.service';
@@ -38,7 +55,15 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     });
   }
 
-  setLimitEdit(initialParameters: EditParams): void {
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+
+    this.commandContext$.complete();
+    this.evaluation$.complete();
+  }
+
+  private setLimitEditCommand(initialParameters: EditParams): void {
     if (!this.form.valid) {
       this.service.setLimitEdit(null);
       return;
@@ -59,18 +84,9 @@ export class LimitEditComponent implements OnInit, OnDestroy {
 
       this.updateEvaluation(newCommand);
       this.service.setLimitEdit(newCommand);
-    }
-    else {
+    } else {
       throw new Error('Empty command');
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-
-    this.commandContext$.complete();
-    this.evaluation$.complete();
   }
 
   private initCommandForm(initialParameters: EditParams | null) {
@@ -79,7 +95,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     }
 
     this.form = this.buildForm(initialParameters);
-    this.setLimitEdit(initialParameters);
+    this.setLimitEditCommand(initialParameters);
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
@@ -88,7 +104,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
         && prev?.quantity == curr?.quantity
       )
     ).subscribe(() => {
-      this.setLimitEdit(initialParameters);
+      this.setLimitEditCommand(initialParameters);
     });
   }
 

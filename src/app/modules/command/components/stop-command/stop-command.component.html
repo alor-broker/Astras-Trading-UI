@@ -33,7 +33,7 @@
                    formControlName="triggerPrice" placeholder="0"/>
           </nz-form-control>
           <ng-template #triggerPriceError>
-            <span *ngIf="form.get('triggerPrice')?.errors?.required">Введите кол-во</span>
+            <span *ngIf="form.get('triggerPrice')?.errors?.required">Введите цену</span>
             <span *ngIf="form.get('triggerPrice')?.errors?.min">Слишком мало</span>
           </ng-template>
         </nz-form-item>
@@ -74,9 +74,9 @@
             <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="price" placeholder="0"/>
           </nz-form-control>
           <ng-template #priceError>
-            <span *ngIf="form.get('price')?.errors?.required">Введите кол-во</span>
+            <span *ngIf="form.get('price')?.errors?.required">Введите цену</span>
             <span *ngIf="form.get('price')?.errors?.min">Слишком мало</span>
-            <span *ngIf="form.get('price')?.errors?.max">Слишком мало</span>
+            <span *ngIf="form.get('price')?.errors?.max">Слишком много</span>
           </ng-template>
         </nz-form-item>
       </div>

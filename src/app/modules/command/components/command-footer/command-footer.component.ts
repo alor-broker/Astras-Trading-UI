@@ -1,11 +1,19 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { Observable, of, take } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input
+} from '@angular/core';
+import {
+  Observable,
+  take
+} from 'rxjs';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { CommandsService } from '../../services/commands.service';
 import { CommandType } from '../../../../shared/models/enums/command-type.model';
 import { finalize } from 'rxjs/operators';
-import { CommandResponse } from "../../../../shared/models/commands/command-response.model";
+import { SubmitOrderResult } from "../../models/order.model";
 
 @Component({
   selector: 'ats-command-footer[activeCommandType]',
@@ -31,20 +39,18 @@ export class CommandFooterComponent {
   }
 
   buy() {
-    let command$: Observable<CommandResponse | null> = of(null);
+    let command$: Observable<SubmitOrderResult> | null = null;
     if (this.activeCommandType === CommandType.Limit) {
       command$ = this.command.submitLimit(Side.Buy);
-    }
-    else if (this.activeCommandType === CommandType.Market) {
+    } else if (this.activeCommandType === CommandType.Market) {
       command$ = this.command.submitMarket(Side.Buy);
-    }
-    else if (this.activeCommandType === CommandType.Stop) {
+    } else if (this.activeCommandType === CommandType.Stop) {
       command$ = this.command.submitStop(Side.Buy);
     }
 
     this.isBuyButtonLoading = true;
 
-    command$.pipe(
+    command$?.pipe(
       take(1),
       finalize(() => this.executeAndDetectChanges(() => this.isBuyButtonLoading = false)),
     ).subscribe({
@@ -58,20 +64,18 @@ export class CommandFooterComponent {
   }
 
   sell() {
-    let command$: Observable<CommandResponse | null> = of(null);
+    let command$: Observable<SubmitOrderResult> | null = null;
     if (this.activeCommandType === CommandType.Limit) {
       command$ = this.command.submitLimit(Side.Sell);
-    }
-    else if (this.activeCommandType === CommandType.Market) {
+    } else if (this.activeCommandType === CommandType.Market) {
       command$ = this.command.submitMarket(Side.Sell);
-    }
-    else if (this.activeCommandType === CommandType.Stop) {
+    } else if (this.activeCommandType === CommandType.Stop) {
       command$ = this.command.submitStop(Side.Sell);
     }
 
     this.isSellButtonLoading = true;
 
-    command$.pipe(
+    command$?.pipe(
       take(1),
       finalize(() => this.executeAndDetectChanges(() => this.isSellButtonLoading = false))
     ).subscribe({

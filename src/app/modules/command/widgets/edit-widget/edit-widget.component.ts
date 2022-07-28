@@ -18,7 +18,6 @@ import { CommandContextModel } from '../../models/command-context.model';
 export class EditWidgetComponent implements OnInit, OnDestroy {
   isVisible$: Observable<boolean> = of(false);
   commandContext$?: Observable<CommandContextModel<EditParams>>;
-  instrument$?: Observable<Instrument>;
   isBusy = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -52,9 +51,6 @@ export class EditWidgetComponent implements OnInit, OnDestroy {
       let command$ = of({});
       if (context.commandParameters?.type == 'limit') {
         command$ = this.command.submitLimitEdit();
-      }
-      else if (context.commandParameters?.type == 'market') {
-        command$ = this.command.submitMarketEdit();
       }
 
       this.isBusy = true;
