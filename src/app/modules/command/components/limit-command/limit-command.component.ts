@@ -62,7 +62,6 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
     if (commandContext.commandParameters && commandContext.commandParameters.user) {
       const newCommand: LimitCommand = {
-        side: 'buy',
         quantity: Number(formValue.quantity),
         price: Number(formValue.price),
         instrument: {

@@ -14,6 +14,7 @@ import { NzNotificationService } from "ng-zorro-antd/notification";
 import { CommandsService } from "../../../command/services/commands.service";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { ModalService } from "../../../../shared/services/modal.service";
+import { CurrentPortfolioOrderService } from "../../../../shared/services/orders/current-portfolio-order.service";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('ScalperOrderBookComponent', () => {
@@ -57,14 +58,12 @@ describe('ScalperOrderBookComponent', () => {
           }
         },
         {
-          provide: CommandsService,
+          provide: CurrentPortfolioOrderService,
           useValue: {
-            setStopCommand: jasmine.createSpy('setStopCommand'),
-            submitStop: jasmine.createSpy('submitStop').and.returnValue(of({})),
-            setLimitCommand: jasmine.createSpy('setLimitCommand'),
-            submitLimit: jasmine.createSpy('submitLimit').and.returnValue(of({})),
-            setMarketCommand: jasmine.createSpy('setMarketCommand'),
-            submitMarket: jasmine.createSpy('submitMarket').and.returnValue(of({})),
+            submitMarketOrder: jasmine.createSpy('submitMarketOrder').and.returnValue(of({})),
+            submitLimitOrder: jasmine.createSpy('submitLimitOrder').and.returnValue(of({})),
+            submitStopLimitOrder: jasmine.createSpy('submitStopLimitOrder').and.returnValue(of({})),
+            submitStopMarketOrder: jasmine.createSpy('submitStopMarketOrder').and.returnValue(of({})),
           }
         },
         {
