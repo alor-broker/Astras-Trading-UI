@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { LoginFormComponent } from 'src/app/modules/login/components/login-form/login-form.component';
 import { AuthService } from './auth.service';
 import { LocalStorageService } from "./local-storage.service";
 import { environment } from "../../../environments/environment";
@@ -14,7 +13,6 @@ describe('AuthService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let localStorageServiceSpy: any;
-  let windowSpy: any;
 
   let userMock: User;
 
@@ -37,16 +35,10 @@ describe('AuthService', () => {
       setItem: jasmine.createSpy('setItem').and.callThrough(),
       removeItem: jasmine.createSpy('removeItem').and.callThrough()
     };
-    windowSpy = {
-      location: {
-        assign: jasmine.createSpy('assign').and.callThrough()
-      }
-    };
 
     await TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([{ path: 'login', pathMatch: 'full', component: LoginFormComponent },])
       ],
       providers: [
         AuthService,
@@ -54,10 +46,6 @@ describe('AuthService', () => {
         {
           provide: LocalStorageService,
           useValue: localStorageServiceSpy
-        },
-        {
-          provide: 'Window',
-          useValue: windowSpy
         }
       ]
     });
@@ -83,37 +71,21 @@ describe('AuthService', () => {
     });
   });
 
-  it('should login', () => {
-    const userRes = {
-      ...userMock,
-      clientId: 'login.' + btoa(JSON.stringify({clientid: userMock.clientId}))
-    };
-
-    const setUserSpy = spyOn(service, 'setUser').and.callThrough();
-
-    service.login({ login: 'login', password: 'test password' })
-      .subscribe(() => {
-        expect(setUserSpy).toHaveBeenCalledOnceWith(userMock);
-      });
-
-    const req = httpTestingController.expectOne(environment.clientDataUrl + '/auth/actions/login');
-
-    expect(req.request.method).toEqual('POST');
-
-    req.flush(userRes);
-  });
-
   it('should logout when logout call', () => {
-    service.currentUser$.pipe(skip(1), take(1)).subscribe(user => {
-      expect(user).toEqual({
-        login: '',
-        jwt: '',
-        clientId: '',
-        refreshToken: '',
-        portfolios: [],
-        isLoggedOut: true
+    service.currentUser$.pipe(
+      skip(1),
+      take(1)
+    )
+      .subscribe(user => {
+        expect(user).toEqual({
+          login: '',
+          jwt: '',
+          clientId: '',
+          refreshToken: '',
+          portfolios: [],
+          isLoggedOut: true
+        });
       });
-    });
 
     service.logout();
     expect(localStorageServiceSpy.removeItem).toHaveBeenCalled();
@@ -181,6 +153,7 @@ describe('AuthService', () => {
 
   it('should not refresh token', () => {
     service.setUser({...userMock, isLoggedOut: true});
+    service.redirectToSso = jasmine.createSpy('redirectToSso').and.callThrough();
 
     const setUserSpy = spyOn(service, 'setUser').and.callThrough();
 
@@ -188,7 +161,7 @@ describe('AuthService', () => {
       .subscribe(() => {
       });
     expect(setUserSpy).not.toHaveBeenCalled();
-    expect(windowSpy.location.assign).toHaveBeenCalled();
+    expect(service.redirectToSso).toHaveBeenCalled();
   });
 
   it('should correctly return access token', fakeAsync(() => {

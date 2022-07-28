@@ -1,12 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable, of, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
 import { catchError, map, mergeMap, switchMap} from 'rxjs/operators';
-import { Login } from '../models/user/login.model';
 import { RefreshToken } from '../models/user/refresh-token.model';
-import { Credentials } from '../models/user/credentials.model';
 import { RefreshTokenResponse } from '../models/user/refresh-token-response.model';
 import { JwtBody } from '../models/user/jwt.model';
 import { BaseUser } from '../models/user/base-user.model';
@@ -45,7 +43,6 @@ export class AuthService {
   constructor(
     private readonly http: HttpClient,
     private readonly localStorage: LocalStorageService,
-    @Inject('Window') private readonly window: Window
   ) {
     const user = localStorage.getItem<User>(this.userStorage);
     if(user) {
@@ -64,24 +61,6 @@ export class AuthService {
 
     this.localStorage.setItem(this.userStorage, user);
     this.setCurrentUser(user);
-  }
-
-  public login(credentials: Credentials) {
-    const request: Login = {
-      credentials: credentials,
-      requiredServices: this.requiredServices,
-    };
-
-    return this.http.post<User>(`${this.accountUrl}/login`, request).pipe(
-      map((user: User) => {
-        if (user) {
-          user.login = credentials.login;
-          user.portfolios = this.extractPortfolios(user?.jwt);
-          user.clientId = this.extractClientId(user?.clientId);
-          this.setUser(user);
-        }
-      })
-    );
   }
 
   public logout() {
@@ -159,8 +138,8 @@ export class AuthService {
     );
   }
 
-  private redirectToSso() {
-    this.window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
+  redirectToSso() {
+    window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
   }
 
   private extractPortfolios(jwt: string) : string[] {

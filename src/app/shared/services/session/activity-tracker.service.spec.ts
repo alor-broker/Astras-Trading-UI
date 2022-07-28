@@ -3,25 +3,12 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivityTrackerService } from './activity-tracker.service';
 import { skip, take } from "rxjs";
 
-fdescribe('ActivityTrackerService', () => {
+describe('ActivityTrackerService', () => {
   let service: ActivityTrackerService;
-  let windowSpy: any;
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
-    windowSpy = {
-      addEventListener: jasmine.createSpy('addEventListener').and.callThrough(),
-      removeEventListener: jasmine.createSpy('removeEventListener').and.callThrough()
-    };
-
-    TestBed.configureTestingModule({
-      providers: [
-        {
-          provide: 'Window',
-          useValue: windowSpy
-        }
-      ]
-    });
+    TestBed.configureTestingModule({});
     service = TestBed.inject(ActivityTrackerService);
   });
 
@@ -30,35 +17,43 @@ fdescribe('ActivityTrackerService', () => {
   });
 
   it('should start tracking', () => {
-    service.startTracking();
-    expect(windowSpy.addEventListener).toHaveBeenCalledTimes(4);
-    expect(windowSpy.addEventListener).toHaveBeenCalledWith('mousemove', service);
-    expect(windowSpy.addEventListener).toHaveBeenCalledWith('scroll', service);
-    expect(windowSpy.addEventListener).toHaveBeenCalledWith('keydown', service);
-    expect(windowSpy.addEventListener).toHaveBeenCalledWith('touchmove', service);
+    const addEventListenerSpy = spyOn(window, 'addEventListener');
+    const removeEventListenerSpy = spyOn(window, 'removeEventListener');
 
-    expect(windowSpy.removeEventListener).toHaveBeenCalledTimes(4);
-    expect(windowSpy.removeEventListener).toHaveBeenCalledWith('mousemove', service);
-    expect(windowSpy.removeEventListener).toHaveBeenCalledWith('scroll', service);
-    expect(windowSpy.removeEventListener).toHaveBeenCalledWith('keydown', service);
-    expect(windowSpy.removeEventListener).toHaveBeenCalledWith('touchmove', service);
+    service.startTracking();
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(4);
+    expect(addEventListenerSpy).toHaveBeenCalledWith('mousemove', service);
+    expect(addEventListenerSpy).toHaveBeenCalledWith('scroll', service);
+    expect(addEventListenerSpy).toHaveBeenCalledWith('keydown', service);
+    expect(addEventListenerSpy).toHaveBeenCalledWith('touchmove', service);
+
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(4);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('mousemove', service);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', service);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', service);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('touchmove', service);
   });
 
   it('should stop tracking', () => {
+    const removeEventListenerSpy = spyOn(window, 'removeEventListener');
+
     service.stopTracking();
 
-    expect(windowSpy.removeEventListener).toHaveBeenCalledTimes(4);
-    expect(windowSpy.removeEventListener).toHaveBeenCalledWith('mousemove', service);
-    expect(windowSpy.removeEventListener).toHaveBeenCalledWith('scroll', service);
-    expect(windowSpy.removeEventListener).toHaveBeenCalledWith('keydown', service);
-    expect(windowSpy.removeEventListener).toHaveBeenCalledWith('touchmove', service);
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(4);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('mousemove', service);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', service);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', service);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('touchmove', service);
   });
 
   it('should write new time in lastActivityUnixTime$ while handle event', fakeAsync(() => {
     service.startTracking();
 
     service.lastActivityUnixTime$
-      .pipe(skip(1), take(1))
+      .pipe(
+        skip(1),
+        take(1)
+      )
       .subscribe(time => {
       expect(time).toBe(new Date().getTime());
     });

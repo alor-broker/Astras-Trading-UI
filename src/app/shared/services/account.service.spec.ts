@@ -19,6 +19,10 @@ describe('AccountService', () => {
       {
         portfolio: 'GtestPortfolio2',
         exchange: 'testExchange2'
+      },
+      {
+        portfolio: '1234',
+        exchange: 'testExchange3'
       }
     ]))
   };
@@ -80,10 +84,16 @@ describe('AccountService', () => {
         agreement: 'testAgreement2',
       },
       {
-        portfolio: 'DtestPortfolio3',
+        portfolio: '1234',
         tks: 'testTks3',
         market: 'test Market3',
         agreement: 'testAgreement3',
+      },
+      {
+        portfolio: 'DtestPortfolio4',
+        tks: 'testTks4',
+        market: 'test Market4',
+        agreement: 'testAgreement4',
       },
     ];
     spyAuth.currentUser$ = of({ clientId: 'testClientId' });
@@ -91,6 +101,7 @@ describe('AccountService', () => {
     const expectedPortfolios = new Map([
       ['testAgreement1', [{...portfoliosMetaRes[0], market: 'test', exchange: 'testExchange1', marketType: MarketType.Stock}]],
       ['testAgreement2', [{...portfoliosMetaRes[1], market: 'test', exchange: 'testExchange2', marketType: MarketType.ForeignExchange}]],
+      ['testAgreement3', [{...portfoliosMetaRes[2], market: 'test', exchange: 'testExchange3', marketType: MarketType.Forward}]],
     ]);
 
     service.getActivePortfolios()
