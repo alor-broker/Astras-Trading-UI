@@ -67,11 +67,11 @@ describe('CurrentPortfolioOrderService', () => {
   describe('#submitMarketOrder', () => {
     const submitOrder = (order: MarketOrder, onResult?: (result: SubmitOrderResult) => void) => {
       service.submitMarketOrder(order)
-        .subscribe((result) => {
-          if (onResult) {
-            onResult(result);
-          }
-        });
+      .subscribe((result) => {
+        if (onResult) {
+          onResult(result);
+        }
+      });
     };
 
     it('correct parameters should be passed', (done) => {
@@ -85,11 +85,11 @@ describe('CurrentPortfolioOrderService', () => {
         price: 100
       };
 
-      orderServiceSpy.submitMarketOrder.and.callFake((passedOrder: MarketOrder, portfolio: string) => {
+      orderServiceSpy.submitMarketOrder.and.callFake((passedOrder: LimitOrder, portfolio: string) => {
         done();
 
-        expect(portfolio).toBe(defaultPortfolio);
-        expect(JSON.stringify(order)).toBe(JSON.stringify(passedOrder));
+        expect(portfolio).toEqual(defaultPortfolio);
+        expect(order).toEqual(passedOrder);
 
         return of({ orderNumber: '123' } as SubmitOrderResult);
       });
@@ -110,7 +110,7 @@ describe('CurrentPortfolioOrderService', () => {
         result => {
           done();
 
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
+          expect(result).toEqual(expectedResult);
         });
     });
 
@@ -126,7 +126,7 @@ describe('CurrentPortfolioOrderService', () => {
         result => {
           done();
 
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
+          expect(result).toEqual(expectedResult);
         });
     });
   });
@@ -134,11 +134,11 @@ describe('CurrentPortfolioOrderService', () => {
   describe('#submitLimitOrder', () => {
     const submitOrder = (order: LimitOrder, onResult?: (result: SubmitOrderResult) => void) => {
       service.submitLimitOrder(order)
-        .subscribe((result) => {
-          if (onResult) {
-            onResult(result);
-          }
-        });
+      .subscribe((result) => {
+        if (onResult) {
+          onResult(result);
+        }
+      });
     };
 
     it('correct parameters should be passed', (done) => {
@@ -155,8 +155,8 @@ describe('CurrentPortfolioOrderService', () => {
       orderServiceSpy.submitLimitOrder.and.callFake((passedOrder: LimitOrder, portfolio: string) => {
         done();
 
-        expect(portfolio).toBe(defaultPortfolio);
-        expect(JSON.stringify(order)).toBe(JSON.stringify(passedOrder));
+        expect(portfolio).toEqual(defaultPortfolio);
+        expect(order).toEqual(passedOrder);
 
         return of({ orderNumber: '123' } as SubmitOrderResult);
       });
@@ -177,7 +177,7 @@ describe('CurrentPortfolioOrderService', () => {
         result => {
           done();
 
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
+          expect(result).toEqual(expectedResult);
         });
     });
 
@@ -193,7 +193,7 @@ describe('CurrentPortfolioOrderService', () => {
         result => {
           done();
 
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
+          expect(result).toEqual(expectedResult);
         });
     });
   });
@@ -201,11 +201,11 @@ describe('CurrentPortfolioOrderService', () => {
   describe('#submitStopMarketOrder', () => {
     const submitOrder = (order: StopMarketOrder, onResult?: (result: SubmitOrderResult) => void) => {
       service.submitStopMarketOrder(order)
-        .subscribe((result) => {
-          if (onResult) {
-            onResult(result);
-          }
-        });
+      .subscribe((result) => {
+        if (onResult) {
+          onResult(result);
+        }
+      });
     };
 
     it('correct parameters should be passed', (done) => {
@@ -221,11 +221,11 @@ describe('CurrentPortfolioOrderService', () => {
         stopEndUnixTime: new Date()
       };
 
-      orderServiceSpy.submitStopMarketOrder.and.callFake((passedOrder: LimitOrder, portfolio: string) => {
+      orderServiceSpy.submitStopMarketOrder.and.callFake((passedOrder: StopMarketOrder, portfolio: string) => {
         done();
 
-        expect(portfolio).toBe(defaultPortfolio);
-        expect(JSON.stringify(order)).toBe(JSON.stringify(passedOrder));
+        expect(portfolio).toEqual(defaultPortfolio);
+        expect(order).toEqual(passedOrder);
 
         return of({ orderNumber: '123' } as SubmitOrderResult);
       });
@@ -246,7 +246,7 @@ describe('CurrentPortfolioOrderService', () => {
         result => {
           done();
 
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
+          expect(result).toEqual(expectedResult);
         });
     });
 
@@ -262,7 +262,7 @@ describe('CurrentPortfolioOrderService', () => {
         result => {
           done();
 
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
+          expect(result).toEqual(expectedResult);
         });
     });
   });
@@ -270,11 +270,11 @@ describe('CurrentPortfolioOrderService', () => {
   describe('#submitStopLimitOrder', () => {
     const submitOrder = (order: StopLimitOrder, onResult?: (result: SubmitOrderResult) => void) => {
       service.submitStopLimitOrder(order)
-        .subscribe((result) => {
-          if (onResult) {
-            onResult(result);
-          }
-        });
+      .subscribe((result) => {
+        if (onResult) {
+          onResult(result);
+        }
+      });
     };
 
     it('correct parameters should be passed', (done) => {
@@ -291,11 +291,11 @@ describe('CurrentPortfolioOrderService', () => {
         price: 100
       };
 
-      orderServiceSpy.submitStopLimitOrder.and.callFake((passedOrder: LimitOrder, portfolio: string) => {
+      orderServiceSpy.submitStopLimitOrder.and.callFake((passedOrder: StopLimitOrder, portfolio: string) => {
         done();
 
-        expect(portfolio).toBe(defaultPortfolio);
-        expect(JSON.stringify(order)).toBe(JSON.stringify(passedOrder));
+        expect(portfolio).toEqual(defaultPortfolio);
+        expect(order).toEqual(passedOrder);
 
         return of({ orderNumber: '123' } as SubmitOrderResult);
       });
@@ -316,7 +316,7 @@ describe('CurrentPortfolioOrderService', () => {
         result => {
           done();
 
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
+          expect(result).toEqual(expectedResult);
         });
     });
 
@@ -332,7 +332,7 @@ describe('CurrentPortfolioOrderService', () => {
         result => {
           done();
 
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
+          expect(result).toEqual(expectedResult);
         });
     });
   });
@@ -340,11 +340,11 @@ describe('CurrentPortfolioOrderService', () => {
   describe('#submitLimitOrderEdit', () => {
     const submitOrder = (order: LimitOrderEdit, onResult?: (result: SubmitOrderResult) => void) => {
       service.submitLimitOrderEdit(order)
-        .subscribe((result) => {
-          if (onResult) {
-            onResult(result);
-          }
-        });
+      .subscribe((result) => {
+        if (onResult) {
+          onResult(result);
+        }
+      });
     };
 
     it('correct parameters should be passed', (done) => {
@@ -358,11 +358,11 @@ describe('CurrentPortfolioOrderService', () => {
         id: '123'
       };
 
-      orderServiceSpy.submitLimitOrderEdit.and.callFake((passedOrder: LimitOrder, portfolio: string) => {
+      orderServiceSpy.submitLimitOrderEdit.and.callFake((passedOrder: LimitOrderEdit, portfolio: string) => {
         done();
 
-        expect(portfolio).toBe(defaultPortfolio);
-        expect(JSON.stringify(order)).toBe(JSON.stringify(passedOrder));
+        expect(portfolio).toEqual(defaultPortfolio);
+        expect(order).toEqual(passedOrder);
 
         return of({ orderNumber: '123' } as SubmitOrderResult);
       });
@@ -383,7 +383,7 @@ describe('CurrentPortfolioOrderService', () => {
         result => {
           done();
 
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
+          expect(result).toEqual(expectedResult);
         });
     });
 
@@ -399,7 +399,7 @@ describe('CurrentPortfolioOrderService', () => {
         result => {
           done();
 
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
+          expect(result).toEqual(expectedResult);
         });
     });
   });

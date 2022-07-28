@@ -3,11 +3,11 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
 import { StopOrderCondition } from "../../../shared/models/enums/stoporder-conditions";
 
 export interface SubmitOrderResponse {
-  message: string,
+  message: string;
   // # of successfully places order
-  orderNumber?: string,
+  orderNumber?: string;
   // Error code if something went wrong
-  code?: string
+  code?: string;
 }
 
 export interface SubmitOrderResult {
@@ -33,9 +33,9 @@ export interface LimitOrderEdit extends Omit<LimitOrder, 'side'> {
 }
 
 export interface StopMarketOrder extends OrderBase {
-  triggerPrice: number,
-  condition: StopOrderCondition,
-  stopEndUnixTime?: Date | number
+  triggerPrice: number;
+  condition: StopOrderCondition;
+  stopEndUnixTime?: Date | number;
 }
 
 export interface StopLimitOrder extends StopMarketOrder {

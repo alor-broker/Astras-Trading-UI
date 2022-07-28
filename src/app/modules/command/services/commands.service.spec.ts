@@ -117,10 +117,10 @@ describe('CommandsService', () => {
       orderServiceSpy.submitMarketOrder.and.returnValue(of(expectedResult));
 
       service.submitMarket(Side.Buy)
-        .subscribe(result => {
-          done();
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
-        });
+      .subscribe(result => {
+        done();
+        expect(result).toEqual(expectedResult);
+      });
     });
 
     it('correct failed result should be returned', (done) => {
@@ -133,10 +133,10 @@ describe('CommandsService', () => {
       orderServiceSpy.submitMarketOrder.and.returnValue(of(expectedResult));
 
       service.submitMarket(Side.Sell)
-        .subscribe(result => {
-          done();
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
-        });
+      .subscribe(result => {
+        done();
+        expect(result).toEqual(expectedResult);
+      });
     });
 
     it('should update command error', (done) => {
@@ -198,7 +198,7 @@ describe('CommandsService', () => {
       orderServiceSpy.submitLimitOrder.and.callFake((order: LimitOrder, portfolio: string) => {
         done();
 
-        expect(portfolio).toBe(command.user!.portfolio);
+        expect(portfolio).toEqual(command.user!.portfolio);
         expect(order.instrument.symbol).toBe(command.instrument.symbol);
         expect(order.instrument.exchange).toBe(command.instrument.exchange);
         expect(order.side).toBe(side);
@@ -222,10 +222,10 @@ describe('CommandsService', () => {
       orderServiceSpy.submitLimitOrder.and.returnValue(of(expectedResult));
 
       service.submitLimit(Side.Buy)
-        .subscribe(result => {
-          done();
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
-        });
+      .subscribe(result => {
+        done();
+        expect(result).toEqual(expectedResult);
+      });
     });
 
     it('correct failed result should be returned', (done) => {
@@ -238,10 +238,10 @@ describe('CommandsService', () => {
       orderServiceSpy.submitLimitOrder.and.returnValue(of(expectedResult));
 
       service.submitLimit(Side.Sell)
-        .subscribe(result => {
-          done();
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
-        });
+      .subscribe(result => {
+        done();
+        expect(result).toEqual(expectedResult);
+      });
     });
 
     it('should update command error', (done) => {
@@ -305,7 +305,7 @@ describe('CommandsService', () => {
       orderServiceSpy.submitStopMarketOrder.and.callFake((order: StopMarketOrder, portfolio: string) => {
         done();
 
-        expect(portfolio).toBe(command.user!.portfolio);
+        expect(portfolio).toEqual(command.user!.portfolio);
         expect(order.instrument.symbol).toBe(command.instrument.symbol);
         expect(order.instrument.exchange).toBe(command.instrument.exchange);
         expect(order.side).toBe(side);
@@ -331,10 +331,10 @@ describe('CommandsService', () => {
       orderServiceSpy.submitStopMarketOrder.and.returnValue(of(expectedResult));
 
       service.submitStop(Side.Buy)
-        .subscribe(result => {
-          done();
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
-        });
+      .subscribe(result => {
+        done();
+        expect(result).toEqual(expectedResult);
+      });
     });
 
     it('correct failed result should be returned', (done) => {
@@ -347,10 +347,10 @@ describe('CommandsService', () => {
       orderServiceSpy.submitStopMarketOrder.and.returnValue(of(expectedResult));
 
       service.submitStop(Side.Sell)
-        .subscribe(result => {
-          done();
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
-        });
+      .subscribe(result => {
+        done();
+        expect(result).toEqual(expectedResult);
+      });
     });
 
     it('should update command error', (done) => {
@@ -415,7 +415,7 @@ describe('CommandsService', () => {
       orderServiceSpy.submitStopLimitOrder.and.callFake((order: StopLimitOrder, portfolio: string) => {
         done();
 
-        expect(portfolio).toBe(command.user!.portfolio);
+        expect(portfolio).toEqual(command.user!.portfolio);
         expect(order.instrument.symbol).toBe(command.instrument.symbol);
         expect(order.instrument.exchange).toBe(command.instrument.exchange);
         expect(order.side).toBe(side);
@@ -437,15 +437,15 @@ describe('CommandsService', () => {
         orderNumber: '123'
       };
 
-      service.setStopCommand({price: 100} as StopCommand);
+      service.setStopCommand({ price: 100 } as StopCommand);
 
       orderServiceSpy.submitStopLimitOrder.and.returnValue(of(expectedResult));
 
       service.submitStop(Side.Buy)
-        .subscribe(result => {
-          done();
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
-        });
+      .subscribe(result => {
+        done();
+        expect(result).toEqual(expectedResult);
+      });
     });
 
     it('correct failed result should be returned', (done) => {
@@ -453,15 +453,15 @@ describe('CommandsService', () => {
         isSuccess: false
       };
 
-      service.setStopCommand({price: 100} as StopCommand);
+      service.setStopCommand({ price: 100 } as StopCommand);
 
       orderServiceSpy.submitStopLimitOrder.and.returnValue(of(expectedResult));
 
       service.submitStop(Side.Sell)
-        .subscribe(result => {
-          done();
-          expect(JSON.stringify(result)).toBe(JSON.stringify(expectedResult));
-        });
+      .subscribe(result => {
+        done();
+        expect(result).toEqual(expectedResult);
+      });
     });
 
     it('should update command error', (done) => {
@@ -469,7 +469,7 @@ describe('CommandsService', () => {
         isSuccess: false
       };
 
-      service.setStopCommand({price: 100} as StopCommand);
+      service.setStopCommand({ price: 100 } as StopCommand);
 
       orderServiceSpy.submitStopLimitOrder.and.returnValue(of(expectedResult));
 
