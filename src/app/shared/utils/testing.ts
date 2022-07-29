@@ -1,6 +1,9 @@
 import { defer } from 'rxjs';
 import { Instrument } from '../models/instruments/instrument.model';
-import { ModuleWithProviders, Type } from '@angular/core';
+import {
+  ModuleWithProviders,
+  Type
+} from '@angular/core';
 import { SharedModule } from '../shared.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -13,6 +16,7 @@ import { EffectsModule } from '@ngrx/effects';
 export function asyncData<T>(data: T) {
   return defer(() => Promise.resolve(data));
 }
+
 /**
  * A class with a bunch of data for tests
  */
@@ -71,3 +75,19 @@ export const sharedModuleImportForTests: Array<Type<any> | ModuleWithProviders<{
   EffectsModule.forRoot(),
   SharedModule
 ];
+
+/**
+ * Create random string
+ * @param length target string length
+ * @returns random string
+ */
+export function generateRandomString(length: number): string {
+  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  let str = '';
+  for (let i = 0; i < length; i++) {
+    str += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  return str;
+}
