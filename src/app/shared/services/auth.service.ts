@@ -4,9 +4,7 @@ import { BehaviorSubject, EMPTY, Observable, of, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
 import { catchError, map, mergeMap, switchMap} from 'rxjs/operators';
-import { Login } from '../models/user/login.model';
 import { RefreshToken } from '../models/user/refresh-token.model';
-import { Credentials } from '../models/user/credentials.model';
 import { RefreshTokenResponse } from '../models/user/refresh-token-response.model';
 import { JwtBody } from '../models/user/jwt.model';
 import { BaseUser } from '../models/user/base-user.model';
@@ -44,7 +42,7 @@ export class AuthService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly localStorage: LocalStorageService
+    private readonly localStorage: LocalStorageService,
   ) {
     const user = localStorage.getItem<User>(this.userStorage);
     if(user) {
@@ -65,26 +63,8 @@ export class AuthService {
     this.setCurrentUser(user);
   }
 
-  public login(credentials: Credentials) {
-    const request : Login = {
-      credentials: credentials,
-      requiredServices: this.requiredServices,
-    };
-
-    return this.http.post<User>(`${this.accountUrl}/login`, request).pipe(
-      map((user: User) => {
-        if (user) {
-          user.login = credentials.login;
-          user.portfolios = this.extractPortfolios(user?.jwt);
-          user.clientId = this.extractClientId(user?.clientId);
-          this.setUser(user);
-        }
-      })
-    );
-  }
-
   public logout() {
-    localStorage.removeItem('user');
+    this.localStorage.removeItem('user');
     this.currentUser.next({
       login: '',
       jwt: '',
@@ -158,7 +138,7 @@ export class AuthService {
     );
   }
 
-  private redirectToSso() {
+  redirectToSso() {
     window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
   }
 

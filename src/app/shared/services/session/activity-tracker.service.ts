@@ -9,8 +9,7 @@ export class ActivityTrackerService implements EventListenerObject {
   private readonly lastActivityTimeSub = new BehaviorSubject<number | null>(new Date().getTime());
   public readonly lastActivityUnixTime$ = this.lastActivityTimeSub.asObservable();
 
-  constructor() {
-  }
+  constructor() {}
 
   handleEvent(): void {
     this.lastActivityTimeSub.next(new Date().getTime());

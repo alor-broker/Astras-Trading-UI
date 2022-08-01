@@ -12,9 +12,7 @@ import {
 import { Store } from "@ngrx/store";
 import { getSelectedInstrument } from "../instruments/instruments.selectors";
 import { map } from "rxjs/operators";
-import {
-  InstrumentKey
-} from "../../shared/models/instruments/instrument-key.model";
+import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
 import {
   getInstrumentLinkedSettings,
   getPortfolioLinkedSettings,
