@@ -35,7 +35,8 @@ describe('WebsocketService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should connect', () => {
+  it('should connect only once', () => {
+    service.connect();
     service.connect();
     expect(fakeSocketCtor).toHaveBeenCalledOnceWith(service.config);
   });
