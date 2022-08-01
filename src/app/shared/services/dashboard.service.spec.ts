@@ -38,45 +38,70 @@ describe('DashboardService', () => {
 
   it('should add widget', fakeAsync(() => {
     const widget = {
-      gridItem: {x: 0, y: 0, rows: 1, cols: 1, label: 'test'}
+      gridItem: {x: 0, y: 0, rows: 1, cols: 1, label: 'test1'}
     };
 
+    service.addWidget(widget);
+    expect(factorySpy.createNewSettings).toHaveBeenCalledWith(widget, undefined);
+    expect(widgetSettingsSpy.addSettings).toHaveBeenCalledWith([{testProp: 'test'}]);
+
+    widget.gridItem.label = 'test2';
     service.addWidget(widget);
 
     service.dashboard$.pipe(take(1))
       .subscribe(res => {
-        const expected = new Map([['test', {guid: 'test', gridItem: widget.gridItem, hasSettings: true, hasHelp: true}]]);
+        const expected = new Map([
+          ['test1', {guid: 'test1', gridItem: widget.gridItem, hasSettings: true, hasHelp: true}],
+          ['test2', {guid: 'test2', gridItem: widget.gridItem, hasSettings: true, hasHelp: true}],
+        ]);
         expect(res).toEqual(expected);
       });
 
     tick();
 
-    expect(factorySpy.createNewSettings).toHaveBeenCalledOnceWith(widget, undefined);
-    expect(widgetSettingsSpy.addSettings).toHaveBeenCalledOnceWith([{testProp: 'test'}]);
-    expect(localStorageServiceSpy.setItem).toHaveBeenCalledOnceWith(
+    expect(factorySpy.createNewSettings).toHaveBeenCalledWith(widget, undefined);
+    expect(widgetSettingsSpy.addSettings).toHaveBeenCalledWith([{testProp: 'test'}]);
+    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(
       'dashboards',
-      [['test', {guid: 'test', gridItem: widget.gridItem, hasSettings: true, hasHelp: true}]]
+      [
+        ['test1', {guid: 'test1', gridItem: widget.gridItem, hasSettings: true, hasHelp: true}],
+        ['test2', {guid: 'test2', gridItem: widget.gridItem, hasSettings: true, hasHelp: true}]
+      ]
     );
   }));
 
-  it('should remove widget', fakeAsync(() => {
+  it('should remove one widget', fakeAsync(() => {
     const widget = {
-      gridItem: {x: 0, y: 0, rows: 1, cols: 1, label: 'test'}
+      gridItem: {x: 0, y: 0, rows: 1, cols: 1, label: 'test1'}
     };
     service.addWidget(widget);
+    widget.gridItem.label = 'test2';
+    service.addWidget(widget);
 
-    service.removeWidget('test');
+    service.removeWidget('test1');
 
     service.dashboard$.pipe(take(1))
       .subscribe(res => {
-        const expected = new Map();
+        const expected = new Map([['test2', {
+          guid: 'test2',
+          ...widget,
+          hasSettings: true,
+          hasHelp: true
+        }]]);
         expect(res).toEqual(expected);
       });
 
     tick();
 
-    expect(widgetSettingsSpy.removeSettings).toHaveBeenCalledOnceWith('test');
-    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith('dashboards', []);
+    expect(widgetSettingsSpy.removeSettings).toHaveBeenCalledOnceWith('test1');
+    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith('dashboards', [[
+      'test2', {
+        guid: 'test2',
+        ...widget,
+        hasSettings: true,
+        hasHelp: true
+      }
+      ]]);
   }));
 
   it('should clear dashboard', fakeAsync(() => {
