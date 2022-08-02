@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { Subject, Observable, BehaviorSubject, Subscription, interval, filter, take } from 'rxjs';
 import { map, switchMap, takeWhile, tap } from 'rxjs/operators';
-import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from "rxjs/webSocket";
+import { webSocket as rxjsWebsocket, WebSocketSubject, WebSocketSubjectConfig } from "rxjs/webSocket";
 import { environment } from 'src/environments/environment';
 import { BaseRequest } from '../models/ws/base-request.model';
 import { BaseResponse } from '../models/ws/base-response.model';
@@ -13,13 +13,25 @@ import { LoggerService } from "./logger.service";
 
 type WsMessage = BaseResponse<unknown> | BaseRequest | ConfirmResponse;
 
+export const WEBSOCKET_CTOR = new InjectionToken<typeof rxjsWebsocket>(
+  'rxjs/webSocket.webSocket',
+  {
+    providedIn: 'root',
+    factory: () => rxjsWebsocket,
+  }
+);
+
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService {
   config: WebSocketSubjectConfig<WsMessage>;
 
-  constructor(private account: AuthService, private logger: LoggerService) {
+  constructor(
+    private account: AuthService,
+    private logger: LoggerService,
+    @Inject(WEBSOCKET_CTOR) private _webSocket: typeof rxjsWebsocket
+  ) {
     this.options = {
       reconnect: true,
       reconnectTimeout: 2000,
@@ -71,7 +83,7 @@ export class WebsocketService {
 
   connect(): void {
     if (!this.socket$ || this.socket$.closed) {
-      this.socket$ = webSocket(this.config);
+      this.socket$ = this._webSocket(this.config);
       this.socket$.subscribe({
         next: (message) => {
           if (this.isBaseResponse(message)) {
