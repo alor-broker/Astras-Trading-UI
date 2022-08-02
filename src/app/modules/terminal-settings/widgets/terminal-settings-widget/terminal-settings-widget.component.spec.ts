@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalService } from 'src/app/shared/services/modal.service';
 
 import { TerminalSettingsWidgetComponent } from './terminal-settings-widget.component';
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('TerminalSettingsWidgetComponent', () => {
   let component: TerminalSettingsWidgetComponent;
@@ -11,7 +12,10 @@ describe('TerminalSettingsWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TerminalSettingsWidgetComponent],
+      declarations: [
+        TerminalSettingsWidgetComponent,
+        ...ngZorroMockComponents
+      ],
       providers: [
         { provide: ModalService, useValue: modalSpy }
       ]

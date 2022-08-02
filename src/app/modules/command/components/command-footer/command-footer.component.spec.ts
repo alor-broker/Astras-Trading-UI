@@ -13,6 +13,7 @@ import {
   of,
   throwError
 } from "rxjs";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('CommandFooterComponent', () => {
   let component: CommandFooterComponent;
@@ -27,7 +28,10 @@ describe('CommandFooterComponent', () => {
     modalSpy = jasmine.createSpyObj('ModalService', ['closeCommandModal']);
 
     await TestBed.configureTestingModule({
-      declarations: [CommandFooterComponent],
+      declarations: [
+        CommandFooterComponent,
+        ...ngZorroMockComponents
+      ],
       providers: [
         { provide: CommandsService, useValue: commandSpy },
         { provide: ModalService, useValue: modalSpy },

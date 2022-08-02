@@ -6,6 +6,7 @@ import { LightChartService } from '../../services/light-chart.service';
 import { LightChartComponent } from './light-chart.component';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
@@ -27,7 +28,10 @@ describe('LightChartComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LightChartComponent],
+      declarations: [
+        LightChartComponent,
+        ...ngZorroMockComponents
+      ],
       providers: [
         {
           provide: WidgetSettingsService,

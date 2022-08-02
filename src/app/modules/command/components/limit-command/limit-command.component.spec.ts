@@ -9,6 +9,7 @@ import { LimitCommandComponent } from './limit-command.component';
 import { CommandContextModel } from "../../models/command-context.model";
 import { CommandParams } from "../../../../shared/models/commands/command-params.model";
 import {
+  mockComponent,
   sharedModuleImportForTests,
   TestData
 } from "../../../../shared/utils/testing";
@@ -75,7 +76,13 @@ describe('LimitCommandComponent', () => {
         ...sharedModuleImportForTests,
         BrowserAnimationsModule
       ],
-      declarations: [LimitCommandComponent],
+      declarations: [
+        LimitCommandComponent,
+        mockComponent({
+          selector: 'ats-evaluation',
+          inputs: ['evaluationProperties']
+        })
+      ],
       providers: [
         { provide: CommandsService, useValue: spyCommands }
       ]

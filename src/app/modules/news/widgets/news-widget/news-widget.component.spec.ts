@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NewsWidgetComponent } from './news-widget.component';
+import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('NewsWidgetComponent', () => {
   let component: NewsWidgetComponent;
@@ -8,7 +9,13 @@ describe('NewsWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NewsWidgetComponent ]
+      declarations: [
+        NewsWidgetComponent,
+        mockComponent({
+          selector: 'ats-news',
+          inputs: ['resize']
+        })
+      ]
     })
     .compileComponents();
   });

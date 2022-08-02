@@ -4,6 +4,7 @@ import {
 } from '@angular/core/testing';
 
 import { OrderbookWidgetComponent } from './orderbook-widget.component';
+import { mockComponent } from "../../../../shared/utils/testing";
 
 const settings = {
   symbol: 'SBER',
@@ -17,7 +18,13 @@ describe('OrderbookWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [OrderbookWidgetComponent],
+      declarations: [
+        OrderbookWidgetComponent,
+        mockComponent({
+          selector: 'ats-order-book',
+          inputs: ['guid', 'resize', 'shouldShowSettings']
+        })
+      ],
     }).compileComponents();
 
     TestBed.overrideComponent(OrderbookWidgetComponent, {

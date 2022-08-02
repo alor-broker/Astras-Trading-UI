@@ -8,7 +8,8 @@ import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings
 import { BlotterWidgetComponent } from './blotter-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import { mockComponent, ngZorroMockComponents, sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import { Store } from "@ngrx/store";
 
 const settings: BlotterSettings = {
   exchange: 'MOEX',
@@ -35,16 +36,26 @@ describe('BlotterWidgetComponent', () => {
     widgetSettingsServiceSpy.getSettings.and.returnValue(of({ activeTabIndex: 0 } as BlotterSettings));
 
     await TestBed.configureTestingModule({
-      declarations: [BlotterWidgetComponent],
-      imports: [
-        ...sharedModuleImportForTests
-      ]
+      declarations: [
+        BlotterWidgetComponent,
+        mockComponent({selector: 'ats-positions', inputs: ['shouldShowSettings', 'guid']}),
+        mockComponent({selector: 'ats-orders', inputs: ['shouldShowSettings', 'guid']}),
+        mockComponent({selector: 'ats-stop-orders', inputs: ['shouldShowSettings', 'guid']}),
+        mockComponent({selector: 'ats-trades', inputs: ['shouldShowSettings', 'guid']}),
+        ...ngZorroMockComponents
+      ],
     }).compileComponents();
 
     TestBed.overrideComponent(BlotterWidgetComponent, {
       set: {
         providers: [
           { provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy },
+          {
+            provide: Store,
+            useValue: {
+              select: jasmine.createSpy('select').and.returnValue(of({}))
+            }
+          }
         ]
       }
     });

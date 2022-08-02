@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ExchangeRateWidgetComponent } from './exchange-rate-widget.component';
+import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('ExchangeRateWidgetComponent', () => {
   let component: ExchangeRateWidgetComponent;
@@ -8,7 +9,13 @@ describe('ExchangeRateWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ExchangeRateWidgetComponent ]
+      declarations: [
+        ExchangeRateWidgetComponent,
+        mockComponent({
+          selector: 'ats-exchange-rate',
+          inputs: ['guid', 'shouldShowSettings', 'resize']
+        })
+      ]
     })
     .compileComponents();
   });
