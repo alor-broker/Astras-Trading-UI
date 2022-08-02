@@ -49,6 +49,10 @@
       [(shouldShowSettings)]="shouldShowSettings"
       [resize]="widgetResize"
     ></ats-exchange-rate-widget>
+    <ats-tech-chart-widget *ngSwitchCase="'tech-chart'"
+                                   [guid]="getGuid()"
+                                   [(shouldShowSettings)]="shouldShowSettings"
+    ></ats-tech-chart-widget>
   </ng-container>
   </div>
 </div>
