@@ -1,5 +1,0 @@
-<ats-tech-chart *ngIf="!shouldShowSettings"
-                [guid]="guid"
-                [shouldShowSettings]="shouldShowSettings"></ats-tech-chart>
-<ats-tech-chart-settings *ngIf="shouldShowSettings" [guid]="guid"
-                         (settingsChange)="onSettingsChange()"></ats-tech-chart-settings>

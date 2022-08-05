@@ -19,7 +19,7 @@ import { OnboardingService } from './services/onboarding.service';
 import { AllTradesModule } from "../all-trades/all-trades.module";
 import { NewsModule } from "../news/news.module";
 import { ExchangeRateModule } from "../exchange-rate/exchange-rate.module";
-import { TechChartModule } from "../tech-chart/tech-chart/tech-chart.module";
+import { TechChartModule } from "../tech-chart/tech-chart.module";
 
 @NgModule({
   declarations: [

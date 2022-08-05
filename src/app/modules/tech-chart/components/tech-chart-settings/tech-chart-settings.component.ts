@@ -11,12 +11,12 @@ import {
   FormGroup,
   Validators
 } from "@angular/forms";
-import { WidgetSettingsService } from "../../../../../shared/services/widget-settings.service";
 import {
   Subject,
   takeUntil
 } from "rxjs";
-import { TechChartSettings } from "../../../../../shared/models/settings/tech-chart-settings.model";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
 
 @Component({
   selector: 'ats-tech-chart-settings[settingsChange][guid]',

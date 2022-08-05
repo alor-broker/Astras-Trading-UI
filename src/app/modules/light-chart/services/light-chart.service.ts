@@ -47,7 +47,9 @@ export class LightChartService extends BaseWebsocketService {
   }
 
   getHistory(request: HistoryRequest): Observable<HistoryResponse> {
-    return this.history.getHistory(request);
+    return this.history.getHistory(request).pipe(
+      filter((x): x is HistoryResponse => !!x)
+    );
   }
 
   changeTimeframe(guid: string, timeFrame: string) {
@@ -90,6 +92,7 @@ export class LightChartService extends BaseWebsocketService {
       settings,
       1)
     ).pipe(
+      filter((x): x is HistoryResponse => !!x),
       map(history => {
         const prevTime = history.history.length > 0
           ? Math.max(...history.history.map(x => x.time))
