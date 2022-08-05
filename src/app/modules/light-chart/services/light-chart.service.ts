@@ -65,21 +65,17 @@ export class LightChartService extends BaseWebsocketService {
     return this.settingsService.getSettings<LightChartSettings>(guid).pipe(
       map(x => x as LightChartSettingsExtended),
       switchMap(settings => {
-        if (settings.minstep == null) {
-          return this.instrumentsService.getInstrument({
-            symbol: settings.symbol,
-            exchange: settings.exchange,
-            instrumentGroup: settings.instrumentGroup
-          }).pipe(
-            filter(x => !!x),
-            map(x => ({
-              ...settings,
-              ...x
-            } as LightChartSettingsExtended))
-          );
-        }
-
-        return of(settings as LightChartSettingsExtended);
+        return this.instrumentsService.getInstrument({
+          symbol: settings.symbol,
+          exchange: settings.exchange,
+          instrumentGroup: settings.instrumentGroup
+        }).pipe(
+          filter(x => !!x),
+          map(x => ({
+            ...settings,
+            ...x
+          } as LightChartSettingsExtended))
+        );
       })
     );
   }
