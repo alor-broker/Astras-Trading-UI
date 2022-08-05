@@ -473,7 +473,8 @@ export function isEqualTechChartSettings(
       settings1.linkToActive == settings2.linkToActive &&
       settings1.guid == settings2.guid &&
       settings1.symbol == settings2.symbol &&
-      settings1.exchange == settings2.exchange
+      settings1.exchange == settings2.exchange &&
+      settings1.chartSettings == settings2.chartSettings
     );
   } else return false;
 }

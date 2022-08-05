@@ -31,7 +31,7 @@ export class WidgetSettingsService {
     this.store.dispatch(addWidgetSettings({ settings }));
   }
 
-  updateSettings(guid: string, changes: Partial<AnySettings>) {
+  updateSettings<T extends AnySettings>(guid: string, changes: Partial<T>) {
     if (!guid) {
       this.logger.warn('WidgetSettingsService', 'updateSettings', 'GUID is empty');
       return;

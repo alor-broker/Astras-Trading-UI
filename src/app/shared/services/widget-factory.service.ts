@@ -260,7 +260,8 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       settingsType: 'TechChartSettings',
       title: 'Тех. анализ',
-      linkToActive: true
+      linkToActive: true,
+      chartSettings: {}
     } as TechChartSettings;
   }
 }
