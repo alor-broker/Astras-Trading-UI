@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of} from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';

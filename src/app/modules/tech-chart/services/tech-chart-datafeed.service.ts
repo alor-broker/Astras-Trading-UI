@@ -60,6 +60,7 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
     const instrumentKey = this.getSymbolAndExchangeFromTicker(symbolName);
     if (!instrumentKey.symbol || !instrumentKey.exchange) {
       onError('Unknown symbol');
+      return;
     }
 
     this.instrumentService.getInstrument(instrumentKey).pipe(
@@ -219,6 +220,7 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
       '1H' as ResolutionString,
       '4h' as ResolutionString,
       '1D' as ResolutionString,
-      '1M' as ResolutionString];
+      '1M' as ResolutionString
+    ];
   }
 }
