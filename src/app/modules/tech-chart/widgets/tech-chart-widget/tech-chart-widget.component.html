@@ -1,6 +1,6 @@
 <ats-tech-chart *ngIf="!shouldShowSettings"
                 [guid]="guid"
-                [resize]="resize"
+                [contentSize]="contentSize$ | async"
                 [shouldShowSettings]="shouldShowSettings"></ats-tech-chart>
 <ats-tech-chart-settings (settingsChange)="onSettingsChange()" *ngIf="shouldShowSettings"
                          [guid]="guid"></ats-tech-chart-settings>

@@ -2,7 +2,6 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  EventEmitter,
   Input,
   OnDestroy,
   OnInit,
@@ -29,23 +28,25 @@ import {
 } from '../../../../../assets/charting_library';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
-import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
-import { map } from 'rxjs/operators';
+import { DashboardItemContentSize } from '../../../../shared/models/dashboard-item.model';
 
 @Component({
-  selector: 'ats-tech-chart[guid][shouldShowSettings][resize]',
+  selector: 'ats-tech-chart[guid][shouldShowSettings][contentSize]',
   templateUrl: './tech-chart.component.html',
   styleUrls: ['./tech-chart.component.less']
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() shouldShowSettings!: boolean;
-  @Input() guid!: string;
-  @Input() resize!: EventEmitter<DashboardItem>;
+  @Input()
+  shouldShowSettings!: boolean;
+
+  @Input()
+  guid!: string;
+
+  @Input()
+  contentSize!: DashboardItemContentSize | null;
 
   @ViewChild('chartContainer', { static: true })
   chartContainer?: ElementRef<HTMLElement>;
-
-  containerHeight$?: Observable<string>;
 
   private chart?: IChartingLibraryWidget;
   private settings$?: Observable<TechChartSettings>;
@@ -60,11 +61,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.initSettingsStream();
-
-    this.containerHeight$ = this.resize?.pipe(
-      map(x => x.height ?? 300),
-      map(x => `${x}px`)
-    );
   }
 
   ngOnDestroy() {

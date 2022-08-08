@@ -2,10 +2,19 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnInit,
   Output
 } from '@angular/core';
 import { TechChartDatafeedService } from "../../services/tech-chart-datafeed.service";
-import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
+import {
+  DashboardItem,
+  DashboardItemContentSize
+} from "../../../../shared/models/dashboard-item.model";
+import { map } from "rxjs/operators";
+import {
+  Observable,
+  shareReplay
+} from "rxjs";
 
 @Component({
   selector: 'ats-tech-chart-widget[shouldShowSettings][guid][resize]',
@@ -13,7 +22,7 @@ import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
   styleUrls: ['./tech-chart-widget.component.less'],
   providers: [TechChartDatafeedService]
 })
-export class TechChartWidgetComponent {
+export class TechChartWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -23,10 +32,22 @@ export class TechChartWidgetComponent {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
+  contentSize$!: Observable<DashboardItemContentSize>;
+
   constructor() {
   }
 
   onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+  }
+
+  ngOnInit(): void {
+    this.contentSize$ = this.resize.pipe(
+      map(x => ({
+        height: x.height,
+        width: x.width
+      } as DashboardItemContentSize)),
+      shareReplay(1)
+    );
   }
 }
