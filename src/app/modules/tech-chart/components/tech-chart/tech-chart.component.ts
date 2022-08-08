@@ -15,9 +15,9 @@ import {
   Subject,
   take,
   takeUntil
-} from "rxjs";
-import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
-import { isEqualTechChartSettings } from "../../../../shared/utils/settings-helper";
+} from 'rxjs';
+import { TechChartSettings } from '../../../../shared/models/settings/tech-chart-settings.model';
+import { isEqualTechChartSettings } from '../../../../shared/utils/settings-helper';
 import {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
@@ -26,11 +26,11 @@ import {
   ResolutionString,
   SubscribeEventsMap,
   widget
-} from "../../../../../assets/charting_library";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { TechChartDatafeedService } from "../../services/tech-chart-datafeed.service";
-import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
-import { map } from "rxjs/operators";
+} from '../../../../../assets/charting_library';
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
+import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'ats-tech-chart[guid][shouldShowSettings][resize]',
@@ -163,7 +163,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       container: this.chartContainer.nativeElement,
       symbol: `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
       interval: '1D' as ResolutionString,
-      locale: "ru",
+      locale: 'ru',
       library_path: '/assets/charting_library/',
       datafeed: this.techChartDatafeedService,
       settings_adapter: this.createSettingsAdapter(settings),
@@ -173,16 +173,24 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       timezone: 'exchange',
       theme: 'Dark',
       time_frames: [
-        { text: "1000y", resolution: "1M" as ResolutionString, description: "Все", title: "Все" },
-        { text: "3y", resolution: "1M" as ResolutionString, description: "3 года", title: "3г" },
-        { text: "1y", resolution: "1D" as ResolutionString, description: "1 год", title: "1г" },
-        { text: "6m", resolution: "1D" as ResolutionString, description: "6 месяцев", title: "6М" },
-        { text: "3m", resolution: "4H" as ResolutionString, description: "3 месяца", title: "3М" },
-        { text: "1m", resolution: "1H" as ResolutionString, description: "1 месяц", title: "1М" },
-        { text: "14d", resolution: "1H" as ResolutionString, description: "2 недели", title: "2Н" },
-        { text: "7d", resolution: "15" as ResolutionString, description: "1 неделя", title: "1Н" },
-        { text: "1d", resolution: "5" as ResolutionString as ResolutionString, description: "1 день", title: "1д" },
+        { text: '1000y', resolution: '1M' as ResolutionString, description: 'Все', title: 'Все' },
+        { text: '3y', resolution: '1M' as ResolutionString, description: '3 года', title: '3г' },
+        { text: '1y', resolution: '1D' as ResolutionString, description: '1 год', title: '1г' },
+        { text: '6m', resolution: '1D' as ResolutionString, description: '6 месяцев', title: '6М' },
+        { text: '3m', resolution: '4H' as ResolutionString, description: '3 месяца', title: '3М' },
+        { text: '1m', resolution: '1H' as ResolutionString, description: '1 месяц', title: '1М' },
+        { text: '14d', resolution: '1H' as ResolutionString, description: '2 недели', title: '2Н' },
+        { text: '7d', resolution: '15' as ResolutionString, description: '1 неделя', title: '1Н' },
+        { text: '1d', resolution: '5' as ResolutionString as ResolutionString, description: '1 день', title: '1д' },
       ],
+      studies_access: {
+        type: 'black',
+        tools: [
+          { name: 'Ratio' },
+          { name: 'Spread' },
+          { name: 'Correlation - Log' },
+        ]
+      },
       //features
       disabled_features: [
         'header_compare',
@@ -199,7 +207,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.subscribeToChartEvent(
       this.chart,
-      "drawing",
+      'drawing',
       () => this.settingsService.updateIsLinked(settings.guid, false)
     );
   }
