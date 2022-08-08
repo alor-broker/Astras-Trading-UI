@@ -154,7 +154,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const config: ChartingLibraryWidgetOptions = {
       // debug
-      debug: true,
+      debug: false,
       // base options
       container: this.chartContainer.nativeElement,
       symbol: `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
