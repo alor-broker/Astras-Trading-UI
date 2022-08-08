@@ -11,9 +11,11 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { OrderbookHotKeysService } from "../../../../shared/services/orderbook-hot-keys.service";
 import { NzNotificationService } from "ng-zorro-antd/notification";
+import { CommandsService } from "../../../command/services/commands.service";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { CurrentPortfolioOrderService } from "../../../../shared/services/orders/current-portfolio-order.service";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -21,7 +23,10 @@ describe('ScalperOrderBookComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ScalperOrderBookComponent],
+      declarations: [
+        ScalperOrderBookComponent,
+        ...ngZorroMockComponents
+      ],
       providers: [
         {
           provide: WidgetSettingsService,

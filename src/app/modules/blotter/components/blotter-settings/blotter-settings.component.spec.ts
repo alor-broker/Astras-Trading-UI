@@ -4,10 +4,13 @@ import {
 } from '@angular/core/testing';
 
 import { BlotterSettingsComponent } from './blotter-settings.component';
-import { AppModule } from 'src/app/app.module';
-import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { ReactiveFormsModule } from "@angular/forms";
+import { NzSelectModule } from "ng-zorro-antd/select";
+import { NzSwitchModule } from "ng-zorro-antd/switch";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 
 describe('BlotterSettingsComponent', () => {
   let component: BlotterSettingsComponent;
@@ -24,8 +27,16 @@ describe('BlotterSettingsComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [BlotterSettingsComponent],
-      imports: [...sharedModuleImportForTests, AppModule],
+      declarations: [
+        BlotterSettingsComponent,
+        ...ngZorroMockComponents,
+      ],
+      imports: [
+        NoopAnimationsModule,
+        ReactiveFormsModule,
+        NzSelectModule,
+        NzSwitchModule
+      ],
       providers: [
         {
           provide: WidgetSettingsService,

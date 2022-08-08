@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { InstrumentSelectWidgetComponent } from './instrument-select-widget.component';
+import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('InstrumentSelectWidgetComponent', () => {
   let component: InstrumentSelectWidgetComponent;
@@ -9,7 +10,13 @@ describe('InstrumentSelectWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [InstrumentSelectWidgetComponent]
+      declarations: [
+        InstrumentSelectWidgetComponent,
+        mockComponent({
+          selector: 'ats-instrument-select',
+          inputs: ['guid', 'shouldShowSettings']
+        })
+      ]
     }).compileComponents();
   });
 

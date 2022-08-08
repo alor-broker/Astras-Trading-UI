@@ -108,10 +108,4 @@ export class DashboardComponent implements OnInit {
       map(map => Array.from(map.values()))
     );
   }
-
-  changedOptions(): void {
-    if (this.options.api && this.options.api.optionsChanged) {
-      this.options.api.optionsChanged();
-    }
-  }
 }

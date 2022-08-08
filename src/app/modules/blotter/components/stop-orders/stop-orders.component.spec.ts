@@ -5,12 +5,12 @@ import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { StopOrdersComponent } from './stop-orders.component';
-import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { of } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -31,9 +31,6 @@ describe('StopOrdersComponent', () => {
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)));
 
     await TestBed.configureTestingModule({
-      imports: [
-        ...sharedModuleImportForTests
-      ],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -46,7 +43,10 @@ describe('StopOrdersComponent', () => {
         { provide: OrderCancellerService, useValue: cancelSpy },
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
       ],
-      declarations: [StopOrdersComponent]
+      declarations: [
+        StopOrdersComponent,
+        ...ngZorroMockComponents
+      ]
     }).compileComponents();
   });
 

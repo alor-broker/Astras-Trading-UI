@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LoadingIndicatorComponent } from './loading-indicator.component';
+import { ngZorroMockComponents } from "../../utils/testing";
 
 describe('LoadingIndicatorComponent', () => {
   let component: LoadingIndicatorComponent;
@@ -9,7 +10,10 @@ describe('LoadingIndicatorComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LoadingIndicatorComponent ]
+      declarations: [
+        LoadingIndicatorComponent,
+        ...ngZorroMockComponents
+      ]
     })
     .compileComponents();
   });

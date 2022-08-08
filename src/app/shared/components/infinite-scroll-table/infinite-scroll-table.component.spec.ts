@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { InfiniteScrollTableComponent } from './infinite-scroll-table.component';
+import { ngZorroMockComponents } from "../../utils/testing";
 
 describe('InfiniteScrollTableComponent', () => {
   let component: InfiniteScrollTableComponent;
@@ -8,7 +9,10 @@ describe('InfiniteScrollTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InfiniteScrollTableComponent ]
+      declarations: [
+        InfiniteScrollTableComponent,
+        ...ngZorroMockComponents
+      ]
     })
     .compileComponents();
   });

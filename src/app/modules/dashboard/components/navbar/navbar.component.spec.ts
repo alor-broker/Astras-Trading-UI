@@ -1,6 +1,4 @@
-import { LayoutModule } from '@angular/cdk/layout';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { NavbarComponent } from './navbar.component';
 import { AccountService } from '../../../../shared/services/account.service';
@@ -9,31 +7,48 @@ import { of } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { PortfolioExtended } from '../../../../shared/models/user/portfolio-extended.model';
-import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import { Store } from "@ngrx/store";
+import { mockComponent, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { RouterModule } from "@angular/router";
+import { NzSelectModule } from "ng-zorro-antd/select";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { FormsModule } from "@angular/forms";
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
   const spyAccount = jasmine.createSpyObj('AccountService', ['getActivePortfolios']);
   spyAccount.getActivePortfolios.and.returnValue(of([]));
-  const spyDashboard = jasmine.createSpy('DashboardService');
+  const spyDashboard = jasmine.createSpyObj('DashboardService', ['clearDashboard', 'addWidget']);
   const spyAuth = jasmine.createSpyObj('AuthService', ['logout']);
-  const spyModal = jasmine.createSpyObj('ModalService', ['openTerminalSettingsModal']);
+  const spyModal = jasmine.createSpyObj('ModalService', ['openTerminalSettingsModal', 'openCommandModal']);
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [NavbarComponent],
-      imports: [
-        NoopAnimationsModule,
-        LayoutModule,
-        ...sharedModuleImportForTests
+      declarations: [
+        NavbarComponent,
+        ...ngZorroMockComponents,
+        mockComponent({selector: 'ats-widget-menu'}),
       ],
       providers: [
         { provide: AccountService, useValue: spyAccount },
         { provide: DashboardService, useValue: spyDashboard },
         { provide: AuthService, useValue: spyAuth },
-        { provide: ModalService, useValue: spyModal }
+        { provide: ModalService, useValue: spyModal },
+        {
+          provide: Store,
+          useValue: {
+            select: jasmine.createSpy('select').and.returnValue(of({})),
+            dispatch: jasmine.createSpy('dispatch').and.callThrough()
+          }
+        }
+      ],
+      imports: [
+        NoopAnimationsModule,
+        RouterModule.forRoot([]),
+        NzSelectModule,
+        FormsModule
       ]
     }).compileComponents();
   });

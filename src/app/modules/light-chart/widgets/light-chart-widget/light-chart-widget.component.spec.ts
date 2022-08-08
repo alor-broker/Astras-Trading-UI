@@ -4,6 +4,7 @@ import {
 } from '@angular/core/testing';
 
 import { LightChartWidgetComponent } from './light-chart-widget.component';
+import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('LightChartWidgetComponent', () => {
   let component: LightChartWidgetComponent;
@@ -12,7 +13,13 @@ describe('LightChartWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LightChartWidgetComponent],
+      declarations: [
+        LightChartWidgetComponent,
+        mockComponent({
+          selector: 'ats-light-chart',
+          inputs: ['guid', 'resize', 'shouldShowSettings']
+        })
+      ],
       providers: []
     })
       .compileComponents();
