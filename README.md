@@ -5,7 +5,7 @@
 ![image](https://user-images.githubusercontent.com/6408195/154630168-1d8c45fb-deb9-46c6-a4a6-83dd2900d352.png)
 
 
-# Architecture `todo: translate`
+# Architecture
 Мы расмотрим общую архитектуру (backend+frontend) и архитектуру самого фронтенда
 
 ## Whole picture
