@@ -24,6 +24,7 @@ import {
   InitialSettingsMap,
   ISettingsAdapter,
   ResolutionString,
+  SubscribeEventsMap,
   widget
 } from "../../../../../assets/charting_library";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -49,6 +50,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private chart?: IChartingLibraryWidget;
   private settings$?: Observable<TechChartSettings>;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
+  private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -66,7 +68,11 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    this.chart?.remove();
+    if (this.chart) {
+      this.clearChartEventsSubscription(this.chart);
+      this.chart?.remove();
+    }
+
     this.techChartDatafeedService.clear();
 
     this.destroy$.next(true);
@@ -141,7 +147,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private createChart(settings: TechChartSettings) {
-    this.chart?.remove();
+    if (this.chart) {
+      this.clearChartEventsSubscription(this.chart);
+      this.chart?.remove();
+    }
 
     if (!this.chartContainer) {
       return;
@@ -179,10 +188,29 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         'header_compare',
         'header_symbol_search',
         'symbol_info',
-        'left_toolbar',
+        'display_market_status',
+      ],
+      enabled_features: [
+        'side_toolbar_in_fullscreen_mode'
       ]
     };
 
     this.chart = new widget(config);
+
+    this.subscribeToChartEvent(
+      this.chart,
+      "drawing",
+      () => this.settingsService.updateIsLinked(settings.guid, false)
+    );
+  }
+
+  private subscribeToChartEvent(target: IChartingLibraryWidget, event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap]) {
+    this.chartEventSubscriptions.push({ event: event, callback });
+    target.subscribe(event, callback);
+  }
+
+  private clearChartEventsSubscription(target: IChartingLibraryWidget) {
+    this.chartEventSubscriptions.forEach(subscription => target.unsubscribe(subscription.event, subscription.callback));
+    this.chartEventSubscriptions = [];
   }
 }
