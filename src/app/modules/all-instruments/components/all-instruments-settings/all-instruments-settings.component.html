@@ -1,0 +1,23 @@
+<p>Настройки</p>
+<div>
+  <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
+    <nz-form-item class="compact">
+      <nz-form-control nzErrorTip="Выберите колонки">
+        <nz-form-label nzRequired nzFor="allInstrumentsColumns">Колонки позиций</nz-form-label>
+        <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
+                   nzPlaceHolder="Выберите..." formControlName="allInstrumentsColumns">
+          <nz-option *ngFor="let item of allInstrumentsColumns" [nzLabel]="item.name" [nzValue]="item.columnId">
+          </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="compact">
+      <nz-form-control>
+        <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</div>
+
+<ng-template #tagPlaceHolder let-selectedList>and {{ selectedList.length }} more selected</ng-template>

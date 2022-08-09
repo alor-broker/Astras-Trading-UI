@@ -1,0 +1,9 @@
+<ats-infinite-scroll-table
+  [tableContainerHeight]="tableContainerHeight"
+  [tableContainerWidth]="tableContainerWidth"
+  [data]="instrumentsList"
+  [isLoading]="isLoading"
+  [columns]="displayedColumns"
+  (scrolled)="scrolled()"
+  (filterApplied)="applyFilter($event)"
+></ats-infinite-scroll-table>

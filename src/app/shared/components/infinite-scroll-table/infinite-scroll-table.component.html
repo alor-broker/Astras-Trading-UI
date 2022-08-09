@@ -15,8 +15,21 @@
 >
   <thead>
   <tr #tableRow>
-    <th *ngFor="let column of columns" [nzWidth]="column.width ?? null">
+    <th
+      *ngFor="let column of columns"
+      [nzWidth]="column.width ?? null"
+      [nzShowSort]="!!column.sortFn"
+      (nzSortOrderChange)="column.sortFn!($event)"
+      nzCustomFilter
+    >
       {{column.displayName}}
+      <nz-filter-trigger
+        *ngIf="column.isFiltering"
+        (nzVisibleChange)="openedFilterChange(column.name, $event)"
+        [nzDropdownMenu]="searchMenu"
+      >
+        <i nz-icon nzType="search"></i>
+      </nz-filter-trigger>
     </th>
   </tr>
   </thead>
@@ -31,3 +44,20 @@
   </ng-template>
   </tbody>
 </nz-table>
+
+<nz-dropdown-menu #searchMenu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown table-filter">
+    <div *ngFor='let column of columns'>
+      <div *ngIf='column.isFiltering && activeFilterName === column.name'>
+        <input
+          nz-input
+          class='ant-input'
+          type="text"
+          [placeholder]="column.displayName"
+          [formControl]="getFilterControl(column.name)"
+        />
+        <button nz-button nzType="primary" nzSize="small" (click)="resetFilter(column.name)">Сбросить</button>
+      </div>
+    </div>
+  </div>
+</nz-dropdown-menu>

@@ -9,4 +9,10 @@ export interface ColumnsSettings {
   classFn?: (data: any) => string | null;
   // Ширина столбца
   width?: string;
+  // Сортирующийся ли столбец
+  sortFn?: (direction: string | null) => any;
+  // Сортирующийся ли столбец
+  isFiltering?: boolean;
+  // Открыт ли фильтр
+  isOpenedFilter?: boolean;
 }

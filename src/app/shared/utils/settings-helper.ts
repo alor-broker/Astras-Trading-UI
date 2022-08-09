@@ -10,6 +10,7 @@ import { NewsSettings } from "../models/settings/news-settings.model";
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
 import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-settings.model";
+import { AllInstrumentsSettings } from "../models/settings/all-instruments-settings.model";
 
 /**
  * A type with describes settings with depends on an instrument
@@ -230,6 +231,19 @@ export function isExchangeRateSettings(settings: AnySettings): settings is Excha
 }
 
 /**
+ * A guard which checks if settings is an all-instruments settings
+ * @param settings Settings to check
+ */
+export function isAllInstrumentsSettings(settings: AnySettings): settings is AllInstrumentsSettings {
+  if(!!settings?.settingsType) {
+    return settings.settingsType === 'AllInstrumentsSettings';
+  }
+
+  // code below for backward compatibility only;
+  return settings && !!settings.title?.includes('Все инструменты');
+}
+
+/**
  * Checks the equality of settings by value
  * @param settings1 first settings
  * @param settings2 second settings
@@ -288,6 +302,9 @@ export function getTypeBySettings(settings: AnySettings) {
   }
   if (isNewsSettings(settings)) {
     return WidgetNames.news;
+  }
+  if (isAllInstrumentsSettings(settings)) {
+    return WidgetNames.allInstruments;
   }
   return WidgetNames.instrumentSelect;
 }

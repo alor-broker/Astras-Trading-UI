@@ -19,6 +19,7 @@ import { OnboardingService } from './services/onboarding.service';
 import { AllTradesModule } from "../all-trades/all-trades.module";
 import { NewsModule } from "../news/news.module";
 import { ExchangeRateModule } from "../exchange-rate/exchange-rate.module";
+import { AllInstrumentsModule } from "../all-instruments/all-instruments.module";
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { ExchangeRateModule } from "../exchange-rate/exchange-rate.module";
         AllTradesModule,
         NewsModule,
         ExchangeRateModule,
+        AllInstrumentsModule
         // components
     ],
   providers: [
