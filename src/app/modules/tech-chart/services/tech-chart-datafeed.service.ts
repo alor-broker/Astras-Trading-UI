@@ -9,6 +9,7 @@ import {
   PeriodParams,
   ResolutionString,
   ResolveCallback,
+  SearchSymbolsCallback,
   ServerTimeCallback,
   SubscribeBarsCallback,
 } from "../../../../assets/charting_library";
@@ -26,6 +27,7 @@ import { Candle } from "../../../shared/models/history/candle.model";
 import { environment } from "../../../../environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { MathHelper } from "../../../shared/utils/math-helper";
+import { SearchFilter } from "../../instruments/models/search-filter.model";
 
 @Injectable()
 export class TechChartDatafeedService extends BaseWebsocketService implements IBasicDataFeed {
@@ -46,14 +48,44 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
 
     const config: DatafeedConfiguration = {
       supports_time: true,
-      supported_resolutions: this.getSupportedResolutions()
+      supported_resolutions: this.getSupportedResolutions(),
+      exchanges: [
+        {
+          value: 'MOEX',
+          name: 'Московская Биржа',
+          desc: 'Московская Биржа'
+        },
+        {
+          value: 'SPBX',
+          name: 'SPBX',
+          desc: 'SPBX'
+        }
+      ]
     };
 
     setTimeout(() => callback(config), 0);
   }
 
-  searchSymbols(): void {
-    // search is not supported
+  searchSymbols(userInput: string, exchange: string, symbolType: string, onResult: SearchSymbolsCallback): void {
+    this.instrumentService.getInstruments({
+      query: userInput,
+      exchange: exchange
+    } as SearchFilter).pipe(
+      take(1)
+    ).subscribe(results => {
+      if (!results) {
+        return [];
+      }
+
+      return onResult(results.map(x => ({
+        symbol: x.symbol,
+        exchange: x.exchange,
+        ticker: `${x.exchange}:${x.symbol}`,
+        description: x.description,
+        full_name: x.symbol,
+        type: ''
+      })));
+    });
   }
 
   resolveSymbol(symbolName: string, onResolve: ResolveCallback, onError: ErrorCallback): void {

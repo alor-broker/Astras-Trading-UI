@@ -17,7 +17,8 @@ import {
   DatafeedConfiguration,
   LibrarySymbolInfo,
   PeriodParams,
-  ResolutionString
+  ResolutionString,
+  SearchSymbolResultItem
 } from "../../../../assets/charting_library";
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
 import {
@@ -38,7 +39,7 @@ describe('TechChartDatafeedService', () => {
 
   beforeEach(() => {
     websocketServiceSpy = jasmine.createSpyObj('WebsocketService', ['connect', 'subscribe', 'messages$']);
-    instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
+    instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument', 'getInstruments']);
     historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getHistory']);
   });
 
@@ -78,6 +79,18 @@ describe('TechChartDatafeedService', () => {
           '4h' as ResolutionString,
           '1D' as ResolutionString,
           '1M' as ResolutionString
+        ],
+        exchanges: [
+          {
+            value: 'MOEX',
+            name: 'Московская Биржа',
+            desc: 'Московская Биржа'
+          },
+          {
+            value: 'SPBX',
+            name: 'SPBX',
+            desc: 'SPBX'
+          }
         ]
       };
 
@@ -184,6 +197,37 @@ describe('TechChartDatafeedService', () => {
         expect(reason).toBe('Unknown symbol');
       }
     );
+  });
+
+  it('#searchSymbols should pass value to onResult callback', (done) => {
+    const instrumentDetails = {
+      symbol: 'SBER',
+      exchange: 'MOEX',
+      instrumentGroup: 'TQBR',
+      description: 'description',
+      currency: 'RUB',
+      minstep: 0.01,
+      type: 'type'
+    } as Instrument;
+
+    const expectedResult: SearchSymbolResultItem[] = [
+      {
+        symbol: instrumentDetails.symbol,
+        exchange: instrumentDetails.exchange,
+        ticker: `${instrumentDetails.exchange}:${instrumentDetails.symbol}`,
+        description: instrumentDetails.description,
+        full_name: instrumentDetails.symbol,
+        type: ''
+      }
+    ];
+
+    instrumentsServiceSpy.getInstruments.and.returnValue(of([instrumentDetails]));
+
+    service.searchSymbols('test', 'MOEX', '', items => {
+      done();
+
+      expect(items).toEqual(expectedResult);
+    });
   });
 
   it('#getBars should pass value to onResult callback', (done) => {

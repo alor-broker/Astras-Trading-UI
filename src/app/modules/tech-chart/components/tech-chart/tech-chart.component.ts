@@ -179,17 +179,9 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         { text: '7d', resolution: '15' as ResolutionString, description: '1 неделя', title: '1Н' },
         { text: '1d', resolution: '5' as ResolutionString as ResolutionString, description: '1 день', title: '1д' },
       ],
-      studies_access: {
-        type: 'black',
-        tools: [
-          { name: 'Ratio' },
-          { name: 'Spread' },
-          { name: 'Correlation - Log' },
-        ]
-      },
+      symbol_search_request_delay: 2000,
       //features
       disabled_features: [
-        'header_compare',
         'header_symbol_search',
         'symbol_info',
         'display_market_status',
