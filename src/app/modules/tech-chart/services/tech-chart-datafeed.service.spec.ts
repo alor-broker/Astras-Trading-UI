@@ -113,17 +113,20 @@ describe('TechChartDatafeedService', () => {
 
     const expectedSymbol = {
       name: instrumentDetails.symbol,
+      full_name: instrumentDetails.symbol,
       ticker: `${instrumentDetails.exchange}:${instrumentDetails.symbol}:${instrumentDetails.instrumentGroup}`,
       exchange: instrumentDetails.exchange,
       listed_exchange: instrumentDetails.exchange,
       description: instrumentDetails.description,
       currency_code: instrumentDetails.currency,
+      type: instrumentDetails.type,
       minmov: 1,
       pricescale: 100,
-      sector: instrumentDetails.type,
+      format: 'price',
       has_empty_bars: false,
       has_intraday: true,
       timezone: 'Europe/Moscow',
+      session: '24x7',
       supported_resolutions: [
         '1' as ResolutionString,
         '5' as ResolutionString,
@@ -204,7 +207,7 @@ describe('TechChartDatafeedService', () => {
     service.getBars(
       { ticker: 'MOEX:SBER' } as LibrarySymbolInfo,
       '1' as ResolutionString,
-      { from: 0 } as PeriodParams,
+      { firstDataRequest: true, from: 0 } as PeriodParams,
       (bars) => {
         done();
 
@@ -226,7 +229,7 @@ describe('TechChartDatafeedService', () => {
       { ticker: 'MOEX:SBER' } as LibrarySymbolInfo,
       '1' as ResolutionString,
       { from: 0 } as PeriodParams,
-      (bars) => {
+      () => {
         throw new Error();
       },
       reason => {
@@ -237,6 +240,34 @@ describe('TechChartDatafeedService', () => {
   });
 
   it('#subscribeBars should pass value to onTick callback', (done) => {
+    const symbolInfo = { ticker: 'MOEX:SBER' } as LibrarySymbolInfo;
+    const resolution = '1' as ResolutionString;
+    const historyResponse: HistoryResponse = {
+      history: [
+        {
+          time: Date.now() / 1000,
+          open: 100,
+          close: 120,
+          low: 95,
+          high: 105,
+          volume: 1000
+        }
+      ],
+      prev: 0,
+      next: 0
+    };
+
+    historyServiceSpy.getHistory.and.returnValue(of(historyResponse));
+    service.getBars(
+      symbolInfo,
+      resolution,
+      { firstDataRequest: true, from: 0 } as PeriodParams,
+      () => {
+      },
+      () => {
+      }
+    );
+
     const expectedBar = {
       time: Date.now() / 1000,
       open: 100,

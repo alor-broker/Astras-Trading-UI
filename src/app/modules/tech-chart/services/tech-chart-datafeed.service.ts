@@ -29,7 +29,7 @@ import { MathHelper } from "../../../shared/utils/math-helper";
 
 @Injectable()
 export class TechChartDatafeedService extends BaseWebsocketService implements IBasicDataFeed {
-  private lastHistoryPoint?: number;
+  private lastBarPoint: number | null = null;
   private barsSubscription?: Subscription;
 
   constructor(
@@ -42,7 +42,7 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
   }
 
   onReady(callback: OnReadyCallback): void {
-    this.lastHistoryPoint = undefined;
+    this.lastBarPoint = null;
 
     const config: DatafeedConfiguration = {
       supports_time: true,
@@ -74,28 +74,34 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
       const precision = MathHelper.getPrecision(instrumentDetails.minstep);
       const priceScale = Number((10 ** precision).toFixed(precision));
 
-      onResolve(
-        {
-          name: instrumentDetails.symbol,
-          ticker: symbolName,
-          description: instrumentDetails.description,
-          exchange: instrumentDetails.exchange,
-          listed_exchange: instrumentDetails.exchange,
-          currency_code: instrumentDetails.currency,
-          minmov: Math.round(instrumentDetails.minstep * priceScale),
-          pricescale: priceScale,
-          sector: instrumentDetails.type,
-          has_empty_bars: false,
-          has_intraday: true,
-          timezone: 'Europe/Moscow',
-          supported_resolutions: this.getSupportedResolutions()
-        } as LibrarySymbolInfo
-      );
+      const resolve: LibrarySymbolInfo = {
+        name: instrumentDetails.symbol,
+        ticker: symbolName,
+        description: instrumentDetails.description,
+        exchange: instrumentDetails.exchange,
+        listed_exchange: instrumentDetails.exchange,
+        currency_code: instrumentDetails.currency,
+        minmov: Math.round(instrumentDetails.minstep * priceScale),
+        pricescale: priceScale,
+        format: 'price',
+        full_name: instrumentDetails.symbol,
+        type: instrumentDetails.type ?? '',
+        has_empty_bars: false,
+        has_intraday: true,
+        timezone: 'Europe/Moscow',
+        supported_resolutions: this.getSupportedResolutions(),
+        session: '24x7'
+      };
+
+      onResolve(resolve);
     });
   }
 
   getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParams, onResult: HistoryCallback, onError: ErrorCallback): void {
     const instrumentKey = this.getSymbolAndExchangeFromTicker(symbolInfo.ticker!);
+    if (periodParams.firstDataRequest) {
+      this.lastBarPoint = null;
+    }
 
     this.historyService.getHistory({
       code: instrumentKey.symbol,
@@ -114,9 +120,11 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
 
       const dataIsEmpty = history.history.length === 0;
 
-      this.lastHistoryPoint = periodParams.firstDataRequest && !dataIsEmpty
-        ? history.history[history.history.length - 1].time
-        : undefined;
+      if (periodParams.firstDataRequest) {
+        this.lastBarPoint = !dataIsEmpty
+          ? history.history[history.history.length - 1].time
+          : this.getDefaultLastHistoryPoint();
+      }
 
       const nextTime = periodParams.firstDataRequest ? history.next : history.prev;
       onResult(
@@ -144,10 +152,15 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
       format: 'simple',
       guid: listenerGuid,
       tf: this.parseTimeframe(resolution),
-      from: this.lastHistoryPoint ?? this.getDefaultLastHistoryPoint()
+      from: this.lastBarPoint ?? this.getDefaultLastHistoryPoint()
     };
 
     this.barsSubscription = this.getEntity<Candle>(request).subscribe(candle => {
+      if (!this.lastBarPoint || candle.time < this.lastBarPoint) {
+        return;
+      }
+
+      this.lastBarPoint = candle.time;
       onTick({
         ...candle,
         time: candle.time * 1000
