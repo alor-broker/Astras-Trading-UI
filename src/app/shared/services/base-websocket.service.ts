@@ -20,6 +20,8 @@ export abstract class BaseWebsocketService {
     this.subGuids.forEach(guid => {
       this.ws.unsubscribe(guid);
     });
+
+    this.subGuids.clear();
   }
 
   protected getEntity<T>(request: BaseRequest): Observable<T> {
