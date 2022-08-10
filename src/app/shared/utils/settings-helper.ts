@@ -235,12 +235,7 @@ export function isExchangeRateSettings(settings: AnySettings): settings is Excha
  * @param settings Settings to check
  */
 export function isAllInstrumentsSettings(settings: AnySettings): settings is AllInstrumentsSettings {
-  if(!!settings?.settingsType) {
-    return settings.settingsType === 'AllInstrumentsSettings';
-  }
-
-  // code below for backward compatibility only;
-  return settings && !!settings.title?.includes('Все инструменты');
+  return settings.settingsType === 'AllInstrumentsSettings';
 }
 
 /**

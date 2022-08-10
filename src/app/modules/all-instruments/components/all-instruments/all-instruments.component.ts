@@ -68,9 +68,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getInstruments();
 
-    this.settingsService.getSettings<AllInstrumentsSettings>(this.guid).pipe(
-      shareReplay()
-    )
+    this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
       .pipe(takeUntil(this.destroy$))
       .subscribe(settings => {
         this.displayedColumns = this.allColumns.filter(col => settings.allInstrumentsColumns.includes(col.name));
