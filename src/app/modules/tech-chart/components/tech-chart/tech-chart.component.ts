@@ -102,7 +102,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     return {
       get initialSettings(): InitialSettingsMap | undefined {
-        return initialSettings.chartSettings;
+          return initialSettings.chartSettings;
       },
 
       setValue(key: string, value: string): void {
@@ -154,13 +154,13 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const config: ChartingLibraryWidgetOptions = {
       // debug
-      debug: false,
       // base options
       container: this.chartContainer.nativeElement,
       symbol: `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
       interval: '1D' as ResolutionString,
       locale: 'ru',
       library_path: '/assets/charting_library/',
+      custom_css_url: '../tv-custom-styles.css',
       datafeed: this.techChartDatafeedService,
       settings_adapter: this.createSettingsAdapter(settings),
       // additional options
@@ -192,6 +192,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     this.chart = new widget(config);
+
+    this.chart.applyOverrides({ 'paneProperties.background': '#141414', 'paneProperties.backgroundType' : 'solid' });
 
     this.subscribeToChartEvent(
       this.chart,
