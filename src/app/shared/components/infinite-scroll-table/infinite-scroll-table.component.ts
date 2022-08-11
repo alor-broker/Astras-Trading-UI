@@ -88,10 +88,6 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
       });
   }
 
-  public applyFilter() {
-    this.filterApplied.emit(this.filtersForm.value);
-  }
-
   public getWidthArr() {
     return this.columns.map(col => col.width || 'auto');
   }

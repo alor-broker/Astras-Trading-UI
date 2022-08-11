@@ -4,6 +4,7 @@ import { AllInstrumentsService } from './all-instruments.service';
 import { HttpClient } from "@angular/common/http";
 import { of } from "rxjs";
 import { environment } from "../../../../environments/environment";
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 
 describe('AllInstrumentsService', () => {
   let service: AllInstrumentsService;
@@ -17,6 +18,10 @@ describe('AllInstrumentsService', () => {
           useValue: {
             get: jasmine.createSpy('get').and.returnValue(of([]))
           }
+        },
+        {
+          provide: ErrorHandlerService,
+          useValue: {}
         }
       ]
     });
