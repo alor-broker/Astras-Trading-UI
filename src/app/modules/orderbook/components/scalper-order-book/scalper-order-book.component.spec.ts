@@ -4,22 +4,67 @@ import {
 } from '@angular/core/testing';
 
 import { ScalperOrderBookComponent } from './scalper-order-book.component';
-import { of } from "rxjs";
-import { OrderbookService } from "../../services/orderbook.service";
+import { Subject } from "rxjs";
 import { ScalperOrderBook } from "../../models/scalper-order-book.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { OrderbookHotKeysService } from "../../../../shared/services/orderbook-hot-keys.service";
-import { NzNotificationService } from "ng-zorro-antd/notification";
-import { CommandsService } from "../../../command/services/commands.service";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
-import { ModalService } from "../../../../shared/services/modal.service";
-import { CurrentPortfolioOrderService } from "../../../../shared/services/orders/current-portfolio-order.service";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { ScalperOrderBookSettings } from "../../../../shared/models/settings/scalper-order-book-settings.model";
+import { ScalperOrderBookService } from "../../services/scalper-order-book.service";
+import { TerminalSettings } from "../../../../shared/models/terminal-settings/terminal-settings.model";
+import { Instrument } from "../../../../shared/models/instruments/instrument.model";
+import { ScalperOrdersService } from "../../services/scalper-orders.service";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
   let fixture: ComponentFixture<ScalperOrderBookComponent>;
+
+  const settingsMock = new Subject<ScalperOrderBookSettings>();
+  const scalperOrderBookMock = new Subject<ScalperOrderBook>();
+  const terminalSettingsMock = new Subject<TerminalSettings>();
+  const instrumentMock = new Subject<Instrument>();
+
+  let widgetSettingsServiceSpy: any;
+  let scalperOrderBookServiceSpy: any;
+  let terminalSettingsServiceSpy: any;
+  let instrumentsServiceSpy: any;
+  let scalperOrdersServiceSpy: any;
+
+  beforeEach(() => {
+    widgetSettingsServiceSpy = jasmine.createSpyObj(
+      'WidgetSettingsService',
+      [
+        'getSettings',
+        'updateSettings'
+      ]
+    );
+
+    widgetSettingsServiceSpy.getSettings.and.returnValue(settingsMock);
+
+    scalperOrderBookServiceSpy = jasmine.createSpyObj('ScalperOrderBookService', ['getOrderBookRealtimeData']);
+    scalperOrderBookServiceSpy.getOrderBookRealtimeData.and.returnValue(scalperOrderBookMock);
+
+    terminalSettingsServiceSpy = jasmine.createSpyObj('TerminalSettingsService', ['getSettings']);
+    terminalSettingsServiceSpy.getSettings.and.returnValue(terminalSettingsMock);
+
+    instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
+    instrumentsServiceSpy.getInstrument.and.returnValue(instrumentMock);
+
+    scalperOrdersServiceSpy = jasmine.createSpyObj(
+      'ScalperOrdersService',
+      [
+        'cancelOrders',
+        'closePositionsByMarket',
+        'placeBestOrder',
+        'placeMarketOrder',
+        'placeLimitOrder',
+        'reversePositionsByMarket',
+        'setStopLimitForRow',
+        'setStopLoss',
+      ]
+    );
+  });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -28,63 +73,14 @@ describe('ScalperOrderBookComponent', () => {
         ...ngZorroMockComponents
       ],
       providers: [
-        {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({
-              symbol: 'SBER', exchange: 'MOEX', showTable: true
-            }))
-          }
-        },
-        {
-          provide: OrderbookService,
-          useValue: {
-            getVerticalOrderBook: jasmine.createSpy('getVerticalOrderBook').and.returnValue(of({
-              asks: [],
-              bids: [],
-              spreadItems: []
-            } as ScalperOrderBook))
-          }
-        },
-        {
-          provide: InstrumentsService,
-          useValue: { getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({})) }
-        },
-        {
-          provide: OrderbookHotKeysService,
-          useValue: {
-            orderBookEventSub: of({}),
-            activeOrderbookChange: jasmine.createSpy('activeOrderbookChange')
-          }
-        },
-        {
-          provide: CurrentPortfolioOrderService,
-          useValue: {
-            submitMarketOrder: jasmine.createSpy('submitMarketOrder').and.returnValue(of({})),
-            submitLimitOrder: jasmine.createSpy('submitLimitOrder').and.returnValue(of({})),
-            submitStopLimitOrder: jasmine.createSpy('submitStopLimitOrder').and.returnValue(of({})),
-            submitStopMarketOrder: jasmine.createSpy('submitStopMarketOrder').and.returnValue(of({})),
-          }
-        },
-        {
-          provide: NzNotificationService,
-          useValue: {
-            error: jasmine.createSpy('error')
-          }
-        },
-        {
-          provide: TerminalSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))
-          }
-        },
-        {
-          provide: ModalService,
-          useValue:  jasmine.createSpy('openCommandModal').and.callThrough()
-        },
+        { provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy },
+        { provide: TerminalSettingsService, useValue: terminalSettingsServiceSpy },
+        { provide: ScalperOrderBookService, useValue: scalperOrderBookServiceSpy },
+        { provide: InstrumentsService, useValue: instrumentsServiceSpy },
+        { provide: ScalperOrdersService, useValue: scalperOrdersServiceSpy },
       ],
     })
-      .compileComponents();
+    .compileComponents();
   });
 
   beforeEach(() => {

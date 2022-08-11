@@ -33,7 +33,7 @@
         <td class="price-cell" nzAlign="center">{{row.displayValue}}</td>
         <td nzAlign="right">
           <span>{{getCurrentOrdersVolume(row.currentOrders)}}</span>
-          <button (click)="cancelOrders(row.currentOrders, $event)" *ngIf='row.currentOrders.length > 0'
+          <button (click)="cancelRowOrders(row, $event)" *ngIf='row.currentOrders.length > 0'
                   class="cancel-order-btn" nz-button
                   nzSize="small" nzType="primary">
             <i nz-icon nzType="close-square"></i>

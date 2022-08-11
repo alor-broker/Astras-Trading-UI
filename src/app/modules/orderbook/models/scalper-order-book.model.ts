@@ -3,6 +3,7 @@ export interface CurrentOrder {
   exchange: string;
   portfolio: string;
   volume: number;
+  type: string;
 }
 
 export interface OrderBookItem {
