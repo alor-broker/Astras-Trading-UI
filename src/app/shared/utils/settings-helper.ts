@@ -10,6 +10,7 @@ import { NewsSettings } from "../models/settings/news-settings.model";
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
 import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-settings.model";
+import { TechChartSettings } from "../models/settings/tech-chart-settings.model";
 import { AllInstrumentsSettings } from "../models/settings/all-instruments-settings.model";
 
 /**
@@ -231,6 +232,14 @@ export function isExchangeRateSettings(settings: AnySettings): settings is Excha
 }
 
 /**
+ * A guard which checks if settings is an tech chart settings
+ * @param settings Settings to check
+ */
+export function isTechChartSettings(settings: AnySettings): settings is TechChartSettings {
+  return settings.settingsType === 'TechChartSettings';
+}
+
+/**
  * A guard which checks if settings is an all-instruments settings
  * @param settings Settings to check
  */
@@ -262,6 +271,9 @@ export function isEqual(settings1: AnySettings, settings2: AnySettings) : boolea
   }
   if (isInstrumentSelectSettings(settings1) && isInstrumentSelectSettings(settings2)) {
     return isEqualInstrumentSelectSettings(settings1, settings2);
+  }
+  if (isTechChartSettings(settings1) && isTechChartSettings(settings2)) {
+    return isEqualTechChartSettings(settings1, settings2);
   }
 
   return (
@@ -297,6 +309,9 @@ export function getTypeBySettings(settings: AnySettings) {
   }
   if (isNewsSettings(settings)) {
     return WidgetNames.news;
+  }
+  if (isTechChartSettings(settings)) {
+    return WidgetNames.techChart;
   }
   if (isAllInstrumentsSettings(settings)) {
     return WidgetNames.allInstruments;
@@ -451,6 +466,27 @@ export function isEqualInfoSettings(
       settings1.guid == settings2.guid &&
       settings1.symbol == settings2.symbol &&
       settings1.exchange == settings2.exchange
+    );
+  } else return false;
+}
+
+/**
+ * Checks if tech chart settings are equal
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true is equal, false if not
+ */
+export function isEqualTechChartSettings(
+  settings1?: TechChartSettings,
+  settings2?: TechChartSettings
+) {
+  if (settings1 && settings2) {
+    return (
+      settings1.linkToActive == settings2.linkToActive &&
+      settings1.guid == settings2.guid &&
+      settings1.symbol == settings2.symbol &&
+      settings1.exchange == settings2.exchange &&
+      settings1.chartSettings == settings2.chartSettings
     );
   } else return false;
 }

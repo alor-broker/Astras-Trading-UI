@@ -116,12 +116,18 @@ describe('StopCommandComponent', () => {
   });
 
   it('should initialize input values from context', () => {
+    jasmine.clock().install();
+    const nowDateMock = Date.now();
+    jasmine.clock().mockDate(new Date(nowDateMock));
+
     const commandContext = getDefaultCommandContext();
     component.commandContext = commandContext;
     fixture.detectChanges();
 
     const formInputs = getFormInputs();
     const expectedDate = timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1));
+
+    jasmine.clock().uninstall();
 
     expect(formInputs.quantity.value).toEqual(commandContext.commandParameters.quantity.toString());
     expect(formInputs.condition.innerText).toEqual('Больше');
