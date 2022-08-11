@@ -33,6 +33,7 @@ import { AllTradesSettings } from "../models/settings/all-trades-settings.model"
 import { NewsSettings } from "../models/settings/news-settings.model";
 import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
 import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-settings.model";
+import { TechChartSettings } from "../models/settings/tech-chart-settings.model";
 
 @Injectable({
   providedIn: 'root',
@@ -87,6 +88,9 @@ export class WidgetFactoryService {
         break;
       case WidgetNames.exchangeRate:
         settings = this.createExchangeRate(newWidget);
+        break;
+      case WidgetNames.techChart:
+        settings = this.createTechChart(newWidget);
         break;
     }
     if (settings) {
@@ -244,5 +248,20 @@ export class WidgetFactoryService {
       settingsType: 'ExchangeRateSettings',
       title: 'Курс валют'
     } as ExchangeRateSettings;
+  }
+
+  private createTechChart(newWidget: NewWidget | Widget): TechChartSettings {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+
+    return {
+      ...this.selectedInstrument,
+      guid: newWidget.gridItem.label,
+      settingsType: 'TechChartSettings',
+      title: 'Тех. анализ',
+      linkToActive: true,
+      chartSettings: {}
+    } as TechChartSettings;
   }
 }

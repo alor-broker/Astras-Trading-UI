@@ -16,10 +16,14 @@ export abstract class BaseWebsocketService {
   protected constructor(private readonly ws: WebsocketService) {
   }
 
-  unsubscribe() {
-    this.subGuids.forEach(guid => {
+  unsubscribe(guid?: string) {
+    if(guid) {
       this.ws.unsubscribe(guid);
-    });
+    } else {
+      this.subGuids.forEach(guid => {
+        this.ws.unsubscribe(guid);
+      });
+    }
   }
 
   protected getEntity<T>(request: BaseRequest): Observable<T> {

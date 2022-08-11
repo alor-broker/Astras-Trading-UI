@@ -27,6 +27,13 @@
   >
     <span><i nz-icon nzType="sliders" nzTheme="outline"></i><label>&nbsp;График</label></span>
   </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.techChart)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.techChart)"
+  >
+    <span><i nz-icon nzType="fund" nzTheme="outline"></i><label> Тех. анализ</label></span>
+  </li>
   <li nz-menu-item
       (click)="selected.emit(widgetNames.blotter)"
       *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.blotter)"
