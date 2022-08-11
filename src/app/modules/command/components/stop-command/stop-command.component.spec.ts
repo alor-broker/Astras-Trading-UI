@@ -98,7 +98,7 @@ describe('StopCommandComponent', () => {
       providers: [
         { provide: NZ_I18N, useValue: ru_RU },
         { provide: CommandsService, useValue: spyCommands },
-        { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy }
+        { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
       ]
     }).compileComponents();
   });

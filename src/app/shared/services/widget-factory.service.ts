@@ -34,6 +34,7 @@ import { NewsSettings } from "../models/settings/news-settings.model";
 import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
 import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-settings.model";
 import { TechChartSettings } from "../models/settings/tech-chart-settings.model";
+import { AllInstrumentsSettings, allInstrumentsColumns as allInstrumentsCols } from "../models/settings/all-instruments-settings.model";
 
 @Injectable({
   providedIn: 'root',
@@ -73,6 +74,9 @@ export class WidgetFactoryService {
         break;
       case WidgetNames.instrumentSelect:
         settings = this.createInstrumentSelect(newWidget);
+        break;
+      case WidgetNames.allInstruments:
+        settings = this.createAllInstruments(newWidget);
         break;
       case WidgetNames.blotter:
         settings = this.createBlotter(newWidget);
@@ -263,5 +267,18 @@ export class WidgetFactoryService {
       linkToActive: true,
       chartSettings: {}
     } as TechChartSettings;
+  }
+
+  private createAllInstruments(newWidget: NewWidget | Widget): AllInstrumentsSettings {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+
+    return {
+      guid: newWidget.gridItem.label,
+      settingsType: 'AllInstrumentsSettings',
+      title: 'Все инструменты',
+      allInstrumentsColumns: allInstrumentsCols.filter(c => c.isDefault).map(col => col.columnId)
+    } as AllInstrumentsSettings;
   }
 }

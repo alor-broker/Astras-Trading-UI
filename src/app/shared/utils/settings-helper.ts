@@ -11,6 +11,7 @@ import { AllTradesSettings } from "../models/settings/all-trades-settings.model"
 import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
 import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-settings.model";
 import { TechChartSettings } from "../models/settings/tech-chart-settings.model";
+import { AllInstrumentsSettings } from "../models/settings/all-instruments-settings.model";
 
 /**
  * A type with describes settings with depends on an instrument
@@ -239,6 +240,14 @@ export function isTechChartSettings(settings: AnySettings): settings is TechChar
 }
 
 /**
+ * A guard which checks if settings is an all-instruments settings
+ * @param settings Settings to check
+ */
+export function isAllInstrumentsSettings(settings: AnySettings): settings is AllInstrumentsSettings {
+  return settings.settingsType === 'AllInstrumentsSettings';
+}
+
+/**
  * Checks the equality of settings by value
  * @param settings1 first settings
  * @param settings2 second settings
@@ -303,6 +312,9 @@ export function getTypeBySettings(settings: AnySettings) {
   }
   if (isTechChartSettings(settings)) {
     return WidgetNames.techChart;
+  }
+  if (isAllInstrumentsSettings(settings)) {
+    return WidgetNames.allInstruments;
   }
   return WidgetNames.instrumentSelect;
 }

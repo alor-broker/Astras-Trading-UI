@@ -9,4 +9,5 @@ export class WidgetNames {
   static readonly news = 'news';
   static readonly exchangeRate = 'exchange-rate';
   static readonly techChart = 'tech-chart';
+  static readonly allInstruments = 'all-instruments';
 }

@@ -20,6 +20,7 @@ import { AllTradesModule } from "../all-trades/all-trades.module";
 import { NewsModule } from "../news/news.module";
 import { ExchangeRateModule } from "../exchange-rate/exchange-rate.module";
 import { TechChartModule } from "../tech-chart/tech-chart.module";
+import { AllInstrumentsModule } from "../all-instruments/all-instruments.module";
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { TechChartModule } from "../tech-chart/tech-chart.module";
     NewsModule,
     ExchangeRateModule,
     TechChartModule,
+    AllInstrumentsModule
     // components
   ],
   providers: [
