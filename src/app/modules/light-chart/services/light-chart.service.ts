@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of} from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -47,7 +47,9 @@ export class LightChartService extends BaseWebsocketService {
   }
 
   getHistory(request: HistoryRequest): Observable<HistoryResponse> {
-    return this.history.getHistory(request);
+    return this.history.getHistory(request).pipe(
+      filter((x): x is HistoryResponse => !!x)
+    );
   }
 
   changeTimeframe(guid: string, timeFrame: string) {
@@ -63,21 +65,17 @@ export class LightChartService extends BaseWebsocketService {
     return this.settingsService.getSettings<LightChartSettings>(guid).pipe(
       map(x => x as LightChartSettingsExtended),
       switchMap(settings => {
-        if (settings.minstep == null) {
-          return this.instrumentsService.getInstrument({
-            symbol: settings.symbol,
-            exchange: settings.exchange,
-            instrumentGroup: settings.instrumentGroup
-          }).pipe(
-            filter(x => !!x),
-            map(x => ({
-              ...settings,
-              ...x
-            } as LightChartSettingsExtended))
-          );
-        }
-
-        return of(settings as LightChartSettingsExtended);
+        return this.instrumentsService.getInstrument({
+          symbol: settings.symbol,
+          exchange: settings.exchange,
+          instrumentGroup: settings.instrumentGroup
+        }).pipe(
+          filter(x => !!x),
+          map(x => ({
+            ...settings,
+            ...x
+          } as LightChartSettingsExtended))
+        );
       })
     );
   }
@@ -90,6 +88,7 @@ export class LightChartService extends BaseWebsocketService {
       settings,
       1)
     ).pipe(
+      filter((x): x is HistoryResponse => !!x),
       map(history => {
         const prevTime = history.history.length > 0
           ? Math.max(...history.history.map(x => x.time))
