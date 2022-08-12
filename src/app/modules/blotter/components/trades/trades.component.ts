@@ -69,6 +69,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Идентификационный номер сделки'
     },
     {
       id: 'orderno',
@@ -83,6 +84,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Номер заявки'
     },
     {
       id: 'symbol',
@@ -97,6 +99,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Биржевой идентификатор ценной бумаги'
     },
     {
       id: 'side',
@@ -108,11 +111,12 @@ export class TradesComponent implements OnInit, OnDestroy {
       hasSearch: false,
       filterFn: (list: string[], trade: DisplayTrade) => list.some(val => trade.side.toString().indexOf(val) !== -1),
       listOfFilter: [
-        { text: 'Покупка', value: 'buy' },
-        { text: 'Продажа', value: 'sell' }
+        {text: 'Покупка', value: 'buy'},
+        {text: 'Продажа', value: 'sell'}
       ],
       isFilterVisible: false,
       hasFilter: true,
+      tooltip: 'Сторона сделки (покупка/продажа)'
     },
     {
       id: 'qty',
@@ -126,6 +130,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Количество сделок'
     },
     {
       id: 'price',
@@ -139,6 +144,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Цена'
     },
     {
       id: 'date',
@@ -152,6 +158,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Время совершения сделки'
     },
     {
       id: 'volume',
@@ -165,6 +172,7 @@ export class TradesComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Объём'
     },
   ];
   listOfColumns: Column<DisplayTrade, TradeFilter>[] = [];
