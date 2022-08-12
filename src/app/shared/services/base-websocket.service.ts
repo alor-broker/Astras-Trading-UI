@@ -19,6 +19,7 @@ export abstract class BaseWebsocketService {
   unsubscribe(guid?: string) {
     if(guid) {
       this.ws.unsubscribe(guid);
+      this.subGuids.delete(guid);
     } else {
       this.subGuids.forEach(guid => {
         this.ws.unsubscribe(guid);
