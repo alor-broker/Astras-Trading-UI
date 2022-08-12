@@ -29,6 +29,7 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: FormGroup;
+  exchanges: string[] = ['MOEX', 'SPBX'];
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private readonly settingsService: WidgetSettingsService) {

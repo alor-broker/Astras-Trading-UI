@@ -43,6 +43,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: SettingsFormGroup;
+  exchanges: string[] = ['MOEX', 'SPBX'];
   readonly validationOptions = {
     minDepth: 0,
     maxDepth: 20

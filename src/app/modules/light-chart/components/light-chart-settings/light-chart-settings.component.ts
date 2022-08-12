@@ -34,6 +34,7 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   settingsChange: EventEmitter<LightChartSettings> = new EventEmitter<LightChartSettings>();
   form!: FormGroup;
   timeFrames: Timeframe[];
+  exchanges: string[] = ['MOEX', 'SPBX'];
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private readonly settingsService: WidgetSettingsService) {

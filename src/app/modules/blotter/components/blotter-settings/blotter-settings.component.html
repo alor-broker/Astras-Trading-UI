@@ -11,11 +11,12 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Введите биржу">
+      <nz-form-control nzErrorTip="Выберите биржу">
         <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
         <nz-input-group nzPrefixIcon="lock">
-          <input class='ant-input' formControlName="exchange" (mousedown)="$event.stopPropagation()"
-            placeholder="Биржа" />
+          <nz-select formControlName='exchange'>
+            <nz-option  *ngFor='let exchange of exchanges' [nzValue]="exchange" [nzLabel]="exchange"></nz-option>
+          </nz-select>
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>

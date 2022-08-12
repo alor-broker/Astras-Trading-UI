@@ -42,6 +42,7 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   allTradesColumns: ColumnIds[] = allTradesColumns;
   allPositionsColumns: ColumnIds[] = allPositionsColumns;
   prevSettings?: BlotterSettings;
+  exchanges: string[] = ['MOEX', 'SPBX'];
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private readonly settingsService: WidgetSettingsService) {

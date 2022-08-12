@@ -9,7 +9,9 @@
   <nz-form-item class="compact">
     <nz-form-control nzErrorTip="Введите биржу">
       <nz-form-label nzFor="exchange" nzRequired>Биржа</nz-form-label>
-      <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="exchange" placeholder="Биржа"/>
+      <nz-select formControlName='exchange'>
+        <nz-option  *ngFor='let exchange of exchanges' [nzValue]="exchange" [nzLabel]="exchange"></nz-option>
+      </nz-select>
     </nz-form-control>
   </nz-form-item>
   <nz-collapse [nzBordered]="false" class="compact">
