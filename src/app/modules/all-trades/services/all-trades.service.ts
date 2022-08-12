@@ -17,6 +17,7 @@ import { WebsocketService } from "../../../shared/services/websocket.service";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { sortByTimestamp } from "../utils/all-trades.utils";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
+import { finalize } from "rxjs/operators";
 
 @Injectable()
 export class AllTradesService extends BaseWebsocketService {
@@ -50,7 +51,9 @@ export class AllTradesService extends BaseWebsocketService {
       format: 'simple'
     };
 
-    return this.getEntity(request);
+    return this.getEntity<AllTradesItem>(request).pipe(
+      finalize(() => this.unsubscribe())
+    );
   }
 
 }

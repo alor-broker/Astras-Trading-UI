@@ -26,6 +26,10 @@ import {
   getUtcNow
 } from "../../../../shared/utils/datetime";
 import { StopCommand } from "../../models/stop-command.model";
+import {
+  NZ_I18N,
+  ru_RU
+} from "ng-zorro-antd/i18n";
 
 describe('StopCommandComponent', () => {
   let component: StopCommandComponent;
@@ -92,8 +96,9 @@ describe('StopCommandComponent', () => {
       ],
       declarations: [StopCommandComponent],
       providers: [
+        { provide: NZ_I18N, useValue: ru_RU },
         { provide: CommandsService, useValue: spyCommands },
-        { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy }
+        { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
       ]
     }).compileComponents();
   });
@@ -111,12 +116,18 @@ describe('StopCommandComponent', () => {
   });
 
   it('should initialize input values from context', () => {
+    jasmine.clock().install();
+    const nowDateMock = Date.now();
+    jasmine.clock().mockDate(new Date(nowDateMock));
+
     const commandContext = getDefaultCommandContext();
     component.commandContext = commandContext;
     fixture.detectChanges();
 
     const formInputs = getFormInputs();
     const expectedDate = timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1));
+
+    jasmine.clock().uninstall();
 
     expect(formInputs.quantity.value).toEqual(commandContext.commandParameters.quantity.toString());
     expect(formInputs.condition.innerText).toEqual('Больше');

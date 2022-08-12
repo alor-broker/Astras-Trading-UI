@@ -1,0 +1,32 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TechChartWidgetComponent } from './widgets/tech-chart-widget/tech-chart-widget.component';
+import { TechChartComponent } from './components/tech-chart/tech-chart.component';
+import { TechChartSettingsComponent } from './components/tech-chart-settings/tech-chart-settings.component';
+import { NzFormModule } from "ng-zorro-antd/form";
+import { ReactiveFormsModule } from "@angular/forms";
+import { NzCollapseModule } from "ng-zorro-antd/collapse";
+import { NzButtonModule } from "ng-zorro-antd/button";
+import { NzInputModule } from "ng-zorro-antd/input";
+
+
+@NgModule({
+  declarations: [
+    TechChartWidgetComponent,
+    TechChartComponent,
+    TechChartSettingsComponent
+  ],
+  imports: [
+    CommonModule,
+    NzFormModule,
+    ReactiveFormsModule,
+    NzCollapseModule,
+    NzButtonModule,
+    NzInputModule
+  ],
+  exports: [
+    TechChartWidgetComponent
+  ]
+})
+export class TechChartModule {
+}

@@ -19,6 +19,8 @@ import { OnboardingService } from './services/onboarding.service';
 import { AllTradesModule } from "../all-trades/all-trades.module";
 import { NewsModule } from "../news/news.module";
 import { ExchangeRateModule } from "../exchange-rate/exchange-rate.module";
+import { TechChartModule } from "../tech-chart/tech-chart.module";
+import { AllInstrumentsModule } from "../all-instruments/all-instruments.module";
 
 @NgModule({
   declarations: [
@@ -28,23 +30,25 @@ import { ExchangeRateModule } from "../exchange-rate/exchange-rate.module";
     ParentWidgetComponent,
     WidgetHeaderComponent
   ],
-    imports: [
-        DashboardRoutingModule,
-        SharedModule,
-        OrderbookModule,
-        LightChartModule,
-        InstrumentsModule,
-        BlotterModule,
-        CommandModule,
-        HelpModule,
-        InfoModule,
-        TerminalSettingsModule,
-        JoyrideModule.forRoot(),
-        AllTradesModule,
-        NewsModule,
-        ExchangeRateModule,
-        // components
-    ],
+  imports: [
+    DashboardRoutingModule,
+    SharedModule,
+    OrderbookModule,
+    LightChartModule,
+    InstrumentsModule,
+    BlotterModule,
+    CommandModule,
+    HelpModule,
+    InfoModule,
+    TerminalSettingsModule,
+    JoyrideModule.forRoot(),
+    AllTradesModule,
+    NewsModule,
+    ExchangeRateModule,
+    TechChartModule,
+    AllInstrumentsModule
+    // components
+  ],
   providers: [
     OnboardingService
   ]

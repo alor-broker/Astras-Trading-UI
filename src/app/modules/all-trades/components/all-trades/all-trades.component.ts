@@ -13,7 +13,12 @@ import { DatePipe } from "@angular/common";
 import { startOfDay, toUnixTimestampSeconds } from "../../../../shared/utils/datetime";
 import { AllTradesSettings } from "../../../../shared/models/settings/all-trades-settings.model";
 import { switchMap, tap } from "rxjs/operators";
-import { Observable, Subject, takeUntil } from "rxjs";
+import {
+  Observable,
+  Subject,
+  Subscription,
+  takeUntil
+} from "rxjs";
 import { AllTradesItem } from "../../models/all-trades.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
@@ -27,6 +32,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   @Input() public resize!: EventEmitter<DashboardItem>;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
+  private newTradesSubscription?: Subscription;
   private settings: AllTradesSettings | null = null;
   private datePipe = new DatePipe('ru-RU');
   private take = 50;
@@ -96,7 +102,10 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   private settingsChange(): void {
     if (!this.settings) return;
 
-    this.getTradesListReq(toUnixTimestampSeconds(new Date()))
+    this.tradesList = [];
+    this.newTradesSubscription?.unsubscribe();
+
+    this.newTradesSubscription = this.getTradesListReq(toUnixTimestampSeconds(new Date()))
       .pipe(
         tap(res => {
           this.tradesList = res;
@@ -131,5 +140,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+    this.newTradesSubscription?.unsubscribe();
   }
 }
