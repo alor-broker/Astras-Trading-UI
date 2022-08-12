@@ -63,7 +63,7 @@ export class AccountService {
     );
   }
 
-  private mergePortfolios(portfolioMeta: PortfolioMeta[], portfolioKeys: PortfolioKey[]) {
+  private mergePortfolios(portfolioMeta: PortfolioMeta[], portfolioKeys: PortfolioKey[]): Map<string,  PortfolioExtended[]> {
     let extendedPortfoliosByAgreement = new Map<string,  PortfolioExtended[]>();
     const formatMarket = (market: string, exchange: string) => {
       market = market.split(' ')[0];
@@ -94,6 +94,15 @@ export class AccountService {
         }
       }
     }
-    return extendedPortfoliosByAgreement;
+
+    const sortedPortfolios = new Map<string,  PortfolioExtended[]>();
+    Array.from(extendedPortfoliosByAgreement.keys())
+      .sort((a, b) => a.localeCompare(b))
+      .forEach(key => {
+        const portfolios = extendedPortfoliosByAgreement.get(key)?.sort((a, b) => a.market.localeCompare(b.market)) ?? [];
+        sortedPortfolios.set(key, portfolios);
+      });
+
+    return sortedPortfolios;
   }
 }
