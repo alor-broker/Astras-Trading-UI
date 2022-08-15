@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit } 
 import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
-import { interval, shareReplay, Subject, Subscription, switchMap, takeUntil } from "rxjs";
+import { interval, Subject, Subscription, switchMap, takeUntil } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { AllInstrumentsSettings } from "../../../../shared/models/settings/all-instruments-settings.model";
 import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
