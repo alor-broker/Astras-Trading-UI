@@ -46,14 +46,14 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   public columns: ColumnsSettings[] = [
     {name: 'qty', displayName: 'Кол-во', classFn: data => data.side},
     {name: 'price', displayName: 'Цена'},
-    {name: 'timestamp', displayName: 'Время', transformFn: (data: number) => this.datePipe.transform(data, 'HH:mm:ss')},
+    {name: 'timestamp', displayName: 'Время', transformFn: (data: AllTradesItem) => this.datePipe.transform(data.timestamp, 'HH:mm:ss')},
     {
       name: 'side',
       displayName: 'Сторона',
       classFn: data => data.side
     },
     {name: 'oi', displayName: 'Откр. интерес'},
-    {name: 'existing', displayName: 'Новое событие', transformFn: (data: boolean) => data ? 'Да' : 'Нет'},
+    {name: 'existing', displayName: 'Новое событие', transformFn: (data: AllTradesItem) => data.existing ? 'Да' : 'Нет'},
   ];
 
   constructor(

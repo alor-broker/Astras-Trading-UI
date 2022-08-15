@@ -38,7 +38,7 @@
   <ng-template nz-virtual-scroll let-data>
     <tr (click)="rowClick.emit(data)">
       <td *ngFor="let column of columns" [class]="column.classFn && column.classFn(data)">
-        {{column.transformFn && column.transformFn(data[column.name]) || data[column.name]}}
+        {{column.transformFn && column.transformFn(data) || data[column.name]}}
       </td>
     </tr>
   </ng-template>
