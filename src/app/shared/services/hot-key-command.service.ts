@@ -35,7 +35,7 @@ export class HotKeyCommandService {
           }
         });
 
-        return fromEvent<KeyboardEvent>(this.document, 'keydown').pipe(
+        return fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
           filter(x => {
               const target = (x.target as HTMLElement);
               return target?.tagName === 'BODY';

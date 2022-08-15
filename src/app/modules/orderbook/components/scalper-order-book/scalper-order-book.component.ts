@@ -186,7 +186,6 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     this.scalperOrdersService.cancelOrders(row.currentOrders);
   }
 
-
   ngOnDestroy() {
     this.destroy$.next(true);
     this.destroy$.complete();
