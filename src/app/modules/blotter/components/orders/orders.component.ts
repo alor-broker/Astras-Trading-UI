@@ -161,6 +161,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Цена заявки'
     },
     {
       id: 'status',
