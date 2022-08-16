@@ -20,14 +20,5 @@
       </span>
     </nz-auto-option>
   </nz-autocomplete>
-  <nz-card nzSize="small" *ngIf="selectedInstrument$ | async as instr">
-    <span class='search-row'>
-      <nz-tag >{{ instr.symbol }}</nz-tag>
-      <span class='row-center' nz-tooltip [nzTooltipTitle]="instr.fullName">{{ instr.shortName }}</span>
-      <nz-tag *ngIf='instr.instrumentGroup'>{{ instr.instrumentGroup }}</nz-tag>
-      <nz-tag>{{ instr.exchange }}</nz-tag>
-      <button nz-button nzSize="small" nzType="primary" (click)="watch(instr)"><i nz-icon nzType="plus"></i></button>
-    </span>
-  </nz-card>
   <ats-watchlist-table [guid]="guid"></ats-watchlist-table>
 </div>
