@@ -5,7 +5,6 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { of } from "rxjs";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import { mockComponent } from "../../../../shared/utils/testing";
-import { EventEmitter } from "@angular/core";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -47,7 +46,6 @@ describe('AllInstrumentsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AllInstrumentsComponent);
     component = fixture.componentInstance;
-    component.resize = new EventEmitter();
     fixture.detectChanges();
   });
 
