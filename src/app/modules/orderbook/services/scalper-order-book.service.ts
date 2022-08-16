@@ -6,8 +6,7 @@ import {
   combineLatest,
   filter,
   Observable,
-  of,
-  take
+  of
 } from "rxjs";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { getSelectedPortfolio } from "../../../store/portfolios/portfolios.selectors";
@@ -62,7 +61,6 @@ export class ScalperOrderBookService extends BaseWebsocketService {
   private getCurrentPortfolio(): Observable<PortfolioKey> {
     return this.store.select(getSelectedPortfolio)
     .pipe(
-      take(1),
       filter((p): p is PortfolioKey => !!p)
     );
   }
@@ -106,6 +104,10 @@ export class ScalperOrderBookService extends BaseWebsocketService {
       currentOrders: OrderBookDataFeedHelper.getCurrentOrdersForItem(x.p, side, currentOrders)
     } as OrderBookItem));
 
+    const allActiveOrders = currentOrders
+    .filter(order => order.status === 'working')
+    .map(order => OrderBookDataFeedHelper.orderToCurrentOrder(order));
+
     let asks = toOrderBookItems(orderBookData.a, Side.Sell).sort((a, b) => a.price - b.price);
     let bids = toOrderBookItems(orderBookData.b, Side.Buy).sort((a, b) => b.price - a.price);
 
@@ -113,7 +115,8 @@ export class ScalperOrderBookService extends BaseWebsocketService {
       return {
         asks,
         bids,
-        spreadItems: []
+        spreadItems: [],
+        allActiveOrders: allActiveOrders
       } as ScalperOrderBook;
     }
 
@@ -134,7 +137,8 @@ export class ScalperOrderBookService extends BaseWebsocketService {
     return {
       asks,
       bids,
-      spreadItems
+      spreadItems,
+      allActiveOrders: allActiveOrders
     } as ScalperOrderBook;
   }
 

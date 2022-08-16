@@ -3,8 +3,7 @@ import {
   combineLatest,
   filter,
   Observable,
-  of,
-  take
+  of
 } from 'rxjs';
 import {
   catchError,
@@ -194,7 +193,6 @@ export class OrderbookService extends BaseWebsocketService {
   private getCurrentPortfolio(): Observable<PortfolioKey> {
     return this.store.select(getSelectedPortfolio)
     .pipe(
-      take(1),
       filter((p): p is PortfolioKey => !!p)
     );
   }

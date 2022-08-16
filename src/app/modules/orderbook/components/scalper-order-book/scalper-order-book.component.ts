@@ -24,7 +24,8 @@ import {
   OrderBookItem,
   ScalperOrderBook,
   ScalperOrderBookRowType,
-  ScalperOrderBookRowView
+  ScalperOrderBookRowView,
+  ScalperOrderBookView
 } from "../../models/scalper-order-book.model";
 import {
   ScalperOrderBookSettings,
@@ -68,7 +69,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
   @Input() shouldShowSettings!: boolean;
   @Input() guid!: string;
 
-  orderBookRows$!: Observable<ScalperOrderBookRowView[]>;
+  orderBook$!: Observable<ScalperOrderBookView>;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$: Observable<ScalperOrderBookSettings> | null = null;
@@ -94,7 +95,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
       filter((x): x is Instrument => !!x)
     );
 
-    this.orderBookRows$ = this.settings$.pipe(
+    this.orderBook$ = this.settings$.pipe(
       mapWith(
         settings => getInstrumentInfo(settings),
         (settings, instrument) => ({ settings, instrument })
@@ -104,17 +105,17 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
         ({ settings, instrument }, orderBook) => ({ settings, instrument, orderBook })
       ),
       map(x => this.toViewModel(x.settings, x.instrument, x.orderBook)),
-      tap(orderBookRows => {
-        this.maxVolume = Math.max(...orderBookRows.map(x => x.volume ?? 0));
+      tap(orderBook => {
+        this.maxVolume = Math.max(...orderBook.rows.map(x => x.volume ?? 0));
       }),
-      startWith([]),
+      startWith(({ rows: [], allActiveOrders: [] } as ScalperOrderBookView)),
       shareReplay(1)
     );
 
     this.subscribeToHotkeys();
     this.subscribeToWorkingVolumesChange();
 
-    this.orderBookRows$.pipe(
+    this.orderBook$.pipe(
       take(1),
       delay(1000)
     ).subscribe(() => this.alignBySpread());
@@ -164,12 +165,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
 
   cancelLimitOrders() {
     this.callWithCurrentOrderBook(orderBook => {
-      const orders = orderBook.reduce((previousValue: CurrentOrder[], currentValue) =>
-          [
-            ...previousValue,
-            ...currentValue.currentOrders
-          ],
-        [])
+      const orders = orderBook.allActiveOrders
       .filter(x => x.type === 'limit');
 
       this.scalperOrdersService.cancelOrders(orders);
@@ -261,8 +257,8 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     ).subscribe(workingVolume => action(workingVolume!));
   }
 
-  private callWithCurrentOrderBook(action: (orderBook: ScalperOrderBookRowView[]) => void) {
-    this.orderBookRows$.pipe(
+  private callWithCurrentOrderBook(action: (orderBook: ScalperOrderBookView) => void) {
+    this.orderBook$.pipe(
       take(1)
     ).subscribe(action);
   }
@@ -402,7 +398,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     this.callWithSettings(settings => {
       this.callWithCurrentOrderBook(orderBook => {
         this.callWithWorkingVolume(workingVolume => {
-          this.scalperOrdersService.placeBestOrder(settings, side, workingVolume!, orderBook);
+          this.scalperOrdersService.placeBestOrder(settings, side, workingVolume!, orderBook.rows);
         });
       });
     });
@@ -428,7 +424,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     .find(x => volume <= x.boundary);
   }
 
-  private toViewModel(settings: ScalperOrderBookSettings, instrumentInfo: Instrument, orderBook: ScalperOrderBook): ScalperOrderBookRowView[] {
+  private toViewModel(settings: ScalperOrderBookSettings, instrumentInfo: Instrument, orderBook: ScalperOrderBook): ScalperOrderBookView {
     const displayYield = settings.showYieldForBonds && getTypeByCfi(instrumentInfo.cfiCode) === InstrumentType.Bond;
 
     const asks = this.toVerticalOrderBookRowView(
@@ -461,7 +457,10 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     );
 
 
-    return [...asks, ...spreadItems, ...bids];
+    return {
+      rows: [...asks, ...spreadItems, ...bids],
+      allActiveOrders: orderBook.allActiveOrders
+    } as ScalperOrderBookView;
   }
 
   private toVerticalOrderBookRowView(

@@ -29,12 +29,16 @@ export class OrderBookDataFeedHelper {
         && o.status === 'working'
     );
 
-    return currentOrders.map(o => ({
-      orderId: o.id,
-      exchange: o.exchange,
-      portfolio: o.portfolio,
-      volume: o.qty,
-      type: o.type
-    } as CurrentOrder));
+    return currentOrders.map(o => this.orderToCurrentOrder(o));
+  }
+
+  public static orderToCurrentOrder(order: Order): CurrentOrder {
+    return {
+      orderId: order.id,
+      exchange: order.exchange,
+      portfolio: order.portfolio,
+      volume: order.qty,
+      type: order.type
+    } as CurrentOrder;
   }
 }

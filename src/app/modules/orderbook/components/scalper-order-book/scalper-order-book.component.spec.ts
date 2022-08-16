@@ -155,10 +155,11 @@ describe('ScalperOrderBookComponent', () => {
           asks: [{
             price: Math.random() * 1000,
             volume: Math.random() * 100,
-            currentOrders: [expectedOrder]
+            currentOrders: []
           }],
           bids: [],
-          spreadItems: []
+          spreadItems: [],
+          allActiveOrders: [expectedOrder]
         });
 
         hotKeyCommandMock.next({ type: ScalperOrderBookCommands.cancelLimitOrdersAll });
@@ -189,10 +190,11 @@ describe('ScalperOrderBookComponent', () => {
           asks: [{
             price: Math.random() * 1000,
             volume: Math.random() * 100,
-            currentOrders: [expectedOrder]
+            currentOrders: []
           }],
           bids: [],
-          spreadItems: []
+          spreadItems: [],
+          allActiveOrders: [expectedOrder]
         });
 
         component.isActiveOrderBook = true;
@@ -222,7 +224,8 @@ describe('ScalperOrderBookComponent', () => {
             currentOrders: []
           }],
           bids: [],
-          spreadItems: []
+          spreadItems: [],
+          allActiveOrders: []
         });
 
         component.isActiveOrderBook = true;
@@ -249,7 +252,8 @@ describe('ScalperOrderBookComponent', () => {
             currentOrders: []
           }],
           bids: [],
-          spreadItems: []
+          spreadItems: [],
+          allActiveOrders: []
         });
 
         component.isActiveOrderBook = true;
