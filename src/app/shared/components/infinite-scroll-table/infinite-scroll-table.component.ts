@@ -104,6 +104,10 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
       this.activeFilterName = isOpened ? name : '';
   }
 
+  public defaultFilterChange(name: string, value: string) {
+    this.getFilterControl(name).setValue(value);
+  }
+
   public ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
