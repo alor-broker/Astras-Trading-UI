@@ -163,11 +163,8 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
   }
 
   cancelLimitOrders() {
-    this.orderBookRows$
-    .pipe(
-      take(1)
-    ).subscribe(rows => {
-      const orders = rows.reduce((previousValue: CurrentOrder[], currentValue) =>
+    this.callWithCurrentOrderBook(orderBook => {
+      const orders = orderBook.reduce((previousValue: CurrentOrder[], currentValue) =>
           [
             ...previousValue,
             ...currentValue.currentOrders
@@ -223,7 +220,9 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
             settings,
             row.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell,
             workingVolume,
-            row.price, settings.enableMouseClickSilentOrders);
+            row.price,
+            settings.enableMouseClickSilentOrders
+          );
         });
       });
     }
