@@ -22,6 +22,7 @@ import {
   ScalperOrderBookSettings,
   VolumeHighlightOption
 } from "../../../../shared/models/settings/scalper-order-book-settings.model";
+import { exchangesList } from "../../../../shared/models/enums/exchanges";
 
 interface SettingsFormData {
   depth: number;
@@ -66,6 +67,8 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   settingsChange: EventEmitter<void> = new EventEmitter();
 
   form!: SettingsFormGroup;
+  exchanges: string[] = exchangesList;
+
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private readonly settingsService: WidgetSettingsService) {

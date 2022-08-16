@@ -21,6 +21,7 @@ import {
   Subject,
   takeUntil
 } from "rxjs";
+import { exchangesList } from "../../../../shared/models/enums/exchanges";
 
 @Component({
   selector: 'ats-light-chart-settings[guid]',
@@ -34,6 +35,7 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   settingsChange: EventEmitter<LightChartSettings> = new EventEmitter<LightChartSettings>();
   form!: FormGroup;
   timeFrames: Timeframe[];
+  exchanges: string[] = exchangesList;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private readonly settingsService: WidgetSettingsService) {

@@ -9,6 +9,8 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { ReactiveFormsModule } from "@angular/forms";
 import { NzSwitchModule } from "ng-zorro-antd/switch";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { NzSelectModule } from "ng-zorro-antd/select";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 
 describe('OrderbookSettingsComponent', () => {
   let component: OrderbookSettingsComponent;
@@ -22,8 +24,10 @@ describe('OrderbookSettingsComponent', () => {
         ...ngZorroMockComponents
       ],
       imports: [
+        NoopAnimationsModule,
         ReactiveFormsModule,
-        NzSwitchModule
+        NzSwitchModule,
+        NzSelectModule
       ],
       providers: [
         {

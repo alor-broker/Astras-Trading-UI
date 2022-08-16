@@ -17,6 +17,7 @@ import {
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
+import { exchangesList } from "../../../../shared/models/enums/exchanges";
 
 @Component({
   selector: 'ats-tech-chart-settings[settingsChange][guid]',
@@ -29,6 +30,7 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: FormGroup;
+  exchanges: string[] = exchangesList;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private readonly settingsService: WidgetSettingsService) {

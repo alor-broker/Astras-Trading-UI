@@ -8,6 +8,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { NzCollapseModule } from "ng-zorro-antd/collapse";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzInputModule } from "ng-zorro-antd/input";
+import { NzSelectModule } from "ng-zorro-antd/select";
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { NzInputModule } from "ng-zorro-antd/input";
     ReactiveFormsModule,
     NzCollapseModule,
     NzButtonModule,
-    NzInputModule
+    NzInputModule,
+    NzSelectModule
   ],
   exports: [
     TechChartWidgetComponent
