@@ -25,6 +25,7 @@ import {
   Subject,
   takeUntil
 } from "rxjs";
+import { exchangesList } from "../../../../shared/models/enums/exchanges";
 
 @Component({
   selector: 'ats-blotter-settings[guid]',
@@ -42,7 +43,7 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   allTradesColumns: ColumnIds[] = allTradesColumns;
   allPositionsColumns: ColumnIds[] = allPositionsColumns;
   prevSettings?: BlotterSettings;
-  exchanges: string[] = ['MOEX', 'SPBX'];
+  exchanges: string[] = exchangesList;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private readonly settingsService: WidgetSettingsService) {

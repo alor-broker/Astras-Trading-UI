@@ -18,6 +18,7 @@ import {
   Subject,
   takeUntil
 } from "rxjs";
+import { exchangesList } from "../../../../shared/models/enums/exchanges";
 
 interface SettingsFormData {
   depth: number,
@@ -43,7 +44,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: SettingsFormGroup;
-  exchanges: string[] = ['MOEX', 'SPBX'];
+  exchanges: string[] = exchangesList;
   readonly validationOptions = {
     minDepth: 0,
     maxDepth: 20
