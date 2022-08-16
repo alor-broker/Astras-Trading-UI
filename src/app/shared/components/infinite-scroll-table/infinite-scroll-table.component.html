@@ -20,7 +20,10 @@
       [nzWidth]="column.width ?? null"
       [nzShowSort]="!!column.sortFn"
       (nzSortOrderChange)="column.sortFn!($event)"
-      nzCustomFilter
+      [nzFilters]="column.filters!"
+      [nzFilterMultiple]="column.isMultipleFilter!"
+      (nzFilterChange)="defaultFilterChange(column.name, $event)"
+      [nzCustomFilter]="!column.isDefaultFilter"
     >
       {{column.displayName}}
       <nz-filter-trigger
@@ -28,7 +31,7 @@
         (nzVisibleChange)="openedFilterChange(column.name, $event)"
         [nzDropdownMenu]="searchMenu"
       >
-        <i nz-icon nzType="search"></i>
+        <i nz-icon nzType="search" [class.active-filter]="!!getFilterControl(column.name).value"></i>
       </nz-filter-trigger>
     </th>
   </tr>

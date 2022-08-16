@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit } 
 import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
-import { interval, shareReplay, Subject, Subscription, switchMap, takeUntil } from "rxjs";
+import { interval, Subject, Subscription, switchMap, takeUntil } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { AllInstrumentsSettings } from "../../../../shared/models/settings/all-instruments-settings.model";
 import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
@@ -48,7 +48,28 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       displayName: 'Биржа',
       sortFn: this.getSortFn('exchange'),
       isFiltering: true,
-      isOpenedFilter: false
+      isOpenedFilter: false,
+      isDefaultFilter: true,
+      isMultipleFilter: false,
+      filters: [
+        { value: 'MOEX', text: 'MOEX' },
+        { value: 'SPBX', text: 'SPBX' },
+      ]
+    },
+    {
+      name: 'market',
+      displayName: 'Рынок',
+      sortFn: this.getSortFn('market'),
+      isFiltering: true,
+      isOpenedFilter: false,
+      isDefaultFilter: true,
+      isMultipleFilter: false,
+      filters: [
+        { value: 'CURR', text: 'CURR' },
+        { value: 'FOND', text: 'FOND' },
+        { value: 'FORTS', text: 'FORTS' },
+        { value: 'SPBX', text: 'SPBX' },
+      ]
     },
     {name: 'lotSize', displayName: 'Лотность'},
     {name: 'price', displayName: 'Цена', sortFn: this.getSortFn('price')},
@@ -92,9 +113,16 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(filters: any) {
-    if (filters.shortName || this.filters.shortName) {
+    if (filters.shortName || this.filters.query) {
       filters.query = filters.shortName;
       delete filters.shortName;
+    }
+    if (filters.market || this.filters.marketType) {
+      filters.marketType = filters.market || '';
+      delete filters.market;
+    }
+    if (filters.exchange || this.filters.exchange) {
+      filters.exchange = filters.exchange || '';
     }
 
     this.filters = {

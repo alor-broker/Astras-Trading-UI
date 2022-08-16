@@ -1,3 +1,5 @@
+import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
+
 export interface ColumnsSettings {
   // Наименование свойства в объекте данных
   name: string;
@@ -15,4 +17,10 @@ export interface ColumnsSettings {
   isFiltering?: boolean;
   // Открыт ли фильтр
   isOpenedFilter?: boolean;
+  // Выпадающий список
+  isDefaultFilter?: boolean;
+  // Множественный выбор
+  isMultipleFilter?: boolean;
+  // значения фильтров
+  filters?: NzTableFilterList;
 }

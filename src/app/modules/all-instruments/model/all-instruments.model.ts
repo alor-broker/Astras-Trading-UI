@@ -26,4 +26,5 @@ export interface AllInstrumentsFilters {
   query?: string;
   exchange?: string;
   shortName?: string;
+  marketType?: string;
 }
