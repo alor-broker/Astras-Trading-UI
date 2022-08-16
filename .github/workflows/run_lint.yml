@@ -1,4 +1,4 @@
-name: NPM Lint
+name: Lint
 
 on:
   push:
