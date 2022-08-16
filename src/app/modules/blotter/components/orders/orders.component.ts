@@ -73,6 +73,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Идентификационный номер заявки'
     },
     {
       id: 'symbol',
@@ -87,6 +88,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Биржевой идентификатор ценной бумаги'
     },
     {
       id: 'side',
@@ -103,6 +105,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
+      tooltip: 'Сторона заявки (покупка/продажа)'
     },
     {
       id: 'residue',
@@ -116,6 +119,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Отношение невыполненных заявок к общему количеству'
     },
     {
       id: 'volume',
@@ -129,6 +133,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Объем'
     },
     {
       id: 'qty',
@@ -142,6 +147,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Количество заявок'
     },
     {
       id: 'price',
@@ -155,6 +161,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Цена заявки'
     },
     {
       id: 'status',
@@ -172,6 +179,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
+      tooltip: 'Стаус заявки'
     },
     {
       id: 'transTime',
@@ -185,6 +193,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Время совершения заявки'
     },
     {
       id: 'exchange',
@@ -201,6 +210,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
+      tooltip: 'Наименование биржи'
     },
     {
       id: 'type',
@@ -217,6 +227,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
+      tooltip: 'Тип заявки (лимитная/рыночная)'
     },
     {
       id: 'endTime',
@@ -230,6 +241,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Срок действия заявки'
     },
   ];
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];

@@ -72,6 +72,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Биржевой идентификатор ценной бумаги'
     },
     {
       id: 'shortName',
@@ -86,6 +87,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Наименование позиции'
     },
     {
       id: 'avgPrice',
@@ -99,6 +101,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Средняя цена'
     },
     {
       id: 'qtyT0',
@@ -112,6 +115,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Количество позиций с учётом сегодняшних расчёов'
     },
     {
       id: 'qtyT1',
@@ -125,6 +129,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Количество позиций с учётом завтрашних расчёов'
     },
     {
       id: 'qtyT2',
@@ -138,6 +143,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Количество позиций с учётом послезавтрашних расчёов'
     },
     {
       id: 'qtyTFuture',
@@ -151,6 +157,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Количество позиций с учётом всех заявок'
     },
     {
       id: 'volume',
@@ -164,6 +171,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Объём'
     },
     {
       id: 'unrealisedPl',
@@ -177,6 +185,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Соотношение прибыли и убытка'
     },
     {
       id: 'dailyUnrealisedPl',
@@ -190,6 +199,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
+      tooltip: 'Соотношение прибыли и убытка за сегодня'
     },
   ];
   listOfColumns: Column<PositionDisplay, PositionFilter>[] = [];

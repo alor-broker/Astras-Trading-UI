@@ -22,7 +22,7 @@
           [nzFilters]="column.listOfFilter"
           [nzShowFilter]="column.hasFilter"
           [nzFilterFn]="column.filterFn">
-        {{column.name}}
+        <span nz-tooltip [nzTooltipTitle]="column.tooltip">{{column.name}}</span>
         <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
           <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon nzType="search"></i>
         </nz-filter-trigger>
