@@ -29,12 +29,10 @@ export class NewsComponent implements OnInit, OnDestroy {
 
   public columns: ColumnsSettings[] = [
     {
-      name: 'publishDate',
-      displayName: 'Время',
-      transformFn: (data: string) => this.datePipe.transform(data, 'dd.MM.yyyy HH:mm:ss'),
-      width: '135px'
+      name: 'header',
+      displayName: 'Новость',
+      transformFn: (data: NewsListItem) => `${this.datePipe.transform(data.publishDate, '[HH:mm]')} ${data.header}`
     },
-    {name: 'header', displayName: 'Новость'},
   ];
 
   constructor(
