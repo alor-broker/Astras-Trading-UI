@@ -46,7 +46,7 @@ class TestWrapperComponent {
   rowClick(e: any) {}
 }
 
-fdescribe('InfiniteScrollTableComponent', () => {
+describe('InfiniteScrollTableComponent', () => {
   let component: InfiniteScrollTableComponent;
   let wrapperComp: TestWrapperComponent;
   let wrapperFixture: ComponentFixture<TestWrapperComponent>;
