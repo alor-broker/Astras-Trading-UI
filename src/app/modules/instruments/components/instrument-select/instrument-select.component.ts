@@ -8,7 +8,6 @@ import {
   ViewChild
 } from '@angular/core';
 import {
-  select,
   Store
 } from '@ngrx/store';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
@@ -25,11 +24,9 @@ import {
   switchMap
 } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
-import { InstrumentAdditions } from '../../models/instrument-additions.model';
 import { SearchFilter } from '../../models/search-filter.model';
 import { InstrumentsService } from '../../services/instruments.service';
 import { selectNewInstrument } from '../../../../store/instruments/instruments.actions';
-import { getSelectedInstrument } from '../../../../store/instruments/instruments.selectors';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -50,7 +47,6 @@ export class InstrumentSelectComponent implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   filteredInstruments$: Observable<Instrument[]> = of([]);
-  selectedInstrument$: Observable<InstrumentAdditions | null> = of(null);
   inputValue?: string;
   private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
 
@@ -98,7 +94,11 @@ export class InstrumentSelectComponent implements OnInit {
   onSelect(event: NzOptionSelectionChange, val: Instrument) {
     if (event.isUserInput) {
       this.store.dispatch(selectNewInstrument({ instrument: val }));
-      setTimeout(() => this.inputEl.nativeElement.blur(), 0);
+      this.watch(val);
+      setTimeout(() => {
+        this.inputEl.nativeElement.value = '';
+        this.inputEl.nativeElement.blur();
+      }, 0);
     }
   }
 
@@ -107,18 +107,6 @@ export class InstrumentSelectComponent implements OnInit {
       filter((f): f is SearchFilter => !!f),
       debounceTime(200),
       switchMap(filter => this.service.getInstruments(filter))
-    );
-
-    this.selectedInstrument$ = this.store.pipe(
-      select(getSelectedInstrument),
-      map((val) => {
-        return !!val
-          ? {
-            ...val,
-            fullName: val.description
-          }
-          : null;
-      })
     );
 
     this.setDefaultWatchList();

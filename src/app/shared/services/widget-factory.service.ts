@@ -129,7 +129,7 @@ export class WidgetFactoryService {
     return {
       guid: newWidget.gridItem.label,
       settingsType: 'ScalperOrderBookSettings',
-      title: `[PRO] Стакан`,
+      title: `Скальперский стакан`,
       linkToActive: true,
       depth: 10,
       symbol: this.selectedInstrument.symbol,
