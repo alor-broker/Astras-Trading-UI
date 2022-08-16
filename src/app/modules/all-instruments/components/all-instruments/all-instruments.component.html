@@ -1,6 +1,6 @@
 <ats-infinite-scroll-table
-  [tableContainerHeight]="tableContainerHeight"
-  [tableContainerWidth]="tableContainerWidth"
+  [tableContainerHeight]="contentSize?.height || 0"
+  [tableContainerWidth]="contentSize?.width || 0"
   [data]="instrumentsList"
   [isLoading]="isLoading"
   [columns]="displayedColumns"
