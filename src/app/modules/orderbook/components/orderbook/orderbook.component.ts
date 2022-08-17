@@ -108,7 +108,7 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     );
 
     this.ob$ = settings$.pipe(
-      switchMap(settings => this.service.getHorizontalOrderBook(settings)),
+      switchMap(settings => this.service.getOrderBook(settings)),
       tap((ob) => (this.maxVolume = ob?.maxVolume ?? 1)),
       startWith(<OrderBook>{
         rows: [],

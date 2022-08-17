@@ -3,6 +3,7 @@ export interface CurrentOrder {
   exchange: string;
   portfolio: string;
   volume: number;
+  type: string;
 }
 
 export interface OrderBookItem {
@@ -16,6 +17,7 @@ export interface ScalperOrderBook {
   asks: OrderBookItem[];
   bids: OrderBookItem[];
   spreadItems: OrderBookItem[];
+  allActiveOrders: CurrentOrder[];
 }
 
 export enum ScalperOrderBookRowType {
@@ -29,4 +31,9 @@ export interface ScalperOrderBookRowView extends OrderBookItem {
   rowType: ScalperOrderBookRowType;
   isBest?: boolean;
   getVolumeStyle: () => { [key: string]: any; } | null;
+}
+
+export interface ScalperOrderBookView {
+  rows: ScalperOrderBookRowView[];
+  allActiveOrders: CurrentOrder[];
 }

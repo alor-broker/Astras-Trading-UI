@@ -4,13 +4,13 @@ import {
   Input,
   Output
 } from '@angular/core';
-import { OrderbookService } from "../../services/orderbook.service";
+import { ScalperOrderBookService } from "../../services/scalper-order-book.service";
 
 @Component({
   selector: 'ats-scalper-order-book-widget[shouldShowSettings][guid]',
   templateUrl: './scalper-order-book-widget.component.html',
   styleUrls: ['./scalper-order-book-widget.component.less'],
-  providers: [OrderbookService]
+  providers: [ScalperOrderBookService]
 })
 export class ScalperOrderBookWidgetComponent {
   @Input()

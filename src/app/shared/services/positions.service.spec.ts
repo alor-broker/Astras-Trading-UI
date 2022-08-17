@@ -1,7 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { PositionsService } from './positions.service';
+import { ErrorHandlerService } from "./handle-error/error-handler.service";
 
 describe('PositionsService', () => {
   let service: PositionsService;
@@ -14,7 +18,15 @@ describe('PositionsService', () => {
       imports: [
         HttpClientTestingModule
       ],
-      providers: [PositionsService]
+      providers: [
+        PositionsService,
+        {
+          provide: ErrorHandlerService,
+          useValue: {
+            handleError: jasmine.createSpy('handleError').and.callThrough()
+          }
+        }
+      ]
     });
 
     httpClient = TestBed.inject(HttpClient);
