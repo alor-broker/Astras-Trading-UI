@@ -51,21 +51,38 @@
     </nz-form-item>
 
     <nz-form-item>
-      <nz-form-label nzFor="highlightHighVolume">Выделять цветом большие объемы</nz-form-label>
-      <nz-switch formControlName='highlightHighVolume'></nz-switch>
+      <nz-form-label nzFor="highlightHighVolume">Выделение цветом объема</nz-form-label>
+      <nz-select formControlName='volumeHighlightMode' [nzDisabled]="hasVolumeHighlightOptionsErrors()">
+        <nz-option  *ngFor='let option of availableVolumeHighlightModes' [nzValue]="option.value" [nzLabel]="option.label"></nz-option>
+      </nz-select>
+      <span nz-typography nzType="secondary" *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.BiggestVolume">
+        Ячейка объема будет выделена стандартными цветами покупки/продажи.
+        Процент заполнения ячейки цветом определяется отношением объема ячейки к максимальному объему в стакане.
+      </span>
+      <span nz-typography nzType="secondary" *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue">
+        Цвет ячейки определяется настройками ниже.
+        Для выделения будет выбрана опция с наибольшим объемом, для которой выполняется условие: объем ячейки >= объема опции.
+        Процент заполнения ячейки цветом определяется отношением объема ячейки к значению настройки "Заполненность полосы объема".
+      </span>
     </nz-form-item>
 
-    <nz-collapse [nzBordered]="false" class="compact" *ngIf="form.value.highlightHighVolume">
-      <nz-collapse-panel nzHeader="Настройки выделения объемов" [nzActive]="true">
+    <nz-collapse [nzBordered]="false" class="compact" *ngIf="showVolumeHighlightOptions()">
+      <nz-collapse-panel nzHeader="Настройки выделения объемов" [nzActive]="true" [nzDisabled]="hasVolumeHighlightOptionsErrors()">
+        <nz-form-item *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue">
+          <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.volumeHighlightOption.volumeHighlightFullness.min}} до {{validationSettings.volumeHighlightOption.volumeHighlightFullness.max}}">
+            <nz-form-label nzFor="volumeHighlightFullness" nzRequired>Заполненность полосы объема</nz-form-label>
+            <input class='ant-input' atsNumerical formControlName="volumeHighlightFullness" (mousedown)="$event.stopPropagation()"/>
+          </nz-form-control>
+        </nz-form-item>
         <nz-form-item>
           <ng-container *ngFor="let optionForm of volumeHighlightOptions.controls; index as i">
             <div [formGroup]="asFormGroup(optionForm)" class="volume-highlight-options">
               <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.volumeHighlightOption.boundary.min}} до {{validationSettings.volumeHighlightOption.boundary.max}}">
-                <nz-form-label nzRequired nzFor="boundary" nzRequired>Объем</nz-form-label>
+                <nz-form-label nzRequired nzFor="boundary">Объем</nz-form-label>
                 <input class='ant-input' atsNumerical formControlName="boundary" (mousedown)="$event.stopPropagation()"/>
               </nz-form-control>
               <nz-form-control nzErrorTip="Выберите цвет">
-                <nz-form-label nzRequired nzFor="color" nzRequired>Цвет выделения</nz-form-label>
+                <nz-form-label nzRequired nzFor="color">Цвет выделения</nz-form-label>
                 <ats-color-picker-input [value]="optionForm.value.color" (colorChangeComplete)="setVolumeHighlightOptionColor(i, $event)"></ats-color-picker-input>
               </nz-form-control>
               <button (click)="removeVolumeHighlightOption($event, i)"
@@ -84,7 +101,7 @@
     </nz-collapse>
 
     <nz-collapse [nzBordered]="false" class="compact working-volumes">
-      <nz-collapse-panel nzHeader="Рабочие объёмы">
+      <nz-collapse-panel nzHeader="Рабочие объёмы" [nzDisabled]="!form?.controls?.workingVolumes?.valid">
         <div class="hint">Используются для быстрого выставления заявок с нужным объёмом</div>
         <nz-form-item class="compact" *ngFor="let ctrl of workingVolumes.controls; let i = index">
           <nz-form-control [nzErrorTip]="workingVolumeError">

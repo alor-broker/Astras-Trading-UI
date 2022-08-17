@@ -20,6 +20,7 @@ import {
 } from "@angular/forms";
 import {
   ScalperOrderBookSettings,
+  VolumeHighlightMode,
   VolumeHighlightOption
 } from "../../../../shared/models/settings/scalper-order-book-settings.model";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
@@ -32,8 +33,9 @@ interface SettingsFormData {
   showYieldForBonds: boolean;
   showZeroVolumeItems: boolean;
   showSpreadItems: boolean;
-  highlightHighVolume: boolean;
+  volumeHighlightMode: VolumeHighlightMode;
   volumeHighlightOptions: VolumeHighlightOption[];
+  volumeHighlightFullness: number;
   workingVolumes: number[];
   disableHotkeys: boolean;
   enableMouseClickSilentOrders: boolean;
@@ -48,9 +50,14 @@ type SettingsFormGroup = FormGroup & { value: SettingsFormData, controls: Settin
   styleUrls: ['./scalper-order-book-settings.component.less']
 })
 export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
+  readonly volumeHighlightModes = VolumeHighlightMode;
   readonly validationSettings = {
     volumeHighlightOption: {
       boundary: {
+        min: 1,
+        max: 1000000000
+      },
+      volumeHighlightFullness: {
         min: 1,
         max: 1000000000
       }
@@ -68,6 +75,12 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
 
   form!: SettingsFormGroup;
   exchanges: string[] = exchangesList;
+
+  readonly availableVolumeHighlightModes: { label: string, value: string }[] = [
+    { label: 'Отключено', value: VolumeHighlightMode.Off },
+    { label: 'Относительно наибольшего объема', value: VolumeHighlightMode.BiggestVolume },
+    { label: 'По границам (более объема)', value: VolumeHighlightMode.VolumeBoundsWithFixedValue },
+  ];
 
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -90,31 +103,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     this.settingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
-      this.form = new FormGroup({
-        symbol: new FormControl(settings.symbol, [
-          Validators.required,
-          Validators.minLength(1)
-        ]),
-        exchange: new FormControl(settings.exchange, Validators.required),
-        depth: new FormControl(settings.depth, [Validators.required,
-          Validators.min(this.validationSettings.depth.min),
-          Validators.max(this.validationSettings.depth.max)]),
-        instrumentGroup: new FormControl(settings.instrumentGroup),
-        showYieldForBonds: new FormControl(settings.showYieldForBonds),
-        showZeroVolumeItems: new FormControl(settings.showZeroVolumeItems),
-        showSpreadItems: new FormControl(settings.showSpreadItems),
-        highlightHighVolume: new FormControl(settings.highlightHighVolume),
-        volumeHighlightOptions: new FormArray(
-          [...settings.volumeHighlightOptions]
-            .sort((a, b) => a.boundary - b.boundary)
-            .map(x => this.createVolumeHighlightOptionsControl(x))
-        ),
-        workingVolumes: new FormArray(settings.workingVolumes.map(
-          wv => new FormControl(wv, [Validators.required, Validators.min(1)])
-        )),
-        disableHotkeys: new FormControl(settings.disableHotkeys),
-        enableMouseClickSilentOrders: new FormControl(settings.enableMouseClickSilentOrders),
-      } as SettingsFormControls) as SettingsFormGroup;
+      this.buildForm(settings);
     });
   }
 
@@ -133,6 +122,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
             boundary: Number(x.boundary)
           } as VolumeHighlightOption)
         ),
+        volumeHighlightFullness: Number(this.form.value.volumeHighlightFullness),
         workingVolumes: this.form.value.workingVolumes.map((wv: string) => Number(wv)),
         linkToActive: false
       });
@@ -163,6 +153,49 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     $event.stopPropagation();
 
     this.volumeHighlightOptions.removeAt(index);
+  }
+
+  showVolumeHighlightOptions() {
+    return this.form?.value.volumeHighlightMode === VolumeHighlightMode.VolumeBoundsWithFixedValue;
+  }
+
+  hasVolumeHighlightOptionsErrors(){
+    return !this.form?.controls?.volumeHighlightOptions?.valid || !this.form?.controls?.volumeHighlightFullness?.valid;
+  }
+
+  private buildForm(settings: ScalperOrderBookSettings) {
+    this.form = new FormGroup({
+      symbol: new FormControl(settings.symbol, [
+        Validators.required,
+        Validators.minLength(1)
+      ]),
+      exchange: new FormControl(settings.exchange, Validators.required),
+      depth: new FormControl(settings.depth, [Validators.required,
+        Validators.min(this.validationSettings.depth.min),
+        Validators.max(this.validationSettings.depth.max)]),
+      instrumentGroup: new FormControl(settings.instrumentGroup),
+      showYieldForBonds: new FormControl(settings.showYieldForBonds),
+      showZeroVolumeItems: new FormControl(settings.showZeroVolumeItems),
+      showSpreadItems: new FormControl(settings.showSpreadItems),
+      volumeHighlightMode: new FormControl(settings.volumeHighlightMode ?? VolumeHighlightMode.Off),
+      volumeHighlightFullness: new FormControl(
+        settings.volumeHighlightFullness ?? 1000,
+        [
+          Validators.required,
+          Validators.min(this.validationSettings.volumeHighlightOption.volumeHighlightFullness.min),
+          Validators.max(this.validationSettings.volumeHighlightOption.volumeHighlightFullness.max)
+        ]),
+      volumeHighlightOptions: new FormArray(
+        [...settings.volumeHighlightOptions]
+        .sort((a, b) => a.boundary - b.boundary)
+        .map(x => this.createVolumeHighlightOptionsControl(x))
+      ),
+      workingVolumes: new FormArray(settings.workingVolumes.map(
+        wv => new FormControl(wv, [Validators.required, Validators.min(1)])
+      )),
+      disableHotkeys: new FormControl(settings.disableHotkeys),
+      enableMouseClickSilentOrders: new FormControl(settings.enableMouseClickSilentOrders),
+    } as SettingsFormControls) as SettingsFormGroup;
   }
 
   private createVolumeHighlightOptionsControl(option?: VolumeHighlightOption): AbstractControl {

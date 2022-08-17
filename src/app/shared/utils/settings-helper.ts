@@ -105,7 +105,7 @@ export function isScalperOrderBookSettings(
     'showYieldForBonds' in settings &&
     'showZeroVolumeItems' in settings &&
     'showSpreadItems' in settings &&
-    'highlightHighVolume' in settings &&
+    'volumeHighlightMode' in settings &&
     'volumeHighlightOptions' in settings &&
     'workingVolumes' in settings &&
     'disableHotkeys' in settings &&
@@ -365,7 +365,7 @@ export function isEqualScalperOrderBookSettings(
       settings1.showYieldForBonds == settings2.showYieldForBonds &&
       settings1.showZeroVolumeItems == settings2.showZeroVolumeItems &&
       settings1.showSpreadItems == settings2.showSpreadItems &&
-      settings1.highlightHighVolume == settings2.highlightHighVolume &&
+      settings1.volumeHighlightMode == settings2.volumeHighlightMode &&
       isArrayEqual(
         settings1.volumeHighlightOptions,
         settings2.volumeHighlightOptions,

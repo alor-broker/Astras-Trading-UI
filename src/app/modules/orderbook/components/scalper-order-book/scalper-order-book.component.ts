@@ -31,6 +31,7 @@ import {
 } from "../../models/scalper-order-book.model";
 import {
   ScalperOrderBookSettings,
+  VolumeHighlightMode,
   VolumeHighlightOption
 } from "../../../../shared/models/settings/scalper-order-book-settings.model";
 import {
@@ -148,7 +149,11 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
       return null;
     }
 
-    if (!settings.highlightHighVolume) {
+    if (settings.volumeHighlightMode === VolumeHighlightMode.Off) {
+      return null;
+    }
+
+    if (settings.volumeHighlightMode === VolumeHighlightMode.BiggestVolume) {
       const size = 100 * (volume / this.maxVolume);
       const color = rowType === ScalperOrderBookRowType.Bid
         ? buyColorBackground
@@ -159,12 +164,18 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
       };
     }
 
+    let size = 0;
     const volumeHighlightOption = this.getVolumeHighlightOption(settings, volume);
     if (!volumeHighlightOption) {
       return null;
     }
 
-    const size = 100 * (volume / volumeHighlightOption.boundary);
+    if (!!settings.volumeHighlightFullness) {
+      size = 100 * (volume / settings.volumeHighlightFullness);
+      if (size > 100) {
+        size = 100;
+      }
+    }
 
     return {
       background: `linear-gradient(90deg, ${volumeHighlightOption.color}BF ${size}% , rgba(0,0,0,0) ${size}%)`
@@ -173,12 +184,12 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
 
   cancelAllOrders() {
     this.orderBookRows$
-      .pipe(take(1))
-      .subscribe(rows =>
-        rows
-          .filter(row => row.currentOrders.length)
-          .forEach(row => this.cancelOrders(row.currentOrders))
-      );
+    .pipe(take(1))
+    .subscribe(rows =>
+      rows
+      .filter(row => row.currentOrders.length)
+      .forEach(row => this.cancelOrders(row.currentOrders))
+    );
   }
 
   cancelOrders(orders: CurrentOrder[], e?: MouseEvent,) {
@@ -197,7 +208,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
 
   closePositions(isReversePosition = false) {
     this.settings$!.pipe(take(1))
-      .subscribe(s => this.orderBookService.closeOrderBookPositions(s, isReversePosition));
+    .subscribe(s => this.orderBookService.closeOrderBookPositions(s, isReversePosition));
   }
 
   ngOnDestroy() {
@@ -248,8 +259,8 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
         ),
         map(({ settings, positions }) => ({
             quantity: positions
-              .map(pos => pos.qtyTFuture)
-              .reduce((acc, curr) => acc + curr, 0),
+            .map(pos => pos.qtyTFuture)
+            .reduce((acc, curr) => acc + curr, 0),
             settings
           })
         ),
@@ -370,7 +381,7 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     ).subscribe(([terminalSettings, settings]) => {
       this.settingsService.updateSettings(this.guid, {
         workingVolumes: terminalSettings.hotKeysSettings?.workingVolumes
-          ?.map((wv, i) => settings.workingVolumes[i] || 10 ** i)
+        ?.map((wv, i) => settings.workingVolumes[i] || 10 ** i)
       });
     });
 
@@ -387,23 +398,23 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
 
   private placeBestOrder(side: Side) {
     this.orderBookRows$
-      .pipe(
-        take(1),
-      )
-      .subscribe((rows) => {
-        const spreadRows = rows.filter(r => r.rowType === this.rowTypes.Spread).map(r => r.price);
-        let price: number;
+    .pipe(
+      take(1),
+    )
+    .subscribe((rows) => {
+      const spreadRows = rows.filter(r => r.rowType === this.rowTypes.Spread).map(r => r.price);
+      let price: number;
 
-        if (spreadRows.length) {
-          price = side === Side.Sell ? <number>spreadRows.shift() : <number>spreadRows.pop();
-        } else {
-          price = side === Side.Sell
-            ? <number>rows.filter(r => r.rowType === this.rowTypes.Ask).map(r => r.price).pop()
-            : <number>rows.filter(r => r.rowType === this.rowTypes.Bid).map(r => r.price).shift();
-        }
+      if (spreadRows.length) {
+        price = side === Side.Sell ? <number>spreadRows.shift() : <number>spreadRows.pop();
+      } else {
+        price = side === Side.Sell
+          ? <number>rows.filter(r => r.rowType === this.rowTypes.Ask).map(r => r.price).pop()
+          : <number>rows.filter(r => r.rowType === this.rowTypes.Bid).map(r => r.price).shift();
+      }
 
-        this.placeLimitOrder(side, price, true);
-      });
+      this.placeLimitOrder(side, price, true);
+    });
   }
 
   private placeMarketOrder(side: Side, isSilent: boolean) {
@@ -517,8 +528,8 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
 
   private getVolumeHighlightOption(settings: ScalperOrderBookSettings, volume: number): VolumeHighlightOption | undefined {
     return [...settings.volumeHighlightOptions]
-      .sort((a, b) => a.boundary - b.boundary)
-      .find(x => volume <= x.boundary);
+    .sort((a, b) => b.boundary - a.boundary)
+    .find(x => volume >= x.boundary);
   }
 
   private toViewModel(settings: ScalperOrderBookSettings, instrumentInfo: Instrument, orderBook: ScalperOrderBook): ScalperOrderBookRowView[] {
