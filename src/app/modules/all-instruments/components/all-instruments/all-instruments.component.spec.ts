@@ -5,6 +5,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { of } from "rxjs";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import { mockComponent } from "../../../../shared/utils/testing";
+import { StoreModule } from "@ngrx/store";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -25,6 +26,9 @@ describe('AllInstrumentsComponent', () => {
           ],
         })
       ],
+      imports: [
+        StoreModule.forRoot({})
+      ],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -37,7 +41,7 @@ describe('AllInstrumentsComponent', () => {
           useValue: {
             getAllInstruments: jasmine.createSpy('getAllInstruments').and.returnValue(of([]))
           }
-        }
+        },
       ]
     })
     .compileComponents();
