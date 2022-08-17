@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit } from '@angular/core';
-import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { DashboardItemContentSize } from "../../../../shared/models/dashboard-item.model";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import { interval, Subject, Subscription, switchMap, takeUntil } from "rxjs";
@@ -21,10 +21,8 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   };
 
   @Input() guid!: string;
-  @Input() public resize!: EventEmitter<DashboardItem>;
+  @Input() contentSize!: DashboardItemContentSize | null;
 
-  public tableContainerHeight: number = 0;
-  public tableContainerWidth: number = 0;
   public instrumentsList: Array<AllInstruments> = [];
   public isLoading = false;
 
@@ -93,14 +91,6 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(settings => {
         this.displayedColumns = this.allColumns.filter(col => settings.allInstrumentsColumns.includes(col.name));
-      });
-
-    this.resize
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        this.tableContainerHeight = data.height ?? 0;
-        this.tableContainerWidth = data.width!;
-        this.cdr.markForCheck();
       });
   }
 

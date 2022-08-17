@@ -1,7 +1,7 @@
 <ats-all-instruments
   *ngIf="!shouldShowSettings"
   [guid]="guid"
-  [resize]="resize"
+  [contentSize]="contentSize$ | async"
 >
 </ats-all-instruments>
 <ats-all-instruments-settings *ngIf="shouldShowSettings" [guid]='guid' (settingsChange)="onSettingsChange()"></ats-all-instruments-settings>

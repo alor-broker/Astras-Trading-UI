@@ -38,7 +38,6 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   @ViewChild('dataTable', {static: false}) public dataTable!: NzTableComponent<any>;
   @ViewChild('tableRow') headerRowEl!: ElementRef;
-  private filtersBtnEl!: any;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private visibleItemsCount = 1;
@@ -47,9 +46,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   public filtersForm = new FormGroup({});
   public activeFilterName = '';
 
-  constructor(
-    private elRef: ElementRef
-  ) {
+  constructor() {
   }
 
   ngOnInit() {
@@ -68,17 +65,11 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   public ngOnChanges(changes: SimpleChanges) {
     if (changes.tableContainerHeight || changes.tableContainerWidth) {
-      this.scrollHeight = this.tableContainerHeight -
-        (
-          InfiniteScrollTableComponent.getElementHeight(this.headerRowEl?.nativeElement) +
-          InfiniteScrollTableComponent.getElementHeight(this.filtersBtnEl)
-        );
-      this.visibleItemsCount = Math.ceil(this.scrollHeight / this.itemHeight);
+      this.calculateScrollHeight();
     }
   }
 
   public ngAfterViewInit(): void {
-    this.filtersBtnEl = this.elRef.nativeElement.querySelector('.filters-btn');
     this.dataTable?.cdkVirtualScrollViewport?.scrolledIndexChange
       .pipe(takeUntil(this.destroy$))
       .subscribe((upperItemIndex: number) => {
@@ -86,6 +77,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
           this.scrolled.emit(this.filtersForm.value);
         }
       });
+    this.calculateScrollHeight();
   }
 
   public getWidthArr() {
@@ -111,6 +103,12 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   public ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+  }
+
+  private calculateScrollHeight() {
+    this.scrollHeight = this.tableContainerHeight -
+      InfiniteScrollTableComponent.getElementHeight(this.headerRowEl?.nativeElement);
+    this.visibleItemsCount = Math.ceil(this.scrollHeight / this.itemHeight);
   }
 
   private static getElementHeight(el?: any) {
