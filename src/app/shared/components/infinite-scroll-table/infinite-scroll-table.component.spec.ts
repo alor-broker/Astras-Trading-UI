@@ -5,7 +5,7 @@ import { NzTableModule } from "ng-zorro-antd/table";
 import { NzDropDownModule } from "ng-zorro-antd/dropdown";
 import { By } from "@angular/platform-browser";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { Component } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { ColumnsSettings } from "../../models/columns-settings.model";
 import { FormControl } from "@angular/forms";
 
@@ -25,7 +25,9 @@ import { FormControl } from "@angular/forms";
     </ats-infinite-scroll-table>
   `
 })
-class TestWrapperComponent {
+class TestWrapperComponent implements OnInit {
+  constructor(private cdr: ChangeDetectorRef) {
+  }
   tableContainerHeight = 50;
   tableContainerWidth = 50;
   isLoading = true;
@@ -44,6 +46,10 @@ class TestWrapperComponent {
   applyFilter(e: any) {}
   scrolled() {}
   rowClick(e: any) {}
+
+  ngOnInit() {
+    this.cdr.detectChanges();
+  }
 }
 
 describe('InfiniteScrollTableComponent', () => {
@@ -69,8 +75,8 @@ describe('InfiniteScrollTableComponent', () => {
   beforeEach(() => {
     wrapperFixture = TestBed.createComponent(TestWrapperComponent);
     wrapperComp = wrapperFixture.componentInstance;
-    wrapperFixture.detectChanges();
     component = wrapperFixture.debugElement.query(By.css('ats-infinite-scroll-table')).componentInstance;
+    wrapperFixture.detectChanges();
   });
 
   it('should create', () => {
