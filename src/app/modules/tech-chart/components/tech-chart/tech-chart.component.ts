@@ -185,6 +185,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         'header_symbol_search',
         'symbol_info',
         'display_market_status',
+        'symbol_search_hot_key',
+        'save_shortcut'
       ],
       enabled_features: [
         'side_toolbar_in_fullscreen_mode'
