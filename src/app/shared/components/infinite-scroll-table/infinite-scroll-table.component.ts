@@ -17,6 +17,8 @@ import { Subject, takeUntil } from "rxjs";
 import { ITEM_HEIGHT } from "../../../modules/all-trades/utils/all-trades.utils";
 import { FormControl, FormGroup } from "@angular/forms";
 import { debounceTime } from "rxjs/operators";
+import { ContextMenu } from "../../models/infinite-scroll-table.model";
+import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
 
 @Component({
   selector: 'ats-infinite-scroll-table',
@@ -31,6 +33,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   @Input() public data: Array<any> = [];
   @Input() public isLoading = false;
   @Input() public columns: Array<ColumnsSettings> = [];
+  @Input() public contextMenu: Array<ContextMenu> = [];
 
   @Output() public rowClick = new EventEmitter();
   @Output() public scrolled = new EventEmitter();
@@ -45,8 +48,11 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   public scrollHeight = 0;
   public filtersForm = new FormGroup({});
   public activeFilterName = '';
+  public selectedRow: any = null;
 
-  constructor() {
+  constructor(
+    private readonly nzContextMenuService: NzContextMenuService,
+  ) {
   }
 
   ngOnInit() {
@@ -98,6 +104,11 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   public defaultFilterChange(name: string, value: string) {
     this.getFilterControl(name).setValue(value);
+  }
+
+  public openContextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedRow: any): void {
+    this.selectedRow = selectedRow;
+    this.nzContextMenuService.create($event, menu);
   }
 
   public ngOnDestroy(): void {

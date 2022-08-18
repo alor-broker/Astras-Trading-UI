@@ -39,7 +39,10 @@
 
   <tbody>
   <ng-template nz-virtual-scroll let-data>
-    <tr (click)="rowClick.emit(data)">
+    <tr
+      (click)="rowClick.emit(data)"
+      (contextmenu)="openContextMenu($event, menu, data)"
+    >
       <td *ngFor="let column of columns" [class]="column.classFn && column.classFn(data)">
         {{column.transformFn && column.transformFn(data) || data[column.name]}}
       </td>
@@ -63,4 +66,36 @@
       </div>
     </div>
   </div>
+</nz-dropdown-menu>
+
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <ul nz-menu>
+    <ng-container *ngFor="let m of contextMenu">
+      <li
+        *ngIf="!m.subMenu?.length; else subMenu"
+        nz-menu-item
+        (click)="m.clickFn(selectedRow)"
+      >
+          {{m.title}}
+      </li>
+
+      <ng-template #subMenu>
+        <li
+          nz-submenu
+          [nzTitle]="m.title"
+          (click)="m.clickFn(selectedRow)"
+        >
+          <ul>
+            <li
+              nz-menu-item
+              *ngFor="let subM of m.subMenu"
+              (click)="subM.clickFn(selectedRow)"
+            >
+              {{subM.title}}
+            </li>
+          </ul>
+        </li>
+      </ng-template>
+    </ng-container>
+  </ul>
 </nz-dropdown-menu>
