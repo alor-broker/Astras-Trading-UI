@@ -25,7 +25,10 @@ import {
   getRandomInt,
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
-import { ScalperOrderBookSettings } from "../../../../shared/models/settings/scalper-order-book-settings.model";
+import {
+  ScalperOrderBookSettings,
+  VolumeHighlightMode
+} from "../../../../shared/models/settings/scalper-order-book-settings.model";
 import { ScalperOrderBookService } from "../../services/scalper-order-book.service";
 import { TerminalSettings } from "../../../../shared/models/terminal-settings/terminal-settings.model";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
@@ -45,7 +48,8 @@ describe('ScalperOrderBookComponent', () => {
     exchange: 'MOEX',
     enableMouseClickSilentOrders: true,
     disableHotkeys: false,
-    highlightHighVolume: false,
+    volumeHighlightFullness: 1000,
+    volumeHighlightMode: VolumeHighlightMode.BiggestVolume,
     showSpreadItems: false,
     showYieldForBonds: false,
     showZeroVolumeItems: false,
