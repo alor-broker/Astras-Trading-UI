@@ -96,7 +96,11 @@ export class WidgetHeaderComponent implements OnInit {
       take(1)
     ).subscribe(settings => {
       const name = getTypeBySettings(settings);
-      this.modal.openHelpModal(name);
+      if(!!name) {
+        this.modal.openHelpModal(name);
+      } else {
+        throw new Error('Unknown widget type');
+      }
     });
   }
 }

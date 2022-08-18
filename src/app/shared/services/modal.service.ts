@@ -6,6 +6,7 @@ import { EditParams } from '../models/commands/edit-params.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
 import { NewsListItem } from "../../modules/news/models/news.model";
+import { WidgetNames } from "../models/enums/widget-names";
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ export class ModalService {
   private editParams = new BehaviorSubject<EditParams | null>(null);
   private shouldShowEditModal = new BehaviorSubject<boolean>(false);
 
-  private helpParams = new BehaviorSubject<string | null>(null);
+  private helpParams = new BehaviorSubject<WidgetNames | null>(null);
   private shouldShowHelpModal = new BehaviorSubject<boolean>(false);
 
   private shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
@@ -65,7 +66,7 @@ export class ModalService {
     this.editParams.next(data);
   }
 
-  openHelpModal(widgetName: string) {
+  openHelpModal(widgetName: WidgetNames) {
     this.shouldShowHelpModal.next(true);
     this.helpParams.next(widgetName);
   }

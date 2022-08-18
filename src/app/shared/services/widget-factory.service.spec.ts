@@ -22,6 +22,8 @@ import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.
 import { sharedModuleImportForTests } from "../utils/testing";
 import { Store } from "@ngrx/store";
 import { selectNewPortfolio } from "../../store/portfolios/portfolios.actions";
+import { TechChartSettings } from "../models/settings/tech-chart-settings.model";
+import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
 
 describe('WidgetFactoryService', () => {
   let service: WidgetFactoryService;
@@ -157,6 +159,24 @@ describe('WidgetFactoryService', () => {
 
     expect(exchangeRateSettings.settingsType).toBe('ExchangeRateSettings');
     expect(exchangeRateSettings.guid).toBe('testGuid');
+  });
+
+  it('should create new tech chart settings', () => {
+    const settings: TechChartSettings = service.createNewSettings({
+      gridItem: {x: 0, y: 0, rows: 1, cols: 1, type: WidgetNames.techChart, label: 'testGuid'}
+    }) as TechChartSettings;
+
+    expect(settings.settingsType).toBe('TechChartSettings');
+    expect(settings.guid).toBe('testGuid');
+  });
+
+  it('should create new order submit settings', () => {
+    const settings: OrderSubmitSettings = service.createNewSettings({
+      gridItem: {x: 0, y: 0, rows: 1, cols: 1, type: WidgetNames.orderSubmit, label: 'testGuid'}
+    }) as OrderSubmitSettings;
+
+    expect(settings.settingsType).toBe('OrderSubmitSettings');
+    expect(settings.guid).toBe('testGuid');
   });
 
   it('should create new settings with additional settings', () => {
