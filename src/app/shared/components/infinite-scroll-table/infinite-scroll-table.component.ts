@@ -45,6 +45,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   public scrollHeight = 0;
   public filtersForm = new FormGroup({});
   public activeFilterName = '';
+  public sortedColumnName = '';
+  public sortedColumnOrder: string | null = '';
 
   constructor() {
   }
@@ -98,6 +100,12 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   public defaultFilterChange(name: string, value: string) {
     this.getFilterControl(name).setValue(value);
+  }
+
+  public sortChange(e: string | null, column: ColumnsSettings) {
+    this.sortedColumnName = column.name;
+    this.sortedColumnOrder = e;
+    column.sortFn!(e);
   }
 
   public ngOnDestroy(): void {
