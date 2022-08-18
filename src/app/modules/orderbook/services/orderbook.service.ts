@@ -3,8 +3,7 @@ import {
   combineLatest,
   filter,
   Observable,
-  of,
-  take
+  of
 } from 'rxjs';
 import {
   catchError,
@@ -14,7 +13,6 @@ import {
 } from 'rxjs/operators';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { OrderbookData } from '../models/orderbook-data.model';
-import { OrderbookRequest } from '../models/orderbook-request.model';
 import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import {
@@ -28,23 +26,10 @@ import { Order } from 'src/app/shared/models/orders/order.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { Store } from '@ngrx/store';
 import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
-import { ScalperOrderBookSettings } from "../../../shared/models/settings/scalper-order-book-settings.model";
-import {
-  CurrentOrder,
-  OrderBookItem,
-  ScalperOrderBook
-} from "../models/scalper-order-book.model";
-import { Instrument } from "../../../shared/models/instruments/instrument.model";
-import { OrderbookDataRow } from "../models/orderbook-data-row.model";
-import { getTypeByCfi } from "../../../shared/utils/instruments";
-import { InstrumentType } from "../../../shared/models/enums/instrument-type.model";
-import { MathHelper } from "../../../shared/utils/math-helper";
 import { Side } from "../../../shared/models/enums/side.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
-import { Position } from "../../../shared/models/positions/position.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import { PositionsService } from "../../../shared/services/positions.service";
-import { CurrentPortfolioOrderService } from "../../../shared/services/orders/current-portfolio-order.service";
+import { OrderBookDataFeedHelper } from "../utils/order-book-data-feed.helper";
 
 @Injectable()
 export class OrderbookService extends BaseWebsocketService {
@@ -53,15 +38,18 @@ export class OrderbookService extends BaseWebsocketService {
   constructor(
     ws: WebsocketService,
     private readonly store: Store,
-    private readonly canceller: OrderCancellerService,
-    private readonly positionsService: PositionsService,
-    private readonly orderService: CurrentPortfolioOrderService,
+    private readonly canceller: OrderCancellerService
   ) {
     super(ws);
   }
 
-  getHorizontalOrderBook(settings: OrderbookSettings): Observable<OrderBook> {
-    const obData$ = this.getOrderBookReq(settings.guid, settings.symbol, settings.exchange, settings.instrumentGroup, settings.depth).pipe(
+  getOrderBook(settings: OrderbookSettings): Observable<OrderBook> {
+    const obData$ = this.getEntity<OrderbookData>(OrderBookDataFeedHelper.getRealtimeDateRequest(
+      settings.guid,
+      settings.symbol,
+      settings.exchange,
+      settings.instrumentGroup,
+      settings.depth)).pipe(
       catchError((e,) => {
         throw e;
       }),
@@ -71,11 +59,13 @@ export class OrderbookService extends BaseWebsocketService {
     return combineLatest([obData$, this.getOrders(settings, settings.guid)]).pipe(
       map(([ob, orders]) => {
         const withOrdersRows = ob.rows.map((row) => {
-          const askOrders = !!row.ask ? this.getCurrentOrdersForItem(row.ask, Side.Sell, orders) : [];
+          const askOrders = !!row.ask
+            ? OrderBookDataFeedHelper.getCurrentOrdersForItem(row.ask, Side.Sell, orders)
+            : [];
 
           const sumAsk = askOrders
-            .map((o) => o.volume)
-            .reduce((prev, curr) => prev + curr, 0);
+          .map((o) => o.volume)
+          .reduce((prev, curr) => prev + curr, 0);
           const askCancels = askOrders.map(
             (o): CancelCommand => ({
               orderid: o.orderId,
@@ -85,10 +75,13 @@ export class OrderbookService extends BaseWebsocketService {
             })
           );
 
-          const bidOrders = !!row.bid ? this.getCurrentOrdersForItem(row.bid, Side.Buy, orders) : [];
+          const bidOrders = !!row.bid
+            ? OrderBookDataFeedHelper.getCurrentOrdersForItem(row.bid, Side.Buy, orders)
+            : [];
+
           const sumBid = bidOrders
-            .map((o) => o.volume)
-            .reduce((prev, curr) => prev + curr, 0);
+          .map((o) => o.volume)
+          .reduce((prev, curr) => prev + curr, 0);
 
           const bidCancels = bidOrders.map(
             (o): CancelCommand => ({
@@ -110,132 +103,8 @@ export class OrderbookService extends BaseWebsocketService {
     );
   }
 
-  getScalperOrderBook(settings: ScalperOrderBookSettings, instrument: Instrument): Observable<ScalperOrderBook> {
-    const obData$ = this.getOrderBookReq(settings.guid, instrument.symbol, instrument.exchange, instrument.instrumentGroup, settings.depth);
-
-    return combineLatest([obData$, this.getOrders(settings, settings.guid)]).pipe(
-      map(([ob, orders]) => this.toScalperOrderBook(settings, instrument, ob, orders))
-    );
-  }
-
   cancelOrder(cancel: CancelCommand) {
     this.canceller.cancelOrder(cancel).subscribe();
-  }
-
-  closeOrderBookPositions(settings: ScalperOrderBookSettings, isReversePosition = false) {
-    this.getOrderBookPositions(settings)
-      .subscribe((positions: Position[]) =>
-        positions.forEach(pos => {
-          if (!pos.qtyTFuture) {
-            return;
-          }
-
-          this.orderService.submitMarketOrder({
-            side: pos.qtyTFuture > 0 ? Side.Sell : Side.Buy,
-            quantity: Math.abs(isReversePosition ? pos.qtyTFuture * 2 : pos.qtyTFuture),
-            instrument: { symbol: pos.symbol, exchange: pos.exchange },
-          }).subscribe();
-        })
-      );
-  }
-
-  getOrderBookPositions(settings: ScalperOrderBookSettings): Observable<Position[]> {
-    return this.store.select(getSelectedPortfolio).pipe(
-      take(1),
-      filter((p): p is PortfolioKey => !!p),
-      switchMap(p => this.positionsService.getAllByPortfolio(p.portfolio, p.exchange)),
-      map(positions => positions.filter(pos => pos.symbol === settings.symbol)
-      )
-    );
-  }
-
-  private toScalperOrderBook(
-    settings: ScalperOrderBookSettings,
-    instrument: Instrument,
-    orderBookData: OrderbookData,
-    currentOrders: Order[]) {
-
-    const toOrderBookItems = (dataRows: OrderbookDataRow[], side: Side) => dataRows.map(x => ({
-      price: x.p,
-      volume: x.v,
-      yield: x.y,
-      currentOrders: this.getCurrentOrdersForItem(x.p, side, currentOrders)
-    } as OrderBookItem));
-
-    let asks = toOrderBookItems(orderBookData.a, Side.Sell).sort((a, b) => a.price - b.price);
-    let bids = toOrderBookItems(orderBookData.b, Side.Buy).sort((a, b) => b.price - a.price);
-
-    if (getTypeByCfi(instrument.cfiCode) === InstrumentType.Bond || !instrument.minstep) {
-      return {
-        asks,
-        bids,
-        spreadItems: []
-      } as ScalperOrderBook;
-    }
-
-    if (settings.showZeroVolumeItems && !!settings.depth) {
-      asks = this.generateSequentialItems(asks, settings.depth, instrument.minstep);
-      bids = this.generateSequentialItems(bids, settings.depth, -instrument.minstep);
-    }
-
-    let spreadItems: OrderBookItem[] = [];
-    if (settings.showSpreadItems && asks.length > 0 && bids.length > 0) {
-      spreadItems = this.generateSpread(
-        Math.min(asks[0].price, bids[0].price),
-        Math.max(asks[0].price, bids[0].price),
-        instrument.minstep
-      );
-    }
-
-    return {
-      asks,
-      bids,
-      spreadItems
-    } as ScalperOrderBook;
-  }
-
-  private generatePriceSequence(startValue: number, length: number, step: number) {
-    const pricePrecision = MathHelper.getPrecision(step);
-    return [...Array(length).keys()]
-      .map(i => startValue + (i * step))
-      .map(x => MathHelper.round(x, pricePrecision));
-  }
-
-  private generateSpread(startValue: number, endValue: number, step: number): OrderBookItem[] {
-    if (startValue === endValue) {
-      return [];
-    }
-
-    const pricePrecision = MathHelper.getPrecision(step);
-    const itemsCountToGenerate = Math.round((endValue - startValue) / step) - 1;
-    if (itemsCountToGenerate <= 0) {
-      return [];
-    }
-
-    return [...Array(itemsCountToGenerate).keys()]
-      .map(i => startValue + ((i + 1) * step))
-      .map(x => MathHelper.round(x, pricePrecision))
-      .map(x => ({
-        price: x,
-        currentOrders: []
-      } as OrderBookItem));
-  }
-
-  private generateSequentialItems(items: OrderBookItem[], count: number, step: number) {
-    if (items.length === 0) {
-      return [];
-    }
-
-    return this.generatePriceSequence(items[0].price, count, step)
-      .map(x => {
-        const existedItem = items.find(i => i.price === x);
-        return {
-          price: x,
-          volume: undefined,
-          currentOrders: [],
-          ...existedItem
-        } as OrderBookItem;
-      });
   }
 
   private toOrderBookRows(orderBookData: OrderbookData): OrderBookViewRow[] {
@@ -267,26 +136,6 @@ export class OrderbookService extends BaseWebsocketService {
     } as OrderBook;
   }
 
-  private getOrderBookReq(
-    trackId: string,
-    symbol: string,
-    exchange: string,
-    instrumentGroup?: string,
-    depth?: number
-  ): Observable<OrderbookData> {
-    const request: OrderbookRequest = {
-      opcode: 'OrderBookGetAndSubscribe',
-      code: symbol,
-      exchange: exchange,
-      depth: depth ?? 10,
-      format: 'slim',
-      guid: '',
-      instrumentGroup: instrumentGroup,
-    };
-    request.guid = trackId;
-    return this.getEntity<OrderbookData>(request);
-  }
-
   private makeChartData(rows: OrderBookViewRow[]): ChartData {
     const asks = new Array<ChartPoint>(rows.length);
     const bids = new Array<ChartPoint>(rows.length);
@@ -316,7 +165,7 @@ export class OrderbookService extends BaseWebsocketService {
   }
 
   private getOrders(instrument: InstrumentKey, trackId: string) {
-    return this.store.select(getSelectedPortfolio).pipe(
+    return this.getCurrentPortfolio().pipe(
       switchMap((p) => {
         if (p) {
           return this.getPortfolioEntity<Order>(
@@ -341,18 +190,10 @@ export class OrderbookService extends BaseWebsocketService {
     );
   }
 
-  private getCurrentOrdersForItem(itemPrice: number, side: Side, orders: Order[]): CurrentOrder[] {
-    const currentOrders = orders.filter(
-      (o) => o.side === side
-        && o.price === itemPrice
-        && o.status === 'working'
+  private getCurrentPortfolio(): Observable<PortfolioKey> {
+    return this.store.select(getSelectedPortfolio)
+    .pipe(
+      filter((p): p is PortfolioKey => !!p)
     );
-
-    return currentOrders.map(o => ({
-      orderId: o.id,
-      exchange: o.exchange,
-      portfolio: o.portfolio,
-      volume: o.qty
-    } as CurrentOrder));
   }
 }

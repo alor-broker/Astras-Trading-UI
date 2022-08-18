@@ -3,7 +3,7 @@
   (mouseenter)="isActiveOrderBook = true"
   (mouseleave)="isActiveOrderBook = false"
 >
-  <div *ngIf="(orderBookRows$ | async) as orderBookRows" class="order-book-table">
+  <div *ngIf="(orderBook$ | async) as orderBook" class="order-book-table">
     <div class="working-volumes">
       <nz-tag
         class="working-volume"
@@ -16,7 +16,7 @@
     </div>
     <nz-table nzBordered nzSize="small" nzTableLayout="fixed" nzTemplateMode>
       <tbody class="order-book-rows">
-      <tr *ngFor='let row of orderBookRows; trackBy: getTrackKey'
+      <tr *ngFor='let row of orderBook.rows; trackBy: getTrackKey'
           [ngClass]="{
           'row': true,
           'ask-row': row.rowType === rowTypes.Ask,
@@ -33,7 +33,7 @@
         <td class="price-cell" nzAlign="center">{{row.displayValue}}</td>
         <td nzAlign="right">
           <span>{{getCurrentOrdersVolume(row.currentOrders)}}</span>
-          <button (click)="cancelOrders(row.currentOrders, $event)" *ngIf='row.currentOrders.length > 0'
+          <button (click)="cancelRowOrders(row, $event)" *ngIf='row.currentOrders.length > 0'
                   class="cancel-order-btn" nz-button
                   nzSize="small" nzType="primary">
             <i nz-icon nzType="close-square"></i>
@@ -42,6 +42,6 @@
       </tr>
       </tbody>
     </nz-table>
-    <nz-empty *ngIf="orderBookRows.length === 0" nzNotFoundImage="simple"></nz-empty>
+    <nz-empty *ngIf="orderBook.rows.length === 0" nzNotFoundImage="simple"></nz-empty>
   </div>
 </div>

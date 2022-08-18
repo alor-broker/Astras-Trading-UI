@@ -186,3 +186,15 @@ export function generateRandomString(length: number): string {
 
   return str;
 }
+
+/**
+ * Getting a random integer between two values
+ * @param min minimum value
+ * @param max maximum value
+ * @returns the value is no lower than min (or the next integer greater than min if min isn't an integer), and is less than (but not equal to) max
+ */
+export function getRandomInt(min: number, max: number) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+}
