@@ -6,6 +6,8 @@ import { interval, Subject, Subscription, switchMap, takeUntil } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { AllInstrumentsSettings } from "../../../../shared/models/settings/all-instruments-settings.model";
 import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
+import { Store } from "@ngrx/store";
+import { selectNewInstrument } from "../../../../store/instruments/instruments.actions";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
 
@@ -85,6 +87,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     private readonly settingsService: WidgetSettingsService,
     private readonly service: AllInstrumentsService,
     private readonly cdr: ChangeDetectorRef,
+    private readonly store: Store,
     private readonly watchlistCollectionService: WatchlistCollectionService
   ) { }
 
@@ -132,6 +135,14 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       offset: 0
     };
     this.getInstruments(true);
+  }
+
+  selectInstrument(row: AllInstruments) {
+    const instrument = {
+      symbol: row.name,
+      exchange: row.exchange,
+    };
+    this.store.dispatch(selectNewInstrument({instrument}));
   }
 
   initContextMenu() {

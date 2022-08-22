@@ -4,7 +4,7 @@ import { AllInstrumentsComponent } from './all-instruments.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of, Subject } from "rxjs";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
-import { mockComponent } from "../../../../shared/utils/testing";
+import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 
 describe('AllInstrumentsComponent', () => {
@@ -15,17 +15,9 @@ describe('AllInstrumentsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         AllInstrumentsComponent,
-        mockComponent({
-          selector: 'ats-infinite-scroll-table',
-          inputs: [
-            'tableContainerHeight',
-            'tableContainerWidth',
-            'data',
-            'isLoading',
-            'columns',
-            'contextMenu'
-          ],
-        })
+      ],
+      imports: [
+        ...sharedModuleImportForTests
       ],
       providers: [
         {
