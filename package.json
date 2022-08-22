@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint --max-warnings 0"
+    "lint": "ng lint --max-warnings 0",
+    "postinstall": "husky install"
   },
   "private": true,
   "dependencies": {

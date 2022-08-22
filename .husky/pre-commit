@@ -4,4 +4,4 @@
 . "$(dirname "$0")/common.sh"
 
 yarn lint
-yarn test -- --browsers=ChromeHeadless --watch=false
+yarn test --browsers=ChromeHeadless --watch=false
