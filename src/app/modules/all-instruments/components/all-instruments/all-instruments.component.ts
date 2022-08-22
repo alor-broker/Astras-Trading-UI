@@ -32,12 +32,13 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
 
   public allColumns: ColumnsSettings[] = [
     {
-      name: 'shortName',
+      name: 'name',
       displayName: 'Тикер',
       sortFn: this.getSortFn('symbol'),
       isFiltering: true,
       isOpenedFilter: false
     },
+    { name: 'shortName', displayName: 'Название' },
     {
       name: 'dailyGrowth',
       displayName: 'Рост за сегодня',
@@ -117,11 +118,11 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(filters: any) {
-    if (filters.shortName || this.filters.query) {
-      filters.query = filters.shortName;
+    if (filters.hasOwnProperty('name')) {
+      filters.query = filters.name;
       delete filters.shortName;
     }
-    if (filters.market || this.filters.marketType) {
+    if (filters.hasOwnProperty('market')) {
       filters.marketType = filters.market || '';
       delete filters.market;
     }
