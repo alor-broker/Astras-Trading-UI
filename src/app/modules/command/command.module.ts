@@ -31,7 +31,8 @@ import { StopCommandComponent } from './components/stop-command/stop-command.com
   ],
   exports: [
     CommandWidgetComponent,
-    EditWidgetComponent
+    EditWidgetComponent,
+    EvaluationComponent
   ]
 })
 export class CommandModule { }

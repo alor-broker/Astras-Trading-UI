@@ -10,13 +10,22 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { OrderSubmitComponent } from './components/order-submit/order-submit.component';
+import { LimitOrderFormComponent } from "./components/order-forms/limit-order-form/limit-order-form.component";
+import { NzTabsModule } from "ng-zorro-antd/tabs";
+import { SharedModule } from "../../shared/shared.module";
+import { CommandModule } from "../command/command.module";
+import { MarketOrderFormComponent } from './components/order-forms/market-order-form/market-order-form.component';
+import { StopOrderFormComponent } from './components/order-forms/stop-order-form/stop-order-form.component';
 
 
 @NgModule({
   declarations: [
     OrderSubmitWidgetComponent,
     OrderSubmitSettingsComponent,
-    OrderSubmitComponent
+    OrderSubmitComponent,
+    LimitOrderFormComponent,
+    MarketOrderFormComponent,
+    StopOrderFormComponent
   ],
   imports: [
     CommonModule,
@@ -26,7 +35,10 @@ import { OrderSubmitComponent } from './components/order-submit/order-submit.com
     NzWaveModule,
     ReactiveFormsModule,
     NzInputModule,
-    NzButtonModule
+    NzButtonModule,
+    NzTabsModule,
+    SharedModule,
+    CommandModule
   ],
   exports: [OrderSubmitWidgetComponent]
 })

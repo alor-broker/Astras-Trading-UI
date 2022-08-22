@@ -1,1 +1,43 @@
-<p>order-submit works!</p>
+<div *ngIf="currentInstrument$ | async as currentInstrument">
+  <!--use ngFor to completely rerender component when instrument changed-->
+  <ng-container *ngFor="let instrument of [currentInstrument]">
+    <div class="header"></div>
+
+    <div class="body">
+      <nz-tabset #formTabs nzSize="small" nzTabPosition="top">
+        <nz-tab #limitTab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" nzTitle="Лимитная">
+          <ats-limit-order-form (formValueChange)="setLimitOrderValue($event)"
+                                [instrument]="currentInstrument"></ats-limit-order-form>
+        </nz-tab>
+        <nz-tab #marketTab (nzSelect)="setSelectedCommandType(orderTypes.MarketOrder)" nzTitle="Рыночная">
+          <ats-market-order-form (formValueChange)="setMarketOrderValue($event)"
+                                 [activated]="marketTab.isActive"
+                                 [instrument]="currentInstrument"></ats-market-order-form>
+        </nz-tab>
+        <nz-tab #stopTab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" nzTitle="Условная">
+          <ats-stop-order-form (formValueChange)="setStopOrderValue($event)"
+                               [instrument]="currentInstrument"></ats-stop-order-form>
+        </nz-tab>
+      </nz-tabset>
+    </div>
+
+    <div class="footer">
+      <button
+        (click)="submitOrder(orderSides.Buy)"
+        [attr.disabled]="((canSubmitOrder$ | async) === false) ? '' : null"
+        [nzLoading]="(buyButtonLoading$ | async)"
+        class='buy-button'
+        nz-button
+        nzSize="large">Купить
+      </button>
+      <button
+        (click)="submitOrder(orderSides.Sell)"
+        [attr.disabled]="((canSubmitOrder$ | async) === false) ? '' : null"
+        [nzLoading]="(sellButtonLoading$ | async)"
+        class='sell-button'
+        nz-button
+        nzSize="large">Продать
+      </button>
+    </div>
+  </ng-container>
+</div>

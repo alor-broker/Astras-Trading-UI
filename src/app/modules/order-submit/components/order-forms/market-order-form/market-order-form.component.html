@@ -1,0 +1,27 @@
+<div *ngIf="instrument$ | async as instrument">
+  <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+    <nz-form-item class="compact">
+      <nz-form-label nzFor="quantity" nzRequired>Кол-во лотов <span *ngIf="(instrument.lotsize ?? -1) !== 1">&nbsp;(лотность {{instrument.lotsize}})</span></nz-form-label>
+      <nz-form-control [nzErrorTip]="quantityError">
+        <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="quantity" nz-input placeholder="0"/>
+      </nz-form-control>
+      <ng-template #quantityError>
+        <span *ngIf="form.get('quantity')?.errors?.required">Введите кол-во</span>
+        <span *ngIf="form.get('quantity')?.errors?.min">Слишком мало</span>
+        <span *ngIf="form.get('quantity')?.errors?.max">Слишком много</span>
+      </ng-template>
+    </nz-form-item>
+    <nz-collapse [nzBordered]="false" class="compact" nzGhost>
+      <nz-collapse-panel nzHeader="Продвинутые">
+        <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
+        <nz-form-control nzErrorTip="Группа">
+          <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="instrumentGroup" placeholder="Режим торгов"/>
+        </nz-form-control>
+      </nz-collapse-panel>
+    </nz-collapse>
+  </form>
+  <ng-container *ngIf="evaluation$ | async as evaluation">
+    <ats-evaluation [evaluationProperties]="evaluation"></ats-evaluation>
+  </ng-container>
+</div>
+
