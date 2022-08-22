@@ -4,7 +4,7 @@ import { AllInstrumentsComponent } from './all-instruments.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
-import { mockComponent } from "../../../../shared/utils/testing";
+import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -14,16 +14,9 @@ describe('AllInstrumentsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         AllInstrumentsComponent,
-        mockComponent({
-          selector: 'ats-infinite-scroll-table',
-          inputs: [
-            'tableContainerHeight',
-            'tableContainerWidth',
-            'data',
-            'isLoading',
-            'columns'
-          ],
-        })
+      ],
+      imports: [
+        ...sharedModuleImportForTests
       ],
       providers: [
         {
@@ -37,7 +30,7 @@ describe('AllInstrumentsComponent', () => {
           useValue: {
             getAllInstruments: jasmine.createSpy('getAllInstruments').and.returnValue(of([]))
           }
-        }
+        },
       ]
     })
     .compileComponents();
