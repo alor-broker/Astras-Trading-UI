@@ -8,6 +8,8 @@ import { AllInstrumentsSettings } from "../../../../shared/models/settings/all-i
 import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
 import { Store } from "@ngrx/store";
 import { selectNewInstrument } from "../../../../store/instruments/instruments.actions";
+import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
+import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
 
 @Component({
   selector: 'ats-all-instruments',
@@ -80,21 +82,30 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     {name: 'yield', displayName: 'Доходность', sortFn: this.getSortFn('yield')},
   ];
   public displayedColumns: ColumnsSettings[] = [];
+  public contextMenu: ContextMenu[] = [];
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly service: AllInstrumentsService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly watchlistCollectionService: WatchlistCollectionService
   ) { }
 
   ngOnInit(): void {
     this.getInstruments();
+    this.initContextMenu();
 
     this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
       .pipe(takeUntil(this.destroy$))
       .subscribe(settings => {
         this.displayedColumns = this.allColumns.filter(col => settings.allInstrumentsColumns.includes(col.name));
+      });
+
+    this.watchlistCollectionService.collectionChanged$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.initContextMenu();
       });
   }
 
@@ -133,6 +144,35 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       exchange: row.exchange,
     };
     this.store.dispatch(selectNewInstrument({instrument}));
+  }
+
+  initContextMenu() {
+    this.contextMenu = [
+      {
+        title: 'Добавить в список',
+        clickFn: (row: AllInstruments) => {
+          if (this.watchlistCollectionService.getWatchlistCollection().collection.length > 1) {
+            return;
+          }
+
+          this.watchlistCollectionService.addItemsToList(this.watchlistCollectionService.getWatchlistCollection().collection[0].id, [
+            { symbol: row.name, exchange: row.exchange }
+          ]);
+        }
+      }
+    ];
+
+    if (this.watchlistCollectionService.getWatchlistCollection().collection.length > 1) {
+      this.contextMenu[0].subMenu = this.watchlistCollectionService.getWatchlistCollection().collection
+        .map(list => ({
+          title: list.title,
+          clickFn: (row: AllInstruments) => {
+            this.watchlistCollectionService.addItemsToList(list.id, [
+              { symbol: row.name, exchange: row.exchange }
+            ]);
+          }
+        }));
+    }
   }
 
   ngOnDestroy() {

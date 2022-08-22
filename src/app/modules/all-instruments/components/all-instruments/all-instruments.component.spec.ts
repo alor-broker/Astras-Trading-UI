@@ -2,9 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AllInstrumentsComponent } from './all-instruments.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
+import { of, Subject } from "rxjs";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -31,6 +32,14 @@ describe('AllInstrumentsComponent', () => {
             getAllInstruments: jasmine.createSpy('getAllInstruments').and.returnValue(of([]))
           }
         },
+        {
+          provide: WatchlistCollectionService,
+          useValue: {
+            collectionChanged$: new Subject(),
+            getWatchlistCollection: jasmine.createSpy('getWatchlistCollection').and.returnValue({collection: []}),
+            addItemsToList: jasmine.createSpy('addItemsToList').and.callThrough()
+          }
+        }
       ]
     })
     .compileComponents();
