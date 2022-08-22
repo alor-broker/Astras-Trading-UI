@@ -3,4 +3,4 @@ export class Exchanges {
   static SPBX = 'SPBX';
 }
 
-export const exchangesList = [Exchanges.MOEX, Exchanges.SPBX]
+export const exchangesList = [Exchanges.MOEX, Exchanges.SPBX];
