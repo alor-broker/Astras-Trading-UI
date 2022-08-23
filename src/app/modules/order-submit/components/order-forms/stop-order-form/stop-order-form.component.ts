@@ -27,7 +27,7 @@ import { map } from "rxjs/operators";
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'>
   & Omit<StopLimitOrder, 'instrument' | 'side'>
-  & { instrumentGroup: string };
+  & { withLimit: boolean };
 
 @Component({
   selector: 'ats-stop-order-form',
@@ -50,7 +50,8 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     const priceControl = this.form.controls.price;
     if (this.form.controls.withLimit.value === true) {
       priceControl.enable();
-    } else {
+    }
+    else {
       priceControl.disable();
     }
   }
@@ -97,6 +98,23 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     return this.timezoneConverterService.getConverter().pipe(
       map(converter => ({ timezoneConverter: converter }))
     );
+  }
+
+  protected getFormValue(): StopOrderFormValue | null {
+    const formValue = super.getFormValue();
+    if (!formValue) {
+      return formValue;
+    }
+
+    return {
+      ...formValue,
+      quantity: Number(formValue.quantity),
+      triggerPrice: Number(formValue.triggerPrice),
+      price: !!formValue.price ? Number(formValue.price) : formValue.price,
+      stopEndUnixTime: !!formValue.stopEndUnixTime
+        ? this.timezoneConverter.terminalToUtc0Date(formValue.stopEndUnixTime as Date)
+        : undefined,
+    };
   }
 
   private checkNowTimeSelection() {

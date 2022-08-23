@@ -1,5 +1,20 @@
-import { BehaviorSubject, filter, Observable, of, Subject, Subscription, takeUntil } from "rxjs";
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
+import {
+  BehaviorSubject,
+  filter,
+  Observable,
+  of,
+  Subject,
+  Subscription,
+  takeUntil
+} from "rxjs";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from "@angular/core";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { FormGroup } from "@angular/forms";
 import { mapWith } from "../../../../shared/utils/observable-helper";

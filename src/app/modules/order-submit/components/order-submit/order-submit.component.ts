@@ -1,5 +1,14 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { NzTabComponent, NzTabSetComponent } from "ng-zorro-antd/tabs";
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import {
+  NzTabComponent,
+  NzTabSetComponent
+} from "ng-zorro-antd/tabs";
 import {
   BehaviorSubject,
   combineLatest,
@@ -22,7 +31,10 @@ import { StopOrderFormValue } from "../order-forms/stop-order-form/stop-order-fo
 import { Side } from "../../../../shared/models/enums/side.model";
 import { SubmitOrderResult } from "../../../command/models/order.model";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { finalize, map } from "rxjs/operators";
+import {
+  finalize,
+  map
+} from "rxjs/operators";
 import { Store } from "@ngrx/store";
 import { OrderService } from "../../../../shared/services/orders/order.service";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
@@ -229,7 +241,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       return null;
     }
 
-    if (!!this.stopOrderFormValue.price) {
+    if (this.stopOrderFormValue.withLimit) {
       return this.orderService.submitStopLimitOrder(
         {
           ...this.stopOrderFormValue,
@@ -240,7 +252,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       );
     }
 
-    return this.orderService.submitMarketOrder(
+    return this.orderService.submitStopMarketOrder(
       {
         ...this.stopOrderFormValue,
         instrument: { ...instrument },
