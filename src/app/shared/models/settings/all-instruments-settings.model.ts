@@ -11,7 +11,8 @@ export interface ColumnIds  {
 }
 
 export const allInstrumentsColumns: ColumnIds[] = [
-  { columnId: 'shortName', name: "Тикер", isDefault: true },
+  { columnId: 'name', name: "Тикер", isDefault: true },
+  { columnId: 'shortName', name: "Название", isDefault: true },
   { columnId: 'dailyGrowth', name: "Рост за сегодня", isDefault: true  },
   { columnId: 'tradeVolume', name: "Объём торгов", isDefault: true  },
   { columnId: 'exchange', name: "Биржа", isDefault: false  },

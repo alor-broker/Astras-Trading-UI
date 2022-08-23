@@ -4,6 +4,8 @@
   [data]="instrumentsList"
   [isLoading]="isLoading"
   [columns]="displayedColumns"
+  [contextMenu]="contextMenu"
   (scrolled)="scrolled()"
   (filterApplied)="applyFilter($event)"
+  (rowClick)="selectInstrument($event)"
 ></ats-infinite-scroll-table>
