@@ -1,24 +1,10 @@
-import {
-  Component,
-  OnDestroy
-} from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { OrderFormBaseComponent } from "../order-form-base.component";
-import {
-  FormControl,
-  FormGroup,
-  Validators
-} from "@angular/forms";
-import {
-  LimitFormControls,
-  LimitFormGroup
-} from "../../../../command/models/command-forms.model";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { LimitFormControls, LimitFormGroup } from "../../../../command/models/command-forms.model";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import { LimitOrder } from "../../../../command/models/order.model";
-import {
-  BehaviorSubject,
-  filter,
-  take
-} from "rxjs";
+import { BehaviorSubject, filter, take } from "rxjs";
 import { EvaluationBaseProperties } from "../../../../command/models/evaluation-base-properties.model";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
 
@@ -94,5 +80,11 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
         instrumentCurrency: instrument.currency
       });
     });
+  }
+
+  protected applyInitialValues(values: Partial<LimitOrderFormValue> | null) {
+    if (!!values && !!values.price && this.form) {
+      this.form.controls.price.setValue(values.price);
+    }
   }
 }

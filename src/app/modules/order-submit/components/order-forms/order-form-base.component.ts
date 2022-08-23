@@ -1,20 +1,5 @@
-import {
-  BehaviorSubject,
-  filter,
-  Observable,
-  of,
-  Subject,
-  Subscription,
-  takeUntil
-} from "rxjs";
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output
-} from "@angular/core";
+import { BehaviorSubject, filter, Observable, of, Subject, Subscription, takeUntil } from "rxjs";
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { FormGroup } from "@angular/forms";
 import { mapWith } from "../../../../shared/utils/observable-helper";
@@ -29,17 +14,25 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
   public readonly instrument$ = new BehaviorSubject<Instrument | null>(null);
   protected destroy$: Subject<boolean> = new Subject<boolean>();
   protected formValueChangeSubscription?: Subscription;
+  protected readonly initialValues$ = new BehaviorSubject<Partial<T> | null>(null);
 
   @Input()
   set instrument(value: Instrument) {
     this.instrument$.next(value);
   }
 
+  @Input()
+  set initialValues(value: Partial<T> | null) {
+    this.initialValues$.next(value);
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
 
+    this.formValueChangeSubscription?.unsubscribe();
     this.instrument$?.complete();
+    this.initialValues$?.complete();
   }
 
   ngOnInit(): void {
@@ -63,6 +56,7 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
     return this.form.value as T;
   }
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   protected onFormValueEmitted(value: T | null) {
 
   }
@@ -72,6 +66,10 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
   }
 
   protected onFormCreated() {
+  }
+
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  protected applyInitialValues(values: Partial<T> | null) {
   }
 
   private initForm(instrument: Instrument, additions: A | null) {
@@ -84,6 +82,9 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
     ).subscribe(() => {
       this.emitFormValue();
     });
+
+    const initialValuesSubscription = this.initialValues$.subscribe(value => this.applyInitialValues(value));
+    this.formValueChangeSubscription.add(initialValuesSubscription);
 
     this.onFormCreated();
   }

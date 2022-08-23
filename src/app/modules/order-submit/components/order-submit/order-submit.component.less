@@ -1,7 +1,29 @@
 @import (reference) '/src/styles.less';
 
-.footer{
-  margin-top: 8px;
+@margin: 8px;
+
+.header {
+  .selectable {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .sell {
+    color: @sell-color;
+  }
+
+  .buy {
+    color: @buy-color;
+  }
+}
+
+.body {
+  margin-top: @margin;
+}
+
+.footer {
+  margin-top: @margin;
+
   .buy-button {
     width: 50%;
     background: @buy-color;

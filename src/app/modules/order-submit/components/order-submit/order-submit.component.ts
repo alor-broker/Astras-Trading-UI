@@ -1,20 +1,12 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import {
-  NzTabComponent,
-  NzTabSetComponent
-} from "ng-zorro-antd/tabs";
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { NzTabComponent, NzTabSetComponent } from "ng-zorro-antd/tabs";
 import {
   BehaviorSubject,
+  combineLatest,
   distinctUntilChanged,
   filter,
   Observable,
-  shareReplay,
+  Subject,
   switchMap,
   take
 } from "rxjs";
@@ -28,15 +20,20 @@ import { LimitOrderFormValue } from "../order-forms/limit-order-form/limit-order
 import { MarketOrderFormValue } from "../order-forms/market-order-form/market-order-form.component";
 import { StopOrderFormValue } from "../order-forms/stop-order-form/stop-order-form.component";
 import { Side } from "../../../../shared/models/enums/side.model";
-import { CurrentPortfolioOrderService } from "../../../../shared/services/orders/current-portfolio-order.service";
 import { SubmitOrderResult } from "../../../command/models/order.model";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { finalize } from "rxjs/operators";
+import { finalize, map } from "rxjs/operators";
+import { Store } from "@ngrx/store";
+import { OrderService } from "../../../../shared/services/orders/order.service";
+import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
+import { getSelectedPortfolio } from "../../../../store/portfolios/portfolios.selectors";
+import { QuotesService } from "../../../../shared/services/quotes.service";
 
 @Component({
   selector: 'ats-order-submit[guid]',
   templateUrl: './order-submit.component.html',
-  styleUrls: ['./order-submit.component.less']
+  styleUrls: ['./order-submit.component.less'],
+  providers: [QuotesService]
 })
 export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly orderSides = Side;
@@ -50,11 +47,13 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   @ViewChild('marketTab', { static: false }) marketTab?: NzTabComponent;
   @ViewChild('stopTab', { static: false }) stopTab?: NzTabComponent;
 
-  currentInstrument$!: Observable<Instrument>;
+  currentInstrumentWithPortfolio$!: Observable<{ instrument: Instrument, portfolio: string }>;
+  priceData$!: Observable<{ bid: number, ask: number }>;
 
   readonly canSubmitOrder$ = new BehaviorSubject(false);
   readonly buyButtonLoading$ = new BehaviorSubject(false);
   readonly sellButtonLoading$ = new BehaviorSubject(false);
+  readonly initialValues$ = new Subject<Partial<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue> | null>();
 
 
   private selectedOrderType: OrderType = OrderType.LimitOrder;
@@ -65,7 +64,9 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly instrumentService: InstrumentsService,
-    private readonly orderService: CurrentPortfolioOrderService
+    private readonly quotesService: QuotesService,
+    private readonly orderService: OrderService,
+    private readonly store: Store
   ) {
   }
 
@@ -79,10 +80,26 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       distinctUntilChanged((previous, current) => isEqualOrderSubmitSettings(previous, current))
     );
 
-    this.currentInstrument$ = settings$.pipe(
+    const currentPortfolio$ = this.store.select(getSelectedPortfolio).pipe(
+      filter((p): p is PortfolioKey => !!p),
+      map(p => p.portfolio),
+    );
+
+    const currentInstrument = settings$.pipe(
       switchMap(settings => this.instrumentService.getInstrument(settings)),
-      filter((i): i is Instrument => !!i),
-      shareReplay(1)
+      filter((i): i is Instrument => !!i)
+    );
+
+    this.currentInstrumentWithPortfolio$ = combineLatest([currentPortfolio$, currentInstrument]).pipe(
+      map(([portfolio, instrument]) => ({ instrument, portfolio }))
+    );
+
+    this.priceData$ = this.currentInstrumentWithPortfolio$.pipe(
+      switchMap(value => this.quotesService.getQuotes(value.instrument.symbol, value.instrument.exchange, value.instrument.instrumentGroup, this.guid)),
+      map(x => ({
+        bid: x.bid,
+        ask: x.ask
+      }))
     );
 
     this.setSelectedCommandType(OrderType.LimitOrder);
@@ -105,19 +122,19 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   }
 
   submitOrder(side: Side) {
-    this.currentInstrument$.pipe(
+    this.currentInstrumentWithPortfolio$.pipe(
       take(1)
-    ).subscribe(instrument => {
+    ).subscribe(({ instrument, portfolio }) => {
       let order$: Observable<SubmitOrderResult> | null = null;
       switch (this.selectedOrderType) {
         case OrderType.LimitOrder:
-          order$ = this.prepareLimitOrder(instrument, side);
+          order$ = this.prepareLimitOrder(instrument, portfolio, side);
           break;
         case OrderType.MarketOrder:
-          order$ = this.prepareMarketOrder(instrument, side);
+          order$ = this.prepareMarketOrder(instrument, portfolio, side);
           break;
         case OrderType.StopOrder:
-          order$ = this.prepareStopOrder(instrument, side);
+          order$ = this.prepareStopOrder(instrument, portfolio, side);
           break;
       }
 
@@ -128,7 +145,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       this.canSubmitOrder$.next(false);
       if (side === Side.Buy) {
         this.buyButtonLoading$.next(true);
-      } else {
+      }
+      else {
         this.sellButtonLoading$.next(true);
       }
 
@@ -143,7 +161,17 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateCanSubmitOrder() {
+  selectPrice(price: number) {
+    this.initialValues$.next({ price: price });
+  }
+
+  ngOnDestroy(): void {
+    this.canSubmitOrder$.complete();
+    this.buyButtonLoading$.complete();
+    this.sellButtonLoading$.complete();
+  }
+
+  private updateCanSubmitOrder() {
     let isValueSet = false;
     switch (this.selectedOrderType) {
       case OrderType.LimitOrder:
@@ -160,13 +188,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     this.canSubmitOrder$.next(isValueSet);
   }
 
-  ngOnDestroy(): void {
-    this.canSubmitOrder$.complete();
-    this.buyButtonLoading$.complete();
-    this.sellButtonLoading$.complete();
-  }
-
-  private prepareLimitOrder(instrument: InstrumentKey, side: Side): Observable<SubmitOrderResult> | null {
+  private prepareLimitOrder(instrument: InstrumentKey, portfolio: string, side: Side): Observable<SubmitOrderResult> | null {
     if (!this.limitOrderFormValue) {
       return null;
     }
@@ -179,11 +201,12 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
           instrumentGroup: this.limitOrderFormValue.instrumentGroup ?? instrument.instrumentGroup
         },
         side: side
-      }
+      },
+      portfolio
     );
   }
 
-  private prepareMarketOrder(instrument: InstrumentKey, side: Side): Observable<SubmitOrderResult> | null {
+  private prepareMarketOrder(instrument: InstrumentKey, portfolio: string, side: Side): Observable<SubmitOrderResult> | null {
     if (!this.marketOrderFormValue) {
       return null;
     }
@@ -196,22 +219,24 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
           instrumentGroup: this.marketOrderFormValue.instrumentGroup ?? instrument.instrumentGroup
         },
         side: side
-      }
+      },
+      portfolio
     );
   }
 
-  private prepareStopOrder(instrument: InstrumentKey, side: Side): Observable<SubmitOrderResult> | null {
+  private prepareStopOrder(instrument: InstrumentKey, portfolio: string, side: Side): Observable<SubmitOrderResult> | null {
     if (!this.stopOrderFormValue) {
       return null;
     }
 
-    if(!!this.stopOrderFormValue.price){
+    if (!!this.stopOrderFormValue.price) {
       return this.orderService.submitStopLimitOrder(
         {
           ...this.stopOrderFormValue,
           instrument: { ...instrument },
           side: side
-        }
+        },
+        portfolio
       );
     }
 
@@ -220,7 +245,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
         ...this.stopOrderFormValue,
         instrument: { ...instrument },
         side: side
-      }
+      },
+      portfolio
     );
   }
 
