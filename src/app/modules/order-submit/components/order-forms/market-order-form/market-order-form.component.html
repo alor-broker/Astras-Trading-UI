@@ -1,7 +1,7 @@
 <div *ngIf="instrument$ | async as instrument">
   <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
     <nz-form-item class="compact">
-      <nz-form-label nzFor="quantity" nzRequired>Кол-во лотов <span *ngIf="(instrument.lotsize ?? -1) !== 1">&nbsp;(лотность {{instrument.lotsize}})</span></nz-form-label>
+      <nz-form-label nzFor="quantity" nz-tooltip="лотность {{instrument.lotsize | shortNumber}}" nzRequired>Кол-во лотов <span><i nz-icon nzType="info-circle" nzTheme="outline"></i></span></nz-form-label>
       <nz-form-control [nzErrorTip]="quantityError">
         <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="quantity" nz-input placeholder="0"/>
       </nz-form-control>
