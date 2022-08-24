@@ -130,31 +130,31 @@ describe('OrderSubmitComponent', () => {
       component.setSelectedCommandType(OrderType.LimitOrder);
     });
 
-    it('should disable buttons on empty value', (done) => {
+    it('should disable buttons on empty value', fakeAsync(() => {
       component.setLimitOrderValue({} as LimitOrderFormValue);
       component.setLimitOrderValue(null);
       fixture.detectChanges();
 
+      tick();
       component.canSubmitOrder$.pipe(
         take(1)
       ).subscribe(x => {
-        done();
         expect(x).toBeFalse();
       });
-    });
+    }));
 
-    it('should enable buttons on NON empty value', (done) => {
+    it('should enable buttons on NON empty value', fakeAsync(() => {
       component.setLimitOrderValue(null);
       component.setLimitOrderValue({} as LimitOrderFormValue);
       fixture.detectChanges();
 
+      tick();
       component.canSubmitOrder$.pipe(
         take(1)
       ).subscribe(x => {
-        done();
         expect(x).toBeTrue();
       });
-    });
+    }));
 
     it('should pass correct order to service', fakeAsync(() => {
         const expectedOrder: LimitOrder = {
@@ -190,31 +190,31 @@ describe('OrderSubmitComponent', () => {
       component.setSelectedCommandType(OrderType.MarketOrder);
     });
 
-    it('should disable buttons on empty value', (done) => {
+    it('should disable buttons on empty value', fakeAsync(() => {
       component.setMarketOrderValue({} as MarketOrderFormValue);
       component.setMarketOrderValue(null);
       fixture.detectChanges();
 
+      tick();
       component.canSubmitOrder$.pipe(
         take(1)
       ).subscribe(x => {
-        done();
         expect(x).toBeFalse();
       });
-    });
+    }));
 
-    it('should enable buttons on NON empty value', (done) => {
+    it('should enable buttons on NON empty value', fakeAsync(() => {
       component.setMarketOrderValue(null);
       component.setMarketOrderValue({} as MarketOrderFormValue);
       fixture.detectChanges();
 
+      tick();
       component.canSubmitOrder$.pipe(
         take(1)
       ).subscribe(x => {
-        done();
         expect(x).toBeTrue();
       });
-    });
+    }));
 
     it('should pass correct order to service', fakeAsync(() => {
         const expectedOrder: MarketOrder = {
@@ -248,31 +248,31 @@ describe('OrderSubmitComponent', () => {
       component.setSelectedCommandType(OrderType.StopOrder);
     });
 
-    it('should disable buttons on empty value', (done) => {
+    it('should disable buttons on empty value', fakeAsync(() => {
       component.setStopOrderValue({} as StopOrderFormValue);
       component.setStopOrderValue(null);
       fixture.detectChanges();
 
+      tick();
       component.canSubmitOrder$.pipe(
         take(1)
       ).subscribe(x => {
-        done();
         expect(x).toBeFalse();
       });
-    });
+    }));
 
-    it('should enable buttons on NON empty value', (done) => {
+    it('should enable buttons on NON empty value', fakeAsync(() => {
       component.setStopOrderValue(null);
       component.setStopOrderValue({} as StopOrderFormValue);
       fixture.detectChanges();
 
+      tick();
       component.canSubmitOrder$.pipe(
         take(1)
       ).subscribe(x => {
-        done();
         expect(x).toBeTrue();
       });
-    });
+    }));
 
     it('should pass correct order to service (StopMarketOrder)', fakeAsync(() => {
         const expectedOrder: StopMarketOrder = {

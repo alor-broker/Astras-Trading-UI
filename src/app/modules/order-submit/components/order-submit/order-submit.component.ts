@@ -2,22 +2,19 @@ import {
   Component,
   Input,
   OnDestroy,
-  OnInit,
-  ViewChild
+  OnInit
 } from '@angular/core';
-import {
-  NzTabComponent,
-  NzTabSetComponent
-} from "ng-zorro-antd/tabs";
 import {
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   filter,
   Observable,
+  shareReplay,
   Subject,
   switchMap,
-  take
+  take,
+  tap
 } from "rxjs";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -50,24 +47,16 @@ import { QuotesService } from "../../../../shared/services/quotes.service";
 export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly orderSides = Side;
   readonly orderTypes = OrderType;
-
   @Input()
   guid!: string;
-
-  @ViewChild('formTabs', { static: false }) formTabs?: NzTabSetComponent;
-  @ViewChild('limitTab', { static: false }) limitTab?: NzTabComponent;
-  @ViewChild('marketTab', { static: false }) marketTab?: NzTabComponent;
-  @ViewChild('stopTab', { static: false }) stopTab?: NzTabComponent;
-
   currentInstrumentWithPortfolio$!: Observable<{ instrument: Instrument, portfolio: string }>;
   priceData$!: Observable<{ bid: number, ask: number }>;
-
   readonly canSubmitOrder$ = new BehaviorSubject(false);
   readonly buyButtonLoading$ = new BehaviorSubject(false);
   readonly sellButtonLoading$ = new BehaviorSubject(false);
   readonly initialValues$ = new Subject<Partial<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue> | null>();
-
-
+  selectedTabIndex$!: Observable<number>;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
   private selectedOrderType: OrderType = OrderType.LimitOrder;
   private limitOrderFormValue: LimitOrderFormValue | null = null;
   private marketOrderFormValue: MarketOrderFormValue | null = null;
@@ -103,7 +92,13 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     );
 
     this.currentInstrumentWithPortfolio$ = combineLatest([currentPortfolio$, currentInstrument]).pipe(
-      map(([portfolio, instrument]) => ({ instrument, portfolio }))
+      tap(() => {
+        this.limitOrderFormValue = null;
+        this.marketOrderFormValue = null;
+        this.stopOrderFormValue = null;
+      }),
+      map(([portfolio, instrument]) => ({ instrument, portfolio })),
+      shareReplay(1)
     );
 
     this.priceData$ = this.currentInstrumentWithPortfolio$.pipe(
@@ -114,8 +109,10 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       }))
     );
 
-    this.setSelectedCommandType(OrderType.LimitOrder);
-    this.activateFormTab(this.limitTab);
+    this.selectedTabIndex$ = this.currentInstrumentWithPortfolio$.pipe(
+      tap(() => this.setSelectedCommandType(this.selectedOrderType)),
+      map(() => this.getFormIndexByType(this.selectedOrderType))
+    );
   }
 
   setLimitOrderValue(value: LimitOrderFormValue | null) {
@@ -178,6 +175,9 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+
     this.canSubmitOrder$.complete();
     this.buyButtonLoading$.complete();
     this.sellButtonLoading$.complete();
@@ -197,7 +197,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
         break;
     }
 
-    this.canSubmitOrder$.next(isValueSet);
+    setTimeout(() => this.canSubmitOrder$.next(isValueSet), 0);
   }
 
   private prepareLimitOrder(instrument: InstrumentKey, portfolio: string, side: Side): Observable<SubmitOrderResult> | null {
@@ -262,12 +262,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     );
   }
 
-  private activateFormTab(targetTab?: NzTabComponent) {
-    if (!targetTab || targetTab.position == null) {
-      return;
-    }
-
-    this.formTabs?.setSelectedIndex(targetTab.position);
+  private getFormIndexByType(orderType: OrderType) {
+    return [OrderType.LimitOrder, OrderType.MarketOrder, OrderType.StopOrder].indexOf(orderType);
   }
 
 }

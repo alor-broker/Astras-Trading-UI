@@ -19,8 +19,8 @@
       </div>
     </div>
     <div class="body">
-      <nz-tabset #formTabs nzSize="small" nzTabPosition="top">
-        <nz-tab #limitTab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" nzTitle="Лимитная">
+      <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async">
+        <nz-tab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" nzTitle="Лимитная">
           <ats-limit-order-form (formValueChange)="setLimitOrderValue($event)"
                                 [instrument]="instrument"
                                 [initialValues]="initialValues$ | async"
@@ -31,30 +31,29 @@
                                  [activated]="marketTab.isActive"
                                  [instrument]="instrument"></ats-market-order-form>
         </nz-tab>
-        <nz-tab #stopTab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" nzTitle="Условная">
+        <nz-tab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" nzTitle="Условная">
           <ats-stop-order-form (formValueChange)="setStopOrderValue($event)"
                                [instrument]="instrument"></ats-stop-order-form>
         </nz-tab>
       </nz-tabset>
     </div>
-
-    <div class="footer">
-      <button
-        (click)="submitOrder(orderSides.Buy)"
-        [attr.disabled]="((canSubmitOrder$ | async) === false) ? '' : null"
-        [nzLoading]="(buyButtonLoading$ | async)"
-        class='buy-button'
-        nz-button
-        nzSize="large">Купить
-      </button>
-      <button
-        (click)="submitOrder(orderSides.Sell)"
-        [attr.disabled]="((canSubmitOrder$ | async) === false) ? '' : null"
-        [nzLoading]="(sellButtonLoading$ | async)"
-        class='sell-button'
-        nz-button
-        nzSize="large">Продать
-      </button>
-    </div>
   </ng-container>
+  <div class="footer">
+    <button
+      (click)="submitOrder(orderSides.Buy)"
+      [attr.disabled]="((canSubmitOrder$ | async) === false) ? '' : null"
+      [nzLoading]="(buyButtonLoading$ | async)"
+      class='buy-button'
+      nz-button
+      nzSize="large">Купить
+    </button>
+    <button
+      (click)="submitOrder(orderSides.Sell)"
+      [attr.disabled]="((canSubmitOrder$ | async) === false) ? '' : null"
+      [nzLoading]="(sellButtonLoading$ | async)"
+      class='sell-button'
+      nz-button
+      nzSize="large">Продать
+    </button>
+  </div>
 </div>
