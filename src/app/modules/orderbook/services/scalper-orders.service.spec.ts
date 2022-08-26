@@ -12,8 +12,8 @@ import { NzNotificationService } from "ng-zorro-antd/notification";
 import { ModalService } from "../../../shared/services/modal.service";
 import {
   CurrentOrder,
-  ScalperOrderBookRowType,
-  ScalperOrderBookRowView
+  ScalperOrderBookRow,
+  ScalperOrderBookRowType
 } from "../models/scalper-order-book.model";
 import { of } from "rxjs";
 import { Store } from "@ngrx/store";
@@ -32,6 +32,8 @@ import { CommandParams } from "../../../shared/models/commands/command-params.mo
 import { CommandType } from "../../../shared/models/enums/command-type.model";
 import { StopOrderCondition } from "../../../shared/models/enums/stoporder-conditions";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { Instrument } from '../../../shared/models/instruments/instrument.model';
+import { OrderbookDataRow } from '../models/orderbook-data-row.model';
 
 describe('ScalperOrdersService', () => {
   let service: ScalperOrdersService;
@@ -87,6 +89,7 @@ describe('ScalperOrdersService', () => {
 
   it('#cancelOrders should call service with appropriate data', () => {
     const testOrder: CurrentOrder = {
+      price: 10,
       orderId: generateRandomString(5),
       exchange: generateRandomString(4),
       portfolio: generateRandomString(5),
@@ -176,102 +179,98 @@ describe('ScalperOrdersService', () => {
 
     store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
 
-    const testInstrumentKey: InstrumentKey = {
+    const symbol = generateRandomString(4);
+    const testInstrument: Instrument = {
       exchange: portfolioKey.exchange,
-      symbol: generateRandomString(4)
+      symbol: symbol,
+      shortName: symbol,
+      description: symbol,
+      currency: 'RUB',
+      minstep: 1
     };
 
-    const askRows: ScalperOrderBookRowView[] = [
-      {
-        rowType: ScalperOrderBookRowType.Ask,
-        price: 6
-      } as ScalperOrderBookRowView,
-      {
-        rowType: ScalperOrderBookRowType.Ask,
-        price: 5
-      } as ScalperOrderBookRowView,
-    ];
-
-    const spreadRows: ScalperOrderBookRowView[] = [
-      {
-        rowType: ScalperOrderBookRowType.Spread,
-        price: 4
-      } as ScalperOrderBookRowView,
-      {
-        rowType: ScalperOrderBookRowType.Spread,
-        price: 3
-      } as ScalperOrderBookRowView,
-    ];
-
-    const bidRows: ScalperOrderBookRowView[] = [
-      {
-        rowType: ScalperOrderBookRowType.Bid,
-        price: 2
-      } as ScalperOrderBookRowView,
-      {
-        rowType: ScalperOrderBookRowType.Bid,
-        price: 1
-      } as ScalperOrderBookRowView,
-    ];
-
     orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
-
     const quantity = Math.round(Math.random() * 100);
 
-    service.placeBestOrder(testInstrumentKey, Side.Buy, quantity, [...askRows, ...spreadRows, ...bidRows]);
+    let testAsks: OrderbookDataRow[] = [
+      { p: 6, v: 1, y: 0 },
+      { p: 7, v: 1, y: 0 },
+      { p: 8, v: 1, y: 0 },
+    ];
+
+    let testBids: OrderbookDataRow[] = [
+      { p: testAsks[0].p - testInstrument.minstep * 2, v: 1, y: 0 },
+      { p: testAsks[0].p - testInstrument.minstep * 3, v: 1, y: 0 },
+      { p: testAsks[0].p - testInstrument.minstep * 4, v: 1, y: 0 }
+    ];
+
+    service.placeBestOrder(testInstrument, Side.Buy, quantity, { a: testAsks, b: testBids });
     expect(orderServiceSpy.submitLimitOrder)
-    .withContext('Spread rows, Buy')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Buy,
-        price: spreadRows[1].price,
-        quantity: quantity,
-        instrument: testInstrumentKey
-      } as LimitOrder,
-      portfolioKey.portfolio
-    );
+      .withContext('Spread rows, Buy')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Buy,
+          price: testBids[0].p + testInstrument.minstep,
+          quantity: quantity,
+          instrument: testInstrument
+        } as LimitOrder,
+        portfolioKey.portfolio
+      );
 
     orderServiceSpy.submitLimitOrder.calls.reset();
-    service.placeBestOrder(testInstrumentKey, Side.Sell, quantity, [...askRows, ...spreadRows, ...bidRows]);
+
+    service.placeBestOrder(testInstrument, Side.Sell, quantity, { a: testAsks, b: testBids });
     expect(orderServiceSpy.submitLimitOrder)
-    .withContext('Spread rows, Sell')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Sell,
-        price: spreadRows[0].price,
-        quantity: quantity,
-        instrument: testInstrumentKey
-      } as LimitOrder,
-      portfolioKey.portfolio
-    );
+      .withContext('Spread rows, Sell')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Sell,
+          price: testAsks[0].p - testInstrument.minstep,
+          quantity: quantity,
+          instrument: testInstrument
+        } as LimitOrder,
+        portfolioKey.portfolio
+      );
+
+    testAsks = [
+      { p: 6, v: 1, y: 0 },
+      { p: 7, v: 1, y: 0 },
+      { p: 8, v: 1, y: 0 },
+    ];
+
+    testBids = [
+      { p: testAsks[0].p - 1, v: 1, y: 0 },
+      { p: testAsks[0].p - 2, v: 1, y: 0 },
+      { p: testAsks[0].p - 3, v: 1, y: 0 }
+    ];
 
     orderServiceSpy.submitLimitOrder.calls.reset();
-    service.placeBestOrder(testInstrumentKey, Side.Buy, quantity, [...askRows, ...bidRows]);
+    service.placeBestOrder(testInstrument, Side.Buy, quantity, { a: testAsks, b: testBids });
     expect(orderServiceSpy.submitLimitOrder)
-    .withContext('No spread, Buy')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Buy,
-        price: bidRows[0].price,
-        quantity: quantity,
-        instrument: testInstrumentKey
-      } as LimitOrder,
-      portfolioKey.portfolio
-    );
+      .withContext('No spread, Buy')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Buy,
+          price: testBids[0].p,
+          quantity: quantity,
+          instrument: testInstrument
+        } as LimitOrder,
+        portfolioKey.portfolio
+      );
 
     orderServiceSpy.submitLimitOrder.calls.reset();
-    service.placeBestOrder(testInstrumentKey, Side.Sell, quantity, [...askRows, ...bidRows]);
+    service.placeBestOrder(testInstrument, Side.Sell, quantity, { a: testAsks, b: testBids });
     expect(orderServiceSpy.submitLimitOrder)
-    .withContext('No spread, Sell')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Sell,
-        price: askRows[1].price,
-        quantity: quantity,
-        instrument: testInstrumentKey
-      } as LimitOrder,
-      portfolioKey.portfolio
-    );
+      .withContext('No spread, Sell')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Sell,
+          price: testAsks[0].p,
+          quantity: quantity,
+          instrument: testInstrument
+        } as LimitOrder,
+        portfolioKey.portfolio
+      );
   });
 
   it('#placeMarketOrder should call appropriate service with appropriate data', () => {
@@ -298,15 +297,15 @@ describe('ScalperOrdersService', () => {
     );
 
     expect(orderServiceSpy.submitMarketOrder)
-    .withContext('Sell')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Sell,
-        quantity,
-        instrument: testInstrumentKey
-      } as MarketOrder,
-      portfolioKey.portfolio
-    );
+      .withContext('Sell')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Sell,
+          quantity,
+          instrument: testInstrumentKey
+        } as MarketOrder,
+        portfolioKey.portfolio
+      );
 
     service.placeMarketOrder(
       testInstrumentKey,
@@ -316,15 +315,15 @@ describe('ScalperOrdersService', () => {
     );
 
     expect(modalServiceSpy.openCommandModal)
-    .withContext('Buy')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Buy,
-        quantity,
-        instrument: testInstrumentKey,
-        type: CommandType.Market
-      } as CommandParams
-    );
+      .withContext('Buy')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Buy,
+          quantity,
+          instrument: testInstrumentKey,
+          type: CommandType.Market
+        } as CommandParams
+      );
   });
 
   it('#placeLimitOrder should call appropriate service with appropriate data', () => {
@@ -353,16 +352,16 @@ describe('ScalperOrdersService', () => {
     );
 
     expect(orderServiceSpy.submitLimitOrder)
-    .withContext('Sell')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Sell,
-        quantity,
-        price: price,
-        instrument: testInstrumentKey
-      } as LimitOrder,
-      portfolioKey.portfolio
-    );
+      .withContext('Sell')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Sell,
+          quantity,
+          price: price,
+          instrument: testInstrumentKey
+        } as LimitOrder,
+        portfolioKey.portfolio
+      );
 
     service.placeLimitOrder(
       testInstrumentKey,
@@ -373,16 +372,16 @@ describe('ScalperOrdersService', () => {
     );
 
     expect(modalServiceSpy.openCommandModal)
-    .withContext('Buy')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Buy,
-        quantity,
-        instrument: testInstrumentKey,
-        price: price,
-        type: CommandType.Limit
-      } as CommandParams
-    );
+      .withContext('Buy')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Buy,
+          quantity,
+          instrument: testInstrumentKey,
+          price: price,
+          type: CommandType.Limit
+        } as CommandParams
+      );
   });
 
   it('#reversePositionsByMarket should call service with appropriate data', () => {
@@ -415,30 +414,30 @@ describe('ScalperOrdersService', () => {
     service.reversePositionsByMarket(testInstrumentKey);
 
     expect(orderServiceSpy.submitMarketOrder)
-    .withContext('qtyTFuture > 0')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Sell,
-        quantity: currentPortfolioPositions[1].qtyTFuture * 2,
-        instrument: testInstrumentKey
-      } as MarketOrder,
-      portfolioKey.portfolio
-    );
+      .withContext('qtyTFuture > 0')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Sell,
+          quantity: currentPortfolioPositions[1].qtyTFuture * 2,
+          instrument: testInstrumentKey
+        } as MarketOrder,
+        portfolioKey.portfolio
+      );
 
     orderServiceSpy.submitMarketOrder.calls.reset();
     currentPortfolioPositions[1].qtyTFuture = currentPortfolioPositions[1].qtyTFuture * -1;
 
     service.reversePositionsByMarket(testInstrumentKey);
     expect(orderServiceSpy.submitMarketOrder)
-    .withContext('qtyTFuture < 0')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Buy,
-        quantity: Math.abs(currentPortfolioPositions[1].qtyTFuture) * 2,
-        instrument: testInstrumentKey
-      } as MarketOrder,
-      portfolioKey.portfolio
-    );
+      .withContext('qtyTFuture < 0')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Buy,
+          quantity: Math.abs(currentPortfolioPositions[1].qtyTFuture) * 2,
+          instrument: testInstrumentKey
+        } as MarketOrder,
+        portfolioKey.portfolio
+      );
   });
 
   it('#setStopLimitForRow should call appropriate service with appropriate data', () => {
@@ -460,64 +459,64 @@ describe('ScalperOrdersService', () => {
 
     service.setStopLimitForRow(
       testInstrumentKey,
-      { rowType: ScalperOrderBookRowType.Ask, price } as ScalperOrderBookRowView,
+      { rowType: ScalperOrderBookRowType.Ask, price } as ScalperOrderBookRow,
       quantity,
       true
     );
 
     expect(orderServiceSpy.submitStopLimitOrder)
-    .withContext('Sell. Silent')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Sell,
-        quantity: quantity,
-        price,
-        instrument: testInstrumentKey,
-        triggerPrice: price,
-        condition: StopOrderCondition.More
-      } as StopLimitOrder,
-      portfolioKey.portfolio
-    );
+      .withContext('Sell. Silent')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Sell,
+          quantity: quantity,
+          price,
+          instrument: testInstrumentKey,
+          triggerPrice: price,
+          condition: StopOrderCondition.More
+        } as StopLimitOrder,
+        portfolioKey.portfolio
+      );
 
     orderServiceSpy.submitStopLimitOrder.calls.reset();
     service.setStopLimitForRow(
       testInstrumentKey,
-      { rowType: ScalperOrderBookRowType.Bid, price } as ScalperOrderBookRowView,
+      { rowType: ScalperOrderBookRowType.Bid, price } as ScalperOrderBookRow,
       quantity,
       true
     );
 
     expect(orderServiceSpy.submitStopLimitOrder)
-    .withContext('Buy. Silent')
-    .toHaveBeenCalledOnceWith(
-      {
-        side: Side.Buy,
-        quantity: quantity,
-        price,
-        instrument: testInstrumentKey,
-        triggerPrice: price,
-        condition: StopOrderCondition.Less
-      } as StopLimitOrder,
-      portfolioKey.portfolio
-    );
+      .withContext('Buy. Silent')
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Buy,
+          quantity: quantity,
+          price,
+          instrument: testInstrumentKey,
+          triggerPrice: price,
+          condition: StopOrderCondition.Less
+        } as StopLimitOrder,
+        portfolioKey.portfolio
+      );
 
 
     service.setStopLimitForRow(
       testInstrumentKey,
-      { rowType: ScalperOrderBookRowType.Bid, price } as ScalperOrderBookRowView,
+      { rowType: ScalperOrderBookRowType.Bid, price } as ScalperOrderBookRow,
       quantity,
       false
     );
 
     expect(modalServiceSpy.openCommandModal)
-    .withContext('Show dialog')
-    .toHaveBeenCalledOnceWith(jasmine.objectContaining({
-      side: Side.Buy,
-      quantity,
-      instrument: testInstrumentKey,
-      price: price,
-      type: CommandType.Stop
-    } as CommandParams));
+      .withContext('Show dialog')
+      .toHaveBeenCalledOnceWith(jasmine.objectContaining({
+        side: Side.Buy,
+        quantity,
+        instrument: testInstrumentKey,
+        price: price,
+        type: CommandType.Stop
+      } as CommandParams));
   });
 
   describe('#setStopLoss', () => {

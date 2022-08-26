@@ -1,54 +1,61 @@
 @import (reference) '/src/styles.less';
 
-.working-volumes {
-  padding-bottom: 10px;
-  position: sticky;
-  top: 0;
-  background-color: #141414;
-  z-index: 5;
+.container {
+  display: flex;
+  flex-direction: column;
 
-  .working-volume {
-    cursor: pointer;
+  .order-book-table-container {
+    flex: 1;
+
+    .row {
+      td {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+      }
+    }
+
+    .hidden-row {
+      display: none;
+    }
+
+    .ask-row {
+      &.trade-row {
+        .price-cell {
+          color: @sell-color;
+        }
+
+        &.best-row {
+          background-color: fade(@sell-color, 20%);
+        }
+      }
+    }
+
+    .bid-row {
+      &.trade-row {
+        .price-cell {
+          color: @buy-color;
+        }
+
+        &.best-row {
+          background-color: fade(@buy-color, 20%);
+        }
+      }
+    }
+
+    .spread-row {
+      background-color: fade(@disabled-color, 7%);
+    }
+
+    .cancel-order-btn {
+      margin-left: 0.5em;
+    }
   }
 }
 
-.order-book-rows {
-  .row {
-    td {
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-    }
-  }
+.working-volumes {
+  padding-bottom: 10px;
 
-  .ask-row {
-    &.trade-row {
-      .price-cell {
-        color: @sell-color;
-      }
-
-      &.best-row {
-        background-color: fade(@sell-color, 20%);
-      }
-    }
-  }
-
-  .bid-row {
-    &.trade-row {
-      .price-cell {
-        color: @buy-color;
-      }
-
-      &.best-row {
-        background-color: fade(@buy-color, 20%);
-      }
-    }
-  }
-
-  .spread-row {
-    background-color: fade(@disabled-color, 7%);
-  }
-
-  .cancel-order-btn {
-    margin-left: 0.5em;
+  .working-volume {
+    cursor: pointer;
   }
 }

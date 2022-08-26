@@ -362,7 +362,6 @@ export function isEqualScalperOrderBookSettings(
       settings1.linkToActive == settings2.linkToActive &&
       settings1.exchange == settings2.exchange &&
       settings1.depth == settings2.depth &&
-      settings1.showYieldForBonds == settings2.showYieldForBonds &&
       settings1.showZeroVolumeItems == settings2.showZeroVolumeItems &&
       settings1.showSpreadItems == settings2.showSpreadItems &&
       settings1.volumeHighlightMode == settings2.volumeHighlightMode &&

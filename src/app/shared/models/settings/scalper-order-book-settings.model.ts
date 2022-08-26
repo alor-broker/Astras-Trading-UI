@@ -14,7 +14,6 @@ export interface VolumeHighlightOption {
 
 export interface ScalperOrderBookSettings extends WidgetSettings, InstrumentKey {
   depth?: number;
-  showYieldForBonds: boolean;
   showZeroVolumeItems: boolean;
   showSpreadItems: boolean;
   volumeHighlightMode?: VolumeHighlightMode;

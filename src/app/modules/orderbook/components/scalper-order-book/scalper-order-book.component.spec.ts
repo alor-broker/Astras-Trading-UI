@@ -12,10 +12,8 @@ import {
   take
 } from "rxjs";
 import {
-  CurrentOrder,
-  ScalperOrderBook,
-  ScalperOrderBookRowType,
-  ScalperOrderBookRowView
+  ScalperOrderBookRow,
+  ScalperOrderBookRowType
 } from "../../models/scalper-order-book.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
@@ -37,6 +35,9 @@ import { HotKeyCommandService } from "../../../../shared/services/hot-key-comman
 import { TerminalCommand } from "../../../../shared/models/terminal-command";
 import { ScalperOrderBookCommands } from "../../models/scalper-order-book-commands";
 import { Side } from "../../../../shared/models/enums/side.model";
+import { OrderbookData } from '../../models/orderbook-data.model';
+import { Order } from '../../../../shared/models/orders/order.model';
+import { OrderBookDataFeedHelper } from '../../utils/order-book-data-feed.helper';
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -51,7 +52,6 @@ describe('ScalperOrderBookComponent', () => {
     volumeHighlightFullness: 1000,
     volumeHighlightMode: VolumeHighlightMode.BiggestVolume,
     showSpreadItems: false,
-    showYieldForBonds: false,
     showZeroVolumeItems: false,
     volumeHighlightOptions: [],
     workingVolumes: []
@@ -66,8 +66,11 @@ describe('ScalperOrderBookComponent', () => {
     minstep: 0.01
   };
 
+  const defaultLastPrice = 101.24;
   const settingsMock = new BehaviorSubject<ScalperOrderBookSettings>(orderBookDefaultSettings);
-  const scalperOrderBookMock = new Subject<ScalperOrderBook>();
+  const orderBookDataMock = new Subject<OrderbookData>();
+  const lastPriceMock = new BehaviorSubject<number>(defaultLastPrice);
+  const currentOrdersMock = new BehaviorSubject<Order[]>([]);
   const terminalSettingsMock = new Subject<TerminalSettings>();
   const instrumentMock = new BehaviorSubject<Instrument>(defaultInstrumentInfo);
   const hotKeyCommandMock = new Subject<TerminalCommand>();
@@ -90,8 +93,18 @@ describe('ScalperOrderBookComponent', () => {
 
     widgetSettingsServiceSpy.getSettings.and.returnValue(settingsMock);
 
-    scalperOrderBookServiceSpy = jasmine.createSpyObj('ScalperOrderBookService', ['getOrderBookRealtimeData']);
-    scalperOrderBookServiceSpy.getOrderBookRealtimeData.and.returnValue(scalperOrderBookMock);
+    scalperOrderBookServiceSpy = jasmine.createSpyObj(
+      'ScalperOrderBookService',
+      [
+        'getOrderBook',
+        'getLastPrice',
+        'getCurrentOrders'
+      ]
+    );
+
+    scalperOrderBookServiceSpy.getOrderBook.and.returnValue(orderBookDataMock);
+    scalperOrderBookServiceSpy.getLastPrice.and.returnValue(lastPriceMock);
+    scalperOrderBookServiceSpy.getCurrentOrders.and.returnValue(currentOrdersMock);
 
     terminalSettingsServiceSpy = jasmine.createSpyObj('TerminalSettingsService', ['getSettings']);
     terminalSettingsServiceSpy.getSettings.and.returnValue(terminalSettingsMock);
@@ -132,7 +145,7 @@ describe('ScalperOrderBookComponent', () => {
         { provide: ScalperOrdersService, useValue: scalperOrdersServiceSpy },
       ],
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -147,29 +160,21 @@ describe('ScalperOrderBookComponent', () => {
 
   describe('Hot keys', () => {
     it('should process cancelLimitOrdersAll command', fakeAsync(() => {
-        const expectedOrder: CurrentOrder = {
-          orderId: generateRandomString(5),
-          volume: 10,
+        const expectedOrder = {
+          id: generateRandomString(5),
+          qty: 10,
           type: 'limit',
           exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234'
-        };
+          portfolio: 'D1234',
+          price: 100,
+        } as Order;
 
-        scalperOrderBookMock.next({
-          asks: [{
-            price: Math.random() * 1000,
-            volume: Math.random() * 100,
-            currentOrders: []
-          }],
-          bids: [],
-          spreadItems: [],
-          allActiveOrders: [expectedOrder]
-        });
-
+        currentOrdersMock.next([expectedOrder]);
+        tick();
         hotKeyCommandMock.next({ type: ScalperOrderBookCommands.cancelLimitOrdersAll });
 
         tick();
-        expect(scalperOrdersServiceSpy.cancelOrders).toHaveBeenCalledOnceWith([expectedOrder]);
+        expect(scalperOrdersServiceSpy.cancelOrders).toHaveBeenCalledOnceWith([OrderBookDataFeedHelper.orderToCurrentOrder(expectedOrder)]);
       })
     );
 
@@ -182,30 +187,21 @@ describe('ScalperOrderBookComponent', () => {
     );
 
     it('should process cancelLimitOrdersCurrent command', fakeAsync(() => {
-        const expectedOrder: CurrentOrder = {
-          orderId: generateRandomString(5),
-          volume: 10,
+        const expectedOrder = {
+          id: generateRandomString(5),
+          qty: 10,
           type: 'limit',
           exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234'
-        };
+          portfolio: 'D1234',
+          price: 100,
+        } as Order;
 
-        scalperOrderBookMock.next({
-          asks: [{
-            price: Math.random() * 1000,
-            volume: Math.random() * 100,
-            currentOrders: []
-          }],
-          bids: [],
-          spreadItems: [],
-          allActiveOrders: [expectedOrder]
-        });
-
+        currentOrdersMock.next([expectedOrder]);
         component.isActiveOrderBook = true;
         hotKeyCommandMock.next({ type: ScalperOrderBookCommands.cancelLimitOrdersCurrent });
 
         tick();
-        expect(scalperOrdersServiceSpy.cancelOrders).toHaveBeenCalledOnceWith([expectedOrder]);
+        expect(scalperOrdersServiceSpy.cancelOrders).toHaveBeenCalledOnceWith([OrderBookDataFeedHelper.orderToCurrentOrder(expectedOrder)]);
       })
     );
 
@@ -221,15 +217,13 @@ describe('ScalperOrderBookComponent', () => {
     it('should process sellBestOrder command', fakeAsync(() => {
         const workingVolume = Math.round(Math.random() * 100);
 
-        scalperOrderBookMock.next({
-          asks: [{
-            price: Math.round(Math.random() * 1000),
-            volume: Math.round(Math.random() * 100),
-            currentOrders: []
+        orderBookDataMock.next({
+          a: [{
+            p: Math.round(Math.random() * 1000),
+            v: Math.round(Math.random() * 100),
+            y: 0
           }],
-          bids: [],
-          spreadItems: [],
-          allActiveOrders: []
+          b: [],
         });
 
         component.isActiveOrderBook = true;
@@ -238,7 +232,7 @@ describe('ScalperOrderBookComponent', () => {
 
         tick();
         expect(scalperOrdersServiceSpy.placeBestOrder).toHaveBeenCalledOnceWith(
-          orderBookDefaultSettings,
+          defaultInstrumentInfo,
           Side.Sell,
           workingVolume,
           jasmine.any(Object)
@@ -249,15 +243,13 @@ describe('ScalperOrderBookComponent', () => {
     it('should process buyBestOrder command', fakeAsync(() => {
         const workingVolume = Math.round(Math.random() * 100);
 
-        scalperOrderBookMock.next({
-          asks: [{
-            price: Math.round(Math.random() * 1000),
-            volume: Math.round(Math.random() * 100),
-            currentOrders: []
+        orderBookDataMock.next({
+          a: [{
+            p: Math.round(Math.random() * 1000),
+            v: Math.round(Math.random() * 100),
+            y: 0
           }],
-          bids: [],
-          spreadItems: [],
-          allActiveOrders: []
+          b: [],
         });
 
         component.isActiveOrderBook = true;
@@ -266,7 +258,7 @@ describe('ScalperOrderBookComponent', () => {
 
         tick();
         expect(scalperOrdersServiceSpy.placeBestOrder).toHaveBeenCalledOnceWith(
-          orderBookDefaultSettings,
+          defaultInstrumentInfo,
           Side.Buy,
           workingVolume,
           jasmine.any(Object)
@@ -352,19 +344,19 @@ describe('ScalperOrderBookComponent', () => {
       const testRow = {
         price: Math.round(Math.random() * 1000),
         rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
-      } as ScalperOrderBookRowView;
+      } as ScalperOrderBookRow;
 
       component.onRowClick(event, testRow);
 
       tick();
 
       expect(scalperOrdersServiceSpy.setStopLimitForRow)
-      .toHaveBeenCalledOnceWith(
-        currentSettings,
-        testRow,
-        workingVolume,
-        currentSettings.enableMouseClickSilentOrders
-      );
+        .toHaveBeenCalledOnceWith(
+          currentSettings,
+          testRow,
+          workingVolume,
+          currentSettings.enableMouseClickSilentOrders
+        );
     }));
 
     it('should process Left click with Shift', fakeAsync(() => {
@@ -383,17 +375,17 @@ describe('ScalperOrderBookComponent', () => {
       const testRow = {
         price: Math.round(Math.random() * 1000),
         rowType: ScalperOrderBookRowType.Ask
-      } as ScalperOrderBookRowView;
+      } as ScalperOrderBookRow;
 
       component.onRowClick(event, testRow);
       tick();
 
       expect(scalperOrdersServiceSpy.setStopLoss)
-      .toHaveBeenCalledOnceWith(
-        currentSettings,
-        testRow.price,
-        currentSettings.enableMouseClickSilentOrders
-      );
+        .toHaveBeenCalledOnceWith(
+          currentSettings,
+          testRow.price,
+          currentSettings.enableMouseClickSilentOrders
+        );
     }));
 
     it('should process Left click WITHOUT Ctrl and Shift', fakeAsync(() => {
@@ -413,19 +405,19 @@ describe('ScalperOrderBookComponent', () => {
       const testRow = {
         price: Math.round(Math.random() * 1000),
         rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
-      } as ScalperOrderBookRowView;
+      } as ScalperOrderBookRow;
 
       component.onRowClick(event, testRow);
       tick();
 
       expect(scalperOrdersServiceSpy.placeLimitOrder)
-      .toHaveBeenCalledOnceWith(
-        currentSettings,
-        testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell,
-        workingVolume,
-        testRow.price,
-        currentSettings.enableMouseClickSilentOrders
-      );
+        .toHaveBeenCalledOnceWith(
+          currentSettings,
+          testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell,
+          workingVolume,
+          testRow.price,
+          currentSettings.enableMouseClickSilentOrders
+        );
     }));
 
     it('should process Right click', fakeAsync(() => {
@@ -445,18 +437,18 @@ describe('ScalperOrderBookComponent', () => {
       const testRow = {
         price: Math.round(Math.random() * 1000),
         rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
-      } as ScalperOrderBookRowView;
+      } as ScalperOrderBookRow;
 
       component.onRowRightClick(event, testRow);
       tick();
 
       expect(scalperOrdersServiceSpy.placeMarketOrder)
-      .toHaveBeenCalledOnceWith(
-        currentSettings,
-        testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Sell : Side.Buy,
-        workingVolume,
-        currentSettings.enableMouseClickSilentOrders
-      );
+        .toHaveBeenCalledOnceWith(
+          currentSettings,
+          testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Sell : Side.Buy,
+          workingVolume,
+          currentSettings.enableMouseClickSilentOrders
+        );
     }));
   });
 });

@@ -142,9 +142,8 @@ export class WidgetFactoryService {
       exchange: this.selectedInstrument.exchange,
       instrumentGroup: this.selectedInstrument.instrumentGroup,
       isin: this.selectedInstrument.isin,
-      showYieldForBonds: false,
-      showZeroVolumeItems: false,
-      showSpreadItems: false,
+      showZeroVolumeItems: true,
+      showSpreadItems: true,
       volumeHighlightMode: VolumeHighlightMode.BiggestVolume,
       volumeHighlightFullness: 10000,
       volumeHighlightOptions: [

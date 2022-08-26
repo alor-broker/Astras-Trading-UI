@@ -30,7 +30,6 @@ interface SettingsFormData {
   exchange: string;
   symbol: string;
   instrumentGroup: string;
-  showYieldForBonds: boolean;
   showZeroVolumeItems: boolean;
   showSpreadItems: boolean;
   volumeHighlightMode: VolumeHighlightMode;
@@ -174,7 +173,6 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         Validators.min(this.validationSettings.depth.min),
         Validators.max(this.validationSettings.depth.max)]),
       instrumentGroup: new FormControl(settings.instrumentGroup),
-      showYieldForBonds: new FormControl(settings.showYieldForBonds),
       showZeroVolumeItems: new FormControl(settings.showZeroVolumeItems),
       showSpreadItems: new FormControl(settings.showSpreadItems),
       volumeHighlightMode: new FormControl(settings.volumeHighlightMode ?? VolumeHighlightMode.Off),

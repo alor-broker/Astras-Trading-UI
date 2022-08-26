@@ -17,6 +17,7 @@
       <ats-scalper-order-book-widget *ngSwitchCase="'scalper-order-book'"
                                       [guid]="getGuid()"
                                       [(shouldShowSettings)]="shouldShowSettings"
+                                      [resize]="widgetResize"
       ></ats-scalper-order-book-widget>
       <ats-light-chart-widget *ngSwitchCase="'light-chart'"
                               [guid]="getGuid()"
