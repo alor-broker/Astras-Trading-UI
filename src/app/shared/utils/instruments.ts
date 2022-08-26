@@ -2,6 +2,17 @@ import { InstrumentType } from "../models/enums/instrument-type.model";
 import { InstrumentKey } from "../models/instruments/instrument-key.model";
 
 /**
+ * badge colors array
+ */
+export const instrumentsBadges = [
+  'yellow',
+  'blue',
+  'pink',
+  'red',
+  'orange'
+];
+
+/**
  * Determines the category of instrument by CFI code
  * @param cfi cfi code
  * @returns InstrumentType

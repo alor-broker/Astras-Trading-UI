@@ -1,21 +1,27 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { InstrumentsService } from 'src/app/modules/instruments/services/instruments.service';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
-import { newInstrumentSelected, selectNewInstrument, } from './instruments.actions';
+import {
+  newInstrumentByBadgeSelected,
+  selectNewInstrumentByBadge,
+} from './instruments.actions';
 import { ErrorHandlerService } from 'src/app/shared/services/handle-error/error-handler.service';
-import { catchHttpError } from 'src/app/shared/utils/observable-helper';
+import { catchHttpError, mapWith } from 'src/app/shared/utils/observable-helper';
 
 @Injectable()
 export class InstrumentsEffects {
-  loadInstruments$ = createEffect(() =>
+  selectInstrumentByBadge$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(selectNewInstrument),
-      switchMap(action => this.instrumentsService.getInstrument(action.instrument)),
-      catchHttpError<Instrument | null>(null, this.errorHandlerService),
-      filter((instrument): instrument is Instrument => !!instrument),
-      map((instrument) => newInstrumentSelected({ instrument }))
+      ofType(selectNewInstrumentByBadge),
+      mapWith(
+        action => this.instrumentsService.getInstrument(action.instrument)
+          .pipe(catchHttpError<Instrument | null>(null, this.errorHandlerService)),
+        (action, instrument) => ({badgeColor: action.badgeColor, instrument})
+      ),
+      filter(({instrument}) => !!instrument),
+      map(({instrument, badgeColor}) => newInstrumentByBadgeSelected({instrument: instrument!, badgeColor}))
     )
   );
 

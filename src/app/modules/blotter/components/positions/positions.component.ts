@@ -57,6 +57,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
   isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
 
   private settings$!: Observable<BlotterSettings>;
+  private badgeColor = 'white';
 
   allColumns: Column<PositionDisplay, PositionFilter>[] = [
     {
@@ -221,6 +222,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
           this.listOfColumns = this.allColumns.filter(c => s.positionsColumns.includes(c.id));
           this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
         }
+        this.badgeColor = s.badgeColor!;
       }
     );
 
@@ -272,7 +274,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
   }
 
   selectInstrument(symbol: string, exchange: string) {
-    this.service.selectNewInstrument(symbol, exchange);
+    this.service.selectNewInstrument(symbol, exchange, this.badgeColor);
   }
 
   isFilterApplied(column: Column<PositionDisplay, PositionFilter>) {

@@ -16,8 +16,11 @@ import {
 } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { selectTerminalSettingsState } from './terminal-settings.selectors';
-import { filter } from 'rxjs';
+import { filter, take } from 'rxjs';
 import { LocalStorageService } from "../../shared/services/local-storage.service";
+import { getAllSettings } from "../widget-settings/widget-settings.selectors";
+import { mapWith } from "../../shared/utils/observable-helper";
+import { updateWidgetSettings } from "../widget-settings/widget-settings.actions";
 
 @Injectable()
 export class TerminalSettingsEffects {
@@ -44,7 +47,25 @@ export class TerminalSettingsEffects {
         concatLatestFrom(() => this.store.select(selectTerminalSettingsState)),
         map(([, settings]) => settings.settings),
         filter((settings): settings is TerminalSettings => !!settings),
-        tap(settings => this.saveSettingsToLocalStorage(settings))
+        tap(settings => this.saveSettingsToLocalStorage(settings)),
+        mapWith(
+          () => this.store.select(getAllSettings)
+            .pipe(
+              take(1),
+              map(ws => ws.filter(s => !!s.badgeColor))
+            ),
+          (ts, ws) => ({ ts, ws })
+          ),
+        tap(({ts, ws}) => {
+          if (!ts.badgesBind) {
+            ws.forEach(
+              s => this.store.dispatch(updateWidgetSettings({
+                settingGuid: s.guid,
+                changes: {badgeColor: 'yellow'}
+              }))
+            );
+          }
+        })
       );
     },
     {
@@ -71,6 +92,7 @@ export class TerminalSettingsEffects {
     return {
       timezoneDisplayOption: TimezoneDisplayOption.MskTime,
       userIdleDurationMin: 15,
+      badgesBind: false,
       hotKeysSettings: this.getDefaultHotkeys(),
     } as TerminalSettings;
   }

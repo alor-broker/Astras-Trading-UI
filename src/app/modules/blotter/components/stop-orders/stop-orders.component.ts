@@ -281,6 +281,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   private cancels$ = this.cancelCommands.asObservable();
   private orders: StopOrder[] = [];
   private settings$!: Observable<BlotterSettings>;
+  private badgeColor = 'white';
 
   constructor(
     private readonly service: BlotterService,
@@ -304,6 +305,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
         this.listOfColumns = this.allColumns.filter(c => s.stopOrdersColumns.includes(c.id));
         this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
       }
+      this.badgeColor = s.badgeColor!;
     });
 
     const orders$ = this.settings$.pipe(
@@ -417,7 +419,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   }
 
   selectInstrument(symbol: string, exchange: string) {
-    this.service.selectNewInstrument(symbol, exchange);
+    this.service.selectNewInstrument(symbol, exchange, this.badgeColor);
   }
 
   isFilterApplied(column: Column<DisplayOrder, OrderFilter>) {

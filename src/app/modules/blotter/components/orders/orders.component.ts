@@ -251,6 +251,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private orders: Order[] = [];
   private orders$: Observable<Order[]> = of([]);
   private settings$!: Observable<BlotterSettings>;
+  private badgeColor = 'white';
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -273,6 +274,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
         this.listOfColumns = this.allColumns.filter(c => s.ordersColumns.includes(c.id));
         this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
       }
+      this.badgeColor = s.badgeColor!;
     });
 
     this.orders$ = this.settings$.pipe(
@@ -383,7 +385,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   selectInstrument(symbol: string, exchange: string) {
-    this.service.selectNewInstrument(symbol, exchange);
+    this.service.selectNewInstrument(symbol, exchange, this.badgeColor);
   }
 
   isFilterApplied(column: Column<DisplayOrder, OrderFilter>) {

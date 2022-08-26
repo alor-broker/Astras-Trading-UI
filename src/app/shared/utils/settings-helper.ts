@@ -422,6 +422,7 @@ export function isEqualBlotterSettings(
       settings1.exchange == settings2.exchange &&
       settings1.portfolio == settings2.portfolio &&
       settings1.guid == settings2.guid &&
+      settings1.badgeColor == settings2.badgeColor &&
       isArrayEqual(settings1.ordersColumns, settings2.ordersColumns, (a, b) => a === b) &&
       isArrayEqual(settings1.stopOrdersColumns, settings2.stopOrdersColumns, (a, b) => a === b) &&
       isArrayEqual(settings1.positionsColumns, settings2.positionsColumns, (a, b) => a === b) &&

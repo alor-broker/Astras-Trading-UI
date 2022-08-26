@@ -7,7 +7,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { AllInstrumentsSettings } from "../../../../shared/models/settings/all-instruments-settings.model";
 import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
 import { Store } from "@ngrx/store";
-import { selectNewInstrument } from "../../../../store/instruments/instruments.actions";
+import { selectNewInstrumentByBadge } from "../../../../store/instruments/instruments.actions";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
 
@@ -23,6 +23,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     limit: 50,
     offset: 0
   };
+  private badgeColor = 'white';
 
   @Input() guid!: string;
   @Input() contentSize!: DashboardItemContentSize | null;
@@ -100,6 +101,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(settings => {
         this.displayedColumns = this.allColumns.filter(col => settings.allInstrumentsColumns.includes(col.name));
+        this.badgeColor = settings.badgeColor!;
       });
 
     this.watchlistCollectionService.collectionChanged$
@@ -143,7 +145,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       symbol: row.name,
       exchange: row.exchange,
     };
-    this.store.dispatch(selectNewInstrument({instrument}));
+    this.store.dispatch(selectNewInstrumentByBadge({instrument, badgeColor: this.badgeColor}));
   }
 
   initContextMenu() {

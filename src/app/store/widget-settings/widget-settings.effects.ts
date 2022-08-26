@@ -36,7 +36,7 @@ export class WidgetSettingsEffects {
       ofType(
         WidgetSettingsActions.addWidgetSettings,
         WidgetSettingsActions.updateWidgetSettings,
-        WidgetSettingsActions.updateWidgetSettingsInstrument,
+        WidgetSettingsActions.updateWidgetSettingsInstrumentWithBadge,
         WidgetSettingsActions.updateWidgetSettingsPortfolio,
         WidgetSettingsActions.removeWidgetSettings,
         WidgetSettingsActions.removeAllWidgetSettings
@@ -49,7 +49,9 @@ export class WidgetSettingsEffects {
       return this.actions$.pipe(
         ofType(WidgetSettingsActions.saveSettings),
         withLatestFrom(this.store.select(getAllSettings)),
-        tap(([, settings]) => this.saveSettingsToLocalStorage(settings))
+        tap(([, settings]) => {
+          this.saveSettingsToLocalStorage(settings);
+        })
       );
     },
     { dispatch: false });

@@ -7,10 +7,11 @@ import {
   combineLatest,
   distinctUntilChanged,
   filter,
-  switchMap, take
+  switchMap,
+  take
 } from "rxjs";
 import { Store } from "@ngrx/store";
-import { getSelectedInstrument } from "../instruments/instruments.selectors";
+import { getSelectedInstrumentsWithBadges } from "../instruments/instruments.selectors";
 import { map } from "rxjs/operators";
 import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
 import {
@@ -19,7 +20,7 @@ import {
   selectWidgetSettingsState
 } from "./widget-settings.selectors";
 import {
-  updateWidgetSettingsInstrument,
+  updateWidgetSettingsInstrumentWithBadge,
   updateWidgetSettingsPortfolio
 } from "./widget-settings.actions";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
@@ -32,11 +33,11 @@ import { InstrumentEqualityComparer } from "../../shared/utils/instruments";
 
 @Injectable()
 export class WidgetSettingsBridgeEffects {
-  newInstrumentKeySelected$ = createEffect(() => {
-    const newInstrumentSelected$ = this.store.select(getSelectedInstrument).pipe(
+  newInstrumentKeyByBadgeSelected$ = createEffect(() => {
+    const newInstrumentsWithBadges$ = this.store.select(getSelectedInstrumentsWithBadges).pipe(
       filter(x => !!x),
-      map(x => x as InstrumentKey),
-      distinctUntilChanged((previous, current) => InstrumentEqualityComparer.equals(previous, current))
+      map(x => x as { [badgeColor: string]: InstrumentKey }),
+      distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
     );
 
     const linkedWidgetSettings$ = this.store.select(getInstrumentLinkedSettings);
@@ -44,19 +45,21 @@ export class WidgetSettingsBridgeEffects {
     return this.store.select(selectWidgetSettingsState).pipe(
       filter(x => x.status === EntityStatus.Success),
       take(1),
-      switchMap(() => combineLatest([newInstrumentSelected$, linkedWidgetSettings$])),
-      map(([instrumentKey, settings]) => {
-        const settingsToUpdate = settings.filter(s => !InstrumentEqualityComparer.equals(instrumentKey, s as InstrumentKey));
+      switchMap(() => combineLatest([newInstrumentsWithBadges$, linkedWidgetSettings$])),
+      map(([badges, settings]) => {
+        const settingsToUpdate = settings.filter(s =>
+          !InstrumentEqualityComparer.equals(badges[s.badgeColor!] as InstrumentKey, s as InstrumentKey));
         return {
           settingsToUpdate,
-          instrumentKey
+          badges
         };
       }),
       filter(changes => changes.settingsToUpdate.length > 0),
-      map(changes => updateWidgetSettingsInstrument({
-        settingGuids: changes.settingsToUpdate.map(s => s.guid),
-        newInstrumentKey: changes.instrumentKey
-      }))
+      map(changes => updateWidgetSettingsInstrumentWithBadge({
+          settingGuids: changes.settingsToUpdate.map(s => s.guid),
+          badges: changes.badges
+        })
+      )
     );
   });
 

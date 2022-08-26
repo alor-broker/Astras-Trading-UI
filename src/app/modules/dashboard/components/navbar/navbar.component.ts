@@ -10,10 +10,10 @@ import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from '@ngrx/store';
-import { getSelectedInstrument } from '../../../../store/instruments/instruments.selectors';
 import { selectNewPortfolio } from '../../../../store/portfolios/portfolios.actions';
 import { joyrideContent } from '../../models/joyride';
 import { PortfolioExtended } from 'src/app/shared/models/user/portfolio-extended.model';
+import { getSelectedInstrumentByBadge } from "../../../../store/instruments/instruments.selectors";
 
 @Component({
   selector: 'ats-navbar',
@@ -47,7 +47,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.changePortfolio(this.selectDefault(portfolios));
     });
 
-    this.activeInstrument$ = this.store.select(getSelectedInstrument);
+    this.activeInstrument$ = this.store.select(getSelectedInstrumentByBadge('white'));
   }
 
   ngOnDestroy(): void {

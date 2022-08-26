@@ -49,20 +49,20 @@ export const reducer = createReducer(
   }),
 
   on(
-    WidgetSettingsActions.updateWidgetSettingsInstrument,
+    WidgetSettingsActions.updateWidgetSettingsInstrumentWithBadge,
     (state, {
       settingGuids,
-      newInstrumentKey
+      badges
     }) => {
       const updates: Update<AnySettings>[] = [];
       settingGuids.forEach(s => updates.push({
         id: s,
         changes: {
           ...state.entities[s],
-          symbol: newInstrumentKey.symbol,
-          exchange: newInstrumentKey.exchange,
-          instrumentGroup: newInstrumentKey.instrumentGroup,
-          isin: newInstrumentKey.isin
+          symbol: badges[state.entities[s]?.badgeColor!]?.symbol,
+          exchange: badges[state.entities[s]?.badgeColor!]?.exchange,
+          instrumentGroup: badges[state.entities[s]?.badgeColor!]?.instrumentGroup,
+          isin: badges[state.entities[s]?.badgeColor!]?.isin
         }
       }));
 
