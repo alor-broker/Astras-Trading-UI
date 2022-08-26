@@ -1,10 +1,10 @@
 <div *ngIf="currentInstrumentWithPortfolio$ | async as currentInstrumentWithPortfolio">
   <!--use ngFor to completely rerender component when instrument changed-->
-  <ng-container *ngFor="let instrument of [currentInstrumentWithPortfolio.instrument]">
+  <ng-container *ngFor="let currentInstrumentWithPortfolio of [currentInstrumentWithPortfolio]">
     <div class="header">
       <div nz-row>
         <div nz-col nzSpan="8">
-          <span class="portfolio">{{currentInstrumentWithPortfolio.portfolio}} ({{instrument.exchange}})</span>
+          <span class="portfolio">{{currentInstrumentWithPortfolio.portfolio}} ({{currentInstrumentWithPortfolio.instrument.exchange}})</span>
         </div>
         <ng-container *ngIf="priceData$ | async as priceData">
           <div nz-col nzSpan="8">
@@ -22,18 +22,18 @@
       <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async">
         <nz-tab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" nzTitle="Лимитная">
           <ats-limit-order-form (formValueChange)="setLimitOrderValue($event)"
-                                [instrument]="instrument"
+                                [instrument]="currentInstrumentWithPortfolio.instrument"
                                 [initialValues]="initialValues$ | async"
           ></ats-limit-order-form>
         </nz-tab>
         <nz-tab #marketTab (nzSelect)="setSelectedCommandType(orderTypes.MarketOrder)" nzTitle="Рыночная">
           <ats-market-order-form (formValueChange)="setMarketOrderValue($event)"
                                  [activated]="marketTab.isActive"
-                                 [instrument]="instrument"></ats-market-order-form>
+                                 [instrument]="currentInstrumentWithPortfolio.instrument"></ats-market-order-form>
         </nz-tab>
         <nz-tab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" nzTitle="Условная">
           <ats-stop-order-form (formValueChange)="setStopOrderValue($event)"
-                               [instrument]="instrument"></ats-stop-order-form>
+                               [instrument]="currentInstrumentWithPortfolio.instrument"></ats-stop-order-form>
         </nz-tab>
       </nz-tabset>
     </div>
