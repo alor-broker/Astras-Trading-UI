@@ -14,6 +14,7 @@ import { selectNewPortfolio } from '../../../../store/portfolios/portfolios.acti
 import { joyrideContent } from '../../models/joyride';
 import { PortfolioExtended } from 'src/app/shared/models/user/portfolio-extended.model';
 import { getSelectedInstrumentByBadge } from "../../../../store/instruments/instruments.selectors";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-navbar',
@@ -47,7 +48,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.changePortfolio(this.selectDefault(portfolios));
     });
 
-    this.activeInstrument$ = this.store.select(getSelectedInstrumentByBadge('white'));
+    this.activeInstrument$ = this.store.select(getSelectedInstrumentByBadge(defaultBadgeColor));
   }
 
   ngOnDestroy(): void {

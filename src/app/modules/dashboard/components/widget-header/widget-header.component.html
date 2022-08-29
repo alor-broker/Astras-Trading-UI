@@ -11,16 +11,13 @@
     <nz-badge
       *ngIf="s.badgeColor &&
         (terminalSettings$ | async)?.badgesBind &&
-        (s.linkToActive || ['InstrumentSelectSettings', 'BlotterSettings', 'AllInstrumentsSettings'].includes(s.settingsType!));
-        else textTitle"
+        (s.linkToActive || ['InstrumentSelectSettings', 'BlotterSettings', 'AllInstrumentsSettings'].includes(s.settingsType!))"
       nz-dropdown
       [nzDropdownMenu]="badgesMenu"
       [nzColor]="s.badgeColor"
-      [nzText]="s.title"
     ></nz-badge>
-    <ng-template #textTitle>
-      {{s.title}}
-    </ng-template>
+
+    {{s.title}}
 
     <nz-dropdown-menu #badgesMenu="nzDropdownMenu">
       <ul nz-menu class="badge-menu">

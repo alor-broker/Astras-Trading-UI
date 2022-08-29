@@ -284,24 +284,22 @@ describe('Widget Settings Store', () => {
       instrumentsServiceSpy.getInstrument.and.returnValue(of(instrumentDetails));
 
       localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, AnySettings][]) => {
-        expect(key)
-        .withContext('Check localStorage key')
-        .toEqual(settingsStorageKey);
+        if (key === settingsStorageKey) {
+          const allSettings = settings.map(x => x[1]);
 
-        const allSettings = settings.map(x => x[1]);
+          expect(allSettings.find(x => x?.guid === instrumentInDependentSettings.guid))
+            .withContext('Check localStorage passed settings (instrumentInDependent)')
+            .toEqual(instrumentInDependentSettings);
 
-        expect(allSettings.find(x => x?.guid === instrumentInDependentSettings.guid))
-        .withContext('Check localStorage passed settings (instrumentInDependent)')
-        .toEqual(instrumentInDependentSettings);
-
-        expect(allSettings.find(x => x?.guid === instrumentDependentSettings.guid))
-        .withContext('Check localStorage passed settings (instrumentDependent)')
-        .toEqual({
-          ...instrumentDependentSettings,
-          ...newInstrumentKey,
-          isin: instrumentDetails.isin,
-          instrumentGroup: instrumentDetails.instrumentGroup
-        });
+          expect(allSettings.find(x => x?.guid === instrumentDependentSettings.guid))
+            .withContext('Check localStorage passed settings (instrumentDependent)')
+            .toEqual({
+              ...instrumentDependentSettings,
+              ...newInstrumentKey,
+              isin: instrumentDetails.isin,
+              instrumentGroup: instrumentDetails.instrumentGroup
+            });
+        }
       });
 
       store.dispatch(selectNewInstrumentByBadge({ instrument: newInstrumentKey, badgeColor: 'yellow' }));

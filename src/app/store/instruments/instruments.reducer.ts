@@ -41,5 +41,10 @@ export const reducer = createReducer(
         ...instrument
       }
     }
+  })),
+
+  on(InstrumentsActions.initInstrumentsWithBadgesSuccess, (state, instruments) =>({
+    ...state,
+    selectedInstrumentWithBadge: instruments
   }))
 );

@@ -7,6 +7,7 @@ import { Store } from '@ngrx/store';
 import { initTerminalSettings } from './store/terminal-settings/terminal-settings.actions';
 import { initWidgetSettings } from "./store/widget-settings/widget-settings.actions";
 import { SessionTrackService } from "./shared/services/session/session-track.service";
+import { initInstrumentsWithBadges } from "./store/instruments/instruments.actions";
 
 @Component({
   selector: 'ats-app-root',
@@ -25,6 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.store.dispatch(initTerminalSettings());
     this.store.dispatch(initWidgetSettings());
+    this.store.dispatch(initInstrumentsWithBadges());
     this.sessionTrackService.startTracking();
   }
 
