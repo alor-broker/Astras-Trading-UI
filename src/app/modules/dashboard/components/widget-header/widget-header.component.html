@@ -9,7 +9,10 @@
   </button>
   <label class="title">
     <nz-badge
-      *ngIf="s.badgeColor && (terminalSettings$ | async)?.badgesBind; else textTitle"
+      *ngIf="s.badgeColor &&
+        (terminalSettings$ | async)?.badgesBind &&
+        (s.linkToActive || ['InstrumentSelectSettings', 'BlotterSettings', 'AllInstrumentsSettings'].includes(s.settingsType!));
+        else textTitle"
       nz-dropdown
       [nzDropdownMenu]="badgesMenu"
       [nzColor]="s.badgeColor"

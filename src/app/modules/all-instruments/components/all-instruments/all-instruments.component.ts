@@ -10,6 +10,7 @@ import { Store } from "@ngrx/store";
 import { selectNewInstrumentByBadge } from "../../../../store/instruments/instruments.actions";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-all-instruments',
@@ -23,7 +24,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     limit: 50,
     offset: 0
   };
-  private badgeColor = 'white';
+  private badgeColor = defaultBadgeColor;
 
   @Input() guid!: string;
   @Input() contentSize!: DashboardItemContentSize | null;

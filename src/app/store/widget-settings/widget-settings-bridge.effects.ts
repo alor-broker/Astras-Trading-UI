@@ -8,18 +8,20 @@ import {
   distinctUntilChanged,
   filter,
   switchMap,
-  take
+  take, withLatestFrom
 } from "rxjs";
 import { Store } from "@ngrx/store";
 import { getSelectedInstrumentsWithBadges } from "../instruments/instruments.selectors";
 import { map } from "rxjs/operators";
 import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
 import {
+  getAllSettings,
   getInstrumentLinkedSettings,
   getPortfolioLinkedSettings,
   selectWidgetSettingsState
 } from "./widget-settings.selectors";
 import {
+  setDefaultBadges,
   updateWidgetSettingsInstrumentWithBadge,
   updateWidgetSettingsPortfolio
 } from "./widget-settings.actions";
@@ -30,6 +32,8 @@ import {
   PortfolioKeyEqualityComparer
 } from "../../shared/models/portfolio-key.model";
 import { InstrumentEqualityComparer } from "../../shared/utils/instruments";
+import { selectTerminalSettingsState } from "../terminal-settings/terminal-settings.selectors";
+import { State } from "../terminal-settings/terminal-settings.reducer";
 
 @Injectable()
 export class WidgetSettingsBridgeEffects {
@@ -89,6 +93,23 @@ export class WidgetSettingsBridgeEffects {
         newPortfolioKey: changes.portfolioKey
       }))
     );
+  });
+
+  terminalSettingsChange$ = createEffect(() => {
+    return this.store.select(selectTerminalSettingsState)
+      .pipe(
+        withLatestFrom(this.store.select(getAllSettings)
+            .pipe(
+              map(ws => ws.filter(s => !!s.badgeColor).map(s => s.guid))
+            )
+        ),
+        map(([ts, settingGuids]: [State, string[]]) => {
+          if (!ts.settings?.badgesBind) {
+            return setDefaultBadges({settingGuids});
+          }
+          return setDefaultBadges({settingGuids: []});
+        }),
+      );
   });
 
   constructor(private readonly actions$: Actions, private readonly store: Store) {

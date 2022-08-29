@@ -35,7 +35,7 @@ import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.
 import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-settings.model";
 import { TechChartSettings } from "../models/settings/tech-chart-settings.model";
 import { AllInstrumentsSettings, allInstrumentsColumns as allInstrumentsCols } from "../models/settings/all-instruments-settings.model";
-import { instrumentsBadges } from "../utils/instruments";
+import { defaultBadgeColor, instrumentsBadges } from "../utils/instruments";
 
 @Injectable({
   providedIn: 'root',
@@ -116,7 +116,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       settingsType: 'OrderbookSettings',
       linkToActive: true,
-      badgeColor: 'yellow',
+      badgeColor: defaultBadgeColor,
       depth: 10,
       title: `Стакан`,
       showChart: true,
@@ -136,7 +136,7 @@ export class WidgetFactoryService {
       settingsType: 'ScalperOrderBookSettings',
       title: `Скальперский стакан`,
       linkToActive: true,
-      badgeColor: 'yellow',
+      badgeColor: defaultBadgeColor,
       depth: 10,
       showYieldForBonds: false,
       showZeroVolumeItems: false,
@@ -159,7 +159,7 @@ export class WidgetFactoryService {
       settingsType: 'InstrumentSelectSettings',
       title: `Выбор инструмента`,
       instrumentColumns: allInstrumentsColumns.filter(c => c.isDefault).map(c => c.columnId),
-      badgeColor: 'yellow'
+      badgeColor: defaultBadgeColor
     } as InstrumentSelectSettings;
   }
 
@@ -173,7 +173,7 @@ export class WidgetFactoryService {
     return {
       ...this.badges.yellow,
       linkToActive: true,
-      badgeColor: 'yellow',
+      badgeColor: defaultBadgeColor,
       guid: newWidget.gridItem.label,
       settingsType: 'LightChartSettings',
       timeFrame: TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value,
@@ -199,7 +199,7 @@ export class WidgetFactoryService {
       ordersColumns: allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       stopOrdersColumns: allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       linkToActive: true,
-      badgeColor: 'yellow',
+      badgeColor: defaultBadgeColor,
       title: `Блоттер`,
       isSoldPositionsHidden: true
     } as BlotterSettings;
@@ -215,7 +215,7 @@ export class WidgetFactoryService {
     return {
       ...this.badges.yellow,
       linkToActive: true,
-      badgeColor: 'yellow',
+      badgeColor: defaultBadgeColor,
       guid: newWidget.gridItem.label,
       settingsType: 'InfoSettings',
       title: `Инфо`,
@@ -230,7 +230,7 @@ export class WidgetFactoryService {
     return {
       ...this.badges.yellow,
       linkToActive: true,
-      badgeColor: 'yellow',
+      badgeColor: defaultBadgeColor,
       guid: newWidget.gridItem.label,
       settingsType: 'AllTradesSettings',
       title: `Все сделки`
@@ -272,7 +272,7 @@ export class WidgetFactoryService {
       settingsType: 'TechChartSettings',
       title: 'Тех. анализ',
       linkToActive: true,
-      badgeColor: 'yellow',
+      badgeColor: defaultBadgeColor,
       chartSettings: {}
     } as TechChartSettings;
   }
@@ -284,7 +284,7 @@ export class WidgetFactoryService {
 
     return {
       guid: newWidget.gridItem.label,
-      badgeColor: 'yellow',
+      badgeColor: defaultBadgeColor,
       settingsType: 'AllInstrumentsSettings',
       title: 'Все инструменты',
       allInstrumentsColumns: allInstrumentsCols.filter(c => c.isDefault).map(col => col.columnId)

@@ -33,7 +33,7 @@ describe('WidgetHeaderComponent', () => {
         {
           provide: WidgetSettingsService,
           useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({ badgeColor: 'yellow', guid: 'testGuid' })),
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({ badgeColor: 'yellow', guid: 'testGuid', linkToActive: true })),
             updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
           }
         },

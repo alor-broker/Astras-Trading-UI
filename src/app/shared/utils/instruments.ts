@@ -13,6 +13,11 @@ export const instrumentsBadges = [
 ];
 
 /**
+ * default badge color
+ */
+export const defaultBadgeColor = 'yellow';
+
+/**
  * Determines the category of instrument by CFI code
  * @param cfi cfi code
  * @returns InstrumentType

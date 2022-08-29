@@ -9,6 +9,7 @@ import {
 } from './instruments.actions';
 import { ErrorHandlerService } from 'src/app/shared/services/handle-error/error-handler.service';
 import { catchHttpError, mapWith } from 'src/app/shared/utils/observable-helper';
+import { defaultBadgeColor } from "../../shared/utils/instruments";
 
 @Injectable()
 export class InstrumentsEffects {
@@ -18,7 +19,7 @@ export class InstrumentsEffects {
       mapWith(
         action => this.instrumentsService.getInstrument(action.instrument)
           .pipe(catchHttpError<Instrument | null>(null, this.errorHandlerService)),
-        (action, instrument) => ({badgeColor: action.badgeColor, instrument})
+        (action, instrument) => ({badgeColor: action.badgeColor || defaultBadgeColor, instrument})
       ),
       filter(({instrument}) => !!instrument),
       map(({instrument, badgeColor}) => newInstrumentByBadgeSelected({instrument: instrument!, badgeColor}))

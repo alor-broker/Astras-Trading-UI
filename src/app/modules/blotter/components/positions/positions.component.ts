@@ -32,6 +32,7 @@ import { BlotterSettings } from "../../../../shared/models/settings/blotter-sett
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 interface PositionDisplay extends Position {
   volume: number
@@ -57,7 +58,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
   isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
 
   private settings$!: Observable<BlotterSettings>;
-  private badgeColor = 'white';
+  private badgeColor = defaultBadgeColor;
 
   allColumns: Column<PositionDisplay, PositionFilter>[] = [
     {

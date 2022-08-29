@@ -34,6 +34,7 @@ import { BlotterSettings } from "../../../../shared/models/settings/blotter-sett
 import { ExportHelper } from "../../utils/export-helper";
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -251,7 +252,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private orders: Order[] = [];
   private orders$: Observable<Order[]> = of([]);
   private settings$!: Observable<BlotterSettings>;
-  private badgeColor = 'white';
+  private badgeColor = defaultBadgeColor;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
