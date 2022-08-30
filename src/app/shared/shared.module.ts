@@ -130,6 +130,7 @@ import { NzInputModule } from "ng-zorro-antd/input";
     NzDatePickerModule,
     NzTypographyModule,
     NzRadioModule,
+    NzPopoverModule,
     // modules
     CommonModule,
     FormsModule,

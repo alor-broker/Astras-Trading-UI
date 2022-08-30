@@ -30,9 +30,9 @@ import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { formatCurrency } from 'src/app/shared/utils/formatters';
 import { CommonSummaryView } from '../models/common-summary-view.model';
 import { CommonSummaryModel } from '../models/common-summary.model';
-import { selectNewInstrument } from '../../../store/instruments/instruments.actions';
 import { ForwardRisks } from "../models/forward-risks.model";
 import { ForwardRisksView } from "../models/forward-risks-view.model";
+import { selectNewInstrumentByBadge } from "../../../store/instruments/instruments.actions";
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +51,7 @@ export class BlotterService extends BaseWebsocketService {
     super(ws);
   }
 
-  selectNewInstrument(symbol: string, exchange: string) {
+  selectNewInstrument(symbol: string, exchange: string, badgeColor: string) {
     if (symbol == CurrencyCode.RUB) {
       return;
     }
@@ -60,7 +60,7 @@ export class BlotterService extends BaseWebsocketService {
       exchange = Exchanges.MOEX;
     }
     const instrument = { symbol, exchange, instrumentGroup: undefined };
-    this.store.dispatch(selectNewInstrument({ instrument }));
+    this.store.dispatch(selectNewInstrumentByBadge({ instrument, badgeColor }));
   }
 
   getPositions(settings: BlotterSettings) {

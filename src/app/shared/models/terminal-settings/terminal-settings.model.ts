@@ -17,5 +17,6 @@ export interface HotKeysSettings {
 export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;
   userIdleDurationMin?: number;
+  badgesBind?: boolean;
   hotKeysSettings?: HotKeysSettings;
 }

@@ -20,9 +20,14 @@ export const addWidgetSettings = createAction(
   props<{ settings: AnySettings[] }>()
 );
 
-export const updateWidgetSettingsInstrument = createAction(
-  '[WidgetSettings] Update Widget Settings Instrument',
-  props<{ settingGuids: string[], newInstrumentKey: InstrumentKey }>()
+export const updateWidgetSettingsInstrumentWithBadge = createAction(
+  '[WidgetSettings] Update Widget Settings Instrument With Badge',
+  props<{ settingGuids: string[], badges: { [badgeColor: string]: InstrumentKey } }>()
+);
+
+export const setDefaultBadges = createAction(
+  '[WidgetSettings] Set Widget Settings To Default Badges',
+  props<{ settingGuids: string[] }>()
 );
 
 export const updateWidgetSettingsPortfolio = createAction(

@@ -26,10 +26,10 @@ import {
   updateWidgetSettings
 } from "./widget-settings.actions";
 import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
-import { selectNewInstrument } from "../instruments/instruments.actions";
 import { InstrumentsService } from "../../modules/instruments/services/instruments.service";
 import { PortfolioKey } from "../../shared/models/portfolio-key.model";
 import { selectNewPortfolio } from "../portfolios/portfolios.actions";
+import { selectNewInstrumentByBadge } from "../instruments/instruments.actions";
 
 describe('Widget Settings Store', () => {
   let store: Store;
@@ -226,7 +226,8 @@ describe('Widget Settings Store', () => {
         isin: generateRandomString(12),
         instrumentGroup: generateRandomString(4),
         // should be initially set to false because otherwise this setting will be updated with initial state selected instrument (SBER)
-        linkToActive: false
+        linkToActive: false,
+        badgeColor: 'yellow'
       };
 
       const instrumentInDependentSettings: AnySettings = {
@@ -283,27 +284,25 @@ describe('Widget Settings Store', () => {
       instrumentsServiceSpy.getInstrument.and.returnValue(of(instrumentDetails));
 
       localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, AnySettings][]) => {
-        expect(key)
-        .withContext('Check localStorage key')
-        .toEqual(settingsStorageKey);
+        if (key === settingsStorageKey) {
+          const allSettings = settings.map(x => x[1]);
 
-        const allSettings = settings.map(x => x[1]);
+          expect(allSettings.find(x => x?.guid === instrumentInDependentSettings.guid))
+            .withContext('Check localStorage passed settings (instrumentInDependent)')
+            .toEqual(instrumentInDependentSettings);
 
-        expect(allSettings.find(x => x?.guid === instrumentInDependentSettings.guid))
-        .withContext('Check localStorage passed settings (instrumentInDependent)')
-        .toEqual(instrumentInDependentSettings);
-
-        expect(allSettings.find(x => x?.guid === instrumentDependentSettings.guid))
-        .withContext('Check localStorage passed settings (instrumentDependent)')
-        .toEqual({
-          ...instrumentDependentSettings,
-          ...newInstrumentKey,
-          isin: instrumentDetails.isin,
-          instrumentGroup: instrumentDetails.instrumentGroup
-        });
+          expect(allSettings.find(x => x?.guid === instrumentDependentSettings.guid))
+            .withContext('Check localStorage passed settings (instrumentDependent)')
+            .toEqual({
+              ...instrumentDependentSettings,
+              ...newInstrumentKey,
+              isin: instrumentDetails.isin,
+              instrumentGroup: instrumentDetails.instrumentGroup
+            });
+        }
       });
 
-      store.dispatch(selectNewInstrument({ instrument: newInstrumentKey }));
+      store.dispatch(selectNewInstrumentByBadge({ instrument: newInstrumentKey, badgeColor: 'yellow' }));
       tick();
 
       store.select(selectWidgetSettingsState).pipe(

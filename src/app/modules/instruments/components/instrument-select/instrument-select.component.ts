@@ -20,13 +20,12 @@ import {
 import {
   debounceTime,
   filter,
-  map,
   switchMap
 } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { SearchFilter } from '../../models/search-filter.model';
 import { InstrumentsService } from '../../services/instruments.service';
-import { selectNewInstrument } from '../../../../store/instruments/instruments.actions';
+import { selectNewInstrumentByBadge } from '../../../../store/instruments/instruments.actions';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -93,7 +92,6 @@ export class InstrumentSelectComponent implements OnInit {
 
   onSelect(event: NzOptionSelectionChange, val: Instrument) {
     if (event.isUserInput) {
-      this.store.dispatch(selectNewInstrument({ instrument: val }));
       this.watch(val);
       setTimeout(() => {
         this.inputEl.nativeElement.value = '';
@@ -112,13 +110,13 @@ export class InstrumentSelectComponent implements OnInit {
     this.setDefaultWatchList();
   }
 
-  watch(inst: InstrumentKey) {
+  watch(instrument: InstrumentKey) {
     this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
-      map(s => s.activeListId),
-      filter((id): id is string => !!id),
+      filter(({activeListId}) => !!activeListId),
       take(1)
-    ).subscribe(activeListId => {
-      this.watchlistCollectionService.addItemsToList(activeListId, [inst]);
+    ).subscribe(s => {
+      this.watchlistCollectionService.addItemsToList(s.activeListId!, [instrument]);
+      this.store.dispatch(selectNewInstrumentByBadge({ badgeColor: s.badgeColor!, instrument }));
     });
   }
 

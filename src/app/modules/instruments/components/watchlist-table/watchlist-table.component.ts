@@ -13,7 +13,7 @@ import {
 } from 'rxjs';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
-import { selectNewInstrument } from '../../../../store/instruments/instruments.actions';
+import { selectNewInstrumentByBadge } from '../../../../store/instruments/instruments.actions';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
@@ -42,6 +42,7 @@ export class WatchlistTableComponent implements OnInit {
 
   watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
   displayedColumns: ColumnIds[] = [];
+  badgeColor: string = '';
 
   sortFns: { [keyName: string]: (a: InstrumentKey, b: InstrumentKey) => number } = {
     symbol: this.getSortFn('instrument.symbol'),
@@ -79,13 +80,14 @@ export class WatchlistTableComponent implements OnInit {
     this.watchedInstruments$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
       tap(settings => {
         this.displayedColumns = allInstrumentsColumns.filter(c => settings.instrumentColumns.includes(c.columnId));
+        this.badgeColor = settings.badgeColor!;
       }),
       switchMap(settings => this.watchInstrumentsService.getWatched(settings)),
     );
   }
 
   makeActive(instrument: InstrumentKey) {
-    this.store.dispatch(selectNewInstrument({ instrument }));
+    this.store.dispatch(selectNewInstrumentByBadge({ instrument, badgeColor: this.badgeColor }));
   }
 
   remove(instr: InstrumentKey) {

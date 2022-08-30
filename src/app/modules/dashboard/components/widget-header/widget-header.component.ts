@@ -21,6 +21,9 @@ import {
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
 import { joyrideContent } from '../../models/joyride';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { instrumentsBadges } from "../../../../shared/utils/instruments";
+import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { TerminalSettings } from "../../../../shared/models/terminal-settings/terminal-settings.model";
 
 
 @Component({
@@ -44,14 +47,19 @@ export class WidgetHeaderComponent implements OnInit {
 
   joyrideContent = joyrideContent;
   settings$!: Observable<AnySettings>;
+  terminalSettings$!: Observable<TerminalSettings>;
+  badges = instrumentsBadges;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly dashboardService: DashboardService,
-    private readonly modal: ModalService) {
+    private readonly modal: ModalService,
+    private readonly terminalSettingsService: TerminalSettingsService
+  ) {
   }
 
   ngOnInit() {
+    this.terminalSettings$ = this.terminalSettingsService.getSettings();
     this.settings$ = this.settingsService.getSettings(this.guid).pipe(
       map(s => {
         const settings = {
@@ -98,5 +106,9 @@ export class WidgetHeaderComponent implements OnInit {
       const name = getTypeBySettings(settings);
       this.modal.openHelpModal(name);
     });
+  }
+
+  switchBadgeColor(badgeColor: string) {
+    this.settingsService.updateSettings(this.guid, { badgeColor });
   }
 }

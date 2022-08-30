@@ -5,7 +5,12 @@ export const selectInstrumentsState = createFeatureSelector<fromInstruments.Inst
   fromInstruments.instrumentsFeatureKey
 );
 
-export const getSelectedInstrument = createSelector(
+export const getSelectedInstrumentsWithBadges = createSelector(
   selectInstrumentsState,
-  (state) => state.selectedInstrument
+  (state) => state.selectedInstrumentWithBadge
+);
+
+export const getSelectedInstrumentByBadge = (badgeColor: string) => createSelector(
+  selectInstrumentsState,
+  (state) => state.selectedInstrumentWithBadge?.[badgeColor]
 );
