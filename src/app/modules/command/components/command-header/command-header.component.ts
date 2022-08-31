@@ -15,9 +15,6 @@ import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
 import { PriceData } from '../../models/price-data.model';
 import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-constants';
 import { PositionsService } from 'src/app/shared/services/positions.service';
-import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
-import { Store } from '@ngrx/store';
-import { getSelectedPortfolio } from '../../../../store/portfolios/portfolios.selectors';
 import { Position } from '../../../../shared/models/positions/position.model';
 import { startWith } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
@@ -41,8 +38,8 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
     private readonly quoteService: QuotesService,
     private readonly commandsService: CommandsService,
     private readonly history: HistoryService,
-    private readonly positionService: PositionsService,
-    private readonly store: Store) {
+    private readonly positionService: PositionsService
+  ) {
   }
 
   @Input()
@@ -61,12 +58,8 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
         shareReplay()
       );
 
-    const portfolio$ = this.store.select(getSelectedPortfolio).pipe(
-      filter((p): p is PortfolioKey => !!p)
-    );
-
-    const position$ = combineLatest([instrument$, portfolio$]).pipe(
-      switchMap(([instrument, portfolio]) => this.positionService.getByPortfolio(portfolio.portfolio, portfolio.exchange, instrument.symbol)),
+    const position$ = instrument$.pipe(
+      switchMap((instrument) => this.positionService.getByPortfolio(instrument.exchange, instrument.symbol)),
       filter((p): p is Position => !!p),
       map(p => ({
         abs: Math.abs(p.qtyTFutureBatch),

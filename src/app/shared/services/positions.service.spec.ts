@@ -6,6 +6,7 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { PositionsService } from './positions.service';
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
+import { sharedModuleImportForTests } from "../utils/testing";
 
 describe('PositionsService', () => {
   let service: PositionsService;
@@ -16,7 +17,8 @@ describe('PositionsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        ...sharedModuleImportForTests
       ],
       providers: [
         PositionsService,

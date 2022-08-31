@@ -8,6 +8,7 @@ import {
 import { ScalperOrderBookComponent } from './scalper-order-book.component';
 import {
   BehaviorSubject,
+  of,
   Subject,
   take
 } from "rxjs";
@@ -34,6 +35,7 @@ import { HotKeyCommandService } from "../../../../shared/services/hot-key-comman
 import { TerminalCommand } from "../../../../shared/models/terminal-command";
 import { ScalperOrderBookCommands } from "../../models/scalper-order-book-commands";
 import { Side } from "../../../../shared/models/enums/side.model";
+import { PositionsService } from "../../../../shared/services/positions.service";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -126,6 +128,7 @@ describe('ScalperOrderBookComponent', () => {
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         { provide: HotKeyCommandService, useValue: hotKeyCommandServiceSpy },
         { provide: ScalperOrdersService, useValue: scalperOrdersServiceSpy },
+        { provide: PositionsService, useValue: { getByPortfolio: jasmine.createSpy('getByPortfolio').and.returnValue(of(null)) } }
       ],
     })
     .compileComponents();

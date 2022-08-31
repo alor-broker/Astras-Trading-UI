@@ -52,6 +52,8 @@ import { ScalperOrdersService } from "../../services/scalper-orders.service";
 import { ScalperOrderBookCommands } from "../../models/scalper-order-book-commands";
 import { TerminalCommand } from "../../../../shared/models/terminal-command";
 import { ScalperOrderBookService } from "../../services/scalper-order-book.service";
+import { PositionsService } from "../../../../shared/services/positions.service";
+import { Position } from "../../../../shared/models/positions/position.model";
 
 @Component({
   selector: 'ats-scalper-order-book[guid][shouldShowSettings]',
@@ -70,9 +72,11 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
   @Input() guid!: string;
 
   orderBook$!: Observable<ScalperOrderBookView>;
+  positionInfo$!: Observable<Position | null>;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$: Observable<ScalperOrderBookSettings> | null = null;
+  private minStep: number = 0.1;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -81,7 +85,8 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
     private readonly instrumentsService: InstrumentsService,
     private readonly hotkeysService: HotKeyCommandService,
     private readonly scalperOrdersService: ScalperOrdersService,
-    private readonly elementRef: ElementRef<HTMLElement>
+    private readonly elementRef: ElementRef<HTMLElement>,
+    private readonly positionsService: PositionsService
   ) {
   }
 
@@ -100,6 +105,10 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
         settings => getInstrumentInfo(settings),
         (settings, instrument) => ({ settings, instrument })
       ),
+      tap(({ instrument }) => {
+        this.minStep = instrument.minstep;
+        this.positionInfo$ = this.positionsService.getByPortfolio(instrument.exchange, instrument.symbol);
+      }),
       mapWith(
         ({ settings, instrument }) => this.orderBookService.getOrderBookRealtimeData(settings, instrument),
         ({ settings, instrument }, orderBook) => ({ settings, instrument, orderBook })
@@ -242,6 +251,16 @@ export class ScalperOrderBookComponent implements OnInit, OnDestroy {
         );
       });
     });
+  }
+
+  getProfit(avgPrice: number, orderBook: ScalperOrderBookView, isAsk: boolean) {
+    const bestRow = orderBook.rows.find(
+      row => row.isBest && (isAsk ? row.rowType === this.rowTypes.Ask : row.rowType === this.rowTypes.Bid)
+    );
+
+    const priceDif = isAsk ? bestRow!.price - avgPrice : avgPrice - bestRow!.price;
+
+    return +(priceDif / this.minStep).toFixed(+this.minStep.toString().split('.')[1]);
   }
 
   private callWithSettings(action: (settings: ScalperOrderBookSettings) => void) {

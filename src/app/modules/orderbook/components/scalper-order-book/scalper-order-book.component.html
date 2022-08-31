@@ -43,5 +43,17 @@
       </tbody>
     </nz-table>
     <nz-empty *ngIf="orderBook.rows.length === 0" nzNotFoundImage="simple"></nz-empty>
+    <div *ngIf="positionInfo$ | async as positionInfo" class="position-profit">
+      <span>{{positionInfo.avgPrice}}</span>
+      <span [ngClass]="{'positive-profit': positionInfo.qtyTFuture > 0, 'negative-profit': positionInfo.qtyTFuture < 0}">
+        {{positionInfo.qtyTFuture > 0 ? positionInfo.qtyTFuture : -positionInfo.qtyTFuture}}л.
+      </span>
+      <span
+        *ngIf="getProfit(positionInfo.avgPrice, orderBook, positionInfo.qtyTFuture > 0) as profit"
+        [ngClass]="{'positive-profit': profit > 0, 'negative-profit': profit < 0}"
+      >
+        {{profit > 0 ? profit : -profit}}п.
+      </span>
+    </div>
   </div>
 </div>

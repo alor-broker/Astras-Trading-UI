@@ -52,3 +52,23 @@
     margin-left: 0.5em;
   }
 }
+
+.position-profit {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+
+  span:not(:last-child) {
+    margin-right: 10px;
+  }
+
+  .negative-profit {
+    color: @sell-color;
+  }
+
+  .positive-profit {
+    color: @buy-color;
+  }
+}
