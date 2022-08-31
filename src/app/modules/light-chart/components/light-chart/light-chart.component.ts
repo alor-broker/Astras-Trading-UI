@@ -4,11 +4,13 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   Output,
+  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
-import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
+import { DashboardItemContentSize } from 'src/app/shared/models/dashboard-item.model';
 import {
   BehaviorSubject,
   combineLatest,
@@ -29,13 +31,13 @@ import { TimezoneConverterService } from '../../../../shared/services/timezone-c
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 @Component({
-  selector: 'ats-light-chart[resize][guid][resize]',
+  selector: 'ats-light-chart[contentSize][guid]',
   templateUrl: './light-chart.component.html',
   styleUrls: ['./light-chart.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LightChartComponent implements OnDestroy, AfterViewInit {
+export class LightChartComponent implements OnDestroy, AfterViewInit, OnChanges {
   readonly availableTimeFrames = TimeframesHelper.timeFrames;
 
   @Input()
@@ -43,7 +45,7 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
   @Input()
   guid!: string;
   @Input()
-  resize!: EventEmitter<DashboardItem>;
+  contentSize!: DashboardItemContentSize | null;
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
@@ -77,21 +79,12 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     if (this.guid) {
       this.initChart(this.guid);
+    }
+  }
 
-      this.resize.pipe(
-        takeUntil(this.destroy$)
-      ).subscribe((item) => {
-        if (this.chart) {
-          this.chart.resize(Math.floor(item.width ?? 0), Math.floor(item.height ?? 0));
-
-          this.settingsService.updateSettings(
-            this.guid,
-            {
-              width: item.width ?? 300,
-              height: item.height ?? 300
-            });
-        }
-      });
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.contentSize && !!this.chart) {
+      this.chartResize();
     }
   }
 
@@ -121,6 +114,8 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
       if (!this.chart) {
         this.chart = new LightChart(options.widgetSettings?.width ?? 300, (options.widgetSettings?.height ?? 300));
         this.chart.create(guid);
+
+        this.chartResize();
       }
 
       this.setActiveTimeFrame(options.widgetSettings.timeFrame);
@@ -167,5 +162,16 @@ export class LightChartComponent implements OnDestroy, AfterViewInit {
   private setActiveTimeFrame(timeFrame: string) {
     // for some reason template is not updated without using setTimeout
     setTimeout(() => this.activeTimeFrame$.next(timeFrame));
+  }
+
+  private chartResize() {
+    this.chart!.resize(Math.floor(this.contentSize?.width ?? 0), Math.floor(this.contentSize?.height ?? 0));
+
+    this.settingsService.updateSettings(
+      this.guid,
+      {
+        width: this.contentSize?.width ?? 300,
+        height: this.contentSize?.height ?? 300
+      });
   }
 }
