@@ -17,10 +17,12 @@ describe('ShortNumberPipe', () => {
       { input: 15, expectedValue: '15' },
       { input: 100, expectedValue: '100' },
       { input: 101, expectedValue: '101' },
-      { input: 1000, expectedValue: '1К' },
+      { input: 1000, expectedValue: '1K' },
       { input: 1001, expectedValue: '1001' },
-      { input: 10000, expectedValue: '10К' },
+      { input: 10000, expectedValue: '10K' },
       { input: 10005, expectedValue: '10005' },
+      { input: 3000000, expectedValue: '3M' },
+      { input: 2000000000, expectedValue: '2B' },
     ];
 
     cases.forEach(testCase => {

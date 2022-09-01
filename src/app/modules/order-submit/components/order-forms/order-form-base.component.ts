@@ -71,10 +71,7 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
     return this.form.value as T;
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  protected onFormValueEmitted(value: T | null) {
-
-  }
+  protected onFormValueEmitted?(value: T | null): void;
 
   protected getFormInitAdditions(): Observable<A | null> {
     return of(null);
@@ -83,9 +80,7 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
   protected onFormCreated() {
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  protected applyInitialValues(values: Partial<T> | null) {
-  }
+  protected applyInitialValues?(values: Partial<T> | null): void;
 
   private initForm(instrument: Instrument, additions: A | null) {
     this.formValueChangeSubscription?.unsubscribe();
@@ -98,8 +93,10 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
       this.emitFormValue();
     });
 
-    const initialValuesSubscription = this.initialValues$.subscribe(value => this.applyInitialValues(value));
-    this.formValueChangeSubscription.add(initialValuesSubscription);
+    if(this.applyInitialValues) {
+      const initialValuesSubscription = this.initialValues$.subscribe(value => this.applyInitialValues?.(value));
+      this.formValueChangeSubscription.add(initialValuesSubscription);
+    }
 
     this.onFormCreated();
   }
@@ -107,6 +104,6 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
   private emitFormValue() {
     const value = this.getFormValue();
     this.formValueChange.emit(value);
-    this.onFormValueEmitted(value);
+    this.onFormValueEmitted?.(value);
   }
 }

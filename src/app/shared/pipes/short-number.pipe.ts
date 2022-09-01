@@ -13,8 +13,16 @@ export class ShortNumberPipe implements PipeTransform {
       return '';
     }
 
+    if (value % 1000000000 === 0) {
+      return `${value / 1000000000}B`;
+    }
+
+    if (value % 1000000 === 0) {
+      return `${value / 1000000}M`;
+    }
+
     if (value % 1000 === 0) {
-      return `${value / 1000}К`;
+      return `${value / 1000}K`;
     }
 
     return value.toString();
