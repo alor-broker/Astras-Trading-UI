@@ -1,16 +1,17 @@
 import { TestBed } from "@angular/core/testing";
 import { Store } from "@ngrx/store";
 import { sharedModuleImportForTests } from "../../shared/utils/testing";
-import { getSelectedInstrument } from "./instruments.selectors";
 import {
   of,
   take
 } from "rxjs";
 import { defaultInstrument } from "./instruments.reducer";
-import { selectNewInstrument } from "./instruments.actions";
 import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
 import { InstrumentsService } from "../../modules/instruments/services/instruments.service";
-import { Instrument } from "../../shared/models/instruments/instrument.model";
+import { Instrument, InstrumentBadges } from "../../shared/models/instruments/instrument.model";
+import { getSelectedInstrumentByBadge, getSelectedInstrumentsWithBadges } from "./instruments.selectors";
+import { instrumentsBadges } from "../../shared/utils/instruments";
+import { selectNewInstrumentByBadge } from "./instruments.actions";
 
 describe('Instruments Store', () => {
   let store: Store;
@@ -50,23 +51,27 @@ describe('Instruments Store', () => {
     store = TestBed.inject(Store);
   });
 
-  it('default instrument should be selected', (done) => {
-    store.select(getSelectedInstrument).pipe(
+  it('default instruments with badges should be selected', (done) => {
+    store.select(getSelectedInstrumentsWithBadges).pipe(
       take(1)
     ).subscribe(instrument => {
+      const expectedState = instrumentsBadges.reduce((acc, curr) => {
+        acc[curr] = defaultInstrument;
+        return acc;
+      }, {} as InstrumentBadges);
       done();
-      expect(instrument).toEqual(defaultInstrument);
+      expect(instrument).toEqual(expectedState);
     });
   });
 
-  it('selectNewInstrument should request instrument details', (done) => {
+  it('selectNewInstrumentByBadge should request instrument details', (done) => {
       instrumentsServiceSpy.getInstrument.and.returnValue(of(expectedInstrumentDetails));
 
-      store.dispatch(selectNewInstrument({ instrument: expectedInstrumentKey }));
+      store.dispatch(selectNewInstrumentByBadge({ badgeColor: 'yellow', instrument: expectedInstrumentKey }));
 
       expect(instrumentsServiceSpy.getInstrument).toHaveBeenCalledOnceWith(expectedInstrumentKey);
 
-      store.select(getSelectedInstrument).pipe(
+      store.select(getSelectedInstrumentByBadge('yellow')).pipe(
         take(1)
       ).subscribe(instrument => {
         done();

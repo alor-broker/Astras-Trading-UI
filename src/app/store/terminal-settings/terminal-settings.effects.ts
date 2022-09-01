@@ -44,7 +44,7 @@ export class TerminalSettingsEffects {
         concatLatestFrom(() => this.store.select(selectTerminalSettingsState)),
         map(([, settings]) => settings.settings),
         filter((settings): settings is TerminalSettings => !!settings),
-        tap(settings => this.saveSettingsToLocalStorage(settings))
+        tap(settings => this.saveSettingsToLocalStorage(settings)),
       );
     },
     {
@@ -71,6 +71,7 @@ export class TerminalSettingsEffects {
     return {
       timezoneDisplayOption: TimezoneDisplayOption.MskTime,
       userIdleDurationMin: 15,
+      badgesBind: false,
       hotKeysSettings: this.getDefaultHotkeys(),
     } as TerminalSettings;
   }

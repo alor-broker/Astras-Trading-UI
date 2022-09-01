@@ -361,7 +361,8 @@ export function isEqualOrderbookSettings(
       settings1.depth == settings2.depth &&
       settings1.showChart == settings2.showChart &&
       settings1.showTable == settings2.showTable &&
-      settings1.showYieldForBonds == settings2.showYieldForBonds
+      settings1.showYieldForBonds == settings2.showYieldForBonds &&
+      settings1.badgeColor == settings2.badgeColor
     );
   } else return false;
 }
@@ -388,6 +389,7 @@ export function isEqualScalperOrderBookSettings(
       settings1.showZeroVolumeItems == settings2.showZeroVolumeItems &&
       settings1.showSpreadItems == settings2.showSpreadItems &&
       settings1.highlightHighVolume == settings2.highlightHighVolume &&
+      settings1.badgeColor == settings2.badgeColor &&
       isArrayEqual(
         settings1.volumeHighlightOptions,
         settings2.volumeHighlightOptions,
@@ -423,7 +425,8 @@ export function isEqualLightChartSettings(
       settings1.timeFrame == settings2.timeFrame &&
       settings1.guid == settings2.guid &&
       settings1.width == settings2.width &&
-      settings1.height == settings2.height
+      settings1.height == settings2.height &&
+      settings1.badgeColor == settings2.badgeColor
     );
   } else return false;
 }
@@ -444,6 +447,7 @@ export function isEqualBlotterSettings(
       settings1.exchange == settings2.exchange &&
       settings1.portfolio == settings2.portfolio &&
       settings1.guid == settings2.guid &&
+      settings1.badgeColor == settings2.badgeColor &&
       isArrayEqual(settings1.ordersColumns, settings2.ordersColumns, (a, b) => a === b) &&
       isArrayEqual(settings1.stopOrdersColumns, settings2.stopOrdersColumns, (a, b) => a === b) &&
       isArrayEqual(settings1.positionsColumns, settings2.positionsColumns, (a, b) => a === b) &&
@@ -467,7 +471,8 @@ export function isEqualInstrumentSelectSettings(
       settings1.linkToActive == settings2.linkToActive &&
       settings1.guid == settings2.guid &&
       settings1.activeListId == settings2.activeListId &&
-      settings1.instrumentColumns == settings2.instrumentColumns
+      settings1.instrumentColumns == settings2.instrumentColumns &&
+      settings1.badgeColor == settings2.badgeColor
     );
   } else return false;
 }
@@ -487,7 +492,8 @@ export function isEqualInfoSettings(
       settings1.linkToActive == settings2.linkToActive &&
       settings1.guid == settings2.guid &&
       settings1.symbol == settings2.symbol &&
-      settings1.exchange == settings2.exchange
+      settings1.exchange == settings2.exchange &&
+      settings1.badgeColor == settings2.badgeColor
     );
   } else return false;
 }
@@ -508,7 +514,8 @@ export function isEqualTechChartSettings(
       settings1.guid == settings2.guid &&
       settings1.symbol == settings2.symbol &&
       settings1.exchange == settings2.exchange &&
-      settings1.chartSettings == settings2.chartSettings
+      settings1.chartSettings == settings2.chartSettings &&
+      settings1.badgeColor == settings2.badgeColor
     );
   } else return false;
 }

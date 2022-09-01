@@ -11,6 +11,7 @@ import { AnySettings } from "../../shared/models/settings/any-settings.model";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
 import * as WidgetSettingsActions from "./widget-settings.actions";
 import { Update } from "@ngrx/entity/src/models";
+import { defaultBadgeColor } from "../../shared/utils/instruments";
 
 export const widgetSettingsFeatureKey = 'widgetSettings';
 
@@ -49,20 +50,45 @@ export const reducer = createReducer(
   }),
 
   on(
-    WidgetSettingsActions.updateWidgetSettingsInstrument,
+    WidgetSettingsActions.updateWidgetSettingsInstrumentWithBadge,
     (state, {
       settingGuids,
-      newInstrumentKey
+      badges
     }) => {
       const updates: Update<AnySettings>[] = [];
       settingGuids.forEach(s => updates.push({
         id: s,
         changes: {
           ...state.entities[s],
-          symbol: newInstrumentKey.symbol,
-          exchange: newInstrumentKey.exchange,
-          instrumentGroup: newInstrumentKey.instrumentGroup,
-          isin: newInstrumentKey.isin
+          symbol: badges[state.entities[s]?.badgeColor!]?.symbol,
+          exchange: badges[state.entities[s]?.badgeColor!]?.exchange,
+          instrumentGroup: badges[state.entities[s]?.badgeColor!]?.instrumentGroup,
+          isin: badges[state.entities[s]?.badgeColor!]?.isin
+        }
+      }));
+
+      if (updates.length > 0) {
+        return adapter.updateMany(
+          updates,
+          state
+        );
+      }
+
+      return state;
+    }
+  ),
+
+  on(
+    WidgetSettingsActions.setDefaultBadges,
+    (state, {
+      settingGuids
+    }) => {
+      const updates: Update<AnySettings>[] = [];
+      settingGuids.forEach(s => updates.push({
+        id: s,
+        changes: {
+          ...state.entities[s],
+          badgeColor: defaultBadgeColor
         }
       }));
 

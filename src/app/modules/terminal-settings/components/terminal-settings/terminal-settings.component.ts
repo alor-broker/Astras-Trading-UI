@@ -117,6 +117,7 @@ export class TerminalSettingsComponent implements OnInit {
           Validators.min(this.validationSettings.userIdleDurationMin.min),
           Validators.max(this.validationSettings.userIdleDurationMin.max)
         ]),
+      badgesBind: new FormControl(currentSettings.badgesBind),
       hotKeysSettings: new FormGroup({
         cancelOrdersKey: new FormControl(currentSettings.hotKeysSettings?.cancelOrdersKey),
         closePositionsKey: new FormControl(currentSettings.hotKeysSettings?.closePositionsKey),

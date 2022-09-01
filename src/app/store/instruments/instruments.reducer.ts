@@ -1,11 +1,14 @@
 import { createReducer, on } from '@ngrx/store';
 import * as InstrumentsActions from './instruments.actions';
 import { Instrument } from '../../shared/models/instruments/instrument.model';
+import { instrumentsBadges } from "../../shared/utils/instruments";
 
 export const instrumentsFeatureKey = 'instruments';
 
 export interface InstrumentsState {
-  selectedInstrument: Instrument;
+  selectedInstrumentWithBadge: {
+    [badgeColor: string]: Instrument
+  }
 }
 
 export const defaultInstrument: Instrument = {
@@ -21,18 +24,27 @@ export const defaultInstrument: Instrument = {
 };
 
 export const initialState: InstrumentsState = {
-  selectedInstrument: {
-    ...defaultInstrument
-  }
+  selectedInstrumentWithBadge: instrumentsBadges.reduce((acc, curr) => {
+    acc[curr] = { ...defaultInstrument };
+    return acc;
+  }, {} as {[badge: string]: Instrument})
 };
 
 export const reducer = createReducer(
   initialState,
-  on(InstrumentsActions.newInstrumentSelected, (state, { instrument }) => ({
-      ...state,
-      selectedInstrument: {
+
+  on(InstrumentsActions.newInstrumentByBadgeSelected, (state, { instrument, badgeColor}) => ({
+    ...state,
+    selectedInstrumentWithBadge: {
+      ...state.selectedInstrumentWithBadge,
+      [badgeColor]: {
         ...instrument
       }
-    })
-  )
+    }
+  })),
+
+  on(InstrumentsActions.initInstrumentsWithBadgesSuccess, (state, instruments) =>({
+    ...state,
+    selectedInstrumentWithBadge: instruments
+  }))
 );
