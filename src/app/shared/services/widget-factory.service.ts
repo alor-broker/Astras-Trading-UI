@@ -13,7 +13,7 @@ import {
   allInstrumentsColumns,
   InstrumentSelectSettings
 } from '../models/settings/instrument-select-settings.model';
-import { Instrument } from '../models/instruments/instrument.model';
+import { InstrumentBadges } from '../models/instruments/instrument.model';
 import {
   allOrdersColumns,
   allPositionsColumns,
@@ -26,7 +26,7 @@ import { WidgetNames } from '../models/enums/widget-names';
 import { CurrencyInstrument } from '../models/enums/currencies.model';
 import { InfoSettings } from '../models/settings/info-settings.model';
 import { Store } from '@ngrx/store';
-import { getSelectedInstrument } from '../../store/instruments/instruments.selectors';
+import { getSelectedInstrumentsWithBadges } from '../../store/instruments/instruments.selectors';
 import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
 import { defaultInstrument } from '../../store/instruments/instruments.reducer';
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
@@ -41,6 +41,10 @@ import {
   allInstrumentsColumns as allInstrumentsCols,
   AllInstrumentsSettings
 } from "../models/settings/all-instruments-settings.model";
+import {
+  defaultBadgeColor,
+  instrumentsBadges
+} from "../utils/instruments";
 
 @Injectable({
   providedIn: 'root',
@@ -48,15 +52,17 @@ import {
 export class WidgetFactoryService {
 
   // TODO: Make the method createNewSettings asynchronous to avoid the need for synchronization with local state
-  private selectedInstrument: Instrument = {
-    ...defaultInstrument
-  };
+  private badges: InstrumentBadges = instrumentsBadges
+    .reduce((acc, curr) => {
+      acc[curr] = {...defaultInstrument};
+      return acc;
+    }, {} as InstrumentBadges);
 
   private selectedPortfolio: PortfolioKey | null = null;
 
   constructor(private store: Store) {
-    this.store.select(getSelectedInstrument).subscribe(
-      (si) => (this.selectedInstrument = si)
+    this.store.select(getSelectedInstrumentsWithBadges).subscribe(
+      (si) => (this.badges = si)
     );
     this.store.select(getSelectedPortfolio).subscribe(
       (sp) => (this.selectedPortfolio = sp)
@@ -115,10 +121,11 @@ export class WidgetFactoryService {
     }
 
     return {
-      ...this.selectedInstrument,
+      ...this.badges.yellow,
       guid: newWidget.gridItem.label,
       settingsType: 'OrderbookSettings',
       linkToActive: true,
+      badgeColor: defaultBadgeColor,
       depth: 10,
       title: `Стакан`,
       showChart: true,
@@ -133,24 +140,17 @@ export class WidgetFactoryService {
     }
 
     return {
+      ...this.badges.yellow,
       guid: newWidget.gridItem.label,
       settingsType: 'ScalperOrderBookSettings',
       title: `Скальперский стакан`,
       linkToActive: true,
+      badgeColor: defaultBadgeColor,
       depth: 10,
-      symbol: this.selectedInstrument.symbol,
-      exchange: this.selectedInstrument.exchange,
-      instrumentGroup: this.selectedInstrument.instrumentGroup,
-      isin: this.selectedInstrument.isin,
       showZeroVolumeItems: true,
       showSpreadItems: true,
       volumeHighlightMode: VolumeHighlightMode.BiggestVolume,
-      volumeHighlightFullness: 10000,
-      volumeHighlightOptions: [
-        { boundary: 1000, color: '#71DB20' },
-        { boundary: 5000, color: '#ff0000' },
-        { boundary: 10000, color: '#ff00ff' }
-      ],
+      volumeHighlightOptions: [{ boundary: 10000, color: '#CC0099' }],
       workingVolumes: [1, 10, 100, 1000],
       disableHotkeys: true,
       enableMouseClickSilentOrders: false
@@ -166,7 +166,8 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       settingsType: 'InstrumentSelectSettings',
       title: `Выбор инструмента`,
-      instrumentColumns: allInstrumentsColumns.filter(c => c.isDefault).map(c => c.columnId)
+      instrumentColumns: allInstrumentsColumns.filter(c => c.isDefault).map(c => c.columnId),
+      badgeColor: defaultBadgeColor
     } as InstrumentSelectSettings;
   }
 
@@ -178,8 +179,9 @@ export class WidgetFactoryService {
     }
 
     return {
-      ...this.selectedInstrument,
+      ...this.badges.yellow,
       linkToActive: true,
+      badgeColor: defaultBadgeColor,
       guid: newWidget.gridItem.label,
       settingsType: 'LightChartSettings',
       timeFrame: TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value,
@@ -205,6 +207,7 @@ export class WidgetFactoryService {
       ordersColumns: allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       stopOrdersColumns: allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       linkToActive: true,
+      badgeColor: defaultBadgeColor,
       title: `Блоттер`,
       isSoldPositionsHidden: true
     } as BlotterSettings;
@@ -218,8 +221,9 @@ export class WidgetFactoryService {
     }
 
     return {
-      ...this.selectedInstrument,
+      ...this.badges.yellow,
       linkToActive: true,
+      badgeColor: defaultBadgeColor,
       guid: newWidget.gridItem.label,
       settingsType: 'InfoSettings',
       title: `Инфо`,
@@ -232,8 +236,9 @@ export class WidgetFactoryService {
     }
 
     return {
-      ...this.selectedInstrument,
+      ...this.badges.yellow,
       linkToActive: true,
+      badgeColor: defaultBadgeColor,
       guid: newWidget.gridItem.label,
       settingsType: 'AllTradesSettings',
       title: `Все сделки`
@@ -270,11 +275,12 @@ export class WidgetFactoryService {
     }
 
     return {
-      ...this.selectedInstrument,
+      ...this.badges.yellow,
       guid: newWidget.gridItem.label,
       settingsType: 'TechChartSettings',
       title: 'Тех. анализ',
       linkToActive: true,
+      badgeColor: defaultBadgeColor,
       chartSettings: {}
     } as TechChartSettings;
   }
@@ -286,6 +292,7 @@ export class WidgetFactoryService {
 
     return {
       guid: newWidget.gridItem.label,
+      badgeColor: defaultBadgeColor,
       settingsType: 'AllInstrumentsSettings',
       title: 'Все инструменты',
       allInstrumentsColumns: allInstrumentsCols.filter(c => c.isDefault).map(col => col.columnId)

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, Subscription } from 'rxjs';
+import { of } from 'rxjs';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { LightChartService } from '../../services/light-chart.service';
 
@@ -49,9 +49,6 @@ describe('LightChartComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LightChartComponent);
     component = fixture.componentInstance;
-    const spy = jasmine.createSpyObj('resize', ['subscribe']);
-    spy.subscribe.and.returnValue(new Subscription());
-    component.resize = spy;
     fixture.detectChanges();
   });
 

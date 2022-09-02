@@ -11,3 +11,7 @@ export interface Instrument extends InstrumentKey {
   cfiCode?: string,
   type?: string
 }
+
+export interface InstrumentBadges {
+  [badgeColor: string]: Instrument
+}

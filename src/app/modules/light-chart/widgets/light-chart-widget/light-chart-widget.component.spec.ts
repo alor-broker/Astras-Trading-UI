@@ -5,6 +5,7 @@ import {
 
 import { LightChartWidgetComponent } from './light-chart-widget.component';
 import { mockComponent } from "../../../../shared/utils/testing";
+import { EventEmitter } from "@angular/core";
 
 describe('LightChartWidgetComponent', () => {
   let component: LightChartWidgetComponent;
@@ -17,7 +18,7 @@ describe('LightChartWidgetComponent', () => {
         LightChartWidgetComponent,
         mockComponent({
           selector: 'ats-light-chart',
-          inputs: ['guid', 'resize', 'shouldShowSettings']
+          inputs: ['guid', 'contentSize', 'shouldShowSettings']
         })
       ],
       providers: []
@@ -34,6 +35,7 @@ describe('LightChartWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LightChartWidgetComponent);
     component = fixture.componentInstance;
+    component.resize = new EventEmitter();
     fixture.detectChanges();
   });
 

@@ -2,10 +2,13 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnInit,
   Output
 } from '@angular/core';
-import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
+import { DashboardItem, DashboardItemContentSize } from 'src/app/shared/models/dashboard-item.model';
 import { LightChartService } from '../../services/light-chart.service';
+import { map } from "rxjs/operators";
+import { Observable, shareReplay } from "rxjs";
 
 @Component({
   selector: 'ats-light-chart-widget[shouldShowSettings][guid][resize]',
@@ -13,7 +16,7 @@ import { LightChartService } from '../../services/light-chart.service';
   styleUrls: ['./light-chart-widget.component.less'],
   providers: [LightChartService]
 })
-export class LightChartWidgetComponent {
+export class LightChartWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -23,11 +26,22 @@ export class LightChartWidgetComponent {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
+  contentSize$!: Observable<DashboardItemContentSize>;
+
   constructor() {
   }
 
-
   onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+  }
+
+  ngOnInit() {
+    this.contentSize$ = this.resize.pipe(
+      map(x => ({
+        height: x.height,
+        width: x.width
+      } as DashboardItemContentSize)),
+      shareReplay(1)
+    );
   }
 }

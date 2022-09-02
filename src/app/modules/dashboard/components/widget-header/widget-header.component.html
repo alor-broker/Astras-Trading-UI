@@ -7,7 +7,26 @@
       [title]="joyrideContent.step8.title"
       [text]="joyrideContent.step8.text"></i>
   </button>
-  <label class="title">{{s.title}}</label>
+  <label class="title">
+    <nz-badge
+      *ngIf="s.badgeColor &&
+        (terminalSettings$ | async)?.badgesBind &&
+        (s.linkToActive || ['InstrumentSelectSettings', 'BlotterSettings', 'AllInstrumentsSettings'].includes(s.settingsType!))"
+      nz-dropdown
+      [nzDropdownMenu]="badgesMenu"
+      [nzColor]="s.badgeColor"
+    ></nz-badge>
+
+    {{s.title}}
+
+    <nz-dropdown-menu #badgesMenu="nzDropdownMenu">
+      <ul nz-menu class="badge-menu">
+        <li nz-menu-item *ngFor="let badge of badges" (click)="switchBadgeColor(badge)">
+          <nz-badge [nzColor]="badge"></nz-badge>
+        </li>
+      </ul>
+    </nz-dropdown-menu>
+  </label>
   <span>
     <button *ngIf='s.linkToActive !== undefined' nz-button nzSize="small"
       (mousedown)="linkToActive($event, !s.linkToActive)"
