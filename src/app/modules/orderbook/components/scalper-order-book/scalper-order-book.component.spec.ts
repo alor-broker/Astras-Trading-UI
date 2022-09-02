@@ -1,8 +1,6 @@
 import {
   ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick
+  TestBed
 } from '@angular/core/testing';
 
 import { ScalperOrderBookComponent } from './scalper-order-book.component';
@@ -12,6 +10,7 @@ import {
   take
 } from "rxjs";
 import {
+  CurrentOrder,
   ScalperOrderBookRow,
   ScalperOrderBookRowType
 } from "../../models/scalper-order-book.model";
@@ -38,6 +37,7 @@ import { Side } from "../../../../shared/models/enums/side.model";
 import { OrderbookData } from '../../models/orderbook-data.model';
 import { Order } from '../../../../shared/models/orders/order.model';
 import { OrderBookDataFeedHelper } from '../../utils/order-book-data-feed.helper';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -159,7 +159,7 @@ describe('ScalperOrderBookComponent', () => {
   });
 
   describe('Hot keys', () => {
-    it('should process cancelLimitOrdersAll command', fakeAsync(() => {
+    it('should process cancelLimitOrdersAll command', ((done) => {
         const expectedOrder = {
           id: generateRandomString(5),
           qty: 10,
@@ -170,23 +170,28 @@ describe('ScalperOrderBookComponent', () => {
         } as Order;
 
         currentOrdersMock.next([expectedOrder]);
-        tick();
+        scalperOrdersServiceSpy.cancelOrders.and.callFake((currentOrders: CurrentOrder[]) => {
+          done();
+          expect(currentOrders).toEqual([OrderBookDataFeedHelper.orderToCurrentOrder(expectedOrder)]);
+        });
+
+        fixture.detectChanges();
         hotKeyCommandMock.next({ type: ScalperOrderBookCommands.cancelLimitOrdersAll });
-
-        tick();
-        expect(scalperOrdersServiceSpy.cancelOrders).toHaveBeenCalledOnceWith([OrderBookDataFeedHelper.orderToCurrentOrder(expectedOrder)]);
       })
     );
 
-    it('should process closePositionsByMarketAll command', fakeAsync(() => {
+    it('should process closePositionsByMarketAll command', ((done) => {
+        scalperOrdersServiceSpy.closePositionsByMarket.and.callFake((instrumentKey: InstrumentKey) => {
+          done();
+          expect(instrumentKey).toEqual(orderBookDefaultSettings);
+        });
+
+        fixture.detectChanges();
         hotKeyCommandMock.next({ type: ScalperOrderBookCommands.closePositionsByMarketAll });
-
-        tick();
-        expect(scalperOrdersServiceSpy.closePositionsByMarket).toHaveBeenCalledOnceWith(orderBookDefaultSettings);
       })
     );
 
-    it('should process cancelLimitOrdersCurrent command', fakeAsync(() => {
+    it('should process cancelLimitOrdersCurrent command', ((done) => {
         const expectedOrder = {
           id: generateRandomString(5),
           qty: 10,
@@ -198,23 +203,30 @@ describe('ScalperOrderBookComponent', () => {
 
         currentOrdersMock.next([expectedOrder]);
         component.isActiveOrderBook = true;
+
+        scalperOrdersServiceSpy.cancelOrders.and.callFake((currentOrders: CurrentOrder[]) => {
+          done();
+          expect(currentOrders).toEqual([OrderBookDataFeedHelper.orderToCurrentOrder(expectedOrder)]);
+        });
+
+        fixture.detectChanges();
         hotKeyCommandMock.next({ type: ScalperOrderBookCommands.cancelLimitOrdersCurrent });
-
-        tick();
-        expect(scalperOrdersServiceSpy.cancelOrders).toHaveBeenCalledOnceWith([OrderBookDataFeedHelper.orderToCurrentOrder(expectedOrder)]);
       })
     );
 
-    it('should process closePositionsByMarketCurrent command', fakeAsync(() => {
+    it('should process closePositionsByMarketCurrent command', ((done) => {
         component.isActiveOrderBook = true;
+        scalperOrdersServiceSpy.closePositionsByMarket.and.callFake((instrumentKey: InstrumentKey) => {
+          done();
+          expect(instrumentKey).toEqual(orderBookDefaultSettings);
+        });
+
+        fixture.detectChanges();
         hotKeyCommandMock.next({ type: ScalperOrderBookCommands.closePositionsByMarketCurrent });
-
-        tick();
-        expect(scalperOrdersServiceSpy.closePositionsByMarket).toHaveBeenCalledOnceWith(orderBookDefaultSettings);
       })
     );
 
-    it('should process sellBestOrder command', fakeAsync(() => {
+    it('should process sellBestOrder command', ((done) => {
         const workingVolume = Math.round(Math.random() * 100);
 
         orderBookDataMock.next({
@@ -228,19 +240,21 @@ describe('ScalperOrderBookComponent', () => {
 
         component.isActiveOrderBook = true;
         component.activeWorkingVolume$.next(workingVolume);
+
+        scalperOrdersServiceSpy.placeBestOrder.and.callFake((instrument: Instrument, side: Side, quantity: number) => {
+          done();
+
+          expect(instrument).toEqual(defaultInstrumentInfo);
+          expect(side).toEqual(Side.Sell);
+          expect(quantity).toEqual(workingVolume);
+        });
+
+        fixture.detectChanges();
         hotKeyCommandMock.next({ type: ScalperOrderBookCommands.sellBestOrder });
-
-        tick();
-        expect(scalperOrdersServiceSpy.placeBestOrder).toHaveBeenCalledOnceWith(
-          defaultInstrumentInfo,
-          Side.Sell,
-          workingVolume,
-          jasmine.any(Object)
-        );
       })
     );
 
-    it('should process buyBestOrder command', fakeAsync(() => {
+    it('should process buyBestOrder command', ((done) => {
         const workingVolume = Math.round(Math.random() * 100);
 
         orderBookDataMock.next({
@@ -254,58 +268,68 @@ describe('ScalperOrderBookComponent', () => {
 
         component.isActiveOrderBook = true;
         component.activeWorkingVolume$.next(workingVolume);
+
+        scalperOrdersServiceSpy.placeBestOrder.and.callFake((instrument: Instrument, side: Side, quantity: number) => {
+          done();
+
+          expect(instrument).toEqual(defaultInstrumentInfo);
+          expect(side).toEqual(Side.Buy);
+          expect(quantity).toEqual(workingVolume);
+        });
+
+        fixture.detectChanges();
         hotKeyCommandMock.next({ type: ScalperOrderBookCommands.buyBestOrder });
-
-        tick();
-        expect(scalperOrdersServiceSpy.placeBestOrder).toHaveBeenCalledOnceWith(
-          defaultInstrumentInfo,
-          Side.Buy,
-          workingVolume,
-          jasmine.any(Object)
-        );
       })
     );
 
-    it('should process sellMarket command', fakeAsync(() => {
+    it('should process sellMarket command', ((done) => {
         const workingVolume = Math.round(Math.random() * 100);
 
         component.isActiveOrderBook = true;
         component.activeWorkingVolume$.next(workingVolume);
+
+        scalperOrdersServiceSpy.placeMarketOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean) => {
+          done();
+          expect(instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(side).toEqual(Side.Sell);
+          expect(quantity).toEqual(workingVolume);
+          expect(silent).toEqual(true);
+        });
+
+        fixture.detectChanges();
         hotKeyCommandMock.next({ type: ScalperOrderBookCommands.sellMarket });
-
-        tick();
-        expect(scalperOrdersServiceSpy.placeMarketOrder).toHaveBeenCalledOnceWith(
-          orderBookDefaultSettings,
-          Side.Sell,
-          workingVolume,
-          true
-        );
       })
     );
 
-    it('should process buyMarket command', fakeAsync(() => {
+    it('should process buyMarket command', ((done) => {
         const workingVolume = Math.round(Math.random() * 100);
 
         component.isActiveOrderBook = true;
         component.activeWorkingVolume$.next(workingVolume);
-        hotKeyCommandMock.next({ type: ScalperOrderBookCommands.buyMarket });
 
-        tick();
-        expect(scalperOrdersServiceSpy.placeMarketOrder).toHaveBeenCalledOnceWith(
-          orderBookDefaultSettings,
-          Side.Buy,
-          workingVolume,
-          true
-        );
+        scalperOrdersServiceSpy.placeMarketOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean) => {
+          done();
+          expect(instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(side).toEqual(Side.Buy);
+          expect(quantity).toEqual(workingVolume);
+          expect(silent).toEqual(true);
+        });
+
+        fixture.detectChanges();
+        hotKeyCommandMock.next({ type: ScalperOrderBookCommands.buyMarket });
       })
     );
 
-    it('should process reversePositionsByMarketCurrent command', fakeAsync(() => {
+    it('should process reversePositionsByMarketCurrent command', ((done) => {
         component.isActiveOrderBook = true;
-        hotKeyCommandMock.next({ type: ScalperOrderBookCommands.reversePositionsByMarketCurrent });
 
-        tick();
-        expect(scalperOrdersServiceSpy.reversePositionsByMarket).toHaveBeenCalledOnceWith(orderBookDefaultSettings);
+        scalperOrdersServiceSpy.reversePositionsByMarket.and.callFake((instrumentKey: InstrumentKey) => {
+          done();
+          expect(instrumentKey).toEqual(orderBookDefaultSettings);
+        });
+
+        fixture.detectChanges();
+        hotKeyCommandMock.next({ type: ScalperOrderBookCommands.reversePositionsByMarketCurrent });
       })
     );
 
@@ -326,129 +350,134 @@ describe('ScalperOrderBookComponent', () => {
   });
 
   describe('Mouse click', () => {
-    it('should process Left click with Ctrl', fakeAsync(() => {
-      const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
-      event.ctrlKey = true;
+    it('should process Left click with Ctrl', (done => {
+        const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
+        event.ctrlKey = true;
 
-      const currentSettings = {
-        ...orderBookDefaultSettings,
-        enableMouseClickSilentOrders: Math.random() < 0.5
-      };
+        const currentSettings = {
+          ...orderBookDefaultSettings,
+          enableMouseClickSilentOrders: true
+        };
 
-      settingsMock.next(currentSettings);
-      const workingVolume = Math.round(Math.random() * 100);
-      component.activeWorkingVolume$.next(workingVolume);
+        settingsMock.next(currentSettings);
+        fixture.detectChanges();
 
-      tick();
+        const workingVolume = Math.round(Math.random() * 100);
+        component.activeWorkingVolume$.next(workingVolume);
+        fixture.detectChanges();
 
-      const testRow = {
-        price: Math.round(Math.random() * 1000),
-        rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
-      } as ScalperOrderBookRow;
+        const testRow = {
+          price: Math.round(Math.random() * 1000),
+          rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
+        } as ScalperOrderBookRow;
 
-      component.onRowClick(event, testRow);
+        scalperOrdersServiceSpy.setStopLimitForRow.and.callFake((instrumentKey: InstrumentKey, row: ScalperOrderBookRow, quantity: number, silent: boolean) => {
+          done();
+          expect(instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(row).toEqual(testRow);
+          expect(quantity).toEqual(workingVolume);
+          expect(silent).toEqual(currentSettings.enableMouseClickSilentOrders);
+        });
 
-      tick();
+        fixture.detectChanges();
+        component.onRowClick(event, testRow);
+      })
+    );
 
-      expect(scalperOrdersServiceSpy.setStopLimitForRow)
-        .toHaveBeenCalledOnceWith(
-          currentSettings,
-          testRow,
-          workingVolume,
-          currentSettings.enableMouseClickSilentOrders
-        );
-    }));
+    it('should process Left click with Shift', (done => {
+        const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
+        event.shiftKey = true;
 
-    it('should process Left click with Shift', fakeAsync(() => {
-      const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
-      event.shiftKey = true;
+        const currentSettings = {
+          ...orderBookDefaultSettings,
+          enableMouseClickSilentOrders: true
+        };
 
-      const currentSettings = {
-        ...orderBookDefaultSettings,
-        enableMouseClickSilentOrders: Math.random() < 0.5
-      };
+        settingsMock.next(currentSettings);
+        fixture.detectChanges();
 
-      settingsMock.next(currentSettings);
+        const testRow = {
+          price: Math.round(Math.random() * 1000),
+          rowType: ScalperOrderBookRowType.Ask
+        } as ScalperOrderBookRow;
 
-      tick();
+        scalperOrdersServiceSpy.setStopLoss.and.callFake((instrumentKey: InstrumentKey, price: number, silent: boolean) => {
+          done();
+          expect(instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(price).toEqual(testRow.price);
+          expect(silent).toEqual(currentSettings.enableMouseClickSilentOrders);
+        });
 
-      const testRow = {
-        price: Math.round(Math.random() * 1000),
-        rowType: ScalperOrderBookRowType.Ask
-      } as ScalperOrderBookRow;
+        fixture.detectChanges();
+        component.onRowClick(event, testRow);
+      })
+    );
 
-      component.onRowClick(event, testRow);
-      tick();
+    it('should process Left click WITHOUT Ctrl and Shift', (done => {
+        const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
 
-      expect(scalperOrdersServiceSpy.setStopLoss)
-        .toHaveBeenCalledOnceWith(
-          currentSettings,
-          testRow.price,
-          currentSettings.enableMouseClickSilentOrders
-        );
-    }));
+        const currentSettings = {
+          ...orderBookDefaultSettings,
+          enableMouseClickSilentOrders: true
+        };
 
-    it('should process Left click WITHOUT Ctrl and Shift', fakeAsync(() => {
-      const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
+        settingsMock.next(currentSettings);
+        fixture.detectChanges();
 
-      const currentSettings = {
-        ...orderBookDefaultSettings,
-        enableMouseClickSilentOrders: Math.random() < 0.5
-      };
+        const workingVolume = Math.round(Math.random() * 100);
+        component.activeWorkingVolume$.next(workingVolume);
+        fixture.detectChanges();
 
-      settingsMock.next(currentSettings);
-      const workingVolume = Math.round(Math.random() * 100);
-      component.activeWorkingVolume$.next(workingVolume);
+        const testRow = {
+          price: Math.round(Math.random() * 1000),
+          rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
+        } as ScalperOrderBookRow;
 
-      tick();
+        scalperOrdersServiceSpy.placeLimitOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
+          done();
+          expect(instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell);
+          expect(quantity).toEqual(workingVolume);
+          expect(price).toEqual(testRow.price);
+          expect(silent).toEqual(currentSettings.enableMouseClickSilentOrders);
+        });
 
-      const testRow = {
-        price: Math.round(Math.random() * 1000),
-        rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
-      } as ScalperOrderBookRow;
+        fixture.detectChanges();
+        component.onRowClick(event, testRow);
+      })
+    );
 
-      component.onRowClick(event, testRow);
-      tick();
+    it('should process Right click', (done => {
+        const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
 
-      expect(scalperOrdersServiceSpy.placeLimitOrder)
-        .toHaveBeenCalledOnceWith(
-          currentSettings,
-          testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell,
-          workingVolume,
-          testRow.price,
-          currentSettings.enableMouseClickSilentOrders
-        );
-    }));
+        const currentSettings = {
+          ...orderBookDefaultSettings,
+          enableMouseClickSilentOrders: true
+        };
 
-    it('should process Right click', fakeAsync(() => {
-      const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
+        settingsMock.next(currentSettings);
+        fixture.detectChanges();
 
-      const currentSettings = {
-        ...orderBookDefaultSettings,
-        enableMouseClickSilentOrders: Math.random() < 0.5
-      };
+        const workingVolume = Math.round(Math.random() * 100);
+        component.activeWorkingVolume$.next(workingVolume);
+        fixture.detectChanges();
 
-      settingsMock.next(currentSettings);
-      const workingVolume = Math.round(Math.random() * 100);
-      component.activeWorkingVolume$.next(workingVolume);
+        const testRow = {
+          price: Math.round(Math.random() * 1000),
+          rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
+        } as ScalperOrderBookRow;
 
-      tick();
+        scalperOrdersServiceSpy.placeMarketOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean) => {
+          done();
+          expect(instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Sell : Side.Buy);
+          expect(quantity).toEqual(workingVolume);
+          expect(silent).toEqual(currentSettings.enableMouseClickSilentOrders);
+        });
 
-      const testRow = {
-        price: Math.round(Math.random() * 1000),
-        rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
-      } as ScalperOrderBookRow;
-
-      component.onRowRightClick(event, testRow);
-      tick();
-
-      expect(scalperOrdersServiceSpy.placeMarketOrder)
-        .toHaveBeenCalledOnceWith(
-          currentSettings,
-          testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Sell : Side.Buy,
-          workingVolume,
-          currentSettings.enableMouseClickSilentOrders
-        );
-    }));
+        fixture.detectChanges();
+        component.onRowRightClick(event, testRow);
+      })
+    );
   });
 });

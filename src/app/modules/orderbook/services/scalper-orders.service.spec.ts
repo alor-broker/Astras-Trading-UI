@@ -1,4 +1,8 @@
-import { TestBed } from '@angular/core/testing';
+import {
+  fakeAsync,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 
 import { ScalperOrdersService } from './scalper-orders.service';
 import {
@@ -87,446 +91,482 @@ describe('ScalperOrdersService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('#cancelOrders should call service with appropriate data', () => {
-    const testOrder: CurrentOrder = {
-      price: 10,
-      orderId: generateRandomString(5),
-      exchange: generateRandomString(4),
-      portfolio: generateRandomString(5),
-      type: 'limit',
-      volume: 10
-    };
+  it('#cancelOrders should call service with appropriate data', fakeAsync(() => {
+      const testOrder: CurrentOrder = {
+        price: 10,
+        orderId: generateRandomString(5),
+        exchange: generateRandomString(4),
+        portfolio: generateRandomString(5),
+        type: 'limit',
+        volume: 10
+      };
 
-    orderCancellerServiceSpy.cancelOrder.and.returnValue(of({}));
+      orderCancellerServiceSpy.cancelOrder.and.returnValue(of({}));
+      service.cancelOrders([testOrder]);
 
-    service.cancelOrders([testOrder]);
+      tick();
+      expect(orderCancellerServiceSpy.cancelOrder).toHaveBeenCalledOnceWith({
+        orderid: testOrder.orderId,
+        exchange: testOrder.exchange,
+        portfolio: testOrder.portfolio,
+        stop: false
+      });
+    })
+  );
 
-    expect(orderCancellerServiceSpy.cancelOrder).toHaveBeenCalledOnceWith({
-      orderid: testOrder.orderId,
-      exchange: testOrder.exchange,
-      portfolio: testOrder.portfolio,
-      stop: false
-    });
-  });
-
-  it('#closePositionsByMarket should call service with appropriate data', () => {
-    const portfolioKey: PortfolioKey = {
-      exchange: generateRandomString(4),
-      portfolio: generateRandomString(5),
-    };
-
-    store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-
-    const testInstrumentKey1: InstrumentKey = {
-      exchange: portfolioKey.exchange,
-      symbol: generateRandomString(4)
-    };
-
-    const testInstrumentKey2: InstrumentKey = {
-      exchange: portfolioKey.exchange,
-      symbol: generateRandomString(4)
-    };
-
-    const currentPortfolioPositions: Position[] = [
-      {
-        symbol: generateRandomString(4),
-        qtyTFuture: Math.round(Math.random() * 100)
-      } as Position,
-      {
-        symbol: generateRandomString(4),
-        qtyTFuture: Math.round(Math.random() * 100)
-      } as Position,
-      {
-        symbol: testInstrumentKey1.symbol,
-        qtyTFuture: Math.round(Math.random() * 100)
-      } as Position,
-      {
-        symbol: testInstrumentKey2.symbol,
-        qtyTFuture: Math.round(Math.random() * 100) * -1
-      } as Position,
-    ];
-
-    positionsServiceSpy.getAllByPortfolio.and.returnValue(of(currentPortfolioPositions));
-    orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
-
-    service.closePositionsByMarket(testInstrumentKey1);
-    expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
-      {
-        side: Side.Sell,
-        quantity: currentPortfolioPositions[2].qtyTFuture,
-        instrument: testInstrumentKey1
-      } as MarketOrder,
-      portfolioKey.portfolio
-    );
-
-    orderServiceSpy.submitMarketOrder.calls.reset();
-    service.closePositionsByMarket(testInstrumentKey2);
-    expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
-      {
-        side: Side.Buy,
-        quantity: Math.abs(currentPortfolioPositions[3].qtyTFuture),
-        instrument: testInstrumentKey2
-      } as MarketOrder,
-      portfolioKey.portfolio
-    );
-  });
-
-  it('#placeBestOrder should call service with appropriate data', () => {
-    const portfolioKey: PortfolioKey = {
-      exchange: generateRandomString(4),
-      portfolio: generateRandomString(5),
-    };
-
-    store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-
-    const symbol = generateRandomString(4);
-    const testInstrument: Instrument = {
-      exchange: portfolioKey.exchange,
-      symbol: symbol,
-      shortName: symbol,
-      description: symbol,
-      currency: 'RUB',
-      minstep: 1
-    };
-
-    orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
-    const quantity = Math.round(Math.random() * 100);
-
-    let testAsks: OrderbookDataRow[] = [
-      { p: 6, v: 1, y: 0 },
-      { p: 7, v: 1, y: 0 },
-      { p: 8, v: 1, y: 0 },
-    ];
-
-    let testBids: OrderbookDataRow[] = [
-      { p: testAsks[0].p - testInstrument.minstep * 2, v: 1, y: 0 },
-      { p: testAsks[0].p - testInstrument.minstep * 3, v: 1, y: 0 },
-      { p: testAsks[0].p - testInstrument.minstep * 4, v: 1, y: 0 }
-    ];
-
-    service.placeBestOrder(testInstrument, Side.Buy, quantity, { a: testAsks, b: testBids });
-    expect(orderServiceSpy.submitLimitOrder)
-      .withContext('Spread rows, Buy')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Buy,
-          price: testBids[0].p + testInstrument.minstep,
-          quantity: quantity,
-          instrument: testInstrument
-        } as LimitOrder,
-        portfolioKey.portfolio
-      );
-
-    orderServiceSpy.submitLimitOrder.calls.reset();
-
-    service.placeBestOrder(testInstrument, Side.Sell, quantity, { a: testAsks, b: testBids });
-    expect(orderServiceSpy.submitLimitOrder)
-      .withContext('Spread rows, Sell')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Sell,
-          price: testAsks[0].p - testInstrument.minstep,
-          quantity: quantity,
-          instrument: testInstrument
-        } as LimitOrder,
-        portfolioKey.portfolio
-      );
-
-    testAsks = [
-      { p: 6, v: 1, y: 0 },
-      { p: 7, v: 1, y: 0 },
-      { p: 8, v: 1, y: 0 },
-    ];
-
-    testBids = [
-      { p: testAsks[0].p - 1, v: 1, y: 0 },
-      { p: testAsks[0].p - 2, v: 1, y: 0 },
-      { p: testAsks[0].p - 3, v: 1, y: 0 }
-    ];
-
-    orderServiceSpy.submitLimitOrder.calls.reset();
-    service.placeBestOrder(testInstrument, Side.Buy, quantity, { a: testAsks, b: testBids });
-    expect(orderServiceSpy.submitLimitOrder)
-      .withContext('No spread, Buy')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Buy,
-          price: testBids[0].p,
-          quantity: quantity,
-          instrument: testInstrument
-        } as LimitOrder,
-        portfolioKey.portfolio
-      );
-
-    orderServiceSpy.submitLimitOrder.calls.reset();
-    service.placeBestOrder(testInstrument, Side.Sell, quantity, { a: testAsks, b: testBids });
-    expect(orderServiceSpy.submitLimitOrder)
-      .withContext('No spread, Sell')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Sell,
-          price: testAsks[0].p,
-          quantity: quantity,
-          instrument: testInstrument
-        } as LimitOrder,
-        portfolioKey.portfolio
-      );
-  });
-
-  it('#placeMarketOrder should call appropriate service with appropriate data', () => {
-    const portfolioKey: PortfolioKey = {
-      exchange: generateRandomString(4),
-      portfolio: generateRandomString(5),
-    };
-
-    store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-
-    const testInstrumentKey: InstrumentKey = {
-      exchange: portfolioKey.exchange,
-      symbol: generateRandomString(4)
-    };
-
-    orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
-    const quantity = Math.round(Math.random() * 100);
-
-    service.placeMarketOrder(
-      testInstrumentKey,
-      Side.Sell,
-      quantity,
-      true
-    );
-
-    expect(orderServiceSpy.submitMarketOrder)
-      .withContext('Sell')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Sell,
-          quantity,
-          instrument: testInstrumentKey
-        } as MarketOrder,
-        portfolioKey.portfolio
-      );
-
-    service.placeMarketOrder(
-      testInstrumentKey,
-      Side.Buy,
-      quantity,
-      false
-    );
-
-    expect(modalServiceSpy.openCommandModal)
-      .withContext('Buy')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Buy,
-          quantity,
-          instrument: testInstrumentKey,
-          type: CommandType.Market
-        } as CommandParams
-      );
-  });
-
-  it('#placeLimitOrder should call appropriate service with appropriate data', () => {
-    const portfolioKey: PortfolioKey = {
-      exchange: generateRandomString(4),
-      portfolio: generateRandomString(5),
-    };
-
-    store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-
-    const testInstrumentKey: InstrumentKey = {
-      exchange: portfolioKey.exchange,
-      symbol: generateRandomString(4)
-    };
-
-    orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
-    const quantity = Math.round(Math.random() * 100);
-    const price = Math.round(Math.random() * 1000);
-
-    service.placeLimitOrder(
-      testInstrumentKey,
-      Side.Sell,
-      quantity,
-      price,
-      true
-    );
-
-    expect(orderServiceSpy.submitLimitOrder)
-      .withContext('Sell')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Sell,
-          quantity,
-          price: price,
-          instrument: testInstrumentKey
-        } as LimitOrder,
-        portfolioKey.portfolio
-      );
-
-    service.placeLimitOrder(
-      testInstrumentKey,
-      Side.Buy,
-      quantity,
-      price,
-      false
-    );
-
-    expect(modalServiceSpy.openCommandModal)
-      .withContext('Buy')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Buy,
-          quantity,
-          instrument: testInstrumentKey,
-          price: price,
-          type: CommandType.Limit
-        } as CommandParams
-      );
-  });
-
-  it('#reversePositionsByMarket should call service with appropriate data', () => {
-    const portfolioKey: PortfolioKey = {
-      exchange: generateRandomString(4),
-      portfolio: generateRandomString(5),
-    };
-
-    store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-
-    const testInstrumentKey: InstrumentKey = {
-      exchange: portfolioKey.exchange,
-      symbol: generateRandomString(4)
-    };
-
-    const currentPortfolioPositions: Position[] = [
-      {
-        symbol: generateRandomString(4),
-        qtyTFuture: Math.round(Math.random() * 100)
-      } as Position,
-      {
-        symbol: testInstrumentKey.symbol,
-        qtyTFuture: Math.round(Math.random() * 100)
-      } as Position,
-    ];
-
-    positionsServiceSpy.getAllByPortfolio.and.returnValue(of(currentPortfolioPositions));
-    orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
-
-    service.reversePositionsByMarket(testInstrumentKey);
-
-    expect(orderServiceSpy.submitMarketOrder)
-      .withContext('qtyTFuture > 0')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Sell,
-          quantity: currentPortfolioPositions[1].qtyTFuture * 2,
-          instrument: testInstrumentKey
-        } as MarketOrder,
-        portfolioKey.portfolio
-      );
-
-    orderServiceSpy.submitMarketOrder.calls.reset();
-    currentPortfolioPositions[1].qtyTFuture = currentPortfolioPositions[1].qtyTFuture * -1;
-
-    service.reversePositionsByMarket(testInstrumentKey);
-    expect(orderServiceSpy.submitMarketOrder)
-      .withContext('qtyTFuture < 0')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Buy,
-          quantity: Math.abs(currentPortfolioPositions[1].qtyTFuture) * 2,
-          instrument: testInstrumentKey
-        } as MarketOrder,
-        portfolioKey.portfolio
-      );
-  });
-
-  it('#setStopLimitForRow should call appropriate service with appropriate data', () => {
-    const portfolioKey: PortfolioKey = {
-      exchange: generateRandomString(4),
-      portfolio: generateRandomString(5),
-    };
-
-    store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-
-    const testInstrumentKey: InstrumentKey = {
-      exchange: portfolioKey.exchange,
-      symbol: generateRandomString(4)
-    };
-
-    orderServiceSpy.submitStopLimitOrder.and.returnValue(of({}));
-    const quantity = Math.round(Math.random() * 100);
-    const price = Math.round(Math.random() * 1000);
-
-    service.setStopLimitForRow(
-      testInstrumentKey,
-      { rowType: ScalperOrderBookRowType.Ask, price } as ScalperOrderBookRow,
-      quantity,
-      true
-    );
-
-    expect(orderServiceSpy.submitStopLimitOrder)
-      .withContext('Sell. Silent')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Sell,
-          quantity: quantity,
-          price,
-          instrument: testInstrumentKey,
-          triggerPrice: price,
-          condition: StopOrderCondition.More
-        } as StopLimitOrder,
-        portfolioKey.portfolio
-      );
-
-    orderServiceSpy.submitStopLimitOrder.calls.reset();
-    service.setStopLimitForRow(
-      testInstrumentKey,
-      { rowType: ScalperOrderBookRowType.Bid, price } as ScalperOrderBookRow,
-      quantity,
-      true
-    );
-
-    expect(orderServiceSpy.submitStopLimitOrder)
-      .withContext('Buy. Silent')
-      .toHaveBeenCalledOnceWith(
-        {
-          side: Side.Buy,
-          quantity: quantity,
-          price,
-          instrument: testInstrumentKey,
-          triggerPrice: price,
-          condition: StopOrderCondition.Less
-        } as StopLimitOrder,
-        portfolioKey.portfolio
-      );
-
-
-    service.setStopLimitForRow(
-      testInstrumentKey,
-      { rowType: ScalperOrderBookRowType.Bid, price } as ScalperOrderBookRow,
-      quantity,
-      false
-    );
-
-    expect(modalServiceSpy.openCommandModal)
-      .withContext('Show dialog')
-      .toHaveBeenCalledOnceWith(jasmine.objectContaining({
-        side: Side.Buy,
-        quantity,
-        instrument: testInstrumentKey,
-        price: price,
-        type: CommandType.Stop
-      } as CommandParams));
-  });
-
-  describe('#setStopLoss', () => {
-    it('should notify if no positions', () => {
+  it('#closePositionsByMarket should call service with appropriate data', fakeAsync(() => {
       const portfolioKey: PortfolioKey = {
         exchange: generateRandomString(4),
         portfolio: generateRandomString(5),
       };
 
       store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      tick();
+
+      const testInstrumentKey1: InstrumentKey = {
+        exchange: portfolioKey.exchange,
+        symbol: generateRandomString(4)
+      };
+
+      const testInstrumentKey2: InstrumentKey = {
+        exchange: portfolioKey.exchange,
+        symbol: generateRandomString(4)
+      };
+
+      const currentPortfolioPositions: Position[] = [
+        {
+          symbol: generateRandomString(4),
+          qtyTFuture: Math.round(Math.random() * 100)
+        } as Position,
+        {
+          symbol: generateRandomString(4),
+          qtyTFuture: Math.round(Math.random() * 100)
+        } as Position,
+        {
+          symbol: testInstrumentKey1.symbol,
+          qtyTFuture: Math.round(Math.random() * 100)
+        } as Position,
+        {
+          symbol: testInstrumentKey2.symbol,
+          qtyTFuture: Math.round(Math.random() * 100) * -1
+        } as Position,
+      ];
+
+      positionsServiceSpy.getAllByPortfolio.and.returnValue(of(currentPortfolioPositions));
+      orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
+
+      service.closePositionsByMarket(testInstrumentKey1);
+      tick();
+
+      expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
+        {
+          side: Side.Sell,
+          quantity: currentPortfolioPositions[2].qtyTFuture,
+          instrument: testInstrumentKey1
+        } as MarketOrder,
+        portfolioKey.portfolio
+      );
+
+      orderServiceSpy.submitMarketOrder.calls.reset();
+      service.closePositionsByMarket(testInstrumentKey2);
+      tick();
+
+      expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
+        {
+          side: Side.Buy,
+          quantity: Math.abs(currentPortfolioPositions[3].qtyTFuture),
+          instrument: testInstrumentKey2
+        } as MarketOrder,
+        portfolioKey.portfolio
+      );
+    })
+  );
+
+  it('#placeBestOrder should call service with appropriate data', fakeAsync(() => {
+      const portfolioKey: PortfolioKey = {
+        exchange: generateRandomString(4),
+        portfolio: generateRandomString(5),
+      };
+
+      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      tick();
+
+      const symbol = generateRandomString(4);
+      const testInstrument: Instrument = {
+        exchange: portfolioKey.exchange,
+        symbol: symbol,
+        shortName: symbol,
+        description: symbol,
+        currency: 'RUB',
+        minstep: 1
+      };
+
+      orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
+      const quantity = Math.round(Math.random() * 100);
+
+      let testAsks: OrderbookDataRow[] = [
+        { p: 6, v: 1, y: 0 },
+        { p: 7, v: 1, y: 0 },
+        { p: 8, v: 1, y: 0 },
+      ];
+
+      let testBids: OrderbookDataRow[] = [
+        { p: testAsks[0].p - testInstrument.minstep * 2, v: 1, y: 0 },
+        { p: testAsks[0].p - testInstrument.minstep * 3, v: 1, y: 0 },
+        { p: testAsks[0].p - testInstrument.minstep * 4, v: 1, y: 0 }
+      ];
+
+      service.placeBestOrder(testInstrument, Side.Buy, quantity, { a: testAsks, b: testBids });
+      tick();
+
+      expect(orderServiceSpy.submitLimitOrder)
+        .withContext('Spread rows, Buy')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Buy,
+            price: testBids[0].p + testInstrument.minstep,
+            quantity: quantity,
+            instrument: testInstrument
+          } as LimitOrder,
+          portfolioKey.portfolio
+        );
+
+      orderServiceSpy.submitLimitOrder.calls.reset();
+
+      service.placeBestOrder(testInstrument, Side.Sell, quantity, { a: testAsks, b: testBids });
+      tick();
+
+      expect(orderServiceSpy.submitLimitOrder)
+        .withContext('Spread rows, Sell')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Sell,
+            price: testAsks[0].p - testInstrument.minstep,
+            quantity: quantity,
+            instrument: testInstrument
+          } as LimitOrder,
+          portfolioKey.portfolio
+        );
+
+      testAsks = [
+        { p: 6, v: 1, y: 0 },
+        { p: 7, v: 1, y: 0 },
+        { p: 8, v: 1, y: 0 },
+      ];
+
+      testBids = [
+        { p: testAsks[0].p - 1, v: 1, y: 0 },
+        { p: testAsks[0].p - 2, v: 1, y: 0 },
+        { p: testAsks[0].p - 3, v: 1, y: 0 }
+      ];
+
+      orderServiceSpy.submitLimitOrder.calls.reset();
+      service.placeBestOrder(testInstrument, Side.Buy, quantity, { a: testAsks, b: testBids });
+      tick();
+
+      expect(orderServiceSpy.submitLimitOrder)
+        .withContext('No spread, Buy')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Buy,
+            price: testBids[0].p,
+            quantity: quantity,
+            instrument: testInstrument
+          } as LimitOrder,
+          portfolioKey.portfolio
+        );
+
+      orderServiceSpy.submitLimitOrder.calls.reset();
+      service.placeBestOrder(testInstrument, Side.Sell, quantity, { a: testAsks, b: testBids });
+      tick();
+
+      expect(orderServiceSpy.submitLimitOrder)
+        .withContext('No spread, Sell')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Sell,
+            price: testAsks[0].p,
+            quantity: quantity,
+            instrument: testInstrument
+          } as LimitOrder,
+          portfolioKey.portfolio
+        );
+    })
+  );
+
+  it('#placeMarketOrder should call appropriate service with appropriate data', fakeAsync(() => {
+      const portfolioKey: PortfolioKey = {
+        exchange: generateRandomString(4),
+        portfolio: generateRandomString(5),
+      };
+
+      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      tick();
+
+      const testInstrumentKey: InstrumentKey = {
+        exchange: portfolioKey.exchange,
+        symbol: generateRandomString(4)
+      };
+
+      orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
+      const quantity = Math.round(Math.random() * 100);
+
+      service.placeMarketOrder(
+        testInstrumentKey,
+        Side.Sell,
+        quantity,
+        true
+      );
+
+      tick();
+      expect(orderServiceSpy.submitMarketOrder)
+        .withContext('Sell')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Sell,
+            quantity,
+            instrument: testInstrumentKey
+          } as MarketOrder,
+          portfolioKey.portfolio
+        );
+
+
+      service.placeMarketOrder(
+        testInstrumentKey,
+        Side.Buy,
+        quantity,
+        false
+      );
+
+      tick();
+      expect(modalServiceSpy.openCommandModal)
+        .withContext('Buy')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Buy,
+            quantity,
+            instrument: testInstrumentKey,
+            type: CommandType.Market
+          } as CommandParams
+        );
+    })
+  );
+
+  it('#placeLimitOrder should call appropriate service with appropriate data', fakeAsync(() => {
+      const portfolioKey: PortfolioKey = {
+        exchange: generateRandomString(4),
+        portfolio: generateRandomString(5),
+      };
+
+      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      tick();
+
+      const testInstrumentKey: InstrumentKey = {
+        exchange: portfolioKey.exchange,
+        symbol: generateRandomString(4)
+      };
+
+      orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
+      const quantity = Math.round(Math.random() * 100);
+      const price = Math.round(Math.random() * 1000);
+
+      service.placeLimitOrder(
+        testInstrumentKey,
+        Side.Sell,
+        quantity,
+        price,
+        true
+      );
+
+      tick();
+      expect(orderServiceSpy.submitLimitOrder)
+        .withContext('Sell')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Sell,
+            quantity,
+            price: price,
+            instrument: testInstrumentKey
+          } as LimitOrder,
+          portfolioKey.portfolio
+        );
+
+      service.placeLimitOrder(
+        testInstrumentKey,
+        Side.Buy,
+        quantity,
+        price,
+        false
+      );
+
+      tick();
+      expect(modalServiceSpy.openCommandModal)
+        .withContext('Buy')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Buy,
+            quantity,
+            instrument: testInstrumentKey,
+            price: price,
+            type: CommandType.Limit
+          } as CommandParams
+        );
+    })
+  );
+
+  it('#reversePositionsByMarket should call service with appropriate data', fakeAsync(() => {
+      const portfolioKey: PortfolioKey = {
+        exchange: generateRandomString(4),
+        portfolio: generateRandomString(5),
+      };
+
+      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      tick();
+
+      const testInstrumentKey: InstrumentKey = {
+        exchange: portfolioKey.exchange,
+        symbol: generateRandomString(4)
+      };
+
+      const currentPortfolioPositions: Position[] = [
+        {
+          symbol: generateRandomString(4),
+          qtyTFuture: Math.round(Math.random() * 100)
+        } as Position,
+        {
+          symbol: testInstrumentKey.symbol,
+          qtyTFuture: Math.round(Math.random() * 100)
+        } as Position,
+      ];
+
+      positionsServiceSpy.getAllByPortfolio.and.returnValue(of(currentPortfolioPositions));
+      orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
+
+      service.reversePositionsByMarket(testInstrumentKey);
+
+      tick();
+      expect(orderServiceSpy.submitMarketOrder)
+        .withContext('qtyTFuture > 0')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Sell,
+            quantity: currentPortfolioPositions[1].qtyTFuture * 2,
+            instrument: testInstrumentKey
+          } as MarketOrder,
+          portfolioKey.portfolio
+        );
+
+      orderServiceSpy.submitMarketOrder.calls.reset();
+      currentPortfolioPositions[1].qtyTFuture = currentPortfolioPositions[1].qtyTFuture * -1;
+
+      service.reversePositionsByMarket(testInstrumentKey);
+      tick();
+      expect(orderServiceSpy.submitMarketOrder)
+        .withContext('qtyTFuture < 0')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Buy,
+            quantity: Math.abs(currentPortfolioPositions[1].qtyTFuture) * 2,
+            instrument: testInstrumentKey
+          } as MarketOrder,
+          portfolioKey.portfolio
+        );
+    })
+  );
+
+  it('#setStopLimitForRow should call appropriate service with appropriate data', fakeAsync(() => {
+      const portfolioKey: PortfolioKey = {
+        exchange: generateRandomString(4),
+        portfolio: generateRandomString(5),
+      };
+
+      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      tick();
+
+      const testInstrumentKey: InstrumentKey = {
+        exchange: portfolioKey.exchange,
+        symbol: generateRandomString(4)
+      };
+
+      orderServiceSpy.submitStopLimitOrder.and.returnValue(of({}));
+      const quantity = Math.round(Math.random() * 100);
+      const price = Math.round(Math.random() * 1000);
+
+      service.setStopLimitForRow(
+        testInstrumentKey,
+        { rowType: ScalperOrderBookRowType.Ask, price } as ScalperOrderBookRow,
+        quantity,
+        true
+      );
+
+      tick();
+      expect(orderServiceSpy.submitStopLimitOrder)
+        .withContext('Sell. Silent')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Sell,
+            quantity: quantity,
+            price,
+            instrument: testInstrumentKey,
+            triggerPrice: price,
+            condition: StopOrderCondition.More
+          } as StopLimitOrder,
+          portfolioKey.portfolio
+        );
+
+      orderServiceSpy.submitStopLimitOrder.calls.reset();
+      service.setStopLimitForRow(
+        testInstrumentKey,
+        { rowType: ScalperOrderBookRowType.Bid, price } as ScalperOrderBookRow,
+        quantity,
+        true
+      );
+
+      tick();
+      expect(orderServiceSpy.submitStopLimitOrder)
+        .withContext('Buy. Silent')
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Buy,
+            quantity: quantity,
+            price,
+            instrument: testInstrumentKey,
+            triggerPrice: price,
+            condition: StopOrderCondition.Less
+          } as StopLimitOrder,
+          portfolioKey.portfolio
+        );
+
+
+      service.setStopLimitForRow(
+        testInstrumentKey,
+        { rowType: ScalperOrderBookRowType.Bid, price } as ScalperOrderBookRow,
+        quantity,
+        false
+      );
+
+      tick();
+      expect(modalServiceSpy.openCommandModal)
+        .withContext('Show dialog')
+        .toHaveBeenCalledOnceWith(jasmine.objectContaining({
+          side: Side.Buy,
+          quantity,
+          instrument: testInstrumentKey,
+          price: price,
+          type: CommandType.Stop
+        } as CommandParams));
+    })
+  );
+
+  describe('#setStopLoss', () => {
+    it('should notify if no positions', fakeAsync(() => {
+      const portfolioKey: PortfolioKey = {
+        exchange: generateRandomString(4),
+        portfolio: generateRandomString(5),
+      };
+
+      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      tick();
 
       const testInstrumentKey: InstrumentKey = {
         exchange: portfolioKey.exchange,
@@ -547,55 +587,60 @@ describe('ScalperOrdersService', () => {
         Math.random() < 0.5
       );
 
+      tick();
       expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
       expect(modalServiceSpy.openCommandModal).not.toHaveBeenCalled();
       expect(notificationServiceSpy.error).toHaveBeenCalledTimes(1);
-    });
+    }));
 
-    it('should should call appropriate service with appropriate data', () => {
-      const portfolioKey: PortfolioKey = {
-        exchange: generateRandomString(4),
-        portfolio: generateRandomString(5),
-      };
+    it('should should call appropriate service with appropriate data', fakeAsync(() => {
+        const portfolioKey: PortfolioKey = {
+          exchange: generateRandomString(4),
+          portfolio: generateRandomString(5),
+        };
 
-      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+        store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+        tick();
 
-      const testInstrumentKey: InstrumentKey = {
-        exchange: portfolioKey.exchange,
-        symbol: generateRandomString(4)
-      };
+        const testInstrumentKey: InstrumentKey = {
+          exchange: portfolioKey.exchange,
+          symbol: generateRandomString(4)
+        };
 
-      const currentPortfolioPositions: Position[] = [
-        {
-          symbol: testInstrumentKey.symbol,
-          qtyTFuture: 10
-        } as Position,
-      ];
+        const currentPortfolioPositions: Position[] = [
+          {
+            symbol: testInstrumentKey.symbol,
+            qtyTFuture: 10
+          } as Position,
+        ];
 
-      const price = Math.round(Math.random() * 1000);
+        const price = Math.round(Math.random() * 1000);
 
-      positionsServiceSpy.getAllByPortfolio.and.returnValue(of(currentPortfolioPositions));
-      orderServiceSpy.submitStopMarketOrder.and.returnValue(of({}));
+        positionsServiceSpy.getAllByPortfolio.and.returnValue(of(currentPortfolioPositions));
+        orderServiceSpy.submitStopMarketOrder.and.returnValue(of({}));
 
-      service.setStopLoss(testInstrumentKey, price, true);
-      expect(orderServiceSpy.submitStopMarketOrder).toHaveBeenCalledOnceWith(
-        {
+        service.setStopLoss(testInstrumentKey, price, true);
+        tick();
+        expect(orderServiceSpy.submitStopMarketOrder).toHaveBeenCalledOnceWith(
+          {
+            side: Side.Sell,
+            quantity: currentPortfolioPositions[0].qtyTFuture,
+            triggerPrice: price,
+            condition: StopOrderCondition.More,
+            instrument: testInstrumentKey
+          } as StopMarketOrder,
+          portfolioKey.portfolio
+        );
+
+        service.setStopLoss(testInstrumentKey, price, false);
+        tick();
+        expect(modalServiceSpy.openCommandModal).toHaveBeenCalledOnceWith(jasmine.objectContaining({
           side: Side.Sell,
+          instrument: testInstrumentKey,
           quantity: currentPortfolioPositions[0].qtyTFuture,
-          triggerPrice: price,
-          condition: StopOrderCondition.More,
-          instrument: testInstrumentKey
-        } as StopMarketOrder,
-        portfolioKey.portfolio
-      );
-
-      service.setStopLoss(testInstrumentKey, price, false);
-      expect(modalServiceSpy.openCommandModal).toHaveBeenCalledOnceWith(jasmine.objectContaining({
-        side: Side.Sell,
-        instrument: testInstrumentKey,
-        quantity: currentPortfolioPositions[0].qtyTFuture,
-        type: CommandType.Stop
-      } as CommandParams));
-    });
+          type: CommandType.Stop
+        } as CommandParams));
+      })
+    );
   });
 });
