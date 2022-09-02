@@ -61,7 +61,8 @@ export class WatchlistTableComponent implements OnInit {
     WidgetNames.orderBook,
     WidgetNames.scalperOrderBook,
     WidgetNames.allTrades,
-    WidgetNames.instrumentInfo
+    WidgetNames.instrumentInfo,
+    WidgetNames.orderSubmit
   ];
 
   private selectedInstrument: InstrumentKey | null = null;

@@ -1,0 +1,37 @@
+@import (reference) '/src/styles.less';
+
+@margin: 8px;
+
+.header {
+  .selectable {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .sell {
+    color: @sell-color;
+  }
+
+  .buy {
+    color: @buy-color;
+  }
+}
+
+.body {
+  margin-top: @margin;
+}
+
+.footer {
+  margin-top: @margin;
+
+  .buy-button {
+    width: 50%;
+    background: @buy-color;
+  }
+
+  .sell-button {
+    width: 50%;
+    background: @sell-color;
+  }
+}
+

@@ -47,6 +47,7 @@ import { ColorPickerInputComponent } from './components/color-picker-input/color
 import { ColorChromeModule } from "ngx-color/chrome";
 import { NzPopoverModule } from "ng-zorro-antd/popover";
 import { NzInputModule } from "ng-zorro-antd/input";
+import { ShortNumberPipe } from './pipes/short-number.pipe';
 
 
 @NgModule({
@@ -56,7 +57,8 @@ import { NzInputModule } from "ng-zorro-antd/input";
     LoadingIndicatorComponent,
     InfiniteScrollTableComponent,
     WidgetMenuComponent,
-    ColorPickerInputComponent
+    ColorPickerInputComponent,
+    ShortNumberPipe
   ],
     imports: [
         CommonModule,
@@ -145,6 +147,7 @@ import { NzInputModule } from "ng-zorro-antd/input";
     ColorPickerInputComponent,
     // directives
     NumericalDirective,
+    ShortNumberPipe,
   ],
   providers: [
     {

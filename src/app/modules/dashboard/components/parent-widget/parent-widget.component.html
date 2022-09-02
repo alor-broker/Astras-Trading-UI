@@ -59,6 +59,11 @@
                                   [(shouldShowSettings)]="shouldShowSettings"
                                   [resize]="widgetResize"
       ></ats-all-instruments-widget>
+      <ats-order-submit-widget *ngSwitchCase="'order-submit'"
+                                     [guid]="getGuid()"
+                                     [(shouldShowSettings)]="shouldShowSettings"
+      ></ats-order-submit-widget>
   </ng-container>
+
   </div>
 </div>
