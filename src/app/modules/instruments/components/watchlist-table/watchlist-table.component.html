@@ -21,7 +21,15 @@
       (click)='makeActive(inst.instrument)'
       (contextmenu)="contextMenu($event, menu, inst.instrument)"
     >
-      <td *ngIf="isVisibleColumn('symbol')" class="ticker">{{ inst.instrument.symbol }}</td>
+      <td *ngIf="isVisibleColumn('symbol')" class="ticker">
+        <span class="ticker-name">{{ inst.instrument.symbol }}</span>
+
+        <ng-container *ngIf="selectedInstruments$ | async as selectedInstruments">
+          <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
+            <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === inst.instrument.symbol"></nz-badge>
+          </ng-container>
+        </ng-container>
+      </td>
       <td *ngIf="isVisibleColumn('price')">
         <ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'>
         </ats-price-tick>

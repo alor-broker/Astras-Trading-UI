@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular
 import { DashboardItemContentSize } from "../../../../shared/models/dashboard-item.model";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
-import { interval, Subject, Subscription, switchMap, takeUntil } from "rxjs";
+import { interval, Subject, Subscription, switchMap, takeUntil, withLatestFrom } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { AllInstrumentsSettings } from "../../../../shared/models/settings/all-instruments-settings.model";
 import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
@@ -11,6 +11,7 @@ import { selectNewInstrumentByBadge } from "../../../../store/instruments/instru
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 
 @Component({
   selector: 'ats-all-instruments',
@@ -38,7 +39,8 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       displayName: 'Тикер',
       sortFn: this.getSortFn('symbol'),
       isFiltering: true,
-      isOpenedFilter: false
+      isOpenedFilter: false,
+      showBadges: true
     },
     { name: 'shortName', displayName: 'Название' },
     {
@@ -97,6 +99,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getInstruments();
     this.initContextMenu();
+    this.badgesChangeSubscribe();
 
     this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
       .pipe(takeUntil(this.destroy$))
@@ -188,12 +191,20 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
     this.service.getAllInstruments(this.filters)
-      .subscribe(res => {
+      .pipe(
+        withLatestFrom(this.store.select(getSelectedInstrumentsWithBadges))
+      )
+      .subscribe(([res, badges]) => {
+        const newDataWithBadges = res.map(instr => ({
+          ...instr,
+          badges: Object.keys(badges).filter(key => instr.name === badges[key].symbol)
+        }));
         if (isFiltersChanged) {
-          this.instrumentsList = res;
+          this.instrumentsList = newDataWithBadges;
         } else {
-          this.instrumentsList = [...this.instrumentsList, ...res];
+          this.instrumentsList = [...this.instrumentsList, ...newDataWithBadges];
         }
+
         this.isLoading = false;
         this.cdr.markForCheck();
       });
@@ -209,10 +220,28 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     this.instrumentsSub = interval(10_000)
       .pipe(
         switchMap(() => this.service.getAllInstruments(filterForSub)),
+        withLatestFrom(this.store.select(getSelectedInstrumentsWithBadges)),
         takeUntil(this.destroy$)
       )
-      .subscribe(res => {
-        this.instrumentsList = res;
+      .subscribe(([res, badges]) => {
+        this.instrumentsList = res.map(instr => ({
+          ...instr,
+          badges: Object.keys(badges).filter(key => instr.name === badges[key].symbol)
+        }));
+        this.cdr.markForCheck();
+      });
+  }
+
+  private badgesChangeSubscribe() {
+    this.store.select(getSelectedInstrumentsWithBadges)
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe(badges => {
+        this.instrumentsList = this.instrumentsList.map(instr => ({
+          ...instr,
+          badges: Object.keys(badges).filter(key => instr.name === badges[key].symbol)
+        }));
         this.cdr.markForCheck();
       });
   }

@@ -49,7 +49,14 @@
         </span>
       </td>
       <td *ngIf='shouldShow("id")'>{{ ord.id }}</td>
-      <td class='bold' *ngIf='shouldShow("symbol")'>{{ ord.symbol }}</td>
+      <td class='bold' *ngIf='shouldShow("symbol")'>
+        <span class="symbol-name">{{ ord.symbol }}</span>
+        <ng-container *ngIf="selectedInstruments$ | async as selectedInstruments">
+          <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
+            <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === ord.symbol"></nz-badge>
+          </ng-container>
+        </ng-container>
+      </td>
       <td [class]='ord.side.toString() === "sell" ? "sell" : "buy"' *ngIf='shouldShow("side")'>{{ ord.side }}</td>
       <td *ngIf='shouldShow("residue")'>{{ ord.residue }}</td>
       <td *ngIf='shouldShow("volume")'>{{ ord.volume }}</td>

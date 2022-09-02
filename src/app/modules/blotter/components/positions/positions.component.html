@@ -31,7 +31,12 @@
   <tbody>
     <tr *ngFor="let ord of nzTable.data" (click)="selectInstrument(ord.symbol, ord.exchange)">
       <td class='bold' *ngIf='shouldShow("symbol")'>
-        {{ ord.symbol }}
+        <span class="symbol-name">{{ ord.symbol }}</span>
+        <ng-container *ngIf="selectedInstruments$ | async as selectedInstruments">
+          <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
+            <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === ord.symbol"></nz-badge>
+          </ng-container>
+        </ng-container>
       </td>
       <td *ngIf='shouldShow("shortName")'>{{ ord.shortName }}</td>
       <td *ngIf='shouldShow("avgPrice")'>{{ roundPrice(ord.avgPrice) }}</td>

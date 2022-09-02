@@ -33,6 +33,9 @@ import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
+import { Store } from "@ngrx/store";
+import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 
 interface PositionDisplay extends Position {
   volume: number
@@ -56,6 +59,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
   displayPositions$: Observable<PositionDisplay[]> = of([]);
   searchFilter = new BehaviorSubject<PositionFilter>({});
   isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
+  selectedInstruments$: Observable<InstrumentBadges> = of({});
 
   private settings$!: Observable<BlotterSettings>;
   private badgeColor = defaultBadgeColor;
@@ -207,7 +211,11 @@ export class PositionsComponent implements OnInit, OnDestroy {
   listOfColumns: Column<PositionDisplay, PositionFilter>[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly service: BlotterService, private readonly settingsService: WidgetSettingsService) {
+  constructor(
+    private readonly service: BlotterService,
+    private readonly settingsService: WidgetSettingsService,
+    private readonly store: Store,
+  ) {
   }
 
   ngOnInit(): void {
@@ -237,6 +245,8 @@ export class PositionsComponent implements OnInit, OnDestroy {
         map(f => positions.filter(o => this.justifyFilter(o, f)))
       ))
     );
+
+    this.selectedInstruments$ = this.store.select(getSelectedInstrumentsWithBadges);
   }
 
   ngOnDestroy(): void {

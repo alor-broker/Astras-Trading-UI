@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { ngZorroMockComponents, sharedModuleImportForTests } from "../../../../shared/utils/testing";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -31,6 +31,9 @@ describe('StopOrdersComponent', () => {
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)));
 
     await TestBed.configureTestingModule({
+      imports: [
+        ...sharedModuleImportForTests
+      ],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -45,7 +48,6 @@ describe('StopOrdersComponent', () => {
       ],
       declarations: [
         StopOrdersComponent,
-        ...ngZorroMockComponents
       ]
     }).compileComponents();
   });
