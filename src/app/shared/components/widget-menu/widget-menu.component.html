@@ -75,4 +75,11 @@
   >
     <span><i nz-icon nzType="profile" nzTheme="outline"></i><label> Все инструменты</label></span>
   </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.orderSubmit)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.orderSubmit)"
+  >
+    <span><i nz-icon nzType="send" nzTheme="outline"></i><label> Выставление заявки</label></span>
+  </li>
 </ul>

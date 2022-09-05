@@ -21,6 +21,7 @@ import { NewsModule } from "../news/news.module";
 import { ExchangeRateModule } from "../exchange-rate/exchange-rate.module";
 import { TechChartModule } from "../tech-chart/tech-chart.module";
 import { AllInstrumentsModule } from "../all-instruments/all-instruments.module";
+import { OrderSubmitModule } from "../order-submit/order-submit.module";
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { AllInstrumentsModule } from "../all-instruments/all-instruments.module"
     NewsModule,
     ExchangeRateModule,
     TechChartModule,
-    AllInstrumentsModule
+    AllInstrumentsModule,
+    OrderSubmitModule
     // components
   ],
   providers: [

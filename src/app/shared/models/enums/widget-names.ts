@@ -10,4 +10,5 @@ export class WidgetNames {
   static readonly exchangeRate = 'exchange-rate';
   static readonly techChart = 'tech-chart';
   static readonly allInstruments = 'all-instruments';
+  static readonly orderSubmit = 'order-submit';
 }

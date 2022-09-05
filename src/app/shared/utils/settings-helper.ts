@@ -12,6 +12,7 @@ import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.
 import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-settings.model";
 import { TechChartSettings } from "../models/settings/tech-chart-settings.model";
 import { AllInstrumentsSettings } from "../models/settings/all-instruments-settings.model";
+import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
 
 /**
  * A type with describes settings with depends on an instrument
@@ -248,6 +249,14 @@ export function isAllInstrumentsSettings(settings: AnySettings): settings is All
 }
 
 /**
+ * A guard which checks if settings is an order submit settings
+ * @param settings Settings to check
+ */
+export function isOrderSubmitSettings(settings: AnySettings): settings is OrderSubmitSettings {
+  return settings.settingsType === 'OrderSubmitSettings';
+}
+
+/**
  * Checks the equality of settings by value
  * @param settings1 first settings
  * @param settings2 second settings
@@ -276,6 +285,10 @@ export function isEqual(settings1: AnySettings, settings2: AnySettings) : boolea
     return isEqualTechChartSettings(settings1, settings2);
   }
 
+  if (isOrderSubmitSettings(settings1) && isOrderSubmitSettings(settings2)) {
+    return isEqualOrderSubmitSettings(settings1, settings2);
+  }
+
   return (
     settings1.guid == settings2.guid && settings1.title == settings2.title
   );
@@ -285,7 +298,11 @@ export function isEqual(settings1: AnySettings, settings2: AnySettings) : boolea
  * @param settings Settings
  * @returns widget name
  */
-export function getTypeBySettings(settings: AnySettings) {
+export function getTypeBySettings(settings: AnySettings): WidgetNames | null {
+  if (isInstrumentSelectSettings(settings)) {
+    return WidgetNames.instrumentSelect;
+  }
+
   if (isOrderbookSettings(settings)) {
     return WidgetNames.orderBook;
   }
@@ -316,7 +333,12 @@ export function getTypeBySettings(settings: AnySettings) {
   if (isAllInstrumentsSettings(settings)) {
     return WidgetNames.allInstruments;
   }
-  return WidgetNames.instrumentSelect;
+
+  if (isOrderSubmitSettings(settings)) {
+    return WidgetNames.orderSubmit;
+  }
+
+  return null;
 }
 
 /**
@@ -493,6 +515,26 @@ export function isEqualTechChartSettings(
       settings1.exchange == settings2.exchange &&
       settings1.chartSettings == settings2.chartSettings &&
       settings1.badgeColor == settings2.badgeColor
+    );
+  } else return false;
+}
+
+/**
+ * Checks if order submit settings are equal
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true is equal, false if not
+ */
+export function isEqualOrderSubmitSettings(
+  settings1?: OrderSubmitSettings,
+  settings2?: OrderSubmitSettings
+) {
+  if (settings1 && settings2) {
+    return (
+      settings1.linkToActive == settings2.linkToActive &&
+      settings1.guid == settings2.guid &&
+      settings1.symbol == settings2.symbol &&
+      settings1.exchange == settings2.exchange
     );
   } else return false;
 }

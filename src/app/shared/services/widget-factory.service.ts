@@ -45,6 +45,7 @@ import {
   defaultBadgeColor,
   instrumentsBadges
 } from "../utils/instruments";
+import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
 
 @Injectable({
   providedIn: 'root',
@@ -108,11 +109,14 @@ export class WidgetFactoryService {
       case WidgetNames.techChart:
         settings = this.createTechChart(newWidget);
         break;
+      case WidgetNames.orderSubmit:
+        settings = this.createOrderSubmit(newWidget);
+        break;
     }
     if (settings) {
       return { ...settings, ...additionalSettings };
     }
-    else throw new Error(`Unknow widget type ${newWidget.gridItem.type}`);
+    else throw new Error(`Unknown widget type ${newWidget.gridItem.type}`);
   }
 
   private createOrderbook(newWidget: NewWidget | Widget): OrderbookSettings {
@@ -297,5 +301,20 @@ export class WidgetFactoryService {
       title: 'Все инструменты',
       allInstrumentsColumns: allInstrumentsCols.filter(c => c.isDefault).map(col => col.columnId)
     } as AllInstrumentsSettings;
+  }
+
+  private createOrderSubmit(newWidget: NewWidget | Widget): OrderSubmitSettings {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+
+      return {
+      ...this.badges.yellow,
+      guid: newWidget.gridItem.label,
+      badgeColor: defaultBadgeColor,
+      settingsType: 'OrderSubmitSettings',
+      title: 'Выставить заявку',
+      linkToActive: true
+    } as OrderSubmitSettings;
   }
 }
