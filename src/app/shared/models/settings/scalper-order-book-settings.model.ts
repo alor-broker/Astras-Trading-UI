@@ -22,4 +22,5 @@ export interface ScalperOrderBookSettings extends WidgetSettings, InstrumentKey 
   workingVolumes: number[];
   disableHotkeys: boolean;
   enableMouseClickSilentOrders: boolean;
+  autoAlignIntervalSec?: number;
 }

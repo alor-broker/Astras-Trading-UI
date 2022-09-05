@@ -38,6 +38,7 @@ interface SettingsFormData {
   workingVolumes: number[];
   disableHotkeys: boolean;
   enableMouseClickSilentOrders: boolean;
+  autoAlignIntervalSec?: number;
 }
 
 type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
@@ -64,6 +65,10 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     depth: {
       min: 0,
       max: 20
+    },
+    autoAlignIntervalSec: {
+      min: 1,
+      max: 600
     }
   };
 
@@ -123,6 +128,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         ),
         volumeHighlightFullness: Number(this.form.value.volumeHighlightFullness),
         workingVolumes: this.form.value.workingVolumes.map((wv: string) => Number(wv)),
+        autoAlignIntervalSec: Number(this.form.value.autoAlignIntervalSec),
         linkToActive: false
       });
 
@@ -158,7 +164,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     return this.form?.value.volumeHighlightMode === VolumeHighlightMode.VolumeBoundsWithFixedValue;
   }
 
-  hasVolumeHighlightOptionsErrors(){
+  hasVolumeHighlightOptionsErrors() {
     return !this.form?.controls?.volumeHighlightOptions?.valid || !this.form?.controls?.volumeHighlightFullness?.valid;
   }
 
@@ -185,14 +191,21 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         ]),
       volumeHighlightOptions: new FormArray(
         [...settings.volumeHighlightOptions]
-        .sort((a, b) => a.boundary - b.boundary)
-        .map(x => this.createVolumeHighlightOptionsControl(x))
+          .sort((a, b) => a.boundary - b.boundary)
+          .map(x => this.createVolumeHighlightOptionsControl(x))
       ),
       workingVolumes: new FormArray(settings.workingVolumes.map(
         wv => new FormControl(wv, [Validators.required, Validators.min(1)])
       )),
       disableHotkeys: new FormControl(settings.disableHotkeys),
       enableMouseClickSilentOrders: new FormControl(settings.enableMouseClickSilentOrders),
+      autoAlignIntervalSec: new FormControl(
+        settings.autoAlignIntervalSec,
+        [
+          Validators.min(this.validationSettings.autoAlignIntervalSec.min),
+          Validators.max(this.validationSettings.autoAlignIntervalSec.max)
+        ]
+      ),
     } as SettingsFormControls) as SettingsFormGroup;
   }
 

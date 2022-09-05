@@ -1,94 +1,105 @@
 <p>Настройки</p>
 <div *ngIf="form">
-  <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="submitForm()">
+  <form (ngSubmit)="submitForm()" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Введите инструмент">
-        <nz-form-label nzRequired nzFor="symbol">Тикер</nz-form-label>
+        <nz-form-label nzFor="symbol" nzRequired>Тикер</nz-form-label>
         <nz-input-group>
-          <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" placeholder="Symbol" />
+          <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="symbol" placeholder="Symbol"/>
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Выберите биржу">
-        <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
+        <nz-form-label nzFor="exchange" nzRequired>Биржа</nz-form-label>
         <nz-input-group>
           <nz-select formControlName='exchange'>
-            <nz-option  *ngFor='let exchange of exchanges' [nzValue]="exchange" [nzLabel]="exchange"></nz-option>
+            <nz-option *ngFor='let exchange of exchanges' [nzLabel]="exchange" [nzValue]="exchange"></nz-option>
           </nz-select>
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationSettings.depth.min}} до {{validationSettings.depth.max}}">
-        <nz-form-label nzRequired nzFor="depth">Глубина</nz-form-label>
+      <nz-form-control
+        nzErrorTip="Значение глубины должно быть от {{validationSettings.depth.min}} до {{validationSettings.depth.max}}">
+        <nz-form-label nzFor="depth" nzRequired>Глубина</nz-form-label>
         <nz-input-group>
-          <input class='ant-input' atsNumerical formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />
+          <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="depth" placeholder="7"/>
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
-      <nz-form-label nzFor="showZeroVolumeItems">Показывать цены заявок с нулевым объемом</nz-form-label>
-      <nz-switch formControlName='showZeroVolumeItems'></nz-switch>
+      <nz-form-control>
+        <nz-form-label nzFor="showZeroVolumeItems">Показывать цены заявок с нулевым объемом</nz-form-label>
+        <nz-switch formControlName='showZeroVolumeItems'></nz-switch>
+      </nz-form-control>
     </nz-form-item>
     <nz-form-item>
-      <nz-form-label nzFor="showSpreadItems">Показывать цены между лучшими ценами покупки/продажи</nz-form-label>
-      <nz-switch formControlName='showSpreadItems'></nz-switch>
-    </nz-form-item>
-
-    <nz-form-item>
-      <nz-form-label nzFor="disableHotkeys">Выключить горячие клавиши</nz-form-label>
-      <nz-switch formControlName='disableHotkeys'></nz-switch>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="enableMouseClickSilentOrders">Покупать по кликам без уведомлений</nz-form-label>
-      <nz-switch formControlName='enableMouseClickSilentOrders'></nz-switch>
+      <nz-form-control>
+        <nz-form-label nzFor="showSpreadItems">Показывать цены между лучшими ценами покупки/продажи</nz-form-label>
+        <nz-switch formControlName='showSpreadItems'></nz-switch>
+      </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
-      <nz-form-label nzFor="highlightHighVolume">Выделение цветом объема</nz-form-label>
-      <nz-select formControlName='volumeHighlightMode' [nzDisabled]="hasVolumeHighlightOptionsErrors()">
-        <nz-option  *ngFor='let option of availableVolumeHighlightModes' [nzValue]="option.value" [nzLabel]="option.label"></nz-option>
-      </nz-select>
-      <span nz-typography nzType="secondary" *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.BiggestVolume">
+      <nz-form-control>
+        <nz-form-label nzFor="disableHotkeys">Выключить горячие клавиши</nz-form-label>
+        <nz-switch formControlName='disableHotkeys'></nz-switch>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-control>
+        <nz-form-label nzFor="enableMouseClickSilentOrders">Покупать по кликам без уведомлений</nz-form-label>
+        <nz-switch formControlName='enableMouseClickSilentOrders'></nz-switch>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control>
+        <nz-form-label nzFor="highlightHighVolume">Выделение цветом объема</nz-form-label>
+        <nz-select [nzDisabled]="hasVolumeHighlightOptionsErrors()" formControlName='volumeHighlightMode'>
+          <nz-option *ngFor='let option of availableVolumeHighlightModes' [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+        </nz-select>
+        <span *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.BiggestVolume" nz-typography nzType="secondary">
         Ячейка объема будет выделена стандартными цветами покупки/продажи.
         Процент заполнения ячейки цветом определяется отношением объема ячейки к максимальному объему в стакане.
       </span>
-      <span nz-typography nzType="secondary" *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue">
+        <span *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue" nz-typography nzType="secondary">
         Цвет ячейки определяется настройками ниже.
         Для выделения будет выбрана опция с наибольшим объемом, для которой выполняется условие: объем ячейки >= объема опции.
         Процент заполнения ячейки цветом определяется отношением объема ячейки к значению настройки "Заполненность полосы объема".
       </span>
+      </nz-form-control>
     </nz-form-item>
 
-    <nz-collapse [nzBordered]="false" class="compact" *ngIf="showVolumeHighlightOptions()">
-      <nz-collapse-panel nzHeader="Настройки выделения объемов" [nzActive]="true" [nzDisabled]="hasVolumeHighlightOptionsErrors()">
+    <nz-collapse *ngIf="showVolumeHighlightOptions()" [nzBordered]="false" class="compact">
+      <nz-collapse-panel [nzActive]="true" [nzDisabled]="hasVolumeHighlightOptionsErrors()" nzHeader="Настройки выделения объемов">
         <nz-form-item *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue">
           <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.volumeHighlightOption.volumeHighlightFullness.min}} до {{validationSettings.volumeHighlightOption.volumeHighlightFullness.max}}">
             <nz-form-label nzFor="volumeHighlightFullness" nzRequired>Заполненность полосы объема</nz-form-label>
-            <input class='ant-input' atsNumerical formControlName="volumeHighlightFullness" (mousedown)="$event.stopPropagation()"/>
+            <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="volumeHighlightFullness"/>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <ng-container *ngFor="let optionForm of volumeHighlightOptions.controls; index as i">
             <div [formGroup]="asFormGroup(optionForm)" class="volume-highlight-options">
               <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.volumeHighlightOption.boundary.min}} до {{validationSettings.volumeHighlightOption.boundary.max}}">
-                <nz-form-label nzRequired nzFor="boundary">Объем</nz-form-label>
-                <input class='ant-input' atsNumerical formControlName="boundary" (mousedown)="$event.stopPropagation()"/>
+                <nz-form-label nzFor="boundary" nzRequired>Объем</nz-form-label>
+                <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="boundary"/>
               </nz-form-control>
               <nz-form-control nzErrorTip="Выберите цвет">
-                <nz-form-label nzRequired nzFor="color">Цвет выделения</nz-form-label>
-                <ats-color-picker-input [value]="optionForm.value.color" (colorChangeComplete)="setVolumeHighlightOptionColor(i, $event)"></ats-color-picker-input>
+                <nz-form-label nzFor="color" nzRequired>Цвет выделения</nz-form-label>
+                <ats-color-picker-input (colorChangeComplete)="setVolumeHighlightOptionColor(i, $event)" [value]="optionForm.value.color"></ats-color-picker-input>
               </nz-form-control>
               <button (click)="removeVolumeHighlightOption($event, i)"
+                      class="volume-highlight-options-remove-btn"
                       nz-button
-                      nzType="dashed"
-                      class="volume-highlight-options-remove-btn">
+                      nzType="dashed">
                 <i nz-icon nzType="minus"></i>
               </button>
             </div>
           </ng-container>
-          <button nz-button class="add-volume-highlight-option-btn" nzType="dashed" (click)="addVolumeHighlightOption($event)" [disabled]="!volumeHighlightOptions.valid">
+          <button (click)="addVolumeHighlightOption($event)" [disabled]="!volumeHighlightOptions.valid" class="add-volume-highlight-option-btn" nz-button nzType="dashed">
             <i nz-icon nzType="plus"></i>
           </button>
         </nz-form-item>
@@ -96,17 +107,17 @@
     </nz-collapse>
 
     <nz-collapse [nzBordered]="false" class="compact working-volumes">
-      <nz-collapse-panel nzHeader="Рабочие объёмы" [nzDisabled]="!form?.controls?.workingVolumes?.valid">
+      <nz-collapse-panel [nzDisabled]="!form?.controls?.workingVolumes?.valid" nzHeader="Рабочие объёмы">
         <div class="hint">Используются для быстрого выставления заявок с нужным объёмом</div>
-        <nz-form-item class="compact" *ngFor="let ctrl of workingVolumes.controls; let i = index">
+        <nz-form-item *ngFor="let ctrl of workingVolumes.controls; let i = index" class="compact">
           <nz-form-control [nzErrorTip]="workingVolumeError">
-            <nz-form-label nzRequired nzFor="workingVolume1">Рабочий объём {{i + 1}}</nz-form-label>
+            <nz-form-label nzFor="workingVolume1" nzRequired>Рабочий объём {{i + 1}}</nz-form-label>
             <nz-input-group>
               <input
-                class='ant-input'
+                (mousedown)="$event.stopPropagation()"
                 [formControl]="workingVolumeCtrl(i)"
                 atsNumerical
-                (mousedown)="$event.stopPropagation()"
+                class='ant-input'
                 placeholder="1"
               />
             </nz-input-group>
@@ -122,19 +133,22 @@
 
     <nz-collapse [nzBordered]="false" class="compact">
       <nz-collapse-panel nzHeader="Продвинутые">
-        <nz-form-control nzErrorTip="Группа">
-          <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
-          <nz-input-group>
-            <input class='ant-input' formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-                   placeholder="Режим торгов" />
-          </nz-input-group>
-        </nz-form-control>
+        <nz-form-item>
+          <nz-form-control nzErrorTip="Группа">
+            <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
+            <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="instrumentGroup" placeholder="Режим торгов"/>
+          </nz-form-control>
+          <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.autoAlignIntervalSec.min}} до {{validationSettings.autoAlignIntervalSec.max}}">
+            <nz-form-label nzFor="instrumentGroup">Интервал автоматического выравнивания стакана, сек.</nz-form-label>
+            <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="autoAlignIntervalSec"/>
+          </nz-form-control>
+        </nz-form-item>
       </nz-collapse-panel>
     </nz-collapse>
-    <br />
+    <br/>
     <nz-form-item class="compact">
       <nz-form-control>
-        <button type="submit" nz-button nzType="primary" [disabled]="!form?.valid">Сохранить</button>
+        <button [disabled]="!form?.valid" nz-button nzType="primary" type="submit">Сохранить</button>
       </nz-form-control>
     </nz-form-item>
   </form>

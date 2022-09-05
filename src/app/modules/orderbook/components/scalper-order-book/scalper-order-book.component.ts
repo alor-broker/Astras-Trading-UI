@@ -12,6 +12,8 @@ import {
   BehaviorSubject,
   distinctUntilChanged,
   filter,
+  interval,
+  NEVER,
   Observable,
   of,
   shareReplay,
@@ -70,27 +72,28 @@ type ExtendedSettings = { widgetSettings: ScalperOrderBookSettings, instrument: 
   providers: [ScalperOrderBookComponentStore]
 })
 export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestroy {
-  public contentSize$ = new BehaviorSubject<DashboardItemContentSize>({ height: 100, width: 0 });
+  rowTypes = ScalperOrderBookRowType;
+  readonly tableRowHeight = 21;
+  readonly priceRowsCacheSize = 50;
 
   @ViewChild('orderBookTableContainer')
   orderBookTableContainer?: ElementRef<HTMLElement>;
   @ViewChild('table')
   table?: NzTableComponent<any>;
 
-  rowTypes = ScalperOrderBookRowType;
+  @Input() shouldShowSettings!: boolean;
+  @Input() guid!: string;
+
+  orderBookTableContainerHeight$?: Observable<number>;
+  readonly isLoading$ = new BehaviorSubject(true);
+  orderBookTableData$!: Observable<ScalperOrderBookRow[]>;
+  readonly contentSize$ = new BehaviorSubject<DashboardItemContentSize>({ height: 100, width: 0 });
   maxVolume: number = 1;
   workingVolumes: number[] = [];
   activeWorkingVolume$ = new BehaviorSubject<number | null>(null);
   isActiveOrderBook = false;
+  readonly enableAutoAlign$ = new BehaviorSubject(true);
 
-  @Input() shouldShowSettings!: boolean;
-  @Input() guid!: string;
-
-  readonly tableRowHeight = 21;
-  readonly priceRowsCacheSize = 50;
-  public orderBookTableContainerHeight$?: Observable<number>;
-  public isLoading$ = new BehaviorSubject(true);
-  orderBookTableData$!: Observable<ScalperOrderBookRow[]>;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   private orderBookContext?: {
@@ -125,6 +128,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
     this.subscribeToHotkeys();
     this.subscribeToWorkingVolumesChange();
+    this.initAutoAlign();
   }
 
   ngAfterViewInit(): void {
@@ -142,6 +146,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
     this.activeWorkingVolume$.complete();
     this.contentSize$.complete();
+    this.enableAutoAlign$.complete();
   }
 
   selectVol(vol: number) {
@@ -190,14 +195,6 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     return {
       background: `linear-gradient(90deg, ${volumeHighlightOption.color}BF ${size}% , rgba(0,0,0,0) ${size}%)`
     };
-  }
-
-  cancelLimitOrders() {
-    this.callWithCurrentOrders(orders => {
-      const limitOrders = orders.filter(x => x.type === 'limit');
-
-      this.scalperOrdersService.cancelOrders(limitOrders);
-    });
   }
 
   cancelRowOrders(row: ScalperOrderBookRow, e: MouseEvent) {
@@ -268,6 +265,22 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     });
   }
 
+  switchEnableAutoAlign() {
+    this.enableAutoAlign$.pipe(
+      take(1)
+    ).subscribe(value => {
+      this.enableAutoAlign$.next(!value);
+    });
+  }
+
+  private cancelLimitOrders() {
+    this.callWithCurrentOrders(orders => {
+      const limitOrders = orders.filter(x => x.type === 'limit');
+
+      this.scalperOrdersService.cancelOrders(limitOrders);
+    });
+  }
+
   private initPriceRowsGeneration() {
     const getLastPrice = (instrumentKey: InstrumentKey) => this.orderBookService.getLastPrice(instrumentKey).pipe(
       filter((lastPrice): lastPrice is number => !!lastPrice),
@@ -299,11 +312,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
         source.instrument.minstep,
         rowCountToDisplay,
         () => {
-          ScalperOrderBookTableHelper.alignTable(
-            this.table?.cdkVirtualScrollViewport,
-            this.tableRowHeight,
-            this.orderBookTableData$
-          );
+          this.alignTable();
           this.isLoading$.next(false);
         }
       );
@@ -395,8 +404,6 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
         takeUntil(this.destroy$)
       )
       .subscribe(x => {
-        console.log('index change: ', x.index);
-
         const bufferSize = Math.ceil(this.priceRowsCacheSize / 4);
         if (x.index < bufferSize) {
           this.isLoading$.next(true);
@@ -468,11 +475,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       this.scalperOrderBookStore.regenerateForPrice(
         minBid,
         maxAsk,
-        () => ScalperOrderBookTableHelper.alignTable(
-          this.table?.cdkVirtualScrollViewport,
-          this.tableRowHeight,
-          this.orderBookTableData$
-        )
+        () => this.alignTable()
       );
 
       return baseRows;
@@ -607,11 +610,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
   private handleCommonCommands(command: TerminalCommand): boolean {
     if (command.type === ScalperOrderBookCommands.centerOrderBook) {
-      ScalperOrderBookTableHelper.alignTable(
-        this.table?.cdkVirtualScrollViewport,
-        this.tableRowHeight,
-        this.orderBookTableData$
-      );
+      this.alignTable();
 
       return true;
     }
@@ -727,5 +726,23 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     return [...settings.volumeHighlightOptions]
       .sort((a, b) => b.boundary - a.boundary)
       .find(x => volume >= x.boundary);
+  }
+
+  private alignTable() {
+    ScalperOrderBookTableHelper.alignTable(
+      this.table?.cdkVirtualScrollViewport,
+      this.tableRowHeight,
+      this.orderBookTableData$
+    );
+  }
+
+  private initAutoAlign() {
+    this.orderBookContext?.expendedSettings$.pipe(
+      map(settings => settings.widgetSettings.autoAlignIntervalSec),
+      filter((x): x is number => !!x && x > 0),
+      mapWith(() => this.enableAutoAlign$, (interval, enabled) => ({ interval, enabled })),
+      switchMap(s => s.enabled ? interval(s.interval * 1000) : NEVER),
+      takeUntil(this.destroy$)
+    ).subscribe(() => this.alignTable());
   }
 }

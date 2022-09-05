@@ -400,7 +400,8 @@ export function isEqualScalperOrderBookSettings(
         (a, b) => a === b
       ) &&
       settings1.disableHotkeys == settings2.disableHotkeys &&
-      settings1.enableMouseClickSilentOrders == settings2.enableMouseClickSilentOrders
+      settings1.enableMouseClickSilentOrders == settings2.enableMouseClickSilentOrders &&
+      settings1.autoAlignIntervalSec == settings2.autoAlignIntervalSec
     );
   } else return false;
 }

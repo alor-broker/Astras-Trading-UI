@@ -15,7 +15,7 @@ describe('ScalperOrderBookWidgetComponent', () => {
         ScalperOrderBookWidgetComponent,
         mockComponent({
           selector: 'ats-scalper-order-book',
-          inputs: ['guid', 'shouldShowSettings']
+          inputs: ['guid', 'shouldShowSettings', 'contentSize']
         })
       ]
     })

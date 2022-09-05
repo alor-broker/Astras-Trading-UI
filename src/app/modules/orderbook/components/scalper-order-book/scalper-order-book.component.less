@@ -4,6 +4,27 @@
   display: flex;
   flex-direction: column;
 
+  .header {
+    padding-bottom: 10px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .working-volumes {
+
+      .working-volume-item {
+        cursor: pointer;
+      }
+    }
+
+    .auto-align-button {
+      nz-tag {
+        cursor: pointer;
+      }
+    }
+  }
+
   .order-book-table-container {
     flex: 1;
 
@@ -49,13 +70,5 @@
     .cancel-order-btn {
       margin-left: 0.5em;
     }
-  }
-}
-
-.working-volumes {
-  padding-bottom: 10px;
-
-  .working-volume {
-    cursor: pointer;
   }
 }

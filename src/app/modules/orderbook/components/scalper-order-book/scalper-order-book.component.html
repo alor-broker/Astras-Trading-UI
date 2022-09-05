@@ -1,4 +1,4 @@
-<div
++-<div
   (mouseenter)="isActiveOrderBook = true"
   (mouseleave)="isActiveOrderBook = false"
   *ngIf="!shouldShowSettings"
@@ -11,9 +11,19 @@
         (click)="selectVol(vol)"
         *ngFor="let vol of workingVolumes"
         [nzColor]="(activeWorkingVolume$ | async) === vol ? 'gold' : 'default'"
-        class="working-volume"
+        class="working-volume-item"
       >
         {{vol}}
+      </nz-tag>
+    </div>
+    <div class="auto-align-button">
+      <nz-tag
+        (click)="switchEnableAutoAlign()"
+        [nzColor]="(enableAutoAlign$ | async) === true ? 'cyan' : 'default'"
+        [nz-tooltip]="'Автоматически выравнивать по спреду'"
+        [nzTooltipMouseEnterDelay]="1"
+      >
+        <span nz-icon nzTheme="outline" nzType="vertical-align-middle"></span>
       </nz-tag>
     </div>
   </div>
@@ -63,6 +73,8 @@
     </ng-container>
   </div>
   <div class="footer">
-    <p>test footer</p>
   </div>
+
 </div>
+
+
