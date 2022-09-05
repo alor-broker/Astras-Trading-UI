@@ -12,7 +12,7 @@ import { distinct, map } from 'rxjs/operators';
 export class CalendarComponent implements OnInit, OnDestroy {
   @Input()
   guid!: string;
-  calendar$?: Observable<Calendar>;
+  calendar$?: Observable<Calendar | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);
   private isActivated$ = new Subject<boolean>();
 
