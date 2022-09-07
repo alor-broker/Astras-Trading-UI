@@ -15,6 +15,7 @@
       nz-dropdown
       [nzDropdownMenu]="badgesMenu"
       [nzColor]="s.badgeColor"
+      [class.square-badge]="['BlotterSettings', 'InstrumentSelectSettings', 'AllInstrumentsSettings'].includes(s.settingsType!)"
     ></nz-badge>
 
     {{s.title}}
@@ -22,7 +23,10 @@
     <nz-dropdown-menu #badgesMenu="nzDropdownMenu">
       <ul nz-menu class="badge-menu">
         <li nz-menu-item *ngFor="let badge of badges" (click)="switchBadgeColor(badge)">
-          <nz-badge [nzColor]="badge"></nz-badge>
+          <nz-badge
+            [nzColor]="badge"
+            [class.square-badge]="['BlotterSettings', 'InstrumentSelectSettings', 'AllInstrumentsSettings'].includes(s.settingsType!)"
+          ></nz-badge>
         </li>
       </ul>
     </nz-dropdown-menu>

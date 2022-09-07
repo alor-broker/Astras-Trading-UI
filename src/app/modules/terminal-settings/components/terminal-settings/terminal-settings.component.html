@@ -49,12 +49,21 @@
               <span
                 nz-icon
                 nz-popover
-                nzPopoverTitle="В заголовках виджетов появятся цветные бейджи"
-                nzPopoverContent="Выбрав инструмент в виджете с бейджем определённого цвета, поменяется выбранный инструмент во всех виджетах с бейджем этого же цвета"
+                [nzPopoverTitle]="badgeBindHint"
                 nzType="info-circle"
                 nzTheme="outline">
               </span>
             </label>
+
+            <ng-template #badgeBindHint>
+              <p> Выбрав инструмент в виджете с бейджем определённого цвета, поменяется выбранный инструмент во всех виджетах с бейджем этого же цвета </p>
+              <p>
+                <nz-badge nzColor="yellow" class="square-badge"></nz-badge> - Виджеты, в которых можно выбрать инструмент
+              </p>
+              <p>
+                <nz-badge nzColor="yellow"></nz-badge> - Виджеты, в которых будут меняться данные, в зависимости от выбранного инструмента
+              </p>
+            </ng-template>
           </nz-form-item>
 
             <h2>Горячие клавиши</h2>
