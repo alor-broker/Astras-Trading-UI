@@ -2,11 +2,11 @@
 <div>
   <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
     <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Введите инструмент">
+      <nz-form-control nzErrorTip="Тикер должен иметь длину от {{validationOptions.symbol.min}} до {{validationOptions.symbol.max}}">
         <nz-form-label nzRequired nzFor="symbol">Тикер</nz-form-label>
-        <nz-input-group nzPrefixIcon="user">
+        <nz-input-group>
           <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input
-            placeholder="Symbol" />
+            placeholder="Тикер" />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
@@ -21,7 +21,7 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationOptions.minDepth}} до {{validationOptions.maxDepth}}">
+      <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationOptions.depth.min}} до {{validationOptions.depth.max}}">
         <nz-form-label nzRequired nzFor="depth">Глубина</nz-form-label>
         <nz-input-group nzPrefixIcon="lock">
           <input class='ant-input' atsNumerical formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />

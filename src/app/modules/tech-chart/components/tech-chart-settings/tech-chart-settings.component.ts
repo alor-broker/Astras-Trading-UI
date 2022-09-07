@@ -18,6 +18,7 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
+import { InstrumentValidation } from '../../../../shared/utils/validation-options';
 
 @Component({
   selector: 'ats-tech-chart-settings[settingsChange][guid]',
@@ -25,6 +26,7 @@ import { exchangesList } from "../../../../shared/models/enums/exchanges";
   styleUrls: ['./tech-chart-settings.component.less']
 })
 export class TechChartSettingsComponent implements OnInit, OnDestroy {
+  readonly validationOptions = InstrumentValidation;
   @Input()
   guid!: string;
   @Output()
@@ -43,7 +45,8 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
       this.form = new FormGroup({
         symbol: new FormControl(settings.symbol, [
           Validators.required,
-          Validators.minLength(4)
+          Validators.minLength(this.validationOptions.symbol.min),
+          Validators.maxLength(this.validationOptions.symbol.max)
         ]),
         exchange: new FormControl(settings.exchange, Validators.required),
         instrumentGroup: new FormControl(settings.instrumentGroup)

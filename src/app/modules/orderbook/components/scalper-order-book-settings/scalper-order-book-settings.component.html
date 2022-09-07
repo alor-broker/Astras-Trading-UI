@@ -2,10 +2,10 @@
 <div *ngIf="form">
   <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="submitForm()">
     <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Введите инструмент">
+      <nz-form-control nzErrorTip="Тикер должен иметь длину от {{validationOptions.symbol.min}} до {{validationOptions.symbol.max}}">
         <nz-form-label nzRequired nzFor="symbol">Тикер</nz-form-label>
         <nz-input-group>
-          <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" placeholder="Symbol" />
+          <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" placeholder="Тикер" />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
@@ -20,7 +20,7 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationSettings.depth.min}} до {{validationSettings.depth.max}}">
+      <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationOptions.depth.min}} до {{validationOptions.depth.max}}">
         <nz-form-label nzRequired nzFor="depth">Глубина</nz-form-label>
         <nz-input-group>
           <input class='ant-input' atsNumerical formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />
@@ -60,7 +60,7 @@
         <nz-form-item>
           <ng-container *ngFor="let optionForm of volumeHighlightOptions.controls; index as i">
             <div [formGroup]="asFormGroup(optionForm)" class="volume-highlight-options">
-              <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.volumeHighlightOption.boundary.min}} до {{validationSettings.volumeHighlightOption.boundary.max}}">
+              <nz-form-control nzErrorTip="Значение должно быть от {{validationOptions.volumeHighlightOption.boundary.min}} до {{validationOptions.volumeHighlightOption.boundary.max}}">
                 <nz-form-label nzRequired nzFor="boundary" nzRequired>Объем</nz-form-label>
                 <input class='ant-input' atsNumerical formControlName="boundary" (mousedown)="$event.stopPropagation()"/>
               </nz-form-control>

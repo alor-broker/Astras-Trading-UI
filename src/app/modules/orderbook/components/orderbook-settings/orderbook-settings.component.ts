@@ -19,6 +19,7 @@ import {
   takeUntil
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
+import { InstrumentValidation } from '../../../../shared/utils/validation-options';
 
 interface SettingsFormData {
   depth: number,
@@ -39,16 +40,21 @@ type SettingsFormGroup = FormGroup & { value: SettingsFormData, controls: Settin
   styleUrls: ['./orderbook-settings.component.less']
 })
 export class OrderbookSettingsComponent implements OnInit, OnDestroy {
+  readonly validationOptions = {
+    ...InstrumentValidation,
+    depth: {
+      min: 1,
+      max: 20
+    }
+  };
+
   @Input()
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: SettingsFormGroup;
   exchanges: string[] = exchangesList;
-  readonly validationOptions = {
-    minDepth: 0,
-    maxDepth: 20
-  };
+
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private readonly settingsService: WidgetSettingsService) {
@@ -61,10 +67,17 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
       this.form = new FormGroup({
         symbol: new FormControl(settings.symbol, [
           Validators.required,
-          Validators.minLength(1)
+          Validators.minLength(this.validationOptions.symbol.min),
+          Validators.maxLength(this.validationOptions.symbol.max)
         ]),
         exchange: new FormControl(settings.exchange, Validators.required),
-        depth: new FormControl(settings.depth, [Validators.required, Validators.min(this.validationOptions.minDepth), Validators.max(this.validationOptions.maxDepth)]),
+        depth: new FormControl(
+          settings.depth,
+          [
+            Validators.required,
+            Validators.min(this.validationOptions.depth.min),
+            Validators.max(this.validationOptions.depth.max)
+          ]),
         instrumentGroup: new FormControl(settings.instrumentGroup),
         showChart: new FormControl(settings.showChart),
         showTable: new FormControl(settings.showTable),
