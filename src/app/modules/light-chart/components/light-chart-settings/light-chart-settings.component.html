@@ -1,10 +1,10 @@
 <p>Настройки</p>
 <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
   <nz-form-item  class='compact'>
-    <nz-form-control nzErrorTip="Введите имя инструмента">
+    <nz-form-control nzErrorTip="Тикер должен иметь длину от {{validationOptions.symbol.min}} до {{validationOptions.symbol.max}}">
       <nz-form-label nzRequired nzFor="symbol">Тикер</nz-form-label>
-      <nz-input-group nzPrefixIcon="user">
-        <input class='ant-input'  formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Тикер" />
+      <nz-input-group>
+        <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Тикер" />
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
