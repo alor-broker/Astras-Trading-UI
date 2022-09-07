@@ -24,6 +24,7 @@ import { Quote } from 'src/app/shared/models/quotes/quote.model';
 import { environment } from '../../../../environments/environment';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
+import { Position } from '../../../shared/models/positions/position.model';
 
 @Injectable()
 export class ScalperOrderBookService extends BaseWebsocketService {
@@ -61,6 +62,7 @@ export class ScalperOrderBookService extends BaseWebsocketService {
   }
 
   public getCurrentOrders(instrument: InstrumentKey, trackId: string): Observable<Order[]> {
+    this.currentOrders.clear();
     return this.getCurrentPortfolio().pipe(
       switchMap((p) => {
         if (p) {
@@ -84,6 +86,19 @@ export class ScalperOrderBookService extends BaseWebsocketService {
         return of([]);
       }),
       startWith([])
+    );
+  }
+
+  public getOrderBookPosition(instrumentKey: InstrumentKey, trackId: string): Observable<Position | null> {
+    return this.getCurrentPortfolio().pipe(
+      switchMap(portfolio => this.getPortfolioEntity<Position>(portfolio.portfolio, instrumentKey.exchange,
+        'PositionsGetAndSubscribeV2',
+        trackId
+      )),
+      filter((p): p is Position => !!p),
+      filter(p => p.symbol === instrumentKey.symbol),
+      filter(p => !!p.avgPrice),
+      startWith(null)
     );
   }
 

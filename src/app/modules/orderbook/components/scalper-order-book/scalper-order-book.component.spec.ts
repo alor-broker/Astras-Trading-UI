@@ -38,6 +38,7 @@ import { OrderbookData } from '../../models/orderbook-data.model';
 import { Order } from '../../../../shared/models/orders/order.model';
 import { OrderBookDataFeedHelper } from '../../utils/order-book-data-feed.helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { Position } from '../../../../shared/models/positions/position.model';
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -71,6 +72,7 @@ describe('ScalperOrderBookComponent', () => {
   const orderBookDataMock = new Subject<OrderbookData>();
   const lastPriceMock = new BehaviorSubject<number>(defaultLastPrice);
   const currentOrdersMock = new BehaviorSubject<Order[]>([]);
+  const positionMock = new BehaviorSubject<Position | null>(null);
   const terminalSettingsMock = new Subject<TerminalSettings>();
   const instrumentMock = new BehaviorSubject<Instrument>(defaultInstrumentInfo);
   const hotKeyCommandMock = new Subject<TerminalCommand>();
@@ -98,13 +100,15 @@ describe('ScalperOrderBookComponent', () => {
       [
         'getOrderBook',
         'getLastPrice',
-        'getCurrentOrders'
+        'getCurrentOrders',
+        'getOrderBookPosition'
       ]
     );
 
     scalperOrderBookServiceSpy.getOrderBook.and.returnValue(orderBookDataMock);
     scalperOrderBookServiceSpy.getLastPrice.and.returnValue(lastPriceMock);
     scalperOrderBookServiceSpy.getCurrentOrders.and.returnValue(currentOrdersMock);
+    scalperOrderBookServiceSpy.getOrderBookPosition.and.returnValue(positionMock);
 
     terminalSettingsServiceSpy = jasmine.createSpyObj('TerminalSettingsService', ['getSettings']);
     terminalSettingsServiceSpy.getSettings.and.returnValue(terminalSettingsMock);

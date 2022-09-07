@@ -10,12 +10,14 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   BehaviorSubject,
+  combineLatest,
   distinctUntilChanged,
   filter,
   interval,
   NEVER,
   Observable,
   of,
+  share,
   shareReplay,
   Subject,
   take,
@@ -25,6 +27,7 @@ import {
 } from "rxjs";
 import {
   CurrentOrder,
+  ScalperOrderBookPositionState,
   ScalperOrderBookRow,
   ScalperOrderBookRowType
 } from "../../models/scalper-order-book.model";
@@ -62,8 +65,10 @@ import { ScalperOrderBookComponentStore } from '../../utils/scalper-order-book-c
 import { OrderBookDataFeedHelper } from '../../utils/order-book-data-feed.helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-table.helper';
+import { Position } from '../../../../shared/models/positions/position.model';
 
 type ExtendedSettings = { widgetSettings: ScalperOrderBookSettings, instrument: Instrument };
+
 
 @Component({
   selector: 'ats-scalper-order-book[guid][shouldShowSettings][contentSize]',
@@ -92,7 +97,9 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   workingVolumes: number[] = [];
   activeWorkingVolume$ = new BehaviorSubject<number | null>(null);
   isActiveOrderBook = false;
+  isAutoAlignAvailable$!: Observable<boolean>;
   readonly enableAutoAlign$ = new BehaviorSubject(true);
+  orderBookPosition$!: Observable<ScalperOrderBookPositionState | null>;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -100,6 +107,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     expendedSettings$: Observable<ExtendedSettings>;
     currentOrders$: Observable<CurrentOrder[]>;
     orderBookData$: Observable<OrderbookData>;
+    orderBookPosition$: Observable<Position | null>;
   };
 
   constructor(
@@ -125,6 +133,8 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     this.orderBookTableData$ = this.getOrderBookTableData().pipe(
       shareReplay(1)
     );
+
+    this.orderBookPosition$ = this.getPositionStateStream(this.orderBookTableData$, this.orderBookContext!.orderBookPosition$);
 
     this.subscribeToHotkeys();
     this.subscribeToWorkingVolumesChange();
@@ -269,7 +279,11 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     this.enableAutoAlign$.pipe(
       take(1)
     ).subscribe(value => {
+      const newValue = !value;
       this.enableAutoAlign$.next(!value);
+      if (newValue) {
+        this.alignTable();
+      }
     });
   }
 
@@ -320,32 +334,90 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   private getOrderBookTableData(): Observable<ScalperOrderBookRow[]> {
-    return this.orderBookContext!.expendedSettings$.pipe(
-      mapWith(
-        () => this.scalperOrderBookStore.rows$,
-        (settings, baseRows) => ({ settings, baseRows })
-      ),
-      mapWith(
-        () => this.orderBookContext!.currentOrders$,
-        (source, currentOrders) => ({
-          settings: source.settings,
-          baseRows: source.baseRows,
-          currentOrders
-        })),
-      map(source => ({
-        settings: source.settings,
-        baseRows: this.mapCurrentOrders(source.baseRows, source.currentOrders)
-      })),
-      mapWith(
-        () => this.orderBookContext!.orderBookData$,
-        (source, orderBookData) => ({
-          settings: source.settings,
-          baseRows: source.baseRows,
-          orderBookData
-        })
-      ),
-      map(source => this.mapOrderBookData(source.baseRows, source.orderBookData, source.settings.widgetSettings))
+    return combineLatest([
+      this.orderBookContext!.expendedSettings$,
+      this.scalperOrderBookStore.rows$,
+      this.orderBookContext!.orderBookData$,
+      this.orderBookContext!.currentOrders$,
+      this.orderBookContext!.orderBookPosition$,
+    ]).pipe(
+      tap(([, , orderBookData, ,]) => {
+        const allRows = [...orderBookData.a, ...orderBookData.b];
+        if (allRows.length > 0) {
+          this.maxVolume = Math.max(...allRows.map(x => x.v));
+        }
+      }),
+      map(([settings, baseRows, orderBookData, currentOrders, currentPosition]) =>
+        this.mapOrderBookData(settings, baseRows, orderBookData, currentOrders, currentPosition))
     );
+  }
+
+  private mapOrderBookData(
+    settings: ExtendedSettings,
+    baseRows: ScalperOrderBookRow[],
+    orderBookData: OrderbookData,
+    currentOrders: CurrentOrder[],
+    currentPosition: Position | null
+  ): ScalperOrderBookRow[] {
+    if (baseRows.length === 0 || orderBookData.a.length === 0 || orderBookData.b.length === 0) {
+      return baseRows;
+    }
+
+    const orderBookBounds = {
+      minAsk: orderBookData.a[0].p,
+      maxAsk: orderBookData.a[orderBookData.a.length - 1].p,
+      minBid: orderBookData.b[orderBookData.b.length - 1].p,
+      maxBid: orderBookData.b[0].p
+    };
+
+    const maxBasePrice = baseRows[0].price;
+    const minBasePrice = baseRows[baseRows.length - 1].price;
+
+    if (orderBookBounds.minBid < minBasePrice || orderBookBounds.maxAsk > maxBasePrice) {
+      this.scalperOrderBookStore.regenerateForPrice(
+        orderBookBounds.minBid,
+        orderBookBounds.maxAsk,
+        () => this.alignTable()
+      );
+
+      return baseRows;
+    }
+
+    const filteredOrders = currentOrders.filter(x => x.type === 'limit');
+    const minOrderPrice = Math.min(...filteredOrders.map(x => x.price));
+    const maxOrderPrice = Math.max(...filteredOrders.map(x => x.price));
+
+    const rows: ScalperOrderBookRow[] = [];
+    for (let i = 0; i < baseRows.length; i++) {
+      const row = { ...baseRows[i] };
+
+      if (!this.mapOrderBook(row, orderBookData, settings.widgetSettings, orderBookBounds)) {
+        continue;
+      }
+
+      if (row.price >= minOrderPrice && row.price <= maxOrderPrice) {
+        row.currentOrders = filteredOrders.filter(x => x.price === row.price);
+      }
+
+      if (!!currentPosition) {
+        const basePrice = currentPosition.qtyTFuture > 0
+          ? orderBookBounds.maxBid
+          : orderBookBounds.minAsk;
+
+        const currentPositionRangeSign = basePrice - currentPosition.avgPrice;
+
+        const isCurrentPositionRange = row.price <= basePrice && row.price >= currentPosition.avgPrice
+          || (row.price >= basePrice && row.price <= currentPosition.avgPrice);
+
+        row.currentPositionRangeSign = isCurrentPositionRange
+          ? currentPositionRangeSign
+          : null;
+      }
+
+      rows.push(row);
+    }
+
+    return rows;
   }
 
   private initOrderBookContext() {
@@ -357,7 +429,8 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     this.orderBookContext = {
       expendedSettings$: settings$,
       currentOrders$: this.getCurrentOrdersStream(settings$),
-      orderBookData$: this.getOrderBookDataStream(settings$)
+      orderBookData$: this.getOrderBookDataStream(settings$),
+      orderBookPosition$: this.getOrderBookPositionStream(settings$)
     };
   }
 
@@ -375,7 +448,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     );
   }
 
-  private getCurrentOrdersStream(settings$: Observable<ExtendedSettings>) {
+  private getCurrentOrdersStream(settings$: Observable<ExtendedSettings>): Observable<CurrentOrder[]> {
     return settings$.pipe(
       switchMap(
         (settings: ExtendedSettings) => this.orderBookService.getCurrentOrders(settings.widgetSettings, this.guid)
@@ -384,11 +457,18 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     );
   }
 
-  private getOrderBookDataStream(settings$: Observable<ExtendedSettings>) {
+  private getOrderBookDataStream(settings$: Observable<ExtendedSettings>): Observable<OrderbookData> {
     return settings$.pipe(
       switchMap((settings: ExtendedSettings) => this.orderBookService.getOrderBook(settings.widgetSettings)),
       startWith(({ a: [], b: [] } as OrderbookData)),
       shareReplay(1)
+    );
+  }
+
+  private getOrderBookPositionStream(settings$: Observable<ExtendedSettings>): Observable<Position | null> {
+    return settings$.pipe(
+      switchMap((settings: ExtendedSettings) => this.orderBookService.getOrderBookPosition(settings.widgetSettings, this.guid)),
+      share()
     );
   }
 
@@ -432,55 +512,17 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       });
   }
 
-  private mapCurrentOrders(baseRows: ScalperOrderBookRow[], orders: CurrentOrder[]): ScalperOrderBookRow[] {
-    if (baseRows.length === 0) {
-      return baseRows;
+  private mapOrderBook(
+    row: ScalperOrderBookRow,
+    orderBookData: OrderbookData,
+    settings: ScalperOrderBookSettings,
+    orderBookBounds: {
+      minAsk: number,
+      maxAsk: number,
+      minBid: number,
+      maxBid: number
     }
-
-    const filteredOrders = orders.filter(x => x.type === 'limit');
-    const minOrderPrice = Math.min(...filteredOrders.map(x => x.price));
-    const maxOrderPrice = Math.max(...filteredOrders.map(x => x.price));
-
-    const rows = [];
-    for (let i = 0; i < baseRows.length; i++) {
-      const row = { ...baseRows[i] };
-
-      if (row.price <= maxOrderPrice && row.price >= minOrderPrice) {
-        row.currentOrders = filteredOrders.filter(x => x.price === row.price);
-      }
-
-      rows.push(row);
-    }
-
-
-    return rows;
-  }
-
-  private mapOrderBookData(baseRows: ScalperOrderBookRow[], realtimeData: OrderbookData, settings: ScalperOrderBookSettings): ScalperOrderBookRow[] {
-    if (baseRows.length === 0 || realtimeData.a.length === 0 || realtimeData.b.length === 0) {
-      return baseRows;
-    }
-
-    this.maxVolume = Math.max(...[...realtimeData.a, ...realtimeData.b].map(x => x.v));
-
-    const minBid = realtimeData.b[realtimeData.b.length - 1].p;
-    const maxBid = realtimeData.b[0].p;
-    const minAsk = realtimeData.a[0].p;
-    const maxAsk = realtimeData.a[realtimeData.a.length - 1].p;
-
-    const maxBasePrice = baseRows[0].price;
-    const minBasePrice = baseRows[baseRows.length - 1].price;
-
-    if (minBid < minBasePrice || maxAsk > maxBasePrice) {
-      this.scalperOrderBookStore.regenerateForPrice(
-        minBid,
-        maxAsk,
-        () => this.alignTable()
-      );
-
-      return baseRows;
-    }
-
+  ): boolean {
     const matchRow = (targetRow: ScalperOrderBookRow, source: OrderbookDataRow[], rowType: ScalperOrderBookRowType) => {
       const matchedRowIndex = source.findIndex(x => x.p === targetRow.price);
       if (matchedRowIndex >= 0) {
@@ -495,39 +537,40 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       return false;
     };
 
-    const rows = [];
-    for (let i = 0; i < baseRows.length; i++) {
-      const row = { ...baseRows[i] };
-
-      if (row.price >= minAsk) {
-        row.rowType = ScalperOrderBookRowType.Ask;
-        if (row.price <= maxAsk) {
-          if (matchRow(row, realtimeData.a, row.rowType) || settings.showZeroVolumeItems) {
-            rows.push(row);
+    if (row.price >= orderBookBounds.minAsk) {
+      row.rowType = ScalperOrderBookRowType.Ask;
+      if (row.price <= orderBookBounds.maxAsk) {
+        if (!matchRow(row, orderBookData.a, row.rowType)) {
+          if (settings.showZeroVolumeItems) {
+            row.isFiller = true;
+          }
+          else {
+            return false;
           }
         }
-        else {
-          rows.push(row);
-        }
       }
-      else if (row.price <= maxBid) {
-        row.rowType = ScalperOrderBookRowType.Bid;
-        if (row.price >= minBid) {
-          if (matchRow(row, realtimeData.b, row.rowType) || settings.showZeroVolumeItems) {
-            rows.push(row);
+      return true;
+    }
+    else if (row.price <= orderBookBounds.maxBid) {
+      row.rowType = ScalperOrderBookRowType.Bid;
+      if (row.price >= orderBookBounds.minBid) {
+        if (!matchRow(row, orderBookData.b, row.rowType)) {
+          if (settings.showZeroVolumeItems) {
+            row.isFiller = true;
+          }
+          else {
+            return false;
           }
         }
-        else {
-          rows.push(row);
-        }
       }
-      else if (settings.showSpreadItems) {
-        row.rowType = ScalperOrderBookRowType.Spread;
-        rows.push(row);
-      }
+      return true;
+    }
+    else if (settings.showSpreadItems) {
+      row.rowType = ScalperOrderBookRowType.Spread;
+      return true;
     }
 
-    return rows;
+    return false;
   }
 
   private getOrderBookTableContainerHeightWatch(): Observable<number> | null {
@@ -737,6 +780,11 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   private initAutoAlign() {
+    this.isAutoAlignAvailable$ = this.orderBookContext!.expendedSettings$.pipe(
+      map(s => !!s.widgetSettings.autoAlignIntervalSec && s.widgetSettings.autoAlignIntervalSec > 0),
+      shareReplay(1)
+    );
+
     this.orderBookContext?.expendedSettings$.pipe(
       map(settings => settings.widgetSettings.autoAlignIntervalSec),
       filter((x): x is number => !!x && x > 0),
@@ -744,5 +792,34 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       switchMap(s => s.enabled ? interval(s.interval * 1000) : NEVER),
       takeUntil(this.destroy$)
     ).subscribe(() => this.alignTable());
+  }
+
+  private getPositionStateStream(
+    orderBookRows$: Observable<ScalperOrderBookRow[]>,
+    orderBookPosition$: Observable<Position | null>): Observable<ScalperOrderBookPositionState | null> {
+    return combineLatest([
+      orderBookRows$,
+      orderBookPosition$
+    ]).pipe(
+      map(([rows, position]) => {
+        if (!position) {
+          return null;
+        }
+
+        const priceRowIndex = rows.findIndex(r => r.price === position!.avgPrice);
+        const sign = position!.qtyTFuture > 0 ? 1 : -1;
+        const bestRowType = sign > 0 ? ScalperOrderBookRowType.Bid :
+          ScalperOrderBookRowType.Ask;
+        const bestRowIndex = rows.findIndex(r => r.isBest && r.rowType === bestRowType);
+
+        return {
+          qty: position!.qtyTFuture,
+          price: position!.avgPrice,
+          lossOrProfit: bestRowIndex >= 0 && priceRowIndex >= 0
+            ? (priceRowIndex - bestRowIndex) * sign
+            : 0
+        };
+      })
+    );
   }
 }

@@ -35,28 +35,24 @@
       }
     }
 
-    .hidden-row {
-      display: none;
-    }
+    .ask-row:not(.filler-row) {
+      .price-cell {
+        color: @sell-color;
+      }
 
-    .ask-row {
       &.trade-row {
-        .price-cell {
-          color: @sell-color;
-        }
-
         &.best-row {
           background-color: fade(@sell-color, 20%);
         }
       }
     }
 
-    .bid-row {
-      &.trade-row {
-        .price-cell {
-          color: @buy-color;
-        }
+    .bid-row:not(.filler-row) {
+      .price-cell {
+        color: @buy-color;
+      }
 
+      &.trade-row {
         &.best-row {
           background-color: fade(@buy-color, 20%);
         }
@@ -67,8 +63,55 @@
       background-color: fade(@disabled-color, 7%);
     }
 
+    .current-position-range-row {
+      &.positive {
+        .price-cell{
+          background-color: fade(@buy-color, 10%);
+        }
+      }
+
+      &.negative {
+        .price-cell{
+          background-color: fade(@sell-color, 10%);
+        }
+      }
+    }
+
     .cancel-order-btn {
       margin-left: 0.5em;
+    }
+  }
+
+  .footer {
+    .position-state {
+      display: flex;
+      justify-content: center;
+
+      font-size: larger;
+      font-weight: bold;
+
+      .qty {
+        padding-left: 1em;
+        padding-right: 1em;
+
+        &.positive {
+          color: @buy-color;
+        }
+
+        &.negative {
+          color: @sell-color;
+        }
+      }
+
+      .loss-or-profit {
+        &.positive {
+          color: @buy-color;
+        }
+
+        &.negative {
+          color: @sell-color;
+        }
+      }
     }
   }
 }

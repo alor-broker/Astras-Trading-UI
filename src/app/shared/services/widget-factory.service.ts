@@ -154,7 +154,12 @@ export class WidgetFactoryService {
       showZeroVolumeItems: true,
       showSpreadItems: true,
       volumeHighlightMode: VolumeHighlightMode.BiggestVolume,
-      volumeHighlightOptions: [{ boundary: 10000, color: '#CC0099' }],
+      volumeHighlightFullness: 10000,
+      volumeHighlightOptions: [
+        { boundary: 1000, color: '#71DB20' },
+        { boundary: 5000, color: '#ff0000' },
+        { boundary: 10000, color: '#ff00ff' }
+      ],
       workingVolumes: [1, 10, 100, 1000],
       disableHotkeys: true,
       enableMouseClickSilentOrders: false,

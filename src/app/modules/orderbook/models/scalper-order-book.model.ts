@@ -21,5 +21,13 @@ export interface ScalperOrderBookRow {
   getVolumeStyle?: (() => { [key: string]: any; } | null) | null;
   currentOrders?: CurrentOrder[] | null;
   isStartRow: boolean;
+  isFiller: boolean;
+  currentPositionRangeSign: number | null;
+}
+
+export interface ScalperOrderBookPositionState {
+  price: number;
+  qty: number;
+  lossOrProfit: number;
 }
 

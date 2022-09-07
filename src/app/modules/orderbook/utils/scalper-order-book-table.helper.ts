@@ -55,7 +55,7 @@ export class ScalperOrderBookTableHelper {
         }
         else {
           const startRowIndex = tableData.findIndex(r => r.isStartRow);
-          if (bestSellRowIndex >= 0) {
+          if (startRowIndex >= 0) {
             targetIndex = startRowIndex;
           }
         }
@@ -66,4 +66,6 @@ export class ScalperOrderBookTableHelper {
       }
     });
   }
+
+
 }

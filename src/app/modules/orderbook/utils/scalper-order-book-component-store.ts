@@ -120,6 +120,7 @@ export class ScalperOrderBookComponentStore extends ComponentStore<ScalperOrderB
     const pricePrecision = MathHelper.getPrecision(step);
     return [...Array(count).keys()]
       .map(i => start + (i * step))
-      .map(x => MathHelper.round(x, pricePrecision));
+      .map(x => MathHelper.round(x, pricePrecision))
+      .filter(x => x > 0);
   }
 }
