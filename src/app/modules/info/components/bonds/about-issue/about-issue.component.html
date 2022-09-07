@@ -1,4 +1,4 @@
-<ng-container *ngIf="issue$ | async as issue">
+<ng-container *ngIf="issue$ | async as issue; else empty">
   <ng-container *ngIf="(isLoading$ | async) === false">
     <nz-descriptions [nzColumn]="columns" [nzSize]="columns === 1 ? 'small' : 'default'" nzBordered>
       <nz-descriptions-item nzTitle="Номинал">{{issue.facevalue | currency: issue.nearestCoupon.currency:'symbol-narrow'| slice: 0:-3 }}</nz-descriptions-item>
@@ -43,4 +43,6 @@
 
 <ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>
 
-
+<ng-template #empty>
+  <nz-empty *ngIf="(isLoading$ | async) === false"></nz-empty>
+</ng-template>

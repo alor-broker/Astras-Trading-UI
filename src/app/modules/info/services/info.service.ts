@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import {
   distinctUntilChanged,
   map,
-  Observable,
+  Observable, of,
   shareReplay,
   switchMap
 } from 'rxjs';
@@ -19,7 +19,7 @@ import { ExchangeInfo } from '../models/exchange-info.model';
 import { Finance } from '../models/finance.model';
 import { Issue } from '../models/issue.model';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
-import { distinct } from 'rxjs/operators';
+import { catchError, distinct } from 'rxjs/operators';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { getTypeByCfi } from 'src/app/shared/utils/instruments';
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
@@ -71,7 +71,7 @@ export class InfoService {
     );
   }
 
-  getDescription(exchangeInfo: ExchangeInfo): Observable<Description> {
+  getDescription(exchangeInfo: ExchangeInfo): Observable<Description | null> {
     return this.getInstrumentEntity<Description>(exchangeInfo, 'description').pipe(
       map(d => {
         if (d.securityType == 'unknown') {
@@ -82,28 +82,39 @@ export class InfoService {
           marginbuy: exchangeInfo?.marginbuy,
           marginsell: exchangeInfo?.marginsell
         };
-      })
-    );
+      }),
+    catchError(() => of(null)),
+  );
   }
 
-  getFinance(exchangeInfo: ExchangeInfo): Observable<Finance> {
-    return this.getInstrumentEntity<Finance>(exchangeInfo, 'finance');
+  getFinance(exchangeInfo: ExchangeInfo): Observable<Finance | null> {
+    return this.getInstrumentEntity<Finance>(exchangeInfo, 'finance')
+      .pipe(
+        catchError(() => of(null)),
+      );
   }
 
-  getCalendar(exchangeInfo: ExchangeInfo): Observable<Calendar> {
-    return this.getInstrumentEntity<Calendar>(exchangeInfo, 'bond/calendar');
+  getCalendar(exchangeInfo: ExchangeInfo): Observable<Calendar | null> {
+    return this.getInstrumentEntity<Calendar>(exchangeInfo, 'bond/calendar')
+      .pipe(
+        catchError(() => of(null)),
+      );
   }
 
-  getIssue(exchangeInfo: ExchangeInfo): Observable<Issue> {
+  getIssue(exchangeInfo: ExchangeInfo): Observable<Issue | null> {
     return this.getInstrumentEntity<Issue>(exchangeInfo, 'bond/issue').pipe(
       map(i => ({
         ...i
-      }))
+      })),
+      catchError(() => of(null)),
     );
   }
 
   getDividends(exchangeInfo: ExchangeInfo): Observable<Dividend[]> {
-    return this.getInstrumentEntity<Dividend[]>(exchangeInfo, 'stock/dividends');
+    return this.getInstrumentEntity<Dividend[]>(exchangeInfo, 'stock/dividends')
+      .pipe(
+        catchError(() => of([])),
+      );
   }
 
   private getInstrumentEntity<T>(exchangeInfo: ExchangeInfo, path: string): Observable<T> {
