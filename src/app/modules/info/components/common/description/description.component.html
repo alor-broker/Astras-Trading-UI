@@ -1,4 +1,4 @@
-<ng-container *ngIf="description$ | async as description">
+<ng-container *ngIf="description$ | async as description; else empty">
   <nz-descriptions *ngIf="(isLoading$ | async) === false" [nzColumn]="columns" [nzSize]="columns === 1 ? 'small' : 'default'" nzBordered>
     <nz-descriptions-item nzTitle="Описание"><span class="full-description">{{description.description}}</span>
     </nz-descriptions-item>
@@ -12,3 +12,6 @@
   </nz-descriptions>
 </ng-container>
 <ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>
+<ng-template #empty>
+  <nz-empty *ngIf="(isLoading$ | async) === false"></nz-empty>
+</ng-template>

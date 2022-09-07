@@ -129,7 +129,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       filters.marketType = filters.market || '';
       delete filters.market;
     }
-    if (filters.exchange || this.filters.exchange) {
+    if (filters.hasOwnProperty('exchange')) {
       filters.exchange = filters.exchange || '';
     }
 

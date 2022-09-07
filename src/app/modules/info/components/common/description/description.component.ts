@@ -13,7 +13,7 @@ export class DescriptionComponent implements OnInit, OnDestroy {
   @Input()
   guid!: string;
   columns: number = 1;
-  description$?: Observable<Description>;
+  description$?: Observable<Description | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);
   private isActivated$ = new Subject<boolean>();
 

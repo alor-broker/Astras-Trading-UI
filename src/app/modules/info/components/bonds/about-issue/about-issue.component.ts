@@ -12,7 +12,7 @@ import { distinct, map } from 'rxjs/operators';
 export class AboutIssueComponent implements OnInit, OnDestroy {
   @Input()
   guid!: string;
-  issue$?: Observable<Issue>;
+  issue$?: Observable<Issue | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);
   columns = 1;
   private isActivated$ = new Subject<boolean>();

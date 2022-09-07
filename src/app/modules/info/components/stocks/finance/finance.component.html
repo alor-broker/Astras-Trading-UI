@@ -1,4 +1,4 @@
-<ng-container *ngIf="finance$ | async as finance">
+<ng-container *ngIf="finance$ | async as finance; else empty">
   <div *ngIf="(isLoading$ | async) === false">
     <nz-descriptions [nzColumn]="columns" [nzSize]="columns === 1 ? 'small' : 'default'" nzBordered>
       <ng-container *ngIf="finance.mainIndicators">
@@ -48,3 +48,6 @@
   <ng-template #trading let-data><strong>Торговые</strong></ng-template>
 </ng-container>
 <ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>
+<ng-template #empty>
+  <nz-empty *ngIf="(isLoading$ | async) === false"></nz-empty>
+</ng-template>

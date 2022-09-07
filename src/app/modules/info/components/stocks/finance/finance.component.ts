@@ -14,7 +14,7 @@ export class FinanceComponent implements OnInit, OnDestroy {
   @Input()
   guid!: string;
   columns = 1;
-  finance$?: Observable<Finance>;
+  finance$?: Observable<Finance | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);
   private isActivated$ = new Subject<boolean>();
   private currency = "RUB";
@@ -39,7 +39,7 @@ export class FinanceComponent implements OnInit, OnDestroy {
       tap(() => this.isLoading$.next(true)),
       switchMap(exchangeInfo => this.service.getFinance(exchangeInfo)),
       tap(() => this.isLoading$.next(false)),
-      tap(f => this.currency = f.currency)
+      tap(f => this.currency = f?.currency || 'RUB')
     );
   }
 
