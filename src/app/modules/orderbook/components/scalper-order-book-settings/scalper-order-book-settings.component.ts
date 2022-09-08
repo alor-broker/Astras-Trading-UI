@@ -24,6 +24,7 @@ import {
   VolumeHighlightOption
 } from "../../../../shared/models/settings/scalper-order-book-settings.model";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
+import { InstrumentValidation } from '../../../../shared/utils/validation-options';
 
 interface SettingsFormData {
   depth: number;
@@ -51,7 +52,12 @@ type SettingsFormGroup = FormGroup & { value: SettingsFormData, controls: Settin
 })
 export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   readonly volumeHighlightModes = VolumeHighlightMode;
-  readonly validationSettings = {
+  readonly validationOptions = {
+    ...InstrumentValidation,
+    depth: {
+      min: 1,
+      max: 20
+    },
     volumeHighlightOption: {
       boundary: {
         min: 1,
@@ -61,10 +67,6 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         min: 1,
         max: 1000000000
       }
-    },
-    depth: {
-      min: 0,
-      max: 20
     },
     autoAlignIntervalSec: {
       min: 1,
@@ -172,12 +174,13 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     this.form = new FormGroup({
       symbol: new FormControl(settings.symbol, [
         Validators.required,
-        Validators.minLength(1)
+        Validators.minLength(this.validationOptions.symbol.min),
+        Validators.maxLength(this.validationOptions.symbol.max)
       ]),
       exchange: new FormControl(settings.exchange, Validators.required),
       depth: new FormControl(settings.depth, [Validators.required,
-        Validators.min(this.validationSettings.depth.min),
-        Validators.max(this.validationSettings.depth.max)]),
+        Validators.min(this.validationOptions.depth.min),
+        Validators.max(this.validationOptions.depth.max)]),
       instrumentGroup: new FormControl(settings.instrumentGroup),
       showZeroVolumeItems: new FormControl(settings.showZeroVolumeItems),
       showSpreadItems: new FormControl(settings.showSpreadItems),
@@ -186,8 +189,8 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         settings.volumeHighlightFullness ?? 1000,
         [
           Validators.required,
-          Validators.min(this.validationSettings.volumeHighlightOption.volumeHighlightFullness.min),
-          Validators.max(this.validationSettings.volumeHighlightOption.volumeHighlightFullness.max)
+          Validators.min(this.validationOptions.volumeHighlightOption.volumeHighlightFullness.min),
+          Validators.max(this.validationOptions.volumeHighlightOption.volumeHighlightFullness.max)
         ]),
       volumeHighlightOptions: new FormArray(
         [...settings.volumeHighlightOptions]
@@ -202,8 +205,8 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
       autoAlignIntervalSec: new FormControl(
         settings.autoAlignIntervalSec,
         [
-          Validators.min(this.validationSettings.autoAlignIntervalSec.min),
-          Validators.max(this.validationSettings.autoAlignIntervalSec.max)
+          Validators.min(this.validationOptions.autoAlignIntervalSec.min),
+          Validators.max(this.validationOptions.autoAlignIntervalSec.max)
         ]
       ),
     } as SettingsFormControls) as SettingsFormGroup;
@@ -215,8 +218,8 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         option?.boundary,
         [
           Validators.required,
-          Validators.min(this.validationSettings.volumeHighlightOption.boundary.min),
-          Validators.max(this.validationSettings.volumeHighlightOption.boundary.max)
+          Validators.min(this.validationOptions.volumeHighlightOption.boundary.min),
+          Validators.max(this.validationOptions.volumeHighlightOption.boundary.max)
         ]),
       color: new FormControl(option?.color, Validators.required)
     });

@@ -235,7 +235,8 @@ describe('LimitEditComponent', () => {
         lotQuantity: Number(inputs.quantity.value),
         instrument: {
           ...commandContext.commandParameters.instrument
-        }
+        },
+        instrumentCurrency: commandContext.instrument.currency
       };
 
       inputs.price.value = expectedEvaluation.price.toString();

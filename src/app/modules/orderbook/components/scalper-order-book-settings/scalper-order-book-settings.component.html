@@ -2,10 +2,10 @@
 <div *ngIf="form">
   <form (ngSubmit)="submitForm()" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
     <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Введите инструмент">
-        <nz-form-label nzFor="symbol" nzRequired>Тикер</nz-form-label>
+      <nz-form-control nzErrorTip="Тикер должен иметь длину от {{validationOptions.symbol.min}} до {{validationOptions.symbol.max}}">
+        <nz-form-label nzRequired nzFor="symbol">Тикер</nz-form-label>
         <nz-input-group>
-          <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="symbol" placeholder="Symbol"/>
+          <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" placeholder="Тикер" />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
@@ -20,9 +20,8 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
-      <nz-form-control
-        nzErrorTip="Значение глубины должно быть от {{validationSettings.depth.min}} до {{validationSettings.depth.max}}">
-        <nz-form-label nzFor="depth" nzRequired>Глубина</nz-form-label>
+      <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationOptions.depth.min}} до {{validationOptions.depth.max}}">
+        <nz-form-label nzRequired nzFor="depth">Глубина</nz-form-label>
         <nz-input-group>
           <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="depth" placeholder="7"/>
         </nz-input-group>
@@ -75,7 +74,7 @@
     <nz-collapse *ngIf="showVolumeHighlightOptions()" [nzBordered]="false" class="compact">
       <nz-collapse-panel [nzActive]="true" [nzDisabled]="hasVolumeHighlightOptionsErrors()" nzHeader="Настройки выделения объемов">
         <nz-form-item *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue">
-          <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.volumeHighlightOption.volumeHighlightFullness.min}} до {{validationSettings.volumeHighlightOption.volumeHighlightFullness.max}}">
+          <nz-form-control nzErrorTip="Значение должно быть от {{validationOptions.volumeHighlightOption.volumeHighlightFullness.min}} до {{validationOptions.volumeHighlightOption.volumeHighlightFullness.max}}">
             <nz-form-label nzFor="volumeHighlightFullness" nzRequired>Заполненность полосы объема</nz-form-label>
             <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="volumeHighlightFullness"/>
           </nz-form-control>
@@ -83,9 +82,9 @@
         <nz-form-item>
           <ng-container *ngFor="let optionForm of volumeHighlightOptions.controls; index as i">
             <div [formGroup]="asFormGroup(optionForm)" class="volume-highlight-options">
-              <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.volumeHighlightOption.boundary.min}} до {{validationSettings.volumeHighlightOption.boundary.max}}">
-                <nz-form-label nzFor="boundary" nzRequired>Объем</nz-form-label>
-                <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="boundary"/>
+              <nz-form-control nzErrorTip="Значение должно быть от {{validationOptions.volumeHighlightOption.boundary.min}} до {{validationOptions.volumeHighlightOption.boundary.max}}">
+                <nz-form-label nzRequired nzFor="boundary" nzRequired>Объем</nz-form-label>
+                <input class='ant-input' atsNumerical formControlName="boundary" (mousedown)="$event.stopPropagation()"/>
               </nz-form-control>
               <nz-form-control nzErrorTip="Выберите цвет">
                 <nz-form-label nzFor="color" nzRequired>Цвет выделения</nz-form-label>
@@ -138,7 +137,7 @@
             <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
             <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="instrumentGroup" placeholder="Режим торгов"/>
           </nz-form-control>
-          <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.autoAlignIntervalSec.min}} до {{validationSettings.autoAlignIntervalSec.max}}">
+          <nz-form-control nzErrorTip="Значение должно быть от {{validationOptions.autoAlignIntervalSec.min}} до {{validationOptions.autoAlignIntervalSec.max}}">
             <nz-form-label nzFor="instrumentGroup">Интервал автоматического выравнивания стакана, сек.</nz-form-label>
             <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="autoAlignIntervalSec"/>
           </nz-form-control>

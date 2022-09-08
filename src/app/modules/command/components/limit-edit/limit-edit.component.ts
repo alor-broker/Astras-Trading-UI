@@ -51,7 +51,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
       filter((x): x is CommandContextModel<EditParams> => !!x),
       takeUntil(this.destroy$)
     ).subscribe(context => {
-      this.initCommandForm(context.commandParameters);
+      this.initCommandForm(context);
     });
   }
 
@@ -63,7 +63,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     this.evaluation$.complete();
   }
 
-  private setLimitEditCommand(initialParameters: EditParams): void {
+  private setLimitEditCommand(commandContext: CommandContextModel<EditParams>): void {
     if (!this.form.valid) {
       this.service.setLimitEdit(null);
       return;
@@ -71,31 +71,28 @@ export class LimitEditComponent implements OnInit, OnDestroy {
 
     const formValue = this.form.value as LimitFormData;
 
-    if (initialParameters && initialParameters.user) {
+    if (commandContext.commandParameters && commandContext.commandParameters.user) {
       const newCommand: LimitEdit = {
         quantity: Number(formValue.quantity),
         price: Number(formValue.price),
         instrument: {
-          ...initialParameters.instrument
+          ...commandContext.commandParameters.instrument,
         },
-        user: initialParameters.user,
-        id: initialParameters.orderId
+        user: commandContext.commandParameters.user,
+        id: commandContext.commandParameters.orderId
       };
 
-      this.updateEvaluation(newCommand);
+      this.updateEvaluation(newCommand, commandContext);
       this.service.setLimitEdit(newCommand);
-    } else {
+    }
+    else {
       throw new Error('Empty command');
     }
   }
 
-  private initCommandForm(initialParameters: EditParams | null) {
-    if (!initialParameters) {
-      return;
-    }
-
-    this.form = this.buildForm(initialParameters);
-    this.setLimitEditCommand(initialParameters);
+  private initCommandForm(commandContext: CommandContextModel<EditParams>) {
+    this.form = this.buildForm(commandContext.commandParameters);
+    this.setLimitEditCommand(commandContext);
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
@@ -104,7 +101,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
         && prev?.quantity == curr?.quantity
       )
     ).subscribe(() => {
-      this.setLimitEditCommand(initialParameters);
+      this.setLimitEditCommand(commandContext);
     });
   }
 
@@ -127,13 +124,14 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     } as LimitFormControls) as LimitFormGroup;
   }
 
-  private updateEvaluation(command: LimitEdit) {
+  private updateEvaluation(command: LimitEdit, commandContext: CommandContextModel<EditParams>) {
     const evaluation: EvaluationBaseProperties = {
       price: command.price,
       lotQuantity: command.quantity,
       instrument: {
         ...command.instrument
       },
+      instrumentCurrency: commandContext.instrument?.currency
     };
 
     if (evaluation.price > 0) {
