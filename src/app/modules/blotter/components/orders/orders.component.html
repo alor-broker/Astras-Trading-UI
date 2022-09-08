@@ -5,87 +5,86 @@
   </nz-empty>
 </ng-template>
 
-<nz-table *ngIf="displayOrders$ | async as orders" #nzTable [nzData]="orders"
-    #nzTableComponent
-    [nzNoResult]="empty"
-    nzTableLayout="fixed"
-    nzSize="small"
-    [nzFrontPagination]="false"
-    [nzShowPagination]="false"
-    [nzScroll]="{ x: tableInnerWidth }">
-  <thead>
-    <tr>
-      <th nzWidth="5px"></th>
-      <th *ngFor='let column of listOfColumns'
-          [nzCustomFilter]='column.hasSearch ? "": null'
-          [nzSortFn]='column.sortFn'
-          [nzFilters]="column.listOfFilter"
-          [nzShowFilter]="column.hasFilter"
-          [nzFilterFn]="column.filterFn">
-        <span nz-tooltip [nzTooltipTitle]="column.tooltip">{{column.name}}</span>
-        <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
-          <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon nzType="search"></i>
-        </nz-filter-trigger>
-      </th>
-      <th>
-        <span>
-          <a nz-popconfirm
-            nzPopconfirmTitle="Точно отменить?"
-            nzOkText="Да"
-            nzCancelText="Нет"
-            (nzOnConfirm)="cancelAllOrders()">Снять все</a>
-        </span>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let ord of nzTable.data" (click)="selectInstrument(ord.symbol, ord.exchange)">
-      <td nzWidth='5px'>
-        <span
-          [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'
-          [class.cancelled-status]="ord.status.toString() === 'canceled'"
-        >
-          &nbsp;
-        </span>
-      </td>
-      <td *ngIf='shouldShow("id")'>{{ ord.id }}</td>
-      <td class='bold' *ngIf='shouldShow("symbol")'>
-        <span class="symbol-name">{{ ord.symbol }}</span>
-        <ng-container *ngIf="selectedInstruments$ | async as selectedInstruments">
+<ng-container *ngIf="selectedInstruments$ | async as selectedInstruments">
+  <nz-table *ngIf="displayOrders$ | async as orders" #nzTable [nzData]="orders"
+      #nzTableComponent
+      [nzNoResult]="empty"
+      nzTableLayout="fixed"
+      nzSize="small"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      [nzScroll]="{ x: tableInnerWidth }">
+    <thead>
+      <tr>
+        <th nzWidth="5px"></th>
+        <th *ngFor='let column of listOfColumns'
+            [nzCustomFilter]='column.hasSearch ? "": null'
+            [nzSortFn]='column.sortFn'
+            [nzFilters]="column.listOfFilter"
+            [nzShowFilter]="column.hasFilter"
+            [nzFilterFn]="column.filterFn">
+          <span nz-tooltip [nzTooltipTitle]="column.tooltip">{{column.name}}</span>
+          <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
+            <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon nzType="search"></i>
+          </nz-filter-trigger>
+        </th>
+        <th>
+          <span>
+            <a nz-popconfirm
+              nzPopconfirmTitle="Точно отменить?"
+              nzOkText="Да"
+              nzCancelText="Нет"
+              (nzOnConfirm)="cancelAllOrders()">Снять все</a>
+          </span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ord of nzTable.data" (click)="selectInstrument(ord.symbol, ord.exchange)">
+        <td nzWidth='5px'>
+          <span
+            [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'
+            [class.cancelled-status]="ord.status.toString() === 'canceled'"
+          >
+            &nbsp;
+          </span>
+        </td>
+        <td *ngIf='shouldShow("id")'>{{ ord.id }}</td>
+        <td class='bold' *ngIf='shouldShow("symbol")'>
+          <span class="symbol-name">{{ ord.symbol }}</span>
           <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
             <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === ord.symbol"></nz-badge>
           </ng-container>
-        </ng-container>
-      </td>
-      <td [class]='ord.side.toString() === "sell" ? "sell" : "buy"' *ngIf='shouldShow("side")'>{{ ord.side }}</td>
-      <td *ngIf='shouldShow("residue")'>{{ ord.residue }}</td>
-      <td *ngIf='shouldShow("volume")'>{{ ord.volume }}</td>
-      <td *ngIf='shouldShow("qty")'>{{ ord.qty }}</td>
-      <td *ngIf='shouldShow("price")'>{{ ord.price }}</td>
-      <td [class]='ord.status.toString() === "filled"
-        ? (ord.status.toString() === "sell" ? "sell" : "buy") :
-        (ord.status.toString() === "canceled" ? "cancelled" : "bold" )' *ngIf='shouldShow("status")'>{{ translateStatus(ord.status) }}</td>
-      <td *ngIf='shouldShow("transTime")'>{{ formatDate(ord.transTime) }}</td>
-      <td *ngIf='shouldShow("exchange")'>{{ ord.exchange }}</td>
-      <td *ngIf='shouldShow("type")'>{{ ord.type }}</td>
-      <td *ngIf='shouldShow("endTime")'>{{ formatDate(ord.endTime) }}</td>
-      <td>
-        <a *ngIf='ord.status.toString() === "working" && ord.type === "limit"' (click)="editOrder(ord)">
-          <i nz-icon nzType="edit" nzTheme="outline"></i>
-        </a>
-        &nbsp;
-        <a *ngIf='ord.status.toString() === "working"' nz-popconfirm
-          nzPopconfirmTitle="Точно отменить?"
-          nzOkText="Да"
-          nzCancelText="Нет"
-          (nzOnConfirm)="cancelOrder(ord.id)">
-          <i nz-icon nzType="close-circle" nzTheme="outline"></i>
-        </a>
-      </td>
-    </tr>
-  </tbody>
-</nz-table>
-
+        </td>
+        <td [class]='ord.side.toString() === "sell" ? "sell" : "buy"' *ngIf='shouldShow("side")'>{{ ord.side }}</td>
+        <td *ngIf='shouldShow("residue")'>{{ ord.residue }}</td>
+        <td *ngIf='shouldShow("volume")'>{{ ord.volume }}</td>
+        <td *ngIf='shouldShow("qty")'>{{ ord.qty }}</td>
+        <td *ngIf='shouldShow("price")'>{{ ord.price }}</td>
+        <td [class]='ord.status.toString() === "filled"
+          ? (ord.status.toString() === "sell" ? "sell" : "buy") :
+          (ord.status.toString() === "canceled" ? "cancelled" : "bold" )' *ngIf='shouldShow("status")'>{{ translateStatus(ord.status) }}</td>
+        <td *ngIf='shouldShow("transTime")'>{{ formatDate(ord.transTime) }}</td>
+        <td *ngIf='shouldShow("exchange")'>{{ ord.exchange }}</td>
+        <td *ngIf='shouldShow("type")'>{{ ord.type }}</td>
+        <td *ngIf='shouldShow("endTime")'>{{ formatDate(ord.endTime) }}</td>
+        <td>
+          <a *ngIf='ord.status.toString() === "working" && ord.type === "limit"' (click)="editOrder(ord)">
+            <i nz-icon nzType="edit" nzTheme="outline"></i>
+          </a>
+          &nbsp;
+          <a *ngIf='ord.status.toString() === "working"' nz-popconfirm
+            nzPopconfirmTitle="Точно отменить?"
+            nzOkText="Да"
+            nzCancelText="Нет"
+            (nzOnConfirm)="cancelOrder(ord.id)">
+            <i nz-icon nzType="close-circle" nzTheme="outline"></i>
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</ng-container>
 <div class="export-button-container" *ngIf="canExport">
   <button nz-button nzType="link" (click)="exportToFile()"><i nz-icon nzType="download"></i>Сохранить в файл</button>
 </div>

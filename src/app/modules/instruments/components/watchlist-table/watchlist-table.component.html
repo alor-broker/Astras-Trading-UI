@@ -1,56 +1,55 @@
-<nz-table *ngIf="watchedInstruments$ | async as instruments"
-  #nzTable
-  [nzData]="instruments"
-  nzTableLayout="fixed"
-  nzSize="small"
-  [nzFrontPagination]="false"
-  [nzShowPagination]="false">
-  <thead>
-    <tr>
-      <th [nzSortFn]="sortFns[col.columnId]" *ngFor="let col of displayedColumns">
-        <span nz-tooltip [nzTooltipTitle]="col.tooltip">
-          {{col.name}}
-        </span>
-      </th>
-      <th><span nz-tooltip nzTooltipTitle="Убрать из наблюдения">Удл.</span></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr
-      *ngFor="let inst of nzTable.data; trackBy: getTrackKey"
-      (click)='makeActive(inst.instrument)'
-      (contextmenu)="contextMenu($event, menu, inst.instrument)"
-    >
-      <td *ngIf="isVisibleColumn('symbol')" class="ticker">
-        <span class="ticker-name">{{ inst.instrument.symbol }}</span>
-
-        <ng-container *ngIf="selectedInstruments$ | async as selectedInstruments">
+<ng-container *ngIf="selectedInstruments$ | async as selectedInstruments">
+  <nz-table *ngIf="watchedInstruments$ | async as instruments"
+    #nzTable
+    [nzData]="instruments"
+    nzTableLayout="fixed"
+    nzSize="small"
+    [nzFrontPagination]="false"
+    [nzShowPagination]="false">
+    <thead>
+      <tr>
+        <th [nzSortFn]="sortFns[col.columnId]" *ngFor="let col of displayedColumns">
+          <span nz-tooltip [nzTooltipTitle]="col.tooltip">
+            {{col.name}}
+          </span>
+        </th>
+        <th><span nz-tooltip nzTooltipTitle="Убрать из наблюдения">Удл.</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let inst of nzTable.data; trackBy: getTrackKey"
+        (click)='makeActive(inst.instrument)'
+        (contextmenu)="contextMenu($event, menu, inst.instrument)"
+      >
+        <td *ngIf="isVisibleColumn('symbol')" class="ticker">
+          <span class="ticker-name">{{ inst.instrument.symbol }}</span>
           <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
             <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === inst.instrument.symbol"></nz-badge>
           </ng-container>
-        </ng-container>
-      </td>
-      <td *ngIf="isVisibleColumn('price')">
-        <ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'>
-        </ats-price-tick>
-      </td>
-      <td *ngIf="isVisibleColumn('dayChange')" [ngClass]="inst.dayChange < 0 ? 'sellCell' : 'buyCell'">
-        {{ inst.dayChange }}
-      </td>
-      <td *ngIf="isVisibleColumn('dayChangePerPrice')" [ngClass]="inst.dayChangePerPrice < 0 ? 'sellCell' : 'buyCell'">
-        {{ inst.dayChangePerPrice }}
-      </td>
-      <td *ngIf="isVisibleColumn('maxPrice')">{{ inst.maxPrice }}</td>
-      <td *ngIf="isVisibleColumn('minPrice')">{{ inst.minPrice }}</td>
-      <td *ngIf="isVisibleColumn('volume')">{{ inst.volume }}</td>
-      <td *ngIf="isVisibleColumn('openPrice')">{{ inst.openPrice }}</td>
-      <td *ngIf="isVisibleColumn('closePrice')">{{ inst.closePrice }}</td>
-      <td>
-        <button nzDanger nzSize='small' nz-button nzType="primary" (click)="remove(inst.instrument)"><i nz-icon nzType="minus"></i></button>
-      </td>
-    </tr>
-  </tbody>
-</nz-table>
+        </td>
+        <td *ngIf="isVisibleColumn('price')">
+          <ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'>
+          </ats-price-tick>
+        </td>
+        <td *ngIf="isVisibleColumn('dayChange')" [ngClass]="inst.dayChange < 0 ? 'sellCell' : 'buyCell'">
+          {{ inst.dayChange }}
+        </td>
+        <td *ngIf="isVisibleColumn('dayChangePerPrice')" [ngClass]="inst.dayChangePerPrice < 0 ? 'sellCell' : 'buyCell'">
+          {{ inst.dayChangePerPrice }}
+        </td>
+        <td *ngIf="isVisibleColumn('maxPrice')">{{ inst.maxPrice }}</td>
+        <td *ngIf="isVisibleColumn('minPrice')">{{ inst.minPrice }}</td>
+        <td *ngIf="isVisibleColumn('volume')">{{ inst.volume }}</td>
+        <td *ngIf="isVisibleColumn('openPrice')">{{ inst.openPrice }}</td>
+        <td *ngIf="isVisibleColumn('closePrice')">{{ inst.closePrice }}</td>
+        <td>
+          <button nzDanger nzSize='small' nz-button nzType="primary" (click)="remove(inst.instrument)"><i nz-icon nzType="minus"></i></button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</ng-container>
 
 <nz-dropdown-menu #menu="nzDropdownMenu">
   <ats-widget-menu [showedWidgets]="showedWidgetNames" (selected)="addWidget($event)"></ats-widget-menu>
