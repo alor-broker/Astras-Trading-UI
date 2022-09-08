@@ -1,4 +1,4 @@
-<ng-container *ngIf="calendar$ | async as calendar">
+<ng-container *ngIf="calendar$ | async as calendar; else empty">
   <div *ngIf="(isLoading$ | async) === false">
     <nz-table  #couponsTable [nzData]="calendar.coupons" #nzTableComponent nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Купоны">
       <thead>
@@ -56,3 +56,7 @@
   </div>
 </ng-container>
 <ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>
+
+<ng-template #empty>
+  <nz-empty *ngIf="(isLoading$ | async) === false"></nz-empty>
+</ng-template>

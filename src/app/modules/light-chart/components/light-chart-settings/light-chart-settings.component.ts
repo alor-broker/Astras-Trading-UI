@@ -22,6 +22,7 @@ import {
   takeUntil
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
+import { InstrumentValidation } from '../../../../shared/utils/validation-options';
 
 @Component({
   selector: 'ats-light-chart-settings[guid]',
@@ -29,6 +30,7 @@ import { exchangesList } from "../../../../shared/models/enums/exchanges";
   styleUrls: ['./light-chart-settings.component.less']
 })
 export class LightChartSettingsComponent implements OnInit, OnDestroy {
+  readonly validationOptions = InstrumentValidation;
   @Input()
   guid!: string;
   @Output()
@@ -49,7 +51,8 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
       this.form = new FormGroup({
         symbol: new FormControl(settings.symbol, [
           Validators.required,
-          Validators.minLength(4)
+          Validators.minLength(this.validationOptions.symbol.min),
+          Validators.maxLength(this.validationOptions.symbol.max)
         ]),
         exchange: new FormControl(settings.exchange, Validators.required),
         timeFrame: new FormControl(settings.timeFrame, Validators.required),
