@@ -16,7 +16,6 @@ export class SsoCallbackComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.account.setUser({
         refreshToken: params['refreshToken']?.trim(),
-        login: params['userName']?.trim(),
         jwt: params['token'],
         isLoggedOut: false
       });

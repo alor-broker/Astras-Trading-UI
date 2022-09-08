@@ -1,5 +1,5 @@
 export interface BaseUser {
-  login: string,
+  login?: string,
   refreshToken: string,
   jwt: string,
   isLoggedOut: boolean,
