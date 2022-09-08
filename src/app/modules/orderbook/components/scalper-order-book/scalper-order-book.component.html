@@ -59,7 +59,7 @@
           }">
           <td [ngStyle]='row.getVolumeStyle ? row.getVolumeStyle() : null' class="volume-cell"
               nzAlign="left">{{row.volume}}</td>
-          <td class="price-cell" nzAlign="left">{{row.price}}</td>
+          <td class="price-cell" nzAlign="center">{{row.price}}</td>
           <td nzAlign="right">
             <span>{{getCurrentOrdersVolume(row.currentOrders)}}</span>
             <button (click)="cancelRowOrders(row, $event)" *ngIf='row.currentOrders?.length > 0'

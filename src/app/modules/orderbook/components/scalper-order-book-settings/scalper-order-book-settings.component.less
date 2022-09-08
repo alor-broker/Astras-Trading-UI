@@ -1,6 +1,26 @@
-.compact {
-  margin: 0
+nz-form-item {
+  &.compact {
+    margin: 0
+  }
+
+  &.one-row {
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+
+    nz-form-label {
+      padding-right: 5px;
+      flex: initial;
+    }
+
+    nz-form-control {
+      align-items: flex-end;
+      padding-right: 5px;
+      flex: initial;
+    }
+  }
 }
+
 
 .volume-highlight-options {
   width: 100%;

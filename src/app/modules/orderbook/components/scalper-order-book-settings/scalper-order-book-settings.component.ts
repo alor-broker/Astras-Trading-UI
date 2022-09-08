@@ -130,7 +130,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         ),
         volumeHighlightFullness: Number(this.form.value.volumeHighlightFullness),
         workingVolumes: this.form.value.workingVolumes.map((wv: string) => Number(wv)),
-        autoAlignIntervalSec: Number(this.form.value.autoAlignIntervalSec),
+        autoAlignIntervalSec: !!this.form.value.autoAlignIntervalSec ? Number(this.form.value.autoAlignIntervalSec) : null,
         linkToActive: false
       });
 

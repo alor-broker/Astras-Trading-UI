@@ -104,7 +104,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   private orderBookContext?: {
-    expendedSettings$: Observable<ExtendedSettings>;
+    extendedSettings$: Observable<ExtendedSettings>;
     currentOrders$: Observable<CurrentOrder[]>;
     orderBookData$: Observable<OrderbookData>;
     orderBookPosition$: Observable<Position | null>;
@@ -134,7 +134,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       shareReplay(1)
     );
 
-    this.orderBookPosition$ = this.getPositionStateStream(this.orderBookTableData$, this.orderBookContext!.orderBookPosition$);
+    this.orderBookPosition$ = this.getPositionStateStream();
 
     this.subscribeToHotkeys();
     this.subscribeToWorkingVolumesChange();
@@ -300,7 +300,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       filter((lastPrice): lastPrice is number => !!lastPrice),
     );
 
-    this.orderBookContext?.expendedSettings$.pipe(
+    this.orderBookContext?.extendedSettings$.pipe(
       tap(() => this.isLoading$.next(true)),
       tap(() => this.scalperOrderBookStore.resetState()),
       mapWith(
@@ -335,7 +335,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
   private getOrderBookTableData(): Observable<ScalperOrderBookRow[]> {
     return combineLatest([
-      this.orderBookContext!.expendedSettings$,
+      this.orderBookContext!.extendedSettings$,
       this.scalperOrderBookStore.rows$,
       this.orderBookContext!.orderBookData$,
       this.orderBookContext!.currentOrders$,
@@ -404,7 +404,8 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
           ? orderBookBounds.maxBid
           : orderBookBounds.minAsk;
 
-        const currentPositionRangeSign = basePrice - currentPosition.avgPrice;
+        const sign = currentPosition.qtyTFuture > 0 ? 1 : -1;
+        const currentPositionRangeSign = (basePrice - currentPosition.avgPrice) * sign;
 
         const isCurrentPositionRange = row.price <= basePrice && row.price >= currentPosition.avgPrice
           || (row.price >= basePrice && row.price <= currentPosition.avgPrice);
@@ -427,7 +428,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       );
 
     this.orderBookContext = {
-      expendedSettings$: settings$,
+      extendedSettings$: settings$,
       currentOrders$: this.getCurrentOrdersStream(settings$),
       orderBookData$: this.getOrderBookDataStream(settings$),
       orderBookPosition$: this.getOrderBookPositionStream(settings$)
@@ -599,7 +600,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   private callWithSettings(action: (settings: { widgetSettings: ScalperOrderBookSettings, instrument: Instrument }) => void) {
-    this.orderBookContext!.expendedSettings$.pipe(
+    this.orderBookContext!.extendedSettings$.pipe(
       take(1)
     ).subscribe(s => action(s));
   }
@@ -624,7 +625,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   private subscribeToHotkeys() {
-    this.orderBookContext?.expendedSettings$?.pipe(
+    this.orderBookContext?.extendedSettings$?.pipe(
       mapWith(
         () => this.hotkeysService.commands$,
         (settings, command) => ({ settings, command })
@@ -736,7 +737,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       takeUntil(this.destroy$),
       distinctUntilChanged((prev, curr) =>
         prev.hotKeysSettings?.workingVolumes?.length === curr.hotKeysSettings?.workingVolumes?.length),
-      withLatestFrom(this.orderBookContext!.expendedSettings$.pipe(take(1))),
+      withLatestFrom(this.orderBookContext!.extendedSettings$.pipe(take(1))),
     ).subscribe(([terminalSettings, settings]) => {
       this.settingsService.updateSettings(this.guid, {
         workingVolumes: terminalSettings.hotKeysSettings?.workingVolumes
@@ -744,7 +745,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       });
     });
 
-    this.orderBookContext!.expendedSettings$!.pipe(
+    this.orderBookContext!.extendedSettings$!.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.workingVolumes = settings.widgetSettings.workingVolumes;
@@ -780,12 +781,12 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   private initAutoAlign() {
-    this.isAutoAlignAvailable$ = this.orderBookContext!.expendedSettings$.pipe(
+    this.isAutoAlignAvailable$ = this.orderBookContext!.extendedSettings$.pipe(
       map(s => !!s.widgetSettings.autoAlignIntervalSec && s.widgetSettings.autoAlignIntervalSec > 0),
       shareReplay(1)
     );
 
-    this.orderBookContext?.expendedSettings$.pipe(
+    this.orderBookContext?.extendedSettings$.pipe(
       map(settings => settings.widgetSettings.autoAlignIntervalSec),
       filter((x): x is number => !!x && x > 0),
       mapWith(() => this.enableAutoAlign$, (interval, enabled) => ({ interval, enabled })),
@@ -794,30 +795,28 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     ).subscribe(() => this.alignTable());
   }
 
-  private getPositionStateStream(
-    orderBookRows$: Observable<ScalperOrderBookRow[]>,
-    orderBookPosition$: Observable<Position | null>): Observable<ScalperOrderBookPositionState | null> {
+  private getPositionStateStream(): Observable<ScalperOrderBookPositionState | null> {
     return combineLatest([
-      orderBookRows$,
-      orderBookPosition$
+      this.orderBookContext!.extendedSettings$,
+      this.orderBookContext!.orderBookData$,
+      this.orderBookContext!.orderBookPosition$
     ]).pipe(
-      map(([rows, position]) => {
-        if (!position) {
+      map(([settings, orderBook, position]) => {
+        if (!position || orderBook.a.length === 0 || orderBook.b.length === 0) {
           return null;
         }
 
-        const priceRowIndex = rows.findIndex(r => r.price === position!.avgPrice);
         const sign = position!.qtyTFuture > 0 ? 1 : -1;
-        const bestRowType = sign > 0 ? ScalperOrderBookRowType.Bid :
-          ScalperOrderBookRowType.Ask;
-        const bestRowIndex = rows.findIndex(r => r.isBest && r.rowType === bestRowType);
+        const bestPrice = sign > 0
+          ? orderBook.b[0].p
+          : orderBook.a[0].p;
+
+        const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
 
         return {
           qty: position!.qtyTFuture,
           price: position!.avgPrice,
-          lossOrProfit: bestRowIndex >= 0 && priceRowIndex >= 0
-            ? (priceRowIndex - bestRowIndex) * sign
-            : 0
+          lossOrProfit: rowsDifference
         };
       })
     );
