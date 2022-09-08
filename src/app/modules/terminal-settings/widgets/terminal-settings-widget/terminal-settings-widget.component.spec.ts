@@ -2,7 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalService } from 'src/app/shared/services/modal.service';
 
 import { TerminalSettingsWidgetComponent } from './terminal-settings-widget.component';
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import { TerminalSettingsService } from "../../services/terminal-settings.service";
+import { of } from "rxjs";
 
 describe('TerminalSettingsWidgetComponent', () => {
   let component: TerminalSettingsWidgetComponent;
@@ -14,10 +16,16 @@ describe('TerminalSettingsWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         TerminalSettingsWidgetComponent,
-        ...ngZorroMockComponents
+      ],
+      imports: [
+        ...sharedModuleImportForTests
       ],
       providers: [
-        { provide: ModalService, useValue: modalSpy }
+        { provide: ModalService, useValue: modalSpy },
+        {
+          provide: TerminalSettingsService,
+          useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})) }
+        },
       ]
     }).compileComponents();
   });

@@ -1,9 +1,9 @@
 <div>
-  <nz-modal nzOkText="Ок" [nzCancelText]="null" [nzVisible]='isVisible$ | async'
-    nzTitle="Профиль" (nzOnOk)="handleClose()" (nzOnCancel)="handleClose()" >
+  <nz-modal nzOkText="Сохранить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
+    nzTitle="Профиль" (nzOnOk)="saveSettingsChanges()" (nzOnCancel)="handleClose()">
     <!-- [nzBodyStyle]="{overflowY: 'auto', height: '300px' }"  -->
     <ng-container *nzModalContent>
-      <ats-terminal-settings></ats-terminal-settings>
+      <ats-terminal-settings [settingsForm]="settingsForm"></ats-terminal-settings>
     </ng-container>
   </nz-modal>
 </div>
