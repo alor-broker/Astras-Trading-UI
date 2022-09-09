@@ -3,8 +3,6 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 
 import { TerminalSettingsWidgetComponent } from './terminal-settings-widget.component';
 import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
-import { TerminalSettingsService } from "../../services/terminal-settings.service";
-import { of } from "rxjs";
 
 describe('TerminalSettingsWidgetComponent', () => {
   let component: TerminalSettingsWidgetComponent;
@@ -21,11 +19,7 @@ describe('TerminalSettingsWidgetComponent', () => {
         ...sharedModuleImportForTests
       ],
       providers: [
-        { provide: ModalService, useValue: modalSpy },
-        {
-          provide: TerminalSettingsService,
-          useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})) }
-        },
+        { provide: ModalService, useValue: modalSpy }
       ]
     }).compileComponents();
   });

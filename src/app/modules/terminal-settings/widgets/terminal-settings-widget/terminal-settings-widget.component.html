@@ -3,7 +3,7 @@
     nzTitle="Профиль" (nzOnOk)="saveSettingsChanges()" (nzOnCancel)="handleClose()">
     <!-- [nzBodyStyle]="{overflowY: 'auto', height: '300px' }"  -->
     <ng-container *nzModalContent>
-      <ats-terminal-settings [settingsForm]="settingsForm"></ats-terminal-settings>
+      <ats-terminal-settings (formChange)="formChange($event)"></ats-terminal-settings>
     </ng-container>
   </nz-modal>
 </div>
