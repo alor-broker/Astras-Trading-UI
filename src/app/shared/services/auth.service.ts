@@ -144,7 +144,7 @@ export class AuthService {
 
   private extractPortfolios(jwt: string) : string[] {
     if (jwt) {
-      return this.decodeJwtBody(jwt).portfolios.split(' ');
+      return this.decodeJwtBody(jwt).portfolios?.split(' ');
     }
     return [];
   }

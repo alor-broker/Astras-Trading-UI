@@ -35,6 +35,9 @@ import { ExportHelper } from "../../utils/export-helper";
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
+import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
+import { Store } from "@ngrx/store";
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -246,6 +249,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
     },
   ];
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
+  selectedInstruments$: Observable<InstrumentBadges> = of({});
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private cancelCommands = new Subject<CancelCommand>();
   private cancels$ = this.cancelCommands.asObservable();
@@ -259,7 +263,9 @@ export class OrdersComponent implements OnInit, OnDestroy {
     private readonly service: BlotterService,
     private readonly canceller: OrderCancellerService,
     private readonly modal: ModalService,
-    private readonly timezoneConverterService: TimezoneConverterService) {
+    private readonly timezoneConverterService: TimezoneConverterService,
+    private readonly store: Store
+    ) {
   }
 
   ngOnInit(): void {
@@ -305,6 +311,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
       catchError((_, caught) => caught),
       takeUntil(this.destroy$)
     ).subscribe();
+
+    this.selectedInstruments$ = this.store.select(getSelectedInstrumentsWithBadges);
   }
 
   ngOnDestroy(): void {
