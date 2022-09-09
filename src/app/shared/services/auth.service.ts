@@ -53,10 +53,12 @@ export class AuthService {
   public setUser(baseUser: BaseUser) {
     const portfolios = this.extractPortfolios(baseUser.jwt);
     const clientId = this.extractClientId(baseUser.jwt);
+    const login = this.extractUserLogin(baseUser.jwt);
     const user : User = {
       ...baseUser,
       clientId,
-      portfolios
+      portfolios,
+      login
     };
 
     this.localStorage.setItem(this.userStorage, user);
@@ -144,7 +146,7 @@ export class AuthService {
 
   private extractPortfolios(jwt: string) : string[] {
     if (jwt) {
-      return this.decodeJwtBody(jwt).portfolios?.split(' ');
+      return this.decodeJwtBody(jwt).portfolios?.split(' ') || [];
     }
     return [];
   }
@@ -153,6 +155,13 @@ export class AuthService {
     if (jwt) {
       let decoded = this.decodeJwtBody(jwt);
       return decoded.clientid;
+    }
+    return '';
+  }
+
+  private extractUserLogin(jwt: string | undefined) : string {
+    if (jwt) {
+      return this.decodeJwtBody(jwt).sub;
     }
     return '';
   }

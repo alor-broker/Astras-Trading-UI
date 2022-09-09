@@ -35,7 +35,7 @@ export class AccountService {
     return this.auth.currentUser$.pipe(
       map((u) => u.login),
       distinct(),
-      switchMap((login) => this.positionsService.getAllByLogin(login)),
+      switchMap((login) => this.positionsService.getAllByLogin(login!)),
       map((positions) => {
         return findUnique(
           positions,
