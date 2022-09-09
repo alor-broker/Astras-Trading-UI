@@ -106,7 +106,7 @@ export function isScalperOrderBookSettings(
     'showYieldForBonds' in settings &&
     'showZeroVolumeItems' in settings &&
     'showSpreadItems' in settings &&
-    'highlightHighVolume' in settings &&
+    'volumeHighlightMode' in settings &&
     'volumeHighlightOptions' in settings &&
     'workingVolumes' in settings &&
     'disableHotkeys' in settings &&
@@ -378,18 +378,17 @@ export function isEqualScalperOrderBookSettings(
   settings2: ScalperOrderBookSettings
 ) : boolean {
   if (settings1 && settings2) {
-    return (
+      return (
+      settings1.badgeColor == settings2.badgeColor &&
       settings1.guid == settings2.guid &&
       settings1.symbol == settings2.symbol &&
       settings1.instrumentGroup == settings2.instrumentGroup &&
       settings1.linkToActive == settings2.linkToActive &&
       settings1.exchange == settings2.exchange &&
       settings1.depth == settings2.depth &&
-      settings1.showYieldForBonds == settings2.showYieldForBonds &&
       settings1.showZeroVolumeItems == settings2.showZeroVolumeItems &&
       settings1.showSpreadItems == settings2.showSpreadItems &&
-      settings1.highlightHighVolume == settings2.highlightHighVolume &&
-      settings1.badgeColor == settings2.badgeColor &&
+      settings1.volumeHighlightMode == settings2.volumeHighlightMode &&
       isArrayEqual(
         settings1.volumeHighlightOptions,
         settings2.volumeHighlightOptions,
@@ -401,7 +400,8 @@ export function isEqualScalperOrderBookSettings(
         (a, b) => a === b
       ) &&
       settings1.disableHotkeys == settings2.disableHotkeys &&
-      settings1.enableMouseClickSilentOrders == settings2.enableMouseClickSilentOrders
+      settings1.enableMouseClickSilentOrders == settings2.enableMouseClickSilentOrders &&
+      settings1.autoAlignIntervalSec == settings2.autoAlignIntervalSec
     );
   } else return false;
 }

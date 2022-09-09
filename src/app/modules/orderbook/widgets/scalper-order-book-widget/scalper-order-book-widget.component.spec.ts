@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ScalperOrderBookWidgetComponent } from './scalper-order-book-widget.component';
 import { mockComponent } from "../../../../shared/utils/testing";
+import { EventEmitter } from '@angular/core';
+import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 
 describe('ScalperOrderBookWidgetComponent', () => {
   let component: ScalperOrderBookWidgetComponent;
@@ -13,7 +15,7 @@ describe('ScalperOrderBookWidgetComponent', () => {
         ScalperOrderBookWidgetComponent,
         mockComponent({
           selector: 'ats-scalper-order-book',
-          inputs: ['guid', 'shouldShowSettings']
+          inputs: ['guid', 'shouldShowSettings', 'contentSize']
         })
       ]
     })
@@ -23,6 +25,7 @@ describe('ScalperOrderBookWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ScalperOrderBookWidgetComponent);
     component = fixture.componentInstance;
+    component.resize = new EventEmitter<DashboardItem>();
     fixture.detectChanges();
   });
 

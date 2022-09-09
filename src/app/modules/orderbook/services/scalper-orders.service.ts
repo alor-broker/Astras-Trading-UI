@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {
   CurrentOrder,
-  ScalperOrderBookRowType,
-  ScalperOrderBookRowView
+  ScalperOrderBookRow,
+  ScalperOrderBookRowType
 } from "../models/scalper-order-book.model";
 import { OrderCancellerService } from "../../../shared/services/order-canceller.service";
 import { CancelCommand } from "../../../shared/models/commands/cancel-command.model";
@@ -33,6 +33,8 @@ import {
   StopMarketOrder
 } from "../../command/models/order.model";
 import { CommandType } from "../../../shared/models/enums/command-type.model";
+import { OrderbookData } from '../models/orderbook-data.model';
+import { Instrument } from '../../../shared/models/instruments/instrument.model';
 
 @Injectable({
   providedIn: 'root'
@@ -66,35 +68,38 @@ export class ScalperOrdersService {
 
   closePositionsByMarket(instrumentKey: InstrumentKey): void {
     this.getCurrentPositionsWithPortfolio(instrumentKey)
-    .subscribe(({ portfolio, positions }) => {
-      positions.forEach(pos => {
-        if (!pos.qtyTFuture) {
-          return;
-        }
+      .subscribe(({ portfolio, positions }) => {
+        positions.forEach(pos => {
+          if (!pos.qtyTFuture) {
+            return;
+          }
 
-        this.orderService.submitMarketOrder({
-            side: pos.qtyTFuture > 0 ? Side.Sell : Side.Buy,
-            quantity: Math.abs(pos.qtyTFuture),
-            instrument: instrumentKey,
-          },
-          portfolio.portfolio
-        ).subscribe();
+          this.orderService.submitMarketOrder({
+              side: pos.qtyTFuture > 0 ? Side.Sell : Side.Buy,
+              quantity: Math.abs(pos.qtyTFuture),
+              instrument: instrumentKey,
+            },
+            portfolio.portfolio
+          ).subscribe();
+        });
       });
-    });
   }
 
-  placeBestOrder(instrumentKey: InstrumentKey, side: Side, quantity: number, rows: ScalperOrderBookRowView[]): void {
-    const spreadRows = rows.filter(r => r.rowType === ScalperOrderBookRowType.Spread).map(r => r.price);
+  placeBestOrder(instrument: Instrument, side: Side, quantity: number, orderBook: OrderbookData): void {
     let price: number | undefined;
 
-    if (spreadRows.length) {
+    const bestAsk = orderBook.a[0].p;
+    const bestBid = orderBook.b[0].p;
+
+    if ((bestAsk - bestBid) > instrument.minstep) {
       price = side === Side.Sell
-        ? spreadRows.shift()
-        : spreadRows.pop();
-    } else {
+        ? bestAsk - instrument.minstep
+        : bestBid + instrument.minstep;
+    }
+    else {
       price = side === Side.Sell
-        ? rows.filter(r => r.rowType === ScalperOrderBookRowType.Ask).map(r => r.price).pop()
-        : rows.filter(r => r.rowType === ScalperOrderBookRowType.Bid).map(r => r.price).shift();
+        ? bestAsk
+        : bestBid;
     }
 
     if (price != undefined) {
@@ -103,142 +108,146 @@ export class ScalperOrdersService {
             side: side,
             price: price!,
             quantity: quantity,
-            instrument: instrumentKey
+            instrument: instrument
           },
           portfolio.portfolio)
-        .subscribe();
+          .subscribe();
       });
     }
   }
 
   placeMarketOrder(instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean): void {
     this.getCurrentPortfolio()
-    .subscribe(portfolio => {
-      const order: MarketOrder = {
-        side: side,
-        quantity: quantity,
-        instrument: instrumentKey
-      };
+      .subscribe(portfolio => {
+        const order: MarketOrder = {
+          side: side,
+          quantity: quantity,
+          instrument: instrumentKey
+        };
 
-      if (silent) {
-        this.orderService.submitMarketOrder(order, portfolio.portfolio).subscribe();
-      } else {
-        this.modal.openCommandModal({
-          ...order,
-          type: CommandType.Market
-        });
-      }
-    });
+        if (silent) {
+          this.orderService.submitMarketOrder(order, portfolio.portfolio).subscribe();
+        }
+        else {
+          this.modal.openCommandModal({
+            ...order,
+            type: CommandType.Market
+          });
+        }
+      });
   }
 
   placeLimitOrder(instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) {
     this.getCurrentPortfolio()
-    .subscribe(portfolio => {
-      const order: LimitOrder = {
-        side: side,
-        quantity: quantity,
-        price: price,
-        instrument: instrumentKey
-      };
+      .subscribe(portfolio => {
+        const order: LimitOrder = {
+          side: side,
+          quantity: quantity,
+          price: price,
+          instrument: instrumentKey
+        };
 
-      if (silent) {
-        this.orderService.submitLimitOrder(order, portfolio.portfolio).subscribe();
-      } else {
-        this.modal.openCommandModal({
-          ...order,
-          type: CommandType.Limit
-        });
-      }
-    });
+        if (silent) {
+          this.orderService.submitLimitOrder(order, portfolio.portfolio).subscribe();
+        }
+        else {
+          this.modal.openCommandModal({
+            ...order,
+            type: CommandType.Limit
+          });
+        }
+      });
   }
 
   reversePositionsByMarket(instrumentKey: InstrumentKey): void {
     this.getCurrentPositionsWithPortfolio(instrumentKey)
-    .subscribe(({ portfolio, positions }) => {
-      positions.forEach(pos => {
-        if (!pos.qtyTFuture) {
-          return;
-        }
+      .subscribe(({ portfolio, positions }) => {
+        positions.forEach(pos => {
+          if (!pos.qtyTFuture) {
+            return;
+          }
 
-        this.orderService.submitMarketOrder({
-            side: pos.qtyTFuture > 0 ? Side.Sell : Side.Buy,
-            quantity: Math.abs(pos.qtyTFuture * 2),
-            instrument: instrumentKey,
-          },
-          portfolio.portfolio
-        ).subscribe();
+          this.orderService.submitMarketOrder({
+              side: pos.qtyTFuture > 0 ? Side.Sell : Side.Buy,
+              quantity: Math.abs(pos.qtyTFuture * 2),
+              instrument: instrumentKey,
+            },
+            portfolio.portfolio
+          ).subscribe();
+        });
       });
-    });
   }
 
-  setStopLimitForRow(instrumentKey: InstrumentKey, row: ScalperOrderBookRowView, quantity: number, silent: boolean): void {
+  setStopLimitForRow(instrumentKey: InstrumentKey, row: ScalperOrderBookRow, quantity: number, silent: boolean): void {
     if (row.rowType != ScalperOrderBookRowType.Bid && row.rowType != ScalperOrderBookRowType.Ask) {
       return;
     }
 
     this.getCurrentPortfolio()
-    .subscribe(portfolio => {
-      const side = row.rowType === ScalperOrderBookRowType.Ask
-        ? Side.Sell
-        : Side.Buy;
+      .subscribe(portfolio => {
+        const side = row.rowType === ScalperOrderBookRowType.Ask
+          ? Side.Sell
+          : Side.Buy;
 
-      const order: StopLimitOrder = {
-        side: side,
-        quantity: quantity,
-        price: row.price,
-        instrument: instrumentKey,
-        triggerPrice: row.price,
-        condition: side === Side.Sell ? StopOrderCondition.More : StopOrderCondition.Less,
-      };
+        const order: StopLimitOrder = {
+          side: side,
+          quantity: quantity,
+          price: row.price,
+          instrument: instrumentKey,
+          triggerPrice: row.price,
+          condition: side === Side.Sell ? StopOrderCondition.More : StopOrderCondition.Less,
+        };
 
-      if (silent) {
-        this.orderService.submitStopLimitOrder(order, portfolio.portfolio).subscribe();
-      } else {
-        this.modal.openCommandModal({
-          ...order,
-          type: CommandType.Stop,
-          stopEndUnixTime: undefined
-        });
-      }
-    });
+        if (silent) {
+          this.orderService.submitStopLimitOrder(order, portfolio.portfolio).subscribe();
+        }
+        else {
+          this.modal.openCommandModal({
+            ...order,
+            type: CommandType.Stop,
+            stopEndUnixTime: undefined
+          });
+        }
+      });
   }
 
   setStopLoss(instrumentKey: InstrumentKey, price: number, silent: boolean): void {
     this.getCurrentPositionsWithPortfolio(instrumentKey)
-    .subscribe(({ portfolio, positions }) => {
-      const quantity = positions.map(x => x.qtyTFuture).reduce((acc, curr) => acc + curr, 0);
+      .subscribe(({ portfolio, positions }) => {
+        const quantity = positions.map(x => x.qtyTFuture).reduce((acc, curr) => acc + curr, 0);
 
-      if (quantity <= 0) {
-        this.notification.error('Нет позиций', 'Позиции для установки стоп-лосс отсутствуют');
-        return;
-      }
+        if (quantity <= 0) {
+          this.notification.error('Нет позиций', 'Позиции для установки стоп-лосс отсутствуют');
+          return;
+        }
 
-      const order: StopMarketOrder = {
-        side: Side.Sell,
-        quantity,
-        instrument: instrumentKey,
-        triggerPrice: price,
-        condition: StopOrderCondition.More
-      };
+        const order: StopMarketOrder = {
+          side: Side.Sell,
+          quantity,
+          instrument: instrumentKey,
+          triggerPrice: price,
+          condition: StopOrderCondition.More
+        };
 
-      if (silent) {
-        this.orderService.submitStopMarketOrder(order, portfolio.portfolio).subscribe();
-      } else {
-        this.modal.openCommandModal({
-          ...order,
-          type: CommandType.Stop,
-          stopEndUnixTime: undefined
-        });
-      }
-    });
+        if (silent) {
+          this.orderService.submitStopMarketOrder(order, portfolio.portfolio).subscribe();
+        }
+        else {
+          this.modal.openCommandModal({
+            ...order,
+            type: CommandType.Stop,
+            stopEndUnixTime: undefined
+          });
+        }
+      });
   }
 
   private getCurrentPortfolio(): Observable<PortfolioKey> {
     return this.store.select(getSelectedPortfolio)
-    .pipe(
-      take(1),
-      filter((p): p is PortfolioKey => !!p)
-    );
+      .pipe(
+        take(1),
+        filter((p): p is PortfolioKey => !!p)
+      );
   }
 
   private getCurrentPositions(instrumentKey: InstrumentKey, portfolio: PortfolioKey): Observable<Position[]> {

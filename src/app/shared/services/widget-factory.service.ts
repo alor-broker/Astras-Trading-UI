@@ -32,10 +32,19 @@ import { defaultInstrument } from '../../store/instruments/instruments.reducer';
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { NewsSettings } from "../models/settings/news-settings.model";
 import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
-import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-settings.model";
+import {
+  ScalperOrderBookSettings,
+  VolumeHighlightMode
+} from "../models/settings/scalper-order-book-settings.model";
 import { TechChartSettings } from "../models/settings/tech-chart-settings.model";
-import { AllInstrumentsSettings, allInstrumentsColumns as allInstrumentsCols } from "../models/settings/all-instruments-settings.model";
-import { defaultBadgeColor, instrumentsBadges } from "../utils/instruments";
+import {
+  allInstrumentsColumns as allInstrumentsCols,
+  AllInstrumentsSettings
+} from "../models/settings/all-instruments-settings.model";
+import {
+  defaultBadgeColor,
+  instrumentsBadges
+} from "../utils/instruments";
 import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
 
 @Injectable({
@@ -142,14 +151,19 @@ export class WidgetFactoryService {
       linkToActive: true,
       badgeColor: defaultBadgeColor,
       depth: 10,
-      showYieldForBonds: false,
-      showZeroVolumeItems: false,
-      showSpreadItems: false,
-      highlightHighVolume: false,
-      volumeHighlightOptions: [{ boundary: 10000, color: '#CC0099' }],
+      showZeroVolumeItems: true,
+      showSpreadItems: true,
+      volumeHighlightMode: VolumeHighlightMode.BiggestVolume,
+      volumeHighlightFullness: 10000,
+      volumeHighlightOptions: [
+        { boundary: 1000, color: '#71DB20' },
+        { boundary: 5000, color: '#ff0000' },
+        { boundary: 10000, color: '#ff00ff' }
+      ],
       workingVolumes: [1, 10, 100, 1000],
       disableHotkeys: true,
-      enableMouseClickSilentOrders: false
+      enableMouseClickSilentOrders: false,
+      autoAlignIntervalSec: 15,
     } as ScalperOrderBookSettings;
   }
 
