@@ -1,14 +1,12 @@
 import { createReducer, on } from '@ngrx/store';
 import * as InstrumentsActions from './instruments.actions';
-import { Instrument } from '../../shared/models/instruments/instrument.model';
+import { Instrument, InstrumentBadges } from '../../shared/models/instruments/instrument.model';
 import { instrumentsBadges } from "../../shared/utils/instruments";
 
 export const instrumentsFeatureKey = 'instruments';
 
 export interface InstrumentsState {
-  selectedInstrumentWithBadge: {
-    [badgeColor: string]: Instrument
-  }
+  selectedInstrumentWithBadge: InstrumentBadges
 }
 
 export const defaultInstrument: Instrument = {

@@ -5,7 +5,7 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 import { PositionsComponent } from './positions.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { ngZorroMockComponents, sharedModuleImportForTests } from "../../../../shared/utils/testing";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -22,6 +22,9 @@ describe('PositionsComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [
+        ...sharedModuleImportForTests
+      ],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -31,7 +34,6 @@ describe('PositionsComponent', () => {
       ],
       declarations: [
         PositionsComponent,
-        ...ngZorroMockComponents
       ]
     })
       .compileComponents();
