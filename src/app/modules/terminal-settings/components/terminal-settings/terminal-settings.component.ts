@@ -1,11 +1,11 @@
 import {
-  Component,
-  OnInit
+  Component, EventEmitter, OnDestroy,
+  OnInit, Output
 } from '@angular/core';
 import {
   Observable,
-  of,
-  take
+  of, Subject,
+  take, takeUntil
 } from 'rxjs';
 import { FullName } from '../../../../shared/models/user/full-name.model';
 import { TerminalSettingsService } from '../../services/terminal-settings.service';
@@ -13,7 +13,6 @@ import {
   TerminalSettingsFormControls,
   TerminalSettingsFormGroup
 } from '../../models/terminal-settings-form.model';
-import { Store } from '@ngrx/store';
 import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import {
   AbstractControl,
@@ -23,20 +22,22 @@ import {
   Validators
 } from '@angular/forms';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
-import { updateTerminalSettings } from '../../../../store/terminal-settings/terminal-settings.actions';
 
 @Component({
   selector: 'ats-terminal-settings',
   templateUrl: './terminal-settings.component.html',
   styleUrls: ['./terminal-settings.component.less']
 })
-export class TerminalSettingsComponent implements OnInit {
+export class TerminalSettingsComponent implements OnInit, OnDestroy {
   readonly validationSettings = {
     userIdleDurationMin: {
       min: 1,
       max: 1140
     }
   };
+  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
+
+  @Output() formChange = new EventEmitter<{value: TerminalSettings, isInitial: boolean}>();
 
   timezoneDisplayOption = TimezoneDisplayOption;
 
@@ -56,23 +57,12 @@ export class TerminalSettingsComponent implements OnInit {
     return this.hotKeysForm.get('workingVolumes') as FormArray;
   }
 
-  constructor(private readonly service: TerminalSettingsService, private readonly store: Store) {
+  constructor(private readonly service: TerminalSettingsService) {
   }
 
   ngOnInit(): void {
     this.fullName$ = this.service.getFullName();
     this.initForm();
-  }
-
-  saveSettingsChanges() {
-    if (this.settingsForm?.valid) {
-      this.store.dispatch(updateTerminalSettings({
-        updates: {
-          ...this.settingsForm.value,
-          userIdleDurationMin: Number(this.settingsForm.value.userIdleDurationMin)
-        } as TerminalSettings
-      }));
-    }
   }
 
   hotkeyChange(e: KeyboardEvent, control: AbstractControl | null) {
@@ -98,13 +88,27 @@ export class TerminalSettingsComponent implements OnInit {
     this.workingVolumes.removeAt(index);
   }
 
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
+
   private initForm() {
     this.service.getSettings()
       .pipe(
         take(1)
       ).subscribe(settings => {
       this.settingsForm = this.buildForm(settings);
+      this.formChange.emit( { value: this.settingsForm?.value, isInitial: true });
     });
+
+    this.settingsForm.valueChanges
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe(value => {
+          this.formChange.emit({value: this.settingsForm?.valid ? value : null, isInitial: false });
+      });
   }
 
   private buildForm(currentSettings: TerminalSettings): TerminalSettingsFormGroup {
