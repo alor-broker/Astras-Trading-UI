@@ -37,7 +37,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   };
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
-  @Output() formChange = new EventEmitter<TerminalSettings>();
+  @Output() formChange = new EventEmitter<{value: TerminalSettings, isInitial: boolean}>();
 
   timezoneDisplayOption = TimezoneDisplayOption;
 
@@ -99,6 +99,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
         take(1)
       ).subscribe(settings => {
       this.settingsForm = this.buildForm(settings);
+      this.formChange.emit( { value: this.settingsForm?.value, isInitial: true });
     });
 
     this.settingsForm.valueChanges
@@ -106,8 +107,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe(value => {
-        if (this.settingsForm?.valid)
-        this.formChange.emit(value);
+          this.formChange.emit({value: this.settingsForm?.valid ? value : null, isInitial: false });
       });
   }
 

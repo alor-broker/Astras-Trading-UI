@@ -12,9 +12,15 @@ import { updateTerminalSettings } from "../../../../store/terminal-settings/term
 })
 export class TerminalSettingsWidgetComponent implements OnInit {
 
-  private settingsFormValue: TerminalSettings | null = null;
+  private initialSettingsFormValue!: TerminalSettings;
+  settingsFormValue: TerminalSettings | null = null;
 
   isVisible$: Observable<boolean> = of(false);
+
+  get isSaveDisabled(): boolean {
+    return !this.settingsFormValue ||
+      (JSON.stringify(this.getTerminalSettingsUpdates(this.settingsFormValue)) === JSON.stringify(this.getTerminalSettingsUpdates(this.initialSettingsFormValue)));
+  }
 
   constructor(
     private modal: ModalService,
@@ -29,20 +35,27 @@ export class TerminalSettingsWidgetComponent implements OnInit {
     this.modal.closeTerminalSettingsModal();
   }
 
-  formChange(value: TerminalSettings) {
-    this.settingsFormValue = value;
+  formChange(event: { value: TerminalSettings, isInitial: boolean }) {
+    this.settingsFormValue = event.value;
+    if (event.isInitial) {
+      this.initialSettingsFormValue = event.value;
+    }
   }
 
   saveSettingsChanges() {
     if (this.settingsFormValue) {
       this.store.dispatch(updateTerminalSettings({
-        updates: {
-          ...this.settingsFormValue,
-          userIdleDurationMin: Number(this.settingsFormValue.userIdleDurationMin)
-        } as TerminalSettings
+        updates: this.getTerminalSettingsUpdates(this.settingsFormValue)
       }));
     }
 
     this.handleClose();
+  }
+
+  getTerminalSettingsUpdates(val: TerminalSettings): TerminalSettings {
+    return {
+      ...val,
+      userIdleDurationMin: Number(val.userIdleDurationMin)
+    } as TerminalSettings;
   }
 }
