@@ -157,7 +157,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       // base options
       container: this.chartContainer.nativeElement,
       symbol: `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
-      interval: '1D' as ResolutionString,
+      interval: (settings.chartSettings?.['chart.lastUsedTimeBasedResolution'] ?? '1D') as ResolutionString,
       locale: 'ru',
       library_path: '/assets/charting_library/',
       custom_css_url: '../tv-custom-styles.css',

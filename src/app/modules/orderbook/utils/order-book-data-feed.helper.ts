@@ -37,6 +37,7 @@ export class OrderBookDataFeedHelper {
       orderId: order.id,
       exchange: order.exchange,
       portfolio: order.portfolio,
+      price: order.price,
       volume: order.qty,
       type: order.type
     } as CurrentOrder;

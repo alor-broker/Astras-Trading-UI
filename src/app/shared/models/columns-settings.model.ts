@@ -23,4 +23,6 @@ export interface ColumnsSettings {
   isMultipleFilter?: boolean;
   // значения фильтров
   filters?: NzTableFilterList;
+  // Показывать лейблы
+  showBadges?: boolean
 }

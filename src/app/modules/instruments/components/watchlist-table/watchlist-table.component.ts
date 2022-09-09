@@ -30,6 +30,8 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
 import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 import { DashboardService } from "../../../../shared/services/dashboard.service";
+import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
+import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
 
 @Component({
   selector: 'ats-watchlist-table[guid]',
@@ -41,6 +43,7 @@ export class WatchlistTableComponent implements OnInit {
   guid!: string;
 
   watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
+  selectedInstruments$: Observable<InstrumentBadges> = of({});
   displayedColumns: ColumnIds[] = [];
   badgeColor: string = '';
 
@@ -85,6 +88,8 @@ export class WatchlistTableComponent implements OnInit {
       }),
       switchMap(settings => this.watchInstrumentsService.getWatched(settings)),
     );
+
+    this.selectedInstruments$ = this.store.select(getSelectedInstrumentsWithBadges);
   }
 
   makeActive(instrument: InstrumentKey) {

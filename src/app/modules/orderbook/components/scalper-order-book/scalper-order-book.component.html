@@ -1,47 +1,98 @@
 <div
-  *ngIf="!shouldShowSettings"
   (mouseenter)="isActiveOrderBook = true"
   (mouseleave)="isActiveOrderBook = false"
+  *ngIf="!shouldShowSettings"
+  [style.height]="(contentSize$ | async)?.height + 'px'"
+  class="container"
 >
-  <div *ngIf="(orderBook$ | async) as orderBook" class="order-book-table">
+  <div class="header">
     <div class="working-volumes">
       <nz-tag
-        class="working-volume"
-        [nzColor]="(activeWorkingVolume$ | async) === vol ? 'gold' : 'default'"
-        *ngFor="let vol of workingVolumes"
         (click)="selectVol(vol)"
+        *ngFor="let vol of workingVolumes"
+        [nzColor]="(activeWorkingVolume$ | async) === vol ? 'gold' : 'default'"
+        class="working-volume-item"
       >
         {{vol}}
       </nz-tag>
     </div>
-    <nz-table nzBordered nzSize="small" nzTableLayout="fixed" nzTemplateMode>
-      <tbody class="order-book-rows">
-      <tr *ngFor='let row of orderBook.rows; trackBy: getTrackKey'
-          [ngClass]="{
+    <div class="auto-align-button" *ngIf="(isAutoAlignAvailable$ | async) === true">
+      <nz-tag
+        (click)="switchEnableAutoAlign()"
+        [nz-tooltip]="'Автоматически выравнивать по спреду'"
+        [nzColor]="(enableAutoAlign$ | async) === true ? 'cyan' : 'default'"
+        [nzTooltipMouseEnterDelay]="1"
+      >
+        <span nz-icon nzTheme="outline" nzType="vertical-align-middle"></span>
+      </nz-tag>
+    </div>
+  </div>
+  <div #orderBookTableContainer class="order-book-table-container">
+    <nz-table
+      #table
+      [nzData]="(orderBookTableData$ | async)!"
+      [nzFrontPagination]="false"
+      [nzLoading]="isLoading$ | async"
+      [nzScroll]="{ y: ((orderBookTableContainerHeight$ | async)! - 5) + 'px' }"
+      [nzShowPagination]="false"
+      [nzVirtualItemSize]="tableRowHeight"
+      [nzVirtualMaxBufferPx]="(orderBookTableContainerHeight$ | async)!"
+      [nzVirtualMinBufferPx]="(orderBookTableContainerHeight$ | async)!"
+      nzBordered
+      nzSize="small"
+      nzTableLayout="fixed">
+      <tbody>
+      <ng-template let-row nz-virtual-scroll>
+        <tr (click)="onRowClick($event, row)"
+            (contextmenu)="onRowRightClick($event, row)"
+            [ngClass]="{
           'row': true,
           'ask-row': row.rowType === rowTypes.Ask,
           'bid-row': row.rowType === rowTypes.Bid,
           'spread-row': row.rowType === rowTypes.Spread,
           'best-row': row.isBest,
-          'trade-row': (row.volume ?? 0) > 0
-          }"
-          (contextmenu)="onRowRightClick($event, row)"
-          (click)="onRowClick($event, row)"
-      >
-        <td [ngStyle]='row.getVolumeStyle()' class="volume-cell"
-            nzAlign="center">{{row.volume}}</td>
-        <td class="price-cell" nzAlign="center">{{row.displayValue}}</td>
-        <td nzAlign="right">
-          <span>{{getCurrentOrdersVolume(row.currentOrders)}}</span>
-          <button (click)="cancelRowOrders(row, $event)" *ngIf='row.currentOrders.length > 0'
-                  class="cancel-order-btn" nz-button
-                  nzSize="small" nzType="primary">
-            <i nz-icon nzType="close-square"></i>
-          </button>
-        </td>
-      </tr>
+          'trade-row': (row.volume ?? 0) > 0,
+          'filler-row': row.isFiller,
+          'current-position-range-row': !!row.currentPositionRangeSign,
+          'positive': row.currentPositionRangeSign > 0,
+          'negative': row.currentPositionRangeSign < 0
+          }">
+          <td [ngStyle]='row.getVolumeStyle ? row.getVolumeStyle() : null' class="volume-cell"
+              nzAlign="left">{{row.volume}}</td>
+          <td class="price-cell" nzAlign="center">{{row.price}}</td>
+          <td nzAlign="right">
+            <span>{{getCurrentOrdersVolume(row.currentOrders)}}</span>
+            <button (click)="cancelRowOrders(row, $event)" *ngIf='row.currentOrders?.length > 0'
+                    class="cancel-order-btn" nz-button
+                    nzSize="small" nzType="primary">
+              <i nz-icon nzType="close-square"></i>
+            </button>
+          </td>
+        </tr>
+      </ng-template>
       </tbody>
     </nz-table>
-    <nz-empty *ngIf="orderBook.rows.length === 0" nzNotFoundImage="simple"></nz-empty>
   </div>
+  <div class="footer">
+    <div *ngIf="orderBookPosition$ | async as position" class="position-state">
+      <div><span [nz-tooltip]="'Средняя цена позиции'" [nzTooltipMouseEnterDelay]="1">{{position.price}}</span></div>
+      <div [ngClass]="{
+      'qty': true,
+      'positive': position.qty >= 0,
+      'negative': position.qty < 0
+      }">
+        <span [nz-tooltip]="'Кол-во лотов'" [nzTooltipMouseEnterDelay]="1">{{position.qty}}л.</span>
+      </div>
+      <div [ngClass]="{
+      'loss-or-profit': true,
+      'positive': position.lossOrProfit > 0,
+      'negative': position.lossOrProfit < 0
+      }">
+        <span [nz-tooltip]="'Прибыль/Убыток'" [nzTooltipMouseEnterDelay]="1">{{position.lossOrProfit}}п.</span>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+

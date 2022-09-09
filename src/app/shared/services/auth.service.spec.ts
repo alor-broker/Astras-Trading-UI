@@ -23,11 +23,12 @@ describe('AuthService', () => {
       refreshToken: 'token',
       jwt: 'login.' + btoa(JSON.stringify({
         portfolios: 'testPortfolio',
-        clientid: '1'
+        clientid: '1',
+        sub: 'login'
       })),
       isLoggedOut: false,
       clientId: '1',
-      portfolios: ['testPortfolio']
+      portfolios: ['testPortfolio'],
     };
 
     localStorageServiceSpy = {
