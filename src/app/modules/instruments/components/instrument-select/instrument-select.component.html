@@ -1,24 +1,41 @@
-<div (mousedown)='$event.stopPropagation()'>
-  <input class='whole ant-input'
-    placeholder='Поиск...'
-    nz-input
-    #inputEl
-    (mousedown)="$event.stopPropagation()"
-    [(ngModel)]="inputValue"
-    (ngModelChange)="onChange($event)"
-    [nzAutocomplete]="auto"
-  />
-  <nz-autocomplete #auto>
-    <nz-auto-option
-     *ngFor="let option of filteredInstruments$ | async" [nzLabel]="option.symbol" [nzValue]="option.description"
-     (selectionChange)='onSelect($event, option)'>
+<ng-container *ngIf="settings$ | async as settings">
+  <div class="header">
+    <div (mousedown)='$event.stopPropagation()' class="search-field">
+      <input #inputEl
+             (mousedown)="$event.stopPropagation()"
+             (ngModelChange)="onChange($event)"
+             [(ngModel)]="inputValue"
+             [nzAutocomplete]="auto"
+             class='whole ant-input'
+             nz-input
+             placeholder='Поиск...'
+      />
+      <nz-autocomplete #auto>
+        <nz-auto-option
+          (selectionChange)='onSelect($event, option)' *ngFor="let option of filteredInstruments$ | async"
+          [nzLabel]="option.symbol"
+          [nzValue]="option.description">
       <span class='search-row'>
         <nz-tag>{{ option.symbol }}</nz-tag>
         <span class='row-center'>{{ option.shortName }}</span>
         <nz-tag *ngIf='option.instrumentGroup'>{{ option.instrumentGroup }}</nz-tag>
         <nz-tag>{{ option.exchange }}</nz-tag>
       </span>
-    </nz-auto-option>
-  </nz-autocomplete>
+        </nz-auto-option>
+      </nz-autocomplete>
+    </div>
+    <div *ngIf="(collection$ | async)!.collection as collection" class="watch-list-collection-select">
+      <button *ngIf="collection.length > 0" [nzDropdownMenu]="menu" nz-button nz-dropdown>
+        <span nz-icon nzTheme="outline" nzType="menu"></span>
+      </button>
+      <nz-dropdown-menu #menu="nzDropdownMenu">
+        <ul nz-menu nzSelectable>
+          <li (click)="selectCollection(list.id)" *ngFor="let list of collection" nz-menu-item [nzSelected]="settings.activeListId === list.id">
+            <span>{{list.title}}</span>
+          </li>
+        </ul>
+      </nz-dropdown-menu>
+    </div>
+  </div>
   <ats-watchlist-table [guid]="guid"></ats-watchlist-table>
-</div>
+</ng-container>

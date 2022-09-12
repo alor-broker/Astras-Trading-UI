@@ -4,14 +4,13 @@ import {
 } from '@angular/core/testing';
 
 import { InstrumentSelectSettingsComponent } from './instrument-select-settings.component';
-import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
-import {
-  BehaviorSubject,
-  Subject
-} from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { mockComponent, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import {
+  mockComponent,
+  ngZorroMockComponents
+} from "../../../../shared/utils/testing";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -19,11 +18,6 @@ import { ReactiveFormsModule } from "@angular/forms";
 describe('InstrumentSelectSettingsComponent', () => {
   let component: InstrumentSelectSettingsComponent;
   let fixture: ComponentFixture<InstrumentSelectSettingsComponent>;
-
-  const watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['collectionChanged$', 'getWatchlistCollection']);
-
-  const collectionChangedMock = new Subject();
-  watchlistCollectionServiceSpy.collectionChanged$ = collectionChangedMock.asObservable();
 
   const getSettingsMock = new BehaviorSubject({} as InstrumentSelectSettings);
 
@@ -49,8 +43,7 @@ describe('InstrumentSelectSettingsComponent', () => {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(getSettingsMock),
             updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
           }
-        },
-        { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
+        }
       ]
     }).compileComponents();
   });
