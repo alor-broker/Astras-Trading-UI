@@ -4,7 +4,10 @@ import {
 } from '@angular/core/testing';
 import { InstrumentsService } from '../../services/instruments.service';
 import { InstrumentSelectComponent } from './instrument-select.component';
-import { mockComponent, sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import {
+  mockComponent,
+  sharedModuleImportForTests
+} from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
   BehaviorSubject,
@@ -12,12 +15,15 @@ import {
 } from 'rxjs';
 import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { WatchlistCollection } from '../../models/watchlist.model';
 
 describe('InstrumentSelectComponent', () => {
   let component: InstrumentSelectComponent;
   let fixture: ComponentFixture<InstrumentSelectComponent>;
   const spyInstrs = jasmine.createSpyObj('InstrumentsService', ['getInstruments']);
-  const watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['addItemsToList']);
+  const watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['addItemsToList', 'collectionChanged$', 'getWatchlistCollection']);
+  watchlistCollectionServiceSpy.collectionChanged$ = of({});
+  watchlistCollectionServiceSpy.getWatchlistCollection.and.returnValue({ collection: [] } as WatchlistCollection);
 
   const getSettingsMock = new BehaviorSubject({} as InstrumentSelectSettings);
 

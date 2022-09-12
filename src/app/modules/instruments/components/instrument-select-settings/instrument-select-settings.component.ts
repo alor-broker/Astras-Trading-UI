@@ -13,20 +13,12 @@ import {
 } from 'src/app/shared/models/settings/instrument-select-settings.model';
 import {
   FormControl,
-  FormGroup,
-  Validators
+  FormGroup
 } from '@angular/forms';
-import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
-  Observable,
   Subject,
   takeUntil
 } from 'rxjs';
-import {
-  map,
-  startWith
-} from 'rxjs/operators';
-import { WatchlistCollection } from '../../models/watchlist.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 @Component({
@@ -37,24 +29,16 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
   settingsForm!: FormGroup;
   allInstrumentColumns: ColumnIds[] = allInstrumentsColumns;
-  collection$?: Observable<WatchlistCollection>;
   @Input()
   guid!: string;
   @Output()
   settingsChange: EventEmitter<InstrumentSelectSettings> = new EventEmitter<InstrumentSelectSettings>();
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly watchlistCollectionService: WatchlistCollectionService) {
+  constructor(private readonly settingsService: WidgetSettingsService) {
   }
 
   ngOnInit(): void {
-    this.collection$ = this.watchlistCollectionService.collectionChanged$.pipe(
-      startWith(null),
-      map(() => this.watchlistCollectionService.getWatchlistCollection()),
-    );
-
     this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
@@ -82,7 +66,6 @@ export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
 
   private buildSettingsForm(currentSettings: InstrumentSelectSettings) {
     this.settingsForm = new FormGroup({
-      activeListId: new FormControl(currentSettings.activeListId, [Validators.required]),
       instrumentColumns: new FormControl(currentSettings.instrumentColumns)
     });
   }
