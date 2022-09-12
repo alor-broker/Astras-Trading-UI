@@ -48,6 +48,7 @@ import { ColorChromeModule } from "ngx-color/chrome";
 import { NzPopoverModule } from "ng-zorro-antd/popover";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { ShortNumberPipe } from './pipes/short-number.pipe';
+import { NzSpaceModule } from 'ng-zorro-antd/space';
 
 
 @NgModule({
@@ -100,7 +101,8 @@ import { ShortNumberPipe } from './pipes/short-number.pipe';
         NzRadioModule,
         ColorChromeModule,
         NzPopoverModule,
-        NzInputModule
+        NzInputModule,
+        NzSpaceModule,
     ],
   exports: [
     // Ng zorro
@@ -133,6 +135,7 @@ import { ShortNumberPipe } from './pipes/short-number.pipe';
     NzTypographyModule,
     NzRadioModule,
     NzPopoverModule,
+    NzSpaceModule,
     // modules
     CommonModule,
     FormsModule,

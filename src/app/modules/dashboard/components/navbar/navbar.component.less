@@ -4,11 +4,25 @@
 @indent: 2px;
 
 nz-header {
+  display: flex;
+  flex-direction: row;
+
+  height: initial;
   line-height: @navbar-height;
-  height: @navbar-height;
+  min-height: @navbar-height;
   padding-left: 5px;
   padding-right: 5px;
 
+  .right {
+    margin-left: auto;
+    display: flex;
+    gap: 0 10px;
+
+    @media (max-width: 420px) {
+      flex-direction: column;
+      gap: 5px 0;
+    }
+  }
 }
 
 ::ng-deep{
@@ -22,11 +36,6 @@ nz-header {
   height: @navbar-height;
   width: @navbar-height - @indent;
   background-repeat: no-repeat;
-  float: left;
-}
-
-.right {
-  float: right;
 }
 
 .managing-icon {

@@ -1,7 +1,7 @@
 <nz-header>
   <ul nz-menu nzTheme="dark" nzMode="horizontal">
-    <li nz-menu-item class="logo-menu-item">
-      <a [routerLink]="['/']" nzSuccess><div class="logo"></div></a>
+    <li nz-menu-item class="logo logo-menu-item">
+      <a [routerLink]="['/']"></a>
     </li>
     <li nz-menu-item
       class='menu-item icon-li'
@@ -47,10 +47,17 @@
         [title]="joyrideContent.step4.title"
         [text]="joyrideContent.step4.text"></i>
     </li>
-    <button class="right" nz-button nz-dropdown [nzDropdownMenu]="rightMenu" nzPlacement="bottomRight">
-      <i nz-icon nzType="user"></i>
-    </button>
   </ul>
+  <div class="right">
+      <div class="notifications">
+        <ats-notification-button ></ats-notification-button>
+      </div>
+    <div>
+      <button nz-button nz-dropdown [nzDropdownMenu]="rightMenu" nzPlacement="bottomRight">
+        <i nz-icon nzType="user"></i>
+      </button>
+    </div>
+  </div>
 </nz-header>
 
 
