@@ -17,6 +17,15 @@
     <thead>
       <tr>
         <th nzWidth="5px"></th>
+        <th>
+          <span>
+            <a nz-popconfirm
+               nzPopconfirmTitle="Точно отменить?"
+               nzOkText="Да"
+               nzCancelText="Нет"
+               (nzOnConfirm)="cancelAllOrders()">Снять все</a>
+          </span>
+        </th>
         <th *ngFor='let column of listOfColumns'
             [nzCustomFilter]='column.hasSearch ? "": null'
             [nzSortFn]='column.sortFn'
@@ -27,15 +36,6 @@
           <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
             <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon nzType="search"></i>
           </nz-filter-trigger>
-        </th>
-        <th>
-          <span>
-            <a nz-popconfirm
-              nzPopconfirmTitle="Точно отменить?"
-              nzOkText="Да"
-              nzCancelText="Нет"
-              (nzOnConfirm)="cancelAllOrders()">Снять все</a>
-          </span>
         </th>
       </tr>
     </thead>
@@ -48,6 +48,19 @@
           >
             &nbsp;
           </span>
+        </td>
+        <td>
+          <a *ngIf='ord.status.toString() === "working" && ord.type === "limit"' (click)="editOrder(ord)">
+            <i nz-icon nzType="edit" nzTheme="outline"></i>
+          </a>
+          &nbsp;
+          <a *ngIf='ord.status.toString() === "working"' nz-popconfirm
+             nzPopconfirmTitle="Точно отменить?"
+             nzOkText="Да"
+             nzCancelText="Нет"
+             (nzOnConfirm)="cancelOrder(ord.id)">
+            <i nz-icon nzType="close-circle" nzTheme="outline"></i>
+          </a>
         </td>
         <td *ngIf='shouldShow("id")'>{{ ord.id }}</td>
         <td class='bold' *ngIf='shouldShow("symbol")'>
@@ -68,19 +81,6 @@
         <td *ngIf='shouldShow("exchange")'>{{ ord.exchange }}</td>
         <td *ngIf='shouldShow("type")'>{{ ord.type }}</td>
         <td *ngIf='shouldShow("endTime")'>{{ formatDate(ord.endTime) }}</td>
-        <td>
-          <a *ngIf='ord.status.toString() === "working" && ord.type === "limit"' (click)="editOrder(ord)">
-            <i nz-icon nzType="edit" nzTheme="outline"></i>
-          </a>
-          &nbsp;
-          <a *ngIf='ord.status.toString() === "working"' nz-popconfirm
-            nzPopconfirmTitle="Точно отменить?"
-            nzOkText="Да"
-            nzCancelText="Нет"
-            (nzOnConfirm)="cancelOrder(ord.id)">
-            <i nz-icon nzType="close-circle" nzTheme="outline"></i>
-          </a>
-        </td>
       </tr>
     </tbody>
   </nz-table>
