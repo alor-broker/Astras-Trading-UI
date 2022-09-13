@@ -8,7 +8,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {
-  BehaviorSubject,
+  BehaviorSubject, combineLatest,
   distinctUntilChanged,
   Observable,
   of,
@@ -36,6 +36,7 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
 import { Store } from "@ngrx/store";
 import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
+import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
 interface PositionDisplay extends Position {
   volume: number
@@ -215,6 +216,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
     private readonly service: BlotterService,
     private readonly settingsService: WidgetSettingsService,
     private readonly store: Store,
+    private readonly terminalSettingsService: TerminalSettingsService
   ) {
   }
 
@@ -246,7 +248,19 @@ export class PositionsComponent implements OnInit, OnDestroy {
       ))
     );
 
-    this.selectedInstruments$ = this.store.select(getSelectedInstrumentsWithBadges);
+    this.selectedInstruments$ = combineLatest([
+      this.store.select(getSelectedInstrumentsWithBadges),
+      this.terminalSettingsService.getSettings()
+    ])
+      .pipe(
+        takeUntil(this.destroy$),
+        map(([badges, settings]) => {
+          if (settings.badgesBind) {
+            return badges;
+          }
+          return {[defaultBadgeColor]: badges[defaultBadgeColor]};
+        })
+      );
   }
 
   ngOnDestroy(): void {
