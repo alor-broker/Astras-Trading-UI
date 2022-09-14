@@ -1,3 +1,63 @@
-<nz-badge [nzCount]="2" [nzOffset]="[-2, 10]">
-  <button nz-button><i nz-icon nzType="bell" nzTheme="outline"></i></button>
+<nz-badge [(nzPopoverVisible)]="isTableVisible" [nzCount]="(notReadNotificationsCount$ | async) || 0"
+          [nzOffset]="[-2, 10]"
+          [nzPopoverContent]="contentTemplate"
+          [nzPopoverTitle]="titleTemplate"
+          nz-popover
+          nzPopoverPlacement="leftBottom"
+          nzPopoverTrigger="click"
+>
+  <button nz-button>
+    <i nz-icon nzTheme="outline" nzType="bell"></i>
+  </button>
 </nz-badge>
+
+<ng-template #titleTemplate>
+  <div class="dialog-title">
+    <div>
+      <h3>Уведомления</h3>
+    </div>
+    <div>
+      <button (click)="isTableVisible = false" aria-label="Close" nz-button>
+        <i [nzTheme]="'outline'" nz-icon nzType="close"></i>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #contentTemplate>
+  <nz-table #table
+            [nzData]="(sortedNotifications$ | async)!"
+            [nzPageSize]="5"
+            class="notifications-table"
+  >
+    <tbody>
+    <tr *ngFor="let data of table.data">
+      <td>
+        <div (click)="clickNotification(data)"
+             [ngClass]="{
+             'notification': true,
+             'read': data.isRead
+             }"
+        >
+          <div class="read-status">
+            <nz-badge [nzStatus]="data.isRead ? 'default' : 'processing'"></nz-badge>
+          </div>
+          <div class="main">
+            <div class="header">
+              <div class="title">
+                <span nz-typography><strong>{{data.title}}</strong></span>
+              </div>
+              <div *ngIf="data.showDate" class="date">
+                <span>{{data.date | date : 'dd MMM в HH:mm' :undefined: 'ru'}}</span>
+              </div>
+            </div>
+            <div class="body">
+              <span nz-typography nzType="secondary">{{data.description}}</span>
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</ng-template>

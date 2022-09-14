@@ -49,6 +49,8 @@ import { NzPopoverModule } from "ng-zorro-antd/popover";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { ShortNumberPipe } from './pipes/short-number.pipe';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { NOTIFICATIONS_PROVIDER } from '../modules/notifications/services/notifications-provider';
+import { TestNotificationsProvider } from '../modules/notifications/services/providers/test-notifications-provider';
 
 
 @NgModule({
@@ -159,7 +161,8 @@ import { NzSpaceModule } from 'ng-zorro-antd/space';
       multi: true
     },
     { provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true },
-    { provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true }
+    { provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true },
+    { provide: NOTIFICATIONS_PROVIDER, useClass: TestNotificationsProvider, multi: true }
   ],
 })
 export class SharedModule {
