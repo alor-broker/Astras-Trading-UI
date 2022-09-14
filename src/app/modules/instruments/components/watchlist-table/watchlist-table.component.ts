@@ -1,14 +1,15 @@
 import {
   Component,
-  Input,
+  Input, OnDestroy,
   OnInit
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
+  combineLatest,
   Observable,
-  of,
+  of, Subject,
   switchMap,
-  take,
+  take, takeUntil,
   tap
 } from 'rxjs';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
@@ -32,13 +33,15 @@ import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 import { DashboardService } from "../../../../shared/services/dashboard.service";
 import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-watchlist-table[guid]',
   templateUrl: './watchlist-table.component.html',
   styleUrls: ['./watchlist-table.component.less']
 })
-export class WatchlistTableComponent implements OnInit {
+export class WatchlistTableComponent implements OnInit, OnDestroy {
   @Input()
   guid!: string;
 
@@ -69,6 +72,7 @@ export class WatchlistTableComponent implements OnInit {
   ];
 
   private selectedInstrument: InstrumentKey | null = null;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly store: Store,
@@ -76,12 +80,14 @@ export class WatchlistTableComponent implements OnInit {
     private readonly watchInstrumentsService: WatchInstrumentsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly nzContextMenuService: NzContextMenuService,
-    private readonly dashBoardService: DashboardService
+    private readonly dashBoardService: DashboardService,
+    private readonly terminalSettingsService: TerminalSettingsService
   ) {
   }
 
   ngOnInit(): void {
     this.watchedInstruments$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
+      takeUntil(this.destroy$),
       tap(settings => {
         this.displayedColumns = allInstrumentsColumns.filter(c => settings.instrumentColumns.includes(c.columnId));
         this.badgeColor = settings.badgeColor!;
@@ -89,7 +95,24 @@ export class WatchlistTableComponent implements OnInit {
       switchMap(settings => this.watchInstrumentsService.getWatched(settings)),
     );
 
-    this.selectedInstruments$ = this.store.select(getSelectedInstrumentsWithBadges);
+    this.selectedInstruments$ = combineLatest([
+      this.store.select(getSelectedInstrumentsWithBadges),
+      this.terminalSettingsService.getSettings()
+    ])
+      .pipe(
+        takeUntil(this.destroy$),
+        map(([badges, settings]) => {
+          if (settings.badgesBind) {
+            return badges;
+          }
+          return {[defaultBadgeColor]: badges[defaultBadgeColor]};
+        })
+      );
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   makeActive(instrument: InstrumentKey) {
