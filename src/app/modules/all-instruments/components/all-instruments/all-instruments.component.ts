@@ -204,7 +204,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         const newDataWithBadges = res.map(instr => ({
           ...instr,
           badges: Object.keys(settings.badgesBind ? badges : {[defaultBadgeColor]: badges[defaultBadgeColor]})
-            .filter(key => instr.name === badges[key].symbol)
+            .filter(key => instr.name === badges[key].symbol  && instr.exchange === badges[key].exchange)
         }));
         if (isFiltersChanged) {
           this.instrumentsList = newDataWithBadges;
@@ -237,7 +237,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         this.instrumentsList = res.map(instr => ({
           ...instr,
           badges: Object.keys(settings.badgesBind ? badges : {[defaultBadgeColor]: badges[defaultBadgeColor]})
-            .filter(key => instr.name === badges[key].symbol)
+            .filter(key => instr.name === badges[key].symbol  && instr.exchange === badges[key].exchange)
         }));
         this.cdr.markForCheck();
       });
@@ -255,7 +255,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         this.instrumentsList = this.instrumentsList.map(instr => ({
           ...instr,
           badges: Object.keys(settings.badgesBind ? badges : {[defaultBadgeColor]: badges[defaultBadgeColor]})
-            .filter(key => instr.name === badges[key].symbol)
+            .filter(key => instr.name === badges[key].symbol  && instr.exchange === badges[key].exchange)
         }));
         this.cdr.markForCheck();
       });
