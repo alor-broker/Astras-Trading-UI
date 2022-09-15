@@ -23,6 +23,7 @@ import { TechChartModule } from "../tech-chart/tech-chart.module";
 import { AllInstrumentsModule } from "../all-instruments/all-instruments.module";
 import { OrderSubmitModule } from "../order-submit/order-submit.module";
 import { NotificationsModule } from '../notifications/notifications.module';
+import { FeedbackModule } from '../feedback/feedback.module';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { NotificationsModule } from '../notifications/notifications.module';
     TechChartModule,
     AllInstrumentsModule,
     OrderSubmitModule,
-    NotificationsModule
+    NotificationsModule,
+    FeedbackModule,
     // components
   ],
   providers: [

@@ -51,6 +51,7 @@ import { ShortNumberPipe } from './pipes/short-number.pipe';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NOTIFICATIONS_PROVIDER } from '../modules/notifications/services/notifications-provider';
 import { TestNotificationsProvider } from '../modules/notifications/services/providers/test-notifications-provider';
+import { FeedbackNotificationsProvider } from '../modules/feedback/services/feedback-notifications-provider';
 
 
 @NgModule({
@@ -162,7 +163,8 @@ import { TestNotificationsProvider } from '../modules/notifications/services/pro
     },
     { provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true },
     { provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true },
-    { provide: NOTIFICATIONS_PROVIDER, useClass: TestNotificationsProvider, multi: true }
+    { provide: NOTIFICATIONS_PROVIDER, useClass: TestNotificationsProvider, multi: true },
+    { provide: NOTIFICATIONS_PROVIDER, useClass: FeedbackNotificationsProvider, multi: true }
   ],
 })
 export class SharedModule {

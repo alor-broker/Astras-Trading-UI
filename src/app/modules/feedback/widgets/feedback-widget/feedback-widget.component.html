@@ -1,0 +1,39 @@
+<div *ngIf="voteParams$ | async as voteParams">
+  <nz-modal
+    (nzOnCancel)="handleClose()"
+    [nzFooter]="null"
+    [nzVisible]='isVisible$ | async'
+    nzTitle="Оцените приложение"
+  >
+    <ng-container *nzModalContent>
+      <div>
+        <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+          <nz-form-item>
+            <nz-form-label nzFor="rate">{{voteParams.description}}</nz-form-label>
+            <nz-form-control>
+              <nz-rate (ngModelChange)="checkAskComment()" [nzCount]="maxStarsCount" formControlName="rate"></nz-rate>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="comment">Комментарий</nz-form-label>
+            <nz-form-control
+              [nzValidateStatus]="askComment ? 'warning' : 'success'"
+              [nzWarningTip]="askComment ? 'Пожалуйста, расскажите что нам следует доработать.' : ''">
+              <nz-textarea-count [nzMaxCharacterCount]="commentMaxLength">
+                <textarea (ngModelChange)="checkAskComment()" formControlName="comment" nz-input rows="4"></textarea>
+              </nz-textarea-count>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+        <div class="submit-button-container">
+          <button
+            (click)="submitFeedback()"
+            [attr.disabled]="form?.valid === false ? '' : null" nz-button
+            nzType="primary">
+            Отправить отзыв
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </nz-modal>
+</div>
