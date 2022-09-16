@@ -28,6 +28,9 @@
             <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === inst.instrument.symbol"></nz-badge>
           </ng-container>
         </td>
+        <td *ngIf="isVisibleColumn('shortName')">
+          {{inst.instrument.shortName}}
+        </td>
         <td *ngIf="isVisibleColumn('price')">
           <ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'>
           </ats-price-tick>
