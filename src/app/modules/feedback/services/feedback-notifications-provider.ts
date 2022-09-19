@@ -19,6 +19,7 @@ import {
 } from 'rxjs/operators';
 import { mapWith } from '../../../shared/utils/observable-helper';
 import { addHours } from '../../../shared/utils/datetime';
+import { NewFeedback } from '../models/feedback.model';
 
 @Injectable()
 export class FeedbackNotificationsProvider implements NotificationsProvider {
@@ -40,10 +41,10 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
     const defaultDelayMilliseconds = defaultDelayHours * 3600 * 1000;
 
     const now = new Date();
-    let startTime = now;
+    let startTime = addHours(new Date(now), defaultDelayHours);
     if (!!lastCheck) {
       if ((now.getTime() - lastCheck) > defaultDelayMilliseconds) {
-        startTime = addHours(new Date(now), -defaultDelayHours);
+        startTime = now;
       }
     }
 
@@ -66,10 +67,14 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
             description: 'Поделитесь своим мнением о приложении',
             showDate: true,
             isRead: false,
-            open: () => this.modalService.openVoteModal({
-              feedbackCode: s.feedback!.feedbackCode,
-              description: s.feedback!.description
-            }),
+            open: () => {
+              const params: NewFeedback = {
+                feedbackCode: s.feedback!.feedbackCode,
+                description: s.feedback!.description
+              };
+
+              this.modalService.openVoteModal(params);
+            },
             markAsRead: () => this.markReadNotification()
           } as NotificationMeta
         ];

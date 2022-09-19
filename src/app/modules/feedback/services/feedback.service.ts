@@ -22,7 +22,7 @@ interface FeedbackMeta {
   providedIn: 'root'
 })
 export class FeedbackService {
-  private readonly baseUrl = environment.apiUrl + '/cmsapi/v1/astras';
+  private readonly baseUrl = environment.apiUrl + '/astras';
   private readonly feedbackLocalStorageKey = 'feedback';
 
   constructor(

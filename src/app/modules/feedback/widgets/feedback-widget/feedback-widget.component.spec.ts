@@ -7,6 +7,8 @@ import { FeedbackService } from '../../services/feedback.service';
 import { of } from 'rxjs';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { NewFeedback } from '../../models/feedback.model';
+import { FeedbackModule } from '../../feedback.module';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 
 describe('FeedbackWidgetComponent', () => {
@@ -15,6 +17,10 @@ describe('FeedbackWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [
+        FeedbackModule,
+        NoopAnimationsModule
+      ],
       declarations: [FeedbackWidgetComponent],
       providers: [
         {
