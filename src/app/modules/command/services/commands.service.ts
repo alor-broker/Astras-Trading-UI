@@ -1,13 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  BehaviorSubject,
-  Observable,
-  Subject,
-  switchMap,
-  take,
-  tap,
-  throwError
-} from 'rxjs';
+import { BehaviorSubject, Observable, Subject, switchMap, take, tap, throwError } from 'rxjs';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { LimitCommand } from '../models/limit-command.model';
 import { LimitEdit } from '../models/limit-edit.model';
@@ -15,6 +7,7 @@ import { MarketCommand } from '../models/market-command.model';
 import { StopCommand } from '../models/stop-command.model';
 import { SubmitOrderResult } from "../models/order.model";
 import { OrderService } from "../../../shared/services/orders/order.service";
+import { StopEdit } from "../models/stop-edit";
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +16,7 @@ export class CommandsService {
   private stopCommand?: BehaviorSubject<StopCommand | null>;
   private limitCommand?: BehaviorSubject<LimitCommand | null>;
   private limitEdit?: BehaviorSubject<LimitEdit | null>;
+  private stopEdit?: BehaviorSubject<StopEdit | null>;
   private marketCommand?: BehaviorSubject<MarketCommand | null>;
   private priceSelectedSubject$ = new Subject<number>();
   public priceSelected$ = this.priceSelectedSubject$.asObservable();
@@ -61,6 +55,13 @@ export class CommandsService {
     this.limitEdit?.next(command);
   }
 
+  setStopEdit(command: StopEdit | null) {
+    if (!this.stopEdit) {
+      this.stopEdit = new BehaviorSubject<StopEdit | null>(command);
+    }
+    this.stopEdit?.next(command);
+  }
+
   setPriceSelected(price: number) {
     this.priceSelectedSubject$.next(price);
   }
@@ -96,6 +97,34 @@ export class CommandsService {
               stopCommand.user?.portfolio ?? ''
             );
           }
+        })
+      )
+    );
+  }
+
+  submitStopEdit() {
+    if (!this.stopEdit) {
+      return this.getEmptyCommandError();
+    }
+
+    return this.extendWithErrorCheck(
+      this.stopEdit.pipe(
+        take(1),
+        switchMap(stopEdit => {
+          if (!stopEdit) {
+            return this.getEmptyCommandError();
+          }
+
+          return this.orderService.submitStopOrderEdit(
+            {
+              ...stopEdit,
+              conditionType: stopEdit.condition,
+              endTime: stopEdit.stopEndUnixTime as number,
+              side: Side.Sell
+            },
+            stopEdit.user?.portfolio ?? '',
+            stopEdit.price ? 'stopLimit' : 'stop'
+          );
         })
       )
     );

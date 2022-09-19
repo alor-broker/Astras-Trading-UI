@@ -48,7 +48,7 @@
           >&nbsp;</span>
         </td>
         <td>
-          <a *ngIf='ord.status.toString() === "working" && ord.type === "limit"' (click)="editOrder(ord)">
+          <a *ngIf='ord.status.toString() === "working"' (click)="editOrder(ord)">
             <i nz-icon nzType="edit" nzTheme="outline"></i>
           </a>
           &nbsp;

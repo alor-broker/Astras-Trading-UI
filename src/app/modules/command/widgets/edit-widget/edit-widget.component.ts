@@ -52,6 +52,9 @@ export class EditWidgetComponent implements OnInit, OnDestroy {
       if (context.commandParameters?.type == 'limit') {
         command$ = this.command.submitLimitEdit();
       }
+      if (context.commandParameters?.type == 'stoplimit' || context.commandParameters?.type == 'stop') {
+        command$ = this.command.submitStopEdit();
+      }
 
       this.isBusy = true;
       command$.pipe(
