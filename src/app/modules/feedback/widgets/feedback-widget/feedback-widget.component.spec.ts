@@ -9,6 +9,7 @@ import { ModalService } from '../../../../shared/services/modal.service';
 import { NewFeedback } from '../../models/feedback.model';
 import { FeedbackModule } from '../../feedback.module';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 
 describe('FeedbackWidgetComponent', () => {
@@ -35,6 +36,12 @@ describe('FeedbackWidgetComponent', () => {
             shouldShowVoteModal$: of(true),
             voteParams$: of({ code: 'testCode', description: '' } as NewFeedback),
             closeVoteModal: jasmine.createSpy('closeVoteModal').and.callThrough()
+          }
+        },
+        {
+          provide: NzNotificationService,
+          useValue: {
+            success: jasmine.createSpy('success').and.callThrough()
           }
         }
       ]

@@ -22,6 +22,7 @@ import {
   finalize
 } from 'rxjs/operators';
 import { NewFeedback } from '../../models/feedback.model';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 @Component({
   selector: 'ats-feedback-widget',
@@ -41,7 +42,8 @@ export class FeedbackWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly modalService: ModalService,
-    private readonly feedbackService: FeedbackService
+    private readonly feedbackService: FeedbackService,
+    private readonly notificationService: NzNotificationService
   ) {
   }
 
@@ -90,7 +92,9 @@ export class FeedbackWidgetComponent implements OnInit, OnDestroy {
         this.modalService.closeVoteModal();
         this.feedbackService.removeUnansweredFeedback();
       })
-    ).subscribe();
+    ).subscribe( ()=> {
+      this.notificationService.success('Оценка приложения', 'Спасибо, Ваш голос важен для нас.');
+    });
   }
 
   checkAskComment() {
