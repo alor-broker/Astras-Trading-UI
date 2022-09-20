@@ -17,7 +17,8 @@ export class TestNotificationsProvider implements NotificationsProvider {
         description: 'Description Description Description Description Description Description',
         isRead: false,
         showDate: true,
-        open: () => {}
+        open: () => {
+        }
       },
       {
         id: '2',
@@ -59,6 +60,22 @@ export class TestNotificationsProvider implements NotificationsProvider {
         isRead: false,
         showDate: true
       },
+      {
+        id: '7',
+        date: new Date(new Date().setMinutes(now.getMinutes() - 6)),
+        title: 'Test 7',
+        description: 'Description Description Description Description Description Description',
+        isRead: false,
+        showDate: true
+      },
+      {
+        id: '8',
+        date: new Date(new Date().setMinutes(now.getMinutes() - 7)),
+        title: 'Test 8',
+        description: 'Description Description Description Description Description Description',
+        isRead: false,
+        showDate: true
+      }
     ]);
   }
 

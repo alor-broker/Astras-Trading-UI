@@ -1,5 +1,5 @@
 ﻿export interface NewFeedback {
-  feedbackCode: string;
+  code: string;
   description: string;
 }
 
@@ -11,4 +11,13 @@ export interface SendFeedBackRequest {
 
 export interface SendFeedBackResponse {
   error?: string;
+}
+
+export interface FeedbackMeta {
+  lastCheck?: number;
+  lastUnansweredFeedback?: UnansweredFeedback
+}
+
+export interface UnansweredFeedback extends NewFeedback {
+  isRead: boolean;
 }

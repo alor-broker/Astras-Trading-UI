@@ -25,9 +25,12 @@
 </ng-template>
 
 <ng-template #contentTemplate>
+  <ng-container *ngIf="sortedNotifications$ | async as notifications">
   <nz-table #table
-            [nzData]="(sortedNotifications$ | async)!"
+            [nzData]="notifications"
             [nzPageSize]="5"
+            [nzShowPagination]="notifications.length > table.nzPageSize"
+            [nzPaginationType]="'small'"
             class="notifications-table"
   >
     <tbody>
@@ -60,4 +63,5 @@
     </tr>
     </tbody>
   </nz-table>
+  </ng-container>
 </ng-template>

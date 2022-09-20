@@ -1,7 +1,9 @@
 ﻿import { NotificationsProvider } from '../../notifications/services/notifications-provider';
 import {
   BehaviorSubject,
+  combineLatest,
   Observable,
+  of,
   shareReplay,
   switchMap,
   tap,
@@ -17,13 +19,18 @@ import {
   map,
   startWith
 } from 'rxjs/operators';
-import { mapWith } from '../../../shared/utils/observable-helper';
-import { addHours } from '../../../shared/utils/datetime';
-import { NewFeedback } from '../models/feedback.model';
+import {
+  addHours,
+  addMinutes
+} from '../../../shared/utils/datetime';
+import {
+  NewFeedback,
+  UnansweredFeedback
+} from '../models/feedback.model';
 
 @Injectable()
 export class FeedbackNotificationsProvider implements NotificationsProvider {
-  private readonly readNotification$ = new BehaviorSubject<boolean>(false);
+  private readonly readFeedbackMeta$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private readonly modalService: ModalService,
@@ -32,8 +39,9 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
   }
 
   getNotifications(): Observable<NotificationMeta[]> {
-    const lastCheck = this.feedbackService.getLastFeedbackCheck();
-    if (!lastCheck) {
+    const feedbackMeta = this.feedbackService.getSavedFeedbackMeta();
+
+    if (!feedbackMeta) {
       this.feedbackService.setLastFeedbackCheck();
     }
 
@@ -42,49 +50,65 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
 
     const now = new Date();
     let startTime = addHours(new Date(now), defaultDelayHours);
-    if (!!lastCheck) {
-      if ((now.getTime() - lastCheck) > defaultDelayMilliseconds) {
+
+    if (!!feedbackMeta) {
+      if (feedbackMeta.lastUnansweredFeedback) {
         startTime = now;
+      }
+      else if (!!feedbackMeta.lastCheck && (now.getTime() - feedbackMeta.lastCheck) > defaultDelayMilliseconds) {
+        startTime = addMinutes(new Date(now), 5);
       }
     }
 
-    return timer(startTime, defaultDelayMilliseconds).pipe(
-      tap(() => this.readNotification$.next(false)),
-      switchMap(() => this.feedbackService.requestFeedback()),
-      tap(() => this.feedbackService.setLastFeedbackCheck()),
-      filter(f => !!f),
-      mapWith(() => this.readNotification$, (feedback, isRead) => ({ feedback, isRead })),
-      map(s => {
-        if (s.isRead) {
-          return [];
-        }
+    return combineLatest([
+      timer(startTime, defaultDelayMilliseconds),
+      this.readFeedbackMeta$
+    ])
+      .pipe(
+        switchMap(() => {
+          const feedbackMeta = this.feedbackService.getSavedFeedbackMeta();
+          if (feedbackMeta?.lastUnansweredFeedback) {
+            return of(feedbackMeta.lastUnansweredFeedback);
+          }
+          else {
+            return this.feedbackService.requestFeedback().pipe(
+              map(x => ({ ...x, isRead: false } as UnansweredFeedback)),
+              tap(x => this.feedbackService.setUnansweredFeedback(x))
+            );
+          }
+        }),
+        tap(() => this.feedbackService.setLastFeedbackCheck()),
+        filter(f => !!f),
+        map(f => {
+          return [
+            {
+              id: GuidGenerator.newGuid(),
+              date: new Date(),
+              title: 'Оценить приложение',
+              description: 'Поделитесь своим мнением о приложении',
+              showDate: true,
+              isRead: f.isRead,
+              open: () => {
+                const params: NewFeedback = {
+                  code: f.code,
+                  description: f.description
+                };
 
-        return [
-          {
-            id: GuidGenerator.newGuid(),
-            date: new Date(),
-            title: 'Оценить приложение',
-            description: 'Поделитесь своим мнением о приложении',
-            showDate: true,
-            isRead: false,
-            open: () => {
-              const params: NewFeedback = {
-                feedbackCode: s.feedback!.feedbackCode,
-                description: s.feedback!.description
-              };
+                this.modalService.openVoteModal(params);
+              },
+              markAsRead: () => {
+                this.feedbackService.setUnansweredFeedback({
+                  ...f,
+                  isRead: true
+                });
 
-              this.modalService.openVoteModal(params);
-            },
-            markAsRead: () => this.markReadNotification()
-          } as NotificationMeta
-        ];
-      }),
-      shareReplay(1),
-      startWith([])
-    );
-  }
-
-  private markReadNotification() {
-    this.readNotification$.next(true);
+                this.readFeedbackMeta$.next(true);
+              }
+            } as NotificationMeta
+          ];
+        }),
+        shareReplay(1),
+        startWith([])
+      );
   }
 }

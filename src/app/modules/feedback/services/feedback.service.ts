@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
+  FeedbackMeta,
   NewFeedback,
   SendFeedBackRequest,
-  SendFeedBackResponse
+  SendFeedBackResponse,
+  UnansweredFeedback
 } from '../models/feedback.model';
 import {
   Observable,
@@ -13,10 +15,6 @@ import { environment } from '../../../../environments/environment';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
-
-interface FeedbackMeta {
-  lastCheck?: number;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -32,21 +30,27 @@ export class FeedbackService {
   ) {
   }
 
-  getLastFeedbackCheck(): number | null {
-    const lastCheck = this.getSavedFeedbackMeta()?.lastCheck ?? null;
-
-    if (lastCheck) {
-      return lastCheck;
-    }
-
-    return null;
+  setLastFeedbackCheck() {
+    const meta = this.getSavedFeedbackMeta() ?? {};
+    this.saveFeedbackMeta({
+      ...meta,
+      lastCheck: Date.now()
+    });
   }
 
-  setLastFeedbackCheck() {
-    const lastCheck = this.getSavedFeedbackMeta()?.lastCheck ?? {};
+  setUnansweredFeedback(unansweredFeedback: UnansweredFeedback) {
+    const meta = this.getSavedFeedbackMeta() ?? {};
     this.saveFeedbackMeta({
-      ...lastCheck,
-      lastCheck: Date.now()
+      ...meta,
+      lastUnansweredFeedback: unansweredFeedback
+    });
+  }
+
+  removeUnansweredFeedback() {
+    const meta = this.getSavedFeedbackMeta() ?? {};
+    this.saveFeedbackMeta({
+      ...meta,
+      lastUnansweredFeedback: undefined
     });
   }
 
@@ -54,6 +58,8 @@ export class FeedbackService {
     return this.httpClient.post<SendFeedBackResponse>(
       `${this.baseUrl}/rates`,
       feedback
+    ).pipe(
+      take(1)
     );
   }
 
@@ -64,7 +70,7 @@ export class FeedbackService {
     );
   }
 
-  private getSavedFeedbackMeta(): FeedbackMeta | null {
+  getSavedFeedbackMeta(): FeedbackMeta | null {
     return this.localStorage.getItem<FeedbackMeta>(this.feedbackLocalStorageKey) ?? null;
   }
 

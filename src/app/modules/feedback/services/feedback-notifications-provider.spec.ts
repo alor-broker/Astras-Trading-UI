@@ -13,7 +13,11 @@ import {
   shareReplay,
   take
 } from 'rxjs';
-import { NewFeedback } from '../models/feedback.model';
+import {
+  FeedbackMeta,
+  NewFeedback,
+  UnansweredFeedback
+} from '../models/feedback.model';
 import { NotificationMeta } from '../../notifications/models/notification.model';
 
 describe('FeedbackNotificationsProvider', () => {
@@ -21,6 +25,8 @@ describe('FeedbackNotificationsProvider', () => {
 
   let feedbackServiceSpy: any;
   let modalServiceSpy: any;
+
+  const oneHourPlusDelay = 3600 * 1000 + 2 * 1000;
 
   const readNotification = (notifications$: Observable<NotificationMeta[]>, read: (notifications: NotificationMeta[]) => void) => {
     notifications$.pipe(
@@ -32,8 +38,10 @@ describe('FeedbackNotificationsProvider', () => {
     feedbackServiceSpy = jasmine.createSpyObj(
       'FeedbackService',
       [
-        'getLastFeedbackCheck',
+        'getSavedFeedbackMeta',
         'setLastFeedbackCheck',
+        'setLastFeedbackCheck',
+        'setUnansweredFeedback',
         'requestFeedback'
       ]);
 
@@ -67,7 +75,7 @@ describe('FeedbackNotificationsProvider', () => {
   });
 
   it('should request feedback after 1 hours at first start', fakeAsync(() => {
-      feedbackServiceSpy.getLastFeedbackCheck.and.returnValue(null);
+      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue(null);
       feedbackServiceSpy.requestFeedback.and.returnValue(of(null));
 
       provider.getNotifications().subscribe();
@@ -75,7 +83,7 @@ describe('FeedbackNotificationsProvider', () => {
 
       expect(feedbackServiceSpy.requestFeedback).not.toHaveBeenCalled();
 
-      jasmine.clock().tick(3600 * 1000 + 2 * 1000);
+      jasmine.clock().tick(oneHourPlusDelay);
 
       expect(feedbackServiceSpy.requestFeedback).toHaveBeenCalled();
       discardPeriodicTasks();
@@ -83,7 +91,7 @@ describe('FeedbackNotificationsProvider', () => {
   );
 
   it('should request feedback after 1 hours of last check', fakeAsync(() => {
-      feedbackServiceSpy.getLastFeedbackCheck.and.returnValue(new Date().getTime());
+      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue({ lastCheck: new Date().getTime() } as FeedbackMeta);
       feedbackServiceSpy.requestFeedback.and.returnValue(of(null));
 
       provider.getNotifications().subscribe();
@@ -91,77 +99,42 @@ describe('FeedbackNotificationsProvider', () => {
 
       expect(feedbackServiceSpy.requestFeedback).not.toHaveBeenCalled();
 
-      jasmine.clock().tick(3600 * 1000 + 2 * 1000);
+      jasmine.clock().tick(oneHourPlusDelay);
 
       expect(feedbackServiceSpy.requestFeedback).toHaveBeenCalled();
       discardPeriodicTasks();
     })
   );
 
-  it('should remove notification after read', fakeAsync(() => {
-      const testFeedbackRequest = {
-        feedbackCode: 'testCode',
-        description: 'description'
-      } as NewFeedback;
+  it('should return last unanswered feedback', fakeAsync(() => {
+      const savedFeedback: UnansweredFeedback = {
+        code: 'testCode',
+        description: 'description test',
+        isRead: true
+      };
 
-      feedbackServiceSpy.getLastFeedbackCheck.and.returnValue(new Date().getTime() - (3600 * 1000 + 5 * 1000));
-      feedbackServiceSpy.requestFeedback.and.returnValue(of(testFeedbackRequest));
+      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue(
+        {
+          lastCheck: new Date().getTime(),
+          lastUnansweredFeedback: savedFeedback
+        }
+      );
 
       const notifications$ = provider.getNotifications().pipe(
         shareReplay(1)
       );
 
       notifications$.subscribe();
-      jasmine.clock().tick(5000);
+      jasmine.clock().tick(1000);
 
-      expect(feedbackServiceSpy.requestFeedback).toHaveBeenCalled();
-
-      readNotification(notifications$, notifications => {
-        expect(notifications.length).toBe(1);
-
-        notifications[0].markAsRead!();
-
-        readNotification(notifications$, notifications => {
-          expect(notifications.length).toBe(0);
-        });
-      });
-
-      discardPeriodicTasks();
-    })
-  );
-
-  it('should return new notification after read', fakeAsync(() => {
-      const testFeedbackRequest = {
-        feedbackCode: 'testCode',
-        description: 'description'
-      } as NewFeedback;
-
-      feedbackServiceSpy.getLastFeedbackCheck.and.returnValue(new Date().getTime() - (3600 * 1000 + 5 * 1000));
-      feedbackServiceSpy.requestFeedback.and.returnValue(of(testFeedbackRequest));
-
-      const notifications$ = provider.getNotifications().pipe(
-        shareReplay(1)
-      );
-
-      notifications$.subscribe();
-      jasmine.clock().tick(5000);
-
-      expect(feedbackServiceSpy.requestFeedback).toHaveBeenCalled();
+      expect(feedbackServiceSpy.requestFeedback).not.toHaveBeenCalled();
 
       readNotification(notifications$, notifications => {
         expect(notifications.length).toBe(1);
 
-        notifications[0].markAsRead!();
+        const notification = notifications[0];
 
-        readNotification(notifications$, notifications => {
-          expect(notifications.length).toBe(0);
-
-          jasmine.clock().tick(3600 * 1000 + 5 * 1000);
-
-          readNotification(notifications$, notifications => {
-            expect(notifications.length).toBe(1);
-          });
-        });
+        expect(notification.isRead).toBe(savedFeedback.isRead);
       });
 
       discardPeriodicTasks();
@@ -170,11 +143,11 @@ describe('FeedbackNotificationsProvider', () => {
 
   it('should open feedback dialog', fakeAsync(() => {
       const testFeedbackRequest = {
-        feedbackCode: 'testCode',
+        code: 'testCode',
         description: 'description'
       } as NewFeedback;
 
-      feedbackServiceSpy.getLastFeedbackCheck.and.returnValue(new Date().getTime() - (3600 * 1000 + 5 * 1000));
+      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue({ lastCheck: new Date().getTime() } as FeedbackMeta);
       feedbackServiceSpy.requestFeedback.and.returnValue(of(testFeedbackRequest));
 
       const notifications$ = provider.getNotifications().pipe(
@@ -182,7 +155,7 @@ describe('FeedbackNotificationsProvider', () => {
       );
 
       notifications$.subscribe();
-      jasmine.clock().tick(5000);
+      jasmine.clock().tick(oneHourPlusDelay);
 
       expect(feedbackServiceSpy.requestFeedback).toHaveBeenCalled();
 
@@ -192,6 +165,45 @@ describe('FeedbackNotificationsProvider', () => {
         notifications[0].open!();
 
         expect(modalServiceSpy.openVoteModal).toHaveBeenCalledOnceWith(testFeedbackRequest);
+      });
+
+      discardPeriodicTasks();
+    })
+  );
+
+  it('should update isRead on saved feedback', fakeAsync(() => {
+      const savedFeedback: UnansweredFeedback = {
+        code: 'testCode',
+        description: 'description test',
+        isRead: false
+      };
+
+      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue(
+        {
+          lastCheck: new Date().getTime(),
+          lastUnansweredFeedback: savedFeedback
+        }
+      );
+
+      const notifications$ = provider.getNotifications().pipe(
+        shareReplay(1)
+      );
+
+      notifications$.subscribe();
+      jasmine.clock().tick(1000);
+
+      expect(feedbackServiceSpy.requestFeedback).not.toHaveBeenCalled();
+
+      readNotification(notifications$, notifications => {
+        expect(notifications.length).toBe(1);
+
+        const notification = notifications[0];
+        notification.markAsRead!();
+
+        expect(feedbackServiceSpy.setUnansweredFeedback).toHaveBeenCalledOnceWith({
+          ...savedFeedback,
+          isRead: true
+        } as UnansweredFeedback);
       });
 
       discardPeriodicTasks();

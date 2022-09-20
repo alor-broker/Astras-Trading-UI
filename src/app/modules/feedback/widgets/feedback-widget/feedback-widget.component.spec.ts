@@ -33,7 +33,7 @@ describe('FeedbackWidgetComponent', () => {
           provide: ModalService,
           useValue: {
             shouldShowVoteModal$: of(true),
-            voteParams$: of({ feedbackCode: 'testCode', description: '' } as NewFeedback),
+            voteParams$: of({ code: 'testCode', description: '' } as NewFeedback),
             closeVoteModal: jasmine.createSpy('closeVoteModal').and.callThrough()
           }
         }

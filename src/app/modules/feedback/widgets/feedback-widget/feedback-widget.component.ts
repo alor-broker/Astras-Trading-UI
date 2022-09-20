@@ -69,7 +69,7 @@ export class FeedbackWidgetComponent implements OnInit, OnDestroy {
     this.form = new FormGroup({
       rate: new FormControl(null, Validators.required),
       comment: new FormControl(null, [Validators.maxLength(this.commentMaxLength)]),
-      feedbackCode: new FormControl(params.feedbackCode)
+      code: new FormControl(params.code)
     });
   }
 
@@ -86,7 +86,10 @@ export class FeedbackWidgetComponent implements OnInit, OnDestroy {
     }
 
     this.feedbackService.submitFeedback(this.form.value).pipe(
-      finalize(() => this.modalService.closeVoteModal())
+      finalize(() => {
+        this.modalService.closeVoteModal();
+        this.feedbackService.removeUnansweredFeedback();
+      })
     ).subscribe();
   }
 
