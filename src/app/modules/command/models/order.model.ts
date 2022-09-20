@@ -38,8 +38,13 @@ export interface LimitOrderEdit extends Omit<LimitOrder, 'side'> {
   id: string;
 }
 
-export interface StopOrderEdit extends StopOrder{
+export interface StopMarketOrderEdit extends StopOrder {
   id: string;
+}
+
+export interface StopLimitOrderEdit extends StopOrder {
+  id: string;
+  price: number;
 }
 
 export interface StopMarketOrder extends OrderBase {

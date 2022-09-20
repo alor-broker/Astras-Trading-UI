@@ -102,7 +102,15 @@ export class CommandsService {
     );
   }
 
-  submitStopEdit() {
+  submitStopLimitEdit() {
+    return this.submitStopEdit(true);
+  }
+
+  submitStopMarketEdit() {
+    return this.submitStopEdit(false);
+  }
+
+  private submitStopEdit(isLimit: boolean) {
     if (!this.stopEdit) {
       return this.getEmptyCommandError();
     }
@@ -115,16 +123,28 @@ export class CommandsService {
             return this.getEmptyCommandError();
           }
 
-          return this.orderService.submitStopOrderEdit(
-            {
-              ...stopEdit,
-              conditionType: stopEdit.condition,
-              endTime: stopEdit.stopEndUnixTime as number,
-              side: Side.Sell
-            },
-            stopEdit.user?.portfolio ?? '',
-            stopEdit.price ? 'stopLimit' : 'stop'
-          );
+          if (isLimit) {
+            return this.orderService.submitStopLimitOrderEdit(
+              {
+                ...stopEdit,
+                conditionType: stopEdit.condition,
+                endTime: stopEdit.stopEndUnixTime as number,
+                side: Side.Sell,
+                price: stopEdit.price!
+              },
+              stopEdit.user?.portfolio ?? ''
+            );
+          } else {
+            return this.orderService.submitStopMarketOrderEdit(
+              {
+                ...stopEdit,
+                conditionType: stopEdit.condition,
+                endTime: stopEdit.stopEndUnixTime as number,
+                side: Side.Sell
+              },
+              stopEdit.user?.portfolio ?? ''
+            );
+          }
         })
       )
     );

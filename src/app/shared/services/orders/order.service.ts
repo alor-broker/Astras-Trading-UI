@@ -19,9 +19,8 @@ import {
   LimitOrder,
   LimitOrderEdit,
   MarketOrder,
-  StopLimitOrder,
-  StopMarketOrder,
-  StopOrderEdit,
+  StopLimitOrder, StopLimitOrderEdit,
+  StopMarketOrder, StopMarketOrderEdit,
   SubmitOrderResponse,
   SubmitOrderResult
 } from "../../../modules/command/models/order.model";
@@ -103,11 +102,24 @@ export class OrderService {
     );
   }
 
-  submitStopOrderEdit(orderEdit: StopOrderEdit, portfolio: string, orderType: string): Observable<SubmitOrderResult> {
+  submitStopMarketOrderEdit(orderEdit: StopMarketOrderEdit, portfolio: string): Observable<SubmitOrderResult> {
     return this.submitOrderEdit(
       portfolio,
       () => ({
-        url: `${this.baseApiUrl}/${orderType}/${orderEdit.id}`,
+        url: `${this.baseApiUrl}/stop/${orderEdit.id}`,
+        body: {
+          ...orderEdit,
+          stopEndUnixTime: orderEdit.endTime,
+        }
+      })
+    );
+  }
+
+  submitStopLimitOrderEdit(orderEdit: StopLimitOrderEdit, portfolio: string): Observable<SubmitOrderResult> {
+    return this.submitOrderEdit(
+      portfolio,
+      () => ({
+        url: `${this.baseApiUrl}/stopLimit/${orderEdit.id}`,
         body: {
           ...orderEdit,
           stopEndUnixTime: orderEdit.endTime,
