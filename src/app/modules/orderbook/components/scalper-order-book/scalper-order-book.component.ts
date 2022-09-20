@@ -698,6 +698,30 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       return;
     }
 
+    if (command.type === ScalperOrderBookCommands.sellBestBid) {
+      this.callWithSettings(settings => {
+        this.callWithCurrentOrderBook(orderBook => {
+          this.callWithWorkingVolume(workingVolume => {
+            this.scalperOrdersService.sellBestBid(settings.instrument, workingVolume!, orderBook);
+          });
+        });
+      });
+
+      return;
+    }
+
+    if (command.type === ScalperOrderBookCommands.buyBestAsk) {
+      this.callWithSettings(settings => {
+        this.callWithCurrentOrderBook(orderBook => {
+          this.callWithWorkingVolume(workingVolume => {
+            this.scalperOrdersService.buyBestAsk(settings.instrument, workingVolume!, orderBook);
+          });
+        });
+      });
+
+      return;
+    }
+
     if (command.type === ScalperOrderBookCommands.sellMarket) {
       this.placeMarketOrderSilent(Side.Sell);
       return;

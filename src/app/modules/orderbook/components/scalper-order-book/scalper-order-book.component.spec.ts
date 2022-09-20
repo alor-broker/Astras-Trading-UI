@@ -127,6 +127,8 @@ describe('ScalperOrderBookComponent', () => {
         'reversePositionsByMarket',
         'setStopLimitForRow',
         'setStopLoss',
+        'sellBestBid',
+        'buyBestAsk'
       ]
     );
 
@@ -283,6 +285,64 @@ describe('ScalperOrderBookComponent', () => {
 
         fixture.detectChanges();
         hotKeyCommandMock.next({ type: ScalperOrderBookCommands.buyBestOrder });
+      })
+    );
+
+    it('should process sellBestBid command', ((done) => {
+        const workingVolume = Math.round(Math.random() * 100);
+
+        orderBookDataMock.next({
+          a: [{
+            p: Math.round(Math.random() * 1000),
+            v: Math.round(Math.random() * 100),
+            y: 0
+          }],
+          b: [{
+            p: Math.round(Math.random() * 1000),
+            v: Math.round(Math.random() * 100),
+            y: 0
+          }],
+        });
+
+        component.isActiveOrderBook = true;
+        component.activeWorkingVolume$.next(workingVolume);
+
+        scalperOrdersServiceSpy.sellBestBid.and.callFake((instrument: Instrument, quantity: number) => {
+          done();
+
+          expect(instrument).toEqual(defaultInstrumentInfo);
+          expect(quantity).toEqual(workingVolume);
+        });
+
+        fixture.detectChanges();
+        hotKeyCommandMock.next({ type: ScalperOrderBookCommands.sellBestBid });
+      })
+    );
+
+    it('should process buyBestAsk command', ((done) => {
+        const workingVolume = Math.round(Math.random() * 100);
+
+        orderBookDataMock.next({
+          a: [{
+            p: Math.round(Math.random() * 1000),
+            v: Math.round(Math.random() * 100),
+            y: 0
+          }],
+          b: [],
+        });
+
+        component.isActiveOrderBook = true;
+        component.activeWorkingVolume$.next(workingVolume);
+
+        scalperOrdersServiceSpy.buyBestAsk.and.callFake((instrument: Instrument, quantity: number) => {
+          done();
+
+          expect(instrument).toEqual(defaultInstrumentInfo);
+          expect(quantity).toEqual(workingVolume);
+        });
+
+        fixture.detectChanges();
+        hotKeyCommandMock.next({ type: ScalperOrderBookCommands.buyBestAsk });
       })
     );
 

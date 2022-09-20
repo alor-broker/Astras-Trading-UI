@@ -12,6 +12,8 @@ export interface HotKeysSettings {
   workingVolumes?: string[];
   sellBestOrder?: string;
   buyBestOrder?: string;
+  buyBestAsk?: string;
+  sellBestBid?: string;
 }
 
 export interface TerminalSettings {

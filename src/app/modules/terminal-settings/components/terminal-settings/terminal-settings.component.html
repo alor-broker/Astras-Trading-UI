@@ -204,6 +204,33 @@
             </nz-form-control>
           </nz-form-item>
 
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="sellBestBid">Продать по лучшей цене из BID</nz-form-label>
+            <nz-form-control nzErrorTip="Введите значение">
+              <input
+                class='ant-input'
+                formControlName="sellBestBid"
+                (mousedown)="$event.stopPropagation()"
+                readonly
+                nz-input
+                (keydown)="hotkeyChange($event, hotKeysForm.get('sellBestBid'))"
+              />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="buyBestAsk">Купить по лучшей цене из ASK</nz-form-label>
+            <nz-form-control nzErrorTip="Введите значение">
+              <input
+                class='ant-input'
+                formControlName="buyBestAsk"
+                (mousedown)="$event.stopPropagation()"
+                readonly
+                nz-input
+                (keydown)="hotkeyChange($event, hotKeysForm.get('buyBestAsk'))"
+              />
+            </nz-form-control>
+          </nz-form-item>
+
           <h3>Рабочие объёмы</h3>
 
           <ng-container *ngIf="hotKeysForm.value.workingVolumes">

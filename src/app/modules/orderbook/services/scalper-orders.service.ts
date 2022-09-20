@@ -86,6 +86,10 @@ export class ScalperOrdersService {
   }
 
   placeBestOrder(instrument: Instrument, side: Side, quantity: number, orderBook: OrderbookData): void {
+    if (orderBook.a.length === 0 || orderBook.b.length === 0) {
+      return;
+    }
+
     let price: number | undefined;
 
     const bestAsk = orderBook.a[0].p;
@@ -114,6 +118,42 @@ export class ScalperOrdersService {
           .subscribe();
       });
     }
+  }
+
+  sellBestBid(instrument: Instrument, quantity: number, orderBook: OrderbookData): void {
+    if (orderBook.b.length === 0) {
+      return;
+    }
+
+    const bestBid = orderBook.b[0].p;
+    this.getCurrentPortfolio().subscribe(portfolio => {
+      this.orderService.submitLimitOrder({
+          side: Side.Sell,
+          price: bestBid!,
+          quantity: quantity,
+          instrument: instrument
+        },
+        portfolio.portfolio)
+        .subscribe();
+    });
+  }
+
+  buyBestAsk(instrument: Instrument, quantity: number, orderBook: OrderbookData): void {
+    if (orderBook.a.length === 0) {
+      return;
+    }
+
+    const bestAsk = orderBook.a[0].p;
+    this.getCurrentPortfolio().subscribe(portfolio => {
+      this.orderService.submitLimitOrder({
+          side: Side.Buy,
+          price: bestAsk!,
+          quantity: quantity,
+          instrument: instrument
+        },
+        portfolio.portfolio)
+        .subscribe();
+    });
   }
 
   placeMarketOrder(instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean): void {
