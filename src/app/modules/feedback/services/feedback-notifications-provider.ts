@@ -72,7 +72,7 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
           }
           else {
             return this.feedbackService.requestFeedback().pipe(
-              map(x => ({ ...x, isRead: false } as UnansweredFeedback)),
+              map(x => ({ ...x, isRead: false, date: Date.now() } as UnansweredFeedback)),
               tap(x => this.feedbackService.setUnansweredFeedback(x))
             );
           }
@@ -83,7 +83,7 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
           return [
             {
               id: GuidGenerator.newGuid(),
-              date: new Date(),
+              date:  !!f.date ? new Date(f.date) : new Date(),
               title: 'Оценить приложение',
               description: 'Поделитесь своим мнением о приложении',
               showDate: true,

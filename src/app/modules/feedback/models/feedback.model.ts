@@ -20,4 +20,5 @@ export interface FeedbackMeta {
 
 export interface UnansweredFeedback extends NewFeedback {
   isRead: boolean;
+  date?: number;
 }
