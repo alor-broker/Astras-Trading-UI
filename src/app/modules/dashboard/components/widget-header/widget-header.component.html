@@ -7,7 +7,12 @@
       [title]="joyrideContent.step8.title"
       [text]="joyrideContent.step8.text"></i>
   </button>
-  <label class="title">
+  <label
+    class="title"
+    nz-popover
+    nzPopoverPlacement="bottom"
+    [nzPopoverContent]="s.title"
+  >
     <nz-badge
       *ngIf="s.badgeColor &&
         (terminalSettings$ | async)?.badgesBind &&
@@ -31,7 +36,7 @@
       </ul>
     </nz-dropdown-menu>
   </label>
-  <span>
+  <div class="right-buttons">
     <button *ngIf='s.linkToActive !== undefined' nz-button nzSize="small"
       (mousedown)="linkToActive($event, !s.linkToActive)"
       (touchstart)="linkToActive($event, !s.linkToActive)"
@@ -59,5 +64,5 @@
       [text]="joyrideContent.step5.text">
       <i nz-icon nzType="close-circle" [nzTheme]="'outline'"></i>
     </button>
-  </span>
+  </div>
 </div>

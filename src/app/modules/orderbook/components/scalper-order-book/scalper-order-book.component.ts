@@ -377,6 +377,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       this.scalperOrderBookStore.regenerateForPrice(
         orderBookBounds.minBid,
         orderBookBounds.maxAsk,
+        settings.instrument.minstep,
         () => this.alignTable()
       );
 
@@ -814,7 +815,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
         const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
 
         return {
-          qty: position!.qtyTFuture,
+          qty: position!.qtyTFutureBatch,
           price: position!.avgPrice,
           lossOrProfit: rowsDifference
         };

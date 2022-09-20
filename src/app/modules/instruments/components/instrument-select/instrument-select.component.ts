@@ -7,19 +7,20 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import {
-  Store
-} from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
 import {
   BehaviorSubject,
   Observable,
   of,
+  shareReplay,
   take
 } from 'rxjs';
 import {
   debounceTime,
   filter,
+  map,
+  startWith,
   switchMap
 } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
@@ -30,6 +31,7 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentSelectSettings } from "../../../../shared/models/settings/instrument-select-settings.model";
+import { WatchlistCollection } from '../../models/watchlist.model';
 
 @Component({
   selector: 'ats-instrument-select[shouldShowSettings][guid]',
@@ -47,6 +49,8 @@ export class InstrumentSelectComponent implements OnInit {
   shouldShowSettingsChange = new EventEmitter<boolean>();
   filteredInstruments$: Observable<Instrument[]> = of([]);
   inputValue?: string;
+  collection$?: Observable<WatchlistCollection>;
+  settings$!: Observable<InstrumentSelectSettings>;
   private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
 
   constructor(
@@ -78,7 +82,8 @@ export class InstrumentSelectComponent implements OnInit {
         exchange: isComplexSearch ? exchange : '',
         instrumentGroup: isComplexSearch && instrumentGroup ? instrumentGroup : ''
       };
-    } else {
+    }
+    else {
       filter = {
         query: isComplexSearch ? query : value,
         exchange: isComplexSearch ? exchange : '',
@@ -101,6 +106,10 @@ export class InstrumentSelectComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.settings$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
+      shareReplay(1)
+    );
+
     this.filteredInstruments$ = this.filter$.pipe(
       filter((f): f is SearchFilter => !!f),
       debounceTime(200),
@@ -108,16 +117,25 @@ export class InstrumentSelectComponent implements OnInit {
     );
 
     this.setDefaultWatchList();
+
+    this.collection$ = this.watchlistCollectionService.collectionChanged$.pipe(
+      startWith(null),
+      map(() => this.watchlistCollectionService.getWatchlistCollection()),
+    );
   }
 
   watch(instrument: InstrumentKey) {
-    this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
-      filter(({activeListId}) => !!activeListId),
+    this.settings$.pipe(
+      filter(({ activeListId }) => !!activeListId),
       take(1)
     ).subscribe(s => {
       this.watchlistCollectionService.addItemsToList(s.activeListId!, [instrument]);
       this.store.dispatch(selectNewInstrumentByBadge({ badgeColor: s.badgeColor!, instrument }));
     });
+  }
+
+  selectCollection(listId: string) {
+    this.settingsService.updateSettings(this.guid, { activeListId: listId });
   }
 
   private setDefaultWatchList() {

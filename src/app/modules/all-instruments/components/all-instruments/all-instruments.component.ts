@@ -12,6 +12,8 @@ import { WatchlistCollectionService } from "../../../instruments/services/watchl
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
+import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 @Component({
   selector: 'ats-all-instruments',
@@ -93,7 +95,8 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     private readonly service: AllInstrumentsService,
     private readonly cdr: ChangeDetectorRef,
     private readonly store: Store,
-    private readonly watchlistCollectionService: WatchlistCollectionService
+    private readonly watchlistCollectionService: WatchlistCollectionService,
+    private readonly terminalSettingsService: TerminalSettingsService
   ) { }
 
   ngOnInit(): void {
@@ -192,12 +195,16 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.service.getAllInstruments(this.filters)
       .pipe(
-        withLatestFrom(this.store.select(getSelectedInstrumentsWithBadges))
+        withLatestFrom(
+          this.store.select(getSelectedInstrumentsWithBadges),
+          this.terminalSettingsService.getSettings()
+        )
       )
-      .subscribe(([res, badges]) => {
+      .subscribe(([res, badges, settings]) => {
         const newDataWithBadges = res.map(instr => ({
           ...instr,
-          badges: Object.keys(badges).filter(key => instr.name === badges[key].symbol)
+          badges: Object.keys(settings.badgesBind ? badges : {[defaultBadgeColor]: badges[defaultBadgeColor]})
+            .filter(key => instr.name === badges[key].symbol  && instr.exchange === badges[key].exchange)
         }));
         if (isFiltersChanged) {
           this.instrumentsList = newDataWithBadges;
@@ -220,13 +227,17 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     this.instrumentsSub = interval(10_000)
       .pipe(
         switchMap(() => this.service.getAllInstruments(filterForSub)),
-        withLatestFrom(this.store.select(getSelectedInstrumentsWithBadges)),
+        withLatestFrom(
+          this.store.select(getSelectedInstrumentsWithBadges),
+          this.terminalSettingsService.getSettings()
+        ),
         takeUntil(this.destroy$)
       )
-      .subscribe(([res, badges]) => {
+      .subscribe(([res, badges, settings]) => {
         this.instrumentsList = res.map(instr => ({
           ...instr,
-          badges: Object.keys(badges).filter(key => instr.name === badges[key].symbol)
+          badges: Object.keys(settings.badgesBind ? badges : {[defaultBadgeColor]: badges[defaultBadgeColor]})
+            .filter(key => instr.name === badges[key].symbol  && instr.exchange === badges[key].exchange)
         }));
         this.cdr.markForCheck();
       });
@@ -235,12 +246,16 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   private badgesChangeSubscribe() {
     this.store.select(getSelectedInstrumentsWithBadges)
       .pipe(
+        mapWith(
+          () => this.terminalSettingsService.getSettings(),
+          (badges, settings) => ({badges, settings})),
         takeUntil(this.destroy$)
       )
-      .subscribe(badges => {
+      .subscribe(({badges, settings}) => {
         this.instrumentsList = this.instrumentsList.map(instr => ({
           ...instr,
-          badges: Object.keys(badges).filter(key => instr.name === badges[key].symbol)
+          badges: Object.keys(settings.badgesBind ? badges : {[defaultBadgeColor]: badges[defaultBadgeColor]})
+            .filter(key => instr.name === badges[key].symbol  && instr.exchange === badges[key].exchange)
         }));
         this.cdr.markForCheck();
       });

@@ -30,6 +30,8 @@ export class ScalperOrderBookComponentStore extends ComponentStore<ScalperOrderB
   }
 
   setInitialRange(startPrice: number, step: number, directionRowsCount: number, complete?: () => void) {
+    this.resetState();
+
     const rows = [
       ...this.generatePriceSequence(startPrice + step, step, directionRowsCount).reverse(),
       startPrice,
@@ -49,19 +51,16 @@ export class ScalperOrderBookComponentStore extends ComponentStore<ScalperOrderB
     }
   }
 
-  regenerateForPrice(minPrice: number, maxPrice: number, complete?: () => void) {
+  regenerateForPrice(minPrice: number, maxPrice: number, rowStep: number, complete?: () => void) {
     this.select(state => state).pipe(
       take(1),
       filter(s => !!s.rowStep)
     ).subscribe(state => {
-      this.resetState();
+      const pricePrecision = MathHelper.getPrecision(rowStep);
+      const newRowsCount = Math.ceil((maxPrice - minPrice) / rowStep) + 10;
+      const newPrice = minPrice + Math.ceil(((maxPrice - minPrice) / rowStep) / 2) * rowStep;
 
-      const step = state.rowStep!;
-      const pricePrecision = MathHelper.getPrecision(state.rowStep!);
-      const newRowsCount = Math.ceil((maxPrice - minPrice) / step) + 10;
-      const newPrice = minPrice + Math.ceil(((maxPrice - minPrice) / step) / 2) * step;
-
-      this.setInitialRange(MathHelper.round(newPrice, pricePrecision), step, Math.max(newRowsCount, state.directionRowsCount), complete);
+      this.setInitialRange(MathHelper.round(newPrice, pricePrecision), rowStep, Math.max(newRowsCount, state.directionRowsCount), complete);
     });
   }
 

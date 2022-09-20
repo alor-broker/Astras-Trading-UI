@@ -63,7 +63,8 @@ export const reducer = createReducer(
           symbol: badges[state.entities[s]?.badgeColor!]?.symbol,
           exchange: badges[state.entities[s]?.badgeColor!]?.exchange,
           instrumentGroup: badges[state.entities[s]?.badgeColor!]?.instrumentGroup,
-          isin: badges[state.entities[s]?.badgeColor!]?.isin
+          isin: badges[state.entities[s]?.badgeColor!]?.isin,
+          shortName: badges[state.entities[s]?.badgeColor!]?.shortName,
         }
       }));
 

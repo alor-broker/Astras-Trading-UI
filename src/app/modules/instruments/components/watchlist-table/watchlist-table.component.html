@@ -25,8 +25,11 @@
         <td *ngIf="isVisibleColumn('symbol')" class="ticker">
           <span class="ticker-name">{{ inst.instrument.symbol }}</span>
           <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
-            <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === inst.instrument.symbol"></nz-badge>
+            <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === inst.instrument.symbol && item.value.exchange === inst.instrument.exchange"></nz-badge>
           </ng-container>
+        </td>
+        <td *ngIf="isVisibleColumn('shortName')">
+          {{inst.instrument.shortName}}
         </td>
         <td *ngIf="isVisibleColumn('price')">
           <ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'>

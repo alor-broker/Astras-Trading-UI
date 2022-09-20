@@ -38,6 +38,7 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
 import { Store } from "@ngrx/store";
 import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
+import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -294,7 +295,8 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
     private readonly canceller: OrderCancellerService,
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly terminalSettingsService: TerminalSettingsService
   ) {
   }
 
@@ -342,7 +344,19 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe();
 
-    this.selectedInstruments$ = this.store.select(getSelectedInstrumentsWithBadges);
+    this.selectedInstruments$ = combineLatest([
+      this.store.select(getSelectedInstrumentsWithBadges),
+      this.terminalSettingsService.getSettings()
+    ])
+      .pipe(
+        takeUntil(this.destroy$),
+        map(([badges, settings]) => {
+          if (settings.badgesBind) {
+            return badges;
+          }
+          return {[defaultBadgeColor]: badges[defaultBadgeColor]};
+        })
+      );
   }
 
   ngOnDestroy(): void {
