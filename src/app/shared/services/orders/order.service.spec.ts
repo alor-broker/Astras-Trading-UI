@@ -9,6 +9,7 @@ import {
   LimitOrderEdit,
   MarketOrder,
   StopLimitOrder,
+  StopLimitOrderEdit,
   StopMarketOrder,
   StopMarketOrderEdit,
   SubmitOrderResponse,
@@ -785,6 +786,137 @@ describe('OrderService', () => {
 
       submitOrder(
         {} as StopMarketOrderEdit,
+        result => {
+          done();
+
+          expect(result.isSuccess).toBeFalse();
+        }
+      );
+
+      expect(errorHandlerServiceSpy.handleError).toHaveBeenCalled();
+    });
+  });
+
+  describe('#submitStopLimitOrderEdit', () => {
+    const submitOrder = (order: StopLimitOrderEdit, onResult?: (result: SubmitOrderResult) => void) => {
+      service.submitStopLimitOrderEdit(order, defaultPortfolio)
+        .subscribe((result) => {
+          if (onResult) {
+            onResult(result);
+          }
+        });
+    };
+
+    it('correct url should be used', (done) => {
+      const order = {
+        id: '123'
+      } as StopLimitOrderEdit;
+
+      httpSpy.put.and.callFake((url: string) => {
+        done();
+
+        expect(url).toBe(`${baseApiUrl}/stopLimit/${order.id}`);
+
+        return of({ orderNumber: order.id } as SubmitOrderResponse);
+      });
+
+      submitOrder(order);
+    });
+
+    it('should send correct headers', (done) => {
+      const order = {
+        id: '123'
+      } as StopLimitOrderEdit;
+
+      httpSpy.put.and.callFake((url: string, body: any, options: any) => {
+        done();
+
+        expect(isHeadersCorrect(options.headers)).toBeTrue();
+
+        return of({ orderNumber: order.id } as SubmitOrderResponse);
+      });
+
+      submitOrder(order);
+    });
+
+    it('all parameters should be provided', (done) => {
+      const order: StopLimitOrderEdit = {
+        instrument: {
+          symbol: 'ABC',
+          exchange: 'MOEX'
+        },
+        quantity: 100,
+        id: '123',
+        conditionType: 'Less',
+        triggerPrice: 100,
+        price: 100,
+        side: Side.Buy,
+        endTime: 123
+      };
+
+      httpSpy.put.and.callFake((url: string, body: any) => {
+        done();
+
+        expect(body.user.portfolio).toBe(defaultPortfolio);
+        expect(body.instrument.symbol).toBe(order.instrument.symbol);
+        expect(body.instrument.exchange).toBe(order.instrument.exchange);
+        expect(body.quantity).toBe(order.quantity);
+        expect(body.side).toBe(order.side);
+        expect(body.conditionType).toBe(order.conditionType);
+        expect(body.triggerPrice).toBe(order.triggerPrice);
+        expect(body.endTime).toBe(order.endTime);
+        expect(body.price).toBe(order.price);
+
+        return of({ orderNumber: order.id } as SubmitOrderResponse);
+      });
+
+      submitOrder(order);
+    });
+
+    it('should notify about success', (done) => {
+      httpSpy.put.and.returnValue(of({ orderNumber: '123' } as SubmitOrderResponse));
+
+      submitOrder(
+        {} as StopLimitOrderEdit,
+        result => {
+          done();
+
+          expect(result.isSuccess).toBeTrue();
+          expect(result.orderNumber).toBeDefined();
+        }
+      );
+
+      expect(notificationServiceSpy.success).toHaveBeenCalled();
+    });
+
+    it('should notify about http error', (done) => {
+      httpSpy.put.and.returnValue(
+        throwError(() => new HttpErrorResponse({
+            error: {
+              code: 'CODE',
+              message: 'Message'
+            }
+          })
+        )
+      );
+
+      submitOrder(
+        {} as StopLimitOrderEdit,
+        result => {
+          done();
+
+          expect(result.isSuccess).toBeFalse();
+        }
+      );
+
+      expect(notificationServiceSpy.error).toHaveBeenCalled();
+    });
+
+    it('should handle common error', (done) => {
+      httpSpy.put.and.returnValue(throwError(() => Error()));
+
+      submitOrder(
+        {} as StopLimitOrderEdit,
         result => {
           done();
 
