@@ -36,6 +36,17 @@ export function addHours(date: Date, hours: number) : Date {
 }
 
 /**
+ * Adding minutes to provided date
+ *
+ * @param {Date} date date
+ * @param {number} minutes number of minutes, negative if you need to substract
+ * @return {Date} updated date
+ */
+export function addMinutes(date: Date, minutes: number) : Date {
+  return new Date(date.setMinutes(date.getMinutes() + minutes));
+}
+
+/**
  * Adding days to provided date
  *
  * @param {Date} date
