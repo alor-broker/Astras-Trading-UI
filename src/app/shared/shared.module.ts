@@ -48,6 +48,9 @@ import { ColorChromeModule } from "ngx-color/chrome";
 import { NzPopoverModule } from "ng-zorro-antd/popover";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { ShortNumberPipe } from './pipes/short-number.pipe';
+import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { NOTIFICATIONS_PROVIDER } from '../modules/notifications/services/notifications-provider';
+import { FeedbackNotificationsProvider } from '../modules/feedback/services/feedback-notifications-provider';
 
 
 @NgModule({
@@ -100,7 +103,8 @@ import { ShortNumberPipe } from './pipes/short-number.pipe';
         NzRadioModule,
         ColorChromeModule,
         NzPopoverModule,
-        NzInputModule
+        NzInputModule,
+        NzSpaceModule,
     ],
   exports: [
     // Ng zorro
@@ -133,6 +137,7 @@ import { ShortNumberPipe } from './pipes/short-number.pipe';
     NzTypographyModule,
     NzRadioModule,
     NzPopoverModule,
+    NzSpaceModule,
     // modules
     CommonModule,
     FormsModule,
@@ -156,7 +161,8 @@ import { ShortNumberPipe } from './pipes/short-number.pipe';
       multi: true
     },
     { provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true },
-    { provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true }
+    { provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true },
+    { provide: NOTIFICATIONS_PROVIDER, useClass: FeedbackNotificationsProvider, multi: true }
   ],
 })
 export class SharedModule {

@@ -7,6 +7,7 @@ import { PortfolioKey } from '../models/portfolio-key.model';
 import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
 import { NewsListItem } from "../../modules/news/models/news.model";
 import { WidgetNames } from "../models/enums/widget-names";
+import { NewFeedback } from '../../modules/feedback/models/feedback.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,9 @@ export class ModalService {
 
   private shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
 
+  private shouldShowVoteModal = new BehaviorSubject<boolean>(false);
+  private voteParams = new BehaviorSubject<NewFeedback | null>(null);
+
   private newsItem = new BehaviorSubject<NewsListItem | null>(null);
   private shouldShowNewsModal = new BehaviorSubject<boolean>(false);
 
@@ -40,7 +44,11 @@ export class ModalService {
   shouldShowTerminalSettingsModal$ = this.shouldShowTerminalSettingsModal.asObservable();
 
   newsItem$ = this.newsItem.asObservable();
+
   shouldShowNewsModal$ = this.shouldShowNewsModal.asObservable();
+
+  shouldShowVoteModal$ = this.shouldShowVoteModal.asObservable();
+  voteParams$ = this.voteParams.asObservable();
 
   constructor(private store: Store) {
     this.store.select(getSelectedPortfolio).subscribe(p => {
@@ -80,6 +88,11 @@ export class ModalService {
     this.newsItem.next(newsItem);
   }
 
+  openVoteModal(voteParams: NewFeedback) {
+    this.voteParams.next(voteParams);
+    this.shouldShowVoteModal.next(true);
+  }
+
   closeTerminalSettingsModal() {
     this.shouldShowTerminalSettingsModal.next(false);
   }
@@ -98,5 +111,10 @@ export class ModalService {
 
   closeNewsModal() {
     this.shouldShowNewsModal.next(false);
+  }
+
+  closeVoteModal() {
+    this.shouldShowVoteModal.next(false);
+    this.voteParams.next(null);
   }
 }

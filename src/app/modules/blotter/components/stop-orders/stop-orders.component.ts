@@ -39,6 +39,7 @@ import { InstrumentBadges } from "../../../../shared/models/instruments/instrume
 import { Store } from "@ngrx/store";
 import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -407,7 +408,10 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
         portfolio: order.portfolio,
         exchange: order.exchange
       },
-      side: order.side
+      side: order.side,
+      triggerPrice: order.triggerPrice,
+      stopEndUnixTime: order.endTime,
+      condition: order.conditionType === 'less' ? StopOrderCondition.Less : StopOrderCondition.More
     });
   }
 

@@ -30,6 +30,7 @@ describe('NavbarComponent', () => {
         NavbarComponent,
         ...ngZorroMockComponents,
         mockComponent({selector: 'ats-widget-menu'}),
+        mockComponent({selector: 'ats-notification-button'}),
       ],
       providers: [
         { provide: AccountService, useValue: spyAccount },

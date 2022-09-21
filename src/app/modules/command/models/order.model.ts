@@ -28,8 +28,23 @@ export interface LimitOrder extends OrderBase {
   price: number;
 }
 
+export interface StopOrder extends OrderBase {
+  triggerPrice: number,
+  conditionType: StopOrderCondition,
+  endTime: number,
+}
+
 export interface LimitOrderEdit extends Omit<LimitOrder, 'side'> {
   id: string;
+}
+
+export interface StopMarketOrderEdit extends StopOrder {
+  id: string;
+}
+
+export interface StopLimitOrderEdit extends StopOrder {
+  id: string;
+  price: number;
 }
 
 export interface StopMarketOrder extends OrderBase {
