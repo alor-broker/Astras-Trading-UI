@@ -11,6 +11,7 @@ import { EvaluationComponent } from './components/evaluation/evaluation.componen
 import { EditWidgetComponent } from './widgets/edit-widget/edit-widget.component';
 import { LimitEditComponent } from './components/limit-edit/limit-edit.component';
 import { StopCommandComponent } from './components/stop-command/stop-command.component';
+import { StopEditComponent } from './components/stop-edit/stop-edit.component';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { StopCommandComponent } from './components/stop-command/stop-command.com
     CommandHeaderComponent,
     CommandFooterComponent,
     MarketCommandComponent,
-    EvaluationComponent
+    EvaluationComponent,
+    StopEditComponent
   ],
   imports: [
     SharedModule,
