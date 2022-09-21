@@ -8,5 +8,7 @@ export enum ScalperOrderBookCommands {
   buyBestOrder = 'buyBestOrder',
   sellMarket = 'sellMarket',
   buyMarket = 'buyMarket',
-  reversePositionsByMarketCurrent = 'reversePositionsByMarketCurrent'
+  reversePositionsByMarketCurrent = 'reversePositionsByMarketCurrent',
+  sellBestBid = 'sellBestBid',
+  buyBestAsk = 'buyBestAsk',
 }

@@ -137,6 +137,8 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
         ),
         sellBestOrder: new FormControl(currentSettings.hotKeysSettings?.sellBestOrder),
         buyBestOrder: new FormControl(currentSettings.hotKeysSettings?.buyBestOrder),
+        buyBestAsk: new FormControl(currentSettings.hotKeysSettings?.buyBestAsk),
+        sellBestBid: new FormControl(currentSettings.hotKeysSettings?.sellBestBid),
       })
       } as TerminalSettingsFormControls
     ) as TerminalSettingsFormGroup;

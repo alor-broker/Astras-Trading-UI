@@ -1,9 +1,8 @@
 <div
-  (mouseenter)="isActiveOrderBook = true"
-  (mouseleave)="isActiveOrderBook = false"
   *ngIf="!shouldShowSettings"
   [style.height]="(contentSize$ | async)?.height + 'px'"
   class="container"
+  [class.active]="isActive"
 >
   <div class="header">
     <div class="working-volumes">

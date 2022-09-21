@@ -89,6 +89,8 @@ export class TerminalSettingsEffects {
       workingVolumes: ['1', '2', '3', '4'],
       sellBestOrder: 'W',
       buyBestOrder: 'Q',
+      sellBestBid: 'Z',
+      buyBestAsk: 'X'
     };
   }
 }

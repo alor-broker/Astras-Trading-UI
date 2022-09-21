@@ -17,6 +17,8 @@ import { TerminalCommand } from "../models/terminal-command";
 
 @Injectable({ providedIn: 'root' })
 export class HotKeyCommandService {
+  private readonly inputs = ['INPUT', 'TEXTAREA'];
+
   public readonly commands$: Observable<TerminalCommand>;
 
   constructor(
@@ -38,7 +40,7 @@ export class HotKeyCommandService {
         return fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
           filter(x => {
               const target = (x.target as HTMLElement);
-              return target?.tagName === 'BODY';
+              return this.inputs.find(x => x === target?.tagName) == null;
             }
           ),
           map(x => {

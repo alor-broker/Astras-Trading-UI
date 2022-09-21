@@ -28,6 +28,10 @@
   .order-book-table-container {
     flex: 1;
 
+    border: 1px dotted transparent;
+    border-left: none;
+    border-right: none;
+
     .row {
       td {
         padding-top: 0 !important;
@@ -79,6 +83,14 @@
 
     .cancel-order-btn {
       margin-left: 0.5em;
+    }
+  }
+
+  &.active {
+    .order-book-table-container {
+      border: 1px dotted rgba(0, 187, 255, 0.5);
+      border-left: none;
+      border-right: none;
     }
   }
 

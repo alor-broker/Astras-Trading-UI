@@ -1,4 +1,7 @@
-<div class="widget">
+<div class="widget"
+     (mouseenter)="isWidgetActivated$.next(true)"
+     (mouseleave)="isWidgetActivated$.next(false)"
+>
   <div class="widget-header">
     <ats-widget-header
       [guid]="widget.gridItem.label"
@@ -8,7 +11,7 @@
       [shouldShowSettings]="shouldShowSettings"
       [hasHelp]="hasHelp()"></ats-widget-header>
   </div>
-  <div class="widget-content show-scroll" #widgetContent>
+  <div class="widget-content show-scroll" #widgetContent [class.active]="isWidgetActivated$ | async">
     <ng-container [ngSwitch]="widget.gridItem.type">
       <ats-orderbook-widget *ngSwitchCase="'order-book'"
                             [guid]="getGuid()"
@@ -18,6 +21,7 @@
                                       [guid]="getGuid()"
                                       [(shouldShowSettings)]="shouldShowSettings"
                                       [resize]="widgetResize"
+                                      [isActive]="(isWidgetActivated$ | async) ?? false"
       ></ats-scalper-order-book-widget>
       <ats-light-chart-widget *ngSwitchCase="'light-chart'"
                               [guid]="getGuid()"

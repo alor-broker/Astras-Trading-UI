@@ -1,7 +1,9 @@
 <ats-scalper-order-book *ngIf="!shouldShowSettings"
                         [contentSize]="contentSize$ | async"
                         [guid]="guid"
-                        [shouldShowSettings]="shouldShowSettings">
+                        [shouldShowSettings]="shouldShowSettings"
+                        [isActive]="isActive"
+>
 
 </ats-scalper-order-book>
 <ats-scalper-order-book-settings (settingsChange)="onSettingsChange()" *ngIf="shouldShowSettings"

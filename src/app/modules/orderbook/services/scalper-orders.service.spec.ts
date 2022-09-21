@@ -294,6 +294,106 @@ describe('ScalperOrdersService', () => {
     })
   );
 
+  it('#sellBestBid should call service with appropriate data', fakeAsync(() => {
+      const portfolioKey: PortfolioKey = {
+        exchange: generateRandomString(4),
+        portfolio: generateRandomString(5),
+      };
+
+      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      tick();
+
+      const symbol = generateRandomString(4);
+      const testInstrument: Instrument = {
+        exchange: portfolioKey.exchange,
+        symbol: symbol,
+        shortName: symbol,
+        description: symbol,
+        currency: 'RUB',
+        minstep: 1
+      };
+
+      orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
+      const quantity = Math.round(Math.random() * 100);
+
+      let testAsks: OrderbookDataRow[] = [
+        { p: 6, v: 1, y: 0 },
+        { p: 7, v: 1, y: 0 },
+        { p: 8, v: 1, y: 0 },
+      ];
+
+      let testBids: OrderbookDataRow[] = [
+        { p: testAsks[0].p - 1, v: 1, y: 0 },
+        { p: testAsks[0].p - 2, v: 1, y: 0 },
+        { p: testAsks[0].p - 3, v: 1, y: 0 }
+      ];
+
+      service.sellBestBid(testInstrument, quantity, { a: testAsks, b: testBids });
+      tick();
+
+      expect(orderServiceSpy.submitLimitOrder)
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Sell,
+            price: testBids[0].p,
+            quantity: quantity,
+            instrument: testInstrument
+          } as LimitOrder,
+          portfolioKey.portfolio
+        );
+    })
+  );
+
+  it('#buyBestAsk should call service with appropriate data', fakeAsync(() => {
+      const portfolioKey: PortfolioKey = {
+        exchange: generateRandomString(4),
+        portfolio: generateRandomString(5),
+      };
+
+      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      tick();
+
+      const symbol = generateRandomString(4);
+      const testInstrument: Instrument = {
+        exchange: portfolioKey.exchange,
+        symbol: symbol,
+        shortName: symbol,
+        description: symbol,
+        currency: 'RUB',
+        minstep: 1
+      };
+
+      orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
+      const quantity = Math.round(Math.random() * 100);
+
+      let testAsks: OrderbookDataRow[] = [
+        { p: 6, v: 1, y: 0 },
+        { p: 7, v: 1, y: 0 },
+        { p: 8, v: 1, y: 0 },
+      ];
+
+      let testBids: OrderbookDataRow[] = [
+        { p: testAsks[0].p - 1, v: 1, y: 0 },
+        { p: testAsks[0].p - 2, v: 1, y: 0 },
+        { p: testAsks[0].p - 3, v: 1, y: 0 }
+      ];
+
+      service.buyBestAsk(testInstrument, quantity, { a: testAsks, b: testBids });
+      tick();
+
+      expect(orderServiceSpy.submitLimitOrder)
+        .toHaveBeenCalledOnceWith(
+          {
+            side: Side.Buy,
+            price: testAsks[0].p,
+            quantity: quantity,
+            instrument: testInstrument
+          } as LimitOrder,
+          portfolioKey.portfolio
+        );
+    })
+  );
+
   it('#placeMarketOrder should call appropriate service with appropriate data', fakeAsync(() => {
       const portfolioKey: PortfolioKey = {
         exchange: generateRandomString(4),

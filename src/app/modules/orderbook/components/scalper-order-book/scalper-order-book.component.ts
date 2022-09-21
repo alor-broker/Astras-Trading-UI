@@ -89,6 +89,9 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   @Input() shouldShowSettings!: boolean;
   @Input() guid!: string;
 
+  @Input()
+  isActive: boolean = false;
+
   orderBookTableContainerHeight$?: Observable<number>;
   readonly isLoading$ = new BehaviorSubject(true);
   orderBookTableData$!: Observable<ScalperOrderBookRow[]>;
@@ -96,7 +99,6 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   maxVolume: number = 1;
   workingVolumes: number[] = [];
   activeWorkingVolume$ = new BehaviorSubject<number | null>(null);
-  isActiveOrderBook = false;
   isAutoAlignAvailable$!: Observable<boolean>;
   readonly enableAutoAlign$ = new BehaviorSubject(true);
   orderBookPosition$!: Observable<ScalperOrderBookPositionState | null>;
@@ -645,7 +647,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
         return;
       }
 
-      if (!this.isActiveOrderBook) {
+      if (!this.isActive) {
         return;
       }
 
@@ -695,6 +697,30 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
     if (command.type === ScalperOrderBookCommands.buyBestOrder) {
       this.placeBestOrder(Side.Buy);
+      return;
+    }
+
+    if (command.type === ScalperOrderBookCommands.sellBestBid) {
+      this.callWithSettings(settings => {
+        this.callWithCurrentOrderBook(orderBook => {
+          this.callWithWorkingVolume(workingVolume => {
+            this.scalperOrdersService.sellBestBid(settings.instrument, workingVolume!, orderBook);
+          });
+        });
+      });
+
+      return;
+    }
+
+    if (command.type === ScalperOrderBookCommands.buyBestAsk) {
+      this.callWithSettings(settings => {
+        this.callWithCurrentOrderBook(orderBook => {
+          this.callWithWorkingVolume(workingVolume => {
+            this.scalperOrdersService.buyBestAsk(settings.instrument, workingVolume!, orderBook);
+          });
+        });
+      });
+
       return;
     }
 
