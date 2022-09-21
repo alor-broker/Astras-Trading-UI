@@ -23,10 +23,18 @@ gridster-item ::ng-deep {
 }
 
 .widget-container {
+  position: relative;
   height: inherit;
 
   ats-parent-widget{
     height: inherit;
+  }
+
+  .resize-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
   }
 }
 

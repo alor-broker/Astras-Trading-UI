@@ -29,8 +29,9 @@ export class DashboardComponent implements OnInit {
   dashboard$?: Observable<Widget[]>;
 
   resize: EventEmitter<DashboardItem> = new EventEmitter<DashboardItem>();
-  constructor(private service: DashboardService) {
+  isResizing = false;
 
+  constructor(private service: DashboardService) {
   }
 
   ngOnInit(): void {
@@ -79,6 +80,12 @@ export class DashboardComponent implements OnInit {
         handles: {
           s: true, n: true, w: true, e: true, nw: true, ne: true, sw: true, se: false
           // se: false
+        },
+        start: () => {
+          this.isResizing = true;
+        },
+        stop: () => {
+          this.isResizing = false;
         }
       },
       pushDirections: { north: true, east: true, south: true, west: true },
