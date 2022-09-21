@@ -208,7 +208,7 @@ describe('ScalperOrderBookComponent', () => {
         } as Order;
 
         currentOrdersMock.next([expectedOrder]);
-        component.isActiveOrderBook = true;
+        component.isActive = true;
 
         scalperOrdersServiceSpy.cancelOrders.and.callFake((currentOrders: CurrentOrder[]) => {
           done();
@@ -221,7 +221,7 @@ describe('ScalperOrderBookComponent', () => {
     );
 
     it('should process closePositionsByMarketCurrent command', ((done) => {
-        component.isActiveOrderBook = true;
+        component.isActive = true;
         scalperOrdersServiceSpy.closePositionsByMarket.and.callFake((instrumentKey: InstrumentKey) => {
           done();
           expect(instrumentKey).toEqual(orderBookDefaultSettings);
@@ -244,7 +244,7 @@ describe('ScalperOrderBookComponent', () => {
           b: [],
         });
 
-        component.isActiveOrderBook = true;
+        component.isActive = true;
         component.activeWorkingVolume$.next(workingVolume);
 
         scalperOrdersServiceSpy.placeBestOrder.and.callFake((instrument: Instrument, side: Side, quantity: number) => {
@@ -272,7 +272,7 @@ describe('ScalperOrderBookComponent', () => {
           b: [],
         });
 
-        component.isActiveOrderBook = true;
+        component.isActive = true;
         component.activeWorkingVolume$.next(workingVolume);
 
         scalperOrdersServiceSpy.placeBestOrder.and.callFake((instrument: Instrument, side: Side, quantity: number) => {
@@ -304,7 +304,7 @@ describe('ScalperOrderBookComponent', () => {
           }],
         });
 
-        component.isActiveOrderBook = true;
+        component.isActive = true;
         component.activeWorkingVolume$.next(workingVolume);
 
         scalperOrdersServiceSpy.sellBestBid.and.callFake((instrument: Instrument, quantity: number) => {
@@ -331,7 +331,7 @@ describe('ScalperOrderBookComponent', () => {
           b: [],
         });
 
-        component.isActiveOrderBook = true;
+        component.isActive = true;
         component.activeWorkingVolume$.next(workingVolume);
 
         scalperOrdersServiceSpy.buyBestAsk.and.callFake((instrument: Instrument, quantity: number) => {
@@ -349,7 +349,7 @@ describe('ScalperOrderBookComponent', () => {
     it('should process sellMarket command', ((done) => {
         const workingVolume = Math.round(Math.random() * 100);
 
-        component.isActiveOrderBook = true;
+        component.isActive = true;
         component.activeWorkingVolume$.next(workingVolume);
 
         scalperOrdersServiceSpy.placeMarketOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean) => {
@@ -368,7 +368,7 @@ describe('ScalperOrderBookComponent', () => {
     it('should process buyMarket command', ((done) => {
         const workingVolume = Math.round(Math.random() * 100);
 
-        component.isActiveOrderBook = true;
+        component.isActive = true;
         component.activeWorkingVolume$.next(workingVolume);
 
         scalperOrdersServiceSpy.placeMarketOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean) => {
@@ -385,7 +385,7 @@ describe('ScalperOrderBookComponent', () => {
     );
 
     it('should process reversePositionsByMarketCurrent command', ((done) => {
-        component.isActiveOrderBook = true;
+        component.isActive = true;
 
         scalperOrdersServiceSpy.reversePositionsByMarket.and.callFake((instrumentKey: InstrumentKey) => {
           done();
@@ -398,7 +398,7 @@ describe('ScalperOrderBookComponent', () => {
     );
 
     it('should process working volume selection', (done) => {
-      component.isActiveOrderBook = true;
+      component.isActive = true;
       component.workingVolumes = [1, 2, 3, 4, 5];
       const selectedIndex = getRandomInt(1, component.workingVolumes.length);
 

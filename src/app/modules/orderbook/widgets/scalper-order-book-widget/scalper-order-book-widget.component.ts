@@ -33,6 +33,9 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
   @Input()
   resize!: EventEmitter<DashboardItem>;
 
+  @Input()
+  isActive: boolean = false;
+
   constructor() {
   }
 

@@ -13,6 +13,7 @@ import {
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { Widget } from 'src/app/shared/models/widget.model';
 import {
+  BehaviorSubject,
   Observable,
   Subject
 } from "rxjs";
@@ -29,6 +30,8 @@ import { map } from "rxjs/operators";
 export class ParentWidgetComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('widgetContent')
   widgetContent?: ElementRef<HTMLElement>;
+
+  isWidgetActivated$ = new BehaviorSubject(false);
 
   @Input()
   widget!: Widget;
@@ -80,6 +83,8 @@ export class ParentWidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     this.destroy$.next(true);
     this.destroy$.complete();
     this.resizeObserver?.disconnect();
+
+    this.isWidgetActivated$.complete();
   }
 
   ngAfterViewInit(): void {
