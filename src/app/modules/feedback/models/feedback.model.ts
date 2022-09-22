@@ -15,7 +15,7 @@ export interface SendFeedBackResponse {
 
 export interface FeedbackMeta {
   lastCheck?: number;
-  lastUnansweredFeedback?: UnansweredFeedback
+  lastUnansweredFeedback?: UnansweredFeedback | null
 }
 
 export interface UnansweredFeedback extends NewFeedback {

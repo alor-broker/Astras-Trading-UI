@@ -15,7 +15,6 @@ import { ModalService } from '../../../shared/services/modal.service';
 import { Injectable } from '@angular/core';
 import { FeedbackService } from './feedback.service';
 import {
-  filter,
   map,
   startWith
 } from 'rxjs/operators';
@@ -23,10 +22,7 @@ import {
   addHours,
   addMinutes
 } from '../../../shared/utils/datetime';
-import {
-  NewFeedback,
-  UnansweredFeedback
-} from '../models/feedback.model';
+import { NewFeedback } from '../models/feedback.model';
 
 @Injectable()
 export class FeedbackNotificationsProvider implements NotificationsProvider {
@@ -72,20 +68,26 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
           if (feedbackMeta?.lastUnansweredFeedback) {
             return of(feedbackMeta.lastUnansweredFeedback);
           }
-          else {
+          else if (!feedbackMeta?.lastCheck || (new Date().getTime() - feedbackMeta.lastCheck) >= defaultDelayMilliseconds) {
             return this.feedbackService.requestFeedback().pipe(
-              map(x => ({ ...x, isRead: false, date: Date.now() } as UnansweredFeedback)),
+              map(x => !x ? null : ({ ...x, isRead: false, date: Date.now() })),
               tap(x => this.feedbackService.setUnansweredFeedback(x))
             );
           }
+          else {
+            return of(null);
+          }
         }),
         tap(() => this.feedbackService.setLastFeedbackCheck()),
-        filter(f => !!f),
         map(f => {
+          if (!f) {
+            return [];
+          }
+
           return [
             {
               id: GuidGenerator.newGuid(),
-              date:  !!f.date ? new Date(f.date) : new Date(),
+              date: !!f.date ? new Date(f.date) : new Date(),
               title: 'Оценить приложение',
               description: 'Поделитесь своим мнением о приложении',
               showDate: true,

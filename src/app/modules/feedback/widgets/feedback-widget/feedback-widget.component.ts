@@ -90,15 +90,15 @@ export class FeedbackWidgetComponent implements OnInit, OnDestroy {
     this.feedbackService.submitFeedback(this.form.value).pipe(
       finalize(() => {
         this.modalService.closeVoteModal();
-        this.feedbackService.removeUnansweredFeedback();
       })
     ).subscribe( ()=> {
-      this.notificationService.success('Оценка приложения', 'Спасибо, Ваш голос важен для нас.');
+      this.notificationService.success('Оценка приложения', 'Спасибо! Ваш голос важен для нас.');
+      this.feedbackService.removeUnansweredFeedback();
     });
   }
 
   checkAskComment() {
-    this.askComment = this.form?.value.rate < this.maxStarsCount && (this.form?.value.comment ?? '').length === 0;
+    this.askComment = this.form?.value.rating < this.maxStarsCount && (this.form?.value.comment ?? '').length === 0;
   }
 
   ngOnDestroy(): void {

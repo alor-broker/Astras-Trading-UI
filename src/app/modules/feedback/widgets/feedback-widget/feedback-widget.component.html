@@ -18,7 +18,7 @@
             <nz-form-label nzFor="comment">Комментарий</nz-form-label>
             <nz-form-control
               [nzValidateStatus]="askComment ? 'warning' : 'success'"
-              [nzWarningTip]="askComment ? 'Пожалуйста, расскажите что нам следует доработать.' : ''">
+              [nzWarningTip]="askComment ? 'Пожалуйста, расскажите, что нам следует доработать.' : ''">
               <nz-textarea-count [nzMaxCharacterCount]="commentMaxLength">
                 <textarea (ngModelChange)="checkAskComment()" formControlName="comment" nz-input rows="4"></textarea>
               </nz-textarea-count>

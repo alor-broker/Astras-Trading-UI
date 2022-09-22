@@ -16,10 +16,7 @@ import { environment } from '../../../../environments/environment';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
-import {
-  filter,
-  map
-} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +41,7 @@ export class FeedbackService {
     });
   }
 
-  setUnansweredFeedback(unansweredFeedback: UnansweredFeedback) {
+  setUnansweredFeedback(unansweredFeedback: UnansweredFeedback | null) {
     const meta = this.getSavedFeedbackMeta() ?? {};
     this.saveFeedbackMeta({
       ...meta,
@@ -85,8 +82,7 @@ export class FeedbackService {
 
         return x;
       }),
-      take(1),
-      filter(x => !!x)
+      take(1)
     );
   }
 
