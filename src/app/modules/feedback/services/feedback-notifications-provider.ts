@@ -36,6 +36,8 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
     private readonly modalService: ModalService,
     private readonly feedbackService: FeedbackService
   ) {
+    this.feedbackService.unansweredFeedbackRemoved$
+      .subscribe(() => this.readFeedbackMeta$.next(true));
   }
 
   getNotifications(): Observable<NotificationMeta[]> {

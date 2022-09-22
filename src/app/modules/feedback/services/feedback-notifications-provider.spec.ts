@@ -45,6 +45,8 @@ describe('FeedbackNotificationsProvider', () => {
         'requestFeedback'
       ]);
 
+    feedbackServiceSpy.unansweredFeedbackRemoved$ = of({});
+
     modalServiceSpy = jasmine.createSpyObj('ModalService', ['openVoteModal']);
   });
 

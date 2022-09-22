@@ -9,17 +9,23 @@ import {
 } from '../models/feedback.model';
 import {
   Observable,
+  Subject,
   take
 } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
+import {
+  filter,
+  map
+} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FeedbackService {
+  unansweredFeedbackRemoved$ = new Subject();
   private readonly baseUrl = environment.apiUrl + '/astras';
   private readonly feedbackLocalStorageKey = 'feedback';
 
@@ -52,6 +58,8 @@ export class FeedbackService {
       ...meta,
       lastUnansweredFeedback: undefined
     });
+
+    this.unansweredFeedbackRemoved$.next({});
   }
 
   submitFeedback(feedback: SendFeedBackRequest): Observable<SendFeedBackResponse> {
@@ -66,7 +74,19 @@ export class FeedbackService {
   requestFeedback(): Observable<NewFeedback | null> {
     return this.httpClient.get<NewFeedback | null>(`${this.baseUrl}/rates/actions/getNewRequest`).pipe(
       catchHttpError<NewFeedback | null>(null, this.errorHandlerService),
-      take(1)
+      map(x => {
+        if (!x) {
+          return null;
+        }
+
+        if (!x.code || !x.description) {
+          return null;
+        }
+
+        return x;
+      }),
+      take(1),
+      filter(x => !!x)
     );
   }
 

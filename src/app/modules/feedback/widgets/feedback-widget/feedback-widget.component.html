@@ -9,9 +9,9 @@
       <div>
         <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
           <nz-form-item>
-            <nz-form-label nzFor="rate">{{voteParams.description}}</nz-form-label>
+            <nz-form-label nzFor="rating">{{voteParams.description}}</nz-form-label>
             <nz-form-control>
-              <nz-rate (ngModelChange)="checkAskComment()" [nzCount]="maxStarsCount" formControlName="rate"></nz-rate>
+              <nz-rate (ngModelChange)="checkAskComment()" [nzCount]="maxStarsCount" formControlName="rating"></nz-rate>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>

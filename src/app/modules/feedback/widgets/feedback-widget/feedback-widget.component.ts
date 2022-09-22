@@ -69,7 +69,7 @@ export class FeedbackWidgetComponent implements OnInit, OnDestroy {
   initForm(params: NewFeedback) {
     this.askComment = false;
     this.form = new FormGroup({
-      rate: new FormControl(null, Validators.required),
+      rating: new FormControl(null, Validators.required),
       comment: new FormControl(null, [Validators.maxLength(this.commentMaxLength)]),
       code: new FormControl(params.code)
     });

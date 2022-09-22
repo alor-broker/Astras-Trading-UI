@@ -4,7 +4,7 @@
 }
 
 export interface SendFeedBackRequest {
-  rate: number;
+  rating: number;
   comment: string;
   feedbackCode: string;
 }
