@@ -49,16 +49,19 @@
               formControlName="stopEndUnixTime"
               nzFormat="yyyy-MM-dd HH:mm:ss"
               nzShowTime
+              [nzDisabledDate]="disabledDate"
               [nzShowNow]="canSelectNow"
             >
             </nz-date-picker>
           </nz-form-control>
         </nz-form-item>
       </div>
+    </div>
 
+    <div nz-row>
       <div nz-col [nzSpan]="24">
         <nz-form-item class="compact">
-          <nz-form-control nzErrorTip="Выберите условие исполнения">
+          <nz-form-control>
             <nz-form-label nzFor="withLimit" nzRequired>Тип стопа</nz-form-label>
             <nz-radio-group formControlName="withLimit">
               <label [nzValue]="true" nz-radio-button>Limit</label>

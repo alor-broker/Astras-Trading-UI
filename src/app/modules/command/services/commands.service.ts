@@ -129,7 +129,7 @@ export class CommandsService {
                 ...stopEdit,
                 conditionType: stopEdit.condition,
                 endTime: stopEdit.stopEndUnixTime as number,
-                side: Side.Sell,
+                side: stopEdit.side as Side,
                 price: stopEdit.price!
               },
               stopEdit.user?.portfolio ?? ''
@@ -140,7 +140,7 @@ export class CommandsService {
                 ...stopEdit,
                 conditionType: stopEdit.condition,
                 endTime: stopEdit.stopEndUnixTime as number,
-                side: Side.Sell
+                side: stopEdit.side as Side
               },
               stopEdit.user?.portfolio ?? ''
             );

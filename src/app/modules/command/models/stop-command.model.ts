@@ -9,5 +9,6 @@ export interface StopCommand {
   user?: PortfolioKey,
   triggerPrice: number,
   condition: StopOrderCondition,
-  stopEndUnixTime?: Date | number
+  stopEndUnixTime?: Date | number,
+  side?: string
 }
