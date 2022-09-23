@@ -4,7 +4,7 @@
 }
 
 export interface SendFeedBackRequest {
-  rate: number;
+  rating: number;
   comment: string;
   feedbackCode: string;
 }
@@ -15,7 +15,7 @@ export interface SendFeedBackResponse {
 
 export interface FeedbackMeta {
   lastCheck?: number;
-  lastUnansweredFeedback?: UnansweredFeedback
+  lastUnansweredFeedback?: UnansweredFeedback | null
 }
 
 export interface UnansweredFeedback extends NewFeedback {
