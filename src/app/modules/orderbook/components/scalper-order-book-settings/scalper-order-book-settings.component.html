@@ -89,7 +89,8 @@
               <button (click)="removeVolumeHighlightOption($event, i)"
                       class="volume-highlight-options-remove-btn"
                       nz-button
-                      nzType="dashed">
+                      nzType="dashed"
+                      [disabled]="!canRemoveVolumeHighlightOption">
                 <i nz-icon nzType="minus"></i>
               </button>
             </div>

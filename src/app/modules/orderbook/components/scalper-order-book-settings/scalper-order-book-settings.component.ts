@@ -155,6 +155,10 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     this.volumeHighlightOptions.push(this.createVolumeHighlightOptionsControl(defaultValue));
   }
 
+  get canRemoveVolumeHighlightOption(): boolean {
+    return this.volumeHighlightOptions.length > 1;
+  }
+
   removeVolumeHighlightOption($event: MouseEvent, index: number) {
     $event.preventDefault();
     $event.stopPropagation();
