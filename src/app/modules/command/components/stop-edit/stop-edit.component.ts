@@ -9,7 +9,7 @@ import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { StopFormData } from "../../models/stop-form-data.model";
-import { addMonthsUnix, compareDates, getUtcNow, startOfDay } from "../../../../shared/utils/datetime";
+import { addMonthsUnix, getUtcNow, startOfDay, toUnixTime } from "../../../../shared/utils/datetime";
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { StopEdit } from "../../models/stop-edit";
 
@@ -153,7 +153,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
 
   disabledDate = (date: Date) => {
     const today = startOfDay(new Date());
-    return !compareDates(date, today);
+    return toUnixTime(date) < toUnixTime(today);
   };
 
   private checkNowTimeSelection(converter: TimezoneConverter) {

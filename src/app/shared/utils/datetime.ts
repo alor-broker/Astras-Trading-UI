@@ -130,15 +130,3 @@ export function getUtcNow(): Date {
   const now = new Date();
   return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
 }
-
-/**
- * Compare two dates
- *
- * @param {Date} date1 first date
- * @param {Date} date2 second date
- * @return {boolean} true if date1 is after date2 else false
- */
-export function compareDates(date1: Date, date2: Date): boolean {
-  return toUnixTime(date1) >= toUnixTime(date2);
-}
-

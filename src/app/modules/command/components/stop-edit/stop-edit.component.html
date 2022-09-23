@@ -58,7 +58,7 @@
       </div>
     </div>
 
-    <div nz-row>
+    <div nz-row class="limit-row">
       <div nz-col [nzSpan]="24">
         <nz-form-item class="compact">
           <nz-form-control>
@@ -72,7 +72,7 @@
       </div>
     </div>
 
-    <div nz-row *ngIf="form.getRawValue().withLimit">
+    <div nz-row *ngIf="form.getRawValue().withLimit" class="limit-row">
       <div nz-col [nzSpan]="24">
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="priceError">
