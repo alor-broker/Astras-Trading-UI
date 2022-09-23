@@ -69,7 +69,7 @@ export class FeedbackWidgetComponent implements OnInit, OnDestroy {
   initForm(params: NewFeedback) {
     this.askComment = false;
     this.form = new FormGroup({
-      rate: new FormControl(null, Validators.required),
+      rating: new FormControl(null, Validators.required),
       comment: new FormControl(null, [Validators.maxLength(this.commentMaxLength)]),
       code: new FormControl(params.code)
     });
@@ -90,15 +90,15 @@ export class FeedbackWidgetComponent implements OnInit, OnDestroy {
     this.feedbackService.submitFeedback(this.form.value).pipe(
       finalize(() => {
         this.modalService.closeVoteModal();
-        this.feedbackService.removeUnansweredFeedback();
       })
     ).subscribe( ()=> {
-      this.notificationService.success('Оценка приложения', 'Спасибо, Ваш голос важен для нас.');
+      this.notificationService.success('Оценка приложения', 'Спасибо! Ваш голос важен для нас.');
+      this.feedbackService.removeUnansweredFeedback();
     });
   }
 
   checkAskComment() {
-    this.askComment = this.form?.value.rate < this.maxStarsCount && (this.form?.value.comment ?? '').length === 0;
+    this.askComment = this.form?.value.rating < this.maxStarsCount && (this.form?.value.comment ?? '').length === 0;
   }
 
   ngOnDestroy(): void {

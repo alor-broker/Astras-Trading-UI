@@ -27,7 +27,8 @@ describe('FeedbackWidgetComponent', () => {
         {
           provide: FeedbackService,
           useValue: {
-            submitFeedback: jasmine.createSpy('submitFeedback').and.returnValue(of({}))
+            submitFeedback: jasmine.createSpy('submitFeedback').and.returnValue(of({})),
+            unansweredFeedbackRemoved$: of({})
           }
         },
         {

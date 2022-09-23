@@ -26,7 +26,7 @@ describe('FeedbackNotificationsProvider', () => {
   let feedbackServiceSpy: any;
   let modalServiceSpy: any;
 
-  const oneHourPlusDelay = 3600 * 1000 + 2 * 1000;
+  const oneHourPlusDelay = 3600 * 1000 + 60 * 1000;
 
   const readNotification = (notifications$: Observable<NotificationMeta[]>, read: (notifications: NotificationMeta[]) => void) => {
     notifications$.pipe(
@@ -44,6 +44,8 @@ describe('FeedbackNotificationsProvider', () => {
         'setUnansweredFeedback',
         'requestFeedback'
       ]);
+
+    feedbackServiceSpy.unansweredFeedbackRemoved$ = of({});
 
     modalServiceSpy = jasmine.createSpyObj('ModalService', ['openVoteModal']);
   });
@@ -91,7 +93,8 @@ describe('FeedbackNotificationsProvider', () => {
   );
 
   it('should request feedback after 1 hours of last check', fakeAsync(() => {
-      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue({ lastCheck: new Date().getTime() } as FeedbackMeta);
+      const savedFeedbackMeta = { lastCheck: Date.now() } as FeedbackMeta;
+      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue(savedFeedbackMeta);
       feedbackServiceSpy.requestFeedback.and.returnValue(of(null));
 
       provider.getNotifications().subscribe();
@@ -113,12 +116,12 @@ describe('FeedbackNotificationsProvider', () => {
         isRead: true
       };
 
-      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue(
-        {
-          lastCheck: new Date().getTime(),
-          lastUnansweredFeedback: savedFeedback
-        }
-      );
+      const savedFeedbackMeta = {
+        lastCheck: Date.now(),
+        lastUnansweredFeedback: savedFeedback
+      } as FeedbackMeta;
+
+      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue(savedFeedbackMeta);
 
       const notifications$ = provider.getNotifications().pipe(
         shareReplay(1)
@@ -147,7 +150,8 @@ describe('FeedbackNotificationsProvider', () => {
         description: 'description'
       } as NewFeedback;
 
-      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue({ lastCheck: new Date().getTime() } as FeedbackMeta);
+      const savedFeedbackMeta = { lastCheck: Date.now() } as FeedbackMeta;
+      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue(savedFeedbackMeta);
       feedbackServiceSpy.requestFeedback.and.returnValue(of(testFeedbackRequest));
 
       const notifications$ = provider.getNotifications().pipe(
@@ -178,12 +182,12 @@ describe('FeedbackNotificationsProvider', () => {
         isRead: false
       };
 
-      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue(
-        {
-          lastCheck: new Date().getTime(),
-          lastUnansweredFeedback: savedFeedback
-        }
-      );
+      const savedFeedbackMeta = {
+        lastCheck: Date.now(),
+        lastUnansweredFeedback: savedFeedback
+      } as FeedbackMeta;
+
+      feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue(savedFeedbackMeta);
 
       const notifications$ = provider.getNotifications().pipe(
         shareReplay(1)
