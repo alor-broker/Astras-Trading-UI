@@ -1,5 +1,6 @@
 <div class='panel' *ngIf="settings$ | async as s">
-  <button *ngIf="hasSettings" nz-button nzSize="small" (click)="switchSettings($event)">
+  <div class="buttons-group">
+    <button *ngIf="hasSettings" nz-button nzSize="small" (click)="switchSettings($event)">
     <i nz-icon
       nzType="setting"
       [nzTheme]="'fill'"
@@ -7,12 +8,6 @@
       [title]="joyrideContent.step8.title"
       [text]="joyrideContent.step8.text"></i>
   </button>
-  <label
-    class="title"
-    nz-popover
-    nzPopoverPlacement="bottom"
-    [nzPopoverContent]="s.title"
-  >
     <nz-badge
       *ngIf="s.badgeColor &&
         (terminalSettings$ | async)?.badgesBind &&
@@ -21,9 +16,8 @@
       [nzDropdownMenu]="badgesMenu"
       [nzColor]="s.badgeColor"
       [class.square-badge]="['BlotterSettings', 'InstrumentSelectSettings', 'AllInstrumentsSettings'].includes(s.settingsType!)"
+      nzSize="small"
     ></nz-badge>
-
-    {{s.title}}
 
     <nz-dropdown-menu #badgesMenu="nzDropdownMenu">
       <ul nz-menu class="badge-menu">
@@ -35,8 +29,16 @@
         </li>
       </ul>
     </nz-dropdown-menu>
+  </div>
+  <label
+    class="title"
+    nz-popover
+    nzPopoverPlacement="bottom"
+    [nzPopoverContent]="s.title"
+  >
+    {{s.title}}
   </label>
-  <div class="right-buttons">
+  <div class="buttons-group">
     <button *ngIf='s.linkToActive !== undefined' nz-button nzSize="small"
       (mousedown)="linkToActive($event, !s.linkToActive)"
       (touchstart)="linkToActive($event, !s.linkToActive)"
