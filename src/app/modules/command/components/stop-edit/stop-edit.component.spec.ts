@@ -110,7 +110,8 @@ describe('StopEditComponent', () => {
         instrument: {
           ...initialCommandContext.commandParameters.instrument,
         },
-        user: initialCommandContext.commandParameters.user
+        user: initialCommandContext.commandParameters.user,
+        side: initialCommandContext.commandParameters.side
       };
 
       expect(commandsServiceSpy.setStopEdit).toHaveBeenCalledWith(expectedCommand);
@@ -127,7 +128,8 @@ describe('StopEditComponent', () => {
         quantity: 125,
         triggerPrice: 110,
         stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndDate).getTime() / 1000,
-        condition: 'Less'
+        condition: 'Less',
+        side: initialCommandContext.commandParameters.side
       };
 
       component.form.controls.price?.setValue(999);
@@ -135,6 +137,7 @@ describe('StopEditComponent', () => {
       component.form.controls.triggerPrice?.setValue(110);
       component.form.controls.stopEndUnixTime?.setValue(stopEndDate);
       component.form.controls.condition?.setValue('Less');
+      component.form.controls.side?.setValue(Side.Buy);
 
       fixture.detectChanges();
 

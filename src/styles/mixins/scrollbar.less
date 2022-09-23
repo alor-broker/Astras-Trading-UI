@@ -3,7 +3,7 @@
 .scrollbar() {
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: @text-color-secondary @component-background;
+  scrollbar-color: @text-color-secondary transparent;
 
   &::-webkit-scrollbar {
     width: 3px;
@@ -11,7 +11,7 @@
   }
 
   &::-webkit-scrollbar-track {
-    background-color: @component-background;
+    background-color: transparent;
     border-radius: 10px;
   }
 

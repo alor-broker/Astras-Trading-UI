@@ -9,7 +9,7 @@ import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { StopFormData } from "../../models/stop-form-data.model";
-import { addMonthsUnix, getUtcNow } from "../../../../shared/utils/datetime";
+import { addMonthsUnix, getUtcNow, startOfDay, toUnixTime } from "../../../../shared/utils/datetime";
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { StopEdit } from "../../models/stop-edit";
 
@@ -75,7 +75,8 @@ export class StopEditComponent implements OnInit, OnDestroy {
           ...initialParameters.instrument
         },
         user: initialParameters.user,
-        id: initialParameters.orderId
+        id: initialParameters.orderId,
+        side: initialParameters.side
       };
 
       this.service.setStopEdit(newCommand);
@@ -140,12 +141,20 @@ export class StopEditComponent implements OnInit, OnDestroy {
           Validators.min(0),
         ]
       ),
-      stopEndUnixTime: new FormControl(initialParameters.stopEndUnixTime ?? this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
+      stopEndUnixTime: new FormControl(
+        initialParameters.stopEndUnixTime ?? this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1)),
+        Validators.required
+      ),
       condition: new FormControl(initialParameters.condition || StopOrderCondition.More),
       withLimit: new FormControl({ value: initialParameters.type === 'stoplimit', disabled: true }),
       side: new FormControl(initialParameters.side)
     } as StopFormControls) as StopFormGroup;
   }
+
+  disabledDate = (date: Date) => {
+    const today = startOfDay(new Date());
+    return toUnixTime(date) < toUnixTime(today);
+  };
 
   private checkNowTimeSelection(converter: TimezoneConverter) {
     // nz-date-picker does not support timezones changing
