@@ -70,13 +70,13 @@ export class ScalperOrdersService {
     this.getCurrentPositionsWithPortfolio(instrumentKey)
       .subscribe(({ portfolio, positions }) => {
         positions.forEach(pos => {
-          if (!pos.qtyTFutureBatch) {
+          if (!pos.qtyTFuture) {
             return;
           }
 
           this.orderService.submitMarketOrder({
-              side: pos.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
-              quantity: Math.abs(pos.qtyTFutureBatch),
+              side: pos.qtyTFuture > 0 ? Side.Sell : Side.Buy,
+              quantity: Math.abs(pos.qtyTFuture),
               instrument: instrumentKey,
             },
             portfolio.portfolio
@@ -203,13 +203,13 @@ export class ScalperOrdersService {
     this.getCurrentPositionsWithPortfolio(instrumentKey)
       .subscribe(({ portfolio, positions }) => {
         positions.forEach(pos => {
-          if (!pos.qtyTFutureBatch) {
+          if (!pos.qtyTFuture) {
             return;
           }
 
           this.orderService.submitMarketOrder({
-              side: pos.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
-              quantity: Math.abs(pos.qtyTFutureBatch * 2),
+              side: pos.qtyTFuture > 0 ? Side.Sell : Side.Buy,
+              quantity: Math.abs(pos.qtyTFuture * 2),
               instrument: instrumentKey,
             },
             portfolio.portfolio
@@ -254,7 +254,7 @@ export class ScalperOrdersService {
   setStopLoss(instrumentKey: InstrumentKey, price: number, silent: boolean): void {
     this.getCurrentPositionsWithPortfolio(instrumentKey)
       .subscribe(({ portfolio, positions }) => {
-        const quantity = positions.map(x => x.qtyTFutureBatch).reduce((acc, curr) => acc + curr, 0);
+        const quantity = positions.map(x => x.qtyTFuture).reduce((acc, curr) => acc + curr, 0);
 
         if (quantity <= 0) {
           this.notification.error('Нет позиций', 'Позиции для установки стоп-лосс отсутствуют');

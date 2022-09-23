@@ -136,23 +136,19 @@ describe('ScalperOrdersService', () => {
       const currentPortfolioPositions: Position[] = [
         {
           symbol: generateRandomString(4),
-          qtyTFuture: Math.round(Math.random() * 100),
-          qtyTFutureBatch: Math.round(Math.random() * 10)
+          qtyTFuture: Math.round(Math.random() * 100)
         } as Position,
         {
           symbol: generateRandomString(4),
-          qtyTFuture: Math.round(Math.random() * 100),
-          qtyTFutureBatch: Math.round(Math.random() * 10)
+          qtyTFuture: Math.round(Math.random() * 100)
         } as Position,
         {
           symbol: testInstrumentKey1.symbol,
-          qtyTFuture: Math.round(Math.random() * 100),
-          qtyTFutureBatch: Math.round(Math.random() * 10)
+          qtyTFuture: Math.round(Math.random() * 100)
         } as Position,
         {
           symbol: testInstrumentKey2.symbol,
-          qtyTFuture: Math.round(Math.random() * 100) * -1,
-          qtyTFutureBatch: Math.round(Math.random() * 10) * -1
+          qtyTFuture: Math.round(Math.random() * 100) * -1
         } as Position,
       ];
 
@@ -165,7 +161,7 @@ describe('ScalperOrdersService', () => {
       expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
         {
           side: Side.Sell,
-          quantity: currentPortfolioPositions[2].qtyTFutureBatch,
+          quantity: currentPortfolioPositions[2].qtyTFuture,
           instrument: testInstrumentKey1
         } as MarketOrder,
         portfolioKey.portfolio
@@ -178,7 +174,7 @@ describe('ScalperOrdersService', () => {
       expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
         {
           side: Side.Buy,
-          quantity: Math.abs(currentPortfolioPositions[3].qtyTFutureBatch),
+          quantity: Math.abs(currentPortfolioPositions[3].qtyTFuture),
           instrument: testInstrumentKey2
         } as MarketOrder,
         portfolioKey.portfolio
@@ -535,13 +531,11 @@ describe('ScalperOrdersService', () => {
       const currentPortfolioPositions: Position[] = [
         {
           symbol: generateRandomString(4),
-          qtyTFuture: Math.round(Math.random() * 100),
-          qtyTFutureBatch: Math.round(Math.random() * 10)
+          qtyTFuture: Math.round(Math.random() * 100)
         } as Position,
         {
           symbol: testInstrumentKey.symbol,
-          qtyTFuture: Math.round(Math.random() * 100),
-          qtyTFutureBatch: Math.round(Math.random() * 10)
+          qtyTFuture: Math.round(Math.random() * 100)
         } as Position,
       ];
 
@@ -552,27 +546,27 @@ describe('ScalperOrdersService', () => {
 
       tick();
       expect(orderServiceSpy.submitMarketOrder)
-        .withContext('qtyTFutureBatch > 0')
+        .withContext('qtyTFuture > 0')
         .toHaveBeenCalledOnceWith(
           {
             side: Side.Sell,
-            quantity: currentPortfolioPositions[1].qtyTFutureBatch * 2,
+            quantity: currentPortfolioPositions[1].qtyTFuture * 2,
             instrument: testInstrumentKey
           } as MarketOrder,
           portfolioKey.portfolio
         );
 
       orderServiceSpy.submitMarketOrder.calls.reset();
-      currentPortfolioPositions[1].qtyTFutureBatch = currentPortfolioPositions[1].qtyTFutureBatch * -1;
+      currentPortfolioPositions[1].qtyTFuture = currentPortfolioPositions[1].qtyTFuture * -1;
 
       service.reversePositionsByMarket(testInstrumentKey);
       tick();
       expect(orderServiceSpy.submitMarketOrder)
-        .withContext('qtyTFutureBatch < 0')
+        .withContext('qtyTFuture < 0')
         .toHaveBeenCalledOnceWith(
           {
             side: Side.Buy,
-            quantity: Math.abs(currentPortfolioPositions[1].qtyTFutureBatch) * 2,
+            quantity: Math.abs(currentPortfolioPositions[1].qtyTFuture) * 2,
             instrument: testInstrumentKey
           } as MarketOrder,
           portfolioKey.portfolio
@@ -682,7 +676,7 @@ describe('ScalperOrdersService', () => {
       const currentPortfolioPositions: Position[] = [
         {
           symbol: testInstrumentKey.symbol,
-          qtyTFutureBatch: 0
+          qtyTFuture: 0
         } as Position,
       ];
 
@@ -716,8 +710,7 @@ describe('ScalperOrdersService', () => {
         const currentPortfolioPositions: Position[] = [
           {
             symbol: testInstrumentKey.symbol,
-            qtyTFuture: 10,
-            qtyTFutureBatch: 1
+            qtyTFuture: 10
           } as Position,
         ];
 
@@ -731,7 +724,7 @@ describe('ScalperOrdersService', () => {
         expect(orderServiceSpy.submitStopMarketOrder).toHaveBeenCalledOnceWith(
           {
             side: Side.Sell,
-            quantity: currentPortfolioPositions[0].qtyTFutureBatch,
+            quantity: currentPortfolioPositions[0].qtyTFuture,
             triggerPrice: price,
             condition: StopOrderCondition.More,
             instrument: testInstrumentKey
@@ -744,7 +737,7 @@ describe('ScalperOrdersService', () => {
         expect(modalServiceSpy.openCommandModal).toHaveBeenCalledOnceWith(jasmine.objectContaining({
           side: Side.Sell,
           instrument: testInstrumentKey,
-          quantity: currentPortfolioPositions[0].qtyTFutureBatch,
+          quantity: currentPortfolioPositions[0].qtyTFuture,
           type: CommandType.Stop
         } as CommandParams));
       })
