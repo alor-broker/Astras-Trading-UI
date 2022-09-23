@@ -90,7 +90,7 @@
                       class="volume-highlight-options-remove-btn"
                       nz-button
                       nzType="dashed"
-                      [attr.disabled]="canRemoveVolumeHighlightOption ? null : ''">
+                      [disabled]="!canRemoveVolumeHighlightOption">
                 <i nz-icon nzType="minus"></i>
               </button>
             </div>

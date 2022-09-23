@@ -41,7 +41,7 @@
   <div class="footer">
     <button
       (click)="submitOrder(orderSides.Buy)"
-      [attr.disabled]="((canSubmitOrder$ | async) === false) ? '' : null"
+      [disabled]="(canSubmitOrder$ | async) === false"
       [nzLoading]="(buyButtonLoading$ | async)"
       class='buy-button'
       nz-button
@@ -49,7 +49,7 @@
     </button>
     <button
       (click)="submitOrder(orderSides.Sell)"
-      [attr.disabled]="((canSubmitOrder$ | async) === false) ? '' : null"
+      [disabled]="(canSubmitOrder$ | async) === false"
       [nzLoading]="(sellButtonLoading$ | async)"
       class='sell-button'
       nz-button
