@@ -122,7 +122,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество позиций с учётом сегодняшних расчёов'
+      tooltip: 'Количество позиций с учётом сегодняшних расчётов'
     },
     {
       id: 'qtyT1',
@@ -136,7 +136,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество позиций с учётом завтрашних расчёов'
+      tooltip: 'Количество позиций с учётом завтрашних расчётов'
     },
     {
       id: 'qtyT2',
@@ -150,7 +150,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество позиций с учётом послезавтрашних расчёов'
+      tooltip: 'Количество позиций с учётом послезавтрашних расчётов'
     },
     {
       id: 'qtyTFuture',
