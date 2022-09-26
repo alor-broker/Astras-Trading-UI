@@ -928,27 +928,4 @@ describe('OrderService', () => {
       expect(errorHandlerServiceSpy.handleError).toHaveBeenCalled();
     });
   });
-
-  describe('#selectedOrderPrice', () => {
-    it('should select new price', fakeAsync(() => {
-      const expectedValue = { price: 100, badgeColor: instrumentsBadges[0] };
-
-      service.selectedOrderPrice.subscribe(val => expect(val).toEqual(expectedValue));
-
-      service.selectPrice(expectedValue.price, expectedValue.badgeColor);
-      tick();
-    }));
-
-    it('should not provide new value', fakeAsync(() => {
-      const subCallback = jasmine.createSpy('subscribeCallback').and.callThrough();
-
-      service.selectedOrderPrice.subscribe(subCallback);
-
-      service.selectPrice(0, instrumentsBadges[0]);
-      service.selectPrice(100, 'anyColor');
-      tick();
-
-      expect(subCallback).not.toHaveBeenCalled();
-    }));
-  });
 });

@@ -5,7 +5,7 @@ import {
   of,
   Subject,
   Subscription,
-  takeUntil, withLatestFrom
+  takeUntil
 } from "rxjs";
 import {
   Component,
@@ -18,8 +18,6 @@ import {
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { FormGroup } from "@angular/forms";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { OrderService } from "../../../../shared/services/orders/order.service";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 @Component({
   template: ''
@@ -51,12 +49,6 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
 
   @Input() guid?: string;
 
-  constructor(
-    private readonly orderService?: OrderService,
-    private readonly settingsService?: WidgetSettingsService
-  ) {
-  }
-
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
@@ -76,19 +68,6 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
       this.initForm(instrument, additions);
       this.emitFormValue();
     });
-
-    this.orderService?.selectedOrderPrice
-      .pipe(
-        takeUntil(this.destroy$),
-        withLatestFrom(
-          this.settingsService!.getSettings(this.guid!),
-          this.isActivated$
-        ),
-        filter(([priceInfo, settings, isActivated]) => priceInfo.badgeColor === settings.badgeColor && isActivated)
-      )
-      .subscribe(([priceInfo]) => {
-        this.form?.get('price')?.setValue(priceInfo.price);
-      });
   }
 
   protected abstract buildForm(instrument: Instrument, additions: A | null): FormGroup;
