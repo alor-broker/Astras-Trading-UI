@@ -1,7 +1,7 @@
 import { OrderService } from "./order.service";
 import { environment } from "../../../../environments/environment";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { TestBed } from "@angular/core/testing";
+import { fakeAsync, TestBed, tick } from "@angular/core/testing";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import {
@@ -19,6 +19,7 @@ import { of, throwError } from "rxjs";
 import { Side } from "../../models/enums/side.model";
 import { StopOrderCondition } from "../../models/enums/stoporder-conditions";
 import { toUnixTimestampSeconds } from "../../utils/datetime";
+import { instrumentsBadges } from "../../utils/instruments";
 
 
 describe('OrderService', () => {
@@ -926,5 +927,28 @@ describe('OrderService', () => {
 
       expect(errorHandlerServiceSpy.handleError).toHaveBeenCalled();
     });
+  });
+
+  describe('#selectedOrderPrice', () => {
+    it('should select new price', fakeAsync(() => {
+      const expectedValue = { price: 100, badgeColor: instrumentsBadges[0] };
+
+      service.selectedOrderPrice.subscribe(val => expect(val).toEqual(expectedValue));
+
+      service.selectPrice(expectedValue.price, expectedValue.badgeColor);
+      tick();
+    }));
+
+    it('should not provide new value', fakeAsync(() => {
+      const subCallback = jasmine.createSpy('subscribeCallback').and.callThrough();
+
+      service.selectedOrderPrice.subscribe(subCallback);
+
+      service.selectPrice(0, instrumentsBadges[0]);
+      service.selectPrice(100, 'anyColor');
+      tick();
+
+      expect(subCallback).not.toHaveBeenCalled();
+    }));
   });
 });

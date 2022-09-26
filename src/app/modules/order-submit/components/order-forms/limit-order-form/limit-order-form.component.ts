@@ -7,6 +7,8 @@ import { LimitOrder } from "../../../../command/models/order.model";
 import { BehaviorSubject, filter, take } from "rxjs";
 import { EvaluationBaseProperties } from "../../../../command/models/evaluation-base-properties.model";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
+import { OrderService } from "../../../../../shared/services/orders/order.service";
+import { WidgetSettingsService } from "../../../../../shared/services/widget-settings.service";
 
 export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
@@ -18,6 +20,12 @@ export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { in
 export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFormValue> implements OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
 
+  constructor(
+    orderService: OrderService,
+    settingsService: WidgetSettingsService
+  ) {
+    super(orderService, settingsService);
+  }
 
   ngOnDestroy(): void {
     super.ngOnDestroy();

@@ -23,6 +23,8 @@ import {
 import { Observable } from "rxjs";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { map } from "rxjs/operators";
+import { OrderService } from "../../../../../shared/services/orders/order.service";
+import { WidgetSettingsService } from "../../../../../shared/services/widget-settings.service";
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'>
@@ -38,8 +40,12 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
   public canSelectNow = true;
   private timezoneConverter!: TimezoneConverter;
 
-  constructor(private readonly timezoneConverterService: TimezoneConverterService) {
-    super();
+  constructor(
+    private readonly timezoneConverterService: TimezoneConverterService,
+    orderService: OrderService,
+    settingsService: WidgetSettingsService
+  ) {
+    super(orderService, settingsService);
   }
 
   checkPriceAvailability() {

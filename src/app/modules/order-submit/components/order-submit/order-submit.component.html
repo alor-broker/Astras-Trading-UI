@@ -20,10 +20,12 @@
     </div>
     <div class="body">
       <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async">
-        <nz-tab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" nzTitle="Лимитная">
+        <nz-tab #limitTab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" nzTitle="Лимитная">
           <ats-limit-order-form (formValueChange)="setLimitOrderValue($event)"
                                 [instrument]="currentInstrumentWithPortfolio.instrument"
                                 [initialValues]="initialValues$ | async"
+                                [guid]="guid"
+                                [activated]="limitTab.isActive"
           ></ats-limit-order-form>
         </nz-tab>
         <nz-tab #marketTab (nzSelect)="setSelectedCommandType(orderTypes.MarketOrder)" nzTitle="Рыночная">
@@ -31,9 +33,12 @@
                                  [activated]="marketTab.isActive"
                                  [instrument]="currentInstrumentWithPortfolio.instrument"></ats-market-order-form>
         </nz-tab>
-        <nz-tab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" nzTitle="Условная">
+        <nz-tab #stopTab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" nzTitle="Условная">
           <ats-stop-order-form (formValueChange)="setStopOrderValue($event)"
-                               [instrument]="currentInstrumentWithPortfolio.instrument"></ats-stop-order-form>
+                               [instrument]="currentInstrumentWithPortfolio.instrument"
+                               [guid]="guid"
+                               [activated]="stopTab.isActive"
+          ></ats-stop-order-form>
         </nz-tab>
       </nz-tabset>
     </div>

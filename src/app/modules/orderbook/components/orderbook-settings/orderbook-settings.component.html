@@ -29,6 +29,20 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
+      <nz-form-label nzFor="useOrderWidget">
+        Использовать виджет заявок
+        <span
+          class="popover-hint"
+          nz-icon
+          nz-popover
+          nzPopoverContent="При клике по цене из стакана не будет появляться всплывающее окно заявки, а будет меняться информация в виджете выставления заявки"
+          nzType="info-circle"
+          nzTheme="outline"
+        ></span>
+      </nz-form-label>
+      <nz-switch formControlName='useOrderWidget'></nz-switch>
+    </nz-form-item>
+    <nz-form-item>
       <nz-form-label nzFor="showChart">Показывать график</nz-form-label>
       <nz-switch formControlName='showChart'></nz-switch>
     </nz-form-item>

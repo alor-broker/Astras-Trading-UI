@@ -41,6 +41,7 @@ import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.mode
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { OrderService } from "../../../../shared/services/orders/order.service";
 
 interface Size {
   width: string;
@@ -78,7 +79,9 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     private readonly settingsService: WidgetSettingsService,
     private readonly instrumentsService: InstrumentsService,
     private readonly service: OrderbookService,
-    private readonly modal: ModalService) {
+    private readonly modal: ModalService,
+    private readonly orderService: OrderService
+    ) {
   }
 
   ngOnInit(): void {
@@ -155,13 +158,17 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
       take(1)
     ).subscribe(settings => {
-      const params: CommandParams = {
-        instrument: { ...settings },
-        price,
-        quantity: quantity ?? 1,
-        type: CommandType.Limit,
-      };
-      this.modal.openCommandModal(params);
+      if (settings.useOrderWidget) {
+        this.orderService.selectPrice(price, settings.badgeColor!);
+      } else {
+        const params: CommandParams = {
+          instrument: { ...settings },
+          price,
+          quantity: quantity ?? 1,
+          type: CommandType.Limit,
+        };
+        this.modal.openCommandModal(params);
+      }
     });
   }
 

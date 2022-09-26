@@ -7,6 +7,7 @@ import { NzNotificationService } from "ng-zorro-antd/notification";
 import {
   Observable,
   of,
+  Subject,
   tap
 } from "rxjs";
 import {
@@ -27,12 +28,16 @@ import {
 import { toUnixTimestampSeconds } from "../../utils/datetime";
 import { GuidGenerator } from "../../utils/guid";
 import { httpLinkRegexp } from "../../utils/regexps";
+import { instrumentsBadges } from "../../utils/instruments";
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderService {
   private readonly baseApiUrl = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
+
+  private selectedOrderPrice$ = new Subject<{ price: number, badgeColor: string }>();
+  selectedOrderPrice = this.selectedOrderPrice$.asObservable();
 
   constructor(private readonly httpService: HttpClient,
               private readonly notificationService: NzNotificationService,
@@ -126,6 +131,12 @@ export class OrderService {
         }
       })
     );
+  }
+
+  selectPrice(price: number, badgeColor: string) {
+    if (price > 0 && instrumentsBadges.includes(badgeColor)) {
+      this.selectedOrderPrice$.next({ price, badgeColor });
+    }
   }
 
   private prepareStopEndUnixTimeValue(order: StopMarketOrder): number | null {
