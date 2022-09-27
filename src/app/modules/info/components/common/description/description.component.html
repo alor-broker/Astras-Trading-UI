@@ -13,5 +13,9 @@
 </ng-container>
 <ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>
 <ng-template #empty>
-  <nz-empty *ngIf="(isLoading$ | async) === false"></nz-empty>
+  <nz-empty
+    *ngIf="(isLoading$ | async) === false"
+    class="ant-list-empty-text"
+    nzNotFoundImage="simple"
+  ></nz-empty>
 </ng-template>
