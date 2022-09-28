@@ -1,9 +1,13 @@
-@import (reference) '/src/styles.less';
+@import "theme-mixin";
 
-.sell {
-  color: @sell-color;
-}
+.themeMixin({
+  :host {
+    .buy {
+      color: @buy-color;
+    }
 
-.buy {
-  color: @buy-color;
-}
+    .sell {
+      color: @sell-color;
+    }
+  }
+});

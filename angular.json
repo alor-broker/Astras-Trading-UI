@@ -40,12 +40,21 @@
               }
             ],
             "styles": [
-              "src/styles.less"
+              "src/styles.less",
+              {
+                "input": "src/styles/default.less",
+                "bundleName": "default",
+                "inject": false
+              },
+              {
+                "input": "src/styles/dark.less",
+                "bundleName": "dark",
+                "inject": false
+              }
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "./node_modules/ng-zorro-antd",
-                "src/styles"
+                "src/styles/themes"
               ]
             },
             "scripts": [
@@ -153,8 +162,7 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "./node_modules/ng-zorro-antd",
-                "src/styles"
+                "src/styles/themes"
               ]
             },
             "scripts": [

@@ -1,4 +1,12 @@
-@import (reference) '/src/styles.less';
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .active-filter {
+      color: @primary-color;
+    }
+  }
+});
 
 .table-filter {
   padding: 10px;
@@ -6,8 +14,4 @@
   .ant-input {
     margin-bottom: 10px;
   }
-}
-
-.active-filter {
-  color: @primary-color;
 }

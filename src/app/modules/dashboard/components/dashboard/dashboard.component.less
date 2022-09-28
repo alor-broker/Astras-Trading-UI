@@ -1,28 +1,32 @@
-@import (reference) '/src/styles.less';
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    gridster ::ng-deep {
+      background-color: @layout-body-background;
+      color: @text-color-secondary
+    }
+
+    gridster-item ::ng-deep {
+      background-color: @component-background;
+      color: @text-color;
+
+      .gridster-item-resizable-handler.handle-e {
+        width: 5px;
+      }
+    }
+  }
+});
 
 .inner-content {
   height: 95vh
-}
-
-gridster ::ng-deep {
-  background-color: @layout-body-background;
-  color: @text-color-secondary
-}
-
-gridster-item ::ng-deep {
-  background-color: @component-background;
-  color: @text-color;
-
-  .gridster-item-resizable-handler.handle-e {
-    width: 5px;
-  }
 }
 
 .widget-container {
   position: relative;
   height: inherit;
 
-  ats-parent-widget{
+  ats-parent-widget {
     height: inherit;
   }
 

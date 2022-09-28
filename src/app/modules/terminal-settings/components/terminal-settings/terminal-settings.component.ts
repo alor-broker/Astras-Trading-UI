@@ -22,6 +22,7 @@ import {
   Validators
 } from '@angular/forms';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
+import { ThemeType } from '../../../../shared/services/theme.service';
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -41,6 +42,8 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
 
   timezoneDisplayOption = TimezoneDisplayOption;
 
+  themeTypes = ThemeType;
+
   settingsForm!: TerminalSettingsFormGroup;
 
   fullName$: Observable<FullName> = of({
@@ -55,6 +58,10 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
 
   get workingVolumes(): FormArray {
     return this.hotKeysForm.get('workingVolumes') as FormArray;
+  }
+
+  get designSettingsForm(): FormGroup {
+    return this.settingsForm.get('designSettings') as FormGroup;
   }
 
   constructor(private readonly service: TerminalSettingsService) {
@@ -113,6 +120,9 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
 
   private buildForm(currentSettings: TerminalSettings): TerminalSettingsFormGroup {
     return new FormGroup({
+      designSettings: new FormGroup({
+        theme: new FormControl(currentSettings.designSettings?.theme)
+      }),
       timezoneDisplayOption: new FormControl(currentSettings.timezoneDisplayOption, Validators.required),
       userIdleDurationMin: new FormControl(
         currentSettings.userIdleDurationMin,

@@ -1,4 +1,5 @@
 ﻿import { TimezoneDisplayOption } from '../enums/timezone-display-option';
+import { ThemeType } from '../../services/theme.service';
 
 export interface HotKeysSettings {
   cancelOrdersKey?: string;
@@ -16,9 +17,14 @@ export interface HotKeysSettings {
   sellBestBid?: string;
 }
 
+export interface DesignSettings {
+  theme?: ThemeType;
+}
+
 export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;
   userIdleDurationMin?: number;
   badgesBind?: boolean;
   hotKeysSettings?: HotKeysSettings;
+  designSettings?: DesignSettings;
 }

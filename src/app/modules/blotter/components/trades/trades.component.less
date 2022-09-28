@@ -1,23 +1,27 @@
-@import (reference) '/src/styles.less';
+@import "theme-mixin";
 
-.sell {
-  color: @sell-color;
-}
+.themeMixin({
+  :host {
+    .sell {
+      color: @sell-color;
+    }
 
-.buy {
-  color: @buy-color;
-}
+    .buy {
+      color: @buy-color;
+    }
+
+    .active-filter {
+      color: @primary-color
+    }
+
+    .not-active-filter {
+      color: @icon-color-hover
+    }
+  }
+});
 
 .bold {
   font-weight: bold;
-}
-
-.active-filter {
-  color: @primary-color
-}
-
-.not-active-filter {
-  color: @icon-color-hover
 }
 
 .export-button-container {

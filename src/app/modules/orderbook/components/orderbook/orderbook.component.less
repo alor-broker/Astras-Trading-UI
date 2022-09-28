@@ -1,4 +1,19 @@
-@import (reference) '/src/styles.less';
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .row-cell {
+      &--ask {
+        color: @sell-color;
+      }
+
+      &--bid {
+        color: @buy-color;
+      }
+    }
+  }
+});
+
 
 .order-book {
   display: flex;
@@ -13,11 +28,10 @@
 
   &--ask {
     &:extend(.row-cell);
-    color: @sell-color;
   }
+
   &--bid {
     &:extend(.row-cell);
-    color: @buy-color;
     text-align: right;
   }
 }

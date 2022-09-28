@@ -1,11 +1,15 @@
-@import (reference) '/src/styles.less';
+@import "theme-mixin";
 
-.buy-button {
-  width: 50%;
-  background: @buy-color;
-}
+.themeMixin({
+  :host {
+    .buy-button {
+      width: 50%;
+      background: @buy-color;
+    }
 
-.sell-button {
-  width: 50%;
-  background: @sell-color;
-}
+    .sell-button {
+      width: 50%;
+      background: @sell-color;
+    }
+  }
+});
