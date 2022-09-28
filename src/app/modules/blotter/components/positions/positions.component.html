@@ -43,7 +43,7 @@
         <td *ngIf='shouldShow("qtyT1")' [class]='ord.qtyT1 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT1) | number }}</td>
         <td *ngIf='shouldShow("qtyT2")' [class]='ord.qtyT2 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT2) | number }}</td>
         <td *ngIf='shouldShow("qtyTFuture")' [class]='ord.qtyTFuture < 0 ? "sell" : "buy"'>{{ round(ord.qtyTFuture) | number }}</td>
-        <td *ngIf='shouldShow("volume")'>{{ ord.volume | number : '0.0-4' : 'ru-RU' }}</td>
+        <td *ngIf='shouldShow("volume")'>{{ ord.volume | number }}</td>
         <td *ngIf='shouldShow("unrealisedPl")' [class]='ord.unrealisedPl < 0 ? "sell" : "buy"'>{{ round(ord.unrealisedPl) | number }}</td>
         <td *ngIf='shouldShow("dailyUnrealisedPl")' [class]='ord.dailyUnrealisedPl < 0 ? "sell" : "buy"'>{{ round(ord.dailyUnrealisedPl) | number }}</td>
       </tr>
