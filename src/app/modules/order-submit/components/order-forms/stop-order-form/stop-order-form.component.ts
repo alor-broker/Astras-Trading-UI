@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   StopLimitOrder,
   StopMarketOrder
@@ -20,11 +20,10 @@ import {
   StopFormControls,
   StopFormGroup
 } from "../../../../command/models/command-forms.model";
-import { filter, Observable, takeUntil, withLatestFrom } from "rxjs";
+import { Observable } from "rxjs";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { map } from "rxjs/operators";
-import { WidgetSettingsService } from "../../../../../shared/services/widget-settings.service";
-import { OrderbookOrdersService } from "../../../../orderbook/services/orderbook-orders.service";
+import { LimitOrderFormValue } from "../limit-order-form/limit-order-form.component";
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'>
@@ -36,34 +35,14 @@ export type StopOrderFormValue =
   templateUrl: './stop-order-form.component.html',
   styleUrls: ['./stop-order-form.component.less']
 })
-export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderFormValue, { timezoneConverter: TimezoneConverter }>
-implements OnInit {
+export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderFormValue, { timezoneConverter: TimezoneConverter }> {
   public canSelectNow = true;
   private timezoneConverter!: TimezoneConverter;
 
   constructor(
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly orderbookOrdersService: OrderbookOrdersService,
-    private readonly settingsService: WidgetSettingsService
   ) {
     super();
-  }
-
-  ngOnInit() {
-    super.ngOnInit();
-
-    this.orderbookOrdersService.selectedOrderPrice
-      .pipe(
-        takeUntil(this.destroy$),
-        withLatestFrom(
-          this.settingsService!.getSettings(this.guid!),
-          this.isActivated$
-        ),
-        filter(([priceInfo, settings, isActivated]) => priceInfo.badgeColor === settings.badgeColor && isActivated)
-      )
-      .subscribe(([priceInfo]) => {
-        this.form?.get('price')?.setValue(priceInfo.price);
-      });
   }
 
   checkPriceAvailability() {
@@ -139,6 +118,12 @@ implements OnInit {
         ? this.timezoneConverter.terminalToUtc0Date(formValue.stopEndUnixTime as Date)
         : undefined,
     };
+  }
+
+  protected applyInitialValues(values: Partial<LimitOrderFormValue> | null) {
+    if (!!values?.price && this.form?.get('withLimit')?.value) {
+      this.form!.get('price')?.setValue(values.price);
+    }
   }
 
   private checkNowTimeSelection() {

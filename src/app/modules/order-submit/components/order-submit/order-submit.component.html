@@ -36,6 +36,7 @@
         <nz-tab #stopTab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" nzTitle="Условная">
           <ats-stop-order-form (formValueChange)="setStopOrderValue($event)"
                                [instrument]="currentInstrumentWithPortfolio.instrument"
+                               [initialValues]="initialValues$ | async"
                                [guid]="guid"
                                [activated]="stopTab.isActive"
           ></ats-stop-order-form>

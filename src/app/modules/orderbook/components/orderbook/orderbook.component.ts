@@ -41,7 +41,8 @@ import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.mode
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { OrderbookOrdersService } from "../../services/orderbook-orders.service";
+import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
+import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
 
 interface Size {
   width: string;
@@ -80,7 +81,7 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     private readonly instrumentsService: InstrumentsService,
     private readonly service: OrderbookService,
     private readonly modal: ModalService,
-    private readonly orderbookOrdersService: OrderbookOrdersService,
+    private readonly widgetsDataProvider: WidgetsDataProviderService,
     ) {
   }
 
@@ -124,6 +125,8 @@ export class OrderBookComponent implements OnInit, OnDestroy {
         }
       }
     ));
+
+    this.widgetsDataProvider.addNewDataProvider<SelectedPriceData>('selectedPrice');
   }
 
   ngOnDestroy(): void {
@@ -159,7 +162,7 @@ export class OrderBookComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe(settings => {
       if (settings.useOrderWidget) {
-        this.orderbookOrdersService.selectPrice(price, settings.badgeColor!);
+        this.widgetsDataProvider.setDataProviderValue<SelectedPriceData>('selectedPrice',{price, badgeColor: settings.badgeColor!});
       } else {
         const params: CommandParams = {
           instrument: { ...settings },

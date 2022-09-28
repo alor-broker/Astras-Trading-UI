@@ -1,14 +1,12 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { OrderFormBaseComponent } from "../order-form-base.component";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { LimitFormControls, LimitFormGroup } from "../../../../command/models/command-forms.model";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import { LimitOrder } from "../../../../command/models/order.model";
-import { BehaviorSubject, filter, take, takeUntil, withLatestFrom } from "rxjs";
+import { BehaviorSubject, filter, take } from "rxjs";
 import { EvaluationBaseProperties } from "../../../../command/models/evaluation-base-properties.model";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
-import { WidgetSettingsService } from "../../../../../shared/services/widget-settings.service";
-import { OrderbookOrdersService } from "../../../../orderbook/services/orderbook-orders.service";
 
 export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
@@ -17,32 +15,8 @@ export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { in
   templateUrl: './limit-order-form.component.html',
   styleUrls: ['./limit-order-form.component.less']
 })
-export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFormValue> implements OnInit, OnDestroy {
+export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFormValue> implements OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
-
-  constructor(
-    private readonly orderbookOrdersService: OrderbookOrdersService,
-    private readonly settingsService: WidgetSettingsService
-  ) {
-    super();
-  }
-
-  ngOnInit() {
-    super.ngOnInit();
-
-    this.orderbookOrdersService.selectedOrderPrice
-      .pipe(
-        takeUntil(this.destroy$),
-        withLatestFrom(
-          this.settingsService!.getSettings(this.guid!),
-          this.isActivated$
-        ),
-        filter(([priceInfo, settings, isActivated]) => priceInfo.badgeColor === settings.badgeColor && isActivated)
-      )
-      .subscribe(([priceInfo]) => {
-        this.form?.get('price')?.setValue(priceInfo.price);
-      });
-  }
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
