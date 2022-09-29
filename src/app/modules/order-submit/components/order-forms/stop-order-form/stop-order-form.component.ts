@@ -23,7 +23,6 @@ import {
 import { Observable } from "rxjs";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { map } from "rxjs/operators";
-import { LimitOrderFormValue } from "../limit-order-form/limit-order-form.component";
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'>
@@ -120,7 +119,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     };
   }
 
-  protected applyInitialValues(values: Partial<LimitOrderFormValue> | null) {
+  protected applyInitialValues(values: Partial<StopOrderFormValue> | null) {
     if (!!values?.price && this.form?.get('withLimit')?.value) {
       this.form!.get('price')?.setValue(values.price);
     }

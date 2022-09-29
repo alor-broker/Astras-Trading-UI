@@ -47,8 +47,6 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
     this.isActivated$.next(value);
   }
 
-  @Input() guid?: string;
-
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();

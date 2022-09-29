@@ -24,7 +24,6 @@
           <ats-limit-order-form (formValueChange)="setLimitOrderValue($event)"
                                 [instrument]="currentInstrumentWithPortfolio.instrument"
                                 [initialValues]="initialValues$ | async"
-                                [guid]="guid"
                                 [activated]="limitTab.isActive"
           ></ats-limit-order-form>
         </nz-tab>
@@ -37,7 +36,6 @@
           <ats-stop-order-form (formValueChange)="setStopOrderValue($event)"
                                [instrument]="currentInstrumentWithPortfolio.instrument"
                                [initialValues]="initialValues$ | async"
-                               [guid]="guid"
                                [activated]="stopTab.isActive"
           ></ats-stop-order-form>
         </nz-tab>
