@@ -34,10 +34,10 @@
       <td *ngIf='shouldShow("orderno")'>{{ ord.orderno }}</td>
       <td class='bold' *ngIf='shouldShow("symbol")'>{{ ord.symbol }}</td>
       <td [class]='ord.side.toString() === "sell" ? "sell" : "buy"' *ngIf='shouldShow("side")'>{{ ord.side }}</td>
-      <td *ngIf='shouldShow("qty")'>{{ ord.qty }}</td>
-      <td *ngIf='shouldShow("price")'>{{ ord.price }}</td>
+      <td *ngIf='shouldShow("qty")'>{{ ord.qty | number }}</td>
+      <td *ngIf='shouldShow("price")'>{{ ord.price | number }}</td>
       <td *ngIf='shouldShow("date")'>{{ formatDate(ord.date) }}</td>
-      <td *ngIf='shouldShow("volume")'>{{ ord.volume }}</td>
+      <td *ngIf='shouldShow("volume")'>{{ ord.volume | number }}</td>
     </tr>
   </tbody>
 </nz-table>
