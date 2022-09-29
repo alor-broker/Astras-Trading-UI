@@ -14,7 +14,6 @@ import {
   TestData
 } from '../../../../shared/utils/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { OrderSubmitModule } from '../../order-submit.module';
 import { selectNewPortfolio } from '../../../../store/portfolios/portfolios.actions';
 import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
@@ -63,14 +62,14 @@ describe('OrderSubmitComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        OrderSubmitModule,
         ...sharedModuleImportForTests,
         BrowserAnimationsModule
       ],
       declarations: [
+        OrderSubmitComponent,
         mockComponent({
           selector: 'ats-limit-order-form',
-          inputs: ['instrument', 'initialValues']
+          inputs: ['instrument', 'initialValues', 'guid', 'activated']
         }),
         mockComponent({
           selector: 'ats-market-order-form',
@@ -78,7 +77,7 @@ describe('OrderSubmitComponent', () => {
         }),
         mockComponent({
           selector: 'ats-stop-order-form',
-          inputs: ['instrument']
+          inputs: ['instrument', 'initialValues', 'guid', 'activated']
         })
       ],
       providers: [

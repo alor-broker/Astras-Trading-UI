@@ -1,6 +1,5 @@
 import {
   Component,
-  Input,
   OnDestroy,
   OnInit
 } from '@angular/core';
@@ -45,16 +44,10 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
   evaluation$!: Observable<EvaluationBaseProperties | null>;
   private readonly componentGuid = GuidGenerator.newGuid();
   private lastFormValue$ = new BehaviorSubject<MarketOrderFormValue | null>(null);
-  private isActivated$ = new BehaviorSubject<boolean>(false);
 
   constructor(private readonly quoteService: QuotesService
   ) {
     super();
-  }
-
-  @Input()
-  set activated(value: boolean) {
-    this.isActivated$.next(value);
   }
 
   ngOnInit(): void {
@@ -66,7 +59,6 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
   ngOnDestroy(): void {
     super.ngOnDestroy();
     this.lastFormValue$.complete();
-    this.isActivated$.complete();
   }
 
   protected buildForm(instrument: Instrument): FormGroup {

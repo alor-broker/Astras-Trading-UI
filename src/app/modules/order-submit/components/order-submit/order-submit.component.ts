@@ -14,7 +14,9 @@ import {
   Subject,
   switchMap,
   take,
-  tap
+  tap,
+  takeUntil,
+  withLatestFrom
 } from "rxjs";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -37,6 +39,8 @@ import { OrderService } from "../../../../shared/services/orders/order.service";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { getSelectedPortfolio } from "../../../../store/portfolios/portfolios.selectors";
 import { QuotesService } from "../../../../shared/services/quotes.service";
+import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
+import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
 
 @Component({
   selector: 'ats-order-submit[guid]',
@@ -67,7 +71,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     private readonly instrumentService: InstrumentsService,
     private readonly quotesService: QuotesService,
     private readonly orderService: OrderService,
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly widgetsDataProvider: WidgetsDataProviderService,
   ) {
   }
 
@@ -113,6 +118,14 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       tap(() => this.setSelectedCommandType(this.selectedOrderType)),
       map(() => this.getFormIndexByType(this.selectedOrderType))
     );
+
+    this.widgetsDataProvider.getDataProvider<SelectedPriceData>('selectedPrice')
+      ?.pipe(
+        takeUntil(this.destroy$),
+        withLatestFrom(settings$),
+        filter(([priceData, settings]) => priceData.badgeColor === settings.badgeColor)
+      )
+      .subscribe(([priceData]) => this.selectPrice(priceData.price));
   }
 
   setLimitOrderValue(value: LimitOrderFormValue | null) {
@@ -171,7 +184,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   }
 
   selectPrice(price: number) {
-    this.initialValues$.next({ price: price });
+    this.initialValues$.next({ price });
   }
 
   ngOnDestroy(): void {
