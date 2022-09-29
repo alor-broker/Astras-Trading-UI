@@ -842,14 +842,10 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
         const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
 
         const minStepDigitsAfterPoint = MathHelper.getPrecision(settings.instrument.minstep);
-        let priceMod = MathHelper.round(position!.avgPrice % settings.instrument.minstep, minStepDigitsAfterPoint) %
-          settings.instrument.minstep;
-
-        priceMod = priceMod >= (settings.instrument.minstep / 2) ? priceMod - settings.instrument.minstep : priceMod ;
 
         return {
           qty: position!.qtyTFutureBatch,
-          price: MathHelper.round(position!.avgPrice - priceMod, minStepDigitsAfterPoint),
+          price: MathHelper.round(position!.avgPrice, minStepDigitsAfterPoint),
           lossOrProfit: rowsDifference
         };
       })
