@@ -6,6 +6,12 @@ import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { CommandHeaderComponent } from './command-header.component';
 import { CommandsService } from "../../services/commands.service";
 import { Store } from "@ngrx/store";
+import {
+  ThemeColors,
+  ThemeSettings,
+  ThemeType
+} from '../../../../shared/models/settings/theme-settings.model';
+import { ThemeService } from 'src/app/shared/services/theme.service';
 
 describe('CommandHeaderComponent', () => {
   let component: CommandHeaderComponent;
@@ -20,6 +26,21 @@ describe('CommandHeaderComponent', () => {
 
     historySpy.getDaysOpen.and.returnValue(of([]));
 
+    const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
+    themeServiceSpy.getThemeSettings.and.returnValue(of({
+      theme: ThemeType.dark,
+      themeColors: {
+        sellColor: 'rgba(239,83,80, 1)',
+        sellColorBackground: 'rgba(184, 27, 68, 0.4)',
+        buyColor: 'rgba(12, 179, 130, 1',
+        buyColorBackground: 'rgba(12, 179, 130, 0.4)',
+        componentBackground: '#141414',
+        primaryColor: '#177ddc',
+        purpleColor5: '#51258f',
+        errorColor: '#a61d24'
+      } as ThemeColors
+    } as ThemeSettings));
+
     await TestBed.configureTestingModule({
       declarations: [CommandHeaderComponent],
       providers: [
@@ -32,7 +53,8 @@ describe('CommandHeaderComponent', () => {
           useValue: {
             select: jasmine.createSpy('select').and.returnValue(of({}))
           }
-        }
+        },
+        { provide: ThemeService, useValue: themeServiceSpy },
       ]
     }).compileComponents();
   });

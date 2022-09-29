@@ -8,19 +8,9 @@ import { initTerminalSettings } from './store/terminal-settings/terminal-setting
 import { initWidgetSettings } from "./store/widget-settings/widget-settings.actions";
 import { SessionTrackService } from "./shared/services/session/session-track.service";
 import { initInstrumentsWithBadges } from "./store/instruments/instruments.actions";
-import {
-  ThemeService,
-  ThemeType
-} from './shared/services/theme.service';
+import { ThemeService } from './shared/services/theme.service';
 import { TerminalSettingsService } from './modules/terminal-settings/services/terminal-settings.service';
-import {
-  Subject,
-  takeUntil
-} from 'rxjs';
-import {
-  distinct,
-  map
-} from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'ats-app-root',
@@ -29,7 +19,8 @@ import {
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'astras';
-  private destroy$: Subject<boolean> = new Subject<boolean>();
+
+  private themeChangeSubscription?: Subscription;
 
   constructor(
     private readonly store: Store,
@@ -45,17 +36,12 @@ export class AppComponent implements OnInit, OnDestroy {
     this.store.dispatch(initInstrumentsWithBadges());
     this.sessionTrackService.startTracking();
 
-    this.terminalSettings.getSettings().pipe(
-      map(x => x.designSettings?.theme ?? ThemeType.dark),
-      distinct(),
-      takeUntil(this.destroy$)
-    ).subscribe(themeType => this.themeService.setTheme(themeType));
+    this.themeChangeSubscription = this.themeService.subscribeToThemeChanges();
   }
 
   ngOnDestroy(): void {
     this.sessionTrackService.stopTracking();
 
-    this.destroy$.next(true);
-    this.destroy$.complete();
+    this.themeChangeSubscription?.unsubscribe();
   }
 }

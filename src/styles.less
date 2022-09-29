@@ -1,3 +1,5 @@
+@import 'theme-mixin';
+
 body {
   height: 98vh;
   margin: 0;
@@ -8,8 +10,41 @@ html {
   margin: 0;
 }
 
+.themeMixin(
+{
+  body {
+    .show-scroll,
+    .ant-table-content,
+    .cdk-virtual-scroll-viewport,
+    .ant-select-dropdown > div,
+    .ant-picker-time-panel-column,
+    textarea {
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: @text-color-secondary transparent;
+
+      &::-webkit-scrollbar {
+        width: 3px;
+        height: 3px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: transparent;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: @text-color-secondary; /* or add it to the track */
+        border-radius: 10px;
+      }
+    }
+  }
+}
+);
+
 .ant-descriptions-item-container,
 .ant-descriptions-item-label,
 .ant-descriptions-item-content {
   cursor: default;
 }
+

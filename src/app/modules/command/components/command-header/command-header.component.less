@@ -10,12 +10,20 @@
       color: @buy-color;
     }
 
-    .position-long {
-      background: @buy-color
+    ::ng-deep {
+      .long {
+        nz-badge-sup {
+          background: @buy-color;
+        }
+      }
     }
 
-    .position-short {
-      background: @sell-color
+    ::ng-deep {
+      .short {
+        nz-badge-sup {
+          background: @sell-color;
+        }
+      }
     }
   }
 });

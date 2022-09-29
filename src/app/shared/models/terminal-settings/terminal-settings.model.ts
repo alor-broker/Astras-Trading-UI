@@ -1,5 +1,5 @@
 ﻿import { TimezoneDisplayOption } from '../enums/timezone-display-option';
-import { ThemeType } from '../../services/theme.service';
+import { ThemeType } from '../settings/theme-settings.model';
 
 export interface HotKeysSettings {
   cancelOrdersKey?: string;

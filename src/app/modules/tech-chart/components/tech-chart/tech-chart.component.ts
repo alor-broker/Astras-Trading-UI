@@ -8,6 +8,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {
+  combineLatest,
   distinctUntilChanged,
   Observable,
   shareReplay,
@@ -29,6 +30,11 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
 import { DashboardItemContentSize } from '../../../../shared/models/dashboard-item.model';
+import { ThemeService } from '../../../../shared/services/theme.service';
+import {
+  ThemeSettings,
+  ThemeType
+} from '../../../../shared/models/settings/theme-settings.model';
 
 @Component({
   selector: 'ats-tech-chart[guid][shouldShowSettings][contentSize]',
@@ -55,7 +61,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
-    private readonly techChartDatafeedService: TechChartDatafeedService
+    private readonly techChartDatafeedService: TechChartDatafeedService,
+    private readonly themeService: ThemeService
   ) {
   }
 
@@ -76,25 +83,31 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.settings$?.pipe(
+    const chartSettings$ = this.settings$!.pipe(
       distinctUntilChanged((previous, current) => {
         return (
           previous?.symbol === current?.symbol &&
           previous?.exchange === current?.exchange
         );
       }),
-      takeUntil(this.destroy$)
-    ).subscribe(settings => {
-      this.createChart(settings);
+    );
+
+    combineLatest([
+      chartSettings$,
+      this.themeService.getThemeSettings()
+    ]).pipe(
+      takeUntil(this.destroy$),
+    ).subscribe(([settings, theme]) => {
+      this.createChart(settings, theme);
     });
   }
 
   private initSettingsStream() {
     this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid)
-    .pipe(
-      distinctUntilChanged((previous, current) => isEqualTechChartSettings(previous, current)),
-      shareReplay(1)
-    );
+      .pipe(
+        distinctUntilChanged((previous, current) => isEqualTechChartSettings(previous, current)),
+        shareReplay(1)
+      );
   }
 
   private createSettingsAdapter(initialSettings: TechChartSettings): ISettingsAdapter {
@@ -102,7 +115,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     return {
       get initialSettings(): InitialSettingsMap | undefined {
-          return initialSettings.chartSettings;
+        return initialSettings.chartSettings;
       },
 
       setValue(key: string, value: string): void {
@@ -142,7 +155,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 
-  private createChart(settings: TechChartSettings) {
+  private createChart(settings: TechChartSettings, theme: ThemeSettings) {
     if (this.chart) {
       this.clearChartEventsSubscription(this.chart);
       this.chart?.remove();
@@ -167,7 +180,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       fullscreen: false,
       autosize: true,
       timezone: 'exchange',
-      theme: 'Dark',
+      theme:  theme.theme === ThemeType.default ? 'Light' : 'Dark',
       time_frames: [
         { text: '1000y', resolution: '1M' as ResolutionString, description: 'Все', title: 'Все' },
         { text: '3y', resolution: '1M' as ResolutionString, description: '3 года', title: '3г' },
@@ -195,7 +208,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.chart = new widget(config);
 
-    this.chart.applyOverrides({ 'paneProperties.background': '#141414', 'paneProperties.backgroundType' : 'solid' });
+    this.chart.applyOverrides({ 'paneProperties.background': theme.theme === ThemeType.dark ? '#141414' : '#ffffff', 'paneProperties.backgroundType': 'solid' });
 
     this.subscribeToChartEvent(
       this.chart,

@@ -42,10 +42,6 @@ import {
   startWith,
   switchMap
 } from "rxjs/operators";
-import {
-  buyColorBackground,
-  sellColorBackground
-} from "../../../../shared/models/settings/styles-constants";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
@@ -66,6 +62,8 @@ import { OrderBookDataFeedHelper } from '../../utils/order-book-data-feed.helper
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-table.helper';
 import { Position } from '../../../../shared/models/positions/position.model';
+import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
+import { ThemeService } from '../../../../shared/services/theme.service';
 
 type ExtendedSettings = { widgetSettings: ScalperOrderBookSettings, instrument: Instrument };
 
@@ -110,6 +108,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     currentOrders$: Observable<CurrentOrder[]>;
     orderBookData$: Observable<OrderbookData>;
     orderBookPosition$: Observable<Position | null>;
+    themeSettings$: Observable<ThemeSettings>;
   };
 
   constructor(
@@ -119,7 +118,8 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     private readonly orderBookService: ScalperOrderBookService,
     private readonly instrumentsService: InstrumentsService,
     private readonly hotkeysService: HotKeyCommandService,
-    private readonly scalperOrdersService: ScalperOrdersService
+    private readonly scalperOrdersService: ScalperOrdersService,
+    private readonly themeService: ThemeService
   ) {
   }
 
@@ -171,7 +171,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       : orders.reduce((previousValue, currentValue) => previousValue + currentValue.volume, 0);
   }
 
-  getVolumeStyle(rowType: ScalperOrderBookRowType, volume: number, settings: ScalperOrderBookSettings) {
+  getVolumeStyle(rowType: ScalperOrderBookRowType, volume: number, settings: ScalperOrderBookSettings, theme: ThemeSettings) {
     if (rowType !== ScalperOrderBookRowType.Ask && rowType !== ScalperOrderBookRowType.Bid || !volume) {
       return null;
     }
@@ -183,8 +183,8 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     if (settings.volumeHighlightMode === VolumeHighlightMode.BiggestVolume) {
       const size = 100 * (volume / this.maxVolume);
       const color = rowType === ScalperOrderBookRowType.Bid
-        ? buyColorBackground
-        : sellColorBackground;
+        ? theme.themeColors.buyColorBackground
+        : theme.themeColors.sellColorBackground;
 
       return {
         background: `linear-gradient(90deg, ${color} ${size}% , rgba(0,0,0,0) ${size}%)`,
@@ -338,19 +338,20 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   private getOrderBookTableData(): Observable<ScalperOrderBookRow[]> {
     return combineLatest([
       this.orderBookContext!.extendedSettings$,
+      this.orderBookContext!.themeSettings$,
       this.scalperOrderBookStore.rows$,
       this.orderBookContext!.orderBookData$,
       this.orderBookContext!.currentOrders$,
       this.orderBookContext!.orderBookPosition$,
     ]).pipe(
-      tap(([, , orderBookData, ,]) => {
+      tap(([, , , orderBookData, ,]) => {
         const allRows = [...orderBookData.a, ...orderBookData.b];
         if (allRows.length > 0) {
           this.maxVolume = Math.max(...allRows.map(x => x.v));
         }
       }),
-      map(([settings, baseRows, orderBookData, currentOrders, currentPosition]) =>
-        this.mapOrderBookData(settings, baseRows, orderBookData, currentOrders, currentPosition))
+      map(([settings, theme, baseRows, orderBookData, currentOrders, currentPosition]) =>
+        this.mapOrderBookData(settings, baseRows, orderBookData, currentOrders, currentPosition, theme))
     );
   }
 
@@ -359,7 +360,8 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     baseRows: ScalperOrderBookRow[],
     orderBookData: OrderbookData,
     currentOrders: CurrentOrder[],
-    currentPosition: Position | null
+    currentPosition: Position | null,
+    theme: ThemeSettings
   ): ScalperOrderBookRow[] {
     if (baseRows.length === 0 || orderBookData.a.length === 0 || orderBookData.b.length === 0) {
       return baseRows;
@@ -394,7 +396,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     for (let i = 0; i < baseRows.length; i++) {
       const row = { ...baseRows[i] };
 
-      if (!this.mapOrderBook(row, orderBookData, settings.widgetSettings, orderBookBounds)) {
+      if (!this.mapOrderBook(row, orderBookData, settings.widgetSettings, theme, orderBookBounds)) {
         continue;
       }
 
@@ -434,7 +436,8 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       extendedSettings$: settings$,
       currentOrders$: this.getCurrentOrdersStream(settings$),
       orderBookData$: this.getOrderBookDataStream(settings$),
-      orderBookPosition$: this.getOrderBookPositionStream(settings$)
+      orderBookPosition$: this.getOrderBookPositionStream(settings$),
+      themeSettings$: this.themeService.getThemeSettings()
     };
   }
 
@@ -520,6 +523,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     row: ScalperOrderBookRow,
     orderBookData: OrderbookData,
     settings: ScalperOrderBookSettings,
+    theme: ThemeSettings,
     orderBookBounds: {
       minAsk: number,
       maxAsk: number,
@@ -533,7 +537,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
         const matchedRow = source[matchedRowIndex];
         targetRow.volume = matchedRow.v;
         targetRow.isBest = matchedRowIndex === 0;
-        targetRow.getVolumeStyle = () => this.getVolumeStyle(rowType, targetRow.volume ?? 0, settings);
+        targetRow.getVolumeStyle = () => this.getVolumeStyle(rowType, targetRow.volume ?? 0, settings, theme);
 
         return true;
       }

@@ -5,26 +5,73 @@ import {
 import { DOCUMENT } from '@angular/common';
 import {
   BehaviorSubject,
-  Observable
+  distinctUntilChanged,
+  Observable,
+  Subscription
 } from 'rxjs';
-import { filter } from 'rxjs/operators';
-
-export enum ThemeType {
-  dark = 'dark',
-  default = 'default',
-}
+import {
+  filter,
+  map
+} from 'rxjs/operators';
+import { TerminalSettingsService } from '../../modules/terminal-settings/services/terminal-settings.service';
+import {
+  ThemeColors,
+  ThemeSettings,
+  ThemeType
+} from '../models/settings/theme-settings.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
-  currentTheme?: ThemeType | null;
+  private currentTheme?: ThemeType | null;
+
+  private readonly darkThemeColors: ThemeColors = {
+    sellColor: 'rgba(184, 27, 68, 1)',
+    sellColorBackground: 'rgba(184, 27, 68, 0.4)',
+    buyColor: 'rgba(12, 179, 130, 1)',
+    buyColorBackground: 'rgba(12, 179, 130, 0.4)',
+    componentBackground: '#141414',
+    primaryColor: '#177ddc',
+    purpleColor5: '#51258f',
+    errorColor: '#a61d24',
+    chartGridColor: '#444'
+  };
+
+  private readonly lightThemeColors: ThemeColors = {
+    sellColor: 'rgba(239,83,80, 1)',
+    sellColorBackground: 'rgba(239,83,80, 0.4)',
+    buyColor: 'rgba(38,166,154, 1)',
+    buyColorBackground: 'rgba(38,166,154, 0.4)',
+    componentBackground: '#ffffff',
+    primaryColor: '#177ddc',
+    purpleColor5: '#51258f',
+    errorColor: '#a61d24',
+    chartGridColor: '#f0f0f0'
+  };
 
   constructor(
-    @Inject(DOCUMENT) private readonly document: Document) {
+    @Inject(DOCUMENT) private readonly document: Document,
+    private readonly terminalSettings: TerminalSettingsService) {
   }
 
-  setTheme(theme: ThemeType): void {
+  subscribeToThemeChanges(): Subscription {
+    return this.getThemeSettings()
+      .subscribe(settings => this.setTheme(settings.theme));
+  }
+
+  getThemeSettings(): Observable<ThemeSettings> {
+    return this.terminalSettings.getSettings().pipe(
+      distinctUntilChanged((previous, current) => previous.designSettings?.theme === current.designSettings?.theme),
+      map(x => x.designSettings?.theme ?? ThemeType.dark),
+      map(x => ({
+        theme: x,
+        themeColors: x === ThemeType.dark ? this.darkThemeColors : this.lightThemeColors
+      }))
+    );
+  }
+
+  private setTheme(theme: ThemeType): void {
     this.loadCss(theme).pipe(
       filter(x => !!x)
     ).subscribe(() => {

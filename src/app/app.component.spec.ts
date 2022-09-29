@@ -6,9 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { sharedModuleImportForTests } from './shared/utils/testing';
 import { SessionTrackService } from "./shared/services/session/session-track.service";
-import { TerminalSettingsService } from './modules/terminal-settings/services/terminal-settings.service';
 import { ThemeService } from './shared/services/theme.service';
-import { of } from 'rxjs';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -30,15 +28,9 @@ describe('AppComponent', () => {
       providers: [
         { provide: SessionTrackService, useValue: sessionTrackServiceSpy },
         {
-          provide: TerminalSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))
-          }
-        },
-        {
           provide: ThemeService,
           useValue: {
-            setTheme: jasmine.createSpy('setTheme').and.callThrough()
+            subscribeToThemeChanges: jasmine.createSpy('subscribeToThemeChanges').and.returnValue(null)
           }
         }
       ]

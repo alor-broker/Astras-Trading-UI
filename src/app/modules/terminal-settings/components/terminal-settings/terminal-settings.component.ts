@@ -22,7 +22,7 @@ import {
   Validators
 } from '@angular/forms';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
-import { ThemeType } from '../../../../shared/services/theme.service';
+import { ThemeType } from 'src/app/shared/models/settings/theme-settings.model';
 
 @Component({
   selector: 'ats-terminal-settings',

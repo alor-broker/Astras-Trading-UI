@@ -21,7 +21,7 @@ import { Store } from '@ngrx/store';
 import { selectTerminalSettingsState } from './terminal-settings.selectors';
 import { filter } from 'rxjs';
 import { LocalStorageService } from "../../shared/services/local-storage.service";
-import { ThemeType } from '../../shared/services/theme.service';
+import { ThemeType } from '../../shared/models/settings/theme-settings.model';
 
 @Injectable()
 export class TerminalSettingsEffects {
