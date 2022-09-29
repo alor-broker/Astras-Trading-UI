@@ -11,7 +11,12 @@
       [shouldShowSettings]="shouldShowSettings"
       [hasHelp]="hasHelp()"></ats-widget-header>
   </div>
-  <div class="widget-content show-scroll" #widgetContent [class.active]="isWidgetActivated$ | async">
+  <div
+    class="widget-content show-scroll"
+    #widgetContent
+    [class.active]="isWidgetActivated$ | async"
+    (mousedown)="$event.stopPropagation()"
+  >
     <ng-container [ngSwitch]="widget.gridItem.type">
       <ats-orderbook-widget *ngSwitchCase="'order-book'"
                             [guid]="getGuid()"

@@ -1,5 +1,6 @@
 <ng-template #empty>
   <nz-empty
+    class="ant-list-empty-text"
     nzNotFoundImage="simple"
     [nzNotFoundContent]='isFilterDisabled() ? "Заявок сегодня не было" : "С такими фильтрами ничего не найдено"'>
   </nz-empty>
@@ -71,9 +72,9 @@
         </td>
         <td [class]='ord.side.toString() === "sell" ? "sell" : "buy"' *ngIf='shouldShow("side")'>{{ ord.side }}</td>
         <td *ngIf='shouldShow("residue")'>{{ ord.residue }}</td>
-        <td *ngIf='shouldShow("volume")'>{{ ord.volume }}</td>
-        <td *ngIf='shouldShow("qty")'>{{ ord.qty }}</td>
-        <td *ngIf='shouldShow("price")'>{{ ord.price }}</td>
+        <td *ngIf='shouldShow("volume")'>{{ ord.volume | number }}</td>
+        <td *ngIf='shouldShow("qty")'>{{ ord.qty | number}}</td>
+        <td *ngIf='shouldShow("price")'>{{ ord.price | number }}</td>
         <td [class]='ord.status.toString() === "filled"
           ? (ord.status.toString() === "sell" ? "sell" : "buy") :
           (ord.status.toString() === "canceled" ? "cancelled" : "bold" )' *ngIf='shouldShow("status")'>{{ translateStatus(ord.status) }}</td>
