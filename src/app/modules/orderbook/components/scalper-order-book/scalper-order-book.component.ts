@@ -66,6 +66,7 @@ import { OrderBookDataFeedHelper } from '../../utils/order-book-data-feed.helper
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-table.helper';
 import { Position } from '../../../../shared/models/positions/position.model';
+import { MathHelper } from "../../../../shared/utils/math-helper";
 
 type ExtendedSettings = { widgetSettings: ScalperOrderBookSettings, instrument: Instrument };
 
@@ -840,16 +841,15 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
         const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
 
-        const minStepDigitsAfterPoint = 10**(+settings.instrument.minstep.toString().split('.')?.[1]?.length || 0);
-        let priceMod = (Math.round((position!.avgPrice % settings.instrument.minstep) * minStepDigitsAfterPoint) /
-          minStepDigitsAfterPoint) %
+        const minStepDigitsAfterPoint = MathHelper.getPrecision(settings.instrument.minstep);
+        let priceMod = MathHelper.round(position!.avgPrice % settings.instrument.minstep, minStepDigitsAfterPoint) %
           settings.instrument.minstep;
 
         priceMod = priceMod >= (settings.instrument.minstep / 2) ? priceMod - settings.instrument.minstep : priceMod ;
 
         return {
           qty: position!.qtyTFutureBatch,
-          price: Math.round((position!.avgPrice - priceMod) * minStepDigitsAfterPoint) / minStepDigitsAfterPoint,
+          price: MathHelper.round(position!.avgPrice - priceMod, minStepDigitsAfterPoint),
           lossOrProfit: rowsDifference
         };
       })
