@@ -18,7 +18,6 @@ export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { in
 export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFormValue> implements OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
 
-
   ngOnDestroy(): void {
     super.ngOnDestroy();
     this.evaluation$.complete();

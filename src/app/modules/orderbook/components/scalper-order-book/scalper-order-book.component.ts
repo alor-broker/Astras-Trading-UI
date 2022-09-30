@@ -64,6 +64,7 @@ import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-tabl
 import { Position } from '../../../../shared/models/positions/position.model';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
+import { MathHelper } from "../../../../shared/utils/math-helper";
 
 type ExtendedSettings = { widgetSettings: ScalperOrderBookSettings, instrument: Instrument };
 
@@ -844,9 +845,11 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
         const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
 
+        const minStepDigitsAfterPoint = MathHelper.getPrecision(settings.instrument.minstep);
+
         return {
           qty: position!.qtyTFutureBatch,
-          price: position!.avgPrice,
+          price: MathHelper.round(position!.avgPrice, minStepDigitsAfterPoint),
           lossOrProfit: rowsDifference
         };
       })

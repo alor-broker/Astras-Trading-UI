@@ -38,6 +38,8 @@ import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.mode
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
+import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 
@@ -80,6 +82,7 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     private readonly instrumentsService: InstrumentsService,
     private readonly service: OrderbookService,
     private readonly modal: ModalService,
+    private readonly widgetsDataProvider: WidgetsDataProviderService,
     private readonly themeService: ThemeService) {
   }
 
@@ -124,6 +127,8 @@ export class OrderBookComponent implements OnInit, OnDestroy {
         }
       }
     ));
+
+    this.widgetsDataProvider.addNewDataProvider<SelectedPriceData>('selectedPrice');
   }
 
   ngOnDestroy(): void {
@@ -166,13 +171,17 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
       take(1)
     ).subscribe(settings => {
-      const params: CommandParams = {
-        instrument: { ...settings },
-        price,
-        quantity: quantity ?? 1,
-        type: CommandType.Limit,
-      };
-      this.modal.openCommandModal(params);
+      if (settings.useOrderWidget) {
+        this.widgetsDataProvider.setDataProviderValue<SelectedPriceData>('selectedPrice',{price, badgeColor: settings.badgeColor!});
+      } else {
+        const params: CommandParams = {
+          instrument: { ...settings },
+          price,
+          quantity: quantity ?? 1,
+          type: CommandType.Limit,
+        };
+        this.modal.openCommandModal(params);
+      }
     });
   }
 

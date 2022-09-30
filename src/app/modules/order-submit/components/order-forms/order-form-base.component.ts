@@ -26,6 +26,7 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
   form?: FormGroup;
   @Output()
   formValueChange = new EventEmitter<T | null>();
+  public readonly isActivated$ = new BehaviorSubject<boolean>(false);
   public readonly instrument$ = new BehaviorSubject<Instrument | null>(null);
   protected destroy$: Subject<boolean> = new Subject<boolean>();
   protected formValueChangeSubscription?: Subscription;
@@ -41,6 +42,11 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
     this.initialValues$.next(value);
   }
 
+  @Input()
+  set activated(value: boolean) {
+    this.isActivated$.next(value);
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
@@ -48,6 +54,7 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
     this.formValueChangeSubscription?.unsubscribe();
     this.instrument$?.complete();
     this.initialValues$?.complete();
+    this.isActivated$.complete();
   }
 
   ngOnInit(): void {

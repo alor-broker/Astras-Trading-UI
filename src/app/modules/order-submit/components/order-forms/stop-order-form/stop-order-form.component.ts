@@ -38,7 +38,9 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
   public canSelectNow = true;
   private timezoneConverter!: TimezoneConverter;
 
-  constructor(private readonly timezoneConverterService: TimezoneConverterService) {
+  constructor(
+    private readonly timezoneConverterService: TimezoneConverterService,
+  ) {
     super();
   }
 
@@ -115,6 +117,12 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
         ? this.timezoneConverter.terminalToUtc0Date(formValue.stopEndUnixTime as Date)
         : undefined,
     };
+  }
+
+  protected applyInitialValues(values: Partial<StopOrderFormValue> | null) {
+    if (!!values?.price && this.form?.get('withLimit')?.value) {
+      this.form!.get('price')?.setValue(values.price);
+    }
   }
 
   private checkNowTimeSelection() {
