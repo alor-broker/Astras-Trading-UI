@@ -11,7 +11,7 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import { ColumnsSettings } from "../../models/columns-settings.model";
+import { ColumnsSettings, FilterData } from "../../models/columns-settings.model";
 import { NzTableComponent } from "ng-zorro-antd/table";
 import { Subject, takeUntil } from "rxjs";
 import { ITEM_HEIGHT } from "../../../modules/all-trades/utils/all-trades.utils";
@@ -58,10 +58,17 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   ngOnInit() {
-    this.columns.filter(col => col.isFiltering)
+    this.columns
+      .filter(col => !!col.filterData)
+      .map(col => col.filterData!)
       .forEach(filter => {
-      this.filtersForm.addControl(filter.name, new FormControl(''));
-    });
+        if (!filter.isInterval) {
+          this.filtersForm.addControl(filter.filterName, new FormControl(''));
+        } else {
+          this.filtersForm.addControl(filter.intervalStartName!, new FormControl(''));
+          this.filtersForm.addControl(filter.intervalEndName!, new FormControl(''));
+        }
+      });
 
     this.filtersForm.valueChanges
       .pipe(
@@ -92,12 +99,17 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
     return this.columns.map(col => col.width || 'auto');
   }
 
-  public getFilterControl(colName: string): FormControl {
-    return this.filtersForm.get(colName) as FormControl;
+  public getFilterControl(filterName: string): FormControl {
+    return this.filtersForm.get(filterName) as FormControl;
   }
 
-  public resetFilter(colName: string) {
-    this.getFilterControl(colName).reset('');
+  public resetFilter(filterData: FilterData) {
+    if (filterData.isInterval) {
+      this.getFilterControl(filterData.intervalStartName!).reset('');
+      this.getFilterControl(filterData.intervalEndName!).reset('');
+    } else {
+      this.getFilterControl(filterData.filterName).reset('');
+    }
   }
 
   public openedFilterChange(name: string, isOpened: boolean) {

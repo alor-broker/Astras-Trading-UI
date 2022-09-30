@@ -26,6 +26,12 @@ export interface AllInstrumentsFilters {
   orderBy?: string;
   query?: string;
   exchange?: string;
-  shortName?: string;
   marketType?: string;
+  currency?: string;
+  priceFrom?: string;
+  priceTo?: string;
+  dailyGrowthFrom?: string;
+  dailyGrowthTo?: string;
+  tradeVolumeFrom?: string;
+  tradeVolumeTo?: string;
 }

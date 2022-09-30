@@ -39,53 +39,101 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     {
       name: 'name',
       displayName: 'Тикер',
+      width: '100px',
       sortFn: this.getSortFn('symbol'),
-      isFiltering: true,
-      isOpenedFilter: false,
+      filterData: {
+        filterName: 'query',
+        // isOpenedFilter: false,
+      },
       showBadges: true
     },
-    { name: 'shortName', displayName: 'Название' },
+    { name: 'shortName', displayName: 'Название', width: '100px' },
+    {
+      name: 'currency',
+      displayName: 'Валюта',
+      width: '90px',
+      filterData: {
+        filterName: 'currency',
+        isOpenedFilter: false,
+      },
+      sortFn: this.getSortFn('currency'),
+    },
     {
       name: 'dailyGrowth',
       displayName: 'Рост за сегодня',
       classFn: data => data.dailyGrowth < 0 ? 'sell' : 'buy',
-      sortFn: this.getSortFn('dailyGrowth')
+      width: '100px',
+      sortFn: this.getSortFn('dailyGrowth'),
+      filterData: {
+        filterName: 'dailyGrowth',
+        isInterval: true,
+        intervalStartName: 'dailyGrowthFrom',
+        intervalEndName: 'dailyGrowthTo'
+      }
     },
-    {name: 'tradeVolume', displayName: 'Объём торгов', sortFn: this.getSortFn('tradeVolume')},
+    {
+      name: 'tradeVolume',
+      displayName: 'Объём торгов',
+      width: '110px',
+      sortFn: this.getSortFn('tradeVolume'),
+      filterData: {
+        filterName: 'tradeVolume',
+        isInterval: true,
+        intervalStartName: 'tradeVolumeFrom',
+        intervalEndName: 'tradeVolumeTo'
+      }
+    },
     {
       name: 'exchange',
       displayName: 'Биржа',
+      width: '90px',
       sortFn: this.getSortFn('exchange'),
-      isFiltering: true,
-      isOpenedFilter: false,
-      isDefaultFilter: true,
-      isMultipleFilter: false,
-      filters: [
-        { value: 'MOEX', text: 'MOEX' },
-        { value: 'SPBX', text: 'SPBX' },
-      ]
+      filterData: {
+        filterName: 'exchange',
+        isOpenedFilter: false,
+        isDefaultFilter: true,
+        isMultipleFilter: true,
+        filters: [
+          { value: 'MOEX', text: 'MOEX' },
+          { value: 'SPBX', text: 'SPBX' },
+        ]
+      },
     },
     {
       name: 'market',
       displayName: 'Рынок',
-      sortFn: this.getSortFn('market'),
-      isFiltering: true,
-      isOpenedFilter: false,
-      isDefaultFilter: true,
-      isMultipleFilter: false,
-      filters: [
-        { value: 'CURR', text: 'CURR' },
-        { value: 'FOND', text: 'FOND' },
-        { value: 'FORTS', text: 'FORTS' },
-        { value: 'SPBX', text: 'SPBX' },
-      ]
+      width: '90px',
+      sortFn: this.getSortFn('marketType'),
+      filterData: {
+        filterName: 'marketType',
+        isOpenedFilter: false,
+        isDefaultFilter: true,
+        isMultipleFilter: true,
+        filters: [
+          { value: 'CURR', text: 'CURR' },
+          { value: 'FOND', text: 'FOND' },
+          { value: 'FORTS', text: 'FORTS' },
+          { value: 'SPBX', text: 'SPBX' },
+        ]
+      },
     },
-    {name: 'lotSize', displayName: 'Лотность'},
-    {name: 'price', displayName: 'Цена', sortFn: this.getSortFn('price')},
-    {name: 'priceMax', displayName: 'Макс. цена'},
-    {name: 'priceMin', displayName: 'Мин. цена'},
-    {name: 'priceScale', displayName: 'Шаг цены', sortFn: this.getSortFn('priceScale')},
-    {name: 'yield', displayName: 'Доходность', sortFn: this.getSortFn('yield')},
+    {name: 'lotSize', displayName: 'Лотность', width: '70px'},
+    {
+      name: 'price',
+      displayName: 'Цена',
+      width: '80px',
+      sortFn: this.getSortFn('price'),
+      filterData: {
+        filterName: 'price',
+        isInterval: true,
+        intervalStartName: 'priceFrom',
+        intervalEndName: 'priceTo'
+      }
+    },
+    {name: 'priceMax', displayName: 'Макс. цена', width: '80px'},
+    {name: 'priceMin', displayName: 'Мин. цена', width: '80px'},
+    {name: 'priceScale', displayName: 'Шаг цены', width: '90px', sortFn: this.getSortFn('priceScale')},
+    {name: 'yield', displayName: 'Доходность', width: '100px', sortFn: this.getSortFn('yield')},
   ];
   public displayedColumns: ColumnsSettings[] = [];
   public contextMenu: ContextMenu[] = [];
@@ -127,23 +175,21 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(filters: any) {
-    if (filters.hasOwnProperty('name')) {
-      filters.query = filters.name;
-      delete filters.shortName;
-    }
-    if (filters.hasOwnProperty('market')) {
-      filters.marketType = filters.market || '';
-      delete filters.market;
-    }
-    if (filters.hasOwnProperty('exchange')) {
-      filters.exchange = filters.exchange || '';
-    }
-
-    this.filters = {
+    const allFilters = {
       ...this.filters,
-      ...filters,
-      offset: 0
+      ...filters
     };
+
+    this.filters = Object.keys(allFilters)
+      .filter(key => !!allFilters[key])
+      .reduce((acc, curr) => {
+        if (Array.isArray(allFilters[curr])) {
+          acc[curr] = allFilters[curr].join(';');
+        } else {
+          acc[curr] = allFilters[curr];
+        }
+        return acc;
+      }, { offset: 0 } as any);
     this.getInstruments(true);
   }
 

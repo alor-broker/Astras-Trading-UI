@@ -13,8 +13,15 @@ export interface ColumnsSettings {
   width?: string;
   // Сортирующийся ли столбец
   sortFn?: (direction: string | null) => any;
-  // Сортирующийся ли столбец
-  isFiltering?: boolean;
+  // Настройки фильтров
+  filterData?: FilterData;
+  // Показывать лейблы
+  showBadges?: boolean
+}
+
+export interface FilterData {
+  // Наименование фильтра
+  filterName: string;
   // Открыт ли фильтр
   isOpenedFilter?: boolean;
   // Выпадающий список
@@ -23,6 +30,7 @@ export interface ColumnsSettings {
   isMultipleFilter?: boolean;
   // значения фильтров
   filters?: NzTableFilterList;
-  // Показывать лейблы
-  showBadges?: boolean
+  isInterval?: boolean;
+  intervalStartName?: string;
+  intervalEndName?: string;
 }
