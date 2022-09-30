@@ -44,7 +44,7 @@ describe('NavbarComponent', () => {
       buyColorBackground: 'rgba(12, 179, 130, 0.4)',
       componentBackground: '#141414',
       primaryColor: '#177ddc',
-      purpleColor5: '#51258f',
+      purpleColor: '#51258f',
       errorColor: '#a61d24'
     } as ThemeColors
   } as ThemeSettings));

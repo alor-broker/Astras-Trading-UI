@@ -10,7 +10,7 @@ export interface ThemeColors {
   buyColorBackground: string;
   componentBackground: string;
   primaryColor: string;
-  purpleColor5: string;
+  purpleColor: string;
   errorColor: string;
   chartGridColor: string;
 }

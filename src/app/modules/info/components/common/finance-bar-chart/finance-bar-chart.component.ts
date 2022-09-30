@@ -139,9 +139,9 @@ export class FinanceBarChartComponent implements OnInit, OnDestroy {
 
   private getIncomeColors(theme: ThemeSettings): { backgroundColor: string, hoverBackgroundColor: string, borderColor: string } {
     return {
-      backgroundColor: theme.themeColors.purpleColor5,
+      backgroundColor: theme.themeColors.purpleColor,
       hoverBackgroundColor: theme.themeColors.errorColor,
-      borderColor: theme.themeColors.purpleColor5
+      borderColor: theme.themeColors.purpleColor
     };
   }
 }
