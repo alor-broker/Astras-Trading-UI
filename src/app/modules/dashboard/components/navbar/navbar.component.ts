@@ -4,7 +4,6 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { AccountService } from '../../../../shared/services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
-import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-constants';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
@@ -15,6 +14,9 @@ import { joyrideContent } from '../../models/joyride';
 import { PortfolioExtended } from 'src/app/shared/models/user/portfolio-extended.model';
 import { getSelectedInstrumentByBadge } from "../../../../store/instruments/instruments.selectors";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { ThemeService } from '../../../../shared/services/theme.service';
+import { ThemeColors } from '../../../../shared/models/settings/theme-settings.model';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'ats-navbar',
@@ -24,18 +26,18 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 export class NavbarComponent implements OnInit, OnDestroy {
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   names = WidgetNames;
-  buyColor = buyColor;
-  sellColor = sellColor;
   joyrideContent = joyrideContent;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private activeInstrument$!: Observable<Instrument>;
+  themeColors$!: Observable<ThemeColors>;
 
   constructor(
     private service: DashboardService,
     private account: AccountService,
     private store: Store,
     private auth: AuthService,
-    private modal: ModalService
+    private modal: ModalService,
+    private themeService: ThemeService
   ) {
   }
 
@@ -49,6 +51,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     });
 
     this.activeInstrument$ = this.store.select(getSelectedInstrumentByBadge(defaultBadgeColor));
+
+    this.themeColors$ = this.themeService.getThemeSettings().pipe(
+      map(x => x.themeColors)
+    );
   }
 
   ngOnDestroy(): void {

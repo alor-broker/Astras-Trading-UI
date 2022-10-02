@@ -3,7 +3,7 @@
     <div class='badge'>
       <nz-badge [nzCount]="data.position.abs"
                 [nzOverflowCount]='1000000000'
-                [nzStyle]='data.position.quantity > 0 ? {background: colors.buyColor}: {background: colors.sellColor}'>
+                [class]="data.position.quantity > 0 ? 'long' : 'short'">
         <nz-avatar [nzSize]="64" [nzSrc]="'https://storage.alorbroker.ru/icon/' + data.instrument.symbol + '.png'" [nzText]="data.instrument.symbol"
                    nzGap='4'></nz-avatar>
       </nz-badge>

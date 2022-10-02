@@ -1,4 +1,77 @@
-@import (reference) '/src/styles.less';
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .order-book-table-container {
+      .ask-row:not(.filler-row) {
+        .price-cell {
+          color: @sell-color;
+        }
+
+        &.trade-row {
+          &.best-row {
+            background-color: fade(@sell-color, 20%);
+          }
+        }
+      }
+
+      .bid-row:not(.filler-row) {
+        .price-cell {
+          color: @buy-color;
+        }
+
+        &.trade-row {
+          &.best-row {
+            background-color: fade(@buy-color, 20%);
+          }
+        }
+      }
+
+      .spread-row {
+        background-color: fade(@disabled-color, 7%);
+      }
+
+      .current-position-range-row {
+        &.positive {
+          .price-cell {
+            background-color: fade(@buy-color, 15%);
+          }
+        }
+
+        &.negative {
+          .price-cell {
+            background-color: fade(@sell-color, 15%);
+          }
+        }
+      }
+    }
+
+    .footer {
+      .position-state {
+        .qty {
+          &.positive {
+            color: @buy-color;
+          }
+
+          &.negative {
+            color: @sell-color;
+          }
+        }
+
+        .loss-or-profit {
+          &.positive {
+            color: @buy-color;
+          }
+
+          &.negative {
+            color: @sell-color;
+          }
+        }
+      }
+    }
+  }
+});
+
 
 .container {
   display: flex;
@@ -39,48 +112,6 @@
       }
     }
 
-    .ask-row:not(.filler-row) {
-      .price-cell {
-        color: @sell-color;
-      }
-
-      &.trade-row {
-        &.best-row {
-          background-color: fade(@sell-color, 20%);
-        }
-      }
-    }
-
-    .bid-row:not(.filler-row) {
-      .price-cell {
-        color: @buy-color;
-      }
-
-      &.trade-row {
-        &.best-row {
-          background-color: fade(@buy-color, 20%);
-        }
-      }
-    }
-
-    .spread-row {
-      background-color: fade(@disabled-color, 7%);
-    }
-
-    .current-position-range-row {
-      &.positive {
-        .price-cell{
-          background-color: fade(@buy-color, 15%);
-        }
-      }
-
-      &.negative {
-        .price-cell{
-          background-color: fade(@sell-color, 15%);
-        }
-      }
-    }
-
     .cancel-order-btn {
       margin-left: 0.5em;
     }
@@ -105,24 +136,6 @@
       .qty {
         padding-left: 1em;
         padding-right: 1em;
-
-        &.positive {
-          color: @buy-color;
-        }
-
-        &.negative {
-          color: @sell-color;
-        }
-      }
-
-      .loss-or-profit {
-        &.positive {
-          color: @buy-color;
-        }
-
-        &.negative {
-          color: @sell-color;
-        }
       }
     }
   }

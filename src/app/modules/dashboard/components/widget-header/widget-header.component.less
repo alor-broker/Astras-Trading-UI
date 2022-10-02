@@ -1,3 +1,15 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .link-to-active-btn {
+      i.active {
+        color: @link-to-active-btn-color;
+      }
+    }
+  }
+});
+
 .icon-display {
   transform: scale(0.7)
 }
@@ -35,12 +47,6 @@ button {
 
   &:last-child {
     margin-right: -5px;
-  }
-}
-
-.link-to-active-btn {
-  i.active {
-    color: lightgreen;
   }
 }
 

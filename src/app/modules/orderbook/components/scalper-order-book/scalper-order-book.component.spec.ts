@@ -6,6 +6,7 @@ import {
 import { ScalperOrderBookComponent } from './scalper-order-book.component';
 import {
   BehaviorSubject,
+  of,
   Subject,
   take
 } from "rxjs";
@@ -39,6 +40,12 @@ import { Order } from '../../../../shared/models/orders/order.model';
 import { OrderBookDataFeedHelper } from '../../utils/order-book-data-feed.helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { Position } from '../../../../shared/models/positions/position.model';
+import {
+  ThemeColors,
+  ThemeSettings,
+  ThemeType
+} from '../../../../shared/models/settings/theme-settings.model';
+import { ThemeService } from '../../../../shared/services/theme.service';
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -83,6 +90,7 @@ describe('ScalperOrderBookComponent', () => {
   let instrumentsServiceSpy: any;
   let scalperOrdersServiceSpy: any;
   let hotKeyCommandServiceSpy: any;
+  let themeServiceSpy: any;
 
   beforeEach(() => {
     widgetSettingsServiceSpy = jasmine.createSpyObj(
@@ -134,6 +142,21 @@ describe('ScalperOrderBookComponent', () => {
 
     hotKeyCommandServiceSpy = jasmine.createSpyObj('HotKeyCommandService', ['commands$']);
     hotKeyCommandServiceSpy.commands$ = hotKeyCommandMock;
+
+    themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
+    themeServiceSpy.getThemeSettings.and.returnValue(of({
+      theme: ThemeType.dark,
+      themeColors: {
+        sellColor: 'rgba(239,83,80, 1)',
+        sellColorBackground: 'rgba(184, 27, 68, 0.4)',
+        buyColor: 'rgba(12, 179, 130, 1',
+        buyColorBackground: 'rgba(12, 179, 130, 0.4)',
+        componentBackground: '#141414',
+        primaryColor: '#177ddc',
+        purpleColor: '#51258f',
+        errorColor: '#a61d24'
+      } as ThemeColors
+    } as ThemeSettings));
   });
 
   beforeEach(async () => {
@@ -149,6 +172,7 @@ describe('ScalperOrderBookComponent', () => {
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         { provide: HotKeyCommandService, useValue: hotKeyCommandServiceSpy },
         { provide: ScalperOrdersService, useValue: scalperOrdersServiceSpy },
+        { provide: ThemeService, useValue: themeServiceSpy },
       ],
     })
       .compileComponents();

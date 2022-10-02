@@ -14,7 +14,7 @@ export interface ColumnIds  {
 
 export const allInstrumentsColumns: ColumnIds[] = [
   { columnId: 'symbol', name: "Тикер", tooltip: 'Биржевой идентификатор ценной бумаги', isDefault: true },
-  { columnId: 'shortName', name: "Название", tooltip: 'Название тикера', isDefault: true },
+  { columnId: 'shortName', name: "Назв.", tooltip: 'Название тикера', isDefault: true },
   { columnId: 'price', name: "Цена", tooltip: 'Цена последней сделки', isDefault: true },
   { columnId: 'dayChange', name: "Д.изм.", tooltip: 'Изменение за день', isDefault: true },
   { columnId: 'dayChangePerPrice', name: "Д.изм.,%", tooltip: 'Изменение за день в %', isDefault: true },

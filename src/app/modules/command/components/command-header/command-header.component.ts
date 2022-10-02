@@ -13,7 +13,6 @@ import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
 import { PriceData } from '../../models/price-data.model';
-import { buyColor, sellColor } from 'src/app/shared/models/settings/styles-constants';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Store } from '@ngrx/store';
@@ -30,10 +29,6 @@ import { CommandsService } from "../../services/commands.service";
   styleUrls: ['./command-header.component.less']
 })
 export class CommandHeaderComponent implements OnInit, OnDestroy {
-  colors = {
-    buyColor: buyColor,
-    sellColor: sellColor
-  };
   viewData$!: Observable<{ instrument: InstrumentKey, position: { abs: number, quantity: number }, priceData: PriceData }>;
   private readonly commandInstrument$ = new BehaviorSubject<InstrumentKey | null>(null);
 

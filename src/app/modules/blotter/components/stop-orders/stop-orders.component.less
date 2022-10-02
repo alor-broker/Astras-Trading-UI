@@ -1,43 +1,47 @@
-@import (reference) '/src/styles.less';
+@import "theme-mixin";
 
-.sell {
-  color: @sell-color;
-}
+.themeMixin({
+  :host {
+    .sell {
+      color: @sell-color;
+    }
 
-.buy {
-  color: @buy-color;
-}
+    .buy {
+      color: @buy-color;
+    }
+
+    .cancelled {
+      color: @disabled-color
+    }
+
+    .side-buy {
+      background-color: @buy-color;
+    }
+
+    .side-sell {
+      background-color: @sell-color;
+    }
+
+    .cancelled-status {
+      background-color: @disabled-color;
+    }
+
+    .active-filter {
+      color: @primary-color
+    }
+
+    .not-active-filter {
+      color: @icon-color-hover
+    }
+  }
+});
 
 .bold {
   font-weight: bold;
 }
 
-.cancelled {
-  color: @disabled-color
-}
-
-.side-buy {
-  background-color: @buy-color;
-}
-
-.side-sell {
-  background-color: @sell-color;
-}
-
-.cancelled-status {
-  background-color: @disabled-color;
-}
-
 tr:hover {
   cursor: pointer;
-}
-
-.active-filter {
-  color: @primary-color
-}
-
-.not-active-filter {
-  color: @icon-color-hover
 }
 
 .export-button-container {

@@ -10,7 +10,7 @@
       [title]="joyrideContent.step3.title"
       [text]="joyrideContent.step3.text"
     >
-      <i nz-icon nzType="plus-circle" nzTheme="twotone" [nzTwotoneColor]="buyColor" class='managing-icon'></i>
+      <i nz-icon nzType="plus-circle" nzTheme="twotone" [nzTwotoneColor]="(themeColors$ | async)!.buyColor" class='managing-icon'></i>
     </li>
     <li nz-menu-item class='menu-item'>
       <button nz-button nz-dropdown
@@ -40,7 +40,6 @@
     <li nz-menu-item (click)="clear()" class='menu-item icon-li'>
       <i nz-icon
         nzType="delete"
-        [nzTwotoneColor]="sellColor"
         nzTheme="outline"
         class="managing-icon"
         joyrideStep="step4"
@@ -53,7 +52,7 @@
         <ats-notification-button></ats-notification-button>
       </div>
     <div>
-      <button nz-button nz-dropdown [nzDropdownMenu]="rightMenu" nzPlacement="bottomRight">
+      <button nz-button nz-dropdown [nzDropdownMenu]="rightMenu" nzPlacement="bottomRight" [nzType]="'text'">
         <i nz-icon nzType="user"></i>
       </button>
     </div>

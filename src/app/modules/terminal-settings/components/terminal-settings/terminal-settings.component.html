@@ -21,6 +21,17 @@
       </nz-tab>
       <nz-tab nzTitle="Общие">
         <form nz-form [nzLayout]="'vertical'" [formGroup]="settingsForm" *ngIf="settingsForm">
+          <ng-container [formGroup]="designSettingsForm">
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="theme">Тема</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName='theme'>
+                  <nz-option  [nzValue]="themeTypes.dark" nzLabel="Темная"></nz-option>
+                  <nz-option  [nzValue]="themeTypes.default" nzLabel="Светлая"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </ng-container>
             <nz-form-item>
               <nz-form-label nzRequired nzFor="timezoneDisplayOption">Часовой пояс отображения времени</nz-form-label>
               <nz-form-control>

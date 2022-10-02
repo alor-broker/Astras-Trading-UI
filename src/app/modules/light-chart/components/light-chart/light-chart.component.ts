@@ -29,6 +29,7 @@ import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper'
 import { TimeframesHelper } from '../../utils/timeframes-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { ThemeService } from '../../../../shared/services/theme.service';
 
 @Component({
   selector: 'ats-light-chart[contentSize][guid]',
@@ -60,7 +61,8 @@ export class LightChartComponent implements OnDestroy, AfterViewInit, OnChanges 
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly service: LightChartService,
-    private readonly timezoneConverterService: TimezoneConverterService) {
+    private readonly timezoneConverterService: TimezoneConverterService,
+    private readonly themeService: ThemeService) {
   }
 
   ngOnDestroy(): void {
@@ -91,12 +93,14 @@ export class LightChartComponent implements OnDestroy, AfterViewInit, OnChanges 
   private initChart(guid: string) {
     combineLatest([
         this.service.getExtendedSettings(guid),
-        this.timezoneConverterService.getConverter()
+        this.timezoneConverterService.getConverter(),
+        this.themeService.getThemeSettings()
       ]
     ).pipe(
-      map(([ws, c]) => ({
+      map(([ws, c, t]) => ({
         widgetSettings: ws,
-        converter: c
+        converter: c,
+        theme: t
       })),
       filter(x => !!x.converter && !!x.widgetSettings),
       distinctUntilChanged((previous, current) =>
@@ -104,6 +108,7 @@ export class LightChartComponent implements OnDestroy, AfterViewInit, OnChanges 
           || (
             isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
             && previous.converter === current.converter
+            && previous.theme?.theme === current.theme?.theme
           )
       ),
       takeUntil(this.destroy$)
@@ -111,12 +116,11 @@ export class LightChartComponent implements OnDestroy, AfterViewInit, OnChanges 
       this.chartDataSubscription?.unsubscribe();
       this.service.unsubscribe();
 
-      if (!this.chart) {
-        this.chart = new LightChart(options.widgetSettings?.width ?? 300, (options.widgetSettings?.height ?? 300));
-        this.chart.create(guid);
+      this.chart?.clear();
 
-        this.chartResize();
-      }
+      this.chart = new LightChart(options.widgetSettings?.width ?? 300, (options.widgetSettings?.height ?? 300));
+      this.chart.create(guid, options.theme.themeColors);
+      this.chartResize();
 
       this.setActiveTimeFrame(options.widgetSettings.timeFrame);
       const currentTimeframe = TimeframesHelper.getTimeframeByValue(options.widgetSettings.timeFrame).value;
