@@ -21,18 +21,26 @@
       [nzShowSort]="!!column.sortFn"
       [nzSortOrder]="sortedColumnName === column.name ? sortedColumnOrder : null"
       (nzSortOrderChange)="sortChange($event, column)"
-      [nzFilters]="column.filters!"
-      [nzFilterMultiple]="column.isMultipleFilter!"
-      (nzFilterChange)="defaultFilterChange(column.name, $event)"
-      [nzCustomFilter]="!column.isDefaultFilter"
+      [nzFilters]="column.filterData?.filters || []"
+      [nzFilterMultiple]="column.filterData?.isMultipleFilter!"
+      (nzFilterChange)="defaultFilterChange(column.filterData!.filterName!, $event)"
+      [nzCustomFilter]="!column.filterData?.isDefaultFilter"
+      class="table-cell"
     >
       {{column.displayName}}
       <nz-filter-trigger
-        *ngIf="column.isFiltering"
-        (nzVisibleChange)="openedFilterChange(column.name, $event)"
+        *ngIf="!!column.filterData"
+        (nzVisibleChange)="openedFilterChange(column.filterData.filterName, $event)"
         [nzDropdownMenu]="searchMenu"
       >
-        <i nz-icon nzType="search" [class.active-filter]="!!getFilterControl(column.name).value"></i>
+        <i
+          nz-icon
+          nzType="search"
+          [class.active-filter]="!!getFilterControl(column.filterData.filterName)?.value
+            || !!getFilterControl(column.filterData.intervalStartName!)?.value
+            || !!getFilterControl(column.filterData.intervalEndName!)?.value"
+        >
+        </i>
       </nz-filter-trigger>
     </th>
   </tr>
@@ -44,7 +52,7 @@
       (click)="rowClick.emit(data)"
       (contextmenu)="openContextMenu($event, menu, data)"
     >
-      <td *ngFor="let column of columns" [class]="column.classFn && column.classFn(data)">
+      <td *ngFor="let column of columns" [class]="column.classFn && column.classFn(data)" class="table-cell">
         {{column.transformFn && column.transformFn(data) || data[column.name]}}
         <ng-container *ngIf="data['badges']?.length && column.showBadges">
           <ng-container *ngFor="let item of data['badges']">
@@ -60,15 +68,32 @@
 <nz-dropdown-menu #searchMenu="nzDropdownMenu">
   <div class="ant-table-filter-dropdown table-filter">
     <div *ngFor='let column of columns'>
-      <div *ngIf='column.isFiltering && activeFilterName === column.name'>
+      <div *ngIf='!!column.filterData && activeFilterName === column.filterData.filterName'>
         <input
+          *ngIf="!column.filterData.isInterval; else intervalFilter"
           nz-input
           class='ant-input'
           type="text"
           [placeholder]="column.displayName"
-          [formControl]="getFilterControl(column.name)"
+          [formControl]="getFilterControl(column.filterData.filterName)"
         />
-        <button nz-button nzType="primary" nzSize="small" (click)="resetFilter(column.name)">Сбросить</button>
+        <ng-template #intervalFilter>
+          <input
+            nz-input
+            class='ant-input'
+            type="text"
+            [placeholder]="column.displayName + ', с'"
+            [formControl]="getFilterControl(column.filterData.intervalStartName!)"
+          />
+          <input
+            nz-input
+            class='ant-input'
+            type="text"
+            [placeholder]="column.displayName + ', по'"
+            [formControl]="getFilterControl(column.filterData.intervalEndName!)"
+          />
+        </ng-template>
+        <button nz-button nzType="primary" nzSize="small" (click)="resetFilter(column.filterData)">Сбросить</button>
       </div>
     </div>
   </div>

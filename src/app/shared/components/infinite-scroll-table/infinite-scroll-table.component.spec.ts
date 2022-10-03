@@ -32,8 +32,8 @@ class TestWrapperComponent implements OnInit {
   tableContainerWidth = 50;
   isLoading = true;
   testColumns: ColumnsSettings[] = [
-    { displayName: 'name1', name: 'name1', isFiltering: true, width: '50px' },
-    { displayName: 'name2', name: 'name2', isFiltering: false },
+    { displayName: 'name1', name: 'name1', filterData: { filterName: 'name1' }, width: '50px' },
+    { displayName: 'name2', name: 'name2' },
   ];
   testData: any[] = [
     {name1: 'testName1', name2: 'testName2', id: 1},
@@ -123,7 +123,7 @@ describe('InfiniteScrollTableComponent', () => {
 
   it('should reset filter', () => {
     component.getFilterControl('name1').setValue('testValue');
-    component.resetFilter('name1');
+    component.resetFilter({filterName: 'name1'});
     expect(component.getFilterControl('name1').value).toBe('');
   });
 });
