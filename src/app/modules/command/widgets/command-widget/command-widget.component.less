@@ -1,4 +1,20 @@
-@import (reference) '/src/styles.less';
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .title {
+      .right {
+        button {
+          &:hover, &:focus {
+            color: @icon-color-hover;
+            text-decoration: none;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+});
 
 .title {
   display: flex;
@@ -12,12 +28,6 @@
     button {
       border: none;
       opacity: 0.5;
-
-      &:hover, &:focus {
-        color: @icon-color-hover;
-        text-decoration: none;
-        opacity: 1;
-      }
     }
   }
 }

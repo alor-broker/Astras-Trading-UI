@@ -1,4 +1,32 @@
-@import (reference) '/src/styles.less';
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .sell {
+      color: @sell-color;
+    }
+
+    .buy {
+      color: @buy-color;
+    }
+
+    ::ng-deep {
+      .long {
+        nz-badge-sup {
+          background: @buy-color;
+        }
+      }
+    }
+
+    ::ng-deep {
+      .short {
+        nz-badge-sup {
+          background: @sell-color;
+        }
+      }
+    }
+  }
+});
 
 .content {
   width: 100%;
@@ -50,22 +78,6 @@
 
 .dynamic {
   max-width: 300px;
-}
-
-.sell {
-  color: @sell-color;
-}
-
-.buy {
-  color: @buy-color;
-}
-
-.position-long {
-  background: @buy-color
-}
-
-.position-short {
-  background: @sell-color
 }
 
 .selectable {

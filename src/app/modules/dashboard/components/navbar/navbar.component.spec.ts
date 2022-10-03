@@ -1,4 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { NavbarComponent } from './navbar.component';
 import { AccountService } from '../../../../shared/services/account.service';
@@ -8,11 +11,20 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { PortfolioExtended } from '../../../../shared/models/user/portfolio-extended.model';
 import { Store } from "@ngrx/store";
-import { mockComponent, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import {
+  mockComponent,
+  ngZorroMockComponents
+} from "../../../../shared/utils/testing";
 import { RouterModule } from "@angular/router";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { FormsModule } from "@angular/forms";
+import {
+  ThemeColors,
+  ThemeSettings,
+  ThemeType
+} from '../../../../shared/models/settings/theme-settings.model';
+import { ThemeService } from '../../../../shared/services/theme.service';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -22,6 +34,20 @@ describe('NavbarComponent', () => {
   const spyDashboard = jasmine.createSpyObj('DashboardService', ['clearDashboard', 'addWidget']);
   const spyAuth = jasmine.createSpyObj('AuthService', ['logout']);
   const spyModal = jasmine.createSpyObj('ModalService', ['openTerminalSettingsModal', 'openCommandModal']);
+  const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
+  themeServiceSpy.getThemeSettings.and.returnValue(of({
+    theme: ThemeType.dark,
+    themeColors: {
+      sellColor: 'rgba(239,83,80, 1)',
+      sellColorBackground: 'rgba(184, 27, 68, 0.4)',
+      buyColor: 'rgba(12, 179, 130, 1',
+      buyColorBackground: 'rgba(12, 179, 130, 0.4)',
+      componentBackground: '#141414',
+      primaryColor: '#177ddc',
+      purpleColor: '#51258f',
+      errorColor: '#a61d24'
+    } as ThemeColors
+  } as ThemeSettings));
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
@@ -29,8 +55,8 @@ describe('NavbarComponent', () => {
       declarations: [
         NavbarComponent,
         ...ngZorroMockComponents,
-        mockComponent({selector: 'ats-widget-menu'}),
-        mockComponent({selector: 'ats-notification-button'}),
+        mockComponent({ selector: 'ats-widget-menu' }),
+        mockComponent({ selector: 'ats-notification-button' }),
       ],
       providers: [
         { provide: AccountService, useValue: spyAccount },
@@ -43,7 +69,8 @@ describe('NavbarComponent', () => {
             select: jasmine.createSpy('select').and.returnValue(of({})),
             dispatch: jasmine.createSpy('dispatch').and.callThrough()
           }
-        }
+        },
+        { provide: ThemeService, useValue: themeServiceSpy },
       ],
       imports: [
         NoopAnimationsModule,

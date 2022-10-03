@@ -1,6 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { FinanceBarChartComponent } from './finance-bar-chart.component';
+import { of } from 'rxjs';
+import {
+  ThemeColors,
+  ThemeSettings,
+  ThemeType
+} from '../../../../../shared/models/settings/theme-settings.model';
+import { ThemeService } from '../../../../../shared/services/theme.service';
 
 describe('FinanceBarChartComponent', () => {
   let component: FinanceBarChartComponent;
@@ -43,12 +53,30 @@ describe('FinanceBarChartComponent', () => {
     }
   };
 
+  const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
+  themeServiceSpy.getThemeSettings.and.returnValue(of({
+    theme: ThemeType.dark,
+    themeColors: {
+      sellColor: 'rgba(239,83,80, 1)',
+      sellColorBackground: 'rgba(184, 27, 68, 0.4)',
+      buyColor: 'rgba(12, 179, 130, 1',
+      buyColorBackground: 'rgba(12, 179, 130, 0.4)',
+      componentBackground: '#141414',
+      primaryColor: '#177ddc',
+      purpleColor: '#51258f',
+      errorColor: '#a61d24'
+    } as ThemeColors
+  } as ThemeSettings));
+
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FinanceBarChartComponent ]
+      declarations: [FinanceBarChartComponent],
+      providers: [
+        { provide: ThemeService, useValue: themeServiceSpy },
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -8,7 +8,10 @@ import {
 
 import * as TerminalSettingsActions from './terminal-settings.actions';
 import { initTerminalSettingsSuccess } from './terminal-settings.actions';
-import { HotKeysSettings, TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
+import {
+  HotKeysSettings,
+  TerminalSettings
+} from '../../shared/models/terminal-settings/terminal-settings.model';
 import { TimezoneDisplayOption } from '../../shared/models/enums/timezone-display-option';
 import {
   map,
@@ -18,6 +21,7 @@ import { Store } from '@ngrx/store';
 import { selectTerminalSettingsState } from './terminal-settings.selectors';
 import { filter } from 'rxjs';
 import { LocalStorageService } from "../../shared/services/local-storage.service";
+import { ThemeType } from '../../shared/models/settings/theme-settings.model';
 
 @Injectable()
 export class TerminalSettingsEffects {
@@ -73,6 +77,9 @@ export class TerminalSettingsEffects {
       userIdleDurationMin: 15,
       badgesBind: false,
       hotKeysSettings: this.getDefaultHotkeys(),
+      designSettings: {
+        theme: ThemeType.dark
+      }
     } as TerminalSettings;
   }
 

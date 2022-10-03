@@ -2,6 +2,7 @@ import {
   Component,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   SimpleChanges,
   ViewChild
@@ -9,68 +10,37 @@ import {
 import {
   BehaviorSubject,
   map,
-  Observable
+  Observable,
+  Subject,
+  takeUntil
 } from 'rxjs';
 import {
   ChartDataset,
-  ChartOptions
+  ChartOptions,
+  ComplexFillTarget,
+  ScatterControllerDatasetOptions
 } from 'chart.js';
-import {
-  buyColor,
-  buyColorBackground,
-  sellColor,
-  sellColorBackground
-} from 'src/app/shared/models/settings/styles-constants';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { ChartData } from '../../models/orderbook.model';
 import { BaseChartDirective } from 'ng2-charts';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
+import { ThemeService } from '../../../../shared/services/theme.service';
 
 @Component({
   selector: 'ats-orderbook-chart[guid][chartData]',
   templateUrl: './orderbook-chart.component.html',
   styleUrls: ['./orderbook-chart.component.less'],
 })
-export class OrderbookChartComponent implements OnInit, OnChanges {
+export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   chartData!: ChartData;
   @Input()
   guid!: string;
-
   @ViewChild(BaseChartDirective)
   chart?: BaseChartDirective;
-
   shouldShowChart$?: Observable<boolean>;
   chartData$ = new BehaviorSubject<ChartDataset[]>([]);
-  public initialData: ChartDataset[] = [
-    {
-      fill: {
-        target: 'origin',
-        above: buyColorBackground, // Area will be red above the origin
-      },
-      showLine: true,
-      radius: 1,
-      borderWidth: 1,
-      borderColor: buyColor,
-      pointBackgroundColor: buyColorBackground,
-      data: [],
-      label: 'Bids',
-    },
-    {
-      fill: {
-        target: 'origin',
-        above: sellColorBackground, // Area will be red above the origin
-      },
-      radius: 1,
-      borderWidth: 1,
-      borderColor: sellColor,
-      pointBackgroundColor: sellColorBackground,
-      showLine: true,
-      data: [],
-      label: 'Offers',
-    },
-  ];
   public chartOptions: ChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -100,12 +70,15 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
             if (typeof value === 'number') {
               if (value >= 1000000) {
                 return MathHelper.round(value / 1000000, 1) + 'M';
-              } else if (value >= 1000) {
+              }
+              else if (value >= 1000) {
                 return MathHelper.round(value / 1000, 1) + 'k';
-              } else {
+              }
+              else {
                 return value;
               }
-            } else {
+            }
+            else {
               return value;
             }
           },
@@ -113,14 +86,58 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
       },
     },
   };
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private initialData: ChartDataset[] = [
+    {
+      fill: {
+        target: 'origin'
+      } as ComplexFillTarget,
+      showLine: true,
+      radius: 1,
+      borderWidth: 1,
+      data: [],
+      label: 'Bids',
+    },
+    {
+      fill: {
+        target: 'origin'
+      } as ComplexFillTarget,
+      radius: 1,
+      borderWidth: 1,
+      showLine: true,
+      data: [],
+      label: 'Offers',
+    },
+  ];
 
-  constructor(private readonly settingsSettings: WidgetSettingsService) {
+  constructor(
+    private readonly widgetSettings: WidgetSettingsService,
+    private readonly themeService: ThemeService) {
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   ngOnInit() {
-    this.shouldShowChart$ = this.settingsSettings
-      .getSettings<OrderbookSettings>(this.guid)
-      .pipe(map((s) => s.showChart));
+    this.shouldShowChart$ = this.widgetSettings.getSettings<OrderbookSettings>(this.guid).pipe(
+      map((s) => s.showChart)
+    );
+
+    this.themeService.getThemeSettings().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(theme => {
+      const buyDatasetOptions = this.initialData[0] as ScatterControllerDatasetOptions;
+      (buyDatasetOptions.fill as ComplexFillTarget).above = theme.themeColors.buyColorBackground;
+      buyDatasetOptions.borderColor = theme.themeColors.buyColor;
+      buyDatasetOptions.pointBackgroundColor = theme.themeColors.buyColorBackground;
+
+      const sellDatasetOptions = this.initialData[1] as ScatterControllerDatasetOptions;
+      (sellDatasetOptions.fill as ComplexFillTarget).above = theme.themeColors.sellColorBackground;
+      sellDatasetOptions.borderColor = theme.themeColors.sellColor;
+      sellDatasetOptions.pointBackgroundColor = theme.themeColors.sellColorBackground;
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {

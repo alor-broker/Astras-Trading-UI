@@ -6,6 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { sharedModuleImportForTests } from './shared/utils/testing';
 import { SessionTrackService } from "./shared/services/session/session-track.service";
+import { ThemeService } from './shared/services/theme.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -25,7 +26,13 @@ describe('AppComponent', () => {
         AppComponent
       ],
       providers: [
-        { provide: SessionTrackService, useValue: sessionTrackServiceSpy }
+        { provide: SessionTrackService, useValue: sessionTrackServiceSpy },
+        {
+          provide: ThemeService,
+          useValue: {
+            subscribeToThemeChanges: jasmine.createSpy('subscribeToThemeChanges').and.returnValue(null)
+          }
+        }
       ]
     }).compileComponents();
   });

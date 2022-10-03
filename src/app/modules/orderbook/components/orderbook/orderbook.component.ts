@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import {
   BehaviorSubject,
+  combineLatest,
   Observable,
   of,
   shareReplay,
@@ -30,10 +31,6 @@ import {
 } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
-import {
-  buyColorBackground,
-  sellColorBackground,
-} from '../../../../shared/models/settings/styles-constants';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { getTypeByCfi } from 'src/app/shared/utils/instruments';
@@ -43,6 +40,8 @@ import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
+import { ThemeService } from '../../../../shared/services/theme.service';
+import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 
 interface Size {
   width: string;
@@ -70,6 +69,8 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   shouldShowTable$: Observable<boolean> = of(true);
   ob$: Observable<OrderBook | null> = of(null);
   maxVolume: number = 1;
+  themeSettings?: ThemeSettings;
+
   sizes: BehaviorSubject<Size> = new BehaviorSubject<Size>({
     width: '100%',
     height: '100%',
@@ -82,7 +83,7 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     private readonly service: OrderbookService,
     private readonly modal: ModalService,
     private readonly widgetsDataProvider: WidgetsDataProviderService,
-    ) {
+    private readonly themeService: ThemeService) {
   }
 
   ngOnInit(): void {
@@ -111,8 +112,9 @@ export class OrderBookComponent implements OnInit, OnDestroy {
       shareReplay()
     );
 
-    this.ob$ = settings$.pipe(
-      switchMap(settings => this.service.getOrderBook(settings)),
+    this.ob$ = combineLatest([settings$, this.themeService.getThemeSettings()]).pipe(
+      tap(([,theme]) => { this.themeSettings = theme;}),
+      switchMap(([settings,]) => this.service.getOrderBook(settings)),
       tap((ob) => (this.maxVolume = ob?.maxVolume ?? 1)),
       startWith(<OrderBook>{
         rows: [],
@@ -136,16 +138,24 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   }
 
   getBidStyle(value: number) {
+    if(!this.themeSettings) {
+      return null;
+    }
+
     const size = 100 * (value / this.maxVolume);
     return {
-      background: `linear-gradient(270deg, ${buyColorBackground} ${size}% , rgba(0,0,0,0) ${size}%)`,
+      background: `linear-gradient(270deg, ${this.themeSettings.themeColors.buyColorBackground} ${size}% , rgba(0,0,0,0) ${size}%)`,
     };
   }
 
   getAskStyle(value: number) {
+    if(!this.themeSettings) {
+      return null;
+    }
+
     const size = 100 * (value / this.maxVolume);
     return {
-      background: `linear-gradient(90deg, ${sellColorBackground} ${size}%, rgba(0,0,0,0) ${size}%)`,
+      background: `linear-gradient(90deg, ${this.themeSettings.themeColors.sellColorBackground} ${size}%, rgba(0,0,0,0) ${size}%)`,
     };
   }
 

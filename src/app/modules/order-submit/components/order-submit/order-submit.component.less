@@ -1,4 +1,31 @@
-@import (reference) '/src/styles.less';
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .header {
+      .sell {
+        color: @sell-color;
+      }
+
+      .buy {
+        color: @buy-color;
+      }
+    }
+
+    .footer {
+      .buy-button {
+        width: 50%;
+        background: @buy-color;
+      }
+
+      .sell-button {
+        width: 50%;
+        background: @sell-color;
+      }
+    }
+  }
+});
+
 
 @margin: 8px;
 
@@ -6,14 +33,6 @@
   .selectable {
     cursor: pointer;
     text-decoration: underline;
-  }
-
-  .sell {
-    color: @sell-color;
-  }
-
-  .buy {
-    color: @buy-color;
   }
 }
 
@@ -23,15 +42,5 @@
 
 .footer {
   margin-top: @margin;
-
-  .buy-button {
-    width: 50%;
-    background: @buy-color;
-  }
-
-  .sell-button {
-    width: 50%;
-    background: @sell-color;
-  }
 }
 

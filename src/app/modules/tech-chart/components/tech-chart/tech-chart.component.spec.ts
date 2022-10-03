@@ -8,6 +8,12 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { TechChartDatafeedService } from "../../services/tech-chart-datafeed.service";
 import { of } from "rxjs";
 import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
+import {
+  ThemeColors,
+  ThemeSettings,
+  ThemeType
+} from '../../../../shared/models/settings/theme-settings.model';
+import { ThemeService } from '../../../../shared/services/theme.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { TestData } from '../../../../shared/utils/testing';
 import { WidgetsDataProviderService } from '../../../../shared/services/widgets-data-provider.service';
@@ -19,6 +25,7 @@ describe('TechChartComponent', () => {
 
   let widgetSettingsServiceSpy: any;
   let techChartDatafeedServiceSpy: any;
+  let themeServiceSpy:any;
   let instrumentsServiceSpy: any;
   let widgetsDataProviderServiceSpy: any;
   let modalServiceSpy: any;
@@ -49,6 +56,21 @@ describe('TechChartComponent', () => {
         'clear'
       ]);
 
+    themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
+    themeServiceSpy.getThemeSettings.and.returnValue(of({
+      theme: ThemeType.dark,
+      themeColors: {
+        sellColor: 'rgba(239,83,80, 1)',
+        sellColorBackground: 'rgba(184, 27, 68, 0.4)',
+        buyColor: 'rgba(12, 179, 130, 1',
+        buyColorBackground: 'rgba(12, 179, 130, 0.4)',
+        componentBackground: '#141414',
+        primaryColor: '#177ddc',
+        purpleColor: '#51258f',
+        errorColor: '#a61d24'
+      } as ThemeColors
+    } as ThemeSettings));
+
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
     instrumentsServiceSpy.getInstrument.and.returnValue(of(TestData.instruments[0]));
 
@@ -63,6 +85,7 @@ describe('TechChartComponent', () => {
       providers: [
         { provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy },
         { provide: TechChartDatafeedService, useValue: techChartDatafeedServiceSpy },
+        { provide: ThemeService, useValue: themeServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         { provide: WidgetsDataProviderService, useValue: widgetsDataProviderServiceSpy },
         { provide: ModalService, useValue: modalServiceSpy },

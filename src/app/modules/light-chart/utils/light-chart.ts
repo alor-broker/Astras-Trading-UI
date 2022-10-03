@@ -5,16 +5,10 @@ import { distinct, map } from 'rxjs/operators';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { TimeframesHelper, TimeframeValue } from './timeframes-helper';
-import {
-  buyColor,
-  buyColorBackground,
-  componentBackgound,
-  sellColor,
-  sellColorBackground
-} from '../../../shared/models/settings/styles-constants';
 import { TimezoneConverter } from '../../../shared/utils/timezone-converter';
 import { fromUnixTime, toUnixTime } from '../../../shared/utils/datetime';
 import { PriceFormatHelper } from "./price-format-helper";
+import { ThemeColors } from '../../../shared/models/settings/theme-settings.model';
 
 type CandleDisplay = Candle & { time: Time };
 
@@ -22,6 +16,7 @@ export class LightChart {
   chart!: LightweightCharts.IChartApi;
   series!: LightweightCharts.ISeriesApi<'Candlestick'>;
   volumeSeries!: LightweightCharts.ISeriesApi<'Histogram'>;
+  themeColors!: ThemeColors;
 
   historyItemsCountToLoad$!: Observable<number>;
 
@@ -44,7 +39,9 @@ export class LightChart {
     };
   }
 
-  create(guid: string) {
+  create(guid: string, themeColors: ThemeColors) {
+    this.themeColors = themeColors;
+
     const chart = LightweightCharts.createChart(guid, {
       width: this.sizes.width,
       height: this.sizes.height,
@@ -61,24 +58,24 @@ export class LightChart {
         borderColor: '#D1D4DC',
       },
       layout: {
-        backgroundColor: componentBackgound, // '#ffffff',
+        backgroundColor: this.themeColors.componentBackground, // '#ffffff',
         textColor: '#fff',
       },
       grid: {
         horzLines: {
-          color: '#444', // '#F0F3FA',
+          color:  this.themeColors.chartGridColor, // '#F0F3FA',
         },
         vertLines: {
-          color: '#444', // '#F0F3FA',
+          color: this.themeColors.chartGridColor, // '#F0F3FA',
         },
       },
     });
 
     const series = chart.addCandlestickSeries({
-      upColor: buyColor,
-      downColor: sellColor,
-      wickUpColor: buyColorBackground,
-      wickDownColor: sellColorBackground,
+      upColor: this.themeColors.buyColor,
+      downColor: this.themeColors.sellColor,
+      wickUpColor: this.themeColors.buyColorBackground,
+      wickDownColor: this.themeColors.sellColorBackground,
       borderVisible: false,
       priceScaleId: 'right', // 'plot'
       scaleMargins: {
@@ -139,8 +136,8 @@ export class LightChart {
         value: displayCandle.volume,
         color:
           displayCandle.close > displayCandle.open
-            ? buyColor
-            : sellColor,
+            ? this.themeColors.buyColor
+            : this.themeColors.sellColor,
       } as any);
 
       this.bars.push(candle);
@@ -163,8 +160,8 @@ export class LightChart {
       value: candle.volume,
       color:
         candle.close > candle.open
-          ? buyColor
-          : sellColor,
+          ? this.themeColors.buyColor
+          : this.themeColors.sellColor,
     }));
     this.volumeSeries.setData(volumes as any);
 
