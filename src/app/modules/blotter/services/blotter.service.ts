@@ -65,7 +65,7 @@ export class BlotterService extends BaseWebsocketService {
 
   getPositions(settings: BlotterSettings) {
     return this.getPositionsReq(settings.portfolio, settings.exchange, settings.guid).pipe(
-      map(poses => settings.isSoldPositionsHidden ? poses.filter(p => p.qtyTFuture !== 0) : poses)
+      map(poses => settings.isSoldPositionsHidden ? poses.filter(p => p.qtyTFuture !== 0) : poses),
     );
   }
 
@@ -167,9 +167,10 @@ export class BlotterService extends BaseWebsocketService {
       trackId
     ).pipe(
       map((position: Position) => {
-        if (!this.isEmptyPosition(position)) {
+        if (!this.isEmptyPosition(position) || !!this.positions.get(position.symbol)) {
           this.positions.set(position.symbol, position);
         }
+
         return Array.from(this.positions.values());
       }),
     );
