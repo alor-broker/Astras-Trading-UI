@@ -59,7 +59,7 @@ export class LightChart {
       },
       layout: {
         backgroundColor: this.themeColors.componentBackground, // '#ffffff',
-        textColor: '#fff',
+        textColor: this.themeColors.chartLabelsColor,
       },
       grid: {
         horzLines: {
