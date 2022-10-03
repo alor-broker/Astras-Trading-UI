@@ -7,7 +7,7 @@
       [nzVisible]='isVisible$ | async'
       nzCancelText="Отмена"
       nzOkText="Изменить"
-      [nzOkDisabled]="(command$ | async) === false"
+      [nzOkDisabled]="(command$ | async) === null"
       [nzTitle]="header"
     >
       <ng-container *nzModalContent>
