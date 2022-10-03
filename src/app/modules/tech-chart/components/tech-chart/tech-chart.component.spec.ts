@@ -14,6 +14,10 @@ import {
   ThemeType
 } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
+import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { TestData } from '../../../../shared/utils/testing';
+import { WidgetsDataProviderService } from '../../../../shared/services/widgets-data-provider.service';
+import { ModalService } from '../../../../shared/services/modal.service';
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -22,6 +26,9 @@ describe('TechChartComponent', () => {
   let widgetSettingsServiceSpy: any;
   let techChartDatafeedServiceSpy: any;
   let themeServiceSpy:any;
+  let instrumentsServiceSpy: any;
+  let widgetsDataProviderServiceSpy: any;
+  let modalServiceSpy: any;
 
   beforeEach(() => {
     widgetSettingsServiceSpy = jasmine.createSpyObj(
@@ -63,6 +70,13 @@ describe('TechChartComponent', () => {
         errorColor: '#a61d24'
       } as ThemeColors
     } as ThemeSettings));
+
+    instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
+    instrumentsServiceSpy.getInstrument.and.returnValue(of(TestData.instruments[0]));
+
+    widgetsDataProviderServiceSpy = jasmine.createSpyObj('WidgetsDataProviderService', ['addNewDataProvider', 'setDataProviderValue']);
+
+    modalServiceSpy = jasmine.createSpyObj('ModalService', ['openCommandModal']);
   });
 
   beforeEach(async () => {
@@ -72,9 +86,12 @@ describe('TechChartComponent', () => {
         { provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy },
         { provide: TechChartDatafeedService, useValue: techChartDatafeedServiceSpy },
         { provide: ThemeService, useValue: themeServiceSpy },
+        { provide: InstrumentsService, useValue: instrumentsServiceSpy },
+        { provide: WidgetsDataProviderService, useValue: widgetsDataProviderServiceSpy },
+        { provide: ModalService, useValue: modalServiceSpy },
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

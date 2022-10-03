@@ -33,6 +33,7 @@ export const getSettingsByGuid = (guid: string) => createSelector(
   (state: State) => state.entities[guid]
 );
 
+
 export const getAllSettings = createSelector(
   selectWidgetSettingsState,
   selectors.selectAll

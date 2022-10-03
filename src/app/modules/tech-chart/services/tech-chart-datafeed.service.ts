@@ -28,11 +28,13 @@ import { environment } from "../../../../environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { SearchFilter } from "../../instruments/models/search-filter.model";
+import { GuidGenerator } from '../../../shared/utils/guid';
 
 @Injectable()
 export class TechChartDatafeedService extends BaseWebsocketService implements IBasicDataFeed {
   private lastBarPoint: number | null = null;
-  private barsSubscription?: Subscription;
+  private readonly barsSubscriptions = new Map<string, Subscription>();
+  private readonly listenerGuidMap = new Map<string, string>();
 
   constructor(
     ws: WebsocketService,
@@ -173,8 +175,9 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
   }
 
   subscribeBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, onTick: SubscribeBarsCallback, listenerGuid: string): void {
-    this.barsSubscription?.unsubscribe();
     const instrumentKey = this.getSymbolAndExchangeFromTicker(symbolInfo.ticker!);
+    const requestGuid = `${listenerGuid}_${GuidGenerator.newGuid()}`;
+    this.listenerGuidMap.set(listenerGuid, requestGuid);
 
     const request: BarsRequest = {
       opcode: 'BarsGetAndSubscribe',
@@ -182,32 +185,46 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
       exchange: instrumentKey.exchange,
       instrumentGroup: instrumentKey.instrumentGroup,
       format: 'simple',
-      guid: listenerGuid,
+      guid: requestGuid,
       tf: this.parseTimeframe(resolution),
       from: this.lastBarPoint ?? this.getDefaultLastHistoryPoint()
     };
 
-    this.barsSubscription = this.getEntity<Candle>(request).subscribe(candle => {
+    const sub = this.getEntity<Candle>(request).subscribe(candle => {
       if (!this.lastBarPoint || candle.time < this.lastBarPoint) {
         return;
       }
 
-      this.lastBarPoint = candle.time;
       onTick({
         ...candle,
         time: candle.time * 1000
       });
     });
+
+    this.barsSubscriptions.set(listenerGuid, sub);
   }
 
   unsubscribeBars(listenerGuid: string): void {
-    this.barsSubscription?.unsubscribe();
-    this.unsubscribe(listenerGuid);
+    const sub = this.barsSubscriptions.get(listenerGuid);
+    if (!!sub) {
+      sub.unsubscribe();
+
+      const requestGuid = this.listenerGuidMap.get(listenerGuid);
+      if (!!requestGuid) {
+        this.unsubscribe(requestGuid);
+        this.listenerGuidMap.delete(listenerGuid);
+      }
+    }
   }
 
   clear() {
-    this.barsSubscription?.unsubscribe();
-    this.unsubscribe();
+    this.barsSubscriptions.forEach((sub, key) => {
+        sub.unsubscribe();
+        this.unsubscribe(key);
+      }
+    );
+
+    this.barsSubscriptions.clear();
   }
 
   getServerTime(callback: ServerTimeCallback): void {
