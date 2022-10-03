@@ -7,6 +7,7 @@ import { LimitOrder } from "../../../../command/models/order.model";
 import { BehaviorSubject, filter, take } from "rxjs";
 import { EvaluationBaseProperties } from "../../../../command/models/evaluation-base-properties.model";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
+import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 
 export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
@@ -29,16 +30,16 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
         1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       price: new FormControl(
         1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       instrumentGroup: new FormControl(instrument.instrumentGroup),

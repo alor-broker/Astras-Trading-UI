@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { combineLatest, filter, Observable, of, Subject, switchMap, take } from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { combineLatest, filter, Observable, of, Subject, switchMap, take, tap } from 'rxjs';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
@@ -8,20 +8,28 @@ import { finalize, map } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { CommandContextModel } from '../../models/command-context.model';
+import { LimitEdit } from "../../models/limit-edit.model";
+import { StopEdit } from "../../models/stop-edit";
 
 @Component({
   selector: 'ats-edit-widget',
   templateUrl: './edit-widget.component.html',
   styleUrls: ['./edit-widget.component.less'],
-  providers: [QuotesService]
+  providers: [QuotesService],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditWidgetComponent implements OnInit, OnDestroy {
   isVisible$: Observable<boolean> = of(false);
   commandContext$?: Observable<CommandContextModel<EditParams>>;
   isBusy = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
+  command$!: Observable<LimitEdit | StopEdit | null>;
 
-  constructor(private command: CommandsService, public modal: ModalService, private readonly instrumentService: InstrumentsService) {
+  constructor(
+    private command: CommandsService,
+    public modal: ModalService,
+    private readonly instrumentService: InstrumentsService,
+  ) {
   }
 
   ngOnInit(): void {
@@ -38,7 +46,14 @@ export class EditWidgetComponent implements OnInit, OnDestroy {
       map(([params, instrument]) => ({
         commandParameters: params,
         instrument: instrument
-      }))
+      })),
+      tap(({commandParameters}) => {
+        if (commandParameters.type === 'limit') {
+            this.command$ = this.command.getLimitEdit();
+        } else {
+          this.command$ = this.command.getStopEdit();
+        }
+      })
     );
 
     this.isVisible$ = this.modal.shouldShowEditModal$;

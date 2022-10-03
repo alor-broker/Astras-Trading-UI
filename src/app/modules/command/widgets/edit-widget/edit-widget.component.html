@@ -1,21 +1,45 @@
 <div *ngIf="commandContext$ | async as commandContext">
-  <nz-modal
-    (nzOnCancel)="handleCancel()"
-    (nzOnOk)='handleOk()'
-    [nzMaskClosable]='false'
-    [nzOkLoading]='isBusy'
-    [nzVisible]='isVisible$ | async'
-    nzCancelText="Отмена"
-    nzOkText="Изменить"
-    nzTitle="Изменить заявку"
-  >
-    <ng-container *nzModalContent>
-      <ats-command-header [instrument]="commandContext.instrument"></ats-command-header>
-      <ats-limit-edit *ngIf='commandContext.commandParameters.type === "limit"' [commandContext]="commandContext"></ats-limit-edit>
-      <ats-stop-edit
-        *ngIf='commandContext.commandParameters.type === "stop" || commandContext.commandParameters.type === "stoplimit"'
-        [commandContext]="commandContext"
-      ></ats-stop-edit>
-    </ng-container>
-  </nz-modal>
+    <nz-modal
+      (nzOnCancel)="handleCancel()"
+      (nzOnOk)='handleOk()'
+      [nzMaskClosable]='false'
+      [nzOkLoading]='isBusy'
+      [nzVisible]='isVisible$ | async'
+      nzCancelText="Отмена"
+      nzOkText="Изменить"
+      [nzOkDisabled]="(command$ | async) === false"
+      [nzTitle]="header"
+    >
+      <ng-container *nzModalContent>
+        <ats-command-header [instrument]="commandContext.instrument"></ats-command-header>
+        <ats-limit-edit *ngIf='commandContext.commandParameters.type === "limit"'
+                        [commandContext]="commandContext"></ats-limit-edit>
+        <ats-stop-edit
+          *ngIf='commandContext.commandParameters.type === "stop" || commandContext.commandParameters.type === "stoplimit"'
+          [commandContext]="commandContext"
+        ></ats-stop-edit>
+      </ng-container>
+    </nz-modal>
+
+    <ng-template #header>
+      <div class="title">
+        <div class="left">
+          <label>
+            <h2>
+              Изменить заявку
+              <span
+                *ngIf="commandContext.commandParameters?.user as portfolio"
+              >
+              ({{portfolio.portfolio}}:{{portfolio.exchange}})
+            </span>
+            </h2>
+          </label>
+        </div>
+        <div class="right">
+          <button nz-button (click)="handleCancel()" aria-label="Close">
+            <i nz-icon nzType="close" [nzTheme]="'outline'"></i>
+          </button>
+        </div>
+      </div>
+    </ng-template>
 </div>

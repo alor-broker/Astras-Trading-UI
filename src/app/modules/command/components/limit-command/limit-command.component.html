@@ -48,5 +48,7 @@
       </div>
     </div>
   </form>
-  <ats-evaluation *ngIf="evaluation$ | async as evaluation" [evaluationProperties]="evaluation"></ats-evaluation>
+  <ng-container *ngIf="form.valid">
+    <ats-evaluation *ngIf="evaluation$ | async as evaluation" [evaluationProperties]="evaluation"></ats-evaluation>
+  </ng-container>
 </div>

@@ -33,6 +33,7 @@ import { StopCommand } from '../../models/stop-command.model';
 import { CommandContextModel } from '../../models/command-context.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
+import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 
 @Component({
   selector: 'ats-stop-command',
@@ -134,23 +135,24 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         initialParameters.quantity ?? 1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       price: new FormControl(
         price,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       triggerPrice: new FormControl(
         null,
         [
           Validators.required,
-          Validators.min(0),
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max),
         ]
       ),
       stopEndUnixTime: new FormControl(initialParameters.stopEndUnixTime ?? this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),

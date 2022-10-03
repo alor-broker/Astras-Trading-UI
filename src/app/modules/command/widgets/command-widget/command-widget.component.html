@@ -1,9 +1,12 @@
 <div *ngIf="commandContext$ | async as commandContext">
-  <nz-modal nzOkText="Выставить" nzCancelText="Отмена" [nzVisible]='isVisible$ | async'
+  <nz-modal
+    [nzVisible]='isVisible$ | async'
     [nzTitle]="header" (nzOnCancel)="handleCancel()"
-    [nzFooter]='null' [nzMaskClosable]='false'
-            (nzAfterOpen)="setInitialCommandTab()"
-    nzClosable="false">
+    [nzFooter]='null'
+    [nzMaskClosable]='false'
+    (nzAfterOpen)="setInitialCommandTab()"
+    nzClosable="false"
+  >
     <ng-container *nzModalContent>
       <ats-command-header [instrument]="commandContext.instrument"></ats-command-header>
 
@@ -19,27 +22,34 @@
         </nz-tab>
       </nz-tabset>
       <ng-container *ngIf="selectedCommandType$ | async as commandType">
-        <ats-command-footer  [activeCommandType]="commandType"></ats-command-footer>
+        <ats-command-footer *ngIf="selectedCommandType$ | async as commandType" [activeCommandType]="commandType"></ats-command-footer>
       </ng-container>
     </ng-container>
   </nz-modal>
 
   <ng-template #header>
-  <div class="title">
-    <div class="left">
-      <label>
-        <h2>Выставить заявку<span *ngIf="commandContext.commandParameters?.user as portfolio"> ({{portfolio.portfolio}}:{{portfolio.exchange}})</span></h2>
-      </label>
+    <div class="title">
+      <div class="left">
+        <label>
+          <h2>
+            Выставить заявку
+            <span
+              *ngIf="commandContext.commandParameters?.user as portfolio"
+            >
+              ({{portfolio.portfolio}}:{{portfolio.exchange}})
+            </span>
+          </h2>
+        </label>
+      </div>
+      <div class="right">
+        <button nz-button (click)="openHelp()" aria-label="Help">
+          <i nz-icon nzType="question-circle" [nzTheme]="'outline'"></i>
+        </button>
+        <button nz-button (click)="handleCancel()" aria-label="Close">
+          <i nz-icon nzType="close" [nzTheme]="'outline'"></i>
+        </button>
+      </div>
     </div>
-    <div class="right">
-      <button nz-button (click)="openHelp()" aria-label="Help">
-        <i nz-icon nzType="question-circle"  [nzTheme]="'outline'"></i>
-      </button>
-      <button nz-button (click)="handleCancel()" aria-label="Close">
-        <i nz-icon nzType="close" [nzTheme]="'outline'"></i>
-      </button>
-    </div>
-  </div>
   </ng-template>
 </div>
 

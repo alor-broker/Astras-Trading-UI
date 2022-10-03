@@ -1,13 +1,13 @@
 <button
   (click)="buy()"
-  [attr.disabled]="isButtonsLocked ? '' : null"
+  [disabled]="isButtonsLocked || (command$ | async) === null"
   [nzLoading]="isBuyButtonLoading"
   class='buy-button'
   nz-button
   nzSize="large">Купить</button>
 <button
   (click)="sell()"
-  [attr.disabled]="isButtonsLocked ? '' : null"
+  [disabled]="isButtonsLocked || (command$ | async) === null"
   [nzLoading]="isSellButtonLoading"
   class='sell-button'
   nz-button
