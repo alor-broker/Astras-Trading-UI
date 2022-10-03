@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import {
   distinctUntilChanged,
+  filter,
   Observable,
   shareReplay,
   Subject,
@@ -16,12 +17,16 @@ import {
   takeUntil
 } from 'rxjs';
 import { TechChartSettings } from '../../../../shared/models/settings/tech-chart-settings.model';
-import { isEqualTechChartSettings } from '../../../../shared/utils/settings-helper';
+import {
+  isEqualTechChartSettings,
+  isOrderSubmitSettings
+} from '../../../../shared/utils/settings-helper';
 import {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
   InitialSettingsMap,
   ISettingsAdapter,
+  PlusClickParams,
   ResolutionString,
   SubscribeEventsMap,
   widget
@@ -29,6 +34,16 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
 import { DashboardItemContentSize } from '../../../../shared/models/dashboard-item.model';
+import { ModalService } from '../../../../shared/services/modal.service';
+import { mapWith } from '../../../../shared/utils/observable-helper';
+import { CommandType } from '../../../../shared/models/enums/command-type.model';
+import { WidgetsDataProviderService } from '../../../../shared/services/widgets-data-provider.service';
+import { SelectedPriceData } from '../../../../shared/models/orders/selected-order-price.model';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { MathHelper } from '../../../../shared/utils/math-helper';
+
+type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
 @Component({
   selector: 'ats-tech-chart[guid][shouldShowSettings][contentSize]',
@@ -38,29 +53,31 @@ import { DashboardItemContentSize } from '../../../../shared/models/dashboard-it
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
   shouldShowSettings!: boolean;
-
   @Input()
   guid!: string;
-
   @Input()
   contentSize!: DashboardItemContentSize | null;
-
   @ViewChild('chartContainer', { static: true })
   chartContainer?: ElementRef<HTMLElement>;
-
+  private readonly selectedPriceProviderName = 'selectedPrice';
   private chart?: IChartingLibraryWidget;
-  private settings$?: Observable<TechChartSettings>;
+  private settings$?: Observable<ExtendedSettings>;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
-    private readonly techChartDatafeedService: TechChartDatafeedService
+    private readonly techChartDatafeedService: TechChartDatafeedService,
+    private readonly instrumentsService: InstrumentsService,
+    private readonly widgetsDataProvider: WidgetsDataProviderService,
+    private readonly modalService: ModalService
   ) {
   }
 
   ngOnInit(): void {
     this.initSettingsStream();
+
+    this.widgetsDataProvider.addNewDataProvider<SelectedPriceData>(this.selectedPriceProviderName);
   }
 
   ngOnDestroy() {
@@ -79,20 +96,27 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.settings$?.pipe(
       distinctUntilChanged((previous, current) => {
         return (
-          previous?.symbol === current?.symbol &&
-          previous?.exchange === current?.exchange
+          previous?.widgetSettings?.symbol === current?.widgetSettings?.symbol &&
+          previous?.widgetSettings?.exchange === current?.widgetSettings?.exchange
         );
       }),
       takeUntil(this.destroy$)
     ).subscribe(settings => {
-      this.createChart(settings);
+      this.createChart(settings.widgetSettings);
     });
   }
 
   private initSettingsStream() {
-    this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid)
-    .pipe(
+    const getInstrumentInfo = (settings: TechChartSettings) => this.instrumentsService.getInstrument(settings).pipe(
+      filter((x): x is Instrument => !!x)
+    );
+
+    this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => isEqualTechChartSettings(previous, current)),
+      mapWith(
+        settings => getInstrumentInfo(settings),
+        (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedSettings)
+      ),
       shareReplay(1)
     );
   }
@@ -102,7 +126,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     return {
       get initialSettings(): InitialSettingsMap | undefined {
-          return initialSettings.chartSettings;
+        return initialSettings.chartSettings;
       },
 
       setValue(key: string, value: string): void {
@@ -110,10 +134,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           take(1)
         ).subscribe(settings => {
           scope.settingsService.updateSettings<TechChartSettings>(
-            settings.guid,
+            settings.widgetSettings.guid,
             {
               chartSettings: {
-                ...settings.chartSettings,
+                ...settings.widgetSettings.chartSettings,
                 [key]: value
               }
             }
@@ -126,13 +150,13 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           take(1)
         ).subscribe(settings => {
           const updatedSettings = {
-            ...settings.chartSettings
+            ...settings.widgetSettings.chartSettings
           };
 
           delete updatedSettings[key];
 
           scope.settingsService.updateSettings<TechChartSettings>(
-            settings.guid,
+            settings.widgetSettings.guid,
             {
               chartSettings: updatedSettings
             }
@@ -189,18 +213,25 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         'save_shortcut'
       ],
       enabled_features: [
-        'side_toolbar_in_fullscreen_mode'
+        'side_toolbar_in_fullscreen_mode',
+        'chart_crosshair_menu'
       ]
     };
 
     this.chart = new widget(config);
 
-    this.chart.applyOverrides({ 'paneProperties.background': '#141414', 'paneProperties.backgroundType' : 'solid' });
+    this.chart.applyOverrides({ 'paneProperties.background': '#141414', 'paneProperties.backgroundType': 'solid' });
 
     this.subscribeToChartEvent(
       this.chart,
       'drawing',
       () => this.settingsService.updateIsLinked(settings.guid, false)
+    );
+
+    this.subscribeToChartEvent(
+      this.chart,
+      'onPlusClick',
+      (params: PlusClickParams) => this.selectPrice(params.price)
     );
   }
 
@@ -212,5 +243,32 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private clearChartEventsSubscription(target: IChartingLibraryWidget) {
     this.chartEventSubscriptions.forEach(subscription => target.unsubscribe(subscription.event, subscription.callback));
     this.chartEventSubscriptions = [];
+  }
+
+  private selectPrice(price: number) {
+    this.settings$?.pipe(
+      mapWith(
+        settings => this.settingsService.getSettingsByColor(settings.widgetSettings.badgeColor ?? ''),
+        (widgetSettings, relatedSettings) => ({ widgetSettings, relatedSettings })),
+      take(1)
+    ).subscribe(({ widgetSettings, relatedSettings }) => {
+      const submitOrderWidgetSettings = relatedSettings.filter(x => isOrderSubmitSettings(x));
+      const roundedPrice = MathHelper.round(price, MathHelper.getPrecision(widgetSettings.instrument.minstep));
+
+      if (submitOrderWidgetSettings.length === 0 || !widgetSettings.widgetSettings.badgeColor) {
+        this.modalService.openCommandModal({
+          instrument: widgetSettings.widgetSettings,
+          type: CommandType.Limit,
+          price: roundedPrice,
+          quantity: 1
+        });
+      }
+      else {
+        this.widgetsDataProvider.setDataProviderValue<SelectedPriceData>(this.selectedPriceProviderName, {
+          price: roundedPrice,
+          badgeColor: widgetSettings.widgetSettings.badgeColor
+        });
+      }
+    });
   }
 }

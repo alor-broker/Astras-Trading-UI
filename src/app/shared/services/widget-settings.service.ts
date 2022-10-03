@@ -5,7 +5,10 @@ import {
 } from 'rxjs';
 import { AnySettings } from '../models/settings/any-settings.model';
 import { Store } from "@ngrx/store";
-import { getSettingsByGuid } from "../../store/widget-settings/widget-settings.selectors";
+import {
+  getAllSettings,
+  getSettingsByGuid
+} from "../../store/widget-settings/widget-settings.selectors";
 import {
   addWidgetSettings,
   removeAllWidgetSettings,
@@ -13,6 +16,7 @@ import {
   updateWidgetSettings
 } from "../../store/widget-settings/widget-settings.actions";
 import { LoggerService } from "./logger.service";
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +28,12 @@ export class WidgetSettingsService {
   getSettings<T extends AnySettings>(guid: string): Observable<T> {
     return this.store.select(getSettingsByGuid(guid)).pipe(
       filter((s): s is T => !!s)
+    );
+  }
+
+  getSettingsByColor(color: string): Observable<AnySettings[]> {
+    return this.store.select(getAllSettings).pipe(
+      map(s => s.filter(x => x.badgeColor === color))
     );
   }
 

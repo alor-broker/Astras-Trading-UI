@@ -28,6 +28,7 @@ import {
 import { HistoryResponse } from "../../../shared/models/history/history-response.model";
 import { BaseResponse } from "../../../shared/models/ws/base-response.model";
 import { Candle } from "../../../shared/models/history/candle.model";
+import { BarsRequest } from '../../light-chart/models/bars-request.model';
 
 describe('TechChartDatafeedService', () => {
   let service: TechChartDatafeedService;
@@ -321,10 +322,14 @@ describe('TechChartDatafeedService', () => {
       volume: 1000
     };
 
-    websocketServiceSpy.messages$ = new BehaviorSubject({
-      guid: 'guid',
-      data: expectedBar
-    } as BaseResponse<Candle>);
+    websocketServiceSpy.messages$ = new BehaviorSubject<BaseResponse<Candle> | null>(null);
+
+    websocketServiceSpy.subscribe.and.callFake((request: BarsRequest) => {
+      websocketServiceSpy.messages$.next({
+        guid: request.guid,
+        data: expectedBar
+      } as BaseResponse<Candle>);
+    });
 
     service.subscribeBars(
       { ticker: 'MOEX:SBER' } as LibrarySymbolInfo,
@@ -339,7 +344,6 @@ describe('TechChartDatafeedService', () => {
           exchange: 'MOEX',
           instrumentGroup: undefined,
           format: 'simple',
-          guid: 'guid',
           tf: '60',
         }));
 
