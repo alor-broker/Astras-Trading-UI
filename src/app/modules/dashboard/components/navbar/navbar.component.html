@@ -1,53 +1,52 @@
 <nz-header>
-  <ul nz-menu nzTheme="dark" nzMode="horizontal">
-    <li nz-menu-item class="logo logo-menu-item">
-      <a [routerLink]="['/']"></a>
-    </li>
-    <li nz-menu-item
-      class='menu-item icon-li'
-      (click)="newOrder()"
-      joyrideStep="step3"
-      [title]="joyrideContent.step3.title"
-      [text]="joyrideContent.step3.text"
-    >
+  <div class="logo">
+    <a [routerLink]="['/']"></a>
+  </div>
+  <div class="menu-item">
+    <button nz-button [nzType]="'text'"
+            (click)="newOrder()"
+            joyrideStep="step3"
+            [title]="joyrideContent.step3.title"
+            [text]="joyrideContent.step3.text">
       <i nz-icon nzType="plus-circle" nzTheme="twotone" [nzTwotoneColor]="(themeColors$ | async)!.buyColor" class='managing-icon'></i>
-    </li>
-    <li nz-menu-item class='menu-item'>
-      <button nz-button nz-dropdown
-        [nzDropdownMenu]="widgetsMenu"
-        nzSize='small'
-        joyrideStep="step2"
-        [title]="joyrideContent.step2.title"
-        [text]="joyrideContent.step2.text">
-        Виджет
-        <i nz-icon nzType="plus"></i>
-      </button>
-    </li>
-    <li nz-menu-item  *ngIf="portfolios$ | async as portfolios"  class='menu-item'>
-
-      <nz-select nzSize='small'
-        nzShowSearch [ngModel]="selectDefault(portfolios)"
-        (ngModelChange)="changePortfolio($event)"
-        joyrideStep="step1"
-        [title]="joyrideContent.step1.title"
-        [text]="joyrideContent.step1.text">
-        <nz-option-group *ngFor='let kvp of portfolios | keyvalue' [nzLabel]="kvp.key">
-          <nz-option *ngFor='let model of kvp.value' [nzValue]="model" nzLabel="{{model.market}} {{model.portfolio}}">
-          </nz-option>
-        </nz-option-group>
-      </nz-select>
-    </li>
-    <li nz-menu-item (click)="clear()" class='menu-item icon-li'>
-      <i nz-icon
-        nzType="delete"
-        nzTheme="outline"
-        class="managing-icon"
-        joyrideStep="step4"
-        [title]="joyrideContent.step4.title"
-        [text]="joyrideContent.step4.text"></i>
-    </li>
-  </ul>
-  <div class="right">
+    </button>
+  </div>
+  <div class="menu-item">
+    <button nz-button nz-dropdown
+            [nzDropdownMenu]="widgetsMenu"
+            nzSize='small'
+            joyrideStep="step2"
+            [title]="joyrideContent.step2.title"
+            [text]="joyrideContent.step2.text">
+      Виджет
+      <i nz-icon nzType="plus"></i>
+    </button>
+  </div>
+  <div class="menu-item" *ngIf="portfolios$ | async as portfolios">
+    <nz-select nzSize='small'
+               nzShowSearch
+               [ngModel]="selectDefault(portfolios)"
+               (ngModelChange)="changePortfolio($event)"
+               joyrideStep="step1"
+               [title]="joyrideContent.step1.title"
+               [text]="joyrideContent.step1.text"
+               id="portfolios-list">
+      <nz-option-group *ngFor='let kvp of portfolios | keyvalue' [nzLabel]="kvp.key">
+        <nz-option *ngFor='let model of kvp.value' [nzValue]="model" nzLabel="{{model.market}} {{model.portfolio}}">
+        </nz-option>
+      </nz-option-group>
+    </nz-select>
+  </div>
+  <div class="menu-item contrast-icon">
+    <button nz-button [nzType]="'text'"
+            (click)="clear()"
+            joyrideStep="step4"
+            [title]="joyrideContent.step4.title"
+            [text]="joyrideContent.step4.text">
+      <i nz-icon nzType="delete" nzTheme="outline"class='managing-icon'></i>
+    </button>
+  </div>
+  <div class="right contrast-icon">
       <div class="notifications">
         <ats-notification-button></ats-notification-button>
       </div>
