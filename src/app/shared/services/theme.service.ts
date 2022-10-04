@@ -35,7 +35,8 @@ export class ThemeService {
     primaryColor: '#177ddc',
     purpleColor: '#51258f',
     errorColor: '#a61d24',
-    chartGridColor: '#444'
+    chartGridColor: '#444',
+    chartLabelsColor: '#fff'
   };
 
   private readonly lightThemeColors: ThemeColors = {
@@ -47,7 +48,8 @@ export class ThemeService {
     primaryColor: '#177ddc',
     purpleColor: '#51258f',
     errorColor: '#a61d24',
-    chartGridColor: '#f0f0f0'
+    chartGridColor: '#f0f0f0',
+    chartLabelsColor: '#000'
   };
 
   constructor(

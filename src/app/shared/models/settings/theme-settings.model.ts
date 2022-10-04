@@ -13,6 +13,7 @@ export interface ThemeColors {
   purpleColor: string;
   errorColor: string;
   chartGridColor: string;
+  chartLabelsColor: string;
 }
 
 export interface ThemeSettings {
