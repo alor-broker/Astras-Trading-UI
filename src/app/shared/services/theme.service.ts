@@ -112,7 +112,12 @@ export class ThemeService {
       subj.error({});
     };
 
-    document.head.append(style);
+    const stylesLink = this.document.head.querySelector('link[href="styles.css"]');
+    if(stylesLink) {
+      document.head.insertBefore(style, stylesLink);
+    } else {
+      document.head.append(style);
+    }
 
     return subj;
   }
