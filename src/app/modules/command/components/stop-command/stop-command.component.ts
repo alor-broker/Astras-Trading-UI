@@ -21,7 +21,7 @@ import { CommandParams } from 'src/app/shared/models/commands/command-params.mod
 import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
 import {
   addMonthsUnix,
-  getUtcNow
+  getUtcNow, startOfDay, toUnixTime
 } from 'src/app/shared/utils/datetime';
 import {
   StopFormControls,
@@ -160,6 +160,11 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       withLimit: new FormControl(false)
     } as StopFormControls) as StopFormGroup;
   }
+
+  disabledDate = (date: Date) => {
+    const today = startOfDay(new Date());
+    return toUnixTime(date) < toUnixTime(today);
+  };
 
   private initCommandForm(initialParameters: CommandParams | null, converter: TimezoneConverter) {
     if (!initialParameters) {

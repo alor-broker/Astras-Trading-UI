@@ -48,6 +48,7 @@
               formControlName="stopEndUnixTime"
               nzFormat="yyyy-MM-dd HH:mm:ss"
               nzShowTime
+              [nzDisabledDate]="disabledDate"
               [nzShowNow] = "canSelectNow"
             >
             </nz-date-picker>
