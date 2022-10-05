@@ -7,8 +7,8 @@ import {
   Output
 } from '@angular/core';
 import {
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from "@angular/forms";
 import {
@@ -31,7 +31,7 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   exchanges: string[] = exchangesList;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -42,14 +42,14 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
     this.settingsService.getSettings<TechChartSettings>(this.guid).pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
-      this.form = new FormGroup({
-        symbol: new FormControl(settings.symbol, [
+      this.form = new UntypedFormGroup({
+        symbol: new UntypedFormControl(settings.symbol, [
           Validators.required,
           Validators.minLength(this.validationOptions.symbol.min),
           Validators.maxLength(this.validationOptions.symbol.max)
         ]),
-        exchange: new FormControl(settings.exchange, Validators.required),
-        instrumentGroup: new FormControl(settings.instrumentGroup)
+        exchange: new UntypedFormControl(settings.exchange, Validators.required),
+        instrumentGroup: new UntypedFormControl(settings.instrumentGroup)
       });
     });
   }

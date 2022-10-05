@@ -12,8 +12,8 @@ import {
 } from 'rxjs';
 import { ModalService } from '../../../../shared/services/modal.service';
 import {
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import { FeedbackService } from '../../services/feedback.service';
@@ -34,7 +34,7 @@ export class FeedbackWidgetComponent implements OnInit, OnDestroy {
   readonly commentMaxLength = 5000;
   readonly maxStarsCount = 5;
   askComment = false;
-  form?: FormGroup;
+  form?: UntypedFormGroup;
 
   voteParams$!: Observable<NewFeedback>;
 
@@ -68,10 +68,10 @@ export class FeedbackWidgetComponent implements OnInit, OnDestroy {
 
   initForm(params: NewFeedback) {
     this.askComment = false;
-    this.form = new FormGroup({
-      rating: new FormControl(null, Validators.required),
-      comment: new FormControl(null, [Validators.maxLength(this.commentMaxLength)]),
-      code: new FormControl(params.code)
+    this.form = new UntypedFormGroup({
+      rating: new UntypedFormControl(null, Validators.required),
+      comment: new UntypedFormControl(null, [Validators.maxLength(this.commentMaxLength)]),
+      code: new UntypedFormControl(params.code)
     });
   }
 

@@ -5,8 +5,8 @@ import {
   OnInit
 } from '@angular/core';
 import {
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import {
@@ -107,15 +107,15 @@ export class LimitEditComponent implements OnInit, OnDestroy {
   }
 
   private buildForm(initialParameters: EditParams) {
-    return new FormGroup({
-      quantity: new FormControl(
+    return new UntypedFormGroup({
+      quantity: new UntypedFormControl(
         initialParameters.quantity ?? 1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max)
         ]),
-      price: new FormControl(
+      price: new UntypedFormControl(
         initialParameters.price ?? 1,
         [
           Validators.required,

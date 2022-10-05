@@ -16,14 +16,14 @@ import {
   Output
 } from "@angular/core";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 
 @Component({
   template: ''
 })
 export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDestroy {
-  form?: FormGroup;
+  form?: UntypedFormGroup;
   @Output()
   formValueChange = new EventEmitter<T | null>();
   public readonly isActivated$ = new BehaviorSubject<boolean>(false);
@@ -68,7 +68,7 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
     });
   }
 
-  protected abstract buildForm(instrument: Instrument, additions: A | null): FormGroup;
+  protected abstract buildForm(instrument: Instrument, additions: A | null): UntypedFormGroup;
 
   protected getFormValue(): T | null {
     if (!this.form || !this.form.valid) {

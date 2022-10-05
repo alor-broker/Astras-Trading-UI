@@ -15,7 +15,7 @@ import { ColumnsSettings, FilterData } from "../../models/columns-settings.model
 import { NzTableComponent } from "ng-zorro-antd/table";
 import { Subject, takeUntil } from "rxjs";
 import { ITEM_HEIGHT } from "../../../modules/all-trades/utils/all-trades.utils";
-import { FormControl, FormGroup } from "@angular/forms";
+import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
 import { debounceTime } from "rxjs/operators";
 import { ContextMenu } from "../../models/infinite-scroll-table.model";
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
@@ -46,7 +46,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   private visibleItemsCount = 1;
   public itemHeight = ITEM_HEIGHT;
   public scrollHeight = 0;
-  public filtersForm = new FormGroup({});
+  public filtersForm = new UntypedFormGroup({});
   public activeFilterName = '';
   public sortedColumnName = '';
   public sortedColumnOrder: string | null = '';
@@ -63,10 +63,10 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
       .map(col => col.filterData!)
       .forEach(filter => {
         if (!filter.isInterval) {
-          this.filtersForm.addControl(filter.filterName, new FormControl(''));
+          this.filtersForm.addControl(filter.filterName, new UntypedFormControl(''));
         } else {
-          this.filtersForm.addControl(filter.intervalStartName!, new FormControl(''));
-          this.filtersForm.addControl(filter.intervalEndName!, new FormControl(''));
+          this.filtersForm.addControl(filter.intervalStartName!, new UntypedFormControl(''));
+          this.filtersForm.addControl(filter.intervalEndName!, new UntypedFormControl(''));
         }
       });
 
@@ -99,8 +99,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
     return this.columns.map(col => col.width || 'auto');
   }
 
-  public getFilterControl(filterName: string): FormControl {
-    return this.filtersForm.get(filterName) as FormControl;
+  public getFilterControl(filterName: string): UntypedFormControl {
+    return this.filtersForm.get(filterName) as UntypedFormControl;
   }
 
   public resetFilter(filterData: FilterData) {

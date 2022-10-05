@@ -7,8 +7,8 @@ import {
   Output
 } from '@angular/core';
 import {
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import { CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
@@ -37,7 +37,7 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   settingsChange: EventEmitter<BlotterSettings> = new EventEmitter<BlotterSettings>();
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   allOrdersColumns: ColumnIds[] = allOrdersColumns;
   allStopOrdersColumns: ColumnIds[] = allStopOrdersColumns;
   allTradesColumns: ColumnIds[] = allTradesColumns;
@@ -55,18 +55,18 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
     ).subscribe(settings => {
       if (settings) {
         this.prevSettings = settings;
-        this.form = new FormGroup({
-          portfolio: new FormControl(settings.portfolio, [
+        this.form = new UntypedFormGroup({
+          portfolio: new UntypedFormControl(settings.portfolio, [
             Validators.required,
             Validators.minLength(4)
           ]),
-          exchange: new FormControl(settings.exchange, Validators.required),
-          ordersColumns: new FormControl(settings.ordersColumns),
-          stopOrdersColumns: new FormControl(settings.stopOrdersColumns),
-          tradesColumns: new FormControl(settings.tradesColumns),
-          positionsColumns: new FormControl(settings.positionsColumns),
-          currency: new FormControl(this.currencyToCode(settings.currency)),
-          isSoldPositionsHidden: new FormControl(settings.isSoldPositionsHidden),
+          exchange: new UntypedFormControl(settings.exchange, Validators.required),
+          ordersColumns: new UntypedFormControl(settings.ordersColumns),
+          stopOrdersColumns: new UntypedFormControl(settings.stopOrdersColumns),
+          tradesColumns: new UntypedFormControl(settings.tradesColumns),
+          positionsColumns: new UntypedFormControl(settings.positionsColumns),
+          currency: new UntypedFormControl(this.currencyToCode(settings.currency)),
+          isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden),
         });
       }
     });

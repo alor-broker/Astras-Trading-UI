@@ -5,7 +5,7 @@ import { CommandContextModel } from "../../models/command-context.model";
 import { EditParams } from "../../../../shared/models/commands/edit-params.model";
 import { CommandsService } from "../../services/commands.service";
 import { distinctUntilChanged } from "rxjs/operators";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { StopFormData } from "../../models/stop-form-data.model";
@@ -118,8 +118,8 @@ export class StopEditComponent implements OnInit, OnDestroy {
       price = 0;
     }
 
-    return new FormGroup({
-      quantity: new FormControl(
+    return new UntypedFormGroup({
+      quantity: new UntypedFormControl(
         initialParameters.quantity ?? 1,
         [
           Validators.required,
@@ -127,7 +127,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      price: new FormControl(
+      price: new UntypedFormControl(
         price,
         [
           Validators.required,
@@ -135,7 +135,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      triggerPrice: new FormControl(
+      triggerPrice: new UntypedFormControl(
         initialParameters.triggerPrice,
         [
           Validators.required,
@@ -143,13 +143,13 @@ export class StopEditComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max),
         ]
       ),
-      stopEndUnixTime: new FormControl(
+      stopEndUnixTime: new UntypedFormControl(
         initialParameters.stopEndUnixTime ?? this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1)),
         Validators.required
       ),
-      condition: new FormControl(initialParameters.condition || StopOrderCondition.More),
-      withLimit: new FormControl({ value: initialParameters.type === 'stoplimit', disabled: true }),
-      side: new FormControl(initialParameters.side)
+      condition: new UntypedFormControl(initialParameters.condition || StopOrderCondition.More),
+      withLimit: new UntypedFormControl({ value: initialParameters.type === 'stoplimit', disabled: true }),
+      side: new UntypedFormControl(initialParameters.side)
     } as StopFormControls) as StopFormGroup;
   }
 

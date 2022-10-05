@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from "@angular/core";
 import { OrderFormBaseComponent } from "../order-form-base.component";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { LimitFormControls, LimitFormGroup } from "../../../../command/models/command-forms.model";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import { LimitOrder } from "../../../../command/models/order.model";
@@ -24,9 +24,9 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
     this.evaluation$.complete();
   }
 
-  protected buildForm(instrument: Instrument): FormGroup {
-    return new FormGroup({
-      quantity: new FormControl(
+  protected buildForm(instrument: Instrument): UntypedFormGroup {
+    return new UntypedFormGroup({
+      quantity: new UntypedFormControl(
         1,
         [
           Validators.required,
@@ -34,7 +34,7 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      price: new FormControl(
+      price: new UntypedFormControl(
         1,
         [
           Validators.required,
@@ -42,7 +42,7 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      instrumentGroup: new FormControl(instrument.instrumentGroup),
+      instrumentGroup: new UntypedFormControl(instrument.instrumentGroup),
     } as LimitFormControls) as LimitFormGroup;
   }
 

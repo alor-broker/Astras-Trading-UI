@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 import {
   AbstractControl,
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -32,7 +32,7 @@ interface SettingsFormData {
 }
 
 type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
-type SettingsFormGroup = FormGroup & { value: SettingsFormData, controls: SettingsFormControls };
+type SettingsFormGroup = UntypedFormGroup & { value: SettingsFormData, controls: SettingsFormControls };
 
 @Component({
   selector: 'ats-orderbook-settings[settingsChange][guid]',
@@ -64,25 +64,25 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
     this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
-      this.form = new FormGroup({
-        symbol: new FormControl(settings.symbol, [
+      this.form = new UntypedFormGroup({
+        symbol: new UntypedFormControl(settings.symbol, [
           Validators.required,
           Validators.minLength(this.validationOptions.symbol.min),
           Validators.maxLength(this.validationOptions.symbol.max)
         ]),
-        exchange: new FormControl(settings.exchange, Validators.required),
-        depth: new FormControl(
+        exchange: new UntypedFormControl(settings.exchange, Validators.required),
+        depth: new UntypedFormControl(
           settings.depth,
           [
             Validators.required,
             Validators.min(this.validationOptions.depth.min),
             Validators.max(this.validationOptions.depth.max)
           ]),
-        instrumentGroup: new FormControl(settings.instrumentGroup),
-        showChart: new FormControl(settings.showChart),
-        showTable: new FormControl(settings.showTable),
-        showYieldForBonds: new FormControl(settings.showYieldForBonds),
-        useOrderWidget: new FormControl(settings.useOrderWidget)
+        instrumentGroup: new UntypedFormControl(settings.instrumentGroup),
+        showChart: new UntypedFormControl(settings.showChart),
+        showTable: new UntypedFormControl(settings.showTable),
+        showYieldForBonds: new UntypedFormControl(settings.showYieldForBonds),
+        useOrderWidget: new UntypedFormControl(settings.useOrderWidget)
       } as SettingsFormControls) as SettingsFormGroup;
     });
   }

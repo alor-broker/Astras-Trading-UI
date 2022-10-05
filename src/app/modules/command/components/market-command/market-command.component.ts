@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import {
   BehaviorSubject,
   combineLatest,
@@ -110,8 +110,8 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
   }
 
   private buildForm(initialParameters: CommandParams) {
-    return new FormGroup({
-      quantity: new FormControl(
+    return new UntypedFormGroup({
+      quantity: new UntypedFormControl(
         initialParameters.quantity ?? 1,
         [
           Validators.required,
@@ -119,7 +119,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),
+      instrumentGroup: new UntypedFormControl(initialParameters.instrument.instrumentGroup),
     } as MarketFormControls) as MarketFormGroup;
   }
 

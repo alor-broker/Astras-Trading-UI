@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
@@ -81,8 +81,8 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
   }
 
   private buildForm(initialParameters: CommandParams) {
-    return new FormGroup({
-      quantity: new FormControl(
+    return new UntypedFormGroup({
+      quantity: new UntypedFormControl(
         initialParameters.quantity ?? 1,
         [
           Validators.required,
@@ -90,7 +90,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      price: new FormControl(
+      price: new UntypedFormControl(
         initialParameters.price ?? 1,
         [
           Validators.required,
@@ -98,7 +98,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),
+      instrumentGroup: new UntypedFormControl(initialParameters.instrument.instrumentGroup),
     } as LimitFormControls) as LimitFormGroup;
   }
 

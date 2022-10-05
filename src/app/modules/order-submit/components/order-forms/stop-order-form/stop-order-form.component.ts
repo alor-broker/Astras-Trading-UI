@@ -6,8 +6,8 @@ import {
 import { OrderFormBaseComponent } from "../order-form-base.component";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import {
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from "@angular/forms";
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
@@ -68,12 +68,12 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     this.checkPriceAvailability();
   }
 
-  protected buildForm(instrument: Instrument, additions: { timezoneConverter: TimezoneConverter } | null): FormGroup {
+  protected buildForm(instrument: Instrument, additions: { timezoneConverter: TimezoneConverter } | null): UntypedFormGroup {
     this.timezoneConverter = additions!.timezoneConverter;
     this.checkNowTimeSelection();
 
-    return new FormGroup({
-      quantity: new FormControl(
+    return new UntypedFormGroup({
+      quantity: new UntypedFormControl(
         1,
         [
           Validators.required,
@@ -81,7 +81,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      price: new FormControl(
+      price: new UntypedFormControl(
         null,
         [
           Validators.required,
@@ -89,7 +89,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      triggerPrice: new FormControl(
+      triggerPrice: new UntypedFormControl(
         null,
         [
           Validators.required,
@@ -97,9 +97,9 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
           Validators.max(inputNumberValidation.max),
         ]
       ),
-      stopEndUnixTime: new FormControl(additions!.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
-      condition: new FormControl(StopOrderCondition.More),
-      withLimit: new FormControl(false)
+      stopEndUnixTime: new UntypedFormControl(additions!.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
+      condition: new UntypedFormControl(StopOrderCondition.More),
+      withLimit: new UntypedFormControl(false)
     } as StopFormControls) as StopFormGroup;
   }
 

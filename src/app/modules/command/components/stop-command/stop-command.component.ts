@@ -5,8 +5,8 @@ import {
   OnInit
 } from '@angular/core';
 import {
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import {
@@ -130,8 +130,8 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       price = 0;
     }
 
-    return new FormGroup({
-      quantity: new FormControl(
+    return new UntypedFormGroup({
+      quantity: new UntypedFormControl(
         initialParameters.quantity ?? 1,
         [
           Validators.required,
@@ -139,7 +139,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      price: new FormControl(
+      price: new UntypedFormControl(
         price,
         [
           Validators.required,
@@ -147,7 +147,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      triggerPrice: new FormControl(
+      triggerPrice: new UntypedFormControl(
         null,
         [
           Validators.required,
@@ -155,9 +155,9 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max),
         ]
       ),
-      stopEndUnixTime: new FormControl(initialParameters.stopEndUnixTime ?? this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
-      condition: new FormControl(StopOrderCondition.More),
-      withLimit: new FormControl(false)
+      stopEndUnixTime: new UntypedFormControl(initialParameters.stopEndUnixTime ?? this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
+      condition: new UntypedFormControl(StopOrderCondition.More),
+      withLimit: new UntypedFormControl(false)
     } as StopFormControls) as StopFormGroup;
   }
 

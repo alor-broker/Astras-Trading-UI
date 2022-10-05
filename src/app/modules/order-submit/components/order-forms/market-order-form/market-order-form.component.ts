@@ -7,8 +7,8 @@ import { OrderFormBaseComponent } from "../order-form-base.component";
 import { MarketOrder } from "../../../../command/models/order.model";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import {
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from "@angular/forms";
 import {
@@ -62,9 +62,9 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
     this.lastFormValue$.complete();
   }
 
-  protected buildForm(instrument: Instrument): FormGroup {
-    return new FormGroup({
-      quantity: new FormControl(
+  protected buildForm(instrument: Instrument): UntypedFormGroup {
+    return new UntypedFormGroup({
+      quantity: new UntypedFormControl(
         1,
         [
           Validators.required,
@@ -72,7 +72,7 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      instrumentGroup: new FormControl(instrument.instrumentGroup),
+      instrumentGroup: new UntypedFormControl(instrument.instrumentGroup),
     } as MarketFormControls) as MarketFormGroup;
   }
 
