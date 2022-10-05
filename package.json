@@ -27,7 +27,7 @@
     "@ngrx/entity": "^14.3.2",
     "@ngrx/store": "^14.3.2",
     "@ngrx/store-devtools": "^14.3.2",
-    "angular-gridster2": "13.1.1",
+    "angular-gridster2": "14.1.1",
     "chart.js": "^3.7.0",
     "lightweight-charts": "^3.7.0",
     "ng-dynamic-component": "^10.0.0",

@@ -2191,10 +2191,10 @@ ajv@^6.10.0, ajv@^6.12.4, ajv@^6.12.5:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-angular-gridster2@13.1.1:
-  version "13.1.1"
-  resolved "https://registry.yarnpkg.com/angular-gridster2/-/angular-gridster2-13.1.1.tgz#a848dd6951f2950156077b614c314f3c19c5b851"
-  integrity sha512-TF6n9HI01+HhMXSHtnGpWtBqVHl3zV4PXhQ8HhDtBDZN22q5SuX9S41bztYOHlTVOwZbVPq7VaI7NMqH1ulNCA==
+angular-gridster2@14.1.1:
+  version "14.1.1"
+  resolved "https://registry.yarnpkg.com/angular-gridster2/-/angular-gridster2-14.1.1.tgz#217847bdbd8a57cd908e7768b01db3dfa4471320"
+  integrity sha512-aj8i9ZfL5dxhQjdVAtvd1yytTP5FkMiByMyRSW11x/DikHJGoeD8ed3SpD/sIIIEBQnMXXVydjNiXtTDLmQ7Ow==
   dependencies:
     tslib "^2.3.0"
 
