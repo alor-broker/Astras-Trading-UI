@@ -35,7 +35,7 @@
     "ng2-charts": "^3.0.8",
     "ngx-color": "7.3.3",
     "ngx-joyride": "^2.5.0",
-    "ngx-markdown": "^13.1.0",
+    "ngx-markdown": "^14.0.1",
     "rxjs": "^7.5.2",
     "tslib": "^2.1.0",
     "zone.js": "~0.11.4"
