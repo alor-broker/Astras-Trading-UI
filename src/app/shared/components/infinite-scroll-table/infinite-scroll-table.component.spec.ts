@@ -122,8 +122,8 @@ describe('InfiniteScrollTableComponent', () => {
   });
 
   it('should reset filter', () => {
-    component.getFilterControl('name1').setValue('testValue');
+    component.getFilterControl('name1')?.setValue('testValue');
     component.resetFilter({filterName: 'name1'});
-    expect(component.getFilterControl('name1').value).toBe('');
+    expect(component.getFilterControl('name1')?.value).toBe('');
   });
 });

@@ -99,16 +99,16 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
     return this.columns.map(col => col.width || 'auto');
   }
 
-  public getFilterControl(filterName: string): UntypedFormControl {
+  public getFilterControl(filterName: string): UntypedFormControl | null {
     return this.filtersForm.get(filterName) as UntypedFormControl;
   }
 
   public resetFilter(filterData: FilterData) {
     if (filterData.isInterval) {
-      this.getFilterControl(filterData.intervalStartName!).reset('');
-      this.getFilterControl(filterData.intervalEndName!).reset('');
+      this.getFilterControl(filterData.intervalStartName!)?.reset('');
+      this.getFilterControl(filterData.intervalEndName!)?.reset('');
     } else {
-      this.getFilterControl(filterData.filterName).reset('');
+      this.getFilterControl(filterData.filterName)?.reset('');
     }
   }
 
@@ -117,7 +117,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   public defaultFilterChange(name: string, value: string) {
-    this.getFilterControl(name).setValue(value);
+    this.getFilterControl(name)?.setValue(value);
   }
 
   public sortChange(e: string | null, column: ColumnsSettings) {

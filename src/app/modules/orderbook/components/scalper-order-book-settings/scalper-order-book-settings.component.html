@@ -103,7 +103,7 @@
     </nz-collapse>
 
     <nz-collapse [nzBordered]="false" class="compact working-volumes">
-      <nz-collapse-panel [nzDisabled]="!form?.controls?.workingVolumes?.valid" nzHeader="Рабочие объёмы">
+      <nz-collapse-panel [nzDisabled]="!form.controls.workingVolumes.valid" nzHeader="Рабочие объёмы">
         <div class="hint">Используются для быстрого выставления заявок с нужным объёмом</div>
         <nz-form-item *ngFor="let ctrl of workingVolumes.controls; let i = index" class="compact">
           <nz-form-label nzFor="workingVolume1" nzRequired>Рабочий объём {{i + 1}}</nz-form-label>
@@ -144,7 +144,7 @@
     <br/>
     <nz-form-item class="compact">
       <nz-form-control>
-        <button [disabled]="!form?.valid" nz-button nzType="primary" type="submit">Сохранить</button>
+        <button [disabled]="!form.valid" nz-button nzType="primary" type="submit">Сохранить</button>
       </nz-form-control>
     </nz-form-item>
   </form>
