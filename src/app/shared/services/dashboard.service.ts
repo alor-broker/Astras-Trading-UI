@@ -95,23 +95,23 @@ export class DashboardService {
   private createDefaultDashboard() {
     setTimeout(() => {
       this.addWidget({
-        gridItem: { x: 0, y: 0, cols: 3, rows: 1, type: WidgetNames.lightChart },
+        gridItem: {x: 0, y: 0, cols: 30, rows: 18, type: WidgetNames.lightChart},
       });
       this.addWidget({
-        gridItem: { x: 0, y: 1, cols: 2, rows: 1, type: WidgetNames.blotter },
-      }, { activeTabIndex: 3 });
+        gridItem: {x: 30, y: 0, cols: 10, rows: 18, type: WidgetNames.orderBook},
+      }, {depth: 10});
       this.addWidget({
-        gridItem: { x: 3, y: 0, cols: 1, rows: 1, type: WidgetNames.orderBook },
-      }, { depth: 10 });
-      this.addWidget({
-        gridItem: { x: 4, y: 0, cols: 1, rows: 1, type: WidgetNames.instrumentInfo },
+        gridItem: {x: 40, y: 0, cols: 10, rows: 18, type: WidgetNames.instrumentInfo},
       });
       this.addWidget({
-        gridItem: { x: 3, y: 1, cols: 2, rows: 1, type: WidgetNames.instrumentSelect },
-      });
+        gridItem: {x: 0, y: 18, cols: 25, rows: 12, type: WidgetNames.blotter},
+      }, {activeTabIndex: 3});
       this.addWidget({
-        gridItem: { x: 2, y: 1, cols: 1, rows: 1, type: WidgetNames.blotter },
-      }, { activeTabIndex: 0 });
+        gridItem: {x: 25, y: 18, cols: 15, rows: 12, type: WidgetNames.blotter},
+      }, {activeTabIndex: 0});
+      this.addWidget({
+        gridItem: {x: 40, y: 18, cols: 10, rows: 12, type: WidgetNames.instrumentSelect},
+      });
     }, 700);
   }
 }
