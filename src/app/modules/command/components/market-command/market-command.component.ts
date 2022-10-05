@@ -21,6 +21,7 @@ import { CommandsService } from '../../services/commands.service';
 import { MarketCommand } from '../../models/market-command.model';
 import { distinct, finalize } from 'rxjs/operators';
 import { CommandContextModel } from '../../models/command-context.model';
+import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 
 @Component({
   selector: 'ats-market-command',
@@ -114,8 +115,8 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
         initialParameters.quantity ?? 1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),

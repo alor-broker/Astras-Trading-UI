@@ -1,19 +1,14 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input
-} from '@angular/core';
-import {
-  Observable,
-  take
-} from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Observable, of, take } from 'rxjs';
 import { Side } from 'src/app/shared/models/enums/side.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { CommandsService } from '../../services/commands.service';
 import { CommandType } from '../../../../shared/models/enums/command-type.model';
 import { finalize } from 'rxjs/operators';
 import { SubmitOrderResult } from "../../models/order.model";
+import { StopCommand } from "../../models/stop-command.model";
+import { LimitCommand } from "../../models/limit-command.model";
+import { MarketCommand } from "../../models/market-command.model";
 
 @Component({
   selector: 'ats-command-footer[activeCommandType]',
@@ -21,12 +16,14 @@ import { SubmitOrderResult } from "../../models/order.model";
   styleUrls: ['./command-footer.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CommandFooterComponent {
+export class CommandFooterComponent implements OnChanges {
   @Input()
   activeCommandType = CommandType.Limit;
 
   isBuyButtonLoading = false;
   isSellButtonLoading = false;
+
+  command$: Observable<StopCommand | LimitCommand | MarketCommand | null> = of(null);
 
   constructor(
     private readonly command: CommandsService,
@@ -36,6 +33,22 @@ export class CommandFooterComponent {
 
   get isButtonsLocked(): boolean {
     return this.isBuyButtonLoading || this.isSellButtonLoading;
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.activeCommandType?.currentValue) {
+      switch (this.activeCommandType) {
+        case CommandType.Limit:
+          this.command$ = this.command.getLimitCommand();
+          break;
+        case CommandType.Stop:
+          this.command$ = this.command.getStopCommand();
+          break;
+        case CommandType.Market:
+          this.command$ = this.command.getMarketCommand();
+          break;
+      }
+    }
   }
 
   buy() {

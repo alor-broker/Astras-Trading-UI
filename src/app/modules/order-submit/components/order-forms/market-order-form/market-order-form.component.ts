@@ -31,6 +31,7 @@ import { QuotesService } from "../../../../../shared/services/quotes.service";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
 import { GuidGenerator } from "../../../../../shared/utils/guid";
+import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 
 export type MarketOrderFormValue = Omit<MarketOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
@@ -67,8 +68,8 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
         1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       instrumentGroup: new FormControl(instrument.instrumentGroup),

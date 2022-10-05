@@ -9,6 +9,7 @@ import { CommandsService } from '../../services/commands.service';
 import { LimitCommand } from '../../models/limit-command.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandContextModel } from '../../models/command-context.model';
+import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 
 @Component({
   selector: 'ats-limit-command',
@@ -85,16 +86,16 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         initialParameters.quantity ?? 1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       price: new FormControl(
         initialParameters.price ?? 1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),

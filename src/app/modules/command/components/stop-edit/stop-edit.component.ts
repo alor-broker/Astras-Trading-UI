@@ -12,6 +12,7 @@ import { StopFormData } from "../../models/stop-form-data.model";
 import { addMonthsUnix, getUtcNow, startOfDay, toUnixTime } from "../../../../shared/utils/datetime";
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { StopEdit } from "../../models/stop-edit";
+import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 
 @Component({
   selector: 'ats-stop-edit',
@@ -122,23 +123,24 @@ export class StopEditComponent implements OnInit, OnDestroy {
         initialParameters.quantity ?? 1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       price: new FormControl(
         price,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       triggerPrice: new FormControl(
         initialParameters.triggerPrice,
         [
           Validators.required,
-          Validators.min(0),
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max),
         ]
       ),
       stopEndUnixTime: new FormControl(

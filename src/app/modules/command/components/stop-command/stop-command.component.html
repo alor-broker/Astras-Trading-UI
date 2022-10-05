@@ -35,6 +35,8 @@
           <ng-template #triggerPriceError>
             <span *ngIf="form.get('triggerPrice')?.errors?.required">Введите цену</span>
             <span *ngIf="form.get('triggerPrice')?.errors?.min">Слишком мало</span>
+            <span *ngIf="form.get('triggerPrice')?.errors?.max">Слишком много</span>
+
           </ng-template>
         </nz-form-item>
       </div>
@@ -46,6 +48,7 @@
               formControlName="stopEndUnixTime"
               nzFormat="yyyy-MM-dd HH:mm:ss"
               nzShowTime
+              [nzDisabledDate]="disabledDate"
               [nzShowNow] = "canSelectNow"
             >
             </nz-date-picker>

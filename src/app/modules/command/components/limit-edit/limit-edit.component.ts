@@ -26,6 +26,7 @@ import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { LimitEdit } from '../../models/limit-edit.model';
 import { CommandContextModel } from '../../models/command-context.model';
+import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 
 @Component({
   selector: 'ats-limit-edit',
@@ -111,15 +112,15 @@ export class LimitEditComponent implements OnInit, OnDestroy {
         initialParameters.quantity ?? 1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]),
       price: new FormControl(
         initialParameters.price ?? 1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ])
     } as LimitFormControls) as LimitFormGroup;
   }

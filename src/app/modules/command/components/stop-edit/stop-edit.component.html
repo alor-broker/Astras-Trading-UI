@@ -37,6 +37,7 @@
           <ng-template #triggerPriceError>
             <span *ngIf="form.get('triggerPrice')?.errors?.required">Введите цену</span>
             <span *ngIf="form.get('triggerPrice')?.errors?.min">Слишком мало</span>
+            <span *ngIf="form.get('triggerPrice')?.errors?.max">Слишком много</span>
           </ng-template>
         </nz-form-item>
       </div>

@@ -13,7 +13,7 @@ import {
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
 import {
   addMonthsUnix,
-  getUtcNow
+  getUtcNow, startOfDay, toUnixTime
 } from "../../../../../shared/utils/datetime";
 import { StopOrderCondition } from "../../../../../shared/models/enums/stoporder-conditions";
 import {
@@ -23,6 +23,7 @@ import {
 import { Observable } from "rxjs";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { map } from "rxjs/operators";
+import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'>
@@ -58,6 +59,11 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     }
   }
 
+  disabledDate = (date: Date) => {
+    const today = startOfDay(new Date());
+    return toUnixTime(date) < toUnixTime(today);
+  };
+
   protected onFormCreated() {
     this.checkPriceAvailability();
   }
@@ -71,23 +77,24 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
         1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       price: new FormControl(
         null,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       triggerPrice: new FormControl(
         null,
         [
           Validators.required,
-          Validators.min(0),
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max),
         ]
       ),
       stopEndUnixTime: new FormControl(additions!.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),

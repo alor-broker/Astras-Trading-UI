@@ -21,7 +21,7 @@ import { CommandParams } from 'src/app/shared/models/commands/command-params.mod
 import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
 import {
   addMonthsUnix,
-  getUtcNow
+  getUtcNow, startOfDay, toUnixTime
 } from 'src/app/shared/utils/datetime';
 import {
   StopFormControls,
@@ -33,6 +33,7 @@ import { StopCommand } from '../../models/stop-command.model';
 import { CommandContextModel } from '../../models/command-context.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
+import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 
 @Component({
   selector: 'ats-stop-command',
@@ -134,23 +135,24 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         initialParameters.quantity ?? 1,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       price: new FormControl(
         price,
         [
           Validators.required,
-          Validators.min(0),
-          Validators.max(1000000000)
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
         ]
       ),
       triggerPrice: new FormControl(
         null,
         [
           Validators.required,
-          Validators.min(0),
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max),
         ]
       ),
       stopEndUnixTime: new FormControl(initialParameters.stopEndUnixTime ?? this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
@@ -158,6 +160,11 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       withLimit: new FormControl(false)
     } as StopFormControls) as StopFormGroup;
   }
+
+  disabledDate = (date: Date) => {
+    const today = startOfDay(new Date());
+    return toUnixTime(date) < toUnixTime(today);
+  };
 
   private initCommandForm(initialParameters: CommandParams | null, converter: TimezoneConverter) {
     if (!initialParameters) {

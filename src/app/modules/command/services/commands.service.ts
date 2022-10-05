@@ -34,11 +34,25 @@ export class CommandsService {
     this.stopCommand?.next(command);
   }
 
+  getStopCommand(): Observable<StopCommand | null> {
+    if (!this.stopCommand) {
+      this.stopCommand = new BehaviorSubject<StopCommand | null>(null);
+    }
+    return this.stopCommand.asObservable();
+  }
+
   setLimitCommand(command: LimitCommand | null) {
     if (!this.limitCommand) {
       this.limitCommand = new BehaviorSubject<LimitCommand | null>(command);
     }
     this.limitCommand?.next(command);
+  }
+
+  getLimitCommand(): Observable<LimitCommand | null> {
+    if (!this.limitCommand) {
+      this.limitCommand = new BehaviorSubject<LimitCommand | null>(null);
+    }
+    return this.limitCommand.asObservable();
   }
 
   setMarketCommand(command: MarketCommand | null) {
@@ -48,6 +62,13 @@ export class CommandsService {
     this.marketCommand?.next(command);
   }
 
+  getMarketCommand(): Observable<MarketCommand | null> {
+    if (!this.marketCommand) {
+      this.marketCommand = new BehaviorSubject<MarketCommand | null>(null);
+    }
+    return this.marketCommand.asObservable();
+  }
+
   setLimitEdit(command: LimitEdit | null) {
     if (!this.limitEdit) {
       this.limitEdit = new BehaviorSubject<LimitEdit | null>(command);
@@ -55,11 +76,25 @@ export class CommandsService {
     this.limitEdit?.next(command);
   }
 
+  getLimitEdit(): Observable<LimitEdit | null> {
+    if (!this.limitEdit) {
+      this.limitEdit = new BehaviorSubject<LimitEdit | null>(null);
+    }
+    return this.limitEdit.asObservable();
+  }
+
   setStopEdit(command: StopEdit | null) {
     if (!this.stopEdit) {
       this.stopEdit = new BehaviorSubject<StopEdit | null>(command);
     }
     this.stopEdit?.next(command);
+  }
+
+  getStopEdit(): Observable<StopEdit | null> {
+    if (!this.stopEdit) {
+      this.stopEdit = new BehaviorSubject<StopEdit | null>(null);
+    }
+    return this.stopEdit.asObservable();
   }
 
   setPriceSelected(price: number) {
