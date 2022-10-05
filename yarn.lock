@@ -1374,7 +1374,7 @@
   resolved "https://registry.yarnpkg.com/@csstools/selector-specificity/-/selector-specificity-2.0.2.tgz#1bfafe4b7ed0f3e4105837e056e0a89b108ebe36"
   integrity sha512-IkpVW/ehM1hWKln4fCA3NzJU8KwD+kIOvPZA4cqxoJHtE21CCzjyp+Kxbu0i5I4tBNOlXPL9mjwnWlL0VEG4Fg==
 
-"@ctrl/tinycolor@^3.3.1", "@ctrl/tinycolor@^3.4.0":
+"@ctrl/tinycolor@^3.3.1", "@ctrl/tinycolor@^3.4.1":
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.1.tgz#75b4c27948c81e88ccd3a8902047bcd797f38d32"
   integrity sha512-ej5oVy6lykXsvieQtqZxCOaLT+xD4+QNarq78cIYISHmZXshCvROLudpQN3lfL8G0NL7plMSSK+zlyvCaIJ4Iw==
@@ -5527,20 +5527,20 @@ ng-zorro-antd@^14.0.0:
     date-fns "^2.16.1"
     tslib "^2.3.0"
 
-ng2-charts@^3.0.8:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/ng2-charts/-/ng2-charts-3.1.2.tgz#2af56b2d8382269595e1e01f63b7c5e6b3d3e60a"
-  integrity sha512-KkbpQhbf8DhcEm5SnqKBQMa25cBOKBiopjl4+8aUbfOaKY59uOfImAYPDsT3du7cfMVD6w7xt4SWhRbbelY9sQ==
+ng2-charts@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/ng2-charts/-/ng2-charts-4.0.1.tgz#28abefaae60fbbf937303cd0d3f8c5b9552d51e6"
+  integrity sha512-QYXVZHP/RIRhAw36xeXPL6JZz73fXuHePTyGwBiOfIRGCG7EDYLApnSgEn+Mx+QFKYT1VN9Fsj5b04rrd2nrEw==
   dependencies:
     lodash-es "^4.17.15"
     tslib "^2.3.0"
 
-ngx-color@7.3.3:
-  version "7.3.3"
-  resolved "https://registry.yarnpkg.com/ngx-color/-/ngx-color-7.3.3.tgz#e328290244eb302fa8a12474f578ace02d82a148"
-  integrity sha512-RyMIFMC5/aYYD/jkfStOUjr3gQfTGhgiiMxuZEfxt2o4GYmb3C/06C1o0S6Mj9qHAcKlG6soioq2MzdhtIswHw==
+ngx-color@8.0.3:
+  version "8.0.3"
+  resolved "https://registry.yarnpkg.com/ngx-color/-/ngx-color-8.0.3.tgz#2e63b4af0a05979ff4adcca06f2abe640c21e901"
+  integrity sha512-tuLP+uIoDEu2m0bh711kb2P1M1bh/oIrOn8mJd9mb8xGL2v+OcokcxPmVvWRn0avMG1lXL53CjSlWXGkdV4CDA==
   dependencies:
-    "@ctrl/tinycolor" "^3.4.0"
+    "@ctrl/tinycolor" "^3.4.1"
     material-colors "^1.2.6"
     tslib "^2.3.0"
 
