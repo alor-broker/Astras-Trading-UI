@@ -85,8 +85,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
       gridItem: {
         x: 0,
         y: 0,
-        cols: 1,
-        rows: 1,
+        cols: 10,
+        rows: 10,
         type: type,
       },
     });
