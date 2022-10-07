@@ -3,6 +3,7 @@
       (nzOnCancel)="handleCancel()"
       (nzOnOk)='handleOk()'
       [nzMaskClosable]='false'
+      nzClosable='false'
       [nzOkLoading]='isBusy'
       [nzVisible]='isVisible$ | async'
       nzCancelText="Отмена"
