@@ -1,15 +1,29 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  Validators
+} from '@angular/forms';
+import {
+  BehaviorSubject,
+  filter,
+  Subject,
+  takeUntil
+} from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
-import { LimitFormControls, LimitFormGroup } from '../../models/command-forms.model';
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { CommandsService } from '../../services/commands.service';
 import { LimitCommand } from '../../models/limit-command.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandContextModel } from '../../models/command-context.model';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
+import { ControlsOf } from '../../../../shared/models/form.model';
 
 @Component({
   selector: 'ats-limit-command',
@@ -18,7 +32,7 @@ import { inputNumberValidation } from "../../../../shared/utils/validation-optio
 })
 export class LimitCommandComponent implements OnInit, OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
-  form!: LimitFormGroup;
+  form!: FormGroup<ControlsOf<LimitFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -80,9 +94,9 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     }
   }
 
-  private buildForm(initialParameters: CommandParams) {
-    return new UntypedFormGroup({
-      quantity: new UntypedFormControl(
+  private buildForm(initialParameters: CommandParams): FormGroup<ControlsOf<LimitFormData>> {
+    return new FormGroup<ControlsOf<LimitFormData>>({
+      quantity: new FormControl(
         initialParameters.quantity ?? 1,
         [
           Validators.required,
@@ -90,7 +104,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      price: new UntypedFormControl(
+      price: new FormControl(
         initialParameters.price ?? 1,
         [
           Validators.required,
@@ -98,8 +112,8 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      instrumentGroup: new UntypedFormControl(initialParameters.instrument.instrumentGroup),
-    } as LimitFormControls) as LimitFormGroup;
+      instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),
+    });
   }
 
   private updateEvaluation(command: LimitCommand, commandContext: CommandContextModel<CommandParams>) {
@@ -123,7 +137,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
-      distinctUntilChanged<LimitFormData>((prev, curr) =>
+      distinctUntilChanged((prev, curr) =>
         prev?.price == curr?.price
         && prev?.quantity == curr?.quantity
         && prev?.instrumentGroup == curr?.instrumentGroup

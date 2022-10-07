@@ -48,7 +48,7 @@ export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
 
   saveSettings() {
     if (this.settingsForm?.valid) {
-      this.settingsService.updateSettings(
+      this.settingsService.updateSettings<InstrumentSelectSettings>(
         this.guid,
         {
           ...this.settingsForm.value

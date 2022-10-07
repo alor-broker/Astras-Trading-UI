@@ -30,6 +30,7 @@ import {
   NZ_I18N,
   ru_RU
 } from "ng-zorro-antd/i18n";
+import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
 
 describe('StopCommandComponent', () => {
   let component: StopCommandComponent;
@@ -228,7 +229,7 @@ describe('StopCommandComponent', () => {
       const expectedCommand: StopCommand = {
         quantity: 125,
         triggerPrice: 126,
-        condition: 'Less',
+        condition: StopOrderCondition.Less,
         price: 140,
         stopEndUnixTime: timezoneConverter.terminalToUtc0Date(expectedDate),
         instrument: {

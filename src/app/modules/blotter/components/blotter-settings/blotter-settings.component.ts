@@ -96,7 +96,7 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
 
   submitForm(): void {
     this.form.value.currency = this.codeToCurrency(this.form.value.currency);
-    this.settingsService.updateSettings(
+    this.settingsService.updateSettings<BlotterSettings>(
       this.guid,
       {
         ...this.form.value,

@@ -11,7 +11,7 @@ export interface EditParams {
   instrument: InstrumentKey,
   user: PortfolioKey,
   side: Side,
-  stopEndUnixTime?: Date | number,
-  triggerPrice?: number,
-  condition?: StopOrderCondition,
+  stopEndUnixTime?: Date | number | null,
+  triggerPrice?: number | null,
+  condition?: StopOrderCondition | null,
 }

@@ -719,7 +719,7 @@ describe('OrderService', () => {
         },
         quantity: 100,
         id: '123',
-        conditionType: 'Less',
+        conditionType: StopOrderCondition.Less,
         triggerPrice: 100,
         side: Side.Buy,
         endTime: 123
@@ -848,7 +848,7 @@ describe('OrderService', () => {
         },
         quantity: 100,
         id: '123',
-        conditionType: 'Less',
+        conditionType: StopOrderCondition.Less,
         triggerPrice: 100,
         price: 100,
         side: Side.Buy,

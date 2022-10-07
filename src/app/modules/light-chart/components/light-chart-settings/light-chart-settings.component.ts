@@ -62,7 +62,7 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   }
 
   submitForm(): void {
-    this.settingsService.updateSettings(
+    this.settingsService.updateSettings<LightChartSettings>(
       this.guid,
       {
         ...this.form.value,

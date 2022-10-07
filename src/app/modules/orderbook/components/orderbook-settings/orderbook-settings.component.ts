@@ -7,9 +7,8 @@ import {
   Output
 } from '@angular/core';
 import {
-  AbstractControl,
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormControl,
+  FormGroup,
   Validators
 } from '@angular/forms';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -20,6 +19,7 @@ import {
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { InstrumentValidation } from '../../../../shared/utils/validation-options';
+import { ControlsOf } from '../../../../shared/models/form.model';
 
 interface SettingsFormData {
   depth: number,
@@ -29,10 +29,8 @@ interface SettingsFormData {
   showChart: boolean,
   showTable: boolean,
   showYieldForBonds: boolean,
+  useOrderWidget: boolean
 }
-
-type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
-type SettingsFormGroup = UntypedFormGroup & { value: SettingsFormData, controls: SettingsFormControls };
 
 @Component({
   selector: 'ats-orderbook-settings[settingsChange][guid]',
@@ -52,7 +50,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
-  form!: SettingsFormGroup;
+  form!: FormGroup<ControlsOf<SettingsFormData>>;
   exchanges: string[] = exchangesList;
 
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
@@ -64,35 +62,42 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
     this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
-      this.form = new UntypedFormGroup({
-        symbol: new UntypedFormControl(settings.symbol, [
+      this.form = new FormGroup<ControlsOf<SettingsFormData>>({
+        symbol: new FormControl(settings.symbol, [
           Validators.required,
           Validators.minLength(this.validationOptions.symbol.min),
           Validators.maxLength(this.validationOptions.symbol.max)
         ]),
-        exchange: new UntypedFormControl(settings.exchange, Validators.required),
-        depth: new UntypedFormControl(
-          settings.depth,
+        exchange: new FormControl(settings.exchange, Validators.required),
+        depth: new FormControl(
+          settings.depth ?? 10,
           [
             Validators.required,
             Validators.min(this.validationOptions.depth.min),
             Validators.max(this.validationOptions.depth.max)
           ]),
-        instrumentGroup: new UntypedFormControl(settings.instrumentGroup),
-        showChart: new UntypedFormControl(settings.showChart),
-        showTable: new UntypedFormControl(settings.showTable),
-        showYieldForBonds: new UntypedFormControl(settings.showYieldForBonds),
-        useOrderWidget: new UntypedFormControl(settings.useOrderWidget)
-      } as SettingsFormControls) as SettingsFormGroup;
+        instrumentGroup: new FormControl(settings.instrumentGroup ?? ''),
+        showChart: new FormControl(settings.showChart),
+        showTable: new FormControl(settings.showTable),
+        showYieldForBonds: new FormControl(settings.showYieldForBonds),
+        useOrderWidget: new FormControl(settings.useOrderWidget ?? false)
+      });
     });
   }
 
   submitForm(): void {
-    this.settingsService.updateSettings(
+    this.settingsService.updateSettings<OrderbookSettings>(
       this.guid,
       {
         ...this.form.value,
-        depth: Number(this.form.value.depth),
+        showChart: this.form.value.showChart!,
+        showTable: this.form.value.showTable!,
+        showYieldForBonds: this.form.value.showYieldForBonds!,
+        useOrderWidget: this.form.value.useOrderWidget!,
+        depth: Number(this.form.value.depth!),
+        symbol: this.form.value.symbol!,
+        instrumentGroup: this.form.value.instrumentGroup!,
+        exchange: this.form.value.exchange!,
         linkToActive: false
       });
 
