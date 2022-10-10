@@ -15,11 +15,15 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
 import {
+  Observable,
+  shareReplay,
   Subject,
+  take,
   takeUntil
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { InstrumentValidation } from '../../../../shared/utils/validation-options';
+import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 
 interface SettingsFormData {
   depth: number,
@@ -54,6 +58,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: SettingsFormGroup;
   exchanges: string[] = exchangesList;
+  private settings$!: Observable<OrderbookSettings>;
 
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -61,7 +66,11 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
+      shareReplay(1)
+    );
+
+    this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.form = new FormGroup({
@@ -88,15 +97,19 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   }
 
   submitForm(): void {
-    this.settingsService.updateSettings(
-      this.guid,
-      {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(initialSettings => {
+      const newSettings = {
         ...this.form.value,
-        depth: Number(this.form.value.depth),
-        linkToActive: false
-      });
+        depth: Number(this.form.value.depth)
+      };
 
-    this.settingsChange.emit();
+      newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
+
+      this.settingsService.updateSettings(this.guid, newSettings);
+      this.settingsChange.emit();
+    });
   }
 
   ngOnDestroy(): void {

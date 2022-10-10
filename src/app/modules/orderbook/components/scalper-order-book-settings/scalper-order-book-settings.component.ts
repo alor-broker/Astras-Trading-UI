@@ -7,7 +7,10 @@ import {
   Output
 } from '@angular/core';
 import {
+  Observable,
+  shareReplay,
   Subject,
+  take,
   takeUntil
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -25,6 +28,7 @@ import {
 } from "../../../../shared/models/settings/scalper-order-book-settings.model";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { InstrumentValidation } from '../../../../shared/utils/validation-options';
+import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 
 interface SettingsFormData {
   depth: number;
@@ -73,21 +77,19 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
       max: 600
     }
   };
-
   @Input()
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
-
   form!: SettingsFormGroup;
   exchanges: string[] = exchangesList;
-
   readonly availableVolumeHighlightModes: { label: string, value: string }[] = [
     { label: 'Отключено', value: VolumeHighlightMode.Off },
     { label: 'Относительно наибольшего объема', value: VolumeHighlightMode.BiggestVolume },
     { label: 'По границам (более объема)', value: VolumeHighlightMode.VolumeBoundsWithFixedValue },
   ];
 
+  private settings$!: Observable<ScalperOrderBookSettings>;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private readonly settingsService: WidgetSettingsService) {
@@ -101,12 +103,20 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     return this.form.controls.workingVolumes as FormArray;
   }
 
+  get canRemoveVolumeHighlightOption(): boolean {
+    return this.volumeHighlightOptions.length > 1;
+  }
+
   workingVolumeCtrl(index: number): FormControl {
     return this.workingVolumes.at(index) as FormControl;
   }
 
   ngOnInit() {
-    this.settingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(
+      shareReplay(1)
+    );
+
+    this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.buildForm(settings);
@@ -118,9 +128,10 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   }
 
   submitForm(): void {
-    this.settingsService.updateSettings(
-      this.guid,
-      {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(initialSettings => {
+      const newSettings = {
         ...this.form.value,
         depth: Number(this.form.value.depth),
         volumeHighlightOptions: this.form.value.volumeHighlightOptions.map((x: VolumeHighlightOption) => ({
@@ -132,9 +143,13 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         workingVolumes: this.form.value.workingVolumes.map((wv: string) => Number(wv)),
         autoAlignIntervalSec: !!this.form.value.autoAlignIntervalSec ? Number(this.form.value.autoAlignIntervalSec) : null,
         linkToActive: false
-      });
+      };
 
-    this.settingsChange.emit();
+      newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
+
+      this.settingsService.updateSettings(this.guid, newSettings);
+      this.settingsChange.emit();
+    });
   }
 
   ngOnDestroy(): void {
@@ -153,10 +168,6 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
 
     const defaultValue = this.volumeHighlightOptions.controls[this.volumeHighlightOptions.controls.length - 1].value as VolumeHighlightOption;
     this.volumeHighlightOptions.push(this.createVolumeHighlightOptionsControl(defaultValue));
-  }
-
-  get canRemoveVolumeHighlightOption(): boolean {
-    return this.volumeHighlightOptions.length > 1;
   }
 
   removeVolumeHighlightOption($event: MouseEvent, index: number) {

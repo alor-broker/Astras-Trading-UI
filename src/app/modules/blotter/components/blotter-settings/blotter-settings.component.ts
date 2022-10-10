@@ -22,7 +22,10 @@ import {
 } from 'src/app/shared/models/settings/blotter-settings.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
+  Observable,
+  shareReplay,
   Subject,
+  take,
   takeUntil
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
@@ -45,12 +48,17 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   prevSettings?: BlotterSettings;
   exchanges: string[] = exchangesList;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
+  private settings$!: Observable<BlotterSettings>;
 
   constructor(private readonly settingsService: WidgetSettingsService) {
   }
 
   ngOnInit() {
-    this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+      shareReplay(1)
+    );
+
+    this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       if (settings) {
@@ -95,20 +103,27 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   }
 
   submitForm(): void {
-    this.form.value.currency = this.codeToCurrency(this.form.value.currency);
-    this.settingsService.updateSettings(
-      this.guid,
-      {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(initialSettings => {
+      const newSettings = {
         ...this.form.value,
-        linkToActive: false
-      }
-    );
+      };
 
-    this.settingsChange.emit();
+      newSettings.linkToActive = this.isPortfolioEqual(initialSettings, newSettings);
+
+      this.settingsService.updateSettings(this.guid, newSettings);
+      this.settingsChange.emit();
+    });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+  }
+
+  private isPortfolioEqual(settings1: BlotterSettings, settings2: BlotterSettings) {
+    return settings1.portfolio === settings2.portfolio
+      && settings1.exchange === settings2.exchange;
   }
 }

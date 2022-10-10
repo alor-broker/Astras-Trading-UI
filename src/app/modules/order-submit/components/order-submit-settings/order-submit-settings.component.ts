@@ -13,11 +13,15 @@ import {
 } from "@angular/forms";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import {
+  Observable,
+  shareReplay,
   Subject,
+  take,
   takeUntil
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderSubmitSettings } from "../../../../shared/models/settings/order-submit-settings.model";
+import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 
 @Component({
   selector: 'ats-order-submit-settings[settingsChange][guid]',
@@ -32,12 +36,17 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   exchanges: string[] = exchangesList;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
+  private settings$!: Observable<OrderSubmitSettings>;
 
   constructor(private readonly settingsService: WidgetSettingsService) {
   }
 
   ngOnInit() {
-    this.settingsService.getSettings<OrderSubmitSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<OrderSubmitSettings>(this.guid).pipe(
+      shareReplay(1)
+    );
+
+    this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.form = new FormGroup({
@@ -52,14 +61,18 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
   }
 
   submitForm(): void {
-    this.settingsService.updateSettings<OrderSubmitSettings>(
-      this.guid,
-      {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(initialSettings => {
+      const newSettings = {
         ...this.form.value,
-        linkToActive: false
-      });
+      };
 
-    this.settingsChange.emit();
+      newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
+
+      this.settingsService.updateSettings(this.guid, newSettings);
+      this.settingsChange.emit();
+    });
   }
 
   ngOnDestroy(): void {
