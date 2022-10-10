@@ -12,6 +12,7 @@ import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { sharedModuleImportForTests, TestData } from "../../../../shared/utils/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { StopEdit } from "../../models/stop-edit";
+import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
 
 describe('StopEditComponent', () => {
   let component: StopEditComponent;
@@ -33,7 +34,7 @@ describe('StopEditComponent', () => {
       triggerPrice: 1000,
       quantity: 15,
       stopEndUnixTime: new Date(),
-      condition: 'More',
+      condition: StopOrderCondition.More,
       user: {
         portfolio: 'D1234'
       } as PortfolioKey
@@ -80,7 +81,7 @@ describe('StopEditComponent', () => {
     expect(formValue.quantity).toBe(initialCommandContext.commandParameters.quantity);
     expect(formValue.price).toBe(initialCommandContext.commandParameters.price!);
     expect(formValue.triggerPrice).toBe(initialCommandContext.commandParameters.triggerPrice!);
-    expect(formValue.stopEndUnixTime).toBe(initialCommandContext.commandParameters.stopEndUnixTime!);
+    expect(formValue.stopEndUnixTime).toEqual(initialCommandContext.commandParameters.stopEndUnixTime);
     expect(formValue.condition).toBe(initialCommandContext.commandParameters.condition!);
     expect(formValue.withLimit).toBe(true);
     expect(formValue.side).toBe(initialCommandContext.commandParameters.side!);
@@ -128,7 +129,7 @@ describe('StopEditComponent', () => {
         quantity: 125,
         triggerPrice: 110,
         stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndDate).getTime() / 1000,
-        condition: 'Less',
+        condition: StopOrderCondition.Less,
         side: initialCommandContext.commandParameters.side
       };
 
@@ -136,7 +137,7 @@ describe('StopEditComponent', () => {
       component.form.controls.quantity?.setValue(125);
       component.form.controls.triggerPrice?.setValue(110);
       component.form.controls.stopEndUnixTime?.setValue(stopEndDate);
-      component.form.controls.condition?.setValue('Less');
+      component.form.controls.condition?.setValue(StopOrderCondition.Less);
       component.form.controls.side?.setValue(Side.Buy);
 
       fixture.detectChanges();

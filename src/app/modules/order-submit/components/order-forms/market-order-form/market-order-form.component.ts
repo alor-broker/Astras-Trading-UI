@@ -12,10 +12,6 @@ import {
   Validators
 } from "@angular/forms";
 import {
-  MarketFormControls,
-  MarketFormGroup
-} from "../../../../command/models/command-forms.model";
-import {
   BehaviorSubject,
   distinctUntilChanged,
   filter,
@@ -32,6 +28,7 @@ import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
 import { GuidGenerator } from "../../../../../shared/utils/guid";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
+import { ControlsOf } from '../../../../../shared/models/form.model';
 
 export type MarketOrderFormValue = Omit<MarketOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
@@ -62,8 +59,8 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
     this.lastFormValue$.complete();
   }
 
-  protected buildForm(instrument: Instrument): FormGroup {
-    return new FormGroup({
+  protected buildForm(instrument: Instrument): FormGroup<ControlsOf<MarketOrderFormValue>> {
+    return new FormGroup<ControlsOf<MarketOrderFormValue>>({
       quantity: new FormControl(
         1,
         [
@@ -72,8 +69,8 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      instrumentGroup: new FormControl(instrument.instrumentGroup),
-    } as MarketFormControls) as MarketFormGroup;
+      instrumentGroup: new FormControl(instrument.instrumentGroup ?? ''),
+    });
   }
 
   protected getFormValue(): MarketOrderFormValue | null {
@@ -139,10 +136,10 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
     );
 
     return this.quoteService.getQuotes(instrument.symbol, instrument.exchange, formValue.instrumentGroup, this.componentGuid)
-    .pipe(
-      map(q => q.last_price),
-      finalize(() => this.quoteService.unsubscribe()),
-      takeUntil(isDeactivated$)
-    );
+      .pipe(
+        map(q => q.last_price),
+        finalize(() => this.quoteService.unsubscribe()),
+        takeUntil(isDeactivated$)
+      );
   }
 }

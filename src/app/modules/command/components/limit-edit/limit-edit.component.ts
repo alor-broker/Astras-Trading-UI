@@ -17,16 +17,13 @@ import {
 } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
-import {
-  LimitFormControls,
-  LimitFormGroup
-} from '../../models/command-forms.model';
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { LimitEdit } from '../../models/limit-edit.model';
 import { CommandContextModel } from '../../models/command-context.model';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
+import { ControlsOf } from '../../../../shared/models/form.model';
 
 @Component({
   selector: 'ats-limit-edit',
@@ -35,7 +32,7 @@ import { inputNumberValidation } from "../../../../shared/utils/validation-optio
 })
 export class LimitEditComponent implements OnInit, OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
-  form!: LimitFormGroup;
+  form!: FormGroup<ControlsOf<LimitFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<EditParams> | null>(null);
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -97,7 +94,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
-      distinctUntilChanged<LimitFormData>((prev, curr) =>
+      distinctUntilChanged((prev, curr) =>
         prev?.price == curr?.price
         && prev?.quantity == curr?.quantity
       )
@@ -106,8 +103,8 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buildForm(initialParameters: EditParams) {
-    return new FormGroup({
+  private buildForm(initialParameters: EditParams): FormGroup<ControlsOf<LimitFormData>> {
+    return new FormGroup<ControlsOf<LimitFormData>>({
       quantity: new FormControl(
         initialParameters.quantity ?? 1,
         [
@@ -122,7 +119,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max)
         ])
-    } as LimitFormControls) as LimitFormGroup;
+    });
   }
 
   private updateEvaluation(command: LimitEdit, commandContext: CommandContextModel<EditParams>) {

@@ -1,5 +1,14 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import {
   BehaviorSubject,
   combineLatest,
@@ -14,14 +23,17 @@ import {
 } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { MarketFormControls, MarketFormGroup } from '../../models/command-forms.model';
 import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { MarketFormData } from '../../models/market-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { MarketCommand } from '../../models/market-command.model';
-import { distinct, finalize } from 'rxjs/operators';
+import {
+  distinct,
+  finalize
+} from 'rxjs/operators';
 import { CommandContextModel } from '../../models/command-context.model';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
+import { ControlsOf } from '../../../../shared/models/form.model';
 
 @Component({
   selector: 'ats-market-command',
@@ -30,7 +42,7 @@ import { inputNumberValidation } from "../../../../shared/utils/validation-optio
 })
 export class MarketCommandComponent implements OnInit, OnDestroy {
   evaluation$!: Observable<EvaluationBaseProperties | null>;
-  form!: MarketFormGroup;
+  form!: FormGroup<ControlsOf<MarketFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private lastCommand$ = new BehaviorSubject<MarketCommand | null>(null);
@@ -109,8 +121,8 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     } as EvaluationBaseProperties;
   }
 
-  private buildForm(initialParameters: CommandParams) {
-    return new FormGroup({
+  private buildForm(initialParameters: CommandParams): FormGroup<ControlsOf<MarketFormData>> {
+    return new FormGroup<ControlsOf<MarketFormData>>({
       quantity: new FormControl(
         initialParameters.quantity ?? 1,
         [
@@ -120,7 +132,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
         ]
       ),
       instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),
-    } as MarketFormControls) as MarketFormGroup;
+    });
   }
 
   private initEvaluationUpdates(commandContext: CommandContextModel<CommandParams>) {
@@ -152,7 +164,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
-      distinctUntilChanged<MarketFormData>((prev, curr) =>
+      distinctUntilChanged((prev, curr) =>
         prev?.quantity == curr?.quantity
         && prev?.instrumentGroup == curr?.instrumentGroup
       )

@@ -16,9 +16,9 @@ import {
 import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import {
   AbstractControl,
-  FormArray,
-  FormControl,
-  FormGroup,
+  UntypedFormArray,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
@@ -52,16 +52,16 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     secondName: ''
   });
 
-  get hotKeysForm(): FormGroup {
-    return this.settingsForm.get('hotKeysSettings') as FormGroup;
+  get hotKeysForm(): UntypedFormGroup {
+    return this.settingsForm.get('hotKeysSettings') as UntypedFormGroup;
   }
 
-  get workingVolumes(): FormArray {
-    return this.hotKeysForm.get('workingVolumes') as FormArray;
+  get workingVolumes(): UntypedFormArray {
+    return this.hotKeysForm.get('workingVolumes') as UntypedFormArray;
   }
 
-  get designSettingsForm(): FormGroup {
-    return this.settingsForm.get('designSettings') as FormGroup;
+  get designSettingsForm(): UntypedFormGroup {
+    return this.settingsForm.get('designSettings') as UntypedFormGroup;
   }
 
   constructor(private readonly service: TerminalSettingsService) {
@@ -85,7 +85,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     e.preventDefault();
     e.stopPropagation();
 
-    this.workingVolumes.push(new FormControl(null, Validators.required));
+    this.workingVolumes.push(new UntypedFormControl(null, Validators.required));
   }
 
   removeWorkingVolume(e: MouseEvent, index: number) {
@@ -119,36 +119,36 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   }
 
   private buildForm(currentSettings: TerminalSettings): TerminalSettingsFormGroup {
-    return new FormGroup({
-      designSettings: new FormGroup({
-        theme: new FormControl(currentSettings.designSettings?.theme)
+    return new UntypedFormGroup({
+      designSettings: new UntypedFormGroup({
+        theme: new UntypedFormControl(currentSettings.designSettings?.theme)
       }),
-      timezoneDisplayOption: new FormControl(currentSettings.timezoneDisplayOption, Validators.required),
-      userIdleDurationMin: new FormControl(
+      timezoneDisplayOption: new UntypedFormControl(currentSettings.timezoneDisplayOption, Validators.required),
+      userIdleDurationMin: new UntypedFormControl(
         currentSettings.userIdleDurationMin,
         [
           Validators.required,
           Validators.min(this.validationSettings.userIdleDurationMin.min),
           Validators.max(this.validationSettings.userIdleDurationMin.max)
         ]),
-      badgesBind: new FormControl(currentSettings.badgesBind),
-      hotKeysSettings: new FormGroup({
-        cancelOrdersKey: new FormControl(currentSettings.hotKeysSettings?.cancelOrdersKey),
-        closePositionsKey: new FormControl(currentSettings.hotKeysSettings?.closePositionsKey),
-        centerOrderbookKey: new FormControl(currentSettings.hotKeysSettings?.centerOrderbookKey),
-        cancelOrderbookOrders: new FormControl(currentSettings.hotKeysSettings?.cancelOrderbookOrders),
-        closeOrderbookPositions: new FormControl(currentSettings.hotKeysSettings?.closeOrderbookPositions),
-        reverseOrderbookPositions: new FormControl(currentSettings.hotKeysSettings?.reverseOrderbookPositions),
-        buyMarket: new FormControl(currentSettings.hotKeysSettings?.buyMarket),
-        sellMarket: new FormControl(currentSettings.hotKeysSettings?.sellMarket),
-        workingVolumes: new FormArray(
-          currentSettings.hotKeysSettings?.workingVolumes?.map(wv => new FormControl(wv, Validators.required))
+      badgesBind: new UntypedFormControl(currentSettings.badgesBind),
+      hotKeysSettings: new UntypedFormGroup({
+        cancelOrdersKey: new UntypedFormControl(currentSettings.hotKeysSettings?.cancelOrdersKey),
+        closePositionsKey: new UntypedFormControl(currentSettings.hotKeysSettings?.closePositionsKey),
+        centerOrderbookKey: new UntypedFormControl(currentSettings.hotKeysSettings?.centerOrderbookKey),
+        cancelOrderbookOrders: new UntypedFormControl(currentSettings.hotKeysSettings?.cancelOrderbookOrders),
+        closeOrderbookPositions: new UntypedFormControl(currentSettings.hotKeysSettings?.closeOrderbookPositions),
+        reverseOrderbookPositions: new UntypedFormControl(currentSettings.hotKeysSettings?.reverseOrderbookPositions),
+        buyMarket: new UntypedFormControl(currentSettings.hotKeysSettings?.buyMarket),
+        sellMarket: new UntypedFormControl(currentSettings.hotKeysSettings?.sellMarket),
+        workingVolumes: new UntypedFormArray(
+          currentSettings.hotKeysSettings?.workingVolumes?.map(wv => new UntypedFormControl(wv, Validators.required))
           || []
         ),
-        sellBestOrder: new FormControl(currentSettings.hotKeysSettings?.sellBestOrder),
-        buyBestOrder: new FormControl(currentSettings.hotKeysSettings?.buyBestOrder),
-        buyBestAsk: new FormControl(currentSettings.hotKeysSettings?.buyBestAsk),
-        sellBestBid: new FormControl(currentSettings.hotKeysSettings?.sellBestBid),
+        sellBestOrder: new UntypedFormControl(currentSettings.hotKeysSettings?.sellBestOrder),
+        buyBestOrder: new UntypedFormControl(currentSettings.hotKeysSettings?.buyBestOrder),
+        buyBestAsk: new UntypedFormControl(currentSettings.hotKeysSettings?.buyBestAsk),
+        sellBestBid: new UntypedFormControl(currentSettings.hotKeysSettings?.sellBestBid),
       })
       } as TerminalSettingsFormControls
     ) as TerminalSettingsFormGroup;

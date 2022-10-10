@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { map, startWith } from 'rxjs/operators';
 import { filter, Observable, shareReplay } from 'rxjs';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { PresetWatchlist, PresetWatchlistCollection, Watchlist } from '../../models/watchlist.model';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
@@ -12,7 +12,7 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
   styleUrls: ['./watchlist-collection-edit.component.less']
 })
 export class WatchlistCollectionEditComponent implements OnInit {
-  newListForm!: FormGroup;
+  newListForm!: UntypedFormGroup;
   collection$?: Observable<Watchlist[]>;
   presetCollection$?: Observable<PresetWatchlist[]>;
   selectedPresetWatchlist?: PresetWatchlist | null = null;
@@ -74,8 +74,8 @@ export class WatchlistCollectionEditComponent implements OnInit {
   }
 
   private buildNewListForm() {
-    this.newListForm = new FormGroup({
-      title: new FormControl(null, [Validators.required, Validators.maxLength(100)])
+    this.newListForm = new UntypedFormGroup({
+      title: new UntypedFormControl(null, [Validators.required, Validators.maxLength(100)])
     });
   }
 }

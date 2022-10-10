@@ -75,7 +75,7 @@
           class='ant-input'
           type="text"
           [placeholder]="column.displayName"
-          [formControl]="getFilterControl(column.filterData.filterName)"
+          [formControl]="getFilterControl(column.filterData.filterName)!"
         />
         <ng-template #intervalFilter>
           <input
@@ -83,14 +83,14 @@
             class='ant-input'
             type="text"
             [placeholder]="column.displayName + ', с'"
-            [formControl]="getFilterControl(column.filterData.intervalStartName!)"
+            [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
           />
           <input
             nz-input
             class='ant-input'
             type="text"
             [placeholder]="column.displayName + ', по'"
-            [formControl]="getFilterControl(column.filterData.intervalEndName!)"
+            [formControl]="getFilterControl(column.filterData.intervalEndName!)!"
           />
         </ng-template>
         <button nz-button nzType="primary" nzSize="small" (click)="resetFilter(column.filterData)">Сбросить</button>

@@ -1,13 +1,24 @@
-import { Component, OnDestroy } from "@angular/core";
+import {
+  Component,
+  OnDestroy
+} from "@angular/core";
 import { OrderFormBaseComponent } from "../order-form-base.component";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { LimitFormControls, LimitFormGroup } from "../../../../command/models/command-forms.model";
+import {
+  FormControl,
+  FormGroup,
+  Validators
+} from "@angular/forms";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import { LimitOrder } from "../../../../command/models/order.model";
-import { BehaviorSubject, filter, take } from "rxjs";
+import {
+  BehaviorSubject,
+  filter,
+  take
+} from "rxjs";
 import { EvaluationBaseProperties } from "../../../../command/models/evaluation-base-properties.model";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
+import { ControlsOf } from '../../../../../shared/models/form.model';
 
 export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
@@ -24,8 +35,8 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
     this.evaluation$.complete();
   }
 
-  protected buildForm(instrument: Instrument): FormGroup {
-    return new FormGroup({
+  protected buildForm(instrument: Instrument): FormGroup<ControlsOf<LimitOrderFormValue>> {
+    return new FormGroup<ControlsOf<LimitOrderFormValue>>({
       quantity: new FormControl(
         1,
         [
@@ -42,8 +53,8 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
           Validators.max(inputNumberValidation.max)
         ]
       ),
-      instrumentGroup: new FormControl(instrument.instrumentGroup),
-    } as LimitFormControls) as LimitFormGroup;
+      instrumentGroup: new FormControl(instrument.instrumentGroup ?? ''),
+    });
   }
 
   protected getFormValue(): LimitOrderFormValue | null {

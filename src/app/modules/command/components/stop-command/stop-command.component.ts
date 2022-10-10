@@ -21,12 +21,10 @@ import { CommandParams } from 'src/app/shared/models/commands/command-params.mod
 import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
 import {
   addMonthsUnix,
-  getUtcNow, startOfDay, toUnixTime
+  getUtcNow,
+  startOfDay,
+  toUnixTime
 } from 'src/app/shared/utils/datetime';
-import {
-  StopFormControls,
-  StopFormGroup
-} from '../../models/command-forms.model';
 import { StopFormData } from '../../models/stop-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { StopCommand } from '../../models/stop-command.model';
@@ -34,6 +32,7 @@ import { CommandContextModel } from '../../models/command-context.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
+import { ControlsOf } from '../../../../shared/models/form.model';
 
 @Component({
   selector: 'ats-stop-command',
@@ -41,7 +40,7 @@ import { inputNumberValidation } from "../../../../shared/utils/validation-optio
   styleUrls: ['./stop-command.component.less']
 })
 export class StopCommandComponent implements OnInit, OnDestroy {
-  form!: StopFormGroup;
+  form!: FormGroup<ControlsOf<StopFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
   public canSelectNow = true;
   private timezoneConverter!: TimezoneConverter;
@@ -73,7 +72,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         if (isErr) {
           Object.values(this.form.controls).forEach(c => {
             c.markAsDirty();
-            c.updateValueAndValidity({onlySelf: false});
+            c.updateValueAndValidity({ onlySelf: false });
           });
         }
       });
@@ -84,6 +83,11 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
     this.commandContext$.complete();
   }
+
+  disabledDate = (date: Date) => {
+    const today = startOfDay(new Date());
+    return toUnixTime(date) < toUnixTime(today);
+  };
 
   private checkNowTimeSelection(converter: TimezoneConverter) {
     // nz-date-picker does not support timezones changing
@@ -99,14 +103,14 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formValue = this.form.value as StopFormData;
+    const formValue = this.form.value;
 
     if (initialParameters && initialParameters.user) {
       const price = Number(formValue.price);
       const newCommand: StopCommand = {
         quantity: Number(formValue.quantity),
         triggerPrice: Number(formValue.triggerPrice),
-        condition: formValue.condition,
+        condition: formValue.condition!,
         stopEndUnixTime: !!formValue.stopEndUnixTime
           ? this.timezoneConverter.terminalToUtc0Date(formValue.stopEndUnixTime)
           : undefined,
@@ -124,13 +128,13 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     }
   }
 
-  private buildForm(initialParameters: CommandParams) {
+  private buildForm(initialParameters: CommandParams): FormGroup<ControlsOf<StopFormData>> {
     let price = initialParameters.price;
     if (price == 1 || price == null) {
       price = 0;
     }
 
-    return new FormGroup({
+    return new FormGroup<ControlsOf<StopFormData>>({
       quantity: new FormControl(
         initialParameters.quantity ?? 1,
         [
@@ -155,16 +159,14 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           Validators.max(inputNumberValidation.max),
         ]
       ),
-      stopEndUnixTime: new FormControl(initialParameters.stopEndUnixTime ?? this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
+      stopEndUnixTime: new FormControl(!!initialParameters.stopEndUnixTime
+        ? new Date(initialParameters.stopEndUnixTime)
+        : this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
+      ),
       condition: new FormControl(StopOrderCondition.More),
       withLimit: new FormControl(false)
-    } as StopFormControls) as StopFormGroup;
+    });
   }
-
-  disabledDate = (date: Date) => {
-    const today = startOfDay(new Date());
-    return toUnixTime(date) < toUnixTime(today);
-  };
 
   private initCommandForm(initialParameters: CommandParams | null, converter: TimezoneConverter) {
     if (!initialParameters) {
@@ -177,7 +179,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
-      distinctUntilChanged<StopFormData>((prev, curr) =>
+      distinctUntilChanged((prev, curr) =>
         prev?.condition == curr?.condition &&
         prev?.price == curr?.price &&
         prev?.quantity == curr?.quantity &&
