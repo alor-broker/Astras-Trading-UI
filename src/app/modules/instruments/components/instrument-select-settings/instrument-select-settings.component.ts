@@ -12,8 +12,8 @@ import {
   InstrumentSelectSettings
 } from 'src/app/shared/models/settings/instrument-select-settings.model';
 import {
-  FormControl,
-  FormGroup
+  UntypedFormControl,
+  UntypedFormGroup
 } from '@angular/forms';
 import {
   Subject,
@@ -27,7 +27,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
   styleUrls: ['./instrument-select-settings.component.less']
 })
 export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
-  settingsForm!: FormGroup;
+  settingsForm!: UntypedFormGroup;
   allInstrumentColumns: ColumnIds[] = allInstrumentsColumns;
   @Input()
   guid!: string;
@@ -48,7 +48,7 @@ export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
 
   saveSettings() {
     if (this.settingsForm?.valid) {
-      this.settingsService.updateSettings(
+      this.settingsService.updateSettings<InstrumentSelectSettings>(
         this.guid,
         {
           ...this.settingsForm.value
@@ -65,8 +65,8 @@ export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
   }
 
   private buildSettingsForm(currentSettings: InstrumentSelectSettings) {
-    this.settingsForm = new FormGroup({
-      instrumentColumns: new FormControl(currentSettings.instrumentColumns)
+    this.settingsForm = new UntypedFormGroup({
+      instrumentColumns: new UntypedFormControl(currentSettings.instrumentColumns)
     });
   }
 }

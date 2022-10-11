@@ -7,7 +7,6 @@ import {
   Output
 } from '@angular/core';
 import {
-  AbstractControl,
   FormControl,
   FormGroup,
   Validators
@@ -24,6 +23,7 @@ import {
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { InstrumentValidation } from '../../../../shared/utils/validation-options';
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
+import { ControlsOf } from '../../../../shared/models/form.model';
 
 interface SettingsFormData {
   depth: number,
@@ -33,10 +33,8 @@ interface SettingsFormData {
   showChart: boolean,
   showTable: boolean,
   showYieldForBonds: boolean,
+  useOrderWidget: boolean
 }
-
-type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
-type SettingsFormGroup = FormGroup & { value: SettingsFormData, controls: SettingsFormControls };
 
 @Component({
   selector: 'ats-orderbook-settings[settingsChange][guid]',
@@ -56,7 +54,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
-  form!: SettingsFormGroup;
+  form!: FormGroup<ControlsOf<SettingsFormData>>;
   exchanges: string[] = exchangesList;
   private settings$!: Observable<OrderbookSettings>;
 
@@ -73,7 +71,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
-      this.form = new FormGroup({
+      this.form = new FormGroup<ControlsOf<SettingsFormData>>({
         symbol: new FormControl(settings.symbol, [
           Validators.required,
           Validators.minLength(this.validationOptions.symbol.min),
@@ -81,18 +79,18 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
         ]),
         exchange: new FormControl(settings.exchange, Validators.required),
         depth: new FormControl(
-          settings.depth,
+          settings.depth ?? 10,
           [
             Validators.required,
             Validators.min(this.validationOptions.depth.min),
             Validators.max(this.validationOptions.depth.max)
           ]),
-        instrumentGroup: new FormControl(settings.instrumentGroup),
+        instrumentGroup: new FormControl(settings.instrumentGroup ?? ''),
         showChart: new FormControl(settings.showChart),
         showTable: new FormControl(settings.showTable),
         showYieldForBonds: new FormControl(settings.showYieldForBonds),
-        useOrderWidget: new FormControl(settings.useOrderWidget)
-      } as SettingsFormControls) as SettingsFormGroup;
+        useOrderWidget: new FormControl(settings.useOrderWidget ?? false)
+      });
     });
   }
 
@@ -102,12 +100,18 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
     ).subscribe(initialSettings => {
       const newSettings = {
         ...this.form.value,
-        depth: Number(this.form.value.depth)
-      };
+          showChart: this.form.value.showChart!,
+          showTable: this.form.value.showTable!,
+          showYieldForBonds: this.form.value.showYieldForBonds!,
+          useOrderWidget: this.form.value.useOrderWidget!,
+          depth: Number(this.form.value.depth!),
+          symbol: this.form.value.symbol!,
+          instrumentGroup: this.form.value.instrumentGroup!,
+          exchange: this.form.value.exchange!,
+      } as OrderbookSettings;
 
       newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
-
-      this.settingsService.updateSettings(this.guid, newSettings);
+      this.settingsService.updateSettings<OrderbookSettings>(this.guid, newSettings);
       this.settingsChange.emit();
     });
   }

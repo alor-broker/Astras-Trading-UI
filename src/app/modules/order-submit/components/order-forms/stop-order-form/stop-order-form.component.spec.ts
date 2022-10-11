@@ -30,6 +30,7 @@ import {
   addMonthsUnix,
   getUtcNow
 } from '../../../../../shared/utils/datetime';
+import { StopOrderCondition } from '../../../../../shared/models/enums/stoporder-conditions';
 
 describe('StopOrderFormComponent', () => {
   let component: StopOrderFormComponent;
@@ -196,7 +197,7 @@ describe('StopOrderFormComponent', () => {
       const expectedValue: StopOrderFormValue = {
         quantity: 125,
         triggerPrice: 126,
-        condition: 'Less',
+        condition: StopOrderCondition.Less,
         price: 140,
         stopEndUnixTime: timezoneConverter.terminalToUtc0Date(expectedDate),
         withLimit: true

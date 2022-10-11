@@ -16,9 +16,9 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   AbstractControl,
-  FormArray,
-  FormControl,
-  FormGroup,
+  UntypedFormArray,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from "@angular/forms";
 import {
@@ -47,7 +47,7 @@ interface SettingsFormData {
 }
 
 type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
-type SettingsFormGroup = FormGroup & { value: SettingsFormData, controls: SettingsFormControls };
+type SettingsFormGroup = UntypedFormGroup & { value: SettingsFormData, controls: SettingsFormControls };
 
 @Component({
   selector: 'ats-scalper-order-book-settings[settingsChange][guid]',
@@ -95,20 +95,20 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   constructor(private readonly settingsService: WidgetSettingsService) {
   }
 
-  get volumeHighlightOptions(): FormArray {
-    return this.form.controls.volumeHighlightOptions as FormArray;
+  get volumeHighlightOptions(): UntypedFormArray {
+    return this.form.controls.volumeHighlightOptions as UntypedFormArray;
   }
 
-  get workingVolumes(): FormArray {
-    return this.form.controls.workingVolumes as FormArray;
+  get workingVolumes(): UntypedFormArray {
+    return this.form.controls.workingVolumes as UntypedFormArray;
   }
 
   get canRemoveVolumeHighlightOption(): boolean {
     return this.volumeHighlightOptions.length > 1;
   }
 
-  workingVolumeCtrl(index: number): FormControl {
-    return this.workingVolumes.at(index) as FormControl;
+  workingVolumeCtrl(index: number): UntypedFormControl {
+    return this.workingVolumes.at(index) as UntypedFormControl;
   }
 
   ngOnInit() {
@@ -123,8 +123,8 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  asFormGroup(control: AbstractControl): FormGroup {
-    return control as FormGroup;
+  asFormGroup(control: AbstractControl): UntypedFormGroup {
+    return control as UntypedFormGroup;
   }
 
   submitForm(): void {
@@ -141,13 +141,12 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         ),
         volumeHighlightFullness: Number(this.form.value.volumeHighlightFullness),
         workingVolumes: this.form.value.workingVolumes.map((wv: string) => Number(wv)),
-        autoAlignIntervalSec: !!this.form.value.autoAlignIntervalSec ? Number(this.form.value.autoAlignIntervalSec) : null,
-        linkToActive: false
+        autoAlignIntervalSec: !!this.form.value.autoAlignIntervalSec ? Number(this.form.value.autoAlignIntervalSec) : null
       };
 
       newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
 
-      this.settingsService.updateSettings(this.guid, newSettings);
+      this.settingsService.updateSettings<ScalperOrderBookSettings>(this.guid, newSettings);
       this.settingsChange.emit();
     });
   }
@@ -158,7 +157,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   }
 
   setVolumeHighlightOptionColor(index: number, color: string) {
-    const formGroup = this.volumeHighlightOptions.controls[index] as FormGroup;
+    const formGroup = this.volumeHighlightOptions.controls[index] as UntypedFormGroup;
     formGroup.controls.color.setValue(color);
   }
 
@@ -186,38 +185,38 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   }
 
   private buildForm(settings: ScalperOrderBookSettings) {
-    this.form = new FormGroup({
-      symbol: new FormControl(settings.symbol, [
+    this.form = new UntypedFormGroup({
+      symbol: new UntypedFormControl(settings.symbol, [
         Validators.required,
         Validators.minLength(this.validationOptions.symbol.min),
         Validators.maxLength(this.validationOptions.symbol.max)
       ]),
-      exchange: new FormControl(settings.exchange, Validators.required),
-      depth: new FormControl(settings.depth, [Validators.required,
+      exchange: new UntypedFormControl(settings.exchange, Validators.required),
+      depth: new UntypedFormControl(settings.depth, [Validators.required,
         Validators.min(this.validationOptions.depth.min),
         Validators.max(this.validationOptions.depth.max)]),
-      instrumentGroup: new FormControl(settings.instrumentGroup),
-      showZeroVolumeItems: new FormControl(settings.showZeroVolumeItems),
-      showSpreadItems: new FormControl(settings.showSpreadItems),
-      volumeHighlightMode: new FormControl(settings.volumeHighlightMode ?? VolumeHighlightMode.Off),
-      volumeHighlightFullness: new FormControl(
+      instrumentGroup: new UntypedFormControl(settings.instrumentGroup),
+      showZeroVolumeItems: new UntypedFormControl(settings.showZeroVolumeItems),
+      showSpreadItems: new UntypedFormControl(settings.showSpreadItems),
+      volumeHighlightMode: new UntypedFormControl(settings.volumeHighlightMode ?? VolumeHighlightMode.Off),
+      volumeHighlightFullness: new UntypedFormControl(
         settings.volumeHighlightFullness ?? 1000,
         [
           Validators.required,
           Validators.min(this.validationOptions.volumeHighlightOption.volumeHighlightFullness.min),
           Validators.max(this.validationOptions.volumeHighlightOption.volumeHighlightFullness.max)
         ]),
-      volumeHighlightOptions: new FormArray(
+      volumeHighlightOptions: new UntypedFormArray(
         [...settings.volumeHighlightOptions]
           .sort((a, b) => a.boundary - b.boundary)
           .map(x => this.createVolumeHighlightOptionsControl(x))
       ),
-      workingVolumes: new FormArray(settings.workingVolumes.map(
-        wv => new FormControl(wv, [Validators.required, Validators.min(1)])
+      workingVolumes: new UntypedFormArray(settings.workingVolumes.map(
+        wv => new UntypedFormControl(wv, [Validators.required, Validators.min(1)])
       )),
-      disableHotkeys: new FormControl(settings.disableHotkeys),
-      enableMouseClickSilentOrders: new FormControl(settings.enableMouseClickSilentOrders),
-      autoAlignIntervalSec: new FormControl(
+      disableHotkeys: new UntypedFormControl(settings.disableHotkeys),
+      enableMouseClickSilentOrders: new UntypedFormControl(settings.enableMouseClickSilentOrders),
+      autoAlignIntervalSec: new UntypedFormControl(
         settings.autoAlignIntervalSec,
         [
           Validators.min(this.validationOptions.autoAlignIntervalSec.min),
@@ -228,15 +227,15 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   }
 
   private createVolumeHighlightOptionsControl(option?: VolumeHighlightOption): AbstractControl {
-    return new FormGroup({
-      boundary: new FormControl(
+    return new UntypedFormGroup({
+      boundary: new UntypedFormControl(
         option?.boundary,
         [
           Validators.required,
           Validators.min(this.validationOptions.volumeHighlightOption.boundary.min),
           Validators.max(this.validationOptions.volumeHighlightOption.boundary.max)
         ]),
-      color: new FormControl(option?.color, Validators.required)
+      color: new UntypedFormControl(option?.color, Validators.required)
     });
   }
 }

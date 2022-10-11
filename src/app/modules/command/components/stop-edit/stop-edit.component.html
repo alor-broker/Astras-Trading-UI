@@ -4,7 +4,7 @@
       <div nz-col [nzSm]="12" [nzXs]="24">
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="quantityError">
-            <nz-form-label  nzRequired nzFor="quantity">Кол-во лотов <span *ngIf="(commandContext.instrument?.lotsize ?? -1) !== 1">&nbsp;(лотность {{commandContext.instrument?.lotsize}})</span></nz-form-label>
+            <nz-form-label  nzRequired nzFor="quantity">Кол-во лотов <span *ngIf="(commandContext.instrument.lotsize ?? -1) !== 1">&nbsp;(лотность {{commandContext.instrument.lotsize}})</span></nz-form-label>
             <input class='ant-input' atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
           </nz-form-control>
           <ng-template #quantityError>

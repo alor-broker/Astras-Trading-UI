@@ -13,17 +13,16 @@ import {
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
 import {
   addMonthsUnix,
-  getUtcNow, startOfDay, toUnixTime
+  getUtcNow,
+  startOfDay,
+  toUnixTime
 } from "../../../../../shared/utils/datetime";
 import { StopOrderCondition } from "../../../../../shared/models/enums/stoporder-conditions";
-import {
-  StopFormControls,
-  StopFormGroup
-} from "../../../../command/models/command-forms.model";
 import { Observable } from "rxjs";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { map } from "rxjs/operators";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
+import { ControlsOf } from '../../../../../shared/models/form.model';
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'>
@@ -68,11 +67,11 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     this.checkPriceAvailability();
   }
 
-  protected buildForm(instrument: Instrument, additions: { timezoneConverter: TimezoneConverter } | null): FormGroup {
+  protected buildForm(instrument: Instrument, additions: { timezoneConverter: TimezoneConverter } | null): FormGroup<ControlsOf<StopOrderFormValue>> {
     this.timezoneConverter = additions!.timezoneConverter;
     this.checkNowTimeSelection();
 
-    return new FormGroup({
+    return new FormGroup<ControlsOf<StopOrderFormValue>>({
       quantity: new FormControl(
         1,
         [
@@ -100,7 +99,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
       stopEndUnixTime: new FormControl(additions!.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
       condition: new FormControl(StopOrderCondition.More),
       withLimit: new FormControl(false)
-    } as StopFormControls) as StopFormGroup;
+    });
   }
 
   protected getFormInitAdditions(): Observable<{ timezoneConverter: TimezoneConverter } | null> {

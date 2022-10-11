@@ -18,12 +18,13 @@ import {
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { FormGroup } from "@angular/forms";
 import { mapWith } from "../../../../shared/utils/observable-helper";
+import { ControlsOf } from '../../../../shared/models/form.model';
 
 @Component({
   template: ''
 })
-export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDestroy {
-  form?: FormGroup;
+export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements OnInit, OnDestroy {
+  form?: FormGroup<ControlsOf<T>>;
   @Output()
   formValueChange = new EventEmitter<T | null>();
   public readonly isActivated$ = new BehaviorSubject<boolean>(false);
@@ -68,7 +69,7 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
     });
   }
 
-  protected abstract buildForm(instrument: Instrument, additions: A | null): FormGroup;
+  protected abstract buildForm(instrument: Instrument, additions: A | null): FormGroup<ControlsOf<T>>;
 
   protected getFormValue(): T | null {
     if (!this.form || !this.form.valid) {
@@ -100,7 +101,7 @@ export abstract class OrderFormBaseComponent<T, A = {}> implements OnInit, OnDes
       this.emitFormValue();
     });
 
-    if(this.applyInitialValues) {
+    if (this.applyInitialValues) {
       const initialValuesSubscription = this.initialValues$.subscribe(value => this.applyInitialValues?.(value));
       this.formValueChangeSubscription.add(initialValuesSubscription);
     }

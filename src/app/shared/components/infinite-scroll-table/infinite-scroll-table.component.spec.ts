@@ -7,7 +7,7 @@ import { By } from "@angular/platform-browser";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { ColumnsSettings } from "../../models/columns-settings.model";
-import { FormControl } from "@angular/forms";
+import { UntypedFormControl } from "@angular/forms";
 
 @Component({
   template: `
@@ -117,13 +117,13 @@ describe('InfiniteScrollTableComponent', () => {
   });
 
   it('should return filter control', () => {
-    expect(component.getFilterControl('name1')).toEqual(component.filtersForm.get('name1') as FormControl);
+    expect(component.getFilterControl('name1')).toEqual(component.filtersForm.get('name1') as UntypedFormControl);
     expect(component.getFilterControl('notExistingName')).toBeFalsy();
   });
 
   it('should reset filter', () => {
-    component.getFilterControl('name1').setValue('testValue');
+    component.getFilterControl('name1')?.setValue('testValue');
     component.resetFilter({filterName: 'name1'});
-    expect(component.getFilterControl('name1').value).toBe('');
+    expect(component.getFilterControl('name1')?.value).toBe('');
   });
 });

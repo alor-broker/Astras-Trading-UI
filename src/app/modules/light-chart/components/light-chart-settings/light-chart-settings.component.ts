@@ -7,8 +7,8 @@ import {
   Output
 } from '@angular/core';
 import {
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
@@ -39,7 +39,7 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   settingsChange: EventEmitter<LightChartSettings> = new EventEmitter<LightChartSettings>();
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   timeFrames: Timeframe[];
   exchanges: string[] = exchangesList;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
@@ -57,15 +57,15 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
-      this.form = new FormGroup({
-        symbol: new FormControl(settings.symbol, [
+      this.form = new UntypedFormGroup({
+        symbol: new UntypedFormControl(settings.symbol, [
           Validators.required,
           Validators.minLength(this.validationOptions.symbol.min),
           Validators.maxLength(this.validationOptions.symbol.max)
         ]),
-        exchange: new FormControl(settings.exchange, Validators.required),
-        timeFrame: new FormControl(settings.timeFrame, Validators.required),
-        instrumentGroup: new FormControl(settings.instrumentGroup)
+        exchange: new UntypedFormControl(settings.exchange, Validators.required),
+        timeFrame: new UntypedFormControl(settings.timeFrame, Validators.required),
+        instrumentGroup: new UntypedFormControl(settings.instrumentGroup)
       });
     });
   }
@@ -80,7 +80,7 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
 
       newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
 
-      this.settingsService.updateSettings(this.guid, newSettings);
+      this.settingsService.updateSettings<LightChartSettings>(this.guid, newSettings);
       this.settingsChange.emit();
     });
   }

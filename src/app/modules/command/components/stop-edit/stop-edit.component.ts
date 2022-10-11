@@ -1,18 +1,39 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, Subject, takeUntil, withLatestFrom } from "rxjs";
-import { StopFormControls, StopFormGroup } from "../../models/command-forms.model";
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  filter,
+  Subject,
+  takeUntil,
+  withLatestFrom
+} from "rxjs";
 import { CommandContextModel } from "../../models/command-context.model";
 import { EditParams } from "../../../../shared/models/commands/edit-params.model";
 import { CommandsService } from "../../services/commands.service";
 import { distinctUntilChanged } from "rxjs/operators";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  FormControl,
+  FormGroup,
+  Validators
+} from "@angular/forms";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { StopFormData } from "../../models/stop-form-data.model";
-import { addMonthsUnix, getUtcNow, startOfDay, toUnixTime } from "../../../../shared/utils/datetime";
+import {
+  addMonthsUnix,
+  getUtcNow,
+  startOfDay,
+  toUnixTime
+} from "../../../../shared/utils/datetime";
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { StopEdit } from "../../models/stop-edit";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
+import { ControlsOf } from '../../../../shared/models/form.model';
+import { Side } from '../../../../shared/models/enums/side.model';
 
 @Component({
   selector: 'ats-stop-edit',
@@ -20,7 +41,7 @@ import { inputNumberValidation } from "../../../../shared/utils/validation-optio
   styleUrls: ['./stop-edit.component.less']
 })
 export class StopEditComponent implements OnInit, OnDestroy {
-  form!: StopFormGroup;
+  form!: FormGroup<ControlsOf<StopFormData & { side: Side }>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<EditParams> | null>(null);
   canSelectNow = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -53,6 +74,11 @@ export class StopEditComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
     this.commandContext$.complete();
   }
+
+  disabledDate = (date: Date) => {
+    const today = startOfDay(new Date());
+    return toUnixTime(date) < toUnixTime(today);
+  };
 
   private setStopEdit(initialParameters: EditParams): void {
     if (!this.form.valid) {
@@ -98,7 +124,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
-      distinctUntilChanged<StopFormData>((prev, curr) =>
+      distinctUntilChanged((prev, curr) =>
         prev?.condition == curr?.condition &&
         prev?.price == curr?.price &&
         prev?.quantity == curr?.quantity &&
@@ -107,18 +133,21 @@ export class StopEditComponent implements OnInit, OnDestroy {
     ).subscribe((val) => {
       this.setStopEdit({
         ...initialParameters,
-        ...val
+        ...val,
+        price: val.price!,
+        quantity: val.quantity!,
+        side: val.side!
       });
     });
   }
 
-  private buildForm(initialParameters: EditParams) {
+  private buildForm(initialParameters: EditParams): FormGroup<ControlsOf<StopFormData & { side: Side }>> {
     let price = initialParameters.price;
     if (price == 1 || price == null) {
       price = 0;
     }
 
-    return new FormGroup({
+    return new FormGroup<ControlsOf<StopFormData & { side: Side }>>({
       quantity: new FormControl(
         initialParameters.quantity ?? 1,
         [
@@ -136,27 +165,22 @@ export class StopEditComponent implements OnInit, OnDestroy {
         ]
       ),
       triggerPrice: new FormControl(
-        initialParameters.triggerPrice,
+        initialParameters.triggerPrice!,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max),
         ]
       ),
-      stopEndUnixTime: new FormControl(
-        initialParameters.stopEndUnixTime ?? this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1)),
-        Validators.required
+      stopEndUnixTime: new FormControl(!!initialParameters.stopEndUnixTime
+        ? new Date(initialParameters.stopEndUnixTime)
+        : this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
       ),
       condition: new FormControl(initialParameters.condition || StopOrderCondition.More),
       withLimit: new FormControl({ value: initialParameters.type === 'stoplimit', disabled: true }),
       side: new FormControl(initialParameters.side)
-    } as StopFormControls) as StopFormGroup;
+    });
   }
-
-  disabledDate = (date: Date) => {
-    const today = startOfDay(new Date());
-    return toUnixTime(date) < toUnixTime(today);
-  };
 
   private checkNowTimeSelection(converter: TimezoneConverter) {
     // nz-date-picker does not support timezones changing

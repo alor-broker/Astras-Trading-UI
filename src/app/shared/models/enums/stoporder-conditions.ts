@@ -1,4 +1,4 @@
-export class StopOrderCondition {
-  static More = 'More';
-  static Less = 'Less';
+export enum StopOrderCondition {
+  More = 'More',
+  Less = 'Less'
 }
