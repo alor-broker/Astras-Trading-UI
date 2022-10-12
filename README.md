@@ -1,6 +1,7 @@
 
 # Astras – торговое веб-приложение с системой виджетов
-![Frame 93](https://user-images.githubusercontent.com/115227067/195303292-d5f2b03d-ccd4-49ee-8a11-ebe6d0b05470.jpg)
+<img width="1610" alt="Frame 93" src="https://user-images.githubusercontent.com/115227067/195320972-eecdbf45-cc69-45a3-a756-1a091002762a.png">
+
 
 # 🔹 Особенности
 
@@ -12,7 +13,8 @@
 * Неограниченное колличество графиков на одном экране
 * 25 индикаторов на одном графике
 * 7 основных видов графиков
-![Frame 103](https://user-images.githubusercontent.com/115227067/195317846-47521c71-a2f9-4f76-882a-4bdff9259ecc.jpg)
+<img width="1100" alt="Frame 103" src="https://user-images.githubusercontent.com/115227067/195321028-ce360e3f-bfba-4ccf-9dec-73e26e1f34cc.png">
+
 
 
 
