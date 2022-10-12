@@ -11,7 +11,10 @@ import {
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
+import {
+  LightChartSettings,
+  TimeFrameDisplayMode
+} from 'src/app/shared/models/settings/light-chart-settings.model';
 import {
   Timeframe,
   TimeframesHelper
@@ -37,6 +40,7 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   settingsChange: EventEmitter<LightChartSettings> = new EventEmitter<LightChartSettings>();
   form!: UntypedFormGroup;
   timeFrames: Timeframe[];
+  timeFrameDisplayModes = TimeFrameDisplayMode;
   exchanges: string[] = exchangesList;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -56,6 +60,7 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
         ]),
         exchange: new UntypedFormControl(settings.exchange, Validators.required),
         timeFrame: new UntypedFormControl(settings.timeFrame, Validators.required),
+        timeFrameDisplayMode: new UntypedFormControl(settings.timeFrameDisplayMode ?? TimeFrameDisplayMode.Buttons, Validators.required),
         instrumentGroup: new UntypedFormControl(settings.instrumentGroup)
       });
     });

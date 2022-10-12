@@ -5,6 +5,7 @@ import { LightChartComponent } from './components/light-chart/light-chart.compon
 import { LightChartWidgetComponent } from './widgets/light-chart-widget/light-chart-widget.component';
 import { LightChartSettingsComponent } from './components/light-chart-settings/light-chart-settings.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { NzInputModule } from 'ng-zorro-antd/input';
 
 
 @NgModule({
@@ -13,10 +14,11 @@ import { SharedModule } from 'src/app/shared/shared.module';
     LightChartSettingsComponent,
     LightChartWidgetComponent,
   ],
-  imports: [
-    SharedModule,
-    LightChartRoutingModule
-  ],
+    imports: [
+        SharedModule,
+        LightChartRoutingModule,
+        NzInputModule
+    ],
   exports: [
     LightChartWidgetComponent
   ]

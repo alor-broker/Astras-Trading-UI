@@ -6,6 +6,7 @@ import {
   Input,
   OnChanges,
   OnDestroy,
+  OnInit,
   Output,
   SimpleChanges,
   ViewEncapsulation,
@@ -15,6 +16,7 @@ import {
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
+  Observable,
   Subject,
   Subscription,
   switchMap,
@@ -22,14 +24,20 @@ import {
   tap
 } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { LightChartService } from '../../services/light-chart.service';
+import {
+  LightChartService,
+  LightChartSettingsExtended
+} from '../../services/light-chart.service';
 import { LightChart } from '../../utils/light-chart';
 import { HistoryRequest } from 'src/app/shared/models/history/history-request.model';
 import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
-import { TimeframesHelper } from '../../utils/timeframes-helper';
+import {
+  TimeframesHelper
+} from '../../utils/timeframes-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ThemeService } from '../../../../shared/services/theme.service';
+import { TimeFrameDisplayMode } from '../../../../shared/models/settings/light-chart-settings.model';
 
 @Component({
   selector: 'ats-light-chart[contentSize][guid]',
@@ -38,8 +46,9 @@ import { ThemeService } from '../../../../shared/services/theme.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LightChartComponent implements OnDestroy, AfterViewInit, OnChanges {
+export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
   readonly availableTimeFrames = TimeframesHelper.timeFrames;
+  timeFrameDisplayModes = TimeFrameDisplayMode;
 
   @Input()
   shouldShowSettings!: boolean;
@@ -52,6 +61,7 @@ export class LightChartComponent implements OnDestroy, AfterViewInit, OnChanges 
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
   activeTimeFrame$ = new BehaviorSubject('D');
+  settings$!: Observable<LightChartSettingsExtended>;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private isUpdating = false;
   private isEndOfHistory = false;
@@ -63,6 +73,10 @@ export class LightChartComponent implements OnDestroy, AfterViewInit, OnChanges 
     private readonly service: LightChartService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly themeService: ThemeService) {
+  }
+
+  ngOnInit(): void {
+    this.settings$ = this.service.getExtendedSettings(this.guid);
   }
 
   ngOnDestroy(): void {
@@ -90,9 +104,13 @@ export class LightChartComponent implements OnDestroy, AfterViewInit, OnChanges 
     }
   }
 
+  getTimeFrameLabel(value: string): string | undefined {
+    return this.availableTimeFrames.find(x => x.value === value)?.label;
+  }
+
   private initChart(guid: string) {
     combineLatest([
-        this.service.getExtendedSettings(guid),
+        this.settings$,
         this.timezoneConverterService.getConverter(),
         this.themeService.getThemeSettings()
       ]

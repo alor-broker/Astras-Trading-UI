@@ -15,7 +15,7 @@ import { InstrumentsService } from '../../instruments/services/instruments.servi
 import { mapWith } from "../../../shared/utils/observable-helper";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 
-type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
+export type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
 @Injectable()
 export class LightChartService extends BaseWebsocketService {

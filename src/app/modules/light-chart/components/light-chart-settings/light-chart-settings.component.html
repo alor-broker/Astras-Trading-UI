@@ -3,37 +3,41 @@
   <nz-form-item  class='compact'>
     <nz-form-control nzErrorTip="Тикер должен иметь длину от {{validationOptions.symbol.min}} до {{validationOptions.symbol.max}}">
       <nz-form-label nzRequired nzFor="symbol">Тикер</nz-form-label>
-      <nz-input-group>
-        <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Тикер" />
-      </nz-input-group>
+      <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Тикер" />
     </nz-form-control>
   </nz-form-item>
   <nz-form-item class="compact">
     <nz-form-control nzErrorTip="Выберите биржу">
       <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
-      <nz-input-group nzPrefixIcon="lock">
-        <nz-select formControlName='exchange'>
-          <nz-option  *ngFor='let exchange of exchanges' [nzValue]="exchange" [nzLabel]="exchange"></nz-option>
-        </nz-select>
-      </nz-input-group>
+      <nz-select formControlName='exchange'>
+        <nz-option  *ngFor='let exchange of exchanges' [nzValue]="exchange" [nzLabel]="exchange"></nz-option>
+      </nz-select>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item class="compact">
-    <nz-form-label nzRequired nzFor="timeFrame">Таймфрейм</nz-form-label>
-    <nz-input-group nzPrefixIcon="lock">
+    <nz-form-control>
+      <nz-form-label nzRequired nzFor="timeFrame">Таймфрейм</nz-form-label>
       <nz-select formControlName='timeFrame'>
         <nz-option  *ngFor='let tf of timeFrames' [nzValue]="tf.value" [nzLabel]="tf.label"></nz-option>
       </nz-select>
-    </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item class="compact">
+    <nz-form-control>
+      <nz-form-label nzFor="timeFrameDisplayMode" nzRequired>Отображение таймфреймов</nz-form-label>
+      <nz-select formControlName='timeFrameDisplayMode'>
+        <nz-option nzLabel="В виде кнопок" [nzValue]="timeFrameDisplayModes.Buttons"></nz-option>
+        <nz-option nzLabel="В виде меню" [nzValue]="timeFrameDisplayModes.Menu"></nz-option>
+        <nz-option nzLabel="Не показывать" [nzValue]="timeFrameDisplayModes.Hide"></nz-option>
+      </nz-select>
+    </nz-form-control>
   </nz-form-item>
   <nz-collapse [nzBordered]="false" class="compact">
     <nz-collapse-panel nzHeader="Продвинутые">
       <nz-form-control nzErrorTip="Введите режим торгов">
         <nz-form-label nzRequired nzFor="instrumentGroup">Режим торгов</nz-form-label>
-        <nz-input-group nzPrefixIcon="lock">
-          <input class='ant-input' formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-            placeholder="Режим торгов" />
-        </nz-input-group>
+        <input class='ant-input' formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+               placeholder="Режим торгов" />
       </nz-form-control>
     </nz-collapse-panel>
   </nz-collapse>
