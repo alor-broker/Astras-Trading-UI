@@ -14,11 +14,15 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
 import {
+  Observable,
+  shareReplay,
   Subject,
+  take,
   takeUntil
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { InstrumentValidation } from '../../../../shared/utils/validation-options';
+import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { ControlsOf } from '../../../../shared/models/form.model';
 
 interface SettingsFormData {
@@ -52,6 +56,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: FormGroup<ControlsOf<SettingsFormData>>;
   exchanges: string[] = exchangesList;
+  private settings$!: Observable<OrderbookSettings>;
 
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -59,7 +64,11 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
+      shareReplay(1)
+    );
+
+    this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.form = new FormGroup<ControlsOf<SettingsFormData>>({
@@ -86,22 +95,25 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   }
 
   submitForm(): void {
-    this.settingsService.updateSettings<OrderbookSettings>(
-      this.guid,
-      {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(initialSettings => {
+      const newSettings = {
         ...this.form.value,
-        showChart: this.form.value.showChart!,
-        showTable: this.form.value.showTable!,
-        showYieldForBonds: this.form.value.showYieldForBonds!,
-        useOrderWidget: this.form.value.useOrderWidget!,
-        depth: Number(this.form.value.depth!),
-        symbol: this.form.value.symbol!,
-        instrumentGroup: this.form.value.instrumentGroup!,
-        exchange: this.form.value.exchange!,
-        linkToActive: false
-      });
+          showChart: this.form.value.showChart!,
+          showTable: this.form.value.showTable!,
+          showYieldForBonds: this.form.value.showYieldForBonds!,
+          useOrderWidget: this.form.value.useOrderWidget!,
+          depth: Number(this.form.value.depth!),
+          symbol: this.form.value.symbol!,
+          instrumentGroup: this.form.value.instrumentGroup!,
+          exchange: this.form.value.exchange!,
+      } as OrderbookSettings;
 
-    this.settingsChange.emit();
+      newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
+      this.settingsService.updateSettings<OrderbookSettings>(this.guid, newSettings);
+      this.settingsChange.emit();
+    });
   }
 
   ngOnDestroy(): void {

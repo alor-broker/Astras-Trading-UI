@@ -21,11 +21,15 @@ import {
 } from '../../utils/timeframes-helper';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
+  Observable,
+  shareReplay,
   Subject,
+  take,
   takeUntil
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { InstrumentValidation } from '../../../../shared/utils/validation-options';
+import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 
 @Component({
   selector: 'ats-light-chart-settings[guid]',
@@ -43,13 +47,18 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   timeFrameDisplayModes = TimeFrameDisplayMode;
   exchanges: string[] = exchangesList;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
+  private settings$!: Observable<LightChartSettings>;
 
   constructor(private readonly settingsService: WidgetSettingsService) {
     this.timeFrames = TimeframesHelper.timeFrames;
   }
 
   ngOnInit() {
-    this.settingsService.getSettings<LightChartSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<LightChartSettings>(this.guid).pipe(
+      shareReplay(1)
+    );
+
+    this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.form = new UntypedFormGroup({
@@ -67,14 +76,18 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   }
 
   submitForm(): void {
-    this.settingsService.updateSettings<LightChartSettings>(
-      this.guid,
-      {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(initialSettings => {
+      const newSettings = {
         ...this.form.value,
-        linkToActive: false
-      });
+      };
 
-    this.settingsChange.emit();
+      newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
+
+      this.settingsService.updateSettings<LightChartSettings>(this.guid, newSettings);
+      this.settingsChange.emit();
+    });
   }
 
   ngOnDestroy(): void {

@@ -13,6 +13,7 @@ import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-
 import { TechChartSettings } from "../models/settings/tech-chart-settings.model";
 import { AllInstrumentsSettings } from "../models/settings/all-instruments-settings.model";
 import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
+import { InstrumentKey } from '../models/instruments/instrument-key.model';
 
 /**
  * A type with describes settings with depends on an instrument
@@ -540,4 +541,16 @@ export function isEqualOrderSubmitSettings(
       settings1.exchange == settings2.exchange
     );
   } else return false;
+}
+
+/**
+ * Checks if instrument keys are equal
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true is equal, false if not
+ */
+export function isInstrumentEqual(settings1?: InstrumentKey | null, settings2?: InstrumentKey | null) {
+  return settings1?.symbol === settings2?.symbol
+    && settings1?.instrumentGroup === settings2?.instrumentGroup
+    && settings1?.exchange == settings2?.exchange;
 }

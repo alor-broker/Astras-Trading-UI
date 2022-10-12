@@ -30,14 +30,17 @@
       </ul>
     </nz-dropdown-menu>
   </div>
-  <label
-    class="title"
-    nz-popover
-    nzPopoverPlacement="bottom"
-    [nzPopoverContent]="s.title"
-  >
-    {{s.title}}
-  </label>
+  <ng-container *ngIf="title$ | async as title">
+    <label
+      class="title"
+      nz-popover
+      nzPopoverPlacement="bottom"
+      [nzPopoverContent]="title"
+    >
+      {{title}}
+    </label>
+  </ng-container>
+
   <div class="buttons-group">
     <button *ngIf='s.linkToActive !== undefined' nz-button nzSize="small"
       (mousedown)="linkToActive($event, !s.linkToActive)"

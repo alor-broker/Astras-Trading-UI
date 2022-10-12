@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { InstrumentSearchResponse } from '../../../shared/models/instruments/instrument-search-response.model';
@@ -9,6 +9,7 @@ import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
+import { CacheService } from '../../../shared/services/cache.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,17 +19,17 @@ export class InstrumentsService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-    ) {
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly cacheService: CacheService
+  ) {
   }
 
   getInstrument(instrument: InstrumentKey): Observable<Instrument | null> {
-    const instrumentGroup = instrument.instrumentGroup ?? "";
-    return this.http.get<InstrumentSearchResponse>(`${this.url}/${instrument.exchange}/${instrument.symbol}`, {
-      params: { instrumentGroup: instrumentGroup }
+    const stream$ = this.http.get<InstrumentSearchResponse>(`${this.url}/${instrument.exchange}/${instrument.symbol}`, {
+      params: { instrumentGroup: instrument.instrumentGroup ?? "" }
     }).pipe(
       map(r => {
-        const selected : Instrument = {
+        const selected: Instrument = {
           symbol: r.symbol,
           shortName: r.shortname,
           exchange: r.exchange,
@@ -45,14 +46,19 @@ export class InstrumentsService {
       }),
       catchHttpError<Instrument | null>(null, this.errorHandlerService),
     );
+
+    return this.cacheService.wrap(
+      () => `${instrument.exchange}_${instrument.symbol}_${instrument.instrumentGroup}`,
+      () => stream$
+    );
   }
 
   getInstruments(filter: SearchFilter): Observable<Instrument[]> {
     return this.http.get<InstrumentSearchResponse[]>(this.url, {
       params: { ...filter },
-     }).pipe(
+    }).pipe(
       map(resp => {
-        const selects : Instrument[] = resp.map(r => ({
+        const selects: Instrument[] = resp.map(r => ({
           symbol: r.symbol,
           shortName: r.shortname,
           exchange: r.exchange,
