@@ -70,6 +70,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private settings$?: Observable<ExtendedSettings>;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
+  private chartStudyTemplate?: object;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -191,6 +192,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const config: ChartingLibraryWidgetOptions = {
       // debug
+      debug: false,
       // base options
       container: this.chartContainer.nativeElement,
       symbol: `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
@@ -238,17 +240,46 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       'paneProperties.backgroundType': 'solid'
     });
 
+    this.chart.onChartReady(() => {
+      if (this.chartStudyTemplate) {
+        this.chart?.activeChart().applyStudyTemplate(this.chartStudyTemplate);
+      }
+    });
+
+    this.subscribeToChartEvents(settings);
+  }
+
+  private subscribeToChartEvents(settings: TechChartSettings) {
     this.subscribeToChartEvent(
-      this.chart,
+      this.chart!,
       'drawing',
       () => this.settingsService.updateIsLinked(settings.guid, false)
     );
 
     this.subscribeToChartEvent(
-      this.chart,
+      this.chart!,
       'onPlusClick',
       (params: PlusClickParams) => this.selectPrice(params.price)
     );
+
+    this.subscribeToChartEvent(
+      this.chart!,
+      'study_event',
+      () => this.saveIndicators()
+    );
+
+    this.subscribeToChartEvent(
+      this.chart!,
+      'study_properties_changed',
+      () => this.saveIndicators()
+    );
+  }
+
+  private saveIndicators() {
+    this.chartStudyTemplate = this.chart?.activeChart().createStudyTemplate({
+      saveSymbol: false,
+      saveInterval: false
+    });
   }
 
   private subscribeToChartEvent(target: IChartingLibraryWidget, event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap]) {
