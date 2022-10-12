@@ -17,7 +17,7 @@ import { ThemeService } from '../../../../shared/services/theme.service';
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
   let fixture: ComponentFixture<LightChartComponent>;
-  const spy = jasmine.createSpyObj('LightChartService', ['settings$', 'resize', 'unsubscribe', 'getBars', 'initSettingsUpdates']);
+  const spy = jasmine.createSpyObj('LightChartService', ['getExtendedSettings', 'unsubscribe', 'getBars']);
   spy.getBars.and.returnValue(of([]));
   const settings: LightChartSettings = {
     timeFrame: 'D',
@@ -27,7 +27,8 @@ describe('LightChartComponent', () => {
     width: 300,
     height: 300
   };
-  spy.settings$ = of(settings);
+
+  spy.getExtendedSettings.and.returnValue(of(settings));
 
   const terminalSettingsServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
   const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);

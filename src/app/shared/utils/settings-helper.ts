@@ -427,7 +427,8 @@ export function isEqualLightChartSettings(
       settings1.guid == settings2.guid &&
       settings1.width == settings2.width &&
       settings1.height == settings2.height &&
-      settings1.badgeColor == settings2.badgeColor
+      settings1.badgeColor == settings2.badgeColor &&
+      settings1.timeFrameDisplayMode == settings2.timeFrameDisplayMode
     );
   } else return false;
 }

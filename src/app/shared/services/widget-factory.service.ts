@@ -4,7 +4,10 @@ import { GuidGenerator } from 'src/app/shared/utils/guid';
 import { AnySettings } from '../models/settings/any-settings.model';
 import { NewWidget } from '../models/new-widget.model';
 import { Widget } from '../models/widget.model';
-import { LightChartSettings } from '../models/settings/light-chart-settings.model';
+import {
+  LightChartSettings,
+  TimeFrameDisplayMode
+} from '../models/settings/light-chart-settings.model';
 import {
   TimeframesHelper,
   TimeframeValue
@@ -196,6 +199,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       settingsType: 'LightChartSettings',
       timeFrame: TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value,
+      timeFrameDisplayMode: TimeFrameDisplayMode.Buttons,
       title: `График`,
       width: 300,
       height: 300
