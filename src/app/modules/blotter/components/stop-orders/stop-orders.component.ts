@@ -209,7 +209,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: (list: string[], order: DisplayOrder) => list.some(val => order.conditionType.toString().indexOf(val) !== -1),
+      filterFn: (list: string[], order: DisplayOrder) => list.some(val => order.conditionType.toString().toLowerCase().indexOf(val.toLowerCase()) !== -1),
       listOfFilter: [
         { text: '>', value: 'More' },
         { text: '<', value: 'Less' }
