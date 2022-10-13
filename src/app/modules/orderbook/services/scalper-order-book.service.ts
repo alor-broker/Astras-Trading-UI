@@ -8,7 +8,7 @@ import {
   of
 } from "rxjs";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import { getSelectedPortfolio } from "../../../store/portfolios/portfolios.selectors";
+import { getSelectedPortfolioKey } from "../../../store/portfolios/portfolios.selectors";
 import { ScalperOrderBookSettings } from "../../../shared/models/settings/scalper-order-book-settings.model";
 import {
   map,
@@ -103,7 +103,7 @@ export class ScalperOrderBookService extends BaseWebsocketService {
   }
 
   private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.store.select(getSelectedPortfolio)
+    return this.store.select(getSelectedPortfolioKey)
       .pipe(
         filter((p): p is PortfolioKey => !!p)
       );

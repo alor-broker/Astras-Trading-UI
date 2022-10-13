@@ -30,7 +30,7 @@ import { CurrencyInstrument } from '../models/enums/currencies.model';
 import { InfoSettings } from '../models/settings/info-settings.model';
 import { Store } from '@ngrx/store';
 import { getSelectedInstrumentsWithBadges } from '../../store/instruments/instruments.selectors';
-import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
+import { getSelectedPortfolioKey } from '../../store/portfolios/portfolios.selectors';
 import { defaultInstrument } from '../../store/instruments/instruments.reducer';
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { NewsSettings } from "../models/settings/news-settings.model";
@@ -68,7 +68,7 @@ export class WidgetFactoryService {
     this.store.select(getSelectedInstrumentsWithBadges).subscribe(
       (si) => (this.badges = si)
     );
-    this.store.select(getSelectedPortfolio).subscribe(
+    this.store.select(getSelectedPortfolioKey).subscribe(
       (sp) => (this.selectedPortfolio = sp)
     );
   }

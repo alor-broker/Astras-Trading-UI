@@ -18,7 +18,7 @@ import {
   StopMarketOrder,
   SubmitOrderResult
 } from "../../../modules/command/models/order.model";
-import { getSelectedPortfolio } from "../../../store/portfolios/portfolios.selectors";
+import { getSelectedPortfolioKey } from "../../../store/portfolios/portfolios.selectors";
 import { PortfolioKey } from "../../models/portfolio-key.model";
 
 @Injectable({
@@ -63,7 +63,7 @@ export class CurrentPortfolioOrderService {
   }
 
   private getCurrentPortfolio(): Observable<string> {
-    return this.store.select(getSelectedPortfolio)
+    return this.store.select(getSelectedPortfolioKey)
       .pipe(
         take(1),
         filter((p): p is PortfolioKey => !!p),

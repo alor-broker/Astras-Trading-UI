@@ -25,7 +25,7 @@ import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.ser
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { Store } from '@ngrx/store';
-import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
+import { getSelectedPortfolioKey } from '../../../store/portfolios/portfolios.selectors';
 import { Side } from "../../../shared/models/enums/side.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
@@ -191,7 +191,7 @@ export class OrderbookService extends BaseWebsocketService {
   }
 
   private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.store.select(getSelectedPortfolio)
+    return this.store.select(getSelectedPortfolioKey)
     .pipe(
       filter((p): p is PortfolioKey => !!p)
     );

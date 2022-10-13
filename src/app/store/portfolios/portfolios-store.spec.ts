@@ -6,7 +6,7 @@ import {
   tick
 } from "@angular/core/testing";
 import { sharedModuleImportForTests } from "../../shared/utils/testing";
-import { getSelectedPortfolio } from "./portfolios.selectors";
+import { getSelectedPortfolioKey } from "./portfolios.selectors";
 import { take } from "rxjs";
 import { selectNewPortfolio } from "./portfolios.actions";
 
@@ -31,7 +31,7 @@ describe('Portfolios Store', () => {
   });
 
   it('portfolio should NOT be selected by default', (done) => {
-    store.select(getSelectedPortfolio).pipe(
+    store.select(getSelectedPortfolioKey).pipe(
       take(1)
     ).subscribe(portfolio => {
       done();
@@ -40,7 +40,7 @@ describe('Portfolios Store', () => {
   });
 
   it('correct portfolio should be returned after selection', fakeAsync(() => {
-    store.select(getSelectedPortfolio).pipe(
+    store.select(getSelectedPortfolioKey).pipe(
       take(1)
     ).subscribe(portfolio => {
       expect(portfolio).toBeNull();
@@ -52,7 +52,7 @@ describe('Portfolios Store', () => {
 
     tick();
 
-    store.select(getSelectedPortfolio).pipe(
+    store.select(getSelectedPortfolioKey).pipe(
       take(1)
     ).subscribe(portfolio => {
       expect(portfolio).toEqual(expectedPortfolioKey);

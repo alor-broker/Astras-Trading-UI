@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { CommandParams } from '../models/commands/command-params.model';
 import { EditParams } from '../models/commands/edit-params.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
-import { getSelectedPortfolio } from '../../store/portfolios/portfolios.selectors';
+import { getSelectedPortfolioKey } from '../../store/portfolios/portfolios.selectors';
 import { NewsListItem } from "../../modules/news/models/news.model";
 import { WidgetNames } from "../models/enums/widget-names";
 import { NewFeedback } from '../../modules/feedback/models/feedback.model';
@@ -51,7 +51,7 @@ export class ModalService {
   voteParams$ = this.voteParams.asObservable();
 
   constructor(private store: Store) {
-    this.store.select(getSelectedPortfolio).subscribe(p => {
+    this.store.select(getSelectedPortfolioKey).subscribe(p => {
       if (p) {
         this.selectedPortfolio = p;
       }

@@ -69,7 +69,7 @@ describe('AccountService', () => {
     req.flush(fullNameRes);
   }));
 
-  it('should get active portfolios', fakeAsync(() => {
+  it('should get login portfolios', fakeAsync(() => {
     const portfoliosMetaRes = [
       {
         portfolio: 'DtestPortfolio1',
@@ -98,21 +98,19 @@ describe('AccountService', () => {
     ];
     spyAuth.currentUser$ = of({ clientId: 'testClientId' });
 
-    const expectedPortfolios = new Map([
-      ['testAgreement1', [{...portfoliosMetaRes[0], market: 'test', exchange: 'testExchange1', marketType: MarketType.Stock}]],
-      ['testAgreement2', [{...portfoliosMetaRes[1], market: 'test', exchange: 'testExchange2', marketType: MarketType.ForeignExchange}]],
-      ['testAgreement3', [{...portfoliosMetaRes[2], market: 'test', exchange: 'testExchange3', marketType: MarketType.Forward}]],
-    ]);
+    const expectedPortfolios = [
+      {...portfoliosMetaRes[0], market: 'test', exchange: 'testExchange1', marketType: MarketType.Stock},
+      {...portfoliosMetaRes[1], market: 'test', exchange: 'testExchange2', marketType: MarketType.ForeignExchange},
+      {...portfoliosMetaRes[2], market: 'test', exchange: 'testExchange3', marketType: MarketType.Forward}
+    ];
 
-    service.getActivePortfolios()
+    service.getLoginPortfolios()
       .subscribe(res => expect(res).toEqual(expectedPortfolios));
 
     tick();
 
     const req = httpTestingController.expectOne(`${environment.clientDataUrl}/client/v1.0/users/testClientId/all-portfolios`);
-
     expect(req.request.method).toEqual('GET');
-
     req.flush(portfoliosMetaRes);
   }));
 });

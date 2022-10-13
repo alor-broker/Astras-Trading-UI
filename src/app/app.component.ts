@@ -11,6 +11,7 @@ import { initInstrumentsWithBadges } from "./store/instruments/instruments.actio
 import { ThemeService } from './shared/services/theme.service';
 import { TerminalSettingsService } from './modules/terminal-settings/services/terminal-settings.service';
 import { Subscription } from 'rxjs';
+import { initPortfolios } from './store/portfolios/portfolios.actions';
 
 @Component({
   selector: 'ats-app-root',
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.store.dispatch(initTerminalSettings());
     this.store.dispatch(initWidgetSettings());
+    this.store.dispatch(initPortfolios());
     this.store.dispatch(initInstrumentsWithBadges());
     this.sessionTrackService.startTracking();
 
