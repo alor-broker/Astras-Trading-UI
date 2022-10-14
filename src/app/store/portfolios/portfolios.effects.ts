@@ -30,7 +30,7 @@ import {
 } from './portfolios.selectors';
 import { PortfolioKey } from '../../shared/models/portfolio-key.model';
 
-interface SavedPortfolioState {
+export interface SavedPortfolioState {
   lastActivePortfolio: PortfolioKey;
 }
 
