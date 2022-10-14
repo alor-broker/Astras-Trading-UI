@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 import { EvaluationBaseProperties } from '../models/evaluation-base-properties.model';
 import { EvaluationRequest } from '../models/evaluation-request.model';
 import { Evaluation } from '../models/evaluation.model';
-import { getSelectedPortfolio } from '../../../store/portfolios/portfolios.selectors';
+import { getSelectedPortfolioKey } from '../../../store/portfolios/portfolios.selectors';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 
@@ -24,7 +24,7 @@ export class EvaluationService {
   ) { }
 
   evaluateOrder(baseRequest: EvaluationBaseProperties) : Observable<Evaluation | null> {
-    return this.store.select(getSelectedPortfolio).pipe(
+    return this.store.select(getSelectedPortfolioKey).pipe(
       filter((pk): pk is PortfolioKey => !!pk),
       switchMap(portfolio => {
         return this.http.post<Evaluation>(this.url, {

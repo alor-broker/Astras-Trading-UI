@@ -37,7 +37,7 @@ import {
 import { Store } from "@ngrx/store";
 import { OrderService } from "../../../../shared/services/orders/order.service";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { getSelectedPortfolio } from "../../../../store/portfolios/portfolios.selectors";
+import { getSelectedPortfolioKey } from "../../../../store/portfolios/portfolios.selectors";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
@@ -86,7 +86,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       distinctUntilChanged((previous, current) => isEqualOrderSubmitSettings(previous, current))
     );
 
-    const currentPortfolio$ = this.store.select(getSelectedPortfolio).pipe(
+    const currentPortfolio$ = this.store.select(getSelectedPortfolioKey).pipe(
       filter((p): p is PortfolioKey => !!p),
       map(p => p.portfolio),
     );

@@ -16,7 +16,7 @@ import { PriceData } from '../../models/price-data.model';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
 import { Store } from '@ngrx/store';
-import { getSelectedPortfolio } from '../../../../store/portfolios/portfolios.selectors';
+import { getSelectedPortfolioKey } from '../../../../store/portfolios/portfolios.selectors';
 import { Position } from '../../../../shared/models/positions/position.model';
 import { startWith } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
@@ -56,7 +56,7 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
         shareReplay()
       );
 
-    const portfolio$ = this.store.select(getSelectedPortfolio).pipe(
+    const portfolio$ = this.store.select(getSelectedPortfolioKey).pipe(
       filter((p): p is PortfolioKey => !!p)
     );
 

@@ -12,7 +12,7 @@ import {
 } from "rxjs";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Store } from '@ngrx/store';
-import { getSelectedPortfolio } from "../../../store/portfolios/portfolios.selectors";
+import { getSelectedPortfolioKey } from "../../../store/portfolios/portfolios.selectors";
 import {
   filter,
   map
@@ -283,7 +283,7 @@ export class ScalperOrdersService {
   }
 
   private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.store.select(getSelectedPortfolio)
+    return this.store.select(getSelectedPortfolioKey)
       .pipe(
         take(1),
         filter((p): p is PortfolioKey => !!p)

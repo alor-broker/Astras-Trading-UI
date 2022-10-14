@@ -1,7 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subject, take, takeUntil } from 'rxjs';
+import {
+  Component,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
+import {
+  Observable,
+  Subject,
+  take
+} from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
-import { AccountService } from '../../../../shared/services/account.service';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
 import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
@@ -16,7 +23,15 @@ import { getSelectedInstrumentByBadge } from "../../../../store/instruments/inst
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeColors } from '../../../../shared/models/settings/theme-settings.model';
-import { map } from 'rxjs/operators';
+import {
+  filter,
+  map
+} from 'rxjs/operators';
+import {
+  getSelectedPortfolio,
+  selectPortfoliosState
+} from '../../../../store/portfolios/portfolios.selectors';
+import { EntityStatus } from '../../../../shared/models/enums/entity-status';
 
 @Component({
   selector: 'ats-navbar',
@@ -25,15 +40,15 @@ import { map } from 'rxjs/operators';
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
+  selectedPortfolio$!: Observable<PortfolioExtended | null>;
   names = WidgetNames;
   joyrideContent = joyrideContent;
+  themeColors$!: Observable<ThemeColors>;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private activeInstrument$!: Observable<Instrument>;
-  themeColors$!: Observable<ThemeColors>;
 
   constructor(
     private service: DashboardService,
-    private account: AccountService,
     private store: Store,
     private auth: AuthService,
     private modal: ModalService,
@@ -42,13 +57,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.portfolios$ = this.account.getActivePortfolios();
+    this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
+      filter(p => p.status === EntityStatus.Success),
+      map(portfolios => this.groupPortfolios(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x)))
+    );
 
-    this.portfolios$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(portfolios => {
-      this.changePortfolio(this.selectDefault(portfolios));
-    });
+    this.selectedPortfolio$ = this.store.select(getSelectedPortfolio).pipe(
+      map(p => p ?? null)
+    );
 
     this.activeInstrument$ = this.store.select(getSelectedInstrumentByBadge(defaultBadgeColor));
 
@@ -68,12 +84,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   logout() {
     this.auth.logout();
-  }
-
-  selectDefault(portfoliosByAgreement: Map<string, PortfolioExtended[]>) {
-    let portfolios = [...portfoliosByAgreement.values()].flat();
-    let result = portfolios.find(p => p.exchange == 'MOEX' && p.portfolio.startsWith('D')) ?? portfoliosByAgreement.values().next().value;
-    return result;
   }
 
   changePortfolio(key: PortfolioExtended) {
@@ -96,7 +106,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.activeInstrument$.pipe(
       take(1)
     ).subscribe(activeInstrument => {
-      if(!activeInstrument) {
+      if (!activeInstrument) {
         throw new Error('Instrument is not selected');
       }
 
@@ -112,5 +122,29 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   openTerminalSettings() {
     this.modal.openTerminalSettingsModal();
+  }
+
+  private groupPortfolios(portfolios: PortfolioExtended[]): Map<string, PortfolioExtended[]> {
+    const extendedPortfoliosByAgreement = new Map<string, PortfolioExtended[]>();
+
+    portfolios.forEach(value => {
+      const existing = extendedPortfoliosByAgreement.get(value.agreement);
+      if (existing) {
+        existing.push(value);
+      }
+      else {
+        extendedPortfoliosByAgreement.set(value.agreement, [value]);
+      }
+    });
+
+    const sortedPortfolios = new Map<string, PortfolioExtended[]>();
+    Array.from(extendedPortfoliosByAgreement.keys())
+      .sort((a, b) => a.localeCompare(b))
+      .forEach(key => {
+        const portfolios = extendedPortfoliosByAgreement.get(key)?.sort((a, b) => a.market.localeCompare(b.market)) ?? [];
+        sortedPortfolios.set(key, portfolios);
+      });
+
+    return sortedPortfolios;
   }
 }

@@ -248,8 +248,8 @@ describe('Widget Settings Store', () => {
         take(1)
       ).subscribe(settingsState => {
         expect(Object.values(settingsState.entities))
-        .withContext('Check state before update')
-        .toEqual(expectedSettings);
+          .withContext('Check state before update')
+          .toEqual(expectedSettings);
       });
 
       tick();
@@ -348,8 +348,8 @@ describe('Widget Settings Store', () => {
         take(1)
       ).subscribe(settingsState => {
         expect(Object.values(settingsState.entities))
-        .withContext('Check state before update')
-        .toEqual(expectedSettings);
+          .withContext('Check state before update')
+          .toEqual(expectedSettings);
       });
 
       tick();
@@ -360,22 +360,25 @@ describe('Widget Settings Store', () => {
       };
 
       localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, AnySettings][]) => {
+        if (key !== 'settingsStorageKey') {
+          return;
+        }
         expect(key)
-        .withContext('Check localStorage key')
-        .toEqual(settingsStorageKey);
+          .withContext('Check localStorage key')
+          .toEqual(settingsStorageKey);
 
         const allSettings = settings.map(x => x[1]);
 
         expect(allSettings.find(x => x?.guid === portfolioInDependentSettings.guid))
-        .withContext('Check localStorage passed settings (instrumentInDependent)')
-        .toEqual(portfolioInDependentSettings);
+          .withContext('Check localStorage passed settings (instrumentInDependent)')
+          .toEqual(portfolioInDependentSettings);
 
         expect(allSettings.find(x => x?.guid === portfolioDependentSettings.guid))
-        .withContext('Check localStorage passed settings (instrumentDependent)')
-        .toEqual({
-          ...portfolioDependentSettings,
-          ...newPortfolioKey
-        });
+          .withContext('Check localStorage passed settings (instrumentDependent)')
+          .toEqual({
+            ...portfolioDependentSettings,
+            ...newPortfolioKey
+          });
       });
 
       store.dispatch(selectNewPortfolio({ portfolio: newPortfolioKey }));
@@ -394,6 +397,11 @@ describe('Widget Settings Store', () => {
       });
 
       tick();
+
+      expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(
+        settingsStorageKey,
+        jasmine.anything()
+      );
     })
   );
 });

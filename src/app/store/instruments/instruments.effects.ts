@@ -20,7 +20,7 @@ import { getSelectedInstrumentsWithBadges } from "./instruments.selectors";
 
 @Injectable()
 export class InstrumentsEffects {
-  initInstrumentsWithBadges = createEffect(() =>
+  initInstrumentsWithBadges$ = createEffect(() =>
     this.actions$.pipe(
       ofType(initInstrumentsWithBadges),
       map(() => {

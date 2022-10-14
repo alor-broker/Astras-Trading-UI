@@ -25,7 +25,7 @@ import {
   PortfolioKey
 } from "../../../../shared/models/portfolio-key.model";
 import { Store } from "@ngrx/store";
-import { getSelectedPortfolio } from "../../../../store/portfolios/portfolios.selectors";
+import { getSelectedPortfolioKey } from "../../../../store/portfolios/portfolios.selectors";
 
 @Component({
   selector: 'ats-blotter-widget[shouldShowSettings][guid][resize]',
@@ -59,7 +59,7 @@ export class BlotterWidgetComponent implements OnInit {
       take(1)
     );
 
-    this.marketType$ = this.store.select(getSelectedPortfolio).pipe(
+    this.marketType$ = this.store.select(getSelectedPortfolioKey).pipe(
       filter((p): p is PortfolioKey => !!p),
       map(p => p.marketType)
     );

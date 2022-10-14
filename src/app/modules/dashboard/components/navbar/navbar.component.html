@@ -25,7 +25,7 @@
   <div class="menu-item" *ngIf="portfolios$ | async as portfolios">
     <nz-select nzSize='small'
                nzShowSearch
-               [ngModel]="selectDefault(portfolios)"
+               [ngModel]="selectedPortfolio$ | async"
                (ngModelChange)="changePortfolio($event)"
                joyrideStep="step1"
                [title]="joyrideContent.step1.title"

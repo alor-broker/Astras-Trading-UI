@@ -26,7 +26,7 @@ import {
   updateWidgetSettingsPortfolio
 } from "./widget-settings.actions";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
-import { getSelectedPortfolio } from "../portfolios/portfolios.selectors";
+import { getSelectedPortfolioKey } from "../portfolios/portfolios.selectors";
 import {
   PortfolioKey,
   PortfolioKeyEqualityComparer
@@ -68,7 +68,7 @@ export class WidgetSettingsBridgeEffects {
   });
 
   newPortfolioSelected$ = createEffect(() => {
-    const newPortfolioSelected$ = this.store.select(getSelectedPortfolio).pipe(
+    const newPortfolioSelected$ = this.store.select(getSelectedPortfolioKey).pipe(
       filter(x => !!x),
       map(x => x as PortfolioKey),
       distinctUntilChanged((previous, current) => PortfolioKeyEqualityComparer.equals(previous, current)),

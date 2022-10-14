@@ -15,3 +15,11 @@ export function getMarketTypeByPortfolio(portfolio: string): MarketType | undefi
 
   return undefined;
 }
+
+export function formatMarket(market: string, exchange: string) {
+  market = market.split(' ')[0];
+  if (market.startsWith('Фондовый')) {
+    return `${market.slice(0, 4)} ${exchange}`;
+  }
+  return `${market}`;
+}
