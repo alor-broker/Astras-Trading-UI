@@ -24,6 +24,7 @@ import { AllInstrumentsModule } from "../all-instruments/all-instruments.module"
 import { OrderSubmitModule } from "../order-submit/order-submit.module";
 import { NotificationsModule } from '../notifications/notifications.module';
 import { FeedbackModule } from '../feedback/feedback.module';
+import { ApplicationMetaModule } from '../application-meta/application-meta.module';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { FeedbackModule } from '../feedback/feedback.module';
     OrderSubmitModule,
     NotificationsModule,
     FeedbackModule,
+    ApplicationMetaModule,
     // components
   ],
   providers: [

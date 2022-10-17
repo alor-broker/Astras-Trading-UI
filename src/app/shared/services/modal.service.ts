@@ -32,6 +32,8 @@ export class ModalService {
   private newsItem = new BehaviorSubject<NewsListItem | null>(null);
   private shouldShowNewsModal = new BehaviorSubject<boolean>(false);
 
+  private shouldShowApplicationUpdatedModal = new BehaviorSubject<boolean>(false);
+
   shouldShowCommandModal$ = this.shouldShowCommandModal.asObservable();
   commandParams$ = this.commandParams.asObservable();
 
@@ -49,6 +51,8 @@ export class ModalService {
 
   shouldShowVoteModal$ = this.shouldShowVoteModal.asObservable();
   voteParams$ = this.voteParams.asObservable();
+
+  shouldShowApplicationUpdatedModal$  = this.shouldShowApplicationUpdatedModal.asObservable();
 
   constructor(private store: Store) {
     this.store.select(getSelectedPortfolio).subscribe(p => {
@@ -93,6 +97,10 @@ export class ModalService {
     this.shouldShowVoteModal.next(true);
   }
 
+  openApplicationUpdatedModal() {
+    this.shouldShowApplicationUpdatedModal.next(true);
+  }
+
   closeTerminalSettingsModal() {
     this.shouldShowTerminalSettingsModal.next(false);
   }
@@ -116,5 +124,9 @@ export class ModalService {
   closeVoteModal() {
     this.shouldShowVoteModal.next(false);
     this.voteParams.next(null);
+  }
+
+  closeApplicationUpdatedModal() {
+    this.shouldShowApplicationUpdatedModal.next(false);
   }
 }

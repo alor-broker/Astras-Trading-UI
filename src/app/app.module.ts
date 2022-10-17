@@ -14,6 +14,7 @@ import { StoreModule } from '@ngrx/store';
 import { extModules } from "./build-specifics/ext-modules";
 import { ErrorHandlerService } from "./shared/services/handle-error/error-handler.service";
 import { EffectsModule } from '@ngrx/effects';
+import { ApplicationMetaModule } from './modules/application-meta/application-meta.module';
 
 registerLocaleData(ru);
 
@@ -30,7 +31,8 @@ registerLocaleData(ru);
     HttpClientModule,
     StoreModule.forRoot({}),
     EffectsModule.forRoot(),
-    ...extModules
+    ...extModules,
+    ApplicationMetaModule
   ],
   bootstrap: [AppComponent],
   providers: [

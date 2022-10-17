@@ -1,0 +1,40 @@
+<nz-modal
+  (nzOnCancel)="handleClose()"
+  (nzOnOk)="handleClose()"
+  [nzVisible]="isVisible$ | async"
+  nzTitle="Приложение обновлено">
+  <ng-container *nzModalContent>
+    <p>
+      <span>Вы используете последнюю версию приложения!</span>
+      <br/>
+      <span>Перечень изменений/исправлений можно посмотреть по </span><a href="https://warp.alor.dev/ru/releases/astras"
+                                                                         target="_blank">ссылке</a>
+    </p>
+    <p>
+      <span nz-typography [nzType]="'warning'">
+        Мы стараемся развивать наше приложение чтобы удовлетворять потребности пользователей. Однако некторые изменения могут быть несовместимыми
+        с сохраненными персональнымим настройками.
+      </span >
+      <br/>
+      <span  nz-typography [nzType]="'warning'">
+        Если Вы столкнулись с какой-либо проблемой при загрузке или отображении приложения, пожалуйста, попробуйте выполнить следующие шаги:
+      </span>
+    </p>
+    <div>
+      <span>1. Попробуйте очистить дашборд, кликнув кнопку </span><i nz-icon nzType="delete" nzTheme="outline" class="button-example"></i><span>, и обновите страницу.</span>
+    </div>
+    <div>
+      <span>2. Если шаг 1 не решил проблему, попробуйте удалить данные сайта.</span>
+      <br/>
+      <span nz-typography [nzType]="'secondary'"> В браузере Google Chrome это можно сделать при помощи следующей последовательности действий:
+        нажать F12,
+        перейти на вкладку "Приложение",
+        слева выбрать Приложение->Хранилище,
+        нажать кнопку "Удалить данные сайта".
+      </span>
+    </div>
+  </ng-container>
+  <ng-container *nzModalFooter>
+    <button (click)="handleConfirmedClose()" nz-button nzType="primary">ОК</button>
+  </ng-container>
+</nz-modal>
