@@ -28,7 +28,8 @@ describe('DashboardWidgetComponent', () => {
         mockComponent({selector: 'ats-help-widget'}),
         mockComponent({selector: 'ats-terminal-settings-widget'}),
         mockComponent({selector: 'ats-news-modal-widget'}),
-        mockComponent({selector: 'ats-feedback-widget'})
+        mockComponent({selector: 'ats-feedback-widget'}),
+        mockComponent({selector: 'ats-application-updated-widget'})
       ],
       providers: [
         { provide: AuthService, useValue: spyAuth },
