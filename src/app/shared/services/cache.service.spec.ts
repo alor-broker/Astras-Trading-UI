@@ -1,5 +1,7 @@
 import {
+  discardPeriodicTasks,
   fakeAsync,
+  flush,
   TestBed
 } from '@angular/core/testing';
 
@@ -105,6 +107,8 @@ describe('CacheService', () => {
       ).subscribe();
 
       expect(loadDataSpy).toHaveBeenCalled();
+
+      discardPeriodicTasks();
     })
   );
 
@@ -131,6 +135,8 @@ describe('CacheService', () => {
       ).subscribe();
 
       expect(loadDataSpy).toHaveBeenCalled();
+
+      discardPeriodicTasks();
     })
   );
 });

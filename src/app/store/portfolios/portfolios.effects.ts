@@ -20,6 +20,7 @@ import {
 } from './portfolios.actions';
 import {
   switchMap,
+  take,
   withLatestFrom
 } from 'rxjs';
 import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.model';
@@ -40,6 +41,7 @@ export class PortfoliosEffects {
     this.actions$.pipe(
       ofType(initPortfolios),
       switchMap(() => this.accountService.getLoginPortfolios()),
+      take(1),
       catchHttpError<PortfolioExtended[] | null>(null, this.errorHandlerService),
       filter(x => !!x),
       map(portfolios => initPortfoliosSuccess({ portfolios: portfolios ?? [] }))

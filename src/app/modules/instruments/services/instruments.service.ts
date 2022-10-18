@@ -48,7 +48,7 @@ export class InstrumentsService {
     );
 
     return this.cacheService.wrap(
-      () => `${instrument.exchange}_${instrument.symbol}_${instrument.instrumentGroup}`,
+      () => `getInstrument_${instrument.exchange}_${instrument.symbol}_${instrument.instrumentGroup}`,
       () => stream$
     );
   }

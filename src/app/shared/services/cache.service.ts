@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import {
+  asyncScheduler,
   Observable,
+  observeOn,
   shareReplay,
   tap
 } from 'rxjs';
@@ -53,7 +55,8 @@ export class CacheService {
           data.expirationTime = expirationTime;
         }
       }),
-      shareReplay(1)
+      shareReplay(1),
+      observeOn(asyncScheduler)
     );
 
     this.loadedData.set(key, { data$: dataStream$ });
