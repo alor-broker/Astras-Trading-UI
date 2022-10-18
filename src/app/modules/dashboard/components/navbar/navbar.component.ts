@@ -124,6 +124,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.modal.openTerminalSettingsModal();
   }
 
+  openThirdPartyLink(link: string) {
+    window.open(link, "_blank", 'noopener,noreferrer');
+  }
+
   private groupPortfolios(portfolios: PortfolioExtended[]): Map<string, PortfolioExtended[]> {
     const extendedPortfoliosByAgreement = new Map<string, PortfolioExtended[]>();
 
