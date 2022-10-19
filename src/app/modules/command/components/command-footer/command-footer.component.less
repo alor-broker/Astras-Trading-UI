@@ -2,14 +2,26 @@
 
 .themeMixin({
   :host {
+    .ant-btn {
+      color: white;
+    }
+
     .buy-button {
       width: 50%;
       background: @buy-color;
+      &:hover {
+        border-color: fade(@buy-color, 20%);
+        background: fade(@buy-color, 90%);
+      }
     }
 
     .sell-button {
       width: 50%;
       background: @sell-color;
+      &:hover {
+        border-color: fade(@sell-color, 20%);
+        background: fade(@sell-color, 90%);
+      }
     }
   }
 });
