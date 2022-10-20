@@ -4,7 +4,6 @@ name: Automatic versioning
 
 on:
   workflow_run:
-    branches: [ "main" ]
     workflows: [ "NPM Test" ]
     types:
       - completed
