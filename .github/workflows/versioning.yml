@@ -1,14 +1,20 @@
+# Working only on main branch
+
 name: Automatic versioning
 
 on:
   workflow_run:
-    branches: [ "versioning" ]
-    workflows: [ "NPM-Test" ]
+    branches: [ "main" ]
+    workflows: [ "NPM Test" ]
     types:
       - completed
 
 jobs:
   versioning:
+
+    # Run only if NPM Test in success
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
     runs-on: ubuntu-latest
 
     steps:
@@ -41,4 +47,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          branch: ${{ github.head_ref }}
