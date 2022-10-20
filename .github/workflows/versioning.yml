@@ -1,8 +1,11 @@
-name: Automatic vesioning
+name: Automatic versioning
 
 on:
-  push:
+  workflow_run:
     branches: [ "versioning" ]
+    workflows: [ "NPM Test" ]
+    types:
+      - completed
 
 jobs:
   versioning:
