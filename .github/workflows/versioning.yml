@@ -1,0 +1,49 @@
+# Working only on main branch
+
+name: Automatic versioning
+
+on:
+  workflow_run:
+    workflows: [ "NPM Test" ]
+    types:
+      - completed
+
+jobs:
+  versioning:
+
+    # Run only if NPM Test in success
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Current version
+      - name: Get current version
+        run: grep 'version' package.json | grep -Po '([0-9]*\.)+[0-9]*'
+
+      # Change version
+      - name: Versioning
+        run: |
+          _ver=( $(grep 'version' package.json | grep -Po '[0-9]*') )
+          ((++_ver[-1])) && _new_ver=$(echo ${_ver[@]} | tr ' ' '.')
+          sed -i "/version/ s/\([0-9]*\.\)\+[0-9]*/${_new_ver}/" package.json
+
+      # New version
+      - name: Get new version
+        run: grep 'version' package.json | grep -Po '([0-9]*\.)+[0-9]*'
+
+      # Commit changes
+      - name: Commit changes
+        run: |
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.alor.ru"
+          git config --local user.name "$GITHUB_ACTOR"
+          git commit -am "Version UP"
+
+      # Push changes
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
