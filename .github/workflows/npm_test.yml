@@ -1,4 +1,4 @@
-name: NPM Test
+name: NPM-Test
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     branch:
       - '**'
-    
+
 jobs:
   build:
 

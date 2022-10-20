@@ -3,7 +3,7 @@ name: Automatic versioning
 on:
   workflow_run:
     branches: [ "versioning" ]
-    workflows: [ "NPM Test" ]
+    workflows: [ "NPM-Test" ]
     types:
       - completed
 
