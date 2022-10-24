@@ -1,7 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import {
   HttpClientTestingModule,
-  HttpTestingController
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { WebsocketService } from 'src/app/shared/services/websocket.service';
@@ -18,15 +16,15 @@ import { Candle } from '../../../shared/models/history/candle.model';
 import { BaseResponse } from '../../../shared/models/ws/base-response.model';
 import { Quote } from '../../../shared/models/quotes/quote.model';
 import { WatchlistCollection } from '../models/watchlist.model';
+import { InstrumentsService } from './instruments.service';
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
-  let httpController: HttpTestingController;
-  let httpClient: HttpClient;
 
   let spy: any;
   let historyServiceSpy: any;
   let watchlistCollectionServiceSpy: any;
+  let instrumentsServiceSpy: any;
 
   const collectionChangedMock = new Subject();
   const daysOpenMock = new BehaviorSubject<Candle | null>({
@@ -34,7 +32,6 @@ describe('WatchInstrumentsService', () => {
   } as Candle);
   const messagesMock = new Subject<BaseResponse<Quote>>();
 
-  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
     historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getDaysOpen']);
@@ -44,6 +41,11 @@ describe('WatchInstrumentsService', () => {
     historyServiceSpy.getDaysOpen.and.returnValue(daysOpenMock.asObservable());
     spy.messages$ = messagesMock.asObservable();
 
+    instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
+  });
+
+  beforeAll(() => TestBed.resetTestingModule());
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
@@ -52,12 +54,11 @@ describe('WatchInstrumentsService', () => {
         WatchInstrumentsService,
         { provide: HistoryService, useValue: historyServiceSpy },
         { provide: WebsocketService, useValue: spy },
-        { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy }
+        { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
+        { provide: InstrumentsService, useValue: instrumentsServiceSpy },
       ]
     });
     service = TestBed.inject(WatchInstrumentsService);
-    httpClient = TestBed.inject(HttpClient);
-    httpController = TestBed.inject(HttpTestingController);
   });
 
   it('should be created', () => {
