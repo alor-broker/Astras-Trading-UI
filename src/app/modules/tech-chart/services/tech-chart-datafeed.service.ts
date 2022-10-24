@@ -276,7 +276,7 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
 
   private getDefaultLastHistoryPoint(): number {
     const now = new Date();
-    return (new Date(now.getFullYear(), now.getMonth(), now.getDate())).getTime() / 1000;
+    return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))).getTime() / 1000;
   }
 
   private getSupportedResolutions(): ResolutionString[] {

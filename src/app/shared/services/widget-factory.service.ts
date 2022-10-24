@@ -9,8 +9,7 @@ import {
   TimeFrameDisplayMode
 } from '../models/settings/light-chart-settings.model';
 import {
-  TimeframesHelper,
-  TimeframeValue
+  TimeframesHelper
 } from 'src/app/modules/light-chart/utils/timeframes-helper';
 import {
   allInstrumentsColumns,
@@ -49,6 +48,7 @@ import {
   instrumentsBadges
 } from "../utils/instruments";
 import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
+import { TimeframeValue } from '../../modules/light-chart/models/light-chart.models';
 
 @Injectable({
   providedIn: 'root',

@@ -5,7 +5,7 @@ import { WidgetNames } from "../models/enums/widget-names";
 import { ScalperOrderBookSettings } from "../models/settings/scalper-order-book-settings.model";
 import { defaultInstrument } from "../../store/instruments/instruments.reducer";
 import { LightChartSettings } from "../models/settings/light-chart-settings.model";
-import { TimeframesHelper, TimeframeValue } from "../../modules/light-chart/utils/timeframes-helper";
+import { TimeframesHelper } from "../../modules/light-chart/utils/timeframes-helper";
 import { allInstrumentsColumns, InstrumentSelectSettings } from "../models/settings/instrument-select-settings.model";
 import {
   allOrdersColumns,
@@ -24,6 +24,7 @@ import { Store } from "@ngrx/store";
 import { selectNewPortfolio } from "../../store/portfolios/portfolios.actions";
 import { TechChartSettings } from "../models/settings/tech-chart-settings.model";
 import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
+import { TimeframeValue } from '../../modules/light-chart/models/light-chart.models';
 
 describe('WidgetFactoryService', () => {
   let service: WidgetFactoryService;
