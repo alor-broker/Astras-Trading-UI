@@ -6,6 +6,7 @@ import { ApplicationMetaService } from './application-meta.service';
 import { map } from 'rxjs/operators';
 import { GuidGenerator } from '../../../shared/utils/guid';
 import { ModalService } from '../../../shared/services/modal.service';
+import { mapWith } from '../../../shared/utils/observable-helper';
 
 @Injectable()
 export class ApplicationReleaseNotificationProvider implements NotificationsProvider {
@@ -19,43 +20,27 @@ export class ApplicationReleaseNotificationProvider implements NotificationsProv
 
   getNotifications(): Observable<NotificationMeta[]> {
     return this.applicationMetaService.savedVersion$.pipe(
-      map(savedVersion => {
-        const currentVersion = this.applicationMetaService.currentVersion;
-        if (this.isApplicationUpdated(currentVersion, savedVersion)) {
-          return [
-            {
-              id: GuidGenerator.newGuid(),
-              title: 'Приложение обновлено',
-              description: 'Вышла новая версия приложения. Нажмите для просмотра деталей.',
-              showDate: false,
-              isRead: false,
-              open: () => this.modalService.openApplicationUpdatedModal()
-            } as NotificationMeta
-          ];
+      mapWith(() => this.applicationMetaService.getCurrentVersion(), (savedVersion, currentVersion) => ({
+        savedVersion,
+        currentVersion
+      })),
+      map(({ savedVersion, currentVersion }) => {
+        if (!currentVersion || currentVersion.id === savedVersion) {
+          return [];
         }
 
-        return [];
+        return [
+          {
+            id: GuidGenerator.newGuid(),
+            title: 'Приложение обновлено',
+            description: 'Вышла новая версия приложения. Нажмите для просмотра деталей.',
+            date: new Date(),
+            showDate: false,
+            isRead: false,
+            open: () => this.modalService.openApplicationUpdatedModal(currentVersion)
+          } as NotificationMeta
+        ];
       })
     );
-  }
-
-  private isApplicationUpdated(currentVersion: string, savedVersion: string | null): boolean {
-    if (!savedVersion) {
-      return true;
-    }
-
-    const currentVersionParts = currentVersion.split('.');
-    const savedVersionParts = savedVersion.split('.');
-
-    for (let i = 0; i < currentVersionParts.length; i++) {
-      const currentPart = Number(currentVersionParts[i]);
-      const savedPart = i < savedVersionParts.length ? Number(savedVersionParts[i]) : 0;
-
-      if (currentPart > savedPart) {
-        return true;
-      }
-    }
-
-    return false;
   }
 }

@@ -1,13 +1,10 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ModalService } from '../../../../shared/services/modal.service';
-import {
-  Observable,
-  of
-} from 'rxjs';
+import { Observable, of, take } from 'rxjs';
 import { ApplicationMetaService } from '../../services/application-meta.service';
+import { filter } from 'rxjs/operators';
+import { ReleaseMeta } from '../../models/application-release.model';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'ats-application-updated-widget',
@@ -16,6 +13,7 @@ import { ApplicationMetaService } from '../../services/application-meta.service'
 })
 export class ApplicationUpdatedWidgetComponent implements OnInit {
   isVisible$: Observable<boolean> = of(false);
+  currentVersion$: Observable<ReleaseMeta | null> = of(null);
 
   constructor(
     private readonly modalService: ModalService,
@@ -25,6 +23,7 @@ export class ApplicationUpdatedWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     this.isVisible$ = this.modalService.shouldShowApplicationUpdatedModal$;
+    this.currentVersion$ = this.modalService.applicationUpdatedParams$;
   }
 
   handleClose() {
@@ -32,7 +31,16 @@ export class ApplicationUpdatedWidgetComponent implements OnInit {
   }
 
   handleConfirmedClose() {
-    this.applicationMetaService.updateCurrentVersion();
-    this.handleClose();
+    this.currentVersion$.pipe(
+      take(1),
+      filter(x => !!x)
+    ).subscribe(release => {
+      this.applicationMetaService.updateCurrentVersion(release!.id);
+      this.handleClose();
+    });
+  }
+
+  getLinkToRelease(release: ReleaseMeta): string {
+    return `${environment.releasesUrl}/ru/releases/release/${release.id}`;
   }
 }

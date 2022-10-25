@@ -2,10 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { ApplicationReleaseNotificationProvider } from './application-release-notification-provider';
 import { ApplicationMetaService } from './application-meta.service';
 import { ModalService } from '../../../shared/services/modal.service';
-import {
-  BehaviorSubject,
-  take
-} from 'rxjs';
+import { BehaviorSubject, take } from 'rxjs';
+import { ReleaseMeta } from '../models/application-release.model';
 
 describe('ApplicationReleaseNotificationProvider', () => {
   let service: ApplicationReleaseNotificationProvider;
@@ -14,7 +12,7 @@ describe('ApplicationReleaseNotificationProvider', () => {
   let modalService: any;
 
   beforeEach(() => {
-    applicationMetaServiceSpy = jasmine.createSpyObj('ApplicationMetaService', ['currentVersion', 'savedVersion$']);
+    applicationMetaServiceSpy = jasmine.createSpyObj('ApplicationMetaService', ['getCurrentVersion', 'savedVersion$']);
 
     modalService = jasmine.createSpyObj('ModalService', ['openApplicationUpdatedModal']);
   });
@@ -42,49 +40,50 @@ describe('ApplicationReleaseNotificationProvider', () => {
   });
 
   it('should provide notification correctly', () => {
-    const cases: { currentVersion: string, savedVersion: string | null, isNotificationExpected: boolean } [] = [
+    const versionMock = new BehaviorSubject<ReleaseMeta | null>(null);
+    applicationMetaServiceSpy.getCurrentVersion.and.returnValue(versionMock);
+
+    const cases: { currentVersion: string | null, savedVersion: string | null, isNotificationExpected: boolean } [] = [
       {
-        currentVersion: '1.0.1',
+        currentVersion: null,
+        savedVersion: 'CHANGES-2079',
+        isNotificationExpected: false
+      },
+      {
+        currentVersion: 'CHANGES-2079',
         savedVersion: null,
         isNotificationExpected: true
       },
       {
-        currentVersion: '1.0.2',
-        savedVersion: '1.0.1',
+        currentVersion: 'CHANGES-2079',
+        savedVersion: 'CHANGES-2080',
         isNotificationExpected: true
       },
       {
-        currentVersion: '1.1.0',
-        savedVersion: '1.0.1',
-        isNotificationExpected: true
-      },
-      {
-        currentVersion: '1.10.2',
-        savedVersion: '1.0.1',
-        isNotificationExpected: true
-      },
-      {
-        currentVersion: '2.1.0',
-        savedVersion: '1.0.1',
-        isNotificationExpected: true
-      },
-      {
-        currentVersion: '1.0.1',
-        savedVersion: '1.0.1',
+        currentVersion: 'CHANGES-2079',
+        savedVersion: 'CHANGES-2079',
         isNotificationExpected: false
-      },
+      }
     ];
 
     cases.forEach(testCase => {
-      applicationMetaServiceSpy.currentVersion = testCase.currentVersion;
+      versionMock.next(testCase.currentVersion ? {
+          id: testCase.currentVersion,
+          summary: 'summary',
+          description: 'description',
+          createdAt: new Date().getTime()
+        }
+        : null);
+
       applicationMetaServiceSpy.savedVersion$ = new BehaviorSubject<string | null>(testCase.savedVersion);
 
       service.getNotifications().pipe(
         take(1)
       ).subscribe(notifications => {
-        if(testCase.isNotificationExpected) {
+        if (testCase.isNotificationExpected) {
           expect(notifications.length).toBe(1);
-        } else {
+        }
+        else {
           expect(notifications.length).toBe(0);
         }
       });
