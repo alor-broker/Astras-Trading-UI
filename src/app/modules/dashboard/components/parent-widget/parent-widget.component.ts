@@ -93,7 +93,7 @@ export class ParentWidgetComponent implements OnInit, OnDestroy, AfterViewInit {
     this.resizeObserver = new ResizeObserver(entries => {
       entries.forEach(x => {
         this.widgetResize.emit({
-          height: Math.floor(x.contentRect.height),
+          height: Math.floor(x.contentRect.height - 5),
           width: Math.floor(x.contentRect.width),
         } as DashboardItem);
       });
