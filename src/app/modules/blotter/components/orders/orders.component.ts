@@ -438,6 +438,10 @@ export class OrdersComponent implements OnInit, OnDestroy {
     });
   }
 
+  isMarketOrder(order: DisplayOrder): boolean {
+    return order.type === 'market';
+  }
+
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof OrderFilter]) {
