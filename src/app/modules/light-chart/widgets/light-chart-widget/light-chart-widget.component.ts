@@ -1,20 +1,12 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DashboardItem, DashboardItemContentSize } from 'src/app/shared/models/dashboard-item.model';
-import { LightChartService } from '../../services/light-chart.service';
 import { map } from "rxjs/operators";
 import { Observable, shareReplay } from "rxjs";
 
 @Component({
   selector: 'ats-light-chart-widget[shouldShowSettings][guid][resize]',
   templateUrl: './light-chart-widget.component.html',
-  styleUrls: ['./light-chart-widget.component.less'],
-  providers: [LightChartService]
+  styleUrls: ['./light-chart-widget.component.less']
 })
 export class LightChartWidgetComponent implements OnInit {
   @Input()
