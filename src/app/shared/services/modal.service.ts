@@ -8,6 +8,7 @@ import { getSelectedPortfolioKey } from '../../store/portfolios/portfolios.selec
 import { NewsListItem } from "../../modules/news/models/news.model";
 import { WidgetNames } from "../models/enums/widget-names";
 import { NewFeedback } from '../../modules/feedback/models/feedback.model';
+import { ReleaseMeta } from '../../modules/application-meta/models/application-release.model';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +34,8 @@ export class ModalService {
   private shouldShowNewsModal = new BehaviorSubject<boolean>(false);
 
   private shouldShowApplicationUpdatedModal = new BehaviorSubject<boolean>(false);
+  private applicationUpdatedParams = new BehaviorSubject<ReleaseMeta | null>(null);
+  applicationUpdatedParams$ = this.applicationUpdatedParams.asObservable();
 
   shouldShowCommandModal$ = this.shouldShowCommandModal.asObservable();
   commandParams$ = this.commandParams.asObservable();
@@ -97,7 +100,8 @@ export class ModalService {
     this.shouldShowVoteModal.next(true);
   }
 
-  openApplicationUpdatedModal() {
+  openApplicationUpdatedModal(release: ReleaseMeta) {
+    this.applicationUpdatedParams.next(release);
     this.shouldShowApplicationUpdatedModal.next(true);
   }
 
@@ -128,5 +132,6 @@ export class ModalService {
 
   closeApplicationUpdatedModal() {
     this.shouldShowApplicationUpdatedModal.next(false);
+    this.applicationUpdatedParams.next(null);
   }
 }
