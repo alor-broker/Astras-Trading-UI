@@ -164,11 +164,19 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
 
   scrolled() {
     this.instrumentsList$.pipe(
-      take(1)
-    ).subscribe(instrumentsList => {
+      take(1),
+      withLatestFrom(this.isLoading$, this.filters$),
+      filter(([,isLoading,]) => !isLoading),
+      map(([instrumentsList, ,currentFilters]) => ({instrumentsList, currentFilters})),
+    ).subscribe(s => {
+      const loadedIndex = s.currentFilters.limit! + s.currentFilters.offset!;
+      if(s.instrumentsList.length < loadedIndex) {
+        return;
+      }
+
       this.updateFilters(curr => ({
         ...curr,
-        offset: instrumentsList.length
+        offset: s.instrumentsList.length
       }));
     });
   }
