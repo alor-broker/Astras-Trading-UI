@@ -405,7 +405,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
         row.currentOrders = filteredOrders.filter(x => x.price === row.price);
       }
 
-      if (!!currentPosition) {
+      if (!!currentPosition && currentPosition.qtyTFuture !== 0) {
         const basePrice = currentPosition.qtyTFuture > 0
           ? orderBookBounds.maxBid
           : orderBookBounds.minAsk;
@@ -835,7 +835,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       this.orderBookContext!.orderBookPosition$
     ]).pipe(
       map(([settings, orderBook, position]) => {
-        if (!position || orderBook.a.length === 0 || orderBook.b.length === 0) {
+        if (!position || position.qtyTFuture === 0 || orderBook.a.length === 0 || orderBook.b.length === 0) {
           return null;
         }
 
