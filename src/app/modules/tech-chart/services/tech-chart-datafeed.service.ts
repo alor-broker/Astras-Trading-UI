@@ -15,10 +15,7 @@ import {
 } from "../../../../assets/charting_library";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { InstrumentsService } from "../../instruments/services/instruments.service";
-import {
-  Subscription,
-  take
-} from "rxjs";
+import { Subscription, take } from "rxjs";
 import { HistoryService } from "../../../shared/services/history.service";
 import { BaseWebsocketService } from "../../../shared/services/base-websocket.service";
 import { WebsocketService } from "../../../shared/services/websocket.service";
@@ -32,7 +29,7 @@ import { GuidGenerator } from '../../../shared/utils/guid';
 
 @Injectable()
 export class TechChartDatafeedService extends BaseWebsocketService implements IBasicDataFeed {
-  private lastBarPoint: number | null = null;
+  private lastBarPoint = new Map<string, number>();
   private readonly barsSubscriptions = new Map<string, Subscription>();
   private readonly listenerGuidMap = new Map<string, string>();
 
@@ -46,7 +43,6 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
   }
 
   onReady(callback: OnReadyCallback): void {
-    this.lastBarPoint = null;
 
     const config: DatafeedConfiguration = {
       supports_time: true,
@@ -133,8 +129,9 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
 
   getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParams, onResult: HistoryCallback, onError: ErrorCallback): void {
     const instrumentKey = this.getSymbolAndExchangeFromTicker(symbolInfo.ticker!);
+    const lastBarPointKey = this.getLastBarPointKey(instrumentKey, resolution);
     if (periodParams.firstDataRequest) {
-      this.lastBarPoint = null;
+      this.lastBarPoint.delete(lastBarPointKey);
     }
 
     this.historyService.getHistory({
@@ -155,9 +152,12 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
       const dataIsEmpty = history.history.length === 0;
 
       if (periodParams.firstDataRequest) {
-        this.lastBarPoint = !dataIsEmpty
-          ? history.history[history.history.length - 1].time
-          : this.getDefaultLastHistoryPoint();
+        this.lastBarPoint.set(
+          lastBarPointKey,
+          dataIsEmpty
+            ? this.getDefaultLastHistoryPoint()
+            : history.history[history.history.length - 1].time
+        );
       }
 
       const nextTime = periodParams.firstDataRequest ? history.next : history.prev;
@@ -187,11 +187,12 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
       format: 'simple',
       guid: requestGuid,
       tf: this.parseTimeframe(resolution),
-      from: this.lastBarPoint ?? this.getDefaultLastHistoryPoint()
+      from: this.lastBarPoint.get(this.getLastBarPointKey(instrumentKey, resolution)) ?? this.getDefaultLastHistoryPoint()
     };
 
     const sub = this.getEntity<Candle>(request).subscribe(candle => {
-      if (!this.lastBarPoint || candle.time < this.lastBarPoint) {
+      const lastBarPoint = this.lastBarPoint.get(this.getLastBarPointKey(instrumentKey, resolution));
+      if (!lastBarPoint || candle.time < lastBarPoint) {
         return;
       }
 
@@ -249,6 +250,10 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
     return { symbol: splits[1], exchange: splits[0], instrumentGroup: splits[2] };
   }
 
+  private getLastBarPointKey(instrument: InstrumentKey, resolution: ResolutionString): string {
+    return `${instrument.symbol}_${instrument.exchange}_${instrument.instrumentGroup}_${resolution}`;
+  }
+
   private parseTimeframe(resolution: ResolutionString): string {
     const code = resolution.slice(-1);
     if (['D', 'W', 'M', 'Y'].includes(code)) {
@@ -271,7 +276,7 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
 
   private getDefaultLastHistoryPoint(): number {
     const now = new Date();
-    return (new Date(now.getFullYear(), now.getMonth(), now.getDate())).getTime() / 1000;
+    return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))).getTime() / 1000;
   }
 
   private getSupportedResolutions(): ResolutionString[] {

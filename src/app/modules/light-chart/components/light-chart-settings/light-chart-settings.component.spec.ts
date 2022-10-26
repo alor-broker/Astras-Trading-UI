@@ -1,10 +1,6 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LightChartSettingsComponent } from './light-chart-settings.component';
-import { LightChartService } from '../../services/light-chart.service';
 import { of } from 'rxjs';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { AppModule } from 'src/app/app.module';
@@ -32,7 +28,6 @@ describe('LightChartSettingsComponent', () => {
       declarations: [LightChartSettingsComponent],
       imports: [...sharedModuleImportForTests, AppModule],
       providers: [
-        { provide: LightChartService, useValue: spy },
         {
           provide: WidgetSettingsService,
           useValue: {

@@ -1,42 +1,45 @@
-<nz-tabset
-*ngIf="!shouldShowSettings"
-  nzTabPosition="top"
-  nzSize="small"
-  (mousedown)='$event.stopPropagation()' [nzSelectedIndex]="activeTabIndex$ | async"
-  (nzSelectChange)="onIndexChange($event)"
-  [nzAnimated]="false">
-  <nz-tab nzTitle="О портфеле" nzForceRender >
-    <ng-container *ngIf="marketType$ | async as marketType">
-      <ats-common-summary
-        *ngIf="!marketType || marketType !== marketTypes.Forward"
+<div class="container">
+  <nz-tabset
+    *ngIf="!shouldShowSettings"
+    nzTabPosition="top"
+    nzSize="small"
+    (mousedown)='$event.stopPropagation()' [nzSelectedIndex]="activeTabIndex$ | async"
+    (nzSelectChange)="onIndexChange($event)"
+    [nzAnimated]="false">
+    <nz-tab nzTitle="О портфеле" nzForceRender >
+      <ng-container *ngIf="marketType$ | async as marketType">
+        <ats-common-summary
+          *ngIf="!marketType || marketType !== marketTypes.Forward"
+          [guid]="guid"
+          [(shouldShowSettings)]="shouldShowSettings"
+          [resize]="resize"></ats-common-summary>
+        <ats-forward-summary
+          *ngIf="marketType === marketTypes.Forward"
+          [guid]="guid"
+          [resize]="resize"></ats-forward-summary>
+      </ng-container>
+    </nz-tab>
+    <nz-tab nzTitle="Заявки" nzForceRender>
+      <ats-orders
         [guid]="guid"
-        [(shouldShowSettings)]="shouldShowSettings"
-        [resize]="resize"></ats-common-summary>
-      <ats-forward-summary
-        *ngIf="marketType === marketTypes.Forward"
+        [(shouldShowSettings)]="shouldShowSettings"></ats-orders>
+    </nz-tab>
+    <nz-tab nzTitle="Стопы" nzForceRender>
+      <ats-stop-orders
         [guid]="guid"
-        [resize]="resize"></ats-forward-summary>
-    </ng-container>
-  </nz-tab>
-  <nz-tab nzTitle="Заявки" nzForceRender>
-    <ats-orders
-      [guid]="guid"
-      [(shouldShowSettings)]="shouldShowSettings"></ats-orders>
-  </nz-tab>
-  <nz-tab nzTitle="Стопы" nzForceRender>
-    <ats-stop-orders
-      [guid]="guid"
-      [(shouldShowSettings)]="shouldShowSettings"></ats-stop-orders>
-  </nz-tab>
-  <nz-tab nzTitle="Позиции" nzForceRender>
-    <ats-positions
-      [guid]="guid"
-      [(shouldShowSettings)]="shouldShowSettings"></ats-positions>
-  </nz-tab>
-  <nz-tab nzTitle="Сделки" nzForceRender>
-    <ats-trades
-      [guid]="guid"
-      [(shouldShowSettings)]="shouldShowSettings"></ats-trades>
-  </nz-tab>
-</nz-tabset>
+        [(shouldShowSettings)]="shouldShowSettings"></ats-stop-orders>
+    </nz-tab>
+    <nz-tab nzTitle="Позиции" nzForceRender>
+      <ats-positions
+        [guid]="guid"
+        [(shouldShowSettings)]="shouldShowSettings"></ats-positions>
+    </nz-tab>
+    <nz-tab nzTitle="Сделки" nzForceRender>
+      <ats-trades
+        [guid]="guid"
+        [(shouldShowSettings)]="shouldShowSettings"></ats-trades>
+    </nz-tab>
+  </nz-tabset>
+</div>
+
 <ats-blotter-settings *ngIf="shouldShowSettings" [guid]='guid' (settingsChange)="onSettingsChange()"></ats-blotter-settings>
