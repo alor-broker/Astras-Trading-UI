@@ -134,7 +134,17 @@
           <nz-form-control nzErrorTip="Группа">
             <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="instrumentGroup" placeholder="Режим торгов"/>
           </nz-form-control>
-          <nz-form-label nzFor="instrumentGroup">Интервал автоматического выравнивания стакана, сек.</nz-form-label>
+          <nz-form-label nzFor="instrumentGroup" class="auto-align-label">
+            Интервал автоматического выравнивания стакана, сек.
+            <span
+              nz-icon
+              nz-popover
+              nzPopoverTitle="Введите '0' или оставьте поле пустым, чтобы отключить авто-выравнивание"
+              nzType="info-circle"
+              nzTheme="outline"
+            >
+            </span>
+          </nz-form-label>
           <nz-form-control nzErrorTip="Значение должно быть от {{validationOptions.autoAlignIntervalSec.min}} до {{validationOptions.autoAlignIntervalSec.max}}">
             <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="autoAlignIntervalSec"/>
           </nz-form-control>

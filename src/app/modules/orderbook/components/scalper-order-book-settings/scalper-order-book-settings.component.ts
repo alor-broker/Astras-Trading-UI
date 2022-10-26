@@ -73,7 +73,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
       }
     },
     autoAlignIntervalSec: {
-      min: 1,
+      min: 0,
       max: 600
     }
   };
@@ -141,7 +141,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         ),
         volumeHighlightFullness: Number(this.form.value.volumeHighlightFullness),
         workingVolumes: this.form.value.workingVolumes.map((wv: string) => Number(wv)),
-        autoAlignIntervalSec: !!this.form.value.autoAlignIntervalSec ? Number(this.form.value.autoAlignIntervalSec) : null
+        autoAlignIntervalSec: !!(+this.form.value.autoAlignIntervalSec) ? Number(this.form.value.autoAlignIntervalSec) : null
       };
 
       newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
