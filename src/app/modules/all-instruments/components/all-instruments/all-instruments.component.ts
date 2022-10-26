@@ -2,7 +2,18 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { DashboardItemContentSize } from "../../../../shared/models/dashboard-item.model";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
-import { BehaviorSubject, interval, Subject, Subscription, take, takeUntil, tap, withLatestFrom } from "rxjs";
+import {
+  BehaviorSubject,
+  interval,
+  Observable,
+  Subject,
+  Subscription,
+  switchMap,
+  take,
+  takeUntil,
+  tap,
+  withLatestFrom
+} from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { AllInstrumentsSettings } from "../../../../shared/models/settings/all-instruments-settings.model";
 import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
@@ -26,7 +37,6 @@ import { TerminalSettings } from '../../../../shared/models/terminal-settings/te
 export class AllInstrumentsComponent implements OnInit, OnDestroy {
   @Input() guid!: string;
   @Input() contentSize!: DashboardItemContentSize | null;
-  public instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
   public isLoading$ = new BehaviorSubject<boolean>(false);
   public allColumns: ColumnsSettings[] = [
     {
@@ -129,6 +139,8 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   ];
   public displayedColumns: ColumnsSettings[] = [];
   public contextMenu: ContextMenu[] = [];
+  public instrumentsDisplay$!: Observable<AllInstruments[]>;
+  private instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
   private readonly loadingChunkSize = 50;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private updatesSub?: Subscription;
@@ -148,6 +160,18 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     this.initInstruments();
     this.initContextMenu();
 
+    this.instrumentsDisplay$ = this.instrumentsList$.pipe(
+      mapWith(
+        () => this.store.select(getSelectedInstrumentsWithBadges),
+        (instruments, output) => ({ instruments, badges: output })
+      ),
+      mapWith(
+        () => this.terminalSettingsService.getSettings(),
+        (source, output) => ({ ...source, terminalSettings: output })
+      ),
+      map(s => this.mapInstrumentsToBadges(s.instruments, s.badges, s.terminalSettings))
+    );
+
     this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
       .pipe(takeUntil(this.destroy$))
       .subscribe(settings => {
@@ -166,11 +190,11 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     this.instrumentsList$.pipe(
       take(1),
       withLatestFrom(this.isLoading$, this.filters$),
-      filter(([,isLoading,]) => !isLoading),
-      map(([instrumentsList, ,currentFilters]) => ({instrumentsList, currentFilters})),
+      filter(([, isLoading,]) => !isLoading),
+      map(([instrumentsList, , currentFilters]) => ({ instrumentsList, currentFilters })),
     ).subscribe(s => {
       const loadedIndex = s.currentFilters.limit! + s.currentFilters.offset!;
-      if(s.instrumentsList.length < loadedIndex) {
+      if (s.instrumentsList.length < loadedIndex) {
         return;
       }
 
@@ -270,27 +294,8 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         f => this.service.getAllInstruments(f),
         (filters, res) => ({ filters, res })
       ),
-      mapWith(
-        () => this.store.select(getSelectedInstrumentsWithBadges),
-        (source, output) => ({ ...source, badges: output })
-      ),
-      mapWith(
-        () => this.terminalSettingsService.getSettings(),
-        (source, output) => ({ ...source, terminalSettings: output })
-      ),
       withLatestFrom(this.instrumentsList$),
-      map(([s, currentList]) => {
-        const newDataWithBadges = this.mapInstrumentsToBadges(s.res, s.badges, s.terminalSettings);
-
-        if ((s.filters.offset ?? 0) > 0) {
-          return [
-            ...currentList,
-            ...newDataWithBadges
-          ];
-        }
-
-        return newDataWithBadges;
-      }),
+      map(([s, currentList]) => s.filters.offset! > 0 ? [...currentList, ...s.res] : s.res),
       tap(() => this.isLoading$.next(false)),
       takeUntil(this.destroy$)
     ).subscribe(instruments => {
@@ -320,19 +325,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
           offset: 0,
           limit: filters.limit! + filters.offset!
         })),
-        mapWith(
-          f => this.service.getAllInstruments(f),
-          (filters, res) => ({ filters, res })
-        ),
-        mapWith(
-          () => this.store.select(getSelectedInstrumentsWithBadges),
-          (source, output) => ({ ...source, badges: output })
-        ),
-        mapWith(
-          () => this.terminalSettingsService.getSettings(),
-          (source, output) => ({ ...source, terminalSettings: output })
-        ),
-        map(s => this.mapInstrumentsToBadges(s.res, s.badges, s.terminalSettings))
+        switchMap(f => this.service.getAllInstruments(f))
       ).subscribe(instruments => {
         this.instrumentsList$.next(instruments);
       });
