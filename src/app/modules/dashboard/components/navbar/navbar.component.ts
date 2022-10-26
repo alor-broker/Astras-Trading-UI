@@ -96,7 +96,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         x: 0,
         y: 0,
         cols: 10,
-        rows: 10,
+        rows: 15,
         type: type,
       },
     });

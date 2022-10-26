@@ -55,7 +55,7 @@
       </div>
     </div>
     <div nz-row>
-      <div nz-col [nzSpan]="24">
+      <div nz-col [nzSm]="12" [nzXs]="24">
         <nz-form-item class="compact">
           <nz-form-label nzFor="withLimit" nzRequired>Тип стопа</nz-form-label>
           <nz-form-control nzErrorTip="Выберите условие исполнения">
@@ -66,9 +66,7 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-    </div>
-    <div nz-row *ngIf="form.value.withLimit">
-      <div nz-col [nzSpan]="24">
+      <div nz-col [nzSm]="12" [nzXs]="24" *ngIf="form.value.withLimit">
         <nz-form-item class="compact">
           <nz-form-label nzFor="price" nzRequired>Цена</nz-form-label>
           <nz-form-control [nzErrorTip]="priceError">
