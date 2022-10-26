@@ -461,7 +461,8 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       switchMap(
         (settings: ExtendedSettings) => this.orderBookService.getCurrentOrders(settings.widgetSettings, this.guid)
       ),
-      map(orders => orders.map(o => OrderBookDataFeedHelper.orderToCurrentOrder(o)))
+      map(orders => orders.map(o => OrderBookDataFeedHelper.orderToCurrentOrder(o))),
+      shareReplay(1)
     );
   }
 
