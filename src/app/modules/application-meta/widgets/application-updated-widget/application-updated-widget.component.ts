@@ -41,6 +41,6 @@ export class ApplicationUpdatedWidgetComponent implements OnInit {
   }
 
   getLinkToRelease(release: ReleaseMeta): string {
-    return `${environment.releasesUrl}/ru/releases/release/${release.id}`;
+    return `${environment.warpUrl}/ru/releases/release/${release.id}`;
   }
 }

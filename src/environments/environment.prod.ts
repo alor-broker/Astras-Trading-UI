@@ -4,5 +4,5 @@ export const environment = {
   wsUrl: 'wss://api.alor.ru/ws',
   clientDataUrl: 'https://lk-api.alor.ru',
   ssoUrl: 'https://login.alor.ru',
-  releasesUrl: 'https://warp.alor.dev'
+  warpUrl: 'https://warp.alor.dev'
 };

@@ -12,7 +12,7 @@ import { catchHttpError } from '../../../shared/utils/observable-helper';
   providedIn: 'root'
 })
 export class ApplicationMetaService {
-  private readonly releasesApiBaseUrl = `${environment.releasesUrl}/api/releases`;
+  private readonly releasesApiBaseUrl = `${environment.warpUrl}/api/releases`;
 
   private readonly update$ = new Subject();
   private readonly versionStorageKey = 'version';
