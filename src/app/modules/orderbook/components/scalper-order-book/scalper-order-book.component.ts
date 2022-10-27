@@ -237,7 +237,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       return;
     }
 
-    if (e.shiftKey && row.rowType === this.rowTypes.Ask) {
+    if (e.shiftKey) {
       this.callWithSettings(settings => this.scalperOrdersService.setStopLoss(settings.widgetSettings, row.price, settings.widgetSettings.enableMouseClickSilentOrders));
 
       return;
