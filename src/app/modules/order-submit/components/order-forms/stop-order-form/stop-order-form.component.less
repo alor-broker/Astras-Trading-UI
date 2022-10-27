@@ -2,11 +2,17 @@
   margin-bottom: 0;
 }
 
-:host ::ng-deep nz-form-label {
-  label {
-    display: inherit;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+:host ::ng-deep {
+  nz-form-label {
+    label {
+      display: inherit;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .ant-picker {
+    width: 100%;
   }
 }
