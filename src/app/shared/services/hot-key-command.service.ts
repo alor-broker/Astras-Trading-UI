@@ -44,6 +44,10 @@ export class HotKeyCommandService {
             }
           ),
           map(x => {
+            if (x.code === 'Space') {
+              x.preventDefault();
+            }
+
             let mappedCommand = hotKeyMap.get(x.key);
             if (mappedCommand != null) {
               return mappedCommand;
