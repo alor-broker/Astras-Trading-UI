@@ -97,7 +97,7 @@ export class ScalperOrderBookService extends BaseWebsocketService {
       )),
       filter((p): p is Position => !!p),
       filter(p => p.symbol === instrumentKey.symbol),
-      filter(p => !!p.avgPrice),
+      map(p => (!p || !p.avgPrice ? null as any : p)),
       startWith(null)
     );
   }

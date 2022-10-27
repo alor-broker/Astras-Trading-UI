@@ -68,20 +68,18 @@ export class ScalperOrdersService {
 
   closePositionsByMarket(instrumentKey: InstrumentKey): void {
     this.getCurrentPositionsWithPortfolio(instrumentKey)
-      .subscribe(({ portfolio, positions }) => {
-        positions.forEach(pos => {
-          if (!pos.qtyTFutureBatch) {
-            return;
-          }
+      .subscribe(({ portfolio, position }) => {
+        if (!position || !position.qtyTFutureBatch) {
+          return;
+        }
 
-          this.orderService.submitMarketOrder({
-              side: pos.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
-              quantity: Math.abs(pos.qtyTFutureBatch),
-              instrument: instrumentKey,
-            },
-            portfolio.portfolio
-          ).subscribe();
-        });
+        this.orderService.submitMarketOrder({
+            side: position.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
+            quantity: Math.abs(position.qtyTFutureBatch),
+            instrument: instrumentKey,
+          },
+          portfolio.portfolio
+        ).subscribe();
       });
   }
 
@@ -201,20 +199,18 @@ export class ScalperOrdersService {
 
   reversePositionsByMarket(instrumentKey: InstrumentKey): void {
     this.getCurrentPositionsWithPortfolio(instrumentKey)
-      .subscribe(({ portfolio, positions }) => {
-        positions.forEach(pos => {
-          if (!pos.qtyTFutureBatch) {
-            return;
-          }
+      .subscribe(({ portfolio, position }) => {
+        if (!position || !position.qtyTFutureBatch) {
+          return;
+        }
 
-          this.orderService.submitMarketOrder({
-              side: pos.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
-              quantity: Math.abs(pos.qtyTFutureBatch * 2),
-              instrument: instrumentKey,
-            },
-            portfolio.portfolio
-          ).subscribe();
-        });
+        this.orderService.submitMarketOrder({
+            side: position.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
+            quantity: Math.abs(position.qtyTFutureBatch * 2),
+            instrument: instrumentKey,
+          },
+          portfolio.portfolio
+        ).subscribe();
       });
   }
 
@@ -253,20 +249,30 @@ export class ScalperOrdersService {
 
   setStopLoss(instrumentKey: InstrumentKey, price: number, silent: boolean): void {
     this.getCurrentPositionsWithPortfolio(instrumentKey)
-      .subscribe(({ portfolio, positions }) => {
-        const quantity = positions.map(x => x.qtyTFutureBatch).reduce((acc, curr) => acc + curr, 0);
-
-        if (quantity <= 0) {
+      .subscribe(({ portfolio, position }) => {
+        if (!position || position.qtyTFutureBatch === 0 || !position.avgPrice) {
           this.notification.error('Нет позиций', 'Позиции для установки стоп-лосс отсутствуют');
           return;
         }
 
+        const side = position.qtyTFutureBatch < 0 ? Side.Buy : Side.Sell;
+
+        if (side === Side.Sell && price >= position.avgPrice) {
+          this.notification.warning('Некорректная цена', `Для установки стоп-лосс цена должна быть меньше ${position.avgPrice}`);
+          return;
+        }
+
+        if (side === Side.Buy && price <= position.avgPrice) {
+          this.notification.warning('Некорректная цена', `Для установки стоп-лосс цена должна быть больше ${position.avgPrice}`);
+          return;
+        }
+
         const order: StopMarketOrder = {
-          side: Side.Sell,
-          quantity,
+          side: side,
+          quantity: Math.abs(position.qtyTFutureBatch),
           instrument: instrumentKey,
           triggerPrice: price,
-          condition: StopOrderCondition.More
+          condition: side === Side.Sell ? StopOrderCondition.Less : StopOrderCondition.More
         };
 
         if (silent) {
@@ -290,19 +296,19 @@ export class ScalperOrdersService {
       );
   }
 
-  private getCurrentPositions(instrumentKey: InstrumentKey, portfolio: PortfolioKey): Observable<Position[]> {
+  private getCurrentPositions(instrumentKey: InstrumentKey, portfolio: PortfolioKey): Observable<Position | null> {
     return this.positionsService.getAllByPortfolio(portfolio.portfolio, portfolio.exchange).pipe(
       filter((positions): positions is Position[] => !!positions),
-      map(positions => positions.filter(pos => pos.symbol === instrumentKey.symbol)),
+      map(positions => positions.find(pos => pos.symbol === instrumentKey.symbol) ?? null),
       take(1)
     );
   }
 
-  private getCurrentPositionsWithPortfolio(instrumentKey: InstrumentKey): Observable<{ portfolio: PortfolioKey, positions: Position[] }> {
+  private getCurrentPositionsWithPortfolio(instrumentKey: InstrumentKey): Observable<{ portfolio: PortfolioKey, position: Position | null }> {
     return this.getCurrentPortfolio().pipe(
       mapWith(
         portfolio => this.getCurrentPositions(instrumentKey, portfolio),
-        (portfolio, positions) => ({ portfolio, positions })
+        (portfolio, position) => ({ portfolio, position })
       ),
       take(1)
     );
