@@ -136,17 +136,12 @@
           </nz-form-control>
           <nz-form-label nzFor="instrumentGroup" class="auto-align-label">
             Интервал автоматического выравнивания стакана, сек.
-            <span
-              nz-icon
-              nz-popover
-              nzPopoverTitle="Введите '0' или оставьте поле пустым, чтобы отключить авто-выравнивание"
-              nzType="info-circle"
-              nzTheme="outline"
-            >
-            </span>
           </nz-form-label>
           <nz-form-control nzErrorTip="Значение должно быть от {{validationOptions.autoAlignIntervalSec.min}} до {{validationOptions.autoAlignIntervalSec.max}}">
             <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="autoAlignIntervalSec"/>
+            <span nz-typography nzType="secondary">
+              Введите '0' или оставьте поле пустым, чтобы отключить авто-выравнивание
+            </span>
           </nz-form-control>
         </nz-form-item>
       </nz-collapse-panel>
