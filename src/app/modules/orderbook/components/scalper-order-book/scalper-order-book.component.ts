@@ -222,6 +222,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   onRowClick(e: MouseEvent, row: ScalperOrderBookRow) {
     e.preventDefault();
     e.stopPropagation();
+    document.getSelection()?.removeAllRanges();
 
     if (row.rowType !== this.rowTypes.Bid && row.rowType !== this.rowTypes.Ask) {
       return;
@@ -239,7 +240,6 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
     if (e.shiftKey) {
       this.callWithSettings(settings => this.scalperOrdersService.setStopLoss(settings.widgetSettings, row.price, settings.widgetSettings.enableMouseClickSilentOrders));
-
       return;
     }
 
@@ -261,6 +261,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   onRowRightClick(event: MouseEvent, row: ScalperOrderBookRow) {
     event.preventDefault();
     event.stopPropagation();
+    document.getSelection()?.removeAllRanges();
 
     if (row.rowType !== this.rowTypes.Bid && row.rowType !== this.rowTypes.Ask) {
       return;
