@@ -74,7 +74,7 @@
         <td *ngIf='shouldShow("residue")'>{{ ord.residue }}</td>
         <td *ngIf='shouldShow("volume")'>{{ isMarketOrder(ord) ? '' : (ord.volume | number) }}</td>
         <td *ngIf='shouldShow("qty")'>{{ ord.qty | number}}</td>
-        <td *ngIf='shouldShow("price")'>{{ isMarketOrder(ord) ? '' :  (ord.price | number) }}</td>
+        <td *ngIf='shouldShow("price")'>{{ isMarketOrder(ord) ? '' :  (ord.price | number : '0.0-10' ) }}</td>
         <td [class]='ord.status.toString() === "filled"
           ? (ord.status.toString() === "sell" ? "sell" : "buy") :
           (ord.status.toString() === "canceled" ? "cancelled" : "bold" )' *ngIf='shouldShow("status")'>{{ translateStatus(ord.status) }}</td>
