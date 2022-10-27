@@ -1,8 +1,19 @@
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { DashboardItemContentSize } from "../../../../shared/models/dashboard-item.model";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
-import { interval, Subject, Subscription, switchMap, takeUntil, withLatestFrom } from "rxjs";
+import {
+  BehaviorSubject,
+  interval,
+  Observable,
+  Subject,
+  Subscription,
+  switchMap,
+  take,
+  takeUntil,
+  tap,
+  withLatestFrom
+} from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { AllInstrumentsSettings } from "../../../../shared/models/settings/all-instruments-settings.model";
 import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
@@ -13,7 +24,10 @@ import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.mod
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import { mapWith } from '../../../../shared/utils/observable-helper';
+import { filter, map } from 'rxjs/operators';
+import { InstrumentBadges } from '../../../../shared/models/instruments/instrument.model';
+import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 
 @Component({
   selector: 'ats-all-instruments',
@@ -21,20 +35,9 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
   styleUrls: ['./all-instruments.component.less']
 })
 export class AllInstrumentsComponent implements OnInit, OnDestroy {
-  private destroy$: Subject<boolean> = new Subject<boolean>();
-  private instrumentsSub!: Subscription;
-  private filters: AllInstrumentsFilters = {
-    limit: 50,
-    offset: 0
-  };
-  private badgeColor = defaultBadgeColor;
-
   @Input() guid!: string;
   @Input() contentSize!: DashboardItemContentSize | null;
-
-  public instrumentsList: Array<AllInstruments> = [];
-  public isLoading = false;
-
+  public isLoading$ = new BehaviorSubject<boolean>(false);
   public allColumns: ColumnsSettings[] = [
     {
       name: 'name',
@@ -42,8 +45,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       width: '100px',
       sortFn: this.getSortFn('symbol'),
       filterData: {
-        filterName: 'query',
-        // isOpenedFilter: false,
+        filterName: 'query'
       },
       showBadges: true
     },
@@ -117,7 +119,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         ]
       },
     },
-    {name: 'lotSize', displayName: 'Лотность', width: '70px'},
+    { name: 'lotSize', displayName: 'Лотность', width: '70px' },
     {
       name: 'price',
       displayName: 'Цена',
@@ -130,27 +132,45 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         intervalEndName: 'priceTo'
       }
     },
-    {name: 'priceMax', displayName: 'Макс. цена', width: '80px'},
-    {name: 'priceMin', displayName: 'Мин. цена', width: '80px'},
-    {name: 'priceScale', displayName: 'Шаг цены', width: '90px', sortFn: this.getSortFn('priceScale')},
-    {name: 'yield', displayName: 'Доходность', width: '100px', sortFn: this.getSortFn('yield')},
+    { name: 'priceMax', displayName: 'Макс. цена', width: '80px' },
+    { name: 'priceMin', displayName: 'Мин. цена', width: '80px' },
+    { name: 'priceScale', displayName: 'Шаг цены', width: '90px', sortFn: this.getSortFn('priceScale') },
+    { name: 'yield', displayName: 'Доходность', width: '100px', sortFn: this.getSortFn('yield') },
   ];
   public displayedColumns: ColumnsSettings[] = [];
   public contextMenu: ContextMenu[] = [];
+  public instrumentsDisplay$!: Observable<AllInstruments[]>;
+  private instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
+  private readonly loadingChunkSize = 50;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private updatesSub?: Subscription;
+  private filters$ = new BehaviorSubject<AllInstrumentsFilters>({ limit: this.loadingChunkSize, offset: 0 });
+  private badgeColor = defaultBadgeColor;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly service: AllInstrumentsService,
-    private readonly cdr: ChangeDetectorRef,
     private readonly store: Store,
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly terminalSettingsService: TerminalSettingsService
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
-    this.getInstruments();
+    this.initInstruments();
     this.initContextMenu();
-    this.badgesChangeSubscribe();
+
+    this.instrumentsDisplay$ = this.instrumentsList$.pipe(
+      mapWith(
+        () => this.store.select(getSelectedInstrumentsWithBadges),
+        (instruments, output) => ({ instruments, badges: output })
+      ),
+      mapWith(
+        () => this.terminalSettingsService.getSettings(),
+        (source, output) => ({ ...source, terminalSettings: output })
+      ),
+      map(s => this.mapInstrumentsToBadges(s.instruments, s.badges, s.terminalSettings))
+    );
 
     this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
       .pipe(takeUntil(this.destroy$))
@@ -167,30 +187,48 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   }
 
   scrolled() {
-    this.filters = {
-      ...this.filters,
-      offset: this.instrumentsList.length
-    };
-    this.getInstruments();
+    this.instrumentsList$.pipe(
+      take(1),
+      withLatestFrom(this.isLoading$, this.filters$),
+      filter(([, isLoading,]) => !isLoading),
+      map(([instrumentsList, , currentFilters]) => ({ instrumentsList, currentFilters })),
+    ).subscribe(s => {
+      const loadedIndex = s.currentFilters.limit! + s.currentFilters.offset!;
+      if (s.instrumentsList.length < loadedIndex) {
+        return;
+      }
+
+      this.updateFilters(curr => ({
+        ...curr,
+        offset: s.instrumentsList.length
+      }));
+    });
   }
 
   applyFilter(filters: any) {
-    const allFilters = {
-      ...this.filters,
-      ...filters
-    };
+    this.updateFilters(curr => {
+      const allFilters = {
+        ...curr,
+        ...filters
+      };
 
-    this.filters = Object.keys(allFilters)
-      .filter(key => !!allFilters[key])
-      .reduce((acc, curr) => {
-        if (Array.isArray(allFilters[curr])) {
-          acc[curr] = allFilters[curr].join(';');
-        } else {
-          acc[curr] = allFilters[curr];
-        }
-        return acc;
-      }, { offset: 0 } as any);
-    this.getInstruments(true);
+      const cleanedFilters = Object.keys(allFilters)
+        .filter(key => !!allFilters[key])
+        .reduce((acc, curr) => {
+          if (Array.isArray(allFilters[curr])) {
+            acc[curr] = allFilters[curr].join(';');
+          }
+          else {
+            acc[curr] = allFilters[curr];
+          }
+          return acc;
+        }, {} as any);
+
+      return {
+        ...cleanedFilters,
+        offset: 0
+      };
+    });
   }
 
   selectInstrument(row: AllInstruments) {
@@ -198,7 +236,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       symbol: row.name,
       exchange: row.exchange,
     };
-    this.store.dispatch(selectNewInstrumentByBadge({instrument, badgeColor: this.badgeColor}));
+    this.store.dispatch(selectNewInstrumentByBadge({ instrument, badgeColor: this.badgeColor }));
   }
 
   initContextMenu() {
@@ -231,93 +269,87 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.updatesSub?.unsubscribe();
+
+    this.filters$.complete();
+    this.instrumentsList$.complete();
+    this.isLoading$.complete();
+
     this.destroy$.next(true);
     this.destroy$.complete();
   }
 
-  private getInstruments(isFiltersChanged = false) {
-    if (this.isLoading) return;
-
-    this.isLoading = true;
-    this.service.getAllInstruments(this.filters)
-      .pipe(
-        withLatestFrom(
-          this.store.select(getSelectedInstrumentsWithBadges),
-          this.terminalSettingsService.getSettings()
-        )
-      )
-      .subscribe(([res, badges, settings]) => {
-        const newDataWithBadges = res.map(instr => ({
-          ...instr,
-          badges: Object.keys(settings.badgesBind ? badges : {[defaultBadgeColor]: badges[defaultBadgeColor]})
-            .filter(key => instr.name === badges[key].symbol  && instr.exchange === badges[key].exchange)
-        }));
-        if (isFiltersChanged) {
-          this.instrumentsList = newDataWithBadges;
-        } else {
-          this.instrumentsList = [...this.instrumentsList, ...newDataWithBadges];
-        }
-
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      });
-
-    if (this.instrumentsSub) {
-      this.instrumentsSub.unsubscribe();
-    }
-
-    const filterForSub = JSON.parse(JSON.stringify(this.filters));
-    filterForSub.limit += filterForSub.offset;
-    filterForSub.offset = 0;
-
-    this.instrumentsSub = interval(10_000)
-      .pipe(
-        switchMap(() => this.service.getAllInstruments(filterForSub)),
-        withLatestFrom(
-          this.store.select(getSelectedInstrumentsWithBadges),
-          this.terminalSettingsService.getSettings()
-        ),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(([res, badges, settings]) => {
-        this.instrumentsList = res.map(instr => ({
-          ...instr,
-          badges: Object.keys(settings.badgesBind ? badges : {[defaultBadgeColor]: badges[defaultBadgeColor]})
-            .filter(key => instr.name === badges[key].symbol  && instr.exchange === badges[key].exchange)
-        }));
-        this.cdr.markForCheck();
-      });
+  private updateFilters(update: (curr: AllInstrumentsFilters) => AllInstrumentsFilters) {
+    this.filters$.pipe(
+      take(1)
+    ).subscribe(curr => {
+      this.filters$.next(update(curr));
+    });
   }
 
-  private badgesChangeSubscribe() {
-    this.store.select(getSelectedInstrumentsWithBadges)
+  private initInstruments() {
+    this.filters$.pipe(
+      tap(() => this.isLoading$.next(true)),
+      mapWith(
+        f => this.service.getAllInstruments(f),
+        (filters, res) => ({ filters, res })
+      ),
+      withLatestFrom(this.instrumentsList$),
+      map(([s, currentList]) => s.filters.offset! > 0 ? [...currentList, ...s.res] : s.res),
+      tap(() => this.isLoading$.next(false)),
+      takeUntil(this.destroy$)
+    ).subscribe(instruments => {
+      this.instrumentsList$.next(instruments);
+      this.subscribeToUpdates();
+    });
+  }
+
+  private mapInstrumentsToBadges(instruments: AllInstruments[], badges: InstrumentBadges, terminalSettings: TerminalSettings): AllInstruments[] {
+    return instruments.map(instr => ({
+      ...instr,
+      badges: Object.keys(terminalSettings.badgesBind ? badges : { [defaultBadgeColor]: badges[defaultBadgeColor] })
+        .filter(key => instr.name === badges[key].symbol && instr.exchange === badges[key].exchange)
+    }));
+  }
+
+  private subscribeToUpdates() {
+    this.updatesSub?.unsubscribe();
+
+    this.updatesSub = interval(10_000)
       .pipe(
-        mapWith(
-          () => this.terminalSettingsService.getSettings(),
-          (badges, settings) => ({badges, settings})),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(({badges, settings}) => {
-        this.instrumentsList = this.instrumentsList.map(instr => ({
-          ...instr,
-          badges: Object.keys(settings.badgesBind ? badges : {[defaultBadgeColor]: badges[defaultBadgeColor]})
-            .filter(key => instr.name === badges[key].symbol  && instr.exchange === badges[key].exchange)
-        }));
-        this.cdr.markForCheck();
+        withLatestFrom(this.isLoading$, this.filters$),
+        filter(([, isLoading,]) => !isLoading),
+        map(([, , filters]) => filters),
+        map(filters => ({
+          ...filters,
+          offset: 0,
+          limit: filters.limit! + filters.offset!
+        })),
+        switchMap(f => this.service.getAllInstruments(f))
+      ).subscribe(instruments => {
+        this.instrumentsList$.next(instruments);
       });
   }
 
   private getSortFn(orderBy: string): (dir: string | null) => void {
     return (dir: string | null) => {
-      let filter = {};
-      if (dir) {
-        filter = {descending: dir === 'descend', orderBy};
-      } else {
-        delete this.filters.descending;
-        delete this.filters.orderBy;
-      }
-      this.applyFilter(filter);
+      this.updateFilters(curr => {
+        const filter = {
+          ...curr,
+          offset: 0
+        };
+
+        delete filter.descending;
+        delete filter.orderBy;
+
+        if (dir) {
+          filter.descending = dir === 'descend';
+          filter.orderBy = orderBy;
+        }
+
+        return filter;
+      });
+
     };
   }
-
 }

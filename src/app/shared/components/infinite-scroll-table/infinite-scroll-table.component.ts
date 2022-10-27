@@ -26,14 +26,26 @@ import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dro
   styleUrls: ['./infinite-scroll-table.component.less']
 })
 export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, OnDestroy, OnInit {
+  private tableData: Array<any> = [];
 
   @Input() public trackByFn = (data: any) => data.id;
   @Input() public tableContainerHeight = 100;
   @Input() public tableContainerWidth = 100;
-  @Input() public data: Array<any> = [];
   @Input() public isLoading = false;
   @Input() public columns: Array<ColumnsSettings> = [];
   @Input() public contextMenu: Array<ContextMenu> = [];
+
+  @Input() public set data(value: Array<any> ){
+    if(this.tableData.length > value.length) {
+      this.dataTable?.cdkVirtualScrollViewport?.scrollToIndex(0);
+    }
+
+    this.tableData = value;
+  }
+
+  public get data(): Array<any> {
+    return this.tableData;
+  }
 
   @Output() public rowClick = new EventEmitter();
   @Output() public scrolled = new EventEmitter();

@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
-  Observable,
-  Subscription,
+  Observable, of,
+  Subscription, switchMap,
   take
 } from 'rxjs';
 import {
+  filter,
   finalize,
   map
 } from 'rxjs/operators';
@@ -21,6 +22,8 @@ import { GuidGenerator } from '../../../shared/utils/guid';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from './watchlist-collection.service';
 import { InstrumentSelectSettings } from '../../../shared/models/settings/instrument-select-settings.model';
+import { InstrumentsService } from './instruments.service';
+import { Instrument } from '../../../shared/models/instruments/instrument.model';
 
 @Injectable()
 export class WatchInstrumentsService {
@@ -44,7 +47,8 @@ export class WatchInstrumentsService {
   constructor(
     private readonly history: HistoryService,
     private readonly ws: WebsocketService,
-    private readonly watchlistCollectionService: WatchlistCollectionService) {
+    private readonly watchlistCollectionService: WatchlistCollectionService,
+    private readonly instrumentSService: InstrumentsService) {
   }
 
   unsubscribe() {
@@ -118,22 +122,36 @@ export class WatchInstrumentsService {
   }
 
   private initInstrumentSubscription(instrument: InstrumentKey) {
-    this.history.getDaysOpen(instrument)
-      .pipe(
-        map(candle => <WatchedInstrument>{
-          instrument: instrument,
-          closePrice: candle?.close ?? 0,
-          openPrice: candle?.open ?? 0,
-          prevTickPrice: 0,
-          dayChange: 0,
-          price: 0,
-          minPrice: candle?.low,
-          maxPrice: candle?.high,
-          volume: candle?.volume,
-          dayChangePerPrice: 0,
-        }),
-        take(1)
-      ).subscribe(wi => {
+    of({}).pipe(
+      switchMap(() => {
+        if(instrument.shortName) {
+          return of(instrument);
+        }
+
+        return this.instrumentSService.getInstrument(instrument).pipe(
+          take(1),
+          filter((x): x is Instrument => !!x)
+        );
+      }),
+      switchMap(i => {
+        return this.history.getDaysOpen(i)
+          .pipe(
+            map(candle => <WatchedInstrument>{
+              instrument: i,
+              closePrice: candle?.close ?? 0,
+              openPrice: candle?.open ?? 0,
+              prevTickPrice: 0,
+              dayChange: 0,
+              price: 0,
+              minPrice: candle?.low,
+              maxPrice: candle?.high,
+              volume: candle?.volume,
+              dayChangePerPrice: 0,
+            }),
+            take(1)
+          );
+      })
+    ).subscribe(wi => {
       this.updateWatchStateItem(wi);
       this.setupInstrumentQuotesSubscription(wi);
     });

@@ -1,22 +1,20 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ApplicationUpdatedWidgetComponent } from './application-updated-widget.component';
 import { of } from 'rxjs';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { ApplicationMetaModule } from '../../application-meta.module';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ApplicationMetaService } from '../../services/application-meta.service';
 
 describe('ApplicationUpdatedWidgetComponent', () => {
   let component: ApplicationUpdatedWidgetComponent;
   let fixture: ComponentFixture<ApplicationUpdatedWidgetComponent>;
 
-  let applicationMetaService: any;
+  let applicationMetaServiceSpy: any;
 
   beforeEach(() => {
-    applicationMetaService = jasmine.createSpyObj('ApplicationMetaService', ['updateCurrentVersion']);
+    applicationMetaServiceSpy = jasmine.createSpyObj('ApplicationMetaService', ['updateCurrentVersion']);
   });
 
   beforeEach(async () => {
@@ -31,7 +29,11 @@ describe('ApplicationUpdatedWidgetComponent', () => {
           useValue: {
             shouldShowApplicationUpdatedModal$: of(true)
           }
-        }
+        },
+        {
+          provide: ApplicationMetaService,
+          useValue: applicationMetaServiceSpy
+        },
       ]
     })
       .compileComponents();

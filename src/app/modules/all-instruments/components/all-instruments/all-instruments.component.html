@@ -1,8 +1,8 @@
 <ats-infinite-scroll-table
   [tableContainerHeight]="contentSize?.height || 0"
   [tableContainerWidth]="contentSize?.width || 0"
-  [data]="instrumentsList"
-  [isLoading]="isLoading"
+  [data]="(instrumentsDisplay$ | async) ?? []"
+  [isLoading]="(isLoading$ | async) ?? false"
   [columns]="displayedColumns"
   [contextMenu]="contextMenu"
   (scrolled)="scrolled()"
