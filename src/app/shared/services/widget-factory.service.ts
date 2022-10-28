@@ -131,10 +131,11 @@ export class WidgetFactoryService {
       ...this.badges.yellow,
       guid: newWidget.gridItem.label,
       settingsType: 'OrderbookSettings',
+      title: `Стакан`,
+      titleIcon: 'ordered-list',
       linkToActive: true,
       badgeColor: defaultBadgeColor,
       depth: 10,
-      title: `Стакан`,
       showChart: true,
       showTable: true,
       showYieldForBonds: false,
@@ -152,6 +153,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       settingsType: 'ScalperOrderBookSettings',
       title: `Скальперский стакан`,
+      titleIcon: 'ordered-list',
       linkToActive: true,
       badgeColor: defaultBadgeColor,
       depth: 10,
@@ -198,9 +200,10 @@ export class WidgetFactoryService {
       badgeColor: defaultBadgeColor,
       guid: newWidget.gridItem.label,
       settingsType: 'LightChartSettings',
+      title: `График`,
+      titleIcon: 'sliders',
       timeFrame: TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value,
       timeFrameDisplayMode: TimeFrameDisplayMode.Buttons,
-      title: `График`,
       width: 300,
       height: 300
     } as LightChartSettings;
@@ -216,6 +219,8 @@ export class WidgetFactoryService {
       activeTabIndex: 0,
       guid: newWidget.gridItem.label,
       settingsType: 'BlotterSettings',
+      title: `Блоттер`,
+      titleIcon: 'table',
       currency: CurrencyInstrument.USD,
       tradesColumns: allTradesColumns.filter(c => c.isDefault).map(c => c.columnId),
       positionsColumns: allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId),
@@ -223,7 +228,6 @@ export class WidgetFactoryService {
       stopOrdersColumns: allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       linkToActive: true,
       badgeColor: defaultBadgeColor,
-      title: `Блоттер`,
       isSoldPositionsHidden: true
     } as BlotterSettings;
   }
@@ -242,6 +246,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       settingsType: 'InfoSettings',
       title: `Инфо`,
+      titleIcon: 'info',
     } as InfoSettings;
   }
 
@@ -256,7 +261,8 @@ export class WidgetFactoryService {
       badgeColor: defaultBadgeColor,
       guid: newWidget.gridItem.label,
       settingsType: 'AllTradesSettings',
-      title: `Все сделки`
+      title: `Все сделки`,
+      titleIcon: 'unordered-list'
     } as AllTradesSettings;
   }
 
@@ -294,6 +300,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       settingsType: 'TechChartSettings',
       title: 'Тех. анализ',
+      titleIcon: 'fund',
       linkToActive: true,
       badgeColor: defaultBadgeColor,
       chartSettings: {}
@@ -325,6 +332,7 @@ export class WidgetFactoryService {
       badgeColor: defaultBadgeColor,
       settingsType: 'OrderSubmitSettings',
       title: 'Выставить заявку',
+      titleIcon: 'send',
       linkToActive: true
     } as OrderSubmitSettings;
   }

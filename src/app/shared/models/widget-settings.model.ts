@@ -4,4 +4,5 @@ export interface WidgetSettings {
   linkToActive?: boolean
   settingsType?: string;
   badgeColor?: string;
+  titleIcon?: string;
 }
