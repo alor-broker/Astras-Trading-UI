@@ -144,7 +144,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         autoAlignIntervalSec: !!(+this.form.value.autoAlignIntervalSec) ? Number(this.form.value.autoAlignIntervalSec) : null
       };
 
-      newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
+      newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
 
       this.settingsService.updateSettings<ScalperOrderBookSettings>(this.guid, newSettings);
       this.settingsChange.emit();
