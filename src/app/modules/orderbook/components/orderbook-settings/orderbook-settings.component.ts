@@ -110,7 +110,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
           exchange: this.form.value.exchange!,
       } as OrderbookSettings;
 
-      newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
+      newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
       this.settingsService.updateSettings<OrderbookSettings>(this.guid, newSettings);
       this.settingsChange.emit();
     });

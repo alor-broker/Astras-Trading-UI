@@ -111,7 +111,7 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
           currency: this.codeToCurrency(this.form.value.currency)
       };
 
-      newSettings.linkToActive = this.isPortfolioEqual(initialSettings, newSettings);
+      newSettings.linkToActive = initialSettings.linkToActive && this.isPortfolioEqual(initialSettings, newSettings);
 
       this.settingsService.updateSettings<BlotterSettings>(this.guid, newSettings);
       this.settingsChange.emit();

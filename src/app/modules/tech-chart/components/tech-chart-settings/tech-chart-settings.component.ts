@@ -71,7 +71,7 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
         ...this.form.value,
       };
 
-      newSettings.linkToActive = isInstrumentEqual(initialSettings, newSettings);
+      newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
 
       this.settingsService.updateSettings(this.guid, newSettings);
       this.settingsChange.emit();
