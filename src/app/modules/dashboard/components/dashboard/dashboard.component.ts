@@ -59,7 +59,7 @@ export class DashboardComponent implements OnInit {
       defaultItemCols: 1,
       defaultItemRows: 1,
       fixedColWidth: 105,
-      fixedRowHeight: 300,
+      fixedRowHeight: 30,
       keepFixedHeightInMobile: true,
       keepFixedWidthInMobile: false,
       scrollSensitivity: 10,
