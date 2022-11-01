@@ -9,6 +9,7 @@ import { NzCollapseModule } from "ng-zorro-antd/collapse";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { NzSelectModule } from "ng-zorro-antd/select";
+import { SharedModule } from '../../shared/shared.module';
 
 
 @NgModule({
@@ -17,15 +18,16 @@ import { NzSelectModule } from "ng-zorro-antd/select";
     TechChartComponent,
     TechChartSettingsComponent
   ],
-  imports: [
-    CommonModule,
-    NzFormModule,
-    ReactiveFormsModule,
-    NzCollapseModule,
-    NzButtonModule,
-    NzInputModule,
-    NzSelectModule
-  ],
+    imports: [
+        CommonModule,
+        NzFormModule,
+        ReactiveFormsModule,
+        NzCollapseModule,
+        NzButtonModule,
+        NzInputModule,
+        NzSelectModule,
+        SharedModule
+    ],
   exports: [
     TechChartWidgetComponent
   ]

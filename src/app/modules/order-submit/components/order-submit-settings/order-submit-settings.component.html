@@ -1,17 +1,15 @@
 <p>Настройки</p>
 <form (ngSubmit)="submitForm()" [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
   <nz-form-item class='compact'>
-    <nz-form-control nzErrorTip="Введите имя инструмента">
-      <nz-form-label nzFor="symbol" nzRequired>Тикер</nz-form-label>
-      <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="symbol" nz-input placeholder="Тикер"/>
+    <nz-form-control nzErrorTip="Выберите тикер">
+      <nz-form-label nzRequired nzFor="instrument">Тикер</nz-form-label>
+      <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item class="compact">
-    <nz-form-control nzErrorTip="Введите биржу">
-      <nz-form-label nzFor="exchange" nzRequired>Биржа</nz-form-label>
-      <nz-select formControlName='exchange'>
-        <nz-option *ngFor='let exchange of exchanges' [nzLabel]="exchange" [nzValue]="exchange"></nz-option>
-      </nz-select>
+    <nz-form-control>
+      <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
+      <input formControlName='exchange' class='ant-input'>
     </nz-form-control>
   </nz-form-item>
   <nz-collapse [nzBordered]="false" class="compact">

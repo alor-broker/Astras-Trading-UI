@@ -27,27 +27,9 @@ import {
   VolumeHighlightOption
 } from "../../../../shared/models/settings/scalper-order-book-settings.model";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
-import { InstrumentValidation } from '../../../../shared/utils/validation-options';
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
-
-interface SettingsFormData {
-  depth: number;
-  exchange: string;
-  symbol: string;
-  instrumentGroup: string;
-  showZeroVolumeItems: boolean;
-  showSpreadItems: boolean;
-  volumeHighlightMode: VolumeHighlightMode;
-  volumeHighlightOptions: VolumeHighlightOption[];
-  volumeHighlightFullness: number;
-  workingVolumes: number[];
-  disableHotkeys: boolean;
-  enableMouseClickSilentOrders: boolean;
-  autoAlignIntervalSec?: number;
-}
-
-type SettingsFormControls = { [key in keyof SettingsFormData]: AbstractControl };
-type SettingsFormGroup = UntypedFormGroup & { value: SettingsFormData, controls: SettingsFormControls };
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
 @Component({
   selector: 'ats-scalper-order-book-settings[settingsChange][guid]',
@@ -57,7 +39,6 @@ type SettingsFormGroup = UntypedFormGroup & { value: SettingsFormData, controls:
 export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   readonly volumeHighlightModes = VolumeHighlightMode;
   readonly validationOptions = {
-    ...InstrumentValidation,
     depth: {
       min: 1,
       max: 20
@@ -81,7 +62,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
-  form!: SettingsFormGroup;
+  form!: UntypedFormGroup;
   exchanges: string[] = exchangesList;
   readonly availableVolumeHighlightModes: { label: string, value: string }[] = [
     { label: 'Отключено', value: VolumeHighlightMode.Off },
@@ -131,19 +112,24 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
+      const formValue = this.form.value;
+
       const newSettings = {
-        ...this.form.value,
-        depth: Number(this.form.value.depth),
-        volumeHighlightOptions: this.form.value.volumeHighlightOptions.map((x: VolumeHighlightOption) => ({
+        ...formValue,
+        symbol: formValue.instrument.symbol,
+        exchange: formValue.instrument.exchange,
+        depth: Number(formValue.depth),
+        volumeHighlightOptions: formValue.volumeHighlightOptions.map((x: VolumeHighlightOption) => ({
             ...x,
             boundary: Number(x.boundary)
           } as VolumeHighlightOption)
         ),
-        volumeHighlightFullness: Number(this.form.value.volumeHighlightFullness),
-        workingVolumes: this.form.value.workingVolumes.map((wv: string) => Number(wv)),
-        autoAlignIntervalSec: !!(+this.form.value.autoAlignIntervalSec) ? Number(this.form.value.autoAlignIntervalSec) : null
+        volumeHighlightFullness: Number(formValue.volumeHighlightFullness),
+        workingVolumes: formValue.workingVolumes.map((wv: string) => Number(wv)),
+        autoAlignIntervalSec: !!(+formValue.autoAlignIntervalSec) ? Number(formValue.autoAlignIntervalSec) : null
       };
 
+      delete newSettings.instrument;
       newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
 
       this.settingsService.updateSettings<ScalperOrderBookSettings>(this.guid, newSettings);
@@ -184,14 +170,19 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     return !this.form?.controls?.volumeHighlightOptions?.valid || !this.form?.controls?.volumeHighlightFullness?.valid;
   }
 
+  instrumentSelected(instrument: Instrument | null) {
+    this.form.controls.exchange.setValue(instrument?.exchange ?? null);
+    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+  }
+
   private buildForm(settings: ScalperOrderBookSettings) {
     this.form = new UntypedFormGroup({
-      symbol: new UntypedFormControl(settings.symbol, [
-        Validators.required,
-        Validators.minLength(this.validationOptions.symbol.min),
-        Validators.maxLength(this.validationOptions.symbol.max)
-      ]),
-      exchange: new UntypedFormControl(settings.exchange, Validators.required),
+      instrument: new UntypedFormControl({
+        symbol: settings.symbol,
+        exchange: settings.exchange,
+        instrumentGroup: settings.instrumentGroup
+      } as InstrumentKey, Validators.required),
+      exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
       depth: new UntypedFormControl(settings.depth, [Validators.required,
         Validators.min(this.validationOptions.depth.min),
         Validators.max(this.validationOptions.depth.max)]),
@@ -223,7 +214,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
           Validators.max(this.validationOptions.autoAlignIntervalSec.max)
         ]
       ),
-    } as SettingsFormControls) as SettingsFormGroup;
+    });
   }
 
   private createVolumeHighlightOptionsControl(option?: VolumeHighlightOption): AbstractControl {

@@ -22,6 +22,8 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderSubmitSettings } from "../../../../shared/models/settings/order-submit-settings.model";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
 @Component({
   selector: 'ats-order-submit-settings[settingsChange][guid]',
@@ -50,11 +52,12 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.form = new UntypedFormGroup({
-        symbol: new UntypedFormControl(settings.symbol, [
-          Validators.required,
-          Validators.minLength(4)
-        ]),
-        exchange: new UntypedFormControl(settings.exchange, Validators.required),
+        instrument: new UntypedFormControl({
+          symbol: settings.symbol,
+          exchange: settings.exchange,
+          instrumentGroup: settings.instrumentGroup
+        } as InstrumentKey, Validators.required),
+        exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
         instrumentGroup: new UntypedFormControl(settings.instrumentGroup)
       });
     });
@@ -64,10 +67,15 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
+      const formValue = this.form.value;
+
       const newSettings = {
-        ...this.form.value,
+        ...formValue,
+        symbol: formValue.instrument.symbol,
+        exchange: formValue.instrument.exchange
       };
 
+      delete newSettings.instrument;
       newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
 
       this.settingsService.updateSettings(this.guid, newSettings);
@@ -78,5 +86,10 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+  }
+
+  instrumentSelected(instrument: Instrument | null) {
+    this.form.controls.exchange.setValue(instrument?.exchange ?? null);
+    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 }

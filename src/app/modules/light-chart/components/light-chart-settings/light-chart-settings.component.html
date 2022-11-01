@@ -1,17 +1,15 @@
 <p>Настройки</p>
 <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
   <nz-form-item  class='compact'>
-    <nz-form-control nzErrorTip="Тикер должен иметь длину от {{validationOptions.symbol.min}} до {{validationOptions.symbol.max}}">
-      <nz-form-label nzRequired nzFor="symbol">Тикер</nz-form-label>
-      <input class='ant-input' formControlName="symbol" (mousedown)="$event.stopPropagation()" nz-input placeholder="Тикер" />
+    <nz-form-control nzErrorTip="Выберите тикер">
+      <nz-form-label nzRequired nzFor="instrument">Тикер</nz-form-label>
+      <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item class="compact">
-    <nz-form-control nzErrorTip="Выберите биржу">
+    <nz-form-control>
       <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
-      <nz-select formControlName='exchange'>
-        <nz-option  *ngFor='let exchange of exchanges' [nzValue]="exchange" [nzLabel]="exchange"></nz-option>
-      </nz-select>
+      <input formControlName='exchange' class='ant-input'>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item class="compact">
