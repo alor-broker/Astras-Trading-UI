@@ -152,10 +152,10 @@ import { InstrumentSearchComponent } from './components/instrument-search/instru
         InfiniteScrollTableComponent,
         WidgetMenuComponent,
         ColorPickerInputComponent,
+        InstrumentSearchComponent,
         // directives
         NumericalDirective,
         ShortNumberPipe,
-        InstrumentSearchComponent,
     ],
   providers: [
     {

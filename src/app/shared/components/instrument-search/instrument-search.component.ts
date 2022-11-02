@@ -105,7 +105,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     this.filter$.complete();
   }
 
-  registerOnChange(fn: (symbol: string) => void): void {
+  registerOnChange(fn: (value: Instrument | null) => void): void {
     this.onValueChanged = fn;
   }
 
@@ -130,7 +130,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     this.instrumentSelected.emit(value);
   }
 
-  private onValueChanged: (value: any) => void = () => {
+  private onValueChanged: (value: Instrument | null) => void = () => {
   };
 
   private onTouched = () => {
