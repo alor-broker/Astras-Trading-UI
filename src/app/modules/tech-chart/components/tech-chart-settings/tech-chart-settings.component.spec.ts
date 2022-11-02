@@ -9,6 +9,7 @@ import { of } from "rxjs";
 import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
 import { TechChartModule } from "../../tech-chart.module";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 
 describe('TechChartSettingsComponent', () => {
   let component: TechChartSettingsComponent;
@@ -19,7 +20,8 @@ describe('TechChartSettingsComponent', () => {
       declarations: [TechChartSettingsComponent],
       imports: [
         TechChartModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        ...sharedModuleImportForTests
       ],
       providers: [
         {

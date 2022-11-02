@@ -51,6 +51,7 @@ import { ShortNumberPipe } from './pipes/short-number.pipe';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NOTIFICATIONS_PROVIDER } from '../modules/notifications/services/notifications-provider';
 import { FeedbackNotificationsProvider } from '../modules/feedback/services/feedback-notifications-provider';
+import { InstrumentSearchComponent } from './components/instrument-search/instrument-search.component';
 
 
 @NgModule({
@@ -61,7 +62,8 @@ import { FeedbackNotificationsProvider } from '../modules/feedback/services/feed
     InfiniteScrollTableComponent,
     WidgetMenuComponent,
     ColorPickerInputComponent,
-    ShortNumberPipe
+    ShortNumberPipe,
+    InstrumentSearchComponent
   ],
     imports: [
         CommonModule,
@@ -106,54 +108,55 @@ import { FeedbackNotificationsProvider } from '../modules/feedback/services/feed
         NzInputModule,
         NzSpaceModule,
     ],
-  exports: [
-    // Ng zorro
-    NzTableModule,
-    NzButtonModule,
-    NzIconModule,
-    NzLayoutModule,
-    NzFormModule,
-    NzSelectModule,
-    NzCollapseModule,
-    NzAutocompleteModule,
-    NzTagModule,
-    NzCardModule,
-    NzTabsModule,
-    NzMenuModule,
-    NzDropDownModule,
-    NzModalModule,
-    NzToolTipModule,
-    NzSwitchModule,
-    NzImageModule,
-    NzAvatarModule,
-    NzBadgeModule,
-    NzNotificationModule,
-    NzPopconfirmModule,
-    NzDescriptionsModule,
-    NzEmptyModule,
-    NzCheckboxModule,
-    ScrollingModule,
-    NzDatePickerModule,
-    NzTypographyModule,
-    NzRadioModule,
-    NzPopoverModule,
-    NzSpaceModule,
-    // modules
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    GridsterModule,
-    NgChartsModule,
-    // components
-    PriceTickComponent,
-    LoadingIndicatorComponent,
-    InfiniteScrollTableComponent,
-    WidgetMenuComponent,
-    ColorPickerInputComponent,
-    // directives
-    NumericalDirective,
-    ShortNumberPipe,
-  ],
+    exports: [
+        // Ng zorro
+        NzTableModule,
+        NzButtonModule,
+        NzIconModule,
+        NzLayoutModule,
+        NzFormModule,
+        NzSelectModule,
+        NzCollapseModule,
+        NzAutocompleteModule,
+        NzTagModule,
+        NzCardModule,
+        NzTabsModule,
+        NzMenuModule,
+        NzDropDownModule,
+        NzModalModule,
+        NzToolTipModule,
+        NzSwitchModule,
+        NzImageModule,
+        NzAvatarModule,
+        NzBadgeModule,
+        NzNotificationModule,
+        NzPopconfirmModule,
+        NzDescriptionsModule,
+        NzEmptyModule,
+        NzCheckboxModule,
+        ScrollingModule,
+        NzDatePickerModule,
+        NzTypographyModule,
+        NzRadioModule,
+        NzPopoverModule,
+        NzSpaceModule,
+        // modules
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        GridsterModule,
+        NgChartsModule,
+        // components
+        PriceTickComponent,
+        LoadingIndicatorComponent,
+        InfiniteScrollTableComponent,
+        WidgetMenuComponent,
+        ColorPickerInputComponent,
+        InstrumentSearchComponent,
+        // directives
+        NumericalDirective,
+        ShortNumberPipe,
+    ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,

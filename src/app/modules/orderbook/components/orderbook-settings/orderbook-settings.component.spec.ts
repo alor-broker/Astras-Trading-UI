@@ -8,7 +8,10 @@ import { of } from 'rxjs';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ReactiveFormsModule } from "@angular/forms";
 import { NzSwitchModule } from "ng-zorro-antd/switch";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import {
+  ngZorroMockComponents,
+  sharedModuleImportForTests
+} from "../../../../shared/utils/testing";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 
@@ -21,13 +24,10 @@ describe('OrderbookSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         OrderbookSettingsComponent,
-        ...ngZorroMockComponents
       ],
       imports: [
         NoopAnimationsModule,
-        ReactiveFormsModule,
-        NzSwitchModule,
-        NzSelectModule
+        ...sharedModuleImportForTests
       ],
       providers: [
         {

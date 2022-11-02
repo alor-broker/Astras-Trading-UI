@@ -27,9 +27,9 @@ import {
   take,
   takeUntil
 } from "rxjs";
-import { exchangesList } from "../../../../shared/models/enums/exchanges";
-import { InstrumentValidation } from '../../../../shared/utils/validation-options';
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 
 @Component({
   selector: 'ats-light-chart-settings[guid]',
@@ -37,7 +37,6 @@ import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
   styleUrls: ['./light-chart-settings.component.less']
 })
 export class LightChartSettingsComponent implements OnInit, OnDestroy {
-  readonly validationOptions = InstrumentValidation;
   @Input()
   guid!: string;
   @Output()
@@ -45,7 +44,6 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   form!: UntypedFormGroup;
   timeFrames: Timeframe[];
   timeFrameDisplayModes = TimeFrameDisplayMode;
-  exchanges: string[] = exchangesList;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<LightChartSettings>;
 
@@ -62,12 +60,12 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.form = new UntypedFormGroup({
-        symbol: new UntypedFormControl(settings.symbol, [
-          Validators.required,
-          Validators.minLength(this.validationOptions.symbol.min),
-          Validators.maxLength(this.validationOptions.symbol.max)
-        ]),
-        exchange: new UntypedFormControl(settings.exchange, Validators.required),
+        instrument: new UntypedFormControl({
+          symbol: settings.symbol,
+          exchange: settings.exchange,
+          instrumentGroup: settings.instrumentGroup
+        } as InstrumentKey, Validators.required),
+        exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
         timeFrame: new UntypedFormControl(settings.timeFrame, Validators.required),
         timeFrameDisplayMode: new UntypedFormControl(settings.timeFrameDisplayMode ?? TimeFrameDisplayMode.Buttons, Validators.required),
         instrumentGroup: new UntypedFormControl(settings.instrumentGroup)
@@ -79,15 +77,25 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
+      const formValue = this.form.value;
       const newSettings = {
-        ...this.form.value,
+        ...formValue,
+        symbol: formValue.instrument.symbol,
+        exchange: formValue.instrument.exchange,
       };
+
+      delete newSettings.instrument;
 
       newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
 
       this.settingsService.updateSettings<LightChartSettings>(this.guid, newSettings);
       this.settingsChange.emit();
     });
+  }
+
+  instrumentSelected(instrument: Instrument | null) {
+    this.form.controls.exchange.setValue(instrument?.exchange ?? null);
+    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
   ngOnDestroy(): void {
