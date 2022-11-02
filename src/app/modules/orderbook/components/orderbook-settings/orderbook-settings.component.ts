@@ -33,7 +33,8 @@ interface SettingsFormData {
   showChart: boolean,
   showTable: boolean,
   showYieldForBonds: boolean,
-  useOrderWidget: boolean
+  useOrderWidget: boolean,
+  showVolume: boolean
 }
 
 @Component({
@@ -89,7 +90,8 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
         showChart: new FormControl(settings.showChart),
         showTable: new FormControl(settings.showTable),
         showYieldForBonds: new FormControl(settings.showYieldForBonds),
-        useOrderWidget: new FormControl(settings.useOrderWidget ?? false)
+        useOrderWidget: new FormControl(settings.useOrderWidget ?? false),
+        showVolume: new FormControl(settings.showVolume || false)
       });
     });
   }
@@ -108,6 +110,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
           symbol: this.form.value.symbol!,
           instrumentGroup: this.form.value.instrumentGroup!,
           exchange: this.form.value.exchange!,
+        showVolume: this.form.value.showVolume
       } as OrderbookSettings;
 
       newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);

@@ -63,6 +63,8 @@ const generateOrderBook = (): OrderBook => {
         { y: 1700, x: 280 },
         { y: 500, x: 290 },
         { y: 200, x: 298 },]
-    }
+    },
+    bidVolumes: 20400,
+    askVolumes: 28600
   };
 };
