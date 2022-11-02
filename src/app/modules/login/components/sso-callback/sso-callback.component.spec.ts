@@ -4,10 +4,17 @@ import { SsoCallbackComponent } from './sso-callback.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { DashboardComponent } from 'src/app/modules/dashboard/components/dashboard/dashboard.component';
+import { AuthService } from '../../../../shared/services/auth.service';
 
 describe('SsoCallbackComponent', () => {
   let component: SsoCallbackComponent;
   let fixture: ComponentFixture<SsoCallbackComponent>;
+
+  let authServiceSpy: any;
+
+  beforeEach(() =>{
+    authServiceSpy = jasmine.createSpyObj('AuthService', ['setUser']);
+  });
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach((async () => {
@@ -17,7 +24,13 @@ describe('SsoCallbackComponent', () => {
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([{ path: 'dashboard', pathMatch: 'full', component: DashboardComponent }])
       ],
-      providers: [RouterTestingModule]
+      providers: [
+        RouterTestingModule,
+        {
+          provide: AuthService,
+          useValue: authServiceSpy
+        }
+      ]
     })
       .compileComponents();
   }));
