@@ -1,13 +1,13 @@
 @import "theme-mixin";
 
-.themeMixin({
-  :host {
-    .buy {
-      color: @buy-color;
-    }
+::ng-deep {
+  .themeMixin({
+      .buy {
+        color: @buy-color;
+      }
 
-    .sell {
-      color: @sell-color;
-    }
-  }
-});
+      .sell {
+        color: @sell-color;
+      }
+  });
+}
