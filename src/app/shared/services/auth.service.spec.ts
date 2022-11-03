@@ -47,6 +47,14 @@ describe('AuthService', () => {
         {
           provide: LocalStorageService,
           useValue: localStorageServiceSpy
+        },
+        {
+          provide: Window,
+          useValue: {
+            location: {
+              assign: jasmine.createSpy('assign').and.callThrough()
+            }
+          }
         }
       ]
     });

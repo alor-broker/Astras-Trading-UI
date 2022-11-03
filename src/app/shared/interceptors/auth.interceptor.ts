@@ -1,14 +1,23 @@
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { switchMap, distinct } from 'rxjs/operators';
+import {
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest
+} from '@angular/common/http';
+import {
+  Observable,
+  take
+} from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authorize: AuthService) { }
+  constructor(private authorize: AuthService) {
+  }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (this.authorize.isAuthRequest(req.url)) {
@@ -16,7 +25,7 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     return this.authorize.accessToken$
       .pipe(
-        distinct(),
+        take(1),
         switchMap(
           token => {
             if (!this.authorize.isAuthorised()) {
@@ -27,7 +36,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 setHeaders: {
                   Authorization: `Bearer ${token}`
                 }
-               }));
+              }));
             }
           }
         ),
