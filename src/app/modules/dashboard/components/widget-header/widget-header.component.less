@@ -7,6 +7,12 @@
         color: @link-to-active-btn-color;
       }
     }
+
+    .title-with-icon {
+      .title-icon {
+        color: @title-icon-color;
+      }
+    }
   }
 });
 
@@ -31,6 +37,22 @@
 
   &:not(:last-child) {
     padding-right: 5px;
+  }
+
+  .title-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .title-with-icon {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+
+    .title-text {
+      padding-left: 8px;
+    }
   }
 }
 
