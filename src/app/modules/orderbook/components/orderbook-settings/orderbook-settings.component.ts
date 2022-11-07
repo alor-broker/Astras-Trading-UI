@@ -8,7 +8,8 @@ import {
 } from '@angular/core';
 import {
   FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -21,21 +22,9 @@ import {
   takeUntil
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
-import { InstrumentValidation } from '../../../../shared/utils/validation-options';
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
-import { ControlsOf } from '../../../../shared/models/form.model';
-
-interface SettingsFormData {
-  depth: number,
-  exchange: string,
-  symbol: string,
-  instrumentGroup: string,
-  showChart: boolean,
-  showTable: boolean,
-  showYieldForBonds: boolean,
-  useOrderWidget: boolean,
-  showVolume: boolean
-}
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
 @Component({
   selector: 'ats-orderbook-settings[settingsChange][guid]',
@@ -44,7 +33,6 @@ interface SettingsFormData {
 })
 export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   readonly validationOptions = {
-    ...InstrumentValidation,
     depth: {
       min: 1,
       max: 20
@@ -55,7 +43,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
-  form!: FormGroup<ControlsOf<SettingsFormData>>;
+  form!: UntypedFormGroup;
   exchanges: string[] = exchangesList;
   private settings$!: Observable<OrderbookSettings>;
 
@@ -72,13 +60,13 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
-      this.form = new FormGroup<ControlsOf<SettingsFormData>>({
-        symbol: new FormControl(settings.symbol, [
-          Validators.required,
-          Validators.minLength(this.validationOptions.symbol.min),
-          Validators.maxLength(this.validationOptions.symbol.max)
-        ]),
-        exchange: new FormControl(settings.exchange, Validators.required),
+      this.form = new UntypedFormGroup({
+        instrument: new UntypedFormControl({
+          symbol: settings.symbol,
+          exchange: settings.exchange,
+          instrumentGroup: settings.instrumentGroup
+        } as InstrumentKey, Validators.required),
+        exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
         depth: new FormControl(
           settings.depth ?? 10,
           [
@@ -100,17 +88,13 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
+      const formValue = this.form.value;
+
       const newSettings = {
-        ...this.form.value,
-          showChart: this.form.value.showChart!,
-          showTable: this.form.value.showTable!,
-          showYieldForBonds: this.form.value.showYieldForBonds!,
-          useOrderWidget: this.form.value.useOrderWidget!,
-          depth: Number(this.form.value.depth!),
-          symbol: this.form.value.symbol!,
-          instrumentGroup: this.form.value.instrumentGroup!,
-          exchange: this.form.value.exchange!,
-        showVolume: this.form.value.showVolume
+        ...formValue,
+        depth: Number(this.form.value.depth!),
+        symbol: formValue.instrument.symbol,
+        exchange: formValue.instrument.exchange
       } as OrderbookSettings;
 
       newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
@@ -122,5 +106,10 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+  }
+
+  instrumentSelected(instrument: Instrument | null) {
+    this.form.controls.exchange.setValue(instrument?.exchange ?? null);
+    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 }

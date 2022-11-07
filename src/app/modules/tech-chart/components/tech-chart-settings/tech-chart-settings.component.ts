@@ -20,9 +20,9 @@ import {
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
-import { exchangesList } from "../../../../shared/models/enums/exchanges";
-import { InstrumentValidation } from '../../../../shared/utils/validation-options';
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
 @Component({
   selector: 'ats-tech-chart-settings[settingsChange][guid]',
@@ -30,13 +30,11 @@ import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
   styleUrls: ['./tech-chart-settings.component.less']
 })
 export class TechChartSettingsComponent implements OnInit, OnDestroy {
-  readonly validationOptions = InstrumentValidation;
   @Input()
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
-  exchanges: string[] = exchangesList;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<TechChartSettings>;
 
@@ -52,12 +50,12 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(settings => {
       this.form = new UntypedFormGroup({
-        symbol: new UntypedFormControl(settings.symbol, [
-          Validators.required,
-          Validators.minLength(this.validationOptions.symbol.min),
-          Validators.maxLength(this.validationOptions.symbol.max)
-        ]),
-        exchange: new UntypedFormControl(settings.exchange, Validators.required),
+        instrument: new UntypedFormControl({
+          symbol: settings.symbol,
+          exchange: settings.exchange,
+          instrumentGroup: settings.instrumentGroup
+        } as InstrumentKey, Validators.required),
+        exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
         instrumentGroup: new UntypedFormControl(settings.instrumentGroup)
       });
     });
@@ -67,10 +65,14 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
+      const formValue = this.form.value;
       const newSettings = {
         ...this.form.value,
+        symbol: formValue.instrument.symbol,
+        exchange: formValue.instrument.exchange,
       };
 
+      delete newSettings.instrument;
       newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
 
       this.settingsService.updateSettings(this.guid, newSettings);
@@ -81,5 +83,10 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+  }
+
+  instrumentSelected(instrument: Instrument | null) {
+    this.form.controls.exchange.setValue(instrument?.exchange ?? null);
+    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 }

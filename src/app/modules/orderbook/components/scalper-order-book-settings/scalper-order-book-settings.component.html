@@ -2,11 +2,9 @@
 <div *ngIf="form">
   <form (ngSubmit)="submitForm()" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
     <nz-form-item class="compact">
-      <nz-form-label nzFor="symbol" nzRequired>Тикер</nz-form-label>
-      <nz-form-control nzErrorTip="Тикер должен иметь длину от {{validationOptions.symbol.min}} до {{validationOptions.symbol.max}}">
-        <nz-input-group>
-          <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="symbol" placeholder="Тикер"/>
-        </nz-input-group>
+      <nz-form-control nzErrorTip="Выберите тикер">
+        <nz-form-label nzRequired nzFor="instrument">Тикер</nz-form-label>
+        <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">

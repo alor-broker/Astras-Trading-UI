@@ -25,24 +25,14 @@ export class AuthService {
     portfolios: [],
     isLoggedOut: false
   });
-  private requiredServices = [
-    'client',
-    'Warp',
-    'CommandApi',
-    'InstrumentApi'
-  ];
 
   currentUser$ = this.currentUser.asObservable();
-  isAuthorised$ = this.currentUser$.pipe(
-    map((user) => {
-      return this.isAuthorised(user);
-    })
-  );
   accessToken$ = this.getAccessToken();
 
   constructor(
     private readonly http: HttpClient,
     private readonly localStorage: LocalStorageService,
+    private readonly window: Window
   ) {
     const user = localStorage.getItem<User>(this.userStorage);
     if(user) {
@@ -75,6 +65,8 @@ export class AuthService {
       portfolios: [],
       isLoggedOut: true
     });
+
+    this.redirectToSso();
   }
 
   public isAuthorised(user?: User): boolean {
@@ -141,7 +133,7 @@ export class AuthService {
   }
 
   redirectToSso() {
-    window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
+    this.window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
   }
 
   private extractPortfolios(jwt: string) : string[] {

@@ -7,6 +7,7 @@ import { NzNotificationService } from "ng-zorro-antd/notification";
 import {
   Observable,
   of,
+  take,
   tap
 } from "rxjs";
 import {
@@ -220,7 +221,8 @@ export class OrderService {
       map(response => ({
         isSuccess: !!response?.orderNumber,
         orderNumber: response?.orderNumber
-      } as SubmitOrderResult))
+      } as SubmitOrderResult)),
+      take(1)
     );
   }
 
