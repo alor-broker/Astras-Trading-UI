@@ -138,7 +138,8 @@ export class WidgetFactoryService {
       showChart: true,
       showTable: true,
       showYieldForBonds: false,
-      useOrderWidget: false
+      useOrderWidget: false,
+      showVolume: false
     } as OrderbookSettings;
   }
 

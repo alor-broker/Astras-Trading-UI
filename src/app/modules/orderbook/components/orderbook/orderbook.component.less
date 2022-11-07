@@ -12,8 +12,27 @@
       }
     }
   }
-});
 
+  .volumes {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+
+    span {
+      padding: 0 10px;
+    }
+
+    .ask-volume {
+      color: @sell-color;
+      background-color: fade(@sell-color, 20%);
+    }
+
+    .bid-volume {
+      color: @buy-color;
+      background-color: fade(@buy-color, 20%);
+    }
+  }
+});
 
 .order-book {
   display: flex;

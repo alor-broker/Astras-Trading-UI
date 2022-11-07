@@ -7,4 +7,5 @@ export interface OrderbookSettings extends WidgetSettings, InstrumentKey {
   showTable: boolean;
   showYieldForBonds: boolean;
   useOrderWidget: boolean;
+  showVolume: boolean;
 }
