@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
 import {
+  AllTradesFilters,
   AllTradesItem,
-  AllTradesSubRequest,
-  GetAllTradesRequest
+  AllTradesSubRequest
 } from "../models/all-trades.model";
 import {
   map,
@@ -30,11 +30,11 @@ export class AllTradesService extends BaseWebsocketService {
     super(ws);
   }
 
-  public getTradesList(req: GetAllTradesRequest): Observable<Array<AllTradesItem>> {
-    const { from, to, take, exchange, symbol } = req;
+  public getTradesList(req: AllTradesFilters): Observable<Array<AllTradesItem>> {
+    const { exchange, symbol } = req;
 
     return this.http.get<Array<AllTradesItem>>(`${this.allTradesUrl}/${exchange}/${symbol}/alltrades`, {
-      params: { from, to, take, descending: true }
+      params: {...req}
     })
       .pipe(
         map(res => res.sort(sortByTimestamp)),

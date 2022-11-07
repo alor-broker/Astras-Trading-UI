@@ -12,15 +12,19 @@ import { ColumnsSettings } from "../../../../shared/models/columns-settings.mode
 import { DatePipe } from "@angular/common";
 import { startOfDay, toUnixTimestampSeconds } from "../../../../shared/utils/datetime";
 import { AllTradesSettings } from "../../../../shared/models/settings/all-trades-settings.model";
-import { switchMap, tap } from "rxjs/operators";
+import { filter, map, tap } from "rxjs/operators";
 import {
+  BehaviorSubject,
   Observable,
   Subject,
   Subscription,
-  takeUntil
+  take,
+  takeUntil,
+  withLatestFrom
 } from "rxjs";
-import { AllTradesItem } from "../../models/all-trades.model";
+import { AllTradesFilters, AllTradesItem } from "../../models/all-trades.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 @Component({
   selector: 'ats-all-trades[guid]',
@@ -33,24 +37,62 @@ export class AllTradesComponent implements OnInit, OnDestroy {
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private newTradesSubscription?: Subscription;
-  private settings: AllTradesSettings | null = null;
   private datePipe = new DatePipe('ru-RU');
   private take = 50;
-  private isEndOfList = false;
+  private isScrolled = false;
+  private settings$!: Observable<AllTradesSettings>;
 
   public tableContainerHeight: number = 0;
   public tableContainerWidth: number = 0;
-  public tradesList: Array<AllTradesItem> = [];
-  public isLoading = false;
+  public tradesList$ = new BehaviorSubject<AllTradesItem[]>([]);
+  public isLoading$ = new BehaviorSubject<boolean>(false);
+  private filters$ = new BehaviorSubject<AllTradesFilters>({
+    take: this.take,
+    exchange: '',
+    symbol: '',
+    to: 0,
+    from: 0,
+    descending: true
+  });
 
   public columns: ColumnsSettings[] = [
-    {name: 'qty', displayName: 'Кол-во', classFn: data => data.side},
-    {name: 'price', displayName: 'Цена'},
+    {
+      name: 'qty',
+      displayName: 'Кол-во',
+      classFn: data => data.side,
+      sortFn: this.getSortFn('quantity'),
+      filterData: {
+        filterName: 'qty',
+        intervalStartName: 'quantityFrom',
+        intervalEndName: 'quantityTo',
+        isInterval: true
+      }
+    },
+    {
+      name: 'price',
+      displayName: 'Цена',
+      sortFn: this.getSortFn('price'),
+      filterData: {
+        filterName: 'price',
+        intervalStartName: 'priceFrom',
+        intervalEndName: 'priceTo',
+        isInterval: true
+      }
+    },
     {name: 'timestamp', displayName: 'Время', transformFn: (data: AllTradesItem) => this.datePipe.transform(data.timestamp, 'HH:mm:ss')},
     {
       name: 'side',
       displayName: 'Сторона',
-      classFn: data => data.side
+      classFn: data => data.side,
+      sortFn: this.getSortFn('side'),
+      filterData: {
+        filterName: 'side',
+        isDefaultFilter: true,
+        filters: [
+          { text: 'Продажа', value: 'sell' },
+          { text: 'Покупка', value: 'buy' }
+        ]
+      }
     },
     {name: 'oi', displayName: 'Откр. интерес'},
     {name: 'existing', displayName: 'Новое событие', transformFn: (data: AllTradesItem) => data.existing ? 'Да' : 'Нет'},
@@ -64,12 +106,22 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settingsService.getSettings<AllTradesSettings>(this.guid).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(settings => {
-        this.settings = settings;
-        this.settingsChange();
+    this.settings$ = this.settingsService.getSettings<AllTradesSettings>(this.guid)
+      .pipe(
+        takeUntil(this.destroy$)
+      );
+
+    this.initTrades();
+
+    this.settings$.subscribe(settings => {
+      this.applyFilter({
+        exchange: settings.exchange,
+        symbol: settings.symbol,
+        from: toUnixTimestampSeconds(startOfDay(new Date())),
+        to: toUnixTimestampSeconds(new Date()),
+        take: this.take
       });
+    });
 
     this.resize
       .pipe(takeUntil(this.destroy$))
@@ -81,65 +133,147 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   }
 
   public scrolled(): void {
-    if (!this.settings || this.isEndOfList || this.isLoading) return;
-
-    this.getTradesListReq(toUnixTimestampSeconds(new Date(this.tradesList[this.tradesList.length - 1].timestamp)))
-      .subscribe(res => {
-        const lastItemIndex = res.findIndex(item => JSON.stringify(item) === JSON.stringify(this.tradesList[this.tradesList.length - 1]));
-        this.isEndOfList = lastItemIndex === res.length - 1;
-
-        if (lastItemIndex !== -1) {
-          this.tradesList = [...this.tradesList, ...res.slice(lastItemIndex + 1)];
-        } else {
-          this.tradesList = [...this.tradesList, ...res];
-        }
-
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      });
+    this.tradesList$.pipe(
+      take(1),
+      withLatestFrom(this.isLoading$, this.filters$),
+      filter(([, isLoading,]) => !isLoading),
+      map(([tradesList, , currentFilters]) => ({ tradesList, currentFilters })),
+    ).subscribe(s => {
+      this.isScrolled = true;
+      this.updateFilters(curr => ({
+        ...curr,
+        offset: s.tradesList.length
+      }));
+    });
   }
 
-  private settingsChange(): void {
-    if (!this.settings) return;
+  applyFilter(filters: any) {
+    this.updateFilters(curr => {
+      const allFilters = {
+        ...curr,
+        ...filters
+      };
 
-    this.tradesList = [];
-    this.newTradesSubscription?.unsubscribe();
+      const cleanedFilters = Object.keys(allFilters)
+        .filter(key => !!allFilters[key])
+        .reduce((acc, curr) => {
+          if (Array.isArray(allFilters[curr])) {
+            acc[curr] = allFilters[curr].join(';');
+          }
+          else {
+            acc[curr] = allFilters[curr];
+          }
+          return acc;
+        }, {} as any);
 
-    this.newTradesSubscription = this.getTradesListReq(toUnixTimestampSeconds(new Date()))
-      .pipe(
-        tap(res => {
-          this.tradesList = res;
-          this.isEndOfList = false;
-          this.cdr.markForCheck();
-        }),
-        switchMap(() => this.allTradesService.getNewTrades(this.settings!)),
-      )
-      .subscribe((res) => {
-        this.tradesList = [res, ...this.tradesList];
-        this.cdr.markForCheck();
-      });
-  }
-
-  private getTradesListReq(to: number): Observable<AllTradesItem[]> {
-    this.isLoading = true;
-    return this.allTradesService.getTradesList({
-      exchange: this.settings!.exchange,
-      symbol: this.settings!.symbol,
-      from: toUnixTimestampSeconds(startOfDay(new Date())),
-      to,
-      take: this.take
-    })
-      .pipe(
-        takeUntil(this.destroy$),
-        tap(() => {
-          this.isLoading = false;
-        })
-      );
+      return {
+        ...cleanedFilters,
+        descending: cleanedFilters.orderBy ? cleanedFilters.descending || false : true,
+        to: toUnixTimestampSeconds(new Date()),
+        offset: 0
+      };
+    });
   }
 
   public ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
     this.newTradesSubscription?.unsubscribe();
+  }
+
+  private updateFilters(update: (curr: AllTradesFilters) => AllTradesFilters) {
+    this.filters$.pipe(
+      take(1)
+    ).subscribe(curr => {
+      this.filters$.next(update(curr));
+    });
+  }
+
+  private initTrades() {
+    this.filters$.pipe(
+      tap(() => this.isLoading$.next(true)),
+      mapWith(
+        f => this.allTradesService.getTradesList(f),
+        (filters, res) => ({ filters, res })
+      ),
+      withLatestFrom(this.tradesList$),
+      map(([s, currentList]) => {
+        if (this.isScrolled) {
+          this.tradesList$.next([...currentList, ...s.res]);
+          this.isScrolled = false;
+        } else {
+          this.tradesList$.next(s.res);
+        }
+
+        return s.filters;
+      }),
+      tap(() => this.isLoading$.next(false)),
+      withLatestFrom(this.settings$),
+      mapWith(
+        ([, settings]) => this.allTradesService.getNewTrades(settings),
+        (data, res) => ({filters: data[0], res})
+      ),
+      takeUntil(this.destroy$),
+    ).subscribe(data => {
+      this.filterNewTrade(data);
+    });
+  }
+
+  private filterNewTrade({filters, res}: { filters: AllTradesFilters, res: AllTradesItem }) {
+    if (
+      filters.quantityFrom && res.qty < filters.quantityFrom ||
+      filters.quantityTo && res.qty > filters.quantityTo ||
+      filters.priceFrom && res.price < filters.priceFrom ||
+      filters.priceTo && res.price > filters.priceTo ||
+      filters.side && res.side !== filters.side
+    ) {
+      return;
+    }
+
+    const tradesListCopy = JSON.parse(JSON.stringify(this.tradesList$.getValue()));
+    let indexForPaste: number;
+
+    switch (filters.orderBy) {
+      case 'side':
+        indexForPaste = tradesListCopy.findIndex((item: AllTradesItem) => item.side === res.side);
+        break;
+      case 'price':
+        indexForPaste = tradesListCopy.findIndex((item: AllTradesItem) => filters.descending ? item.price <= res.price : item.price >= res.price);
+        break;
+      case 'quantity':
+        indexForPaste = tradesListCopy.findIndex((item: AllTradesItem) => filters.descending ? item.qty <= res.qty : item.qty >= res.qty);
+        break;
+      default:
+        indexForPaste = 0;
+    }
+
+    if (indexForPaste !== -1) {
+      tradesListCopy.splice(indexForPaste, 0, res);
+      this.tradesList$.next(tradesListCopy);
+    }
+  }
+
+  private getSortFn(orderBy: string): (dir: string | null) => void {
+    return (dir: string | null) => {
+      this.updateFilters(curr => {
+        const filter = {
+          ...curr,
+          to: toUnixTimestampSeconds(new Date()),
+          offset: 0
+        };
+
+        delete filter.descending;
+        delete filter.orderBy;
+
+        if (dir) {
+          filter.descending = dir === 'descend';
+          filter.orderBy = orderBy;
+        } else {
+          filter.descending = true;
+        }
+
+        return filter;
+      });
+    };
   }
 }

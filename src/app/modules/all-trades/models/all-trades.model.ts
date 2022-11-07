@@ -24,3 +24,20 @@ export interface AllTradesItem {
   time: string;
   timestamp: number;
 }
+
+export interface AllTradesFilters {
+  limit?: number;
+  offset?: number;
+  descending?: boolean;
+  orderBy?: string;
+  exchange: string;
+  symbol: string;
+  from: number;
+  to: number;
+  take: number;
+  quantityFrom?: number;
+  quantityTo?: number;
+  priceFrom?: number;
+  priceTo?: number;
+  side?: string;
+}
