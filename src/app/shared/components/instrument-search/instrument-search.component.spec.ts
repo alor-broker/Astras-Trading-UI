@@ -6,6 +6,8 @@ import {
 import { InstrumentSearchComponent } from './instrument-search.component';
 import { InstrumentsService } from '../../../modules/instruments/services/instruments.service';
 import { of } from 'rxjs';
+import { SharedModule } from '../../shared.module';
+import { sharedModuleImportForTests } from '../../utils/testing';
 
 describe('InstrumentSearchComponent', () => {
   let component: InstrumentSearchComponent;
@@ -20,6 +22,7 @@ describe('InstrumentSearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [...sharedModuleImportForTests],
       declarations: [InstrumentSearchComponent],
       providers: [
         {
