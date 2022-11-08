@@ -35,8 +35,8 @@ export interface AllTradesFilters {
   from: number;
   to: number;
   take: number;
-  quantityFrom?: number;
-  quantityTo?: number;
+  qtyFrom?: number;
+  qtyTo?: number;
   priceFrom?: number;
   priceTo?: number;
   side?: string;

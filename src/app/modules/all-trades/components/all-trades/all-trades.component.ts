@@ -60,11 +60,11 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       name: 'qty',
       displayName: 'Кол-во',
       classFn: data => data.side,
-      sortFn: this.getSortFn('quantity'),
+      sortFn: this.getSortFn('qty'),
       filterData: {
         filterName: 'qty',
-        intervalStartName: 'quantityFrom',
-        intervalEndName: 'quantityTo',
+        intervalStartName: 'qtyFrom',
+        intervalEndName: 'qtyTo',
         isInterval: true
       }
     },
@@ -221,8 +221,8 @@ export class AllTradesComponent implements OnInit, OnDestroy {
 
   private filterNewTrade({filters, res}: { filters: AllTradesFilters, res: AllTradesItem }) {
     if (
-      filters.quantityFrom && res.qty < filters.quantityFrom ||
-      filters.quantityTo && res.qty > filters.quantityTo ||
+      filters.qtyFrom && res.qty < filters.qtyFrom ||
+      filters.qtyTo && res.qty > filters.qtyTo ||
       filters.priceFrom && res.price < filters.priceFrom ||
       filters.priceTo && res.price > filters.priceTo ||
       filters.side && res.side !== filters.side
@@ -240,7 +240,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       case 'price':
         indexForPaste = tradesListCopy.findIndex((item: AllTradesItem) => filters.descending ? item.price <= res.price : item.price >= res.price);
         break;
-      case 'quantity':
+      case 'qty':
         indexForPaste = tradesListCopy.findIndex((item: AllTradesItem) => filters.descending ? item.qty <= res.qty : item.qty >= res.qty);
         break;
       default:

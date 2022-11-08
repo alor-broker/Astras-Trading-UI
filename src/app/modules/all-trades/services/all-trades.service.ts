@@ -7,7 +7,6 @@ import {
   AllTradesSubRequest
 } from "../models/all-trades.model";
 import {
-  map,
   Observable
 } from "rxjs";
 import { AllTradesSettings } from "../../../shared/models/settings/all-trades-settings.model";
@@ -15,7 +14,6 @@ import { ErrorHandlerService } from "../../../shared/services/handle-error/error
 import { BaseWebsocketService } from "../../../shared/services/base-websocket.service";
 import { WebsocketService } from "../../../shared/services/websocket.service";
 import { GuidGenerator } from "../../../shared/utils/guid";
-import { sortByTimestamp } from "../utils/all-trades.utils";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { finalize } from "rxjs/operators";
 
@@ -37,7 +35,6 @@ export class AllTradesService extends BaseWebsocketService {
       params: {...req}
     })
       .pipe(
-        map(res => res.sort(sortByTimestamp)),
         catchHttpError<Array<AllTradesItem>>([], this.errorHandlerService),
       );
   }
