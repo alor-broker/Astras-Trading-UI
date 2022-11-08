@@ -1,3 +1,8 @@
+:root:not(.theme-dark) {
+  --tv-color-toolbar-button-text: #8D99AD;
+}
+
 .theme-dark:root {
-  --tv-color-pane-background: #141414;
+  --tv-color-pane-background: #141922;
+  --tv-color-toolbar-button-text: #97A4BB;
 }
