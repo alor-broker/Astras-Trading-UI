@@ -27,29 +27,29 @@ export class ThemeService {
   private currentTheme?: ThemeType | null;
 
   private readonly darkThemeColors: ThemeColors = {
-    sellColor: 'rgba(184, 27, 68, 1)',
-    sellColorBackground: 'rgba(184, 27, 68, 0.4)',
-    buyColor: 'rgba(12, 179, 130, 1)',
-    buyColorBackground: 'rgba(12, 179, 130, 0.4)',
-    componentBackground: '#141414',
+    sellColor: 'rgba(209, 38, 27, 1)',
+    sellColorBackground: 'rgba(209, 38, 27, 0.4)',
+    buyColor: 'rgba(0, 141, 99, 1)',
+    buyColorBackground: 'rgba(0, 141, 99, 0.4)',
+    componentBackground: '#141922',
     primaryColor: '#177ddc',
     purpleColor: '#51258f',
     errorColor: '#a61d24',
     chartGridColor: '#444',
-    chartLabelsColor: '#fff'
+    chartLabelsColor: '#97A4BB'
   };
 
   private readonly lightThemeColors: ThemeColors = {
-    sellColor: 'rgba(239,83,80, 1)',
-    sellColorBackground: 'rgba(239,83,80, 0.4)',
-    buyColor: 'rgba(38,166,154, 1)',
-    buyColorBackground: 'rgba(38,166,154, 0.4)',
+    sellColor: 'rgba(250, 79, 56, 1)',
+    sellColorBackground: 'rgba(250, 79, 56, 0.4)',
+    buyColor: 'rgba(0, 219, 139, 1)',
+    buyColorBackground: 'rgba(0, 219, 139, 0.4)',
     componentBackground: '#ffffff',
     primaryColor: '#177ddc',
     purpleColor: '#51258f',
     errorColor: '#a61d24',
     chartGridColor: '#f0f0f0',
-    chartLabelsColor: '#000'
+    chartLabelsColor: '#8D99AD'
   };
 
   constructor(
