@@ -17,7 +17,6 @@ import {
   BehaviorSubject,
   Observable,
   Subject,
-  Subscription,
   take,
   takeUntil,
   withLatestFrom
@@ -36,7 +35,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   @Input() public resize!: EventEmitter<DashboardItem>;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  private newTradesSubscription?: Subscription;
   private datePipe = new DatePipe('ru-RU');
   private take = 50;
   private isScrolled = false;
@@ -113,7 +111,8 @@ export class AllTradesComponent implements OnInit, OnDestroy {
 
     this.initTrades();
 
-    this.settings$.subscribe(settings => {
+    this.settings$
+      .subscribe(settings => {
       this.applyFilter({
         exchange: settings.exchange,
         symbol: settings.symbol,
@@ -133,13 +132,16 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   }
 
   public scrolled(): void {
+    if (this.isScrolled) {
+      return;
+    }
+
     this.tradesList$.pipe(
       take(1),
       withLatestFrom(this.isLoading$, this.filters$),
       filter(([, isLoading,]) => !isLoading),
       map(([tradesList, , currentFilters]) => ({ tradesList, currentFilters })),
     ).subscribe(s => {
-      this.isScrolled = true;
       this.updateFilters(curr => ({
         ...curr,
         offset: s.tradesList.length
@@ -148,6 +150,8 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(filters: any) {
+    this.isScrolled = false;
+
     this.updateFilters(curr => {
       const allFilters = {
         ...curr,
@@ -178,7 +182,9 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
-    this.newTradesSubscription?.unsubscribe();
+    this.tradesList$.unsubscribe();
+    this.isLoading$.unsubscribe();
+    this.filters$.unsubscribe();
   }
 
   private updateFilters(update: (curr: AllTradesFilters) => AllTradesFilters) {
@@ -191,6 +197,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
 
   private initTrades() {
     this.filters$.pipe(
+      filter(() => !this.isScrolled),
       tap(() => this.isLoading$.next(true)),
       mapWith(
         f => this.allTradesService.getTradesList(f),
@@ -198,9 +205,11 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       ),
       withLatestFrom(this.tradesList$),
       map(([s, currentList]) => {
-        if (this.isScrolled) {
+        if (!s.res.length) {
+          this.isScrolled = true;
+        }
+        if ((s.filters.offset || 0) > 0) {
           this.tradesList$.next([...currentList, ...s.res]);
-          this.isScrolled = false;
         } else {
           this.tradesList$.next(s.res);
         }
