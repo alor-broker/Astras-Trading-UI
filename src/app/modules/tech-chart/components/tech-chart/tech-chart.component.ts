@@ -236,8 +236,15 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.chart = new widget(config);
 
     this.chart.applyOverrides({
-      'paneProperties.background': theme.theme === ThemeType.dark ? '#141414' : '#ffffff',
-      'paneProperties.backgroundType': 'solid'
+      'paneProperties.background': theme.themeColors.componentBackground,
+      'paneProperties.backgroundType': 'solid',
+      'paneProperties.vertGridProperties.color': theme.themeColors.chartGridColor,
+      'paneProperties.horzGridProperties.color': theme.themeColors.chartGridColor,
+      'scalesProperties.textColor': theme.themeColors.chartLabelsColor,
+      'mainSeriesProperties.candleStyle.upColor': theme.themeColors.buyColor,
+      'mainSeriesProperties.candleStyle.downColor': theme.themeColors.sellColor,
+      'mainSeriesProperties.candleStyle.borderUpColor': theme.themeColors.buyColor,
+      'mainSeriesProperties.candleStyle.borderDownColor': theme.themeColors.sellColor
     });
 
     this.chart.onChartReady(() => {
