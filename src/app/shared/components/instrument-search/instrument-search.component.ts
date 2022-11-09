@@ -14,17 +14,13 @@ import { InstrumentsService } from '../../../modules/instruments/services/instru
 import {
   BehaviorSubject,
   Observable,
-  of,
-  take
+  of
 } from 'rxjs';
 import {
   debounceTime,
   filter,
   switchMap
 } from 'rxjs/operators';
-import { Store } from '@ngrx/store';
-import { PortfolioKey } from '../../models/portfolio-key.model';
-import { getSelectedPortfolioKey } from '../../../store/portfolios/portfolios.selectors';
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR
@@ -54,8 +50,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   private touched = false;
 
   constructor(
-    private readonly instrumentsService: InstrumentsService,
-    private readonly store: Store,
+    private readonly instrumentsService: InstrumentsService
   ) {
   }
 
@@ -68,31 +63,24 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   }
 
   filterChanged(value: string): void {
-   this.markAsTouched();
-    this.getCurrentPortfolio().pipe(
-      take(1)
-    ).subscribe(portfolio => {
-      const defaultExchange = portfolio.exchange ?? 'MOEX';
+    this.markAsTouched();
 
-      const filter = {
-        limit: 20
-      } as SearchFilter;
+    const filter = {
+      limit: 20
+    } as SearchFilter;
 
-      if (value.includes(':')) {
-        const parts = value.split(':');
+    if (value.includes(':')) {
+      const parts = value.split(':');
 
-        filter.exchange = parts[0].toUpperCase();
-        filter.query = parts[1];
-        filter.instrumentGroup = parts[2]?.toUpperCase() ?? '';
-      }
-      else {
-        filter.exchange = defaultExchange;
-        filter.query = value;
-        filter.instrumentGroup = '';
-      }
+      filter.exchange = parts[0].toUpperCase();
+      filter.query = parts[1];
+      filter.instrumentGroup = parts[2]?.toUpperCase() ?? '';
+    }
+    else {
+      filter.query = value;
+    }
 
-      this.filter$.next(filter);
-    });
+    this.filter$.next(filter);
   }
 
   onSelect(event: NzOptionSelectionChange, val: Instrument) {
@@ -135,13 +123,6 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
 
   private onTouched = () => {
   };
-
-  private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.store.select(getSelectedPortfolioKey)
-      .pipe(
-        filter((p): p is PortfolioKey => !!p)
-      );
-  }
 
   private markAsTouched() {
     if (!this.touched) {

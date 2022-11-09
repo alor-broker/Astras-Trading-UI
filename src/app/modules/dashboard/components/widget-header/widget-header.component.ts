@@ -78,7 +78,7 @@ export class WidgetHeaderComponent implements OnInit {
     this.title$ = this.settings$.pipe(
       switchMap(settings => {
         if (isPortfolioDependent(settings)) {
-          return of(`${settings.title} ${settings.portfolio} (${settings.exchange})`);
+          return of(`${settings.portfolio} (${settings.exchange})`);
         }
         else if (isInstrumentDependent(settings)) {
           return this.getInstrumentDependentTitle(settings);
@@ -130,7 +130,7 @@ export class WidgetHeaderComponent implements OnInit {
   private getInstrumentDependentTitle(settings: AnySettings): Observable<string> {
     return this.instrumentService.getInstrument(settings as InstrumentKey).pipe(
       filter((x): x is Instrument => !!x),
-      map(x => `${settings.title} ${x.symbol} ${x.instrumentGroup ? '(' + x.instrumentGroup + ')' : ''} ${x.shortName}`)
+      map(x => `${x.symbol} ${x.instrumentGroup ? '(' + x.instrumentGroup + ')' : ''} ${x.shortName}`)
     );
   }
 }
