@@ -138,7 +138,7 @@ export const ngZorroMockComponents = [
   }),
   mockDirective({
     selector: '[nz-icon]',
-    inputs: ['title', 'text', 'nzTwotoneColor', 'nzTheme', 'nzType']
+    inputs: ['title', 'text', 'nzTwotoneColor', 'nzTheme', 'nzType', 'nzRotate']
   })
 ];
 

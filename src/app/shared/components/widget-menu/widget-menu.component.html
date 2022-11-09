@@ -82,4 +82,24 @@
   >
     <span><i nz-icon nzType="send" nzTheme="outline"></i><label> Выставление заявки</label></span>
   </li>
+
+  <ng-container *ngIf="!showedWidgets.length">
+    <li nz-menu-divider></li>
+
+    <li
+      nz-menu-item
+      (click)="clearDashboard.emit()"
+      *ngIf="!showedWidgets.length"
+    >
+      <span><i nz-icon nzType="delete" nzTheme="outline"></i><label> Очистить все виджеты </label></span>
+    </li>
+
+    <li
+      nz-menu-item
+      (click)="resetDashboard.emit()"
+      *ngIf="!showedWidgets.length"
+    >
+      <span><i nz-icon nzType="appstore" nzTheme="outline"></i><label> Стандартный вид </label></span>
+    </li>
+  </ng-container>
 </ul>

@@ -10,6 +10,8 @@ export class WidgetMenuComponent {
 
   @Input() public showedWidgets: string[] = [];
   @Output() public selected = new EventEmitter<string>();
+  @Output() public clearDashboard = new EventEmitter<void>();
+  @Output() public resetDashboard = new EventEmitter<void>();
 
   public widgetNames = WidgetNames;
 

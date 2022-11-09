@@ -3,50 +3,75 @@
     <a [routerLink]="['/']"></a>
   </div>
   <div class="menu-item">
+    <button nz-button nz-dropdown
+            [nzDropdownMenu]="widgetsMenu"
+            nzSize='small'
+            joyrideStep="step2"
+            nzType="text"
+            [title]="joyrideContent.step2.title"
+            [text]="joyrideContent.step2.text">
+      <i nz-icon nzType="appstore-add" nzTheme="outline" [nzRotate]="-90" class="left-side-icon"></i>
+      Виджеты
+    </button>
+  </div>
+
+  <div class="menu-item">
     <button nz-button [nzType]="'text'"
             (click)="newOrder()"
             joyrideStep="step3"
             [title]="joyrideContent.step3.title"
             [text]="joyrideContent.step3.text">
-      <i nz-icon nzType="plus-circle" nzTheme="twotone" [nzTwotoneColor]="(themeColors$ | async)!.buyColor" class='managing-icon'></i>
+      <i nz-icon nzType="plus-circle" nzTheme="outline" class="left-side-icon"></i>
+      Заявка
     </button>
   </div>
-  <div class="menu-item">
-    <button nz-button nz-dropdown
-            [nzDropdownMenu]="widgetsMenu"
-            nzSize='small'
-            joyrideStep="step2"
-            [title]="joyrideContent.step2.title"
-            [text]="joyrideContent.step2.text">
-      Виджет
-      <i nz-icon nzType="plus"></i>
-    </button>
-  </div>
+
   <div class="menu-item" *ngIf="portfolios$ | async as portfolios">
-    <nz-select nzSize='small'
-               nzShowSearch
-               [ngModel]="selectedPortfolio$ | async"
-               (ngModelChange)="changePortfolio($event)"
-               joyrideStep="step1"
-               [title]="joyrideContent.step1.title"
-               [text]="joyrideContent.step1.text"
-               id="portfolios-list">
-      <nz-option-group *ngFor='let kvp of portfolios | keyvalue' [nzLabel]="kvp.key">
-        <nz-option *ngFor='let model of kvp.value' [nzValue]="model" nzLabel="{{model.market}} {{model.portfolio}}">
-        </nz-option>
-      </nz-option-group>
-    </nz-select>
-  </div>
-  <div class="menu-item contrast-icon">
-    <button nz-button [nzType]="'text'"
-            (click)="clear()"
-            joyrideStep="step4"
-            [title]="joyrideContent.step4.title"
-            [text]="joyrideContent.step4.text"
-            nz-tooltip="Очистить дашборд">
-      <i nz-icon nzType="delete" nzTheme="outline"class='managing-icon'></i>
+    <button
+      *ngIf="selectedPortfolio$ | async as selectedPortfolio"
+      class="portfolio-btn"
+      nz-button
+      nz-dropdown
+      nzSize="small"
+      nzType="text"
+      [nzDropdownMenu]="portfoliosDropdown"
+      joyrideStep="step1"
+      [title]="joyrideContent.step1.title"
+      [text]="joyrideContent.step1.text"
+    >
+      <span>
+        {{selectedPortfolio.market}} {{selectedPortfolio.portfolio}}
+        <i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i>
+      </span>
     </button>
+
+    <nz-dropdown-menu #portfoliosDropdown="nzDropdownMenu">
+      <ul nz-menu class="portfolio-menu">
+        <li>
+          <input
+            type="text"
+            nz-input
+            class="portfolio-search"
+            placeholder="Поиск по портфелю"
+            [formControl]="searchControl"
+          />
+        </li>
+        <ng-container *ngFor="let kvp of portfolios | keyvalue">
+          <li nz-menu-item nzDisabled> {{kvp.key}} </li>
+          <ng-container *ngFor="let model of kvp.value">
+            <li
+              *ngIf="isFindedPortfolio(model)"
+              nz-menu-item
+              (click)="changePortfolio(model)"
+            >
+              {{model.market}} {{model.portfolio}}
+            </li>
+          </ng-container>
+        </ng-container>
+      </ul>
+    </nz-dropdown-menu>
   </div>
+
   <div class="right contrast-icon">
       <div class="notifications">
         <ats-notification-button></ats-notification-button>
@@ -61,7 +86,11 @@
 
 
 <nz-dropdown-menu #widgetsMenu="nzDropdownMenu">
-  <ats-widget-menu (selected)="addItem($event)"></ats-widget-menu>
+  <ats-widget-menu
+    (selected)="addItem($event)"
+    (clearDashboard)="clear()"
+    (resetDashboard)="resetDashboard()"
+  ></ats-widget-menu>
 </nz-dropdown-menu>
 
 <nz-dropdown-menu #rightMenu="nzDropdownMenu">

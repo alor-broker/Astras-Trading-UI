@@ -17,7 +17,6 @@ import { WidgetSettingsService } from "./widget-settings.service";
 export class DashboardService {
   dashboard$: Observable<Map<string, Widget>>;
   private dashboardsStorage = 'dashboards';
-  private profileStorage = 'profile';
   private dashboardSource: BehaviorSubject<Map<string, Widget>>;
 
   constructor(
@@ -68,9 +67,13 @@ export class DashboardService {
 
   clearDashboard() {
     this.setDashboard(new Map());
-    this.localStorage.removeItem(this.dashboardsStorage);
+    this.localStorage.setItem(this.dashboardsStorage, []);
     this.settingsService.removeAllSettings();
-    this.localStorage.removeItem(this.profileStorage);
+  }
+
+  resetDashboard() {
+    this.clearDashboard();
+    this.createDefaultDashboard();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
