@@ -165,7 +165,8 @@ import { InstrumentSearchComponent } from './components/instrument-search/instru
     },
     { provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true },
     { provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true },
-    { provide: NOTIFICATIONS_PROVIDER, useClass: FeedbackNotificationsProvider, multi: true }
+    { provide: NOTIFICATIONS_PROVIDER, useClass: FeedbackNotificationsProvider, multi: true },
+    { provide: Window, useValue: window}
   ],
 })
 export class SharedModule {

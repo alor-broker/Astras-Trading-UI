@@ -33,7 +33,9 @@ describe('OrderBookComponent', () => {
       bids: [],
       minPrice: 0,
       maxPrice: 0
-    }
+    },
+    bidVolumes: 0,
+    askVolumes: 0
   };
   spyOb.getHorizontalOrderBook.and.returnValue(of(ob));
   const modalSync = jasmine.createSpyObj('ModalService', ['openCommandModal']);

@@ -133,6 +133,8 @@ export class OrderbookService extends BaseWebsocketService {
       maxVolume: Math.max(...volumes),
       rows: rows,
       chartData: this.makeChartData(rows),
+      bidVolumes: rows.map(r => r.bidVolume).reduce((curr, prev) => curr! + prev!, 0),
+      askVolumes: rows.map(r => r.askVolume).reduce((curr, prev) => curr! + prev!, 0),
     } as OrderBook;
   }
 

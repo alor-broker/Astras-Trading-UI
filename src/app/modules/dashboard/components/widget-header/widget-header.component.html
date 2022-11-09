@@ -30,16 +30,30 @@
       </ul>
     </nz-dropdown-menu>
   </div>
-  <ng-container *ngIf="title$ | async as title">
-    <label
-      class="title"
-      nz-popover
-      nzPopoverPlacement="bottom"
-      [nzPopoverContent]="title"
-    >
-      {{title}}
-    </label>
-  </ng-container>
+  <div class="title" *ngIf="title$ | async as title">
+    <ng-container *ngIf="s.titleIcon; else simpleTitle">
+      <div class="title-with-icon">
+        <i nz-icon
+           class="title-icon"
+           [nzType]="s.titleIcon"
+           nzTheme="outline"
+           nz-popover
+           nzPopoverPlacement="bottom"
+           [nzPopoverContent]="s.title"
+        ></i>
+        <ng-container *ngTemplateOutlet="simpleTitle"></ng-container>
+      </div>
+    </ng-container>
+    <ng-template #simpleTitle>
+      <label
+        class="title-text"
+        nz-popover
+        nzPopoverPlacement="bottom"
+        [nzPopoverContent]="title">
+        {{title}}
+      </label>
+    </ng-template>
+  </div>
 
   <div class="buttons-group">
     <button *ngIf='s.linkToActive !== undefined' nz-button nzSize="small"
