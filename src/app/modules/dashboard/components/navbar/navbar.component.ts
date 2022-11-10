@@ -32,6 +32,7 @@ import {
   selectPortfoliosState
 } from '../../../../store/portfolios/portfolios.selectors';
 import { EntityStatus } from '../../../../shared/models/enums/entity-status';
+import { DashboardHelper } from '../../../../shared/utils/dashboard-helper';
 
 @Component({
   selector: 'ats-navbar',
@@ -91,15 +92,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   addItem(type: string): void {
-    this.service.addWidget({
-      gridItem: {
-        x: 0,
-        y: 0,
-        cols: 10,
-        rows: 15,
-        type: type,
-      },
-    });
+    DashboardHelper.addWidget(this.service, type);
   }
 
   newOrder() {
