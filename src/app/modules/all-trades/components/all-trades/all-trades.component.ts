@@ -37,7 +37,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private datePipe = new DatePipe('ru-RU');
   private take = 50;
-  private isScrolled = false;
   private settings$!: Observable<AllTradesSettings>;
 
   public tableContainerHeight: number = 0;
@@ -132,16 +131,17 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   }
 
   public scrolled(): void {
-    if (this.isScrolled) {
-      return;
-    }
-
     this.tradesList$.pipe(
       take(1),
       withLatestFrom(this.isLoading$, this.filters$),
       filter(([, isLoading,]) => !isLoading),
       map(([tradesList, , currentFilters]) => ({ tradesList, currentFilters })),
     ).subscribe(s => {
+      const loadedIndex = s.currentFilters.take! + s.currentFilters.offset!;
+      if (s.tradesList.length < loadedIndex) {
+        return;
+      }
+
       this.updateFilters(curr => ({
         ...curr,
         offset: s.tradesList.length
@@ -150,8 +150,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(filters: any) {
-    this.isScrolled = false;
-
     this.updateFilters(curr => {
       const allFilters = {
         ...curr,
@@ -197,7 +195,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
 
   private initTrades() {
     this.filters$.pipe(
-      filter(() => !this.isScrolled),
       tap(() => this.isLoading$.next(true)),
       mapWith(
         f => this.allTradesService.getTradesList(f),
@@ -205,9 +202,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       ),
       withLatestFrom(this.tradesList$),
       map(([s, currentList]) => {
-        if (!s.res.length) {
-          this.isScrolled = true;
-        }
         if ((s.filters.offset || 0) > 0) {
           this.tradesList$.next([...currentList, ...s.res]);
         } else {
