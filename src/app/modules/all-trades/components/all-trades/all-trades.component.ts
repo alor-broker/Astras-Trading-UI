@@ -182,9 +182,9 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
-    this.tradesList$.unsubscribe();
-    this.isLoading$.unsubscribe();
-    this.filters$.unsubscribe();
+    this.tradesList$.complete();
+    this.isLoading$.complete();
+    this.filters$.complete();
   }
 
   private updateFilters(update: (curr: AllTradesFilters) => AllTradesFilters) {
