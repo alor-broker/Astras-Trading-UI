@@ -2,12 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
 import {
+  AllTradesFilters,
   AllTradesItem,
-  AllTradesSubRequest,
-  GetAllTradesRequest
+  AllTradesSubRequest
 } from "../models/all-trades.model";
 import {
-  map,
   Observable
 } from "rxjs";
 import { AllTradesSettings } from "../../../shared/models/settings/all-trades-settings.model";
@@ -15,7 +14,6 @@ import { ErrorHandlerService } from "../../../shared/services/handle-error/error
 import { BaseWebsocketService } from "../../../shared/services/base-websocket.service";
 import { WebsocketService } from "../../../shared/services/websocket.service";
 import { GuidGenerator } from "../../../shared/utils/guid";
-import { sortByTimestamp } from "../utils/all-trades.utils";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { finalize } from "rxjs/operators";
 
@@ -30,14 +28,13 @@ export class AllTradesService extends BaseWebsocketService {
     super(ws);
   }
 
-  public getTradesList(req: GetAllTradesRequest): Observable<Array<AllTradesItem>> {
-    const { from, to, take, exchange, symbol } = req;
+  public getTradesList(req: AllTradesFilters): Observable<Array<AllTradesItem>> {
+    const { exchange, symbol } = req;
 
     return this.http.get<Array<AllTradesItem>>(`${this.allTradesUrl}/${exchange}/${symbol}/alltrades`, {
-      params: { from, to, take, descending: true }
+      params: {...req}
     })
       .pipe(
-        map(res => res.sort(sortByTimestamp)),
         catchHttpError<Array<AllTradesItem>>([], this.errorHandlerService),
       );
   }
