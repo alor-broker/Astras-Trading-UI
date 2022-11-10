@@ -1,15 +1,17 @@
 <div>
   <nz-modal
     nzTitle="Профиль"
-    nzOkText="Сохранить"
-    nzCancelText="Отмена"
-    [nzOkDisabled]="isSaveDisabled"
     [nzVisible]='isVisible$ | async'
-    (nzOnOk)="saveSettingsChanges()"
     (nzOnCancel)="handleClose()">
     <!-- [nzBodyStyle]="{overflowY: 'auto', height: '300px' }"  -->
     <ng-container *nzModalContent>
-      <ats-terminal-settings (formChange)="formChange($event)"></ats-terminal-settings>
+      <ats-terminal-settings (formChange)="formChange($event)" (tabChange)="selectedTab = $event"></ats-terminal-settings>
     </ng-container>
+    <div *nzModalFooter>
+      <ng-container *ngIf="!!selectedTab">
+        <button nz-button nzType="default" (click)="saveSettingsChanges()" [disabled]="isSaveDisabled">Сохранить</button>
+        <button nz-button nzType="primary" (click)="handleClose()">Отмена</button>
+      </ng-container>
+    </div>
   </nz-modal>
 </div>

@@ -39,6 +39,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   @Output() formChange = new EventEmitter<{value: TerminalSettings, isInitial: boolean}>();
+  @Output() tabChange = new EventEmitter<number>();
 
   timezoneDisplayOption = TimezoneDisplayOption;
 

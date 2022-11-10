@@ -17,6 +17,8 @@ export class TerminalSettingsWidgetComponent implements OnInit {
 
   isVisible$: Observable<boolean> = of(false);
 
+  selectedTab = 0;
+
   get isSaveDisabled(): boolean {
     return !this.settingsFormValue ||
       (JSON.stringify(this.getTerminalSettingsUpdates(this.settingsFormValue)) === JSON.stringify(this.getTerminalSettingsUpdates(this.initialSettingsFormValue)));
