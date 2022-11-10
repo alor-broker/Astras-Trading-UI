@@ -28,17 +28,15 @@
         </nz-form-item>
       </div>
     </div>
-    <div nz-row>
-      <div nz-col>
-        <nz-collapse [nzBordered]="false" class="compact" nzGhost>
-          <nz-collapse-panel nzHeader="Продвинутые">
-            <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
-            <nz-form-control nzErrorTip="Группа">
-              <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="instrumentGroup" placeholder="Режим торгов"/>
-            </nz-form-control>
-          </nz-collapse-panel>
-        </nz-collapse>
-      </div>
+    <div>
+      <nz-collapse [nzBordered]="false" class="compact" nzGhost>
+        <nz-collapse-panel nzHeader="Продвинутые">
+          <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
+          <nz-form-control nzErrorTip="Группа">
+            <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="instrumentGroup" placeholder="Режим торгов"/>
+          </nz-form-control>
+        </nz-collapse-panel>
+      </nz-collapse>
     </div>
   </form>
   <ats-evaluation *ngIf="evaluation$ | async as evaluation" [evaluationProperties]="evaluation"></ats-evaluation>

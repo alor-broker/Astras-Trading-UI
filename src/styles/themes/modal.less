@@ -1,0 +1,30 @@
+﻿@import 'theme-mixin';
+
+.themeMixin({
+  .ant-modal-title {
+    .title {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+
+      .right {
+        white-space: nowrap;
+        margin-right: -8px;
+
+        button {
+          border: none;
+          opacity: 0.5;
+          font-size: @font-size-base;
+
+          &:hover, &:focus {
+            color: @icon-color-hover;
+            text-decoration: none;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+});
+
+

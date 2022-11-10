@@ -32,20 +32,18 @@
         </nz-form-item>
       </div>
     </div>
-    <div nz-row>
-      <div nz-col>
-        <nz-collapse nzGhost [nzBordered]="false" class="compact">
-          <nz-collapse-panel nzHeader="Продвинутые">
-            <nz-form-control nzErrorTip="Группа">
-              <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
-              <nz-input-group nzPrefixIcon="lock">
-                <input class='ant-input'  formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-                       placeholder="Режим торгов" />
-              </nz-input-group>
-            </nz-form-control>
-          </nz-collapse-panel>
-        </nz-collapse>
-      </div>
+    <div>
+      <nz-collapse nzGhost [nzBordered]="false" class="compact">
+        <nz-collapse-panel nzHeader="Продвинутые">
+          <nz-form-control nzErrorTip="Группа">
+            <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
+            <nz-input-group nzPrefixIcon="lock">
+              <input class='ant-input'  formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+                     placeholder="Режим торгов" />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-collapse-panel>
+      </nz-collapse>
     </div>
   </form>
   <ng-container *ngIf="form.valid">
