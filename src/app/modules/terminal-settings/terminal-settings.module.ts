@@ -4,6 +4,7 @@ import { TerminalSettingsRoutingModule } from './terminal-settings-routing.modul
 import { TerminalSettingsWidgetComponent } from './widgets/terminal-settings-widget/terminal-settings-widget.component';
 import { TerminalSettingsComponent } from './components/terminal-settings/terminal-settings.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { ExternalLinkModule } from '../../shared/components/external-link/external-link.module';
 
 
 @NgModule({
@@ -11,10 +12,11 @@ import { SharedModule } from 'src/app/shared/shared.module';
     TerminalSettingsWidgetComponent,
     TerminalSettingsComponent
   ],
-  imports: [
-    SharedModule,
-    TerminalSettingsRoutingModule
-  ],
+    imports: [
+        SharedModule,
+        TerminalSettingsRoutingModule,
+        ExternalLinkModule
+    ],
   exports: [
     TerminalSettingsWidgetComponent
   ]

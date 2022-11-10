@@ -8,6 +8,7 @@ import { NzWaveModule } from 'ng-zorro-antd/core/wave';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { ExternalLinkModule } from '../../shared/components/external-link/external-link.module';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
     NzWaveModule,
     NzButtonModule,
     NzTypographyModule,
-    NzIconModule
+    NzIconModule,
+    ExternalLinkModule
   ],
   exports: [
     ApplicationUpdatedWidgetComponent
