@@ -69,17 +69,30 @@
     <li nz-menu-item (click)="openTerminalSettings()" class='menu-item' >
       <span><i nz-icon nzType="user" nzTheme="outline"></i> <label>&nbsp;Профиль</label></span>
     </li>
-    <li nz-menu-item class='menu-item' (click)="openThirdPartyLink('https://lk.alor.ru/reports/broker')">
-      <span><i nz-icon nzType="audit" nzTheme="outline"></i> <label>&nbsp;Отчёты</label></span>
+    <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://lk.alor.ru/reports/broker')">
+      <span>
+        <i nz-icon nzType="audit" nzTheme="outline"></i>
+        <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name:'Отчеты'}"></ng-container>
+      </span>
     </li>
-    <li nz-menu-item class='menu-item' (click)="openThirdPartyLink('https://warp.alor.dev/ru/releases/astras')">
-      <span><i nz-icon nzType="history" nzTheme="outline"></i><label>&nbsp;Релизы</label></span>
+    <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://warp.alor.dev/ru/releases/astras')">
+      <span>
+        <i nz-icon nzType="history" nzTheme="outline"></i>
+        <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name:'Релизы'}"></ng-container>
+      </span>
     </li>
-    <li nz-menu-item class='menu-item' (click)="openThirdPartyLink('https://t.me/+oM0i9QbtD4cwMzNi')">
-      <span><i nz-icon nzType="customer-service" nzTheme="outline"></i><label>&nbsp;Техподдержка</label></span>
+    <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://t.me/+oM0i9QbtD4cwMzNi')">
+      <span>
+        <i nz-icon nzType="customer-service" nzTheme="outline"></i>
+        <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name:'Техподдержка'}"></ng-container>
+      </span>
     </li>
     <li nz-menu-item (click)="logout()" class='menu-item' >
       <span><i nz-icon nzType="logout" nzTheme="outline"></i> <label>&nbsp;Выйти</label></span>
     </li>
   </ul>
+
+  <ng-template #externalLink let-name='name'>
+    <span class="link-label"><label>&nbsp;{{name}} </label><span nz-icon nzType="ats-external-link" nzTheme="outline"></span></span>
+  </ng-template>
 </nz-dropdown-menu>
