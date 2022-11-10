@@ -126,7 +126,7 @@ export const ngZorroMockComponents = [
   }),
   mockComponent({
     selector: 'nz-badge',
-    inputs: ['nzColor', 'nzText', 'nzDropdownMenu']
+    inputs: ['nzColor', 'nzText', 'nzDropdownMenu', 'nzPopoverTitle', 'nzOffset', 'nzCount', 'nzPopoverVisible']
   }),
   mockComponent({ selector: 'nz-tag', inputs: ['nzColor', 'nz-tooltip', 'nzTooltipMouseEnterDelay']}),
   mockDirective({selector: '[text]', inputs: ['text']}),
