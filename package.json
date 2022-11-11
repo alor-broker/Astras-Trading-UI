@@ -1,6 +1,6 @@
 {
   "name": "astras",
-  "version": "1.55",
+  "version": "1.59",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

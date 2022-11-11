@@ -1,4 +1,8 @@
-﻿import { HistoryMetadata, LightChartConfig, TimeframeValue } from '../models/light-chart.models';
+﻿import {
+  HistoryMetadata,
+  LightChartConfig,
+  TimeframeValue
+} from '../models/light-chart.models';
 import {
   BusinessDay,
   ChartOptions,
@@ -14,7 +18,10 @@ import {
 import { Candle } from '../../../shared/models/history/candle.model';
 import { TimeframesHelper } from './timeframes-helper';
 import { PriceFormatHelper } from './price-format-helper';
-import { Subject, Subscription } from 'rxjs';
+import {
+  Subject,
+  Subscription
+} from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 interface ChartSeries {
@@ -190,7 +197,7 @@ export class LightChartWrapper {
     );
   }
 
-  private fillVisibleTimeScale(complete?: () => void) {
+  private fillVisibleTimeScale(complete?: () => void, prevHistoryTime?: number) {
     const visibleRange = this.chart?.timeScale().getVisibleLogicalRange();
     if (!visibleRange || visibleRange.from > 0 || this.loadedHistoryPoints.length === 0) {
       complete?.();
@@ -198,7 +205,7 @@ export class LightChartWrapper {
     }
 
     const historyStart = this.loadedHistoryPoints[0].time;
-    const from = this.getTimeFrameHistoryPointMove(new Date(historyStart * 1000)) / 1000;
+    const from = Math.min(prevHistoryTime ?? Number.MAX_VALUE, this.getTimeFrameHistoryPointMove(new Date(historyStart * 1000)) / 1000);
 
     this.loadHistoryPeriod(from, historyStart, false, (meta) => {
       if (meta.noData || !meta.prevTime) {
@@ -206,7 +213,7 @@ export class LightChartWrapper {
         return;
       }
 
-      this.fillVisibleTimeScale(() => complete?.());
+      this.fillVisibleTimeScale(() => complete?.(), meta.prevTime);
     });
   }
 
@@ -299,9 +306,9 @@ export class LightChartWrapper {
   private getTimeFrameHistoryPointMove(fromDate: Date): number {
     switch (this.config.timeFrame) {
       case TimeframeValue.Month:
-        return (new Date(Date.UTC(fromDate.getUTCFullYear() -1, 0))).getTime();
+        return (new Date(Date.UTC(fromDate.getUTCFullYear() - 1, 0))).getTime();
       case TimeframeValue.Day:
-        return (new Date(Date.UTC(fromDate.getUTCFullYear() , fromDate.getUTCMonth() - 6))).getTime();
+        return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth() - 6))).getTime();
       case TimeframeValue.H4:
         return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth() - 1))).getTime();
       case TimeframeValue.H:
