@@ -77,6 +77,10 @@
             </ng-template>
           </nz-form-item>
         </form>
+        <button nz-button nzType="primary" (click)="clearDashboard()" nzDanger>
+          <i nz-icon nzType="delete" nzTheme="outline"></i>
+          Полный сброс
+        </button>
       </nz-tab>
 
       <nz-tab nzTitle="Горячие клавиши"  (nzSelect)="tabChange.emit(tabNames.hotKeys)">

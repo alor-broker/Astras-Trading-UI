@@ -85,19 +85,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     return !value || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes(value.toUpperCase());
   }
 
-  clear() {
-    this.modal.openConfirmModal({
-      nzTitle: 'Вы уверены, что хотите сделать полный сброс?',
-      nzContent: 'При полном сбросе удалятся все Ваши настройки, списки наблюдения, виджеты и так далее.',
-      nzOkText: 'Да',
-      nzOkType: 'primary',
-      nzOkDanger: true,
-      nzOnOk: () => this.service.clearDashboard(),
-      nzCancelText: 'Нет',
-      nzOnCancel: () => {}
-    });
-  }
-
   resetDashboard() {
     this.service.resetDashboard();
   }
