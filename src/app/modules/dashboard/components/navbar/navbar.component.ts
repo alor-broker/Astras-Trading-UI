@@ -95,7 +95,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   changePortfolio(key: PortfolioExtended) {
-    this.store.dispatch(selectNewPortfolio({ portfolio: key }));
+    setTimeout(() => {
+      this.store.dispatch(selectNewPortfolio({ portfolio: key }));
+    }, 150);
   }
 
   addItem(type: string): void {
