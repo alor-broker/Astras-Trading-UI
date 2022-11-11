@@ -25,6 +25,7 @@ import { OrderSubmitModule } from "../order-submit/order-submit.module";
 import { NotificationsModule } from '../notifications/notifications.module';
 import { FeedbackModule } from '../feedback/feedback.module';
 import { ApplicationMetaModule } from '../application-meta/application-meta.module';
+import { NzInputModule } from "ng-zorro-antd/input";
 
 @NgModule({
   declarations: [
@@ -34,29 +35,30 @@ import { ApplicationMetaModule } from '../application-meta/application-meta.modu
     ParentWidgetComponent,
     WidgetHeaderComponent
   ],
-  imports: [
-    DashboardRoutingModule,
-    SharedModule,
-    OrderbookModule,
-    LightChartModule,
-    InstrumentsModule,
-    BlotterModule,
-    CommandModule,
-    HelpModule,
-    InfoModule,
-    TerminalSettingsModule,
-    JoyrideModule.forRoot(),
-    AllTradesModule,
-    NewsModule,
-    ExchangeRateModule,
-    TechChartModule,
-    AllInstrumentsModule,
-    OrderSubmitModule,
-    NotificationsModule,
-    FeedbackModule,
-    ApplicationMetaModule,
-    // components
-  ],
+    imports: [
+        DashboardRoutingModule,
+        SharedModule,
+        OrderbookModule,
+        LightChartModule,
+        InstrumentsModule,
+        BlotterModule,
+        CommandModule,
+        HelpModule,
+        InfoModule,
+        TerminalSettingsModule,
+        JoyrideModule.forRoot(),
+        AllTradesModule,
+        NewsModule,
+        ExchangeRateModule,
+        TechChartModule,
+        AllInstrumentsModule,
+        OrderSubmitModule,
+        NotificationsModule,
+        FeedbackModule,
+        ApplicationMetaModule,
+        NzInputModule,
+        // components
+    ],
   providers: [
     OnboardingService
   ]
