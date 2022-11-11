@@ -9,8 +9,8 @@ import { WidgetNames } from "../../models/enums/widget-names";
 export class WidgetMenuComponent {
 
   @Input() public showedWidgets: string[] = [];
+  @Input() public showResetItem: boolean = false;
   @Output() public selected = new EventEmitter<string>();
-  @Output() public clearDashboard = new EventEmitter<void>();
   @Output() public resetDashboard = new EventEmitter<void>();
 
   public widgetNames = WidgetNames;

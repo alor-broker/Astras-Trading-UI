@@ -87,8 +87,8 @@
 
 <nz-dropdown-menu #widgetsMenu="nzDropdownMenu">
   <ats-widget-menu
+    [showResetItem]="true"
     (selected)="addItem($event)"
-    (clearDashboard)="clear()"
     (resetDashboard)="resetDashboard()"
   ></ats-widget-menu>
 </nz-dropdown-menu>
@@ -115,6 +115,9 @@
         <i nz-icon nzType="customer-service" nzTheme="outline"></i>
         <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name:'Техподдержка'}"></ng-container>
       </span>
+    </li>
+    <li nz-menu-item (click)="clear()" class='menu-item' nzDanger>
+      <span><i nz-icon nzType="delete" nzTheme="outline"></i><label> Полный сброс </label></span>
     </li>
     <li nz-menu-item (click)="logout()" class='menu-item' >
       <span><i nz-icon nzType="logout" nzTheme="outline"></i> <label>&nbsp;Выйти</label></span>

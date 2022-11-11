@@ -31,6 +31,8 @@ describe('DashboardService', () => {
       ]
     });
     service = TestBed.inject(DashboardService);
+    service.reloadPage = () => null;
+
   });
 
   it('should be created', () => {
@@ -118,7 +120,14 @@ describe('DashboardService', () => {
       });
     tick();
 
-    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith('dashboards', []);
+    expect(localStorageServiceSpy.removeItem).toHaveBeenCalledWith('dashboards');
+    expect(localStorageServiceSpy.removeItem).toHaveBeenCalledWith('terminalSettings');
+    expect(localStorageServiceSpy.removeItem).toHaveBeenCalledWith('watchlistCollection');
+    expect(localStorageServiceSpy.removeItem).toHaveBeenCalledWith('portfolio');
+    expect(localStorageServiceSpy.removeItem).toHaveBeenCalledWith('profile');
+    expect(localStorageServiceSpy.removeItem).toHaveBeenCalledWith('feedback');
+    expect(localStorageServiceSpy.removeItem).toHaveBeenCalledWith('instruments');
+    expect(localStorageServiceSpy.removeItem).toHaveBeenCalledWith('feedback');
     expect(widgetSettingsSpy.removeAllSettings).toHaveBeenCalled();
   }));
 

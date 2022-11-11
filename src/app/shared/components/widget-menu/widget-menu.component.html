@@ -88,16 +88,8 @@
 
     <li
       nz-menu-item
-      (click)="clearDashboard.emit()"
-      *ngIf="!showedWidgets.length"
-    >
-      <span><i nz-icon nzType="delete" nzTheme="outline"></i><label> Очистить все виджеты </label></span>
-    </li>
-
-    <li
-      nz-menu-item
       (click)="resetDashboard.emit()"
-      *ngIf="!showedWidgets.length"
+      *ngIf="showResetItem"
     >
       <span><i nz-icon nzType="appstore" nzTheme="outline"></i><label> Стандартный вид </label></span>
     </li>

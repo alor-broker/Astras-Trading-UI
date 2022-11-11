@@ -67,8 +67,20 @@ export class DashboardService {
 
   clearDashboard() {
     this.setDashboard(new Map());
-    this.localStorage.setItem(this.dashboardsStorage, []);
+    this.localStorage.removeItem(this.dashboardsStorage);
+    this.localStorage.removeItem('terminalSettings');
+    this.localStorage.removeItem('watchlistCollection');
+    this.localStorage.removeItem('portfolio');
+    this.localStorage.removeItem('profile');
+    this.localStorage.removeItem('feedback');
+    this.localStorage.removeItem('instruments');
+    this.localStorage.removeItem('feedback');
     this.settingsService.removeAllSettings();
+    this.reloadPage();
+  }
+
+  reloadPage() {
+    window.location.reload();
   }
 
   resetDashboard() {
