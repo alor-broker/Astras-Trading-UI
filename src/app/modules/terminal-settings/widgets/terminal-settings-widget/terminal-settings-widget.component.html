@@ -8,7 +8,7 @@
       <ats-terminal-settings (formChange)="formChange($event)" (tabChange)="selectedTab = $event"></ats-terminal-settings>
     </ng-container>
     <div *nzModalFooter>
-      <ng-container *ngIf="!!selectedTab">
+      <ng-container *ngIf="selectedTab !== tabNames.usefulLinks">
         <button nz-button nzType="default" (click)="saveSettingsChanges()" [disabled]="isSaveDisabled">Сохранить</button>
         <button nz-button nzType="primary" (click)="handleClose()">Отмена</button>
       </ng-container>

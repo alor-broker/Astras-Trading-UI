@@ -4,7 +4,7 @@
     {{name.firstName}}&nbsp;{{name.lastName}}
   </h1>
     <nz-tabset>
-      <nz-tab nzTitle="Полезные ссылки" (nzSelect)="tabChange.emit(0)">
+      <nz-tab nzTitle="Полезные ссылки" (nzSelect)="tabChange.emit(tabNames.usefulLinks)">
         <div class="useful-links">
           <div nz-row [nzGutter]="[16, 24]">
             <div nz-col nzMd="12"  nzXs="24" class="group">
@@ -22,7 +22,7 @@
           </div>
         </div>
       </nz-tab>
-      <nz-tab nzTitle="Общие"  (nzSelect)="tabChange.emit(1)">
+      <nz-tab nzTitle="Общие"  (nzSelect)="tabChange.emit(tabNames.main)">
         <form nz-form [nzLayout]="'vertical'" [formGroup]="settingsForm" *ngIf="settingsForm">
           <ng-container [formGroup]="designSettingsForm">
             <nz-form-item>
@@ -79,7 +79,7 @@
         </form>
       </nz-tab>
 
-      <nz-tab nzTitle="Горячие клавиши"  (nzSelect)="tabChange.emit(2)">
+      <nz-tab nzTitle="Горячие клавиши"  (nzSelect)="tabChange.emit(tabNames.hotKeys)">
         <div [formGroup]="hotKeysForm">
           <h3>Общие для всех открытых стаканов</h3>
 
