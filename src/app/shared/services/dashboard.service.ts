@@ -74,7 +74,6 @@ export class DashboardService {
     this.localStorage.removeItem('profile');
     this.localStorage.removeItem('feedback');
     this.localStorage.removeItem('instruments');
-    this.localStorage.removeItem('feedback');
     this.settingsService.removeAllSettings();
     this.reloadPage();
   }
