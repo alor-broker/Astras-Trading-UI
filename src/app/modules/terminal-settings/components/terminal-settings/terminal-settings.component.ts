@@ -23,6 +23,7 @@ import {
 } from '@angular/forms';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { ThemeType } from 'src/app/shared/models/settings/theme-settings.model';
+import { TabNames } from "../../models/terminal-settings.model";
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -39,10 +40,12 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   @Output() formChange = new EventEmitter<{value: TerminalSettings, isInitial: boolean}>();
+  @Output() tabChange = new EventEmitter<number>();
 
   timezoneDisplayOption = TimezoneDisplayOption;
 
   themeTypes = ThemeType;
+  tabNames = TabNames;
 
   settingsForm!: TerminalSettingsFormGroup;
 
