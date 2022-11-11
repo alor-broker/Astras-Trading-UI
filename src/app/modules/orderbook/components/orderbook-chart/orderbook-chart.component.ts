@@ -137,6 +137,9 @@ export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
       (sellDatasetOptions.fill as ComplexFillTarget).above = theme.themeColors.sellColorBackground;
       sellDatasetOptions.borderColor = theme.themeColors.sellColor;
       sellDatasetOptions.pointBackgroundColor = theme.themeColors.sellColorBackground;
+
+      this.chartOptions.scales!.x!.ticks!.color = theme.themeColors.chartLabelsColor;
+      this.chartOptions.scales!.y!.ticks!.color = theme.themeColors.chartLabelsColor;
     });
   }
 
