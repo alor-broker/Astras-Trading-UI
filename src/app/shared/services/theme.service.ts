@@ -49,7 +49,7 @@ export class ThemeService {
     purpleColor: '#51258f',
     errorColor: '#a61d24',
     chartGridColor: '#f0f0f0',
-    chartLabelsColor: '#8D99AD'
+    chartLabelsColor: '#647188'
   };
 
   constructor(

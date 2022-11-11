@@ -1,3 +1,15 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .ant-layout-header {
+      .ant-btn {
+        color: @layout-header-color;
+      }
+    }
+  }
+});
+
 @navbar-height: 40px;
 @logo-height: 30px;
 @indent: 2px;
