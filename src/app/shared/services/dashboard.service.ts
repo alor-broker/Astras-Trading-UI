@@ -84,6 +84,7 @@ export class DashboardService {
   }
 
   resetDashboard() {
+    this.setDashboard(new Map());
     this.localStorage.setItem(this.dashboardsStorage, []);
     this.settingsService.removeAllSettings();
     this.createDefaultDashboard();
