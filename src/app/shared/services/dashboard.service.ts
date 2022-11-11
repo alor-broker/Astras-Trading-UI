@@ -111,7 +111,7 @@ export class DashboardService {
   private createDefaultDashboard() {
     setTimeout(() => {
       this.addWidget({
-        gridItem: {x: 0, y: 0, cols: 30, rows: 18, type: WidgetNames.lightChart},
+        gridItem: {x: 0, y: 0, cols: 30, rows: 18, type: WidgetNames.techChart},
       });
       this.addWidget({
         gridItem: {x: 30, y: 0, cols: 10, rows: 18, type: WidgetNames.orderBook},

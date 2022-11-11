@@ -140,7 +140,7 @@ describe('DashboardService', () => {
     expect(widgetSettingsSpy.removeAllSettings).toHaveBeenCalled();
     expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith('dashboards', []);
     expect(addWidgetSpy).toHaveBeenCalledTimes(6);
-    expect(addWidgetSpy).toHaveBeenCalledWith({gridItem: {x: 0, y: 0, cols: 30, rows: 18, type: WidgetNames.lightChart}});
+    expect(addWidgetSpy).toHaveBeenCalledWith({gridItem: {x: 0, y: 0, cols: 30, rows: 18, type: WidgetNames.techChart}});
     expect(addWidgetSpy).toHaveBeenCalledWith({gridItem: {x: 30, y: 0, cols: 10, rows: 18, type: WidgetNames.orderBook}}, {depth: 10});
     expect(addWidgetSpy).toHaveBeenCalledWith({gridItem: {x: 40, y: 0, cols: 10, rows: 18, type: WidgetNames.instrumentInfo}});
     expect(addWidgetSpy).toHaveBeenCalledWith({gridItem: {x: 0, y: 18, cols: 25, rows: 12, type: WidgetNames.blotter}}, {activeTabIndex: 3});
