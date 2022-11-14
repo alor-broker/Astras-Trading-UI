@@ -5,7 +5,6 @@ import {
 } from '@angular/core/testing';
 
 import { TechChartDatafeedService } from './tech-chart-datafeed.service';
-import { WebsocketService } from "../../../shared/services/websocket.service";
 import { InstrumentsService } from "../../instruments/services/instruments.service";
 import { HistoryService } from "../../../shared/services/history.service";
 import {
@@ -26,20 +25,19 @@ import {
   of
 } from "rxjs";
 import { HistoryResponse } from "../../../shared/models/history/history-response.model";
-import { BaseResponse } from "../../../shared/models/ws/base-response.model";
 import { Candle } from "../../../shared/models/history/candle.model";
-import { BarsRequest } from '../../light-chart/models/bars-request.model';
+import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 
 describe('TechChartDatafeedService', () => {
   let service: TechChartDatafeedService;
 
-  let websocketServiceSpy: any;
+  let subscriptionsDataFeedServiceSpy: any;
   let instrumentsServiceSpy: any;
   let historyServiceSpy: any;
   let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
-    websocketServiceSpy = jasmine.createSpyObj('WebsocketService', ['connect', 'subscribe', 'messages$']);
+    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument', 'getInstruments']);
     historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getHistory']);
   });
@@ -51,7 +49,7 @@ describe('TechChartDatafeedService', () => {
       ],
       providers: [
         TechChartDatafeedService,
-        { provide: WebsocketService, useValue: websocketServiceSpy },
+        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         { provide: HistoryService, useValue: historyServiceSpy }
       ]
@@ -322,14 +320,9 @@ describe('TechChartDatafeedService', () => {
       volume: 1000
     };
 
-    websocketServiceSpy.messages$ = new BehaviorSubject<BaseResponse<Candle> | null>(null);
+    const messages$ = new BehaviorSubject<Candle | null>(expectedBar);
 
-    websocketServiceSpy.subscribe.and.callFake((request: BarsRequest) => {
-      websocketServiceSpy.messages$.next({
-        guid: request.guid,
-        data: expectedBar
-      } as BaseResponse<Candle>);
-    });
+    subscriptionsDataFeedServiceSpy.subscribe.and.returnValue(messages$);
 
     service.subscribeBars(
       { ticker: 'MOEX:SBER' } as LibrarySymbolInfo,
@@ -337,15 +330,15 @@ describe('TechChartDatafeedService', () => {
       bar => {
         done();
 
-        expect(websocketServiceSpy.connect).toHaveBeenCalled();
-        expect(websocketServiceSpy.subscribe).toHaveBeenCalledWith(jasmine.objectContaining({
-          opcode: 'BarsGetAndSubscribe',
-          code: 'SBER',
-          exchange: 'MOEX',
-          instrumentGroup: undefined,
-          format: 'simple',
-          tf: '60',
-        }));
+        expect(subscriptionsDataFeedServiceSpy.subscribe).toHaveBeenCalledWith(jasmine.objectContaining({
+            opcode: 'BarsGetAndSubscribe',
+            code: 'SBER',
+            exchange: 'MOEX',
+            instrumentGroup: undefined,
+            format: 'simple',
+            tf: '60',
+          }),
+          jasmine.anything());
 
         expect(bar).toEqual({
           ...expectedBar,
