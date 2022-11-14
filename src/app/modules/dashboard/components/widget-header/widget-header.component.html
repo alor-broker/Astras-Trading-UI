@@ -1,5 +1,5 @@
 <div class='panel' *ngIf="settings$ | async as s">
-  <div class="buttons-group">
+  <div class="buttons-group title-wrapper">
     <nz-badge
       *ngIf="s.badgeColor &&
         (terminalSettings$ | async)?.badgesBind &&
