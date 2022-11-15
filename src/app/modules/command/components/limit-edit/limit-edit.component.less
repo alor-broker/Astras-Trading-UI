@@ -1,0 +1,19 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .lot-size-hint {
+      color: @text-color;
+    }
+  }
+});
+
+.limit-edit-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  .compact {
+    margin-right: 0;
+  }
+}
