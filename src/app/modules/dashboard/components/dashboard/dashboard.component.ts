@@ -74,6 +74,12 @@ export class DashboardComponent implements OnInit {
       ignoreMarginInRow: false,
       draggable: {
         enabled: true,
+        start: (gridsterItem, gridsterItemComp) => {
+          gridsterItemComp.el.style.zIndex = '3';
+        },
+        stop: (gridsterItem, gridsterItemComp) => {
+          gridsterItemComp.el.style.zIndex = '2';
+        }
       },
       resizable: {
         enabled: true,
