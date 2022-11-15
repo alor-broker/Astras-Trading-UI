@@ -70,12 +70,12 @@ export class LightChartWrapper {
     return {
       timeScale: {
         timeVisible: true,
-        borderColor: '#D1D4DC',
+        borderColor: this.config.themeColors.chartGridColor,
       },
       rightPriceScale: {
         autoScale: true,
         visible: true,
-        borderColor: '#D1D4DC',
+        borderColor: this.config.themeColors.chartGridColor,
       },
       layout: {
         backgroundColor: this.config.themeColors.componentBackground, // '#ffffff',

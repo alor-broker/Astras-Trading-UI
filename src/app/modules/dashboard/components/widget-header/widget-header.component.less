@@ -8,9 +8,14 @@
       }
     }
 
-    .title-with-icon {
-      .title-icon {
-        color: @title-icon-color;
+    .title {
+      .title-text {
+        color: @title-text-color;
+      }
+      .title-with-icon {
+        .title-icon {
+          color: @title-icon-color;
+        }
       }
     }
   }
@@ -96,4 +101,8 @@ button {
 .buttons-group {
   display: flex;
   align-items: center;
+}
+
+.title-wrapper {
+  max-width: calc(100% - 70px);
 }

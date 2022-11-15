@@ -1,4 +1,16 @@
-@navbar-height: 40px;
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .ant-layout-header {
+      .ant-btn {
+        color: @heading-color;
+      }
+    }
+  }
+});
+
+@navbar-height: 5vh;
 @logo-height: 30px;
 @indent: 2px;
 
@@ -19,6 +31,7 @@ nz-header {
     width: @logo-height - @indent;
     background-repeat: no-repeat;
     background-color: transparent;
+    margin-right: 15px;
   }
 
   .menu-item {
