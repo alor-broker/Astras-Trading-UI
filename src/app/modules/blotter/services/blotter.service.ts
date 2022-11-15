@@ -191,7 +191,7 @@ export class BlotterService extends BaseWebsocketService {
       trackId
     ).pipe(
       map((order: StopOrderData) => {
-        const existingOrder = this.orders.get(order.id);
+        const existingOrder = this.stopOrders.get(order.id);
         order.transTime = new Date(order.transTime);
         order.endTime = new Date(order.endTime);
 

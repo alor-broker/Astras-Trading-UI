@@ -56,6 +56,7 @@ export class FeedbackService {
       lastUnansweredFeedback: undefined
     });
 
+    this.setLastFeedbackCheck();
     this.unansweredFeedbackRemoved$.next({});
   }
 
