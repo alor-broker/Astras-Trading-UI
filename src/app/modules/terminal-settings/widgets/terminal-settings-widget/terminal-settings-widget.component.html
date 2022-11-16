@@ -9,8 +9,8 @@
     </ng-container>
     <div *nzModalFooter>
       <ng-container *ngIf="selectedTab !== tabNames.usefulLinks">
-        <button nz-button nzType="default" (click)="saveSettingsChanges()" [disabled]="isSaveDisabled">Сохранить</button>
-        <button nz-button nzType="primary" (click)="handleClose()">Отмена</button>
+        <button nz-button nzType="primary" (click)="saveSettingsChanges()" [disabled]="isSaveDisabled">Сохранить</button>
+        <button nz-button nzType="default" class="secondary-btn" (click)="handleClose()">Отмена</button>
       </ng-container>
     </div>
   </nz-modal>
