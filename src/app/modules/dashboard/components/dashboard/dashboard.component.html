@@ -3,7 +3,7 @@
     <div>
       <gridster-item [item]="widget.gridItem" *ngFor="let widget of dashboard">
         <div class="widget-container">
-          <div class="resize-overlay" *ngIf="isResizing"></div>
+          <div class="blocked-widget-overlay" *ngIf="isBlockWidget"></div>
           <ats-parent-widget [widget]="widget" [resize]="resize"></ats-parent-widget>
         </div>
       </gridster-item>

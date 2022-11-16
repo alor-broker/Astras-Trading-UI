@@ -29,7 +29,7 @@ export class DashboardComponent implements OnInit {
   dashboard$?: Observable<Widget[]>;
 
   resize: EventEmitter<DashboardItem> = new EventEmitter<DashboardItem>();
-  isResizing = false;
+  isBlockWidget = false;
 
   constructor(private service: DashboardService) {
   }
@@ -74,6 +74,14 @@ export class DashboardComponent implements OnInit {
       ignoreMarginInRow: false,
       draggable: {
         enabled: true,
+        start: (gridsterItem, gridsterItemComp) => {
+          gridsterItemComp.el.style.zIndex = '3';
+          this.isBlockWidget = true;
+        },
+        stop: (gridsterItem, gridsterItemComp) => {
+          gridsterItemComp.el.style.zIndex = '2';
+          this.isBlockWidget = false;
+        }
       },
       resizable: {
         enabled: true,
@@ -82,10 +90,10 @@ export class DashboardComponent implements OnInit {
           // se: false
         },
         start: () => {
-          this.isResizing = true;
+          this.isBlockWidget = true;
         },
         stop: () => {
-          this.isResizing = false;
+          this.isBlockWidget = false;
         }
       },
       pushDirections: { north: true, east: true, south: true, west: true },
