@@ -17,18 +17,21 @@
           </div>
         </ng-container>
       </div>
-      <div nz-row *ngIf="positionInfo$ | async as positionInfo" class="position-row">
-        <div nz-col>
-          <nz-badge
-            nzStandalone
-            [nzCount]="positionInfo.abs"
-            [nzOverflowCount]="1000000000"
-            class="position-badge"
-            [class]="positionInfo.quantity > 0 ? 'long' : 'short'"
-          ></nz-badge>
-          <span>Позиций по бумаге</span>
+
+      <ng-container *ngIf="positionInfo$ | async as positionInfo">
+        <div nz-row *ngIf="positionInfo.abs" class="position-row">
+          <div nz-col>
+            <nz-badge
+              nzStandalone
+              [nzCount]="positionInfo.abs"
+              [nzOverflowCount]="1000000000"
+              class="position-badge"
+              [class]="positionInfo.quantity > 0 ? 'long' : 'short'"
+            ></nz-badge>
+            <span>Позиций по бумаге</span>
+          </div>
         </div>
-      </div>
+      </ng-container>
     </div>
     <div class="body">
       <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async">
