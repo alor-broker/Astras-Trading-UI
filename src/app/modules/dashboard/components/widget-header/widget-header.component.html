@@ -1,13 +1,5 @@
 <div class='panel' *ngIf="settings$ | async as s">
-  <div class="buttons-group">
-    <button *ngIf="hasSettings" nz-button nzSize="small" (click)="switchSettings($event)">
-    <i nz-icon
-      nzType="setting"
-      [nzTheme]="'fill'"
-      joyrideStep="step8"
-      [title]="joyrideContent.step8.title"
-      [text]="joyrideContent.step8.text"></i>
-  </button>
+  <div class="buttons-group title-wrapper">
     <nz-badge
       *ngIf="s.badgeColor &&
         (terminalSettings$ | async)?.badgesBind &&
@@ -29,30 +21,31 @@
         </li>
       </ul>
     </nz-dropdown-menu>
-  </div>
-  <div class="title" *ngIf="title$ | async as title">
-    <ng-container *ngIf="s.titleIcon; else simpleTitle">
-      <div class="title-with-icon">
-        <i nz-icon
-           class="title-icon"
-           [nzType]="s.titleIcon"
-           nzTheme="outline"
-           nz-popover
-           nzPopoverPlacement="bottom"
-           [nzPopoverContent]="s.title"
-        ></i>
-        <ng-container *ngTemplateOutlet="simpleTitle"></ng-container>
-      </div>
-    </ng-container>
-    <ng-template #simpleTitle>
-      <label
-        class="title-text"
-        nz-popover
-        nzPopoverPlacement="bottom"
-        [nzPopoverContent]="title">
-        {{title}}
-      </label>
-    </ng-template>
+
+    <div class="title" *ngIf="title$ | async as title">
+      <ng-container *ngIf="s.titleIcon; else simpleTitle">
+        <div class="title-with-icon">
+          <i nz-icon
+             class="title-icon"
+             [nzType]="s.titleIcon"
+             nzTheme="outline"
+             nz-popover
+             nzPopoverPlacement="bottom"
+             [nzPopoverContent]="s.title"
+          ></i>
+          <ng-container *ngTemplateOutlet="simpleTitle"></ng-container>
+        </div>
+      </ng-container>
+      <ng-template #simpleTitle>
+        <label
+          class="title-text"
+          nz-popover
+          nzPopoverPlacement="bottom"
+          [nzPopoverContent]="title">
+          {{title}}
+        </label>
+      </ng-template>
+    </div>
   </div>
 
   <div class="buttons-group">
@@ -67,6 +60,14 @@
         [title]="joyrideContent.step7.title"
         [text]="joyrideContent.step7.text"
         [class.active]="s.linkToActive"></i>
+    </button>
+    <button *ngIf="hasSettings" nz-button nzSize="small" (click)="switchSettings($event)">
+      <i nz-icon
+         nzType="setting"
+         [nzTheme]="'outline'"
+         joyrideStep="step8"
+         [title]="joyrideContent.step8.title"
+         [text]="joyrideContent.step8.text"></i>
     </button>
     <button *ngIf="hasHelp" nz-button nzSize="small" (click)="openHelp()">
       <i nz-icon nzType="question-circle" [nzTheme]="'outline'"

@@ -1,14 +1,22 @@
-<button
-  (click)="buy()"
-  [disabled]="isButtonsLocked || (command$ | async) === null"
-  [nzLoading]="isBuyButtonLoading"
-  class='buy-button'
-  nz-button
-  nzSize="large">Купить</button>
-<button
-  (click)="sell()"
-  [disabled]="isButtonsLocked || (command$ | async) === null"
-  [nzLoading]="isSellButtonLoading"
-  class='sell-button'
-  nz-button
-  nzSize="large">Продать</button>
+<div class="buttons-wrapper">
+  <button
+    (click)="buy()"
+    [disabled]="isButtonsLocked || (command$ | async) === null"
+    [nzLoading]="isBuyButtonLoading"
+    class='buy-button'
+    nz-button
+    nzSize="large"
+  >
+    Купить
+  </button>
+  <button
+    (click)="sell()"
+    [disabled]="isButtonsLocked || (command$ | async) === null"
+    [nzLoading]="isSellButtonLoading"
+    class='sell-button'
+    nz-button
+    nzSize="large"
+  >
+    Продать
+  </button>
+</div>

@@ -23,6 +23,9 @@ import {
 } from '@angular/forms';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { ThemeType } from 'src/app/shared/models/settings/theme-settings.model';
+import { TabNames } from "../../models/terminal-settings.model";
+import { DashboardService } from "../../../../shared/services/dashboard.service";
+import { ModalService } from "../../../../shared/services/modal.service";
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -39,10 +42,12 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   @Output() formChange = new EventEmitter<{value: TerminalSettings, isInitial: boolean}>();
+  @Output() tabChange = new EventEmitter<number>();
 
   timezoneDisplayOption = TimezoneDisplayOption;
 
   themeTypes = ThemeType;
+  tabNames = TabNames;
 
   settingsForm!: TerminalSettingsFormGroup;
 
@@ -64,7 +69,11 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     return this.settingsForm.get('designSettings') as UntypedFormGroup;
   }
 
-  constructor(private readonly service: TerminalSettingsService) {
+  constructor(
+    private readonly service: TerminalSettingsService,
+    private readonly dashboardService: DashboardService,
+    private modal: ModalService,
+  ) {
   }
 
   ngOnInit(): void {
@@ -93,6 +102,20 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     e.stopPropagation();
 
     this.workingVolumes.removeAt(index);
+  }
+
+  clearDashboard() {
+    this.modal.openConfirmModal({
+      nzTitle: 'Вы уверены, что хотите сделать полный сброс?',
+      nzContent: 'При полном сбросе удалятся все Ваши настройки, списки наблюдения, виджеты и так далее.',
+      nzOkText: 'Да',
+      nzOkType: 'primary',
+      nzOkDanger: true,
+      nzOnOk: () => this.dashboardService.clearDashboard(),
+      nzCancelText: 'Нет',
+      nzOnCancel: () => {
+      }
+    });
   }
 
   ngOnDestroy() {

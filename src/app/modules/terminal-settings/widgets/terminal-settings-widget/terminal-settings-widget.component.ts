@@ -4,6 +4,7 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { TerminalSettings } from "../../../../shared/models/terminal-settings/terminal-settings.model";
 import { Store } from "@ngrx/store";
 import { updateTerminalSettings } from "../../../../store/terminal-settings/terminal-settings.actions";
+import { TabNames } from "../../models/terminal-settings.model";
 
 @Component({
   selector: 'ats-terminal-settings-widget',
@@ -16,6 +17,9 @@ export class TerminalSettingsWidgetComponent implements OnInit {
   settingsFormValue: TerminalSettings | null = null;
 
   isVisible$: Observable<boolean> = of(false);
+
+  tabNames = TabNames;
+  selectedTab = TabNames.usefulLinks;
 
   get isSaveDisabled(): boolean {
     return !this.settingsFormValue ||
