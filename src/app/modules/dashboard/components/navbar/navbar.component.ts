@@ -32,6 +32,7 @@ import {
   selectPortfoliosState
 } from '../../../../store/portfolios/portfolios.selectors';
 import { EntityStatus } from '../../../../shared/models/enums/entity-status';
+import { FormControl } from "@angular/forms";
 import { DashboardHelper } from '../../../../shared/utils/dashboard-helper';
 
 @Component({
@@ -45,6 +46,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   names = WidgetNames;
   joyrideContent = joyrideContent;
   themeColors$!: Observable<ThemeColors>;
+  searchControl = new FormControl('');
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private activeInstrument$!: Observable<Instrument>;
 
@@ -79,8 +81,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  clear() {
-    this.service.clearDashboard();
+  isFindedPortfolio(portfolio: PortfolioExtended) {
+    const { value } = this.searchControl;
+    return !value || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes(value.toUpperCase());
+  }
+
+  resetDashboard() {
+    this.service.resetDashboard();
   }
 
   logout() {
@@ -88,7 +95,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   changePortfolio(key: PortfolioExtended) {
-    this.store.dispatch(selectNewPortfolio({ portfolio: key }));
+    setTimeout(() => {
+      this.store.dispatch(selectNewPortfolio({ portfolio: key }));
+    }, 150);
   }
 
   addItem(type: string): void {

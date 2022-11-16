@@ -2,6 +2,22 @@
 
 .themeMixin({
   :host {
+    .header {
+      .working-volumes {
+        .working-volume-item {
+          color: @working-volume-tag-color;
+          border-color: @working-volume-tag-border-color;
+          background-color: @working-volume-tag-background-color;
+
+          &.active {
+            color: @primary-color;
+            border-color: @border-color-active;
+            background-color: @background-color-active;
+          }
+        }
+      }
+    }
+
     .order-book-table-container {
       .ask-row:not(.filler-row) {
         .price-cell {

@@ -1,17 +1,19 @@
 <div *ngIf="viewData$ | async as data" class="content">
-  <div class="instrument">
-    <div class='badge'>
-      <nz-badge [nzCount]="data.position.abs"
-                [nzOverflowCount]='1000000000'
-                [class]="data.position.quantity > 0 ? 'long' : 'short'">
-        <nz-avatar [nzSize]="64" [nzSrc]="'https://storage.alorbroker.ru/icon/' + data.instrument.symbol + '.png'" [nzText]="data.instrument.symbol"
-                   nzGap='4'></nz-avatar>
-      </nz-badge>
-    </div>
-    <div class='description'>
+  <div class='badge'>
+    <nz-badge [nzCount]="data.position.abs"
+              [nzOverflowCount]='1000000000'
+              [class]="data.position.quantity > 0 ? 'long' : 'short'">
+      <nz-avatar [nzSize]="64" [nzSrc]="'https://storage.alorbroker.ru/icon/' + data.instrument.symbol + '.png'"
+                 [nzText]="data.instrument.symbol"
+                 nzGap='4'></nz-avatar>
+    </nz-badge>
+  </div>
+
+  <div class='description'>
+    <div class="instrument">
       <div class='identifier'>
         <p class='ticker'>{{data.instrument.symbol}}</p>
-        <div>
+        <div class="exchange-info">
           <p class='exchange'>{{data.instrument.exchange}}</p>
           <p class='instrument-group'>{{data.instrument.instrumentGroup}}</p>
         </div>
@@ -20,27 +22,28 @@
         <span>{{data.priceData.lastPrice}}</span>
       </div>
     </div>
+
+    <nz-descriptions [nzColon]="false" [nzColumn]="{ xxl: 3, xl: 3, lg: 3, md: 2, sm: 2, xs: 2 }" class="dynamic" nzSize="small">
+      <nz-descriptions-item nzTitle="Изм.">
+        <span><p [class]='data.priceData.dayChange < 0 ? "sell" : "buy"' class="upper-row">{{data.priceData.dayChange}}</p></span>
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="High">
+        <span><p class="upper-row">{{data.priceData.high}}</p></span>
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Ask">
+        <span (click)="selectPrice(data.priceData.ask)"><p class='sell selectable upper-row'>{{data.priceData.ask}}</p></span>
+      </nz-descriptions-item>
+
+      <nz-descriptions-item nzTitle="Дн.%">
+        <span><p [class]='data.priceData.dayChange < 0 ? "sell" : "buy"' class="lower-row">{{data.priceData.dayChangePerPrice}}</p></span>
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Low">
+        <span><p class="lower-row">{{data.priceData.low}}</p></span>
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Bid">
+        <span (click)="selectPrice(data.priceData.bid)"><p class='buy selectable lower-row'>{{data.priceData.bid}}</p></span>
+      </nz-descriptions-item>
+    </nz-descriptions>
   </div>
-
-  <nz-descriptions [nzColumn]="{ xxl: 3, xl: 3, lg: 3, md: 2, sm: 2, xs: 2 }" class="dynamic" nzSize="small">
-    <nz-descriptions-item nzTitle="Изм.">
-      <span><p [class]='data.priceData.dayChange < 0 ? "sell" : "buy"'>{{data.priceData.dayChange}}</p></span>
-    </nz-descriptions-item>
-    <nz-descriptions-item nzTitle="High">
-      <span><p>{{data.priceData.high}}</p></span>
-    </nz-descriptions-item>
-    <nz-descriptions-item nzTitle="Ask">
-      <span (click)="selectPrice(data.priceData.ask)"><p class='sell selectable'>{{data.priceData.ask}}</p></span>
-    </nz-descriptions-item>
-
-    <nz-descriptions-item nzTitle="Дн.%">
-      <span><p [class]='data.priceData.dayChange < 0 ? "sell" : "buy"'>{{data.priceData.dayChangePerPrice}}%</p></span>
-    </nz-descriptions-item>
-    <nz-descriptions-item nzTitle="Low">
-      <span><p>{{data.priceData.low}}</p></span>
-    </nz-descriptions-item>
-    <nz-descriptions-item nzTitle="Bid">
-      <span (click)="selectPrice(data.priceData.bid)"><p class='buy selectable'>{{data.priceData.bid}}</p></span>
-    </nz-descriptions-item>
-  </nz-descriptions>
 </div>
+

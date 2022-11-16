@@ -9,6 +9,8 @@ import { NewsListItem } from "../../modules/news/models/news.model";
 import { WidgetNames } from "../models/enums/widget-names";
 import { NewFeedback } from '../../modules/feedback/models/feedback.model';
 import { ReleaseMeta } from '../../modules/application-meta/models/application-release.model';
+import { NzModalService } from "ng-zorro-antd/modal";
+import { ModalOptions } from "ng-zorro-antd/modal/modal-types";
 
 @Injectable({
   providedIn: 'root'
@@ -57,7 +59,10 @@ export class ModalService {
 
   shouldShowApplicationUpdatedModal$  = this.shouldShowApplicationUpdatedModal.asObservable();
 
-  constructor(private store: Store) {
+  constructor(
+    private store: Store,
+    private nzModalService: NzModalService
+  ) {
     this.store.select(getSelectedPortfolioKey).subscribe(p => {
       if (p) {
         this.selectedPortfolio = p;
@@ -103,6 +108,10 @@ export class ModalService {
   openApplicationUpdatedModal(release: ReleaseMeta) {
     this.applicationUpdatedParams.next(release);
     this.shouldShowApplicationUpdatedModal.next(true);
+  }
+
+  openConfirmModal(options?: ModalOptions) {
+    this.nzModalService.confirm(options);
   }
 
   closeTerminalSettingsModal() {

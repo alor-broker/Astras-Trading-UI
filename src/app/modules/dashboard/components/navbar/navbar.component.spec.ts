@@ -51,7 +51,7 @@ describe('NavbarComponent', () => {
       declarations: [
         NavbarComponent,
         ...ngZorroMockComponents,
-        mockComponent({ selector: 'ats-widget-menu' }),
+        mockComponent({ selector: 'ats-widget-menu', inputs: ['showResetItem'] }),
         mockComponent({ selector: 'ats-notification-button' }),
       ],
       providers: [

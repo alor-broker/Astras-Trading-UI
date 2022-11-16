@@ -4,10 +4,11 @@
   :host {
     .ant-btn {
       color: white;
+      flex-grow: 1;
+      border-radius: 4px;
     }
 
     .buy-button {
-      width: 50%;
       background: @buy-color;
       &:hover {
         border-color: fade(@buy-color, 20%);
@@ -16,7 +17,6 @@
     }
 
     .sell-button {
-      width: 50%;
       background: @sell-color;
       &:hover {
         border-color: fade(@sell-color, 20%);
@@ -25,3 +25,10 @@
     }
   }
 });
+
+.buttons-wrapper {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
