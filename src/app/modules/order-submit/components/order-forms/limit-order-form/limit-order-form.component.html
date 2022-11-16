@@ -3,9 +3,10 @@
     <div [nzGutter]="12" nz-row>
       <div [nzSm]="12" [nzXs]="24" nz-col>
         <nz-form-item class="compact">
-          <nz-form-label nzFor="quantity" nzRequired><span nz-tooltip="лотность: {{instrument.lotsize | shortNumber}}">Кол-во лотов <i nz-icon nzType="info-circle" nzTheme="outline"></i></span></nz-form-label>
+          <nz-form-label nzFor="quantity" nzRequired>Кол-во лотов</nz-form-label>
           <nz-form-control [nzErrorTip]="quantityError">
             <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="quantity" nz-input placeholder="0"/>
+            <span>1 лот = {{instrument.lotsize | shortNumber}} шт.</span>
             <ng-template #quantityError>
               <span *ngIf="form.get('quantity')?.errors?.required">Введите кол-во</span>
               <span *ngIf="form.get('quantity')?.errors?.min">Слишком мало</span>

@@ -12,6 +12,16 @@
       }
     }
 
+    ::ng-deep {
+      .long nz-badge-sup {
+        background: @buy-color;
+      }
+
+      .short nz-badge-sup {
+        background: @sell-color;
+      }
+    }
+
     .footer {
       .ant-btn {
         color: white;
@@ -54,5 +64,33 @@
 
 .footer {
   margin-top: @margin;
+  display: flex;
+  gap: 6px;
+
+  .ant-btn {
+    flex-grow: 1;
+    border-radius: 4px;
+  }
 }
 
+:host {
+  ::ng-deep {
+    .position-row {
+      margin-top: 10px;
+
+      div[nz-col] {
+        display: flex;
+        align-items: center;
+
+        .position-badge {
+          font-size: 14px;
+          margin-right: 10px;
+
+          .ant-scroll-number-only-unit {
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+}
