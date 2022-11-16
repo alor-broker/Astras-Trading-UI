@@ -22,7 +22,7 @@ html {
     textarea {
       overflow-y: auto;
       scrollbar-width: thin;
-      scrollbar-color: @text-color-secondary transparent;
+      scrollbar-color: @scrollbar-color transparent;
 
       &::-webkit-scrollbar {
         width: 3px;
@@ -35,22 +35,28 @@ html {
       }
 
       &::-webkit-scrollbar-thumb {
-        background-color: @text-color-secondary; /* or add it to the track */
+        background-color: @scrollbar-color; /* or add it to the track */
         border-radius: 10px;
       }
     }
 
-    .external-link {
-      .link-label {
-        .anticon-ats-external-link {
-          font-size: smaller;
-        }
+    .ant-dropdown-menu-item {
+        color: @heading-color;
+      &-disabled {
+        color: @text-color;
       }
+    }
 
-      &:hover {
-        .link-label {
-          color: @link-hover-color;
-        }
+    .ant-select-item-option {
+      .ant-tag {
+        background: @tag-background;
+      }
+    }
+
+    .ant-btn {
+      &.secondary-btn {
+        color: #FFFFFF;
+        background-color: @text-color;
       }
     }
   }

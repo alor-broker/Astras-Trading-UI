@@ -1,25 +1,16 @@
 @import "theme-mixin";
 
-.themeMixin({
-  :host {
-    .dialog-title {
-      button {
-        &:hover, &:focus {
-          color: @icon-color-hover;
-          text-decoration: none;
-          opacity: 1;
+::ng-deep {
+  .themeMixin({
+    .ant-popover {
+      .notifications-table {
+        .notification {
+          border-bottom: 1px solid @border-color-base;
         }
       }
     }
-
-    .notifications-table {
-      .notification {
-        border-bottom: 1px solid @border-color-base;
-      }
-    }
-  }
-});
-
+  })
+}
 
 @width: 350px;
 
