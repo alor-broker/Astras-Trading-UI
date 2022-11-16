@@ -29,8 +29,8 @@ export class ThemeService {
   private readonly darkThemeColors: ThemeColors = {
     sellColor: 'rgba(209, 38, 27, 1)',
     sellColorBackground: 'rgba(209, 38, 27, 0.4)',
-    buyColor: '#009B63',
-    buyColorBackground: 'rgba(0, 141, 99, 0.4)',
+    buyColor: 'rgba(0, 155, 99, 1)',
+    buyColorBackground: 'rgba(0, 155, 99, 0.4)',
     componentBackground: '#141922',
     primaryColor: '#177ddc',
     purpleColor: '#51258f',
@@ -48,7 +48,7 @@ export class ThemeService {
     primaryColor: '#177ddc',
     purpleColor: '#51258f',
     errorColor: '#a61d24',
-    chartGridColor: '#f0f0f0',
+    chartGridColor: '#D8E3F5',
     chartLabelsColor: '#647188'
   };
 

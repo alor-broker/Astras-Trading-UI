@@ -8,13 +8,13 @@
         <div class="useful-links">
           <div nz-row [nzGutter]="[16, 24]">
             <div nz-col nzMd="12"  nzXs="24" class="group">
-              <div class="group-header">Общие</div>
+              <div><h3>Общие</h3></div>
               <ats-external-link class="group-item" href="https://www.alorbroker.ru">Официальный сайт</ats-external-link>
               <ats-external-link class="group-item" href="https://www.alorbroker.ru/trading/leverage">Ставки риска</ats-external-link>
             </div>
 
             <div nz-col nzMd="12" nzXs="24" class="group">
-              <div class="group-header">Операции в кабинете клиента</div>
+              <div><h3>Операции в кабинете клиента</h3></div>
               <ats-external-link class="group-item" href="https://lk.alor.ru/main">Личный кабинет</ats-external-link>
               <ats-external-link class="group-item" href="https://lk.alor.ru/operations/money">Денежные средства</ats-external-link>
               <ats-external-link class="group-item" href="https://lk.alor.ru/products/services">Услуги</ats-external-link>
@@ -76,11 +76,15 @@
               </p>
             </ng-template>
           </nz-form-item>
+          <nz-form-item>
+            <nz-form-control>
+              <button nz-button nzType="link" (click)="clearDashboard()" nzDanger>
+                <i nz-icon nzType="delete" nzTheme="outline"></i>
+                Сбросить все настройки
+              </button>
+            </nz-form-control>
+          </nz-form-item>
         </form>
-        <button nz-button nzType="primary" (click)="clearDashboard()" nzDanger>
-          <i nz-icon nzType="delete" nzTheme="outline"></i>
-          Полный сброс
-        </button>
       </nz-tab>
 
       <nz-tab nzTitle="Горячие клавиши"  (nzSelect)="tabChange.emit(tabNames.hotKeys)">

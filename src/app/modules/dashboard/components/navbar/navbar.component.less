@@ -3,8 +3,8 @@
 .themeMixin({
   :host {
     .ant-layout-header {
-      .ant-btn {
-        color: @heading-color;
+      ::ng-deep .ant-btn {
+        color: @layout-header-color;
       }
     }
   }
@@ -68,16 +68,6 @@ nz-header {
       .ant-btn {
         i {
           font-size: 15px;
-        }
-      }
-    }
-  }
-
-  .contrast-icon {
-    ::ng-deep {
-      .ant-btn {
-        i {
-          color: white;
         }
       }
     }

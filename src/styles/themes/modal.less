@@ -1,6 +1,10 @@
 ﻿@import 'theme-mixin';
 
 .themeMixin({
+  .ant-modal-close {
+    color: @text-color;
+  }
+
   .ant-modal-title {
     .title {
       display: flex;
@@ -10,6 +14,8 @@
       .right {
         white-space: nowrap;
         margin-right: -8px;
+        display: flex;
+        flex-direction: row-reverse;
 
         button {
           border: none;
@@ -17,9 +23,8 @@
           font-size: @font-size-base;
 
           &:hover, &:focus {
-            color: @icon-color-hover;
+            color: @text-color;
             text-decoration: none;
-            opacity: 1;
           }
         }
       }
