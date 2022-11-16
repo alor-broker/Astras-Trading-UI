@@ -27,10 +27,7 @@ import { EvaluationBaseProperties } from '../../models/evaluation-base-propertie
 import { MarketFormData } from '../../models/market-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { MarketCommand } from '../../models/market-command.model';
-import {
-  distinct,
-  finalize
-} from 'rxjs/operators';
+import { distinct } from 'rxjs/operators';
 import { CommandContextModel } from '../../models/command-context.model';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
@@ -142,8 +139,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
         && previous?.instrument?.exchange == current?.instrument?.exchange
         && previous?.instrument?.instrumentGroup == current?.instrument?.instrumentGroup
       ),
-      switchMap(command => this.getCurrentPrice(command)),
-      distinct()
+      switchMap(command => this.getCurrentPrice(command))
     );
 
     this.evaluation$ = combineLatest([
@@ -181,7 +177,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     return this.quoteService.getQuotes(command.instrument.symbol, command.instrument.exchange, command.instrument.instrumentGroup)
       .pipe(
         map(q => q.last_price),
-        finalize(() => this.quoteService.unsubscribe()),
+        distinct()
       );
   }
 }

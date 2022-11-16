@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/
 import { BehaviorSubject, combineLatest, filter, Observable, of, switchMap, take } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { CommandType } from '../../../../shared/models/enums/command-type.model';
 import { NzTabComponent, NzTabSetComponent } from 'ng-zorro-antd/tabs';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
@@ -14,7 +13,6 @@ import { CommandContextModel } from '../../models/command-context.model';
   selector: 'ats-command-widget',
   templateUrl: './command-widget.component.html',
   styleUrls: ['./command-widget.component.less'],
-  providers: [QuotesService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CommandWidgetComponent implements OnInit {

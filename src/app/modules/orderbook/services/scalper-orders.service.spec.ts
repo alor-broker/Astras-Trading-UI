@@ -1,5 +1,6 @@
 import {
   fakeAsync,
+  flushMicrotasks,
   TestBed,
   tick
 } from '@angular/core/testing';
@@ -38,6 +39,7 @@ import { StopOrderCondition } from "../../../shared/models/enums/stoporder-condi
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
 import { OrderbookDataRow } from '../models/orderbook-data-row.model';
+import { CancelCommand } from '../../../shared/models/commands/cancel-command.model';
 
 describe('ScalperOrdersService', () => {
   let service: ScalperOrdersService;
@@ -91,27 +93,32 @@ describe('ScalperOrdersService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('#cancelOrders should call service with appropriate data', fakeAsync(() => {
-      const testOrder: CurrentOrder = {
-        price: 10,
-        orderId: generateRandomString(5),
-        exchange: generateRandomString(4),
-        portfolio: generateRandomString(5),
-        type: 'limit',
-        volume: 10
-      };
+  it('#cancelOrders should call service with appropriate data', (done => {
+        const testOrder: CurrentOrder = {
+          price: 10,
+          orderId: generateRandomString(5),
+          exchange: generateRandomString(4),
+          portfolio: generateRandomString(5),
+          type: 'limit',
+          volume: 10
+        };
 
-      orderCancellerServiceSpy.cancelOrder.and.returnValue(of({}));
-      service.cancelOrders([testOrder]);
+        orderCancellerServiceSpy.cancelOrder.and.callFake((command: CancelCommand) => {
+          done();
 
-      tick(1000);
-      expect(orderCancellerServiceSpy.cancelOrder).toHaveBeenCalledOnceWith({
-        orderid: testOrder.orderId,
-        exchange: testOrder.exchange,
-        portfolio: testOrder.portfolio,
-        stop: false
-      });
-    })
+          expect(command).toEqual({
+            orderid: testOrder.orderId,
+            exchange: testOrder.exchange,
+            portfolio: testOrder.portfolio,
+            stop: false
+          });
+
+          return of({});
+        });
+
+        service.cancelOrders([testOrder]);
+      }
+    )
   );
 
   it('#closePositionsByMarket should call service with appropriate data', fakeAsync(() => {
@@ -121,7 +128,7 @@ describe('ScalperOrdersService', () => {
       };
 
       store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-      tick(10);
+      flushMicrotasks();
 
       const testInstrumentKey1: InstrumentKey = {
         exchange: portfolioKey.exchange,
@@ -160,7 +167,7 @@ describe('ScalperOrdersService', () => {
       orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
 
       service.closePositionsByMarket(testInstrumentKey1);
-      tick(1000);
+      tick(10000);
 
       expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
         {
@@ -173,7 +180,7 @@ describe('ScalperOrdersService', () => {
 
       orderServiceSpy.submitMarketOrder.calls.reset();
       service.closePositionsByMarket(testInstrumentKey2);
-      tick(1000);
+      tick(10000);
 
       expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
         {
@@ -193,7 +200,7 @@ describe('ScalperOrdersService', () => {
       };
 
       store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-      tick(10);
+      flushMicrotasks();
 
       const symbol = generateRandomString(4);
       const testInstrument: Instrument = {
@@ -221,7 +228,7 @@ describe('ScalperOrdersService', () => {
       ];
 
       service.placeBestOrder(testInstrument, Side.Buy, quantity, { a: testAsks, b: testBids });
-      tick(1000);
+      tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
         .withContext('Spread rows, Buy')
@@ -238,7 +245,7 @@ describe('ScalperOrdersService', () => {
       orderServiceSpy.submitLimitOrder.calls.reset();
 
       service.placeBestOrder(testInstrument, Side.Sell, quantity, { a: testAsks, b: testBids });
-      tick(1000);
+      tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
         .withContext('Spread rows, Sell')
@@ -266,7 +273,7 @@ describe('ScalperOrdersService', () => {
 
       orderServiceSpy.submitLimitOrder.calls.reset();
       service.placeBestOrder(testInstrument, Side.Buy, quantity, { a: testAsks, b: testBids });
-      tick(1000);
+      tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
         .withContext('No spread, Buy')
@@ -282,7 +289,7 @@ describe('ScalperOrdersService', () => {
 
       orderServiceSpy.submitLimitOrder.calls.reset();
       service.placeBestOrder(testInstrument, Side.Sell, quantity, { a: testAsks, b: testBids });
-      tick(1000);
+      tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
         .withContext('No spread, Sell')
@@ -305,7 +312,7 @@ describe('ScalperOrdersService', () => {
       };
 
       store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-      tick(10);
+      flushMicrotasks();
 
       const symbol = generateRandomString(4);
       const testInstrument: Instrument = {
@@ -333,7 +340,7 @@ describe('ScalperOrdersService', () => {
       ];
 
       service.sellBestBid(testInstrument, quantity, { a: testAsks, b: testBids });
-      tick(1000);
+      tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
         .toHaveBeenCalledOnceWith(
@@ -355,7 +362,7 @@ describe('ScalperOrdersService', () => {
       };
 
       store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-      tick(10);
+      flushMicrotasks();
 
       const symbol = generateRandomString(4);
       const testInstrument: Instrument = {
@@ -383,7 +390,7 @@ describe('ScalperOrdersService', () => {
       ];
 
       service.buyBestAsk(testInstrument, quantity, { a: testAsks, b: testBids });
-      tick(1000);
+      tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
         .toHaveBeenCalledOnceWith(
@@ -405,7 +412,7 @@ describe('ScalperOrdersService', () => {
       };
 
       store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-      tick(10);
+      flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
         exchange: portfolioKey.exchange,
@@ -422,7 +429,7 @@ describe('ScalperOrdersService', () => {
         true
       );
 
-      tick(1000);
+      tick(10000);
       expect(orderServiceSpy.submitMarketOrder)
         .withContext('Sell')
         .toHaveBeenCalledOnceWith(
@@ -442,7 +449,7 @@ describe('ScalperOrdersService', () => {
         false
       );
 
-      tick(1000);
+      tick(10000);
       expect(modalServiceSpy.openCommandModal)
         .withContext('Buy')
         .toHaveBeenCalledOnceWith(
@@ -463,7 +470,7 @@ describe('ScalperOrdersService', () => {
       };
 
       store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-      tick(10);
+      flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
         exchange: portfolioKey.exchange,
@@ -482,7 +489,7 @@ describe('ScalperOrdersService', () => {
         true
       );
 
-      tick(1000);
+      tick(10000);
       expect(orderServiceSpy.submitLimitOrder)
         .withContext('Sell')
         .toHaveBeenCalledOnceWith(
@@ -503,7 +510,7 @@ describe('ScalperOrdersService', () => {
         false
       );
 
-      tick(1000);
+      tick(10000);
       expect(modalServiceSpy.openCommandModal)
         .withContext('Buy')
         .toHaveBeenCalledOnceWith(
@@ -525,7 +532,7 @@ describe('ScalperOrdersService', () => {
       };
 
       store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-      tick(10);
+      flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
         exchange: portfolioKey.exchange,
@@ -550,7 +557,7 @@ describe('ScalperOrdersService', () => {
 
       service.reversePositionsByMarket(testInstrumentKey);
 
-      tick(1000);
+      tick(10000);
       expect(orderServiceSpy.submitMarketOrder)
         .withContext('qtyTFutureBatch > 0')
         .toHaveBeenCalledOnceWith(
@@ -566,7 +573,7 @@ describe('ScalperOrdersService', () => {
       currentPortfolioPositions[1].qtyTFutureBatch = currentPortfolioPositions[1].qtyTFutureBatch * -1;
 
       service.reversePositionsByMarket(testInstrumentKey);
-      tick(1000);
+      tick(10000);
       expect(orderServiceSpy.submitMarketOrder)
         .withContext('qtyTFutureBatch < 0')
         .toHaveBeenCalledOnceWith(
@@ -587,7 +594,7 @@ describe('ScalperOrdersService', () => {
       };
 
       store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-      tick(10);
+      flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
         exchange: portfolioKey.exchange,
@@ -605,7 +612,7 @@ describe('ScalperOrdersService', () => {
         true
       );
 
-      tick(1000);
+      tick(10000);
       expect(orderServiceSpy.submitStopLimitOrder)
         .withContext('Sell. Silent')
         .toHaveBeenCalledOnceWith(
@@ -628,7 +635,7 @@ describe('ScalperOrdersService', () => {
         true
       );
 
-      tick(1000);
+      tick(10000);
       expect(orderServiceSpy.submitStopLimitOrder)
         .withContext('Buy. Silent')
         .toHaveBeenCalledOnceWith(
@@ -651,7 +658,7 @@ describe('ScalperOrdersService', () => {
         false
       );
 
-      tick(1000);
+      tick(10000);
       expect(modalServiceSpy.openCommandModal)
         .withContext('Show dialog')
         .toHaveBeenCalledOnceWith(jasmine.objectContaining({
@@ -672,7 +679,7 @@ describe('ScalperOrdersService', () => {
       };
 
       store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-      tick(10);
+      flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
         exchange: portfolioKey.exchange,
@@ -693,7 +700,7 @@ describe('ScalperOrdersService', () => {
         Math.random() < 0.5
       );
 
-      tick(1000);
+      tick(10000);
       expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
       expect(modalServiceSpy.openCommandModal).not.toHaveBeenCalled();
       expect(notificationServiceSpy.error).toHaveBeenCalledTimes(1);
@@ -706,7 +713,7 @@ describe('ScalperOrdersService', () => {
       };
 
       store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-      tick(10);
+      flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
         exchange: portfolioKey.exchange,
@@ -729,7 +736,7 @@ describe('ScalperOrdersService', () => {
         Math.random() < 0.5
       );
 
-      tick(1000);
+      tick(10000);
       expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
       expect(modalServiceSpy.openCommandModal).not.toHaveBeenCalled();
       expect(notificationServiceSpy.warning).toHaveBeenCalledTimes(1);
@@ -749,7 +756,7 @@ describe('ScalperOrdersService', () => {
         Math.random() < 0.5
       );
 
-      tick(1000);
+      tick(10000);
       expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
       expect(modalServiceSpy.openCommandModal).not.toHaveBeenCalled();
       expect(notificationServiceSpy.warning).toHaveBeenCalledTimes(1);
@@ -762,7 +769,7 @@ describe('ScalperOrdersService', () => {
         };
 
         store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
-        tick(10);
+        flushMicrotasks();
 
         const testInstrumentKey: InstrumentKey = {
           exchange: portfolioKey.exchange,
@@ -784,7 +791,7 @@ describe('ScalperOrdersService', () => {
         orderServiceSpy.submitStopMarketOrder.and.returnValue(of({}));
 
         service.setStopLoss(testInstrumentKey, expectedPrice, true);
-        tick(1000);
+        tick(10000);
         expect(orderServiceSpy.submitStopMarketOrder).toHaveBeenCalledOnceWith(
           {
             side: Side.Sell,
@@ -801,7 +808,7 @@ describe('ScalperOrdersService', () => {
         positions[0].qtyTFutureBatch = -1;
 
         service.setStopLoss(testInstrumentKey, expectedPrice, true);
-        tick(1000);
+        tick(10000);
         expect(orderServiceSpy.submitStopMarketOrder).toHaveBeenCalledOnceWith(
           {
             side: Side.Buy,

@@ -113,6 +113,8 @@ export class WatchlistTableComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+
+    this.watchInstrumentsService.unsubscribe();
   }
 
   makeActive(instrument: InstrumentKey) {

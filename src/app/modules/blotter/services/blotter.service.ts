@@ -34,9 +34,7 @@ import { ForwardRisks } from "../models/forward-risks.model";
 import { ForwardRisksView } from "../models/forward-risks-view.model";
 import { selectNewInstrumentByBadge } from "../../../store/instruments/instruments.actions";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class BlotterService extends BaseWebsocketService {
   private trades: Map<string, Trade> = new Map<string, Trade>();
   private positions: Map<string, Position> = new Map<string, Position>();

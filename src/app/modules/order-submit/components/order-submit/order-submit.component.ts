@@ -14,8 +14,8 @@ import {
   Subject,
   switchMap,
   take,
-  tap,
   takeUntil,
+  tap,
   withLatestFrom
 } from "rxjs";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
@@ -45,8 +45,7 @@ import { SelectedPriceData } from "../../../../shared/models/orders/selected-ord
 @Component({
   selector: 'ats-order-submit[guid]',
   templateUrl: './order-submit.component.html',
-  styleUrls: ['./order-submit.component.less'],
-  providers: [QuotesService]
+  styleUrls: ['./order-submit.component.less']
 })
 export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly orderSides = Side;
@@ -107,7 +106,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     );
 
     this.priceData$ = this.currentInstrumentWithPortfolio$.pipe(
-      switchMap(value => this.quotesService.getQuotes(value.instrument.symbol, value.instrument.exchange, value.instrument.instrumentGroup, this.guid)),
+      switchMap(value => this.quotesService.getQuotes(value.instrument.symbol, value.instrument.exchange, value.instrument.instrumentGroup)),
       map(x => ({
         bid: x.bid,
         ask: x.ask

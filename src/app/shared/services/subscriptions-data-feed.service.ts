@@ -13,7 +13,7 @@ import {
   filter,
   interval,
   Observable,
-  share,
+  shareReplay,
   Subject,
   Subscription,
   switchMap,
@@ -104,7 +104,7 @@ export class SubscriptionsDataFeedService {
           this.dropSubscription(subscriptionId);
         }),
         map(x => x.data as R),
-        share()
+        shareReplay({ bufferSize: 1, refCount: true })
       ),
       subscription: messageSubscription
     };

@@ -17,6 +17,7 @@ import { BaseResponse } from '../../../shared/models/ws/base-response.model';
 import { Quote } from '../../../shared/models/quotes/quote.model';
 import { WatchlistCollection } from '../models/watchlist.model';
 import { InstrumentsService } from './instruments.service';
+import { QuotesService } from '../../../shared/services/quotes.service';
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
@@ -25,6 +26,7 @@ describe('WatchInstrumentsService', () => {
   let historyServiceSpy: any;
   let watchlistCollectionServiceSpy: any;
   let instrumentsServiceSpy: any;
+  let quotesServiceSpy: any;
 
   const collectionChangedMock = new Subject();
   const daysOpenMock = new BehaviorSubject<Candle | null>({
@@ -42,6 +44,9 @@ describe('WatchInstrumentsService', () => {
     spy.messages$ = messagesMock.asObservable();
 
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
+
+    quotesServiceSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
+    quotesServiceSpy.getQuotes.and.returnValue(new Subject());
   });
 
   beforeAll(() => TestBed.resetTestingModule());
@@ -56,6 +61,7 @@ describe('WatchInstrumentsService', () => {
         { provide: WebsocketService, useValue: spy },
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
+        { provide: QuotesService, useValue: quotesServiceSpy }
       ]
     });
     service = TestBed.inject(WatchInstrumentsService);

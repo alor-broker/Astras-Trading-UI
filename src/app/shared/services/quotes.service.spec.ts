@@ -1,16 +1,22 @@
 import { TestBed } from '@angular/core/testing';
 import { QuotesService } from './quotes.service';
-import { WebsocketService } from './websocket.service';
+import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 
 describe('QuotesService', () => {
   let service: QuotesService;
-  const spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
+
+  let subscriptionsDataFeedServiceSpy: any;
 
   beforeAll(() => TestBed.resetTestingModule());
+
+  beforeEach(() => {
+    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
+  });
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: WebsocketService, useValue: spy },
+        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
         QuotesService
       ],
     });
