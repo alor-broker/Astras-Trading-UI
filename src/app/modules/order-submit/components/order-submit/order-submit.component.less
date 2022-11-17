@@ -17,12 +17,19 @@
     }
 
     ::ng-deep {
-      .long nz-badge-sup {
-        background: @buy-color;
-      }
+      .position-badge {
+        padding: 0 5px;
+        border-radius: .5em;
+        font-weight: 600;
+        color: @heading-color;
 
-      .short nz-badge-sup {
-        background: @sell-color;
+        &.long {
+          background: @buy-color;
+        }
+
+        &.short {
+          background: @sell-color;
+        }
       }
     }
 
@@ -76,6 +83,10 @@
     cursor: pointer;
     text-decoration: underline;
   }
+
+  .instrument-info {
+    justify-content: space-between;
+  }
 }
 
 .body {
@@ -90,18 +101,5 @@
   .ant-btn {
     flex-grow: 1;
     border-radius: 4px;
-  }
-}
-
-:host {
-  ::ng-deep {
-    .position-badge {
-      font-size: 14px;
-      margin-right: 10px;
-
-      .ant-scroll-number-only-unit {
-        font-weight: 600;
-      }
-    }
   }
 }

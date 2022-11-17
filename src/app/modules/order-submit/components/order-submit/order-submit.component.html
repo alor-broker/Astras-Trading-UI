@@ -2,32 +2,32 @@
   <!--use ngFor to completely rerender component when instrument changed-->
   <ng-container *ngFor="let currentInstrumentWithPortfolio of [currentInstrumentWithPortfolio]">
     <div class="header">
-      <div nz-row>
-        <div nz-col nzSpan="8">
+      <div nz-row class="instrument-info">
+        <div nz-col>
           <label class="portfolio">{{currentInstrumentWithPortfolio.portfolio}} ({{currentInstrumentWithPortfolio.instrument.exchange}})</label>
         </div>
         <ng-container *ngIf="positionInfo$ | async as positionInfo">
           <div
             nz-tooltip
             nzTooltipTitle="Текущая позиция"
-            nz-col nzSpan="3"
+            nz-col
+            nzSpan="3"
             *ngIf="positionInfo.abs"
           >
-            <nz-badge
-              nzStandalone
-              [nzCount]="positionInfo.abs"
-              [nzOverflowCount]="1000000000"
+            <span
               class="position-badge"
               [class]="positionInfo.quantity > 0 ? 'long' : 'short'"
-            ></nz-badge>
+            >
+              {{positionInfo.abs}}
+            </span>
           </div>
         </ng-container>
         <ng-container *ngIf="priceData$ | async as priceData">
-          <div nz-col nzSpan="7">
+          <div nz-col>
             <label>Ask: </label>
             <span class="selectable sell" (click)="selectPrice(priceData.ask)">{{priceData.ask}}</span>
           </div>
-          <div nz-col nzSpan="6">
+          <div nz-col>
             <label>Bid: </label>
             <span class="selectable buy" (click)="selectPrice(priceData.bid)">{{priceData.bid}}</span>
           </div>
