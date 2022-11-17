@@ -32,7 +32,8 @@ import { SubmitOrderResult } from "../../../command/models/order.model";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import {
   finalize,
-  map
+  map,
+  startWith
 } from "rxjs/operators";
 import { Store } from "@ngrx/store";
 import { OrderService } from "../../../../shared/services/orders/order.service";
@@ -41,6 +42,8 @@ import { getSelectedPortfolioKey } from "../../../../store/portfolios/portfolios
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
+import { PositionsService } from "../../../../shared/services/positions.service";
+import { Position } from "../../../../shared/models/positions/position.model";
 
 @Component({
   selector: 'ats-order-submit[guid]',
@@ -65,6 +68,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   private limitOrderFormValue: LimitOrderFormValue | null = null;
   private marketOrderFormValue: MarketOrderFormValue | null = null;
   private stopOrderFormValue: StopOrderFormValue | null = null;
+  public positionInfo$!: Observable<{ abs: number, quantity: number }>;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -73,6 +77,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     private readonly orderService: OrderService,
     private readonly store: Store,
     private readonly widgetsDataProvider: WidgetsDataProviderService,
+    private readonly positionService: PositionsService,
   ) {
   }
 
@@ -104,6 +109,19 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       }),
       map(([portfolio, instrument]) => ({ instrument, portfolio })),
       shareReplay(1)
+    );
+
+    this.positionInfo$ = this.currentInstrumentWithPortfolio$.pipe(
+      switchMap(data => this.positionService.getByPortfolio(data.portfolio, data.instrument.exchange, data.instrument.symbol)),
+      filter((p): p is Position => !!p),
+      map(p => ({
+        abs: Math.abs(p.qtyTFutureBatch),
+        quantity: p.qtyTFutureBatch
+      })),
+      startWith(({
+        abs: 0,
+        quantity: 0
+      }))
     );
 
     this.priceData$ = this.currentInstrumentWithPortfolio$.pipe(

@@ -8,7 +8,7 @@ export class DashboardHelper {
           x: 0,
           y: 0,
           cols: 10,
-          rows: 15,
+          rows: 18,
           type: widgetName
         },
       },

@@ -2,44 +2,65 @@
   <!--use ngFor to completely rerender component when instrument changed-->
   <ng-container *ngFor="let currentInstrumentWithPortfolio of [currentInstrumentWithPortfolio]">
     <div class="header">
-      <div nz-row>
-        <div nz-col nzSpan="8">
+      <div nz-row class="instrument-info">
+        <div nz-col>
           <label class="portfolio">{{currentInstrumentWithPortfolio.portfolio}} ({{currentInstrumentWithPortfolio.instrument.exchange}})</label>
         </div>
+        <ng-container *ngIf="positionInfo$ | async as positionInfo">
+          <div
+            nz-tooltip
+            nzTooltipTitle="Текущая позиция"
+            nz-col
+            nzSpan="3"
+            *ngIf="positionInfo.abs"
+          >
+            <span
+              class="position-badge"
+              [class]="positionInfo.quantity > 0 ? 'long' : 'short'"
+            >
+              {{positionInfo.abs}}
+            </span>
+          </div>
+        </ng-container>
         <ng-container *ngIf="priceData$ | async as priceData">
-          <div nz-col nzSpan="8">
+          <div nz-col>
             <label>Ask: </label>
             <span class="selectable sell" (click)="selectPrice(priceData.ask)">{{priceData.ask}}</span>
           </div>
-          <div nz-col nzSpan="8">
+          <div nz-col>
             <label>Bid: </label>
             <span class="selectable buy" (click)="selectPrice(priceData.bid)">{{priceData.bid}}</span>
           </div>
         </ng-container>
       </div>
+
+
     </div>
     <div class="body">
-      <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async">
-        <nz-tab #limitTab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" nzTitle="Лимитная">
-          <ats-limit-order-form (formValueChange)="setLimitOrderValue($event)"
-                                [instrument]="currentInstrumentWithPortfolio.instrument"
-                                [initialValues]="initialValues$ | async"
-                                [activated]="limitTab.isActive"
-          ></ats-limit-order-form>
-        </nz-tab>
-        <nz-tab #marketTab (nzSelect)="setSelectedCommandType(orderTypes.MarketOrder)" nzTitle="Рыночная">
-          <ats-market-order-form (formValueChange)="setMarketOrderValue($event)"
-                                 [activated]="marketTab.isActive"
-                                 [instrument]="currentInstrumentWithPortfolio.instrument"></ats-market-order-form>
-        </nz-tab>
-        <nz-tab #stopTab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" nzTitle="Условная">
-          <ats-stop-order-form (formValueChange)="setStopOrderValue($event)"
-                               [instrument]="currentInstrumentWithPortfolio.instrument"
-                               [initialValues]="initialValues$ | async"
-                               [activated]="stopTab.isActive"
-          ></ats-stop-order-form>
-        </nz-tab>
-      </nz-tabset>
+      <ng-container *ngIf="positionInfo$ | async as positionInfo">
+        <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async">
+          <nz-tab #limitTab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" nzTitle="Лимитная">
+            <ats-limit-order-form (formValueChange)="setLimitOrderValue($event)"
+                                  [instrument]="currentInstrumentWithPortfolio.instrument"
+                                  [initialValues]="initialValues$ | async"
+                                  [activated]="limitTab.isActive"
+            ></ats-limit-order-form>
+          </nz-tab>
+          <nz-tab #marketTab (nzSelect)="setSelectedCommandType(orderTypes.MarketOrder)" nzTitle="Рыночная">
+            <ats-market-order-form (formValueChange)="setMarketOrderValue($event)"
+                                   [activated]="marketTab.isActive"
+                                   [instrument]="currentInstrumentWithPortfolio.instrument"
+            ></ats-market-order-form>
+          </nz-tab>
+          <nz-tab #stopTab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" nzTitle="Условная">
+            <ats-stop-order-form (formValueChange)="setStopOrderValue($event)"
+                                 [instrument]="currentInstrumentWithPortfolio.instrument"
+                                 [initialValues]="initialValues$ | async"
+                                 [activated]="stopTab.isActive"
+            ></ats-stop-order-form>
+          </nz-tab>
+        </nz-tabset>
+      </ng-container>
     </div>
   </ng-container>
   <div class="footer">

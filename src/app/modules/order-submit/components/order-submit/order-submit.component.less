@@ -16,15 +16,42 @@
       }
     }
 
+    ::ng-deep {
+      .position-badge {
+        padding: 0 5px;
+        border-radius: .5em;
+        font-weight: 600;
+        color: @heading-color;
+
+        &.long {
+          background: @buy-color;
+        }
+
+        &.short {
+          background: @sell-color;
+        }
+      }
+    }
+
     .footer {
       .ant-btn {
         color: white;
+
+        &[disabled] {
+          border: none;
+        }
       }
 
       .buy-button {
         width: 50%;
         background: @buy-color;
-        &:hover {
+
+        &[disabled] {
+          color: @buy-color-disabled;
+          background: @buy-color-background-disabled;
+        }
+
+        &:hover:not([disabled]) {
           border-color: fade(@buy-color, 20%);
           background: fade(@buy-color, 90%);
         }
@@ -33,7 +60,13 @@
       .sell-button {
         width: 50%;
         background: @sell-color;
-        &:hover {
+
+        &[disabled] {
+          color: @sell-color-disabled;
+          background: @sell-color-background-disabled;
+        }
+
+        &:hover:not([disabled]) {
           border-color: fade(@sell-color, 20%);
           background: fade(@sell-color, 90%);
         }
@@ -50,6 +83,10 @@
     cursor: pointer;
     text-decoration: underline;
   }
+
+  .instrument-info {
+    justify-content: space-between;
+  }
 }
 
 .body {
@@ -58,5 +95,11 @@
 
 .footer {
   margin-top: @margin;
-}
+  display: flex;
+  gap: 6px;
 
+  .ant-btn {
+    flex-grow: 1;
+    border-radius: 4px;
+  }
+}
