@@ -1,0 +1,35 @@
+﻿@import 'theme-mixin';
+
+.themeMixin({
+  .ant-modal-close {
+    color: @text-color;
+  }
+
+  .ant-modal-title {
+    .title {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+
+      .right {
+        white-space: nowrap;
+        margin-right: -8px;
+        display: flex;
+        flex-direction: row-reverse;
+
+        button {
+          border: none;
+          opacity: 0.5;
+          font-size: @font-size-base;
+
+          &:hover, &:focus {
+            color: @text-color;
+            text-decoration: none;
+          }
+        }
+      }
+    }
+  }
+});
+
+

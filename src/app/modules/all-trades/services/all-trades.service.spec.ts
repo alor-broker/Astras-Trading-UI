@@ -8,7 +8,11 @@ import { SubscriptionsDataFeedService } from '../../../shared/services/subscript
 describe('AllTradesService', () => {
   let service: AllTradesService;
 
-  const subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
+  let subscriptionsDataFeedServiceSpy: any;
+
+  beforeEach(() => {
+    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
+  });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -23,10 +27,7 @@ describe('AllTradesService', () => {
             handleError: jasmine.createSpy('handleError').and.callThrough()
           }
         },
-        {
-          provide: SubscriptionsDataFeedService,
-          useValue: subscriptionsDataFeedServiceSpy
-        }
+        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
       ]
     });
     service = TestBed.inject(AllTradesService);

@@ -7,6 +7,17 @@
         color: @link-to-active-btn-color;
       }
     }
+
+    .title {
+      .title-text {
+        color: @heading-color;
+      }
+      .title-with-icon {
+        .title-icon {
+          color: @title-icon-color;
+        }
+      }
+    }
   }
 });
 
@@ -31,6 +42,23 @@
 
   &:not(:last-child) {
     padding-right: 5px;
+  }
+
+  .title-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  .title-with-icon {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+
+    .title-text {
+      padding-left: 8px;
+    }
   }
 }
 
@@ -73,4 +101,8 @@ button {
 .buttons-group {
   display: flex;
   align-items: center;
+}
+
+.title-wrapper {
+  max-width: calc(100% - 70px);
 }

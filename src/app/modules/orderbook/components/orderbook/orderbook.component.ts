@@ -67,6 +67,7 @@ export class OrderBookComponent implements OnInit, OnDestroy {
 
   shouldShowYield$: Observable<boolean> = of(false);
   shouldShowTable$: Observable<boolean> = of(true);
+  shouldShowVolumes$: Observable<boolean> = of(false);
   ob$: Observable<OrderBook | null> = of(null);
   maxVolume: number = 1;
   themeSettings?: ThemeSettings;
@@ -93,6 +94,10 @@ export class OrderBookComponent implements OnInit, OnDestroy {
 
     this.shouldShowTable$ = settings$.pipe(
       map((s) => s.showTable)
+    );
+
+    this.shouldShowVolumes$ = settings$.pipe(
+      map((s) => s.showVolume)
     );
 
     this.shouldShowYield$ = settings$.pipe(
@@ -124,9 +129,11 @@ export class OrderBookComponent implements OnInit, OnDestroy {
           bids: [],
           minPrice: 0,
           maxPrice: 0
-        }
-      }
-    ));
+        },
+        bidVolumes: 0,
+        askVolumes: 0,
+      })
+    );
 
     this.widgetsDataProvider.addNewDataProvider<SelectedPriceData>('selectedPrice');
   }

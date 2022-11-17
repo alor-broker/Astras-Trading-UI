@@ -16,62 +16,75 @@
           background: @buy-color;
         }
       }
-    }
 
-    ::ng-deep {
       .short {
         nz-badge-sup {
           background: @sell-color;
         }
       }
     }
+
+    .description {
+      .instrument {
+        color: @heading-color;
+      }
+    }
   }
 });
 
 .content {
-  width: 100%;
   display: inline-flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
 }
 
-.instrument {
+.badge {
+  margin: 3px 10px 3px 0;
+}
+
+.description {
   display: flex;
+  flex-direction: column;
+  line-height: 0.7;
+  margin: 0 0 10px 10px;
 
-  .badge {
-    margin: 3px 10px 3px 0;
-    align-self: baseline;
-  }
-
-  .description {
-    line-height: 0.7;
-    margin: 10px;
+  .instrument {
+    display: flex;
+    margin-bottom: 15px;
 
     .identifier {
       display: inline-flex;
-      padding: 3px;
+      padding: 3px 3px 3px 0;
+    }
+
+    .exchange-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .exchange {
+        font-size: .6rem;
+        color: darkgray;
+        margin-bottom: 0;
+      }
+
+      .instrument-group {
+        font-size: .6rem;
+        color: lightgray;
+        margin-bottom: 0;
+      }
     }
 
     .ticker {
-      font-size: 1.5em;
-    }
-
-    .exchange {
-      font-size: 0.6em;
-      color: darkgray;
-      margin-bottom: 1px;
-    }
-
-    .instrument-group {
-      font-size: 0.6em;
-      color: lightgray;
-      margin-top: 1px;
+      font-size: 2em;
+      margin-right: 5px;
+      margin-bottom: 0;
     }
 
     .price {
       font-size: 2em;
       margin-top: 3px;
+      margin-left: 5px;
     }
   }
 }
@@ -83,4 +96,20 @@
 .selectable {
   cursor: pointer;
   text-decoration: underline;
+}
+
+:host {
+  ::ng-deep {
+    .ant-descriptions-item-container span {
+      line-height: 1;
+    }
+  }
+}
+
+.upper-row {
+  margin-bottom: .5em;
+}
+
+.lower-row {
+  margin-bottom: 0;
 }

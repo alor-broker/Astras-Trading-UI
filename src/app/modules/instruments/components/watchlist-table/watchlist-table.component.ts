@@ -35,6 +35,7 @@ import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/
 import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { DashboardHelper } from '../../../../shared/utils/dashboard-helper';
 
 @Component({
   selector: 'ats-watchlist-table[guid]',
@@ -145,22 +146,13 @@ export class WatchlistTableComponent implements OnInit, OnDestroy {
   }
 
   addWidget(type: WidgetNames): void {
-    const settings = {
-      gridItem: {
-        x: 0,
-        y: 0,
-        cols: 1,
-        rows: 1,
-        type: type,
-      },
-    };
-
-    const additionalSettings = {
-        linkToActive: false,
-        ...this.selectedInstrument
-      };
-
-    this.dashBoardService.addWidget(settings, additionalSettings);
+    DashboardHelper.addWidget(
+      this.dashBoardService,
+      type,
+      {
+      linkToActive: false,
+      ...this.selectedInstrument
+    });
   }
 
   private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {

@@ -2,23 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
 import {
+  AllTradesFilters,
   AllTradesItem,
-  AllTradesSubRequest,
-  GetAllTradesRequest
+  AllTradesSubRequest
 } from "../models/all-trades.model";
-import {
-  map,
-  Observable
-} from "rxjs";
+import { Observable } from "rxjs";
 import { AllTradesSettings } from "../../../shared/models/settings/all-trades-settings.model";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
-import { sortByTimestamp } from "../utils/all-trades.utils";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AllTradesService {
   private allTradesUrl = environment.apiUrl + '/md/v2/Securities';
 
@@ -28,19 +22,18 @@ export class AllTradesService {
     private readonly errorHandlerService: ErrorHandlerService) {
   }
 
-  public getTradesList(req: GetAllTradesRequest): Observable<Array<AllTradesItem>> {
-    const { from, to, take, exchange, symbol } = req;
+  public getTradesList(req: AllTradesFilters): Observable<Array<AllTradesItem>> {
+    const { exchange, symbol } = req;
 
     return this.http.get<Array<AllTradesItem>>(`${this.allTradesUrl}/${exchange}/${symbol}/alltrades`, {
-      params: { from, to, take, descending: true }
+      params: { ...req }
     })
       .pipe(
-        map(res => res.sort(sortByTimestamp)),
         catchHttpError<Array<AllTradesItem>>([], this.errorHandlerService),
       );
   }
 
-  public subscribeToNewTrades(req: AllTradesSettings): Observable<AllTradesItem> {
+  public getNewTradesSubscription(req: AllTradesSettings): Observable<AllTradesItem> {
     const request: AllTradesSubRequest = {
       opcode: 'AllTradesSubscribe',
       code: req.symbol,
@@ -53,4 +46,5 @@ export class AllTradesService {
       request => `${request.opcode}_${request.code}_${request.exchange}`
     );
   }
+
 }

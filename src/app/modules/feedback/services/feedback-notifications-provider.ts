@@ -18,10 +18,7 @@ import {
   map,
   startWith
 } from 'rxjs/operators';
-import {
-  addHours,
-  addMinutes
-} from '../../../shared/utils/datetime';
+import { addMinutes } from '../../../shared/utils/datetime';
 import { NewFeedback } from '../models/feedback.model';
 
 @Injectable()
@@ -39,27 +36,18 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
   getNotifications(): Observable<NotificationMeta[]> {
     const feedbackMeta = this.feedbackService.getSavedFeedbackMeta();
 
-    if (!feedbackMeta) {
-      this.feedbackService.setLastFeedbackCheck();
-    }
-
-    const defaultDelayHours = 1;
-    const defaultDelayMilliseconds = defaultDelayHours * 3600 * 1000;
+    const initialDelayMinutes = 3;
+    const checkIntervalMs = 30 * 60 * 1000;
 
     const now = new Date();
-    let startTime = addHours(new Date(now), defaultDelayHours);
+    let startTime = addMinutes(new Date(now), initialDelayMinutes);
 
-    if (!!feedbackMeta) {
-      if (feedbackMeta.lastUnansweredFeedback) {
-        startTime = now;
-      }
-      else if (!!feedbackMeta.lastCheck && (now.getTime() - feedbackMeta.lastCheck) > defaultDelayMilliseconds) {
-        startTime = addMinutes(new Date(now), 5);
-      }
+    if (feedbackMeta && feedbackMeta.lastUnansweredFeedback) {
+      startTime = now;
     }
 
     return combineLatest([
-      timer(startTime, defaultDelayMilliseconds),
+      timer(startTime, 60 * 1000),
       this.readFeedbackMeta$
     ])
       .pipe(
@@ -68,9 +56,10 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
           if (feedbackMeta?.lastUnansweredFeedback) {
             return of(feedbackMeta.lastUnansweredFeedback);
           }
-          else if (!feedbackMeta?.lastCheck || (new Date().getTime() - feedbackMeta.lastCheck) >= defaultDelayMilliseconds) {
+          else if (!feedbackMeta?.lastCheck || (new Date().getTime() - feedbackMeta.lastCheck) >= checkIntervalMs) {
             return this.feedbackService.requestFeedback().pipe(
               map(x => !x ? null : ({ ...x, isRead: false, date: Date.now() })),
+              tap(() => this.feedbackService.setLastFeedbackCheck()),
               tap(x => this.feedbackService.setUnansweredFeedback(x))
             );
           }
@@ -78,7 +67,6 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
             return of(null);
           }
         }),
-        tap(() => this.feedbackService.setLastFeedbackCheck()),
         map(f => {
           if (!f) {
             return [];
@@ -89,7 +77,9 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
               id: GuidGenerator.newGuid(),
               date: !!f.date ? new Date(f.date) : new Date(),
               title: 'Оценить приложение',
-              description: 'Поделитесь своим мнением о приложении',
+              description: f.description.length > 100
+                ? f.description.substring(0, 100) + '...'
+                : f.description,
               showDate: true,
               isRead: f.isRead,
               open: () => {

@@ -9,8 +9,7 @@
     </ng-template>
     <ng-container *nzModalContent>
       <p>
-      <span>Подробнее перечень изменений/исправлений в текущей версии можно посмотреть по <a
-        [href]="getLinkToRelease(currentVersion)" target="_blank">ссылке</a>.</span>
+      <span>Подробнее перечень изменений/исправлений в текущей версии можно посмотреть по <ats-external-link [href]="getLinkToRelease(currentVersion)">ссылке</ats-external-link>.</span>
       </p>
       <p>
       <span [nzType]="'warning'" nz-typography>
@@ -23,11 +22,13 @@
       </span>
       </p>
       <div>
-        <span>1. Попробуйте очистить дашборд, кликнув кнопку </span><i class="button-example" nz-icon nzTheme="outline"
-                                                                       nzType="delete"></i><span>, и обновите страницу.</span>
+        <span>1. Попробуйте привести дашборд к стандартному виду, кликнув кнопку "Стандартный вид" в меню виджетов </span>
       </div>
       <div>
-        <span>2. Если шаг 1 не решил проблему, попробуйте удалить данные сайта.</span>
+        <span>2. Если шаг 1 не решил проблему, попробуйте сделать полный сброс, кликнув кнопку "Полный сброс" в меню профиля.</span>
+      </div>
+      <div>
+        <span>3. Если шаг 2 не решил проблему, попробуйте удалить данные сайта.</span>
         <br/>
         <span [nzType]="'secondary'" nz-typography> В браузере Google Chrome это можно сделать при помощи следующей последовательности действий:
         нажать F12,

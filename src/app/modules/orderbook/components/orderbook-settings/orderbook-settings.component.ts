@@ -78,7 +78,8 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
         showChart: new FormControl(settings.showChart),
         showTable: new FormControl(settings.showTable),
         showYieldForBonds: new FormControl(settings.showYieldForBonds),
-        useOrderWidget: new FormControl(settings.useOrderWidget ?? false)
+        useOrderWidget: new FormControl(settings.useOrderWidget ?? false),
+        showVolume: new FormControl(settings.showVolume ?? false)
       });
     });
   }

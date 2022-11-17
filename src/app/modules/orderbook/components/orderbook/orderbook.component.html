@@ -1,6 +1,10 @@
 <div *ngIf="!shouldShowSettings">
   <div *ngIf="(ob$ | async) as ob">
     <ats-orderbook-chart [guid]='guid' [chartData]="ob.chartData"></ats-orderbook-chart>
+    <div class="volumes" *ngIf="shouldShowVolumes$ | async">
+      <span class="bid-volume">{{ob.bidVolumes}}</span>
+      <span class="ask-volume">{{ob.askVolumes}}</span>
+    </div>
     <nz-table *ngIf="shouldShowTable$ | async" #basicTable [nzData]="ob.rows" nzSize="small" [nzFrontPagination]="false">
       <thead>
         <tr>

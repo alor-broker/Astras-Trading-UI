@@ -27,6 +27,7 @@ describe('FeedbackNotificationsProvider', () => {
   let modalServiceSpy: any;
 
   const oneHourPlusDelay = 3600 * 1000 + 60 * 1000;
+  const initialDelayMinutes = 3 * 60 * 1000 + 10 * 1000;
 
   const readNotification = (notifications$: Observable<NotificationMeta[]>, read: (notifications: NotificationMeta[]) => void) => {
     notifications$.pipe(
@@ -76,7 +77,7 @@ describe('FeedbackNotificationsProvider', () => {
     expect(provider).toBeTruthy();
   });
 
-  it('should request feedback after 1 hours at first start', fakeAsync(() => {
+  it('should request feedback after delay at first start', fakeAsync(() => {
       feedbackServiceSpy.getSavedFeedbackMeta.and.returnValue(null);
       feedbackServiceSpy.requestFeedback.and.returnValue(of(null));
 
@@ -85,7 +86,7 @@ describe('FeedbackNotificationsProvider', () => {
 
       expect(feedbackServiceSpy.requestFeedback).not.toHaveBeenCalled();
 
-      jasmine.clock().tick(oneHourPlusDelay);
+      jasmine.clock().tick(initialDelayMinutes);
 
       expect(feedbackServiceSpy.requestFeedback).toHaveBeenCalled();
       discardPeriodicTasks();

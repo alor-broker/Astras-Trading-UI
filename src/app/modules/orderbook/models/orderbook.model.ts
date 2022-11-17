@@ -15,5 +15,7 @@ export interface ChartData {
 export interface OrderBook {
   rows: Array<OrderBookViewRow>,
   maxVolume: number,
-  chartData: ChartData
+  chartData: ChartData,
+  bidVolumes: number,
+  askVolumes: number,
 }
