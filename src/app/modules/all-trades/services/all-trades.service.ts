@@ -12,22 +12,20 @@ import {
 } from "rxjs";
 import { AllTradesSettings } from "../../../shared/models/settings/all-trades-settings.model";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
-import { BaseWebsocketService } from "../../../shared/services/base-websocket.service";
-import { WebsocketService } from "../../../shared/services/websocket.service";
-import { GuidGenerator } from "../../../shared/utils/guid";
 import { sortByTimestamp } from "../utils/all-trades.utils";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
-import { finalize } from "rxjs/operators";
+import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 
-@Injectable()
-export class AllTradesService extends BaseWebsocketService {
+@Injectable({
+  providedIn: 'root'
+})
+export class AllTradesService {
   private allTradesUrl = environment.apiUrl + '/md/v2/Securities';
 
   constructor(
-    ws: WebsocketService,
+    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService) {
-    super(ws);
   }
 
   public getTradesList(req: GetAllTradesRequest): Observable<Array<AllTradesItem>> {
@@ -42,18 +40,17 @@ export class AllTradesService extends BaseWebsocketService {
       );
   }
 
-  public getNewTrades(req: AllTradesSettings): Observable<AllTradesItem> {
+  public subscribeToNewTrades(req: AllTradesSettings): Observable<AllTradesItem> {
     const request: AllTradesSubRequest = {
       opcode: 'AllTradesSubscribe',
       code: req.symbol,
       exchange: req.exchange,
-      guid: GuidGenerator.newGuid(),
       format: 'simple'
     };
 
-    return this.getEntity<AllTradesItem>(request).pipe(
-      finalize(() => this.unsubscribe())
+    return this.subscriptionsDataFeedService.subscribe(
+      request,
+      request => `${request.opcode}_${request.code}_${request.exchange}`
     );
   }
-
 }

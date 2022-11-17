@@ -112,7 +112,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
           this.isEndOfList = false;
           this.cdr.markForCheck();
         }),
-        switchMap(() => this.allTradesService.getNewTrades(this.settings!)),
+        switchMap(() => this.allTradesService.subscribeToNewTrades(this.settings!)),
       )
       .subscribe((res) => {
         this.tradesList = [res, ...this.tradesList];

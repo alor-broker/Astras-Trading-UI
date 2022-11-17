@@ -3,9 +3,12 @@ import { TestBed } from '@angular/core/testing';
 import { AllTradesService } from './all-trades.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 
 describe('AllTradesService', () => {
   let service: AllTradesService;
+
+  const subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -19,6 +22,10 @@ describe('AllTradesService', () => {
           useValue: {
             handleError: jasmine.createSpy('handleError').and.callThrough()
           }
+        },
+        {
+          provide: SubscriptionsDataFeedService,
+          useValue: subscriptionsDataFeedServiceSpy
         }
       ]
     });
