@@ -95,9 +95,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   changePortfolio(key: PortfolioExtended) {
-    setTimeout(() => {
-      this.store.dispatch(selectNewPortfolio({ portfolio: key }));
-    }, 150);
+    this.store.dispatch(selectNewPortfolio({ portfolio: key }));
   }
 
   addItem(type: string): void {
@@ -128,6 +126,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   openThirdPartyLink(link: string) {
     window.open(link, "_blank", 'noopener,noreferrer');
+  }
+
+  portfolioGroupsTrackByFn(index: number, item: {key: string, value: PortfolioExtended[]}): string {
+    return item.key;
+  }
+
+  portfoliosTrackByFn(index: number, item: PortfolioExtended) {
+    return item.market + item.portfolio;
   }
 
   private groupPortfolios(portfolios: PortfolioExtended[]): Map<string, PortfolioExtended[]> {
