@@ -1,8 +1,5 @@
-import {
-  HttpClientTestingModule,
-} from '@angular/common/http/testing';
+import { HttpClientTestingModule, } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { WebsocketService } from 'src/app/shared/services/websocket.service';
 
 import { WatchInstrumentsService } from './watch-instruments.service';
 import { TestData } from '../../../shared/utils/testing';
@@ -22,7 +19,6 @@ import { QuotesService } from '../../../shared/services/quotes.service';
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
 
-  let spy: any;
   let historyServiceSpy: any;
   let watchlistCollectionServiceSpy: any;
   let instrumentsServiceSpy: any;
@@ -35,13 +31,11 @@ describe('WatchInstrumentsService', () => {
   const messagesMock = new Subject<BaseResponse<Quote>>();
 
   beforeEach(() => {
-    spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
     historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getDaysOpen']);
     watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['getWatchlistCollection', 'collectionChanged$', 'getListItems',]);
 
     watchlistCollectionServiceSpy.collectionChanged$ = collectionChangedMock.asObservable();
     historyServiceSpy.getDaysOpen.and.returnValue(daysOpenMock.asObservable());
-    spy.messages$ = messagesMock.asObservable();
 
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
 
@@ -58,7 +52,6 @@ describe('WatchInstrumentsService', () => {
       providers: [
         WatchInstrumentsService,
         { provide: HistoryService, useValue: historyServiceSpy },
-        { provide: WebsocketService, useValue: spy },
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         { provide: QuotesService, useValue: quotesServiceSpy }

@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
 import { LightChartDatafeedFactoryService } from './light-chart-datafeed-factory.service';
-import { WebsocketService } from '../../../shared/services/websocket.service';
 import { HistoryService } from '../../../shared/services/history.service';
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 
