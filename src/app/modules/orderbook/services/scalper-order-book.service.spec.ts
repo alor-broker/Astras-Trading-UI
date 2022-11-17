@@ -2,22 +2,18 @@ import { TestBed } from '@angular/core/testing';
 
 import { ScalperOrderBookService } from './scalper-order-book.service';
 import { sharedModuleImportForTests } from "../../../shared/utils/testing";
-import { WebsocketService } from "../../../shared/services/websocket.service";
+import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
+import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 
 describe('ScalperOrderBookService', () => {
   let service: ScalperOrderBookService;
 
-  let websocketServiceSpy: any;
+  let subscriptionsDataFeedServiceSpy: any;
+  let portfolioSubscriptionsServiceSpy: any;
 
   beforeEach(() => {
-    websocketServiceSpy = jasmine.createSpyObj(
-      'WebsocketService',
-      [
-        'unsubscribe',
-        'connect',
-        'subscribe',
-        'messages$'
-      ]);
+    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
+    portfolioSubscriptionsServiceSpy = jasmine.createSpyObj('PortfolioSubscriptionsService', ['getOrdersSubscription']);
   });
 
   beforeEach(() => {
@@ -27,7 +23,8 @@ describe('ScalperOrderBookService', () => {
       ],
       providers: [
         ScalperOrderBookService,
-        { provide: WebsocketService, useValue: websocketServiceSpy }
+        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
+        { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
       ]
     });
     service = TestBed.inject(ScalperOrderBookService);

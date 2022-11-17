@@ -2,16 +2,13 @@ import { Injectable } from '@angular/core';
 import {
   combineLatest,
   filter,
-  Observable,
-  of
+  Observable
 } from 'rxjs';
 import {
-  catchError,
   map,
   startWith,
   switchMap,
 } from 'rxjs/operators';
-import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import { OrderbookData } from '../models/orderbook-data.model';
 import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
@@ -21,7 +18,6 @@ import {
   OrderBook
 } from '../models/orderbook.model';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
-import { BaseWebsocketService } from 'src/app/shared/services/base-websocket.service';
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { Store } from '@ngrx/store';
@@ -30,33 +26,36 @@ import { Side } from "../../../shared/models/enums/side.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { OrderBookDataFeedHelper } from "../utils/order-book-data-feed.helper";
+import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
+import { OrderbookRequest } from '../models/orderbook-request.model';
+import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 
 @Injectable()
-export class OrderbookService extends BaseWebsocketService {
-  private ordersById: Map<string, Order> = new Map<string, Order>();
+export class OrderbookService {
 
   constructor(
-    ws: WebsocketService,
+    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly store: Store,
     private readonly canceller: OrderCancellerService
   ) {
-    super(ws);
   }
 
   getOrderBook(settings: OrderbookSettings): Observable<OrderBook> {
-    const obData$ = this.getEntity<OrderbookData>(OrderBookDataFeedHelper.getRealtimeDateRequest(
-      settings.guid,
-      settings.symbol,
-      settings.exchange,
-      settings.instrumentGroup,
-      settings.depth)).pipe(
-      catchError((e,) => {
-        throw e;
-      }),
+    const obData$ = this.subscriptionsDataFeedService.subscribe<OrderbookRequest, OrderbookData>(
+      OrderBookDataFeedHelper.getRealtimeDateRequest(
+        settings.symbol,
+        settings.exchange,
+        settings.instrumentGroup,
+        settings.depth
+      ),
+      OrderBookDataFeedHelper.getOrderbookSubscriptionId
+    ).pipe(
       map(ob => this.toOrderBook(ob))
     );
 
-    return combineLatest([obData$, this.getOrders(settings, settings.guid)]).pipe(
+
+    return combineLatest([obData$, this.getOrders(settings)]).pipe(
       map(([ob, orders]) => {
         const withOrdersRows = ob.rows.map((row) => {
           const askOrders = !!row.ask
@@ -64,8 +63,8 @@ export class OrderbookService extends BaseWebsocketService {
             : [];
 
           const sumAsk = askOrders
-          .map((o) => o.volume)
-          .reduce((prev, curr) => prev + curr, 0);
+            .map((o) => o.volume)
+            .reduce((prev, curr) => prev + curr, 0);
           const askCancels = askOrders.map(
             (o): CancelCommand => ({
               orderid: o.orderId,
@@ -80,8 +79,8 @@ export class OrderbookService extends BaseWebsocketService {
             : [];
 
           const sumBid = bidOrders
-          .map((o) => o.volume)
-          .reduce((prev, curr) => prev + curr, 0);
+            .map((o) => o.volume)
+            .reduce((prev, curr) => prev + curr, 0);
 
           const bidCancels = bidOrders.map(
             (o): CancelCommand => ({
@@ -164,36 +163,18 @@ export class OrderbookService extends BaseWebsocketService {
     };
   }
 
-  private getOrders(instrument: InstrumentKey, trackId: string) {
+  private getOrders(instrument: InstrumentKey): Observable<Order[]> {
     return this.getCurrentPortfolio().pipe(
-      switchMap((p) => {
-        if (p) {
-          return this.getPortfolioEntity<Order>(
-            p.portfolio,
-            p.exchange,
-            'OrdersGetAndSubscribeV2',
-            trackId
-          ).pipe(
-            filter(order => order.symbol === instrument.symbol),
-            map((order: Order) => {
-              this.ordersById.set(order.id, order);
-              return Array.from(this.ordersById.values()).sort((o1, o2) =>
-                o2.id.localeCompare(o1.id)
-              );
-            })
-          );
-        }
-
-        return of([]);
-      }),
+      switchMap(p => this.portfolioSubscriptionsService.getOrdersSubscription(p.portfolio, p.exchange)),
+      map(x => x.allOrders.filter(o => o.symbol === instrument.symbol)),
       startWith([])
     );
   }
 
   private getCurrentPortfolio(): Observable<PortfolioKey> {
     return this.store.select(getSelectedPortfolioKey)
-    .pipe(
-      filter((p): p is PortfolioKey => !!p)
-    );
+      .pipe(
+        filter((p): p is PortfolioKey => !!p)
+      );
   }
 }

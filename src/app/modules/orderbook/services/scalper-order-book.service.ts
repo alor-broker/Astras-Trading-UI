@@ -1,11 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BaseWebsocketService } from "../../../shared/services/base-websocket.service";
-import { WebsocketService } from "../../../shared/services/websocket.service";
 import { Store } from "@ngrx/store";
 import {
   filter,
-  Observable,
-  of
+  Observable
 } from "rxjs";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { getSelectedPortfolioKey } from "../../../store/portfolios/portfolios.selectors";
@@ -25,18 +22,19 @@ import { environment } from '../../../../environments/environment';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { Position } from '../../../shared/models/positions/position.model';
+import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
+import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
+import { OrderbookRequest } from '../models/orderbook-request.model';
 
 @Injectable()
-export class ScalperOrderBookService extends BaseWebsocketService {
-  private readonly currentOrders: Map<string, Order> = new Map<string, Order>();
-
+export class ScalperOrderBookService {
   constructor(
-    ws: WebsocketService,
+    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly store: Store,
     private readonly httpClient: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService
   ) {
-    super(ws);
   }
 
   getLastPrice(instrumentKey: InstrumentKey): Observable<number | null> {
@@ -53,50 +51,28 @@ export class ScalperOrderBookService extends BaseWebsocketService {
   }
 
   getOrderBook(settings: ScalperOrderBookSettings): Observable<OrderbookData> {
-    return this.getEntity<OrderbookData>(OrderBookDataFeedHelper.getRealtimeDateRequest(
-      settings.guid,
-      settings.symbol,
-      settings.exchange,
-      settings.instrumentGroup,
-      settings.depth));
-  }
-
-  public getCurrentOrders(instrument: InstrumentKey, trackId: string): Observable<Order[]> {
-    this.currentOrders.clear();
-    return this.getCurrentPortfolio().pipe(
-      switchMap((p) => {
-        if (p) {
-          return this.getPortfolioEntity<Order>(
-            p.portfolio,
-            p.exchange,
-            'OrdersGetAndSubscribeV2',
-            trackId
-          ).pipe(
-            filter(order => order.symbol === instrument.symbol),
-            map((order: Order) => {
-              this.currentOrders.set(order.id, order);
-              return Array.from(this.currentOrders.values()).sort((o1, o2) =>
-                o2.id.localeCompare(o1.id)
-              );
-            }),
-            map(orders => orders.filter(x => x.status === 'working'))
-          );
-        }
-
-        return of([]);
-      }),
-      startWith([])
+    return this.subscriptionsDataFeedService.subscribe<OrderbookRequest, OrderbookData>(
+      OrderBookDataFeedHelper.getRealtimeDateRequest(
+        settings.symbol,
+        settings.exchange,
+        settings.instrumentGroup,
+        settings.depth
+      ),
+      OrderBookDataFeedHelper.getOrderbookSubscriptionId
     );
   }
 
-  public getOrderBookPosition(instrumentKey: InstrumentKey, trackId: string): Observable<Position | null> {
+  public getCurrentOrders(instrument: InstrumentKey): Observable<Order[]> {
     return this.getCurrentPortfolio().pipe(
-      switchMap(portfolio => this.getPortfolioEntity<Position>(portfolio.portfolio, instrumentKey.exchange,
-        'PositionsGetAndSubscribeV2',
-        trackId
-      )),
-      filter((p): p is Position => !!p),
-      filter(p => p.symbol === instrumentKey.symbol),
+      switchMap(p => this.portfolioSubscriptionsService.getOrdersSubscription(p.portfolio, p.exchange)),
+      map(x => x.allOrders.filter(o => o.symbol === instrument.symbol && o.symbol === 'working'))
+    );
+  }
+
+  public getOrderBookPosition(instrumentKey: InstrumentKey): Observable<Position | null> {
+    return this.getCurrentPortfolio().pipe(
+      switchMap(p => this.portfolioSubscriptionsService.getAllPositionsSubscription(p.portfolio, p.exchange)),
+      map(x => x.find(p => p.symbol === instrumentKey.symbol)),
       map(p => (!p || !p.avgPrice ? null as any : p)),
       startWith(null)
     );

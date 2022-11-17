@@ -132,7 +132,6 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.service.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.complete();
   }

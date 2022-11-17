@@ -4,22 +4,18 @@ import { Side } from "../../../shared/models/enums/side.model";
 import { CurrentOrder } from "../models/scalper-order-book.model";
 
 export class OrderBookDataFeedHelper {
-  public static getRealtimeDateRequest(trackId: string,
-                                       symbol: string,
+  public static getRealtimeDateRequest(symbol: string,
                                        exchange: string,
                                        instrumentGroup?: string,
                                        depth?: number): OrderbookRequest {
-    const request: OrderbookRequest = {
+    return {
       opcode: 'OrderBookGetAndSubscribe',
       code: symbol,
       exchange: exchange,
       depth: depth ?? 10,
       format: 'slim',
-      guid: trackId,
       instrumentGroup: instrumentGroup,
     };
-
-    return request;
   }
 
   public static getCurrentOrdersForItem(itemPrice: number, side: Side, orders: Order[]): CurrentOrder[] {
@@ -42,4 +38,7 @@ export class OrderBookDataFeedHelper {
       type: order.type
     } as CurrentOrder;
   }
+
+  public static getOrderbookSubscriptionId: (request: OrderbookRequest) => string = request =>
+    `${request.opcode}_${request.code}_${request.exchange}_${request.instrumentGroup}_${request.depth}_${request.format}`;
 }
