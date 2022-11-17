@@ -29,12 +29,22 @@
     .footer {
       .ant-btn {
         color: white;
+
+        &[disabled] {
+          border: none;
+        }
       }
 
       .buy-button {
         width: 50%;
         background: @buy-color;
-        &:hover {
+
+        &[disabled] {
+          color: @buy-color-disabled;
+          background: @buy-color-background-disabled;
+        }
+
+        &:hover:not([disabled]) {
           border-color: fade(@buy-color, 20%);
           background: fade(@buy-color, 90%);
         }
@@ -43,7 +53,13 @@
       .sell-button {
         width: 50%;
         background: @sell-color;
-        &:hover {
+
+        &[disabled] {
+          color: @sell-color-disabled;
+          background: @sell-color-background-disabled;
+        }
+
+        &:hover:not([disabled]) {
           border-color: fade(@sell-color, 20%);
           background: fade(@sell-color, 90%);
         }
@@ -79,21 +95,12 @@
 
 :host {
   ::ng-deep {
-    .position-row {
-      margin-top: 10px;
+    .position-badge {
+      font-size: 14px;
+      margin-right: 10px;
 
-      div[nz-col] {
-        display: flex;
-        align-items: center;
-
-        .position-badge {
-          font-size: 14px;
-          margin-right: 10px;
-
-          .ant-scroll-number-only-unit {
-            font-weight: 600;
-          }
-        }
+      .ant-scroll-number-only-unit {
+        font-weight: 600;
       }
     }
   }
