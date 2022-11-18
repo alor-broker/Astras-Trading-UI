@@ -56,9 +56,9 @@
             [formControl]="searchControl"
           />
         </li>
-        <ng-container *ngFor="let kvp of portfolios | keyvalue">
+        <ng-container *ngFor="let kvp of portfolios | keyvalue; trackBy: portfolioGroupsTrackByFn">
           <li nz-menu-item nzDisabled> {{kvp.key}} </li>
-          <ng-container *ngFor="let model of kvp.value">
+          <ng-container *ngFor="let model of kvp.value; trackBy: portfoliosTrackByFn">
             <li
               *ngIf="isFindedPortfolio(model)"
               nz-menu-item
