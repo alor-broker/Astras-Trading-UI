@@ -1,7 +1,7 @@
 <div *ngIf="commandContext$ | async as commandContext">
 <form nz-form [nzLayout]="'horizontal'" [formGroup]="form">
   <nz-form-item class="compact">
-    <nz-form-control [nzErrorTip]="quantityError" [nzValidateStatus]="form.get('quantity')?.invalid ? 'error' : ''">
+    <nz-form-control [nzErrorTip]="quantityError" [nzValidateStatus]="form.get('quantity')!">
       <nz-form-label [nzNoColon]="true" nzRequired nzFor="quantity">
         Кол-во лотов
         <span *ngIf="(commandContext.instrument.lotsize ?? -1) !== 1" class="lot-size-hint">
