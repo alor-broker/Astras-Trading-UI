@@ -10,7 +10,7 @@
                 &nbsp;1 лот = {{commandContext.instrument.lotsize}} шт.
               </span>
             </nz-form-label>
-            <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="quantity" nz-input placeholder="0"/>
+            <input (mousedown)="$event.stopPropagation()" atsNumerical formControlName="quantity" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #quantityError>
             <span *ngIf="form.get('quantity')?.errors?.required">Введите кол-во</span>
@@ -34,7 +34,7 @@
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="triggerPriceError" [nzValidateStatus]="form.get('triggerPrice')!">
             <nz-form-label [nzNoColon]="true" nzFor="triggerPrice" nzRequired>Сигнальная цена</nz-form-label>
-            <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input'
+            <input (mousedown)="$event.stopPropagation()" atsNumerical
                    formControlName="triggerPrice" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #triggerPriceError>
@@ -77,7 +77,7 @@
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="priceError" [nzValidateStatus]="form.get('price')!">
             <nz-form-label [nzNoColon]="true" nzFor="price" nzRequired>Цена</nz-form-label>
-            <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="price" nz-input placeholder="0"/>
+            <input (mousedown)="$event.stopPropagation()" atsNumerical formControlName="price" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #priceError>
             <span *ngIf="form.get('price')?.errors?.required">Введите цену</span>
