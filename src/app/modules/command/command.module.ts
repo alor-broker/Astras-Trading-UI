@@ -12,6 +12,7 @@ import { EditWidgetComponent } from './widgets/edit-widget/edit-widget.component
 import { LimitEditComponent } from './components/limit-edit/limit-edit.component';
 import { StopCommandComponent } from './components/stop-command/stop-command.component';
 import { StopEditComponent } from './components/stop-edit/stop-edit.component';
+import { NzInputModule } from "ng-zorro-antd/input";
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { StopEditComponent } from './components/stop-edit/stop-edit.component';
   ],
   imports: [
     SharedModule,
-    CommandRoutingModule
+    CommandRoutingModule,
+    NzInputModule
   ],
   exports: [
     CommandWidgetComponent,
