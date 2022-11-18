@@ -72,7 +72,7 @@
         <input
           *ngIf="!column.filterData.isInterval; else intervalFilter"
           nz-input
-          class='ant-input'
+          class="filter-input"
           type="text"
           [placeholder]="column.displayName"
           [formControl]="getFilterControl(column.filterData.filterName)!"
@@ -80,14 +80,14 @@
         <ng-template #intervalFilter>
           <input
             nz-input
-            class='ant-input'
+            class="filter-input"
             type="text"
             [placeholder]="column.displayName + ', с'"
             [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
           />
           <input
             nz-input
-            class='ant-input'
+            class="filter-input"
             type="text"
             [placeholder]="column.displayName + ', по'"
             [formControl]="getFilterControl(column.filterData.intervalEndName!)!"

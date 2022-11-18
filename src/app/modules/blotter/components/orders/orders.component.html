@@ -94,7 +94,7 @@
   <div class="ant-table-filter-dropdown" *ngFor='let column of listOfColumns'>
     <div class="search-box" *ngIf='column.hasSearch && column.isSearchVisible'>
       <input
-        class='ant-input' type="text" nz-input [placeholder]="column.searchDescription"
+        type="text" nz-input [placeholder]="column.searchDescription"
         [ngModel]='getFilter(column.id)'
         (ngModelChange)="filterChange($event, column.id)"/>
     </div>
