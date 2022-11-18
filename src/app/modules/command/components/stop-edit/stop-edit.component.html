@@ -3,7 +3,7 @@
     <div nz-row [nzGutter]="12">
       <div nz-col [nzSm]="12" [nzXs]="24">
         <nz-form-item class="compact">
-          <nz-form-control [nzErrorTip]="quantityError">
+          <nz-form-control [nzErrorTip]="quantityError" [nzValidateStatus]="form.get('quantity')?.invalid ? 'error' : ''">
             <nz-form-label [nzNoColon]="true" nzRequired nzFor="quantity">
               Кол-во лотов
               <span *ngIf="(commandContext.instrument.lotsize ?? -1) !== 1" class="lot-size-hint">
@@ -34,10 +34,10 @@
 
       <div [nzSm]="12" [nzXs]="24" nz-col>
         <nz-form-item class="compact">
-          <nz-form-control [nzErrorTip]="triggerPriceError">
+          <nz-form-control [nzErrorTip]="triggerPriceError" [nzValidateStatus]="form.get('triggerPrice')?.invalid ? 'error' : ''">
             <nz-form-label [nzNoColon]="true" nzFor="triggerPrice" nzRequired>Сигнальная цена</nz-form-label>
             <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input'
-                   formControlName="triggerPrice" placeholder="0"/>
+                   formControlName="triggerPrice" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #triggerPriceError>
             <span *ngIf="form.get('triggerPrice')?.errors?.required">Введите цену</span>
@@ -78,9 +78,9 @@
       </div>
       <div nz-col [nzSm]="12" [nzXs]="24" *ngIf="form.getRawValue().withLimit">
         <nz-form-item class="compact">
-          <nz-form-control [nzErrorTip]="priceError">
+          <nz-form-control [nzErrorTip]="priceError" [nzValidateStatus]="form.get('price')?.invalid ? 'error' : ''">
             <nz-form-label [nzNoColon]="true" nzFor="price" nzRequired>Цена</nz-form-label>
-            <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="price" placeholder="0"/>
+            <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="price" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #priceError>
             <span *ngIf="form.get('price')?.errors?.required">Введите цену</span>

@@ -152,7 +152,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         ]
       ),
       triggerPrice: new FormControl(
-        null,
+        1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
