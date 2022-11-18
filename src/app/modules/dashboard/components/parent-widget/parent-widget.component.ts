@@ -34,6 +34,8 @@ export class ParentWidgetComponent implements OnInit, OnDestroy, AfterViewInit {
   isWidgetActivated$ = new BehaviorSubject(false);
 
   @Input()
+  isBlockWidget!: boolean;
+  @Input()
   widget!: Widget;
   @Input()
   resize!: EventEmitter<DashboardItem>;
