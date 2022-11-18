@@ -135,7 +135,7 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
     }
 
     this.historyService.getHistory({
-      code: instrumentKey.symbol,
+      symbol: instrumentKey.symbol,
       exchange: instrumentKey.exchange,
       instrumentGroup: instrumentKey.instrumentGroup,
       from: periodParams.from,
