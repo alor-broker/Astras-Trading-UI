@@ -18,33 +18,34 @@ import { ErrorHandlerService } from "./handle-error/error-handler.service";
   providedIn: 'root'
 })
 export class HistoryService {
-  private url = environment.apiUrl + '/md/history';
+  private url = environment.apiUrl + '/md/v2/history';
 
   constructor(
     private readonly http: HttpClient,
     private readonly errorHandler: ErrorHandlerService
-  ) { }
+  ) {
+  }
 
   getDaysOpen(instrument: InstrumentKey): Observable<Candle> {
     const request = {
-      code: instrument.symbol,
+      symbol: instrument.symbol,
       exchange: instrument.exchange,
       tf: 'D',
       from: addDaysUnix(new Date(), -14),
-      to: Date.now(),
+      to: Math.round(Date.now() / 1000),
       instrumentGroup: instrument.instrumentGroup
     };
 
     return this.getHistory(request).pipe(
       filter((x): x is HistoryResponse => !!x),
       map(resp => {
-        const [lastCandle] = resp.history.slice(-1);
-        return lastCandle;
-      },
-    ));
+          const [lastCandle] = resp.history.slice(-1);
+          return lastCandle;
+        },
+      ));
   }
 
-  getHistory(request: HistoryRequest) : Observable<HistoryResponse | null> {
+  getHistory(request: HistoryRequest): Observable<HistoryResponse | null> {
     return this.http.get<HistoryResponse>(this.url, { params: { ...request } }).pipe(
       catchHttpError<HistoryResponse | null>(null, this.errorHandler)
     );
