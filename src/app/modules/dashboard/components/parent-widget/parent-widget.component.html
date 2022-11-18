@@ -17,6 +17,7 @@
     [class.active]="isWidgetActivated$ | async"
     (mousedown)="$event.stopPropagation()"
   >
+    <div class="blocked-widget-overlay" *ngIf="isBlockWidget"></div>
     <ng-container [ngSwitch]="widget.gridItem.type">
       <ats-orderbook-widget *ngSwitchCase="'order-book'"
                             [guid]="getGuid()"
