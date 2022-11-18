@@ -107,18 +107,26 @@ export class OrderbookService {
   }
 
   private toOrderBookRows(orderBookData: OrderbookData): OrderBookViewRow[] {
-    return orderBookData.a.map((a, i) => {
-      const obr: OrderBookViewRow = {
-        ask: a.p,
-        askVolume: a.v,
-        yieldAsk: a.y,
-        yieldBid: orderBookData.b[i]?.y ?? 0,
+    const rows:  OrderBookViewRow[] = [];
+
+    if(orderBookData.a.length === 0 && orderBookData.b.length === 0) {
+      return [];
+    }
+
+    for (let i = 0; i < Math.max(orderBookData.a.length, orderBookData.b.length); i++) {
+      const row : OrderBookViewRow = {
+        ask: orderBookData.a[i]?.p ?? 0,
+        askVolume: orderBookData.a[i]?.v ?? 0,
+        yieldAsk: orderBookData.a[i]?.y ?? 0,
         bid: orderBookData.b[i]?.p ?? 0,
         bidVolume: orderBookData.b[i]?.v ?? 0,
+        yieldBid: orderBookData.b[i]?.y ?? 0,
       };
 
-      return obr;
-    });
+      rows.push(row);
+    }
+
+    return rows;
   }
 
   private toOrderBook(orderBookData: OrderbookData): OrderBook {
@@ -158,8 +166,8 @@ export class OrderbookService {
     const minPrice = Math.min(...bids.map(b => b.x));
     const maxPrice = Math.max(...asks.map(a => a.x));
     return {
-      asks: asks,
-      bids: bids,
+      asks: asks.filter(x => x.x > 0),
+      bids: bids.filter(x => x.x > 0),
       minPrice: minPrice,
       maxPrice: maxPrice
     };
@@ -168,7 +176,7 @@ export class OrderbookService {
   private getOrders(instrument: InstrumentKey): Observable<Order[]> {
     return this.getCurrentPortfolio().pipe(
       switchMap(p => this.portfolioSubscriptionsService.getOrdersSubscription(p.portfolio, p.exchange)),
-      map(x => x.allOrders.filter(o => o.symbol === instrument.symbol)),
+      map(x => x.allOrders.filter(o => o.symbol === instrument.symbol && o.exchange === instrument.exchange)),
       startWith([])
     );
   }

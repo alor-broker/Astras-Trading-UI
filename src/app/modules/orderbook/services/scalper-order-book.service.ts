@@ -65,14 +65,14 @@ export class ScalperOrderBookService {
   public getCurrentOrders(instrument: InstrumentKey): Observable<Order[]> {
     return this.getCurrentPortfolio().pipe(
       switchMap(p => this.portfolioSubscriptionsService.getOrdersSubscription(p.portfolio, p.exchange)),
-      map(x => x.allOrders.filter(o => o.symbol === instrument.symbol && o.symbol === 'working'))
+      map(x => x.allOrders.filter(o => o.symbol === instrument.symbol && o.exchange === instrument.exchange && o.status === 'working'))
     );
   }
 
   public getOrderBookPosition(instrumentKey: InstrumentKey): Observable<Position | null> {
     return this.getCurrentPortfolio().pipe(
       switchMap(p => this.portfolioSubscriptionsService.getAllPositionsSubscription(p.portfolio, p.exchange)),
-      map(x => x.find(p => p.symbol === instrumentKey.symbol)),
+      map(x => x.find(p => p.symbol === instrumentKey.symbol && p.exchange === instrumentKey.exchange)),
       map(p => (!p || !p.avgPrice ? null as any : p)),
       startWith(null)
     );
