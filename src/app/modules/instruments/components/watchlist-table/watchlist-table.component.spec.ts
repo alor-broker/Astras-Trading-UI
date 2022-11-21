@@ -12,21 +12,27 @@ import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
   let fixture: ComponentFixture<WatchlistTableComponent>;
 
-  const spySync = jasmine.createSpyObj('SyncService', ['selectNewInstrument']);
-  spySync.selectedInstrument$ = of(null);
+  let subscriptionsDataFeedServiceSpy: any;
+  let watchInstrumentsServiceSpy: any;
+  let watchlistCollectionServiceSpy: any;
 
-  const spyWatcher = jasmine.createSpyObj('WatchInstrumentsService', ['getWatched']);
-  spyWatcher.getWatched.and.returnValue(of([]));
   const getSettingsMock = new BehaviorSubject({} as InstrumentSelectSettings);
 
-  const watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['removeItemsFromList']);
-
   beforeAll(() => TestBed.resetTestingModule());
+
+  beforeEach(() => {
+    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
+    watchInstrumentsServiceSpy = jasmine.createSpyObj('WatchInstrumentsService', ['getWatched', 'unsubscribe']);
+    watchInstrumentsServiceSpy.getWatched.and.returnValue(of([]));
+
+    watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['removeItemsFromList']);
+  });
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [...sharedModuleImportForTests],
@@ -36,8 +42,9 @@ describe('WatchlistTableComponent', () => {
           provide: WidgetSettingsService,
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(getSettingsMock) }
         },
-        { provide: WatchInstrumentsService, useValue: spyWatcher },
-        { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy }
+        { provide: WatchInstrumentsService, useValue: watchInstrumentsServiceSpy },
+        { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
+        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
       ]
     }).compileComponents();
   });

@@ -1,6 +1,8 @@
-import { BaseRequest } from "../ws/base-request.model";
+import { SubscriptionRequest } from '../../services/subscriptions-data-feed.service';
 
-export interface QuotesRequest extends BaseRequest  {
+export interface QuotesRequest extends SubscriptionRequest {
   code: string,
+  exchange: string,
   instrumentGroup?: string
+  format: string
 }

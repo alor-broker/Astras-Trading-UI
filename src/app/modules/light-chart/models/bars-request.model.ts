@@ -1,8 +1,10 @@
-import { BaseRequest } from "src/app/shared/models/ws/base-request.model";
+import { SubscriptionRequest } from '../../../shared/services/subscriptions-data-feed.service';
 
-export interface BarsRequest extends BaseRequest {
+export interface BarsRequest extends SubscriptionRequest {
   code: string, // "SBER",
   tf: string, // 60, D
   from: number, // 1629648038,
   instrumentGroup?: string // TQBR or SMAL
+  exchange: string,
+  format: string
 }

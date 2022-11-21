@@ -1,24 +1,24 @@
 import { TestBed } from '@angular/core/testing';
 
 import { LightChartDatafeedFactoryService } from './light-chart-datafeed-factory.service';
-import { WebsocketService } from '../../../shared/services/websocket.service';
 import { HistoryService } from '../../../shared/services/history.service';
+import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 
 describe('LightChartDatafeedFactoryService', () => {
   let service: LightChartDatafeedFactoryService;
 
-  let websocketServiceSpy: any;
+  let subscriptionsDataFeedServiceSpy: any;
   let historyServiceSpy: any;
 
   beforeEach(() => {
-    websocketServiceSpy = jasmine.createSpy('WebsocketService');
+    subscriptionsDataFeedServiceSpy = jasmine.createSpy('SubscriptionsDataFeedService');
     historyServiceSpy = jasmine.createSpy('HistoryService');
   });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: WebsocketService, useValue: websocketServiceSpy },
+        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
         { provide: HistoryService, useValue: historyServiceSpy },
       ]
     });

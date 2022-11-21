@@ -17,7 +17,6 @@ import {
 } from 'rxjs/operators';
 import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
 import { BlotterService } from '../../services/blotter.service';
-import { QuotesService } from '../../../../shared/services/quotes.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import {
@@ -32,7 +31,6 @@ import { getSelectedPortfolioKey } from "../../../../store/portfolios/portfolios
   templateUrl: './blotter-widget.component.html',
   styleUrls: ['./blotter-widget.component.less'],
   providers: [
-    QuotesService,
     BlotterService
   ]
 })

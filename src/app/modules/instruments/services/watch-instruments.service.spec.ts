@@ -1,8 +1,5 @@
-import {
-  HttpClientTestingModule,
-} from '@angular/common/http/testing';
+import { HttpClientTestingModule, } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { WebsocketService } from 'src/app/shared/services/websocket.service';
 
 import { WatchInstrumentsService } from './watch-instruments.service';
 import { TestData } from '../../../shared/utils/testing';
@@ -17,14 +14,15 @@ import { BaseResponse } from '../../../shared/models/ws/base-response.model';
 import { Quote } from '../../../shared/models/quotes/quote.model';
 import { WatchlistCollection } from '../models/watchlist.model';
 import { InstrumentsService } from './instruments.service';
+import { QuotesService } from '../../../shared/services/quotes.service';
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
 
-  let spy: any;
   let historyServiceSpy: any;
   let watchlistCollectionServiceSpy: any;
   let instrumentsServiceSpy: any;
+  let quotesServiceSpy: any;
 
   const collectionChangedMock = new Subject();
   const daysOpenMock = new BehaviorSubject<Candle | null>({
@@ -33,15 +31,16 @@ describe('WatchInstrumentsService', () => {
   const messagesMock = new Subject<BaseResponse<Quote>>();
 
   beforeEach(() => {
-    spy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
     historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getDaysOpen']);
     watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['getWatchlistCollection', 'collectionChanged$', 'getListItems',]);
 
     watchlistCollectionServiceSpy.collectionChanged$ = collectionChangedMock.asObservable();
     historyServiceSpy.getDaysOpen.and.returnValue(daysOpenMock.asObservable());
-    spy.messages$ = messagesMock.asObservable();
 
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
+
+    quotesServiceSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
+    quotesServiceSpy.getQuotes.and.returnValue(new Subject());
   });
 
   beforeAll(() => TestBed.resetTestingModule());
@@ -53,9 +52,9 @@ describe('WatchInstrumentsService', () => {
       providers: [
         WatchInstrumentsService,
         { provide: HistoryService, useValue: historyServiceSpy },
-        { provide: WebsocketService, useValue: spy },
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
+        { provide: QuotesService, useValue: quotesServiceSpy }
       ]
     });
     service = TestBed.inject(WatchInstrumentsService);

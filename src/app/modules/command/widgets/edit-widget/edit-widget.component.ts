@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { combineLatest, filter, Observable, of, Subject, switchMap, take, tap } from 'rxjs';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { CommandsService } from '../../services/commands.service';
 import { finalize, map } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
@@ -15,7 +14,6 @@ import { StopEdit } from "../../models/stop-edit";
   selector: 'ats-edit-widget',
   templateUrl: './edit-widget.component.html',
   styleUrls: ['./edit-widget.component.less'],
-  providers: [QuotesService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditWidgetComponent implements OnInit, OnDestroy {

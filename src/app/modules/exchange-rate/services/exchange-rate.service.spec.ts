@@ -1,8 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ExchangeRateService } from './exchange-rate.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { WebsocketService } from "../../../shared/services/websocket.service";
-import { of } from "rxjs";
 
 describe('ExchangeRateService', () => {
   let service: ExchangeRateService;
@@ -13,16 +11,7 @@ describe('ExchangeRateService', () => {
         HttpClientTestingModule
       ],
       providers: [
-        ExchangeRateService,
-        {
-          provide: WebsocketService,
-          useValue: {
-            connect: jasmine.createSpy('connect'),
-            messages$: of({}),
-            subscribe: jasmine.createSpy('subscribe'),
-            unsubscribe: jasmine.createSpy('unsubscribe'),
-          }
-        }
+        ExchangeRateService
       ]
     });
     service = TestBed.inject(ExchangeRateService);

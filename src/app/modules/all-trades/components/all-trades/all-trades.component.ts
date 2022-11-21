@@ -213,7 +213,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       tap(() => this.isLoading$.next(false)),
       withLatestFrom(this.settings$),
       mapWith(
-        ([, settings]) => this.allTradesService.getNewTrades(settings),
+        ([, settings]) => this.allTradesService.getNewTradesSubscription(settings),
         (data, res) => ({filters: data[0], res})
       ),
       takeUntil(this.destroy$),

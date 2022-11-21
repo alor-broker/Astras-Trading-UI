@@ -1,7 +1,9 @@
-import { BaseRequest } from 'src/app/shared/models/ws/base-request.model';
+import { SubscriptionRequest } from '../../../shared/services/subscriptions-data-feed.service';
 
-export interface OrderbookRequest extends BaseRequest {
+export interface OrderbookRequest extends SubscriptionRequest {
   code: string,
-  depth: number,
+  exchange: string,
   instrumentGroup?: string
+  depth: number,
+  format: string
 }

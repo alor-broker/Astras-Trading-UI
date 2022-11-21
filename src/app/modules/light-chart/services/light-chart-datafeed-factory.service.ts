@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { LightChartDatafeed } from './light-chart-datafeed';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
-import { WebsocketService } from '../../../shared/services/websocket.service';
 import { HistoryService } from '../../../shared/services/history.service';
 import { TimeframeValue } from '../models/light-chart.models';
+import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ import { TimeframeValue } from '../models/light-chart.models';
 export class LightChartDatafeedFactoryService {
 
   constructor(
-    private readonly websocketService: WebsocketService,
+    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly historyService: HistoryService
   ) {
   }
@@ -20,7 +20,7 @@ export class LightChartDatafeedFactoryService {
     return new LightChartDatafeed(
       instrumentKey,
       timeFrame,
-      this.websocketService,
+      this.subscriptionsDataFeedService,
       this.historyService
     );
   }

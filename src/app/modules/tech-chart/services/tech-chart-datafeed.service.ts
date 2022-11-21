@@ -15,31 +15,31 @@ import {
 } from "../../../../assets/charting_library";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { InstrumentsService } from "../../instruments/services/instruments.service";
-import { Subscription, take } from "rxjs";
+import {
+  Subscription,
+  take
+} from "rxjs";
 import { HistoryService } from "../../../shared/services/history.service";
-import { BaseWebsocketService } from "../../../shared/services/base-websocket.service";
-import { WebsocketService } from "../../../shared/services/websocket.service";
 import { BarsRequest } from "../../light-chart/models/bars-request.model";
 import { Candle } from "../../../shared/models/history/candle.model";
 import { environment } from "../../../../environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { SearchFilter } from "../../instruments/models/search-filter.model";
-import { GuidGenerator } from '../../../shared/utils/guid';
+import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
+import { ChartSubscriptionIdHelper } from '../../../shared/utils/subscription-id-helper';
 
 @Injectable()
-export class TechChartDatafeedService extends BaseWebsocketService implements IBasicDataFeed {
+export class TechChartDatafeedService implements IBasicDataFeed {
   private lastBarPoint = new Map<string, number>();
   private readonly barsSubscriptions = new Map<string, Subscription>();
-  private readonly listenerGuidMap = new Map<string, string>();
 
   constructor(
-    ws: WebsocketService,
+    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly instrumentService: InstrumentsService,
     private readonly historyService: HistoryService,
     private readonly http: HttpClient,
   ) {
-    super(ws);
   }
 
   onReady(callback: OnReadyCallback): void {
@@ -176,8 +176,6 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
 
   subscribeBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, onTick: SubscribeBarsCallback, listenerGuid: string): void {
     const instrumentKey = this.getSymbolAndExchangeFromTicker(symbolInfo.ticker!);
-    const requestGuid = `${listenerGuid}_${GuidGenerator.newGuid()}`;
-    this.listenerGuidMap.set(listenerGuid, requestGuid);
 
     const request: BarsRequest = {
       opcode: 'BarsGetAndSubscribe',
@@ -185,16 +183,21 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
       exchange: instrumentKey.exchange,
       instrumentGroup: instrumentKey.instrumentGroup,
       format: 'simple',
-      guid: requestGuid,
       tf: this.parseTimeframe(resolution),
       from: this.lastBarPoint.get(this.getLastBarPointKey(instrumentKey, resolution)) ?? this.getDefaultLastHistoryPoint()
     };
 
-    const sub = this.getEntity<Candle>(request).subscribe(candle => {
-      const lastBarPoint = this.lastBarPoint.get(this.getLastBarPointKey(instrumentKey, resolution));
+    const sub = this.subscriptionsDataFeedService.subscribe<BarsRequest, Candle>(
+      request,
+      ChartSubscriptionIdHelper.getCandleSubscriptionId
+    ).subscribe(candle => {
+      const lastBarPointKey = this.getLastBarPointKey(instrumentKey, resolution);
+      const lastBarPoint = this.lastBarPoint.get(lastBarPointKey);
       if (!lastBarPoint || candle.time < lastBarPoint) {
         return;
       }
+
+      this.lastBarPoint.set(lastBarPointKey, candle.time);
 
       onTick({
         ...candle,
@@ -209,19 +212,12 @@ export class TechChartDatafeedService extends BaseWebsocketService implements IB
     const sub = this.barsSubscriptions.get(listenerGuid);
     if (!!sub) {
       sub.unsubscribe();
-
-      const requestGuid = this.listenerGuidMap.get(listenerGuid);
-      if (!!requestGuid) {
-        this.unsubscribe(requestGuid);
-        this.listenerGuidMap.delete(listenerGuid);
-      }
     }
   }
 
   clear() {
-    this.barsSubscriptions.forEach((sub, key) => {
+    this.barsSubscriptions.forEach((sub) => {
         sub.unsubscribe();
-        this.unsubscribe(key);
       }
     );
 

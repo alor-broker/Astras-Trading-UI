@@ -91,21 +91,7 @@ describe('OrderSubmitComponent', () => {
         },
         { provide: OrderService, useValue: orderServiceSpy }
       ]
-    })
-      .overrideComponent(
-        OrderSubmitComponent,
-        {
-          set: {
-            providers: [{
-              provide: QuotesService,
-              useValue: {
-                getQuotes: jasmine.createSpy('getQuotes').and.returnValue(of({ bid: 101, ask: 102 } as Quote))
-              }
-            }]
-          }
-        }
-      )
-      .compileComponents();
+    }).compileComponents();
 
     store = TestBed.inject(Store);
   });

@@ -1,24 +1,23 @@
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
-  Observable, of,
-  Subscription, switchMap,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
   take
 } from 'rxjs';
 import {
   filter,
-  finalize,
   map
 } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { WatchedInstrument } from '../models/watched-instrument.model';
-import { WebsocketService } from 'src/app/shared/services/websocket.service';
 import {
   getDayChange,
   getDayChangePerPrice
 } from 'src/app/shared/utils/price';
-import { GuidGenerator } from '../../../shared/utils/guid';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from './watchlist-collection.service';
 import { InstrumentSelectSettings } from '../../../shared/models/settings/instrument-select-settings.model';
@@ -27,7 +26,6 @@ import { Instrument } from '../../../shared/models/instruments/instrument.model'
 
 @Injectable()
 export class WatchInstrumentsService {
-  private readonly quitesSubscriptionId = GuidGenerator.newGuid();
   private listId?: string;
 
 
@@ -46,7 +44,7 @@ export class WatchInstrumentsService {
 
   constructor(
     private readonly history: HistoryService,
-    private readonly ws: WebsocketService,
+    private readonly quotesService: QuotesService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly instrumentSService: InstrumentsService) {
   }
@@ -124,7 +122,7 @@ export class WatchInstrumentsService {
   private initInstrumentSubscription(instrument: InstrumentKey) {
     of({}).pipe(
       switchMap(() => {
-        if(instrument.shortName) {
+        if (instrument.shortName) {
           return of(instrument);
         }
 
@@ -160,11 +158,7 @@ export class WatchInstrumentsService {
   private setupInstrumentQuotesSubscription(wi: WatchedInstrument) {
     const key = WatchlistCollectionService.getInstrumentKey(wi.instrument);
 
-    const service = new QuotesService(this.ws);
-    const sub = service.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup, this.quitesSubscriptionId)
-      .pipe(finalize(() => {
-        service.unsubscribe();
-      }))
+    const sub = this.quotesService.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup)
       .subscribe(q => {
         const dayChange = getDayChange(q.last_price, wi.closePrice);
         const dayChangePerPrice = getDayChangePerPrice(q.last_price, wi.closePrice);

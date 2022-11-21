@@ -1,4 +1,4 @@
-import { BaseRequest } from "../../../shared/models/ws/base-request.model";
+import { SubscriptionRequest } from '../../../shared/services/subscriptions-data-feed.service';
 
 export interface GetAllTradesRequest {
   exchange: string;
@@ -8,8 +8,10 @@ export interface GetAllTradesRequest {
   take: number;
 }
 
-export interface AllTradesSubRequest extends BaseRequest {
+export interface AllTradesSubRequest extends SubscriptionRequest {
   code: string;
+  format: string,
+  exchange: string
 }
 
 export interface AllTradesItem {

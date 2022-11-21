@@ -1,25 +1,29 @@
 ﻿import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
-import { BaseWebsocketService } from '../../../shared/services/base-websocket.service';
-import { WebsocketService } from '../../../shared/services/websocket.service';
 import { HistoryService } from '../../../shared/services/history.service';
-import { HistoryCallback, PeriodParams, TimeframeValue } from '../models/light-chart.models';
-import { GuidGenerator } from '../../../shared/utils/guid';
+import {
+  HistoryCallback,
+  PeriodParams,
+  TimeframeValue
+} from '../models/light-chart.models';
 import { BarsRequest } from '../models/bars-request.model';
-import { Subscription, take } from 'rxjs';
+import {
+  Subscription,
+  take
+} from 'rxjs';
 import { Candle } from '../../../shared/models/history/candle.model';
+import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
+import { ChartSubscriptionIdHelper } from '../../../shared/utils/subscription-id-helper';
 
-export class LightChartDatafeed extends BaseWebsocketService {
-  private readonly guid = GuidGenerator.newGuid();
+export class LightChartDatafeed {
   private lastHistoryPoint: number | null = null;
   private lastBarSubscription: Subscription | null = null;
 
   constructor(
     private readonly instrumentKey: InstrumentKey,
     private readonly timeFrame: TimeframeValue,
-    ws: WebsocketService,
+    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly historyService: HistoryService,
   ) {
-    super(ws);
   }
 
   getHistory(
@@ -71,21 +75,29 @@ export class LightChartDatafeed extends BaseWebsocketService {
       exchange: this.instrumentKey.exchange,
       instrumentGroup: this.instrumentKey.instrumentGroup,
       format: 'simple',
-      guid: this.guid,
       tf: timeFrame,
       from: this.lastHistoryPoint ?? this.getDefaultLastHistoryPoint(timeFrame)
     };
 
-    this.lastBarSubscription = this.getEntity<Candle>(request).subscribe(candle => {
+    this.lastBarSubscription = this.subscriptionsDataFeedService.subscribe<BarsRequest, Candle>(
+      request,
+      ChartSubscriptionIdHelper.getCandleSubscriptionId
+    ).subscribe(candle => {
       if (!this.lastHistoryPoint || candle.time < this.lastHistoryPoint) {
         return;
       }
+
+      this.lastHistoryPoint = candle.time;
 
       onResult({
         ...candle,
         time: candle.time
       });
     });
+  }
+
+  unsubscribe() {
+    this.lastBarSubscription?.unsubscribe();
   }
 
   private getDefaultLastHistoryPoint(timeFrame: TimeframeValue): number {

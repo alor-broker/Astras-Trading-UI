@@ -3,15 +3,15 @@ import { TestBed } from '@angular/core/testing';
 import { AllTradesService } from './all-trades.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
-import { WebsocketService } from '../../../shared/services/websocket.service';
+import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 
 describe('AllTradesService', () => {
   let service: AllTradesService;
 
-  let websocketServiceSpy: any;
+  let subscriptionsDataFeedServiceSpy: any;
 
   beforeEach(() => {
-    websocketServiceSpy = jasmine.createSpyObj('WebsocketService', ['unsubscribe', 'connect', 'subscribe', 'messages$']);
+    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
   });
 
   beforeEach(() => {
@@ -27,10 +27,7 @@ describe('AllTradesService', () => {
             handleError: jasmine.createSpy('handleError').and.callThrough()
           }
         },
-        {
-          provide: WebsocketService,
-          useValue: websocketServiceSpy
-        }
+        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
       ]
     });
     service = TestBed.inject(AllTradesService);

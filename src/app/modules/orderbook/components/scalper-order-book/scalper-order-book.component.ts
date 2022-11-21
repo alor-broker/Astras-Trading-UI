@@ -134,7 +134,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   ngOnInit(): void {
     this.initOrderBookContext();
     this.orderBookTableData$ = this.getOrderBookTableData().pipe(
-      shareReplay(1)
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     this.orderBookPosition$ = this.getPositionStateStream();
@@ -146,7 +146,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
   ngAfterViewInit(): void {
     this.orderBookTableContainerHeight$ = (this.getOrderBookTableContainerHeightWatch() ?? of(0)).pipe(
-      shareReplay(1)
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     this.initPriceRowsGeneration();
@@ -460,10 +460,10 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   private getCurrentOrdersStream(settings$: Observable<ExtendedSettings>): Observable<CurrentOrder[]> {
     return settings$.pipe(
       switchMap(
-        (settings: ExtendedSettings) => this.orderBookService.getCurrentOrders(settings.widgetSettings, this.guid)
+        (settings: ExtendedSettings) => this.orderBookService.getCurrentOrders(settings.widgetSettings)
       ),
       map(orders => orders.map(o => OrderBookDataFeedHelper.orderToCurrentOrder(o))),
-      shareReplay(1)
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
@@ -471,13 +471,13 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     return settings$.pipe(
       switchMap((settings: ExtendedSettings) => this.orderBookService.getOrderBook(settings.widgetSettings)),
       startWith(({ a: [], b: [] } as OrderbookData)),
-      shareReplay(1)
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
   private getOrderBookPositionStream(settings$: Observable<ExtendedSettings>): Observable<Position | null> {
     return settings$.pipe(
-      switchMap((settings: ExtendedSettings) => this.orderBookService.getOrderBookPosition(settings.widgetSettings, this.guid)),
+      switchMap((settings: ExtendedSettings) => this.orderBookService.getOrderBookPosition(settings.widgetSettings)),
       share()
     );
   }

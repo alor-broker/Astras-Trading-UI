@@ -22,13 +22,13 @@ import {
   takeUntil
 } from "rxjs";
 import { EvaluationBaseProperties } from "../../../../command/models/evaluation-base-properties.model";
-import { finalize } from "rxjs/operators";
 import { QuotesService } from "../../../../../shared/services/quotes.service";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
 import { GuidGenerator } from "../../../../../shared/utils/guid";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../../shared/models/form.model';
+import { distinct } from 'rxjs/operators';
 
 export type MarketOrderFormValue = Omit<MarketOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
@@ -135,10 +135,10 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
       filter(x => !x)
     );
 
-    return this.quoteService.getQuotes(instrument.symbol, instrument.exchange, formValue.instrumentGroup, this.componentGuid)
+    return this.quoteService.getQuotes(instrument.symbol, instrument.exchange, formValue.instrumentGroup)
       .pipe(
         map(q => q.last_price),
-        finalize(() => this.quoteService.unsubscribe()),
+        distinct(),
         takeUntil(isDeactivated$)
       );
   }

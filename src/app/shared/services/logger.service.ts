@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,9 @@ export class LoggerService {
   }
 
   public trace(message: string): void {
-    console.trace(message);
+    if (!environment.production) {
+      console.trace(message);
+    }
   }
 
   public warn(...details: string[]): void {
