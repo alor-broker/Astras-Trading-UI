@@ -42,8 +42,7 @@ import { getSelectedPortfolioKey } from "../../../../store/portfolios/portfolios
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
-import { PositionsService } from "../../../../shared/services/positions.service";
-import { Position } from "../../../../shared/models/positions/position.model";
+import { OrderSubmitService } from "../../services/order-submit.service";
 
 @Component({
   selector: 'ats-order-submit[guid]',
@@ -76,7 +75,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     private readonly orderService: OrderService,
     private readonly store: Store,
     private readonly widgetsDataProvider: WidgetsDataProviderService,
-    private readonly positionService: PositionsService,
+    private readonly orderSubmitService: OrderSubmitService,
   ) {
   }
 
@@ -111,11 +110,11 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     );
 
     this.positionInfo$ = this.currentInstrumentWithPortfolio$.pipe(
-      switchMap(data => this.positionService.getByPortfolio(data.portfolio, data.instrument.exchange, data.instrument.symbol)),
-      filter((p): p is Position => !!p),
+      takeUntil(this.destroy$),
+      switchMap(data => this.orderSubmitService.getPosition(data)),
       map(p => ({
-        abs: Math.abs(p.qtyTFutureBatch),
-        quantity: p.qtyTFutureBatch
+        abs: Math.abs(p?.qtyTFutureBatch || 0),
+        quantity: p?.qtyTFutureBatch || 0
       })),
       startWith(({
         abs: 0,
