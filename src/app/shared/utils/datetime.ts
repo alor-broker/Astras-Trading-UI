@@ -51,7 +51,7 @@ export function addMinutes(date: Date, minutes: number) : Date {
  *
  * @param {Date} date
  * @param {number} days number of days, negative if you need to substract
- * @return {number} unixtime with updated date
+ * @return {number} unix time (seconds) with updated date
  */
 export function addDaysUnix(date: Date, days: number) {
   const result = new Date(date);

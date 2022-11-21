@@ -3,7 +3,7 @@
     <div nz-row [nzGutter]="12">
       <div nz-col [nzSm]="12" [nzXs]="24">
         <nz-form-item class="compact">
-          <nz-form-control [nzErrorTip]="quantityError">
+          <nz-form-control [nzErrorTip]="quantityError" [nzValidateStatus]="form.get('quantity')!">
             <nz-form-label [nzNoColon]="true" nzRequired nzFor="quantity">
               Кол-во лотов
               <span *ngIf="(commandContext.instrument?.lotsize ?? -1) !== 1" class="lot-size-hint">
@@ -11,7 +11,7 @@
               </span>
             </nz-form-label>
             <nz-input-group>
-              <input class='ant-input' atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
+              <input atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
             </nz-input-group>
           </nz-form-control>
           <ng-template #quantityError>
@@ -23,10 +23,10 @@
       </div>
       <div nz-col [nzSm]="12" [nzXs]="24">
         <nz-form-item class="compact">
-          <nz-form-control [nzErrorTip]="priceError">
+          <nz-form-control [nzErrorTip]="priceError" [nzValidateStatus]="form.get('price')!">
             <nz-form-label [nzNoColon]="true" nzRequired nzFor="price">Цена</nz-form-label>
             <nz-input-group>
-              <input class='ant-input' atsNumerical formControlName="price" (mousedown)="$event.stopPropagation()" placeholder="0" />
+              <input atsNumerical formControlName="price" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
             </nz-input-group>
           </nz-form-control>
           <ng-template #priceError>
@@ -42,9 +42,8 @@
         <nz-collapse-panel nzHeader="Продвинутые">
           <nz-form-control nzErrorTip="Группа">
             <nz-form-label [nzNoColon]="true" nzFor="instrumentGroup">Группа</nz-form-label>
-            <nz-input-group nzPrefixIcon="lock">
-              <input class='ant-input'  formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-                     placeholder="Режим торгов" />
+            <nz-input-group>
+              <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()" nz-input placeholder="Режим торгов" />
             </nz-input-group>
           </nz-form-control>
         </nz-collapse-panel>

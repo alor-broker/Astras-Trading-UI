@@ -10,14 +10,14 @@
     <nz-form-item class="compact">
       <nz-form-control>
         <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
-        <input formControlName='exchange' class='ant-input'>
+        <input formControlName='exchange' nz-input>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationOptions.depth.min}} до {{validationOptions.depth.max}}">
         <nz-form-label nzRequired nzFor="depth">Глубина</nz-form-label>
-        <nz-input-group nzPrefixIcon="lock">
-          <input class='ant-input' atsNumerical formControlName="depth" (mousedown)="$event.stopPropagation()" placeholder="7" />
+        <nz-input-group>
+          <input atsNumerical formControlName="depth" (mousedown)="$event.stopPropagation()" nz-input placeholder="7" />
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
@@ -55,9 +55,9 @@
       <nz-collapse-panel nzHeader="Продвинутые">
         <nz-form-control nzErrorTip="Группа">
           <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
-          <nz-input-group nzPrefixIcon="lock">
-            <input class='ant-input' formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-              placeholder="Режим торгов" />
+          <nz-input-group>
+            <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+              nz-input placeholder="Режим торгов" />
           </nz-input-group>
         </nz-form-control>
       </nz-collapse-panel>

@@ -1,5 +1,5 @@
 export interface HistoryRequest {
-  code: string,
+  symbol: string,
   exchange: string,
   tf?: string,
   from?: number,

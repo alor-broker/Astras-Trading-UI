@@ -9,6 +9,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { CommonSummaryComponent } from './components/common-summary/common-summary.component';
 import { StopOrdersComponent } from './components/stop-orders/stop-orders.component';
 import { ForwardSummaryComponent } from './components/forward-summary/forward-summary.component';
+import { NzInputModule } from "ng-zorro-antd/input";
 
 
 @NgModule({
@@ -22,10 +23,11 @@ import { ForwardSummaryComponent } from './components/forward-summary/forward-su
     CommonSummaryComponent,
     ForwardSummaryComponent
   ],
-  imports: [
-    SharedModule,
-    BlotterRoutingModule
-  ],
+    imports: [
+        SharedModule,
+        BlotterRoutingModule,
+        NzInputModule
+    ],
   exports: [
     BlotterWidgetComponent
   ]

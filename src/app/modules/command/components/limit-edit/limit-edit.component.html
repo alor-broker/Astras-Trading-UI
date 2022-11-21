@@ -3,22 +3,22 @@
     <div nz-row [nzGutter]="12">
       <div nz-col [nzSm]="12" [nzXs]="24">
         <nz-form-item class="compact">
-          <nz-form-control nzErrorTip="Введите кол-во">
+          <nz-form-control nzErrorTip="Введите кол-во" [nzValidateStatus]="form.get('quantity')!">
             <nz-form-label [nzNoColon]="true" nzRequired nzFor="quantity">
               Кол-во лотов
               <span *ngIf="(commandContext.instrument?.lotsize ?? -1) !== 1" class="lot-size-hint">
                 &nbsp;1 лот = {{commandContext.instrument.lotsize}} шт.
               </span>
             </nz-form-label>
-            <input class='ant-input' atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
+            <input atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
           </nz-form-control>
         </nz-form-item>
       </div>
       <div nz-col [nzSm]="12" [nzXs]="24">
         <nz-form-item class="compact">
-          <nz-form-control nzErrorTip="Введите цену">
+          <nz-form-control nzErrorTip="Введите цену" [nzValidateStatus]="form.get('price')!">
             <nz-form-label [nzNoColon]="true" [nzSm]="6" [nzXs]="24" nzRequired nzFor="price">Цена</nz-form-label>
-            <input class='ant-input' atsNumerical formControlName="price" (mousedown)="$event.stopPropagation()" placeholder="0" />
+            <input atsNumerical formControlName="price" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
           </nz-form-control>
         </nz-form-item>
       </div>

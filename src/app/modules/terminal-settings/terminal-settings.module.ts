@@ -5,6 +5,7 @@ import { TerminalSettingsWidgetComponent } from './widgets/terminal-settings-wid
 import { TerminalSettingsComponent } from './components/terminal-settings/terminal-settings.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ExternalLinkModule } from '../../shared/components/external-link/external-link.module';
+import { NzInputModule } from "ng-zorro-antd/input";
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { ExternalLinkModule } from '../../shared/components/external-link/extern
     imports: [
         SharedModule,
         TerminalSettingsRoutingModule,
-        ExternalLinkModule
+        ExternalLinkModule,
+        NzInputModule
     ],
   exports: [
     TerminalSettingsWidgetComponent

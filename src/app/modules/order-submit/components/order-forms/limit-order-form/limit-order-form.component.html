@@ -19,7 +19,7 @@
         <nz-form-item class="compact">
           <nz-form-label nzFor="price" nzRequired>Цена</nz-form-label>
           <nz-form-control [nzErrorTip]="priceError">
-            <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="price" placeholder="0"/>
+            <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="price" nz-input placeholder="0"/>
             <ng-template #priceError>
               <span *ngIf="form.get('price')?.errors?.required">Введите цену</span>
               <span *ngIf="form.get('price')?.errors?.min">Слишком мало</span>
@@ -34,7 +34,7 @@
         <nz-collapse-panel nzHeader="Продвинутые">
           <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
           <nz-form-control nzErrorTip="Группа">
-            <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="instrumentGroup" placeholder="Режим торгов"/>
+            <input (mousedown)="$event.stopPropagation()" formControlName="instrumentGroup" nz-input placeholder="Режим торгов"/>
           </nz-form-control>
         </nz-collapse-panel>
       </nz-collapse>

@@ -135,7 +135,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     }
 
     this.historyService.getHistory({
-      code: instrumentKey.symbol,
+      symbol: instrumentKey.symbol,
       exchange: instrumentKey.exchange,
       instrumentGroup: instrumentKey.instrumentGroup,
       from: periodParams.from,

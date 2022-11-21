@@ -35,7 +35,7 @@ export class LightChartDatafeed {
     }
 
     this.historyService.getHistory({
-      code: this.instrumentKey.symbol,
+      symbol: this.instrumentKey.symbol,
       exchange: this.instrumentKey.exchange,
       instrumentGroup: this.instrumentKey.instrumentGroup,
       from: periodParams.from,
