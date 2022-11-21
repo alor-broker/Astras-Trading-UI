@@ -47,7 +47,7 @@
             <nz-form-item>
               <nz-form-label nzRequired nzFor="userIdleDurationMin">Время бездействия до приостановки сеанса, мин.</nz-form-label>
               <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.userIdleDurationMin.min}} до {{validationSettings.userIdleDurationMin.max}}">
-                <input class='ant-input' atsNumerical formControlName="userIdleDurationMin" (mousedown)="$event.stopPropagation()" nz-input/>
+                <input atsNumerical formControlName="userIdleDurationMin" (mousedown)="$event.stopPropagation()" nz-input/>
               </nz-form-control>
             </nz-form-item>
 
@@ -95,7 +95,6 @@
             <nz-form-label nzRequired nzFor="cancelOrdersKey">Снять лимитные заявки</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="cancelOrdersKey"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -108,7 +107,6 @@
             <nz-form-label nzRequired nzFor="closePositionsKey">Закрыть позиции по рынку</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="closePositionsKey"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -121,7 +119,6 @@
             <nz-form-label nzRequired nzFor="centerOrderbookKey">Отцентровать стаканы по спреду</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="centerOrderbookKey"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -137,7 +134,6 @@
             <nz-form-label nzRequired nzFor="cancelOrderbookOrders">Снять лимитные заявки</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="cancelOrderbookOrders"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -150,7 +146,6 @@
             <nz-form-label nzRequired nzFor="closeOrderbookPositions">Закрыть позицию по рынку</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="closeOrderbookPositions"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -163,7 +158,6 @@
             <nz-form-label nzRequired nzFor="reverseOrderbookPositions">Переворот позиции по рынку</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="reverseOrderbookPositions"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -176,7 +170,6 @@
             <nz-form-label nzRequired nzFor="buyMarket">Купить по рынку</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="buyMarket"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -189,7 +182,6 @@
             <nz-form-label nzRequired nzFor="sellMarket">Продать по рынку</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="sellMarket"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -203,7 +195,6 @@
             <nz-form-label nzRequired nzFor="sellBestOrder">Выставить лучшую заявку на продажу</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="sellBestOrder"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -216,7 +207,6 @@
             <nz-form-label nzRequired nzFor="buyBestOrder">Выставить лучшую заявку на покупку</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="buyBestOrder"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -230,7 +220,6 @@
             <nz-form-label nzRequired nzFor="sellBestBid">Продать по лучшей цене из BID</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="sellBestBid"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -243,7 +232,6 @@
             <nz-form-label nzRequired nzFor="buyBestAsk">Купить по лучшей цене из ASK</nz-form-label>
             <nz-form-control nzErrorTip="Введите значение">
               <input
-                class='ant-input'
                 formControlName="buyBestAsk"
                 (mousedown)="$event.stopPropagation()"
                 readonly
@@ -261,7 +249,6 @@
                 <nz-form-label nzRequired nzFor="selectWorkingVolume1">Выбрать рабочий объём {{i + 1}}</nz-form-label>
                 <nz-form-control nzErrorTip="Введите значение">
                   <input
-                    class='ant-input'
                     (mousedown)="$event.stopPropagation()"
                     readonly
                     nz-input

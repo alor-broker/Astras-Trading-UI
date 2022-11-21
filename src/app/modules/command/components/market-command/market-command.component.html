@@ -9,7 +9,7 @@
         </span>
       </nz-form-label>
       <nz-input-group>
-        <input class='ant-input' atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
+        <input atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
       </nz-input-group>
     </nz-form-control>
     <ng-template #quantityError>
@@ -22,9 +22,8 @@
     <nz-collapse-panel nzHeader="Продвинутые">
       <nz-form-control nzErrorTip="Группа">
         <nz-form-label [nzNoColon]="true" nzFor="instrumentGroup">Группа</nz-form-label>
-        <nz-input-group nzPrefixIcon="lock">
-          <input class='ant-input'  formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-            placeholder="Режим торгов" />
+        <nz-input-group>
+          <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()" nz-input placeholder="Режим торгов" />
         </nz-input-group>
       </nz-form-control>
     </nz-collapse-panel>

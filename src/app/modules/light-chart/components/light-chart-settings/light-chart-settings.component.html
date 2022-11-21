@@ -9,7 +9,7 @@
   <nz-form-item class="compact">
     <nz-form-control>
       <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
-      <input formControlName='exchange' class='ant-input'>
+      <input formControlName='exchange' nz-input>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item class="compact">
@@ -34,8 +34,8 @@
     <nz-collapse-panel nzHeader="Продвинутые">
       <nz-form-control nzErrorTip="Введите режим торгов">
         <nz-form-label nzRequired nzFor="instrumentGroup">Режим торгов</nz-form-label>
-        <input class='ant-input' formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-               placeholder="Режим торгов" />
+        <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+               nz-input placeholder="Режим торгов" />
       </nz-form-control>
     </nz-collapse-panel>
   </nz-collapse>
