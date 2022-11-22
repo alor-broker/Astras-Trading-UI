@@ -36,6 +36,7 @@ import { Side } from '../../../../shared/models/enums/side.model';
 import { MarketOrderFormValue } from '../order-forms/market-order-form/market-order-form.component';
 import { StopOrderFormValue } from '../order-forms/stop-order-form/stop-order-form.component';
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 
 describe('OrderSubmitComponent', () => {
   let component: OrderSubmitComponent;
@@ -89,7 +90,13 @@ describe('OrderSubmitComponent', () => {
           provide: InstrumentsService,
           useValue: { getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of(defaultInstrument)) }
         },
-        { provide: OrderService, useValue: orderServiceSpy }
+        { provide: OrderService, useValue: orderServiceSpy },
+        {
+          provide: PortfolioSubscriptionsService,
+          useValue: {
+            getAllPositionsSubscription: jasmine.createSpy('getAllPositionsSubscription').and.returnValue(of(null))
+          }
+        }
       ]
     }).compileComponents();
 
