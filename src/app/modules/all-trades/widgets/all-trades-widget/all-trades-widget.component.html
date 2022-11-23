@@ -1,5 +1,6 @@
 <ats-all-trades
   *ngIf="!shouldShowSettings"
   [guid]="guid"
-  [resize]="resize"
+  [contentSize]="contentSize$ | async"
 ></ats-all-trades>
+<ats-all-trades-settings *ngIf="shouldShowSettings" [guid]='guid' (settingsChange)="onSettingsChange()"></ats-all-trades-settings>

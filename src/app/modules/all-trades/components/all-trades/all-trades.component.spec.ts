@@ -44,7 +44,6 @@ describe('AllTradesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AllTradesComponent);
     component = fixture.componentInstance;
-    component.resize = new EventEmitter();
 
     fixture.detectChanges();
   });

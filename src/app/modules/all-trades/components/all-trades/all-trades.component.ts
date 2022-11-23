@@ -1,12 +1,10 @@
 import {
-  ChangeDetectorRef,
   Component,
-  EventEmitter,
   Input,
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
+import { DashboardItemContentSize } from "../../../../shared/models/dashboard-item.model";
 import { AllTradesService } from "../../services/all-trades.service";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { DatePipe } from "@angular/common";
@@ -32,7 +30,7 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 })
 export class AllTradesComponent implements OnInit, OnDestroy {
   @Input() guid!: string;
-  @Input() public resize!: EventEmitter<DashboardItem>;
+  @Input() contentSize!: DashboardItemContentSize | null;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private datePipe = new DatePipe('ru-RU');
@@ -52,7 +50,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     descending: true
   });
 
-  public columns: ColumnsSettings[] = [
+  public allColumns: ColumnsSettings[] = [
     {
       name: 'qty',
       displayName: 'Кол-во',
@@ -94,11 +92,11 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     {name: 'oi', displayName: 'Откр. интерес'},
     {name: 'existing', displayName: 'Новое событие', transformFn: (data: AllTradesItem) => data.existing ? 'Да' : 'Нет'},
   ];
+  public displayedColumns: ColumnsSettings[] = [];
 
   constructor(
     private readonly allTradesService: AllTradesService,
     private readonly settingsService: WidgetSettingsService,
-    private readonly cdr: ChangeDetectorRef
   ) {
   }
 
@@ -112,7 +110,9 @@ export class AllTradesComponent implements OnInit, OnDestroy {
 
     this.settings$
       .subscribe(settings => {
-      this.applyFilter({
+        this.displayedColumns = this.allColumns.filter(col => settings.allTradesColumns.includes(col.name));
+
+        this.applyFilter({
         exchange: settings.exchange,
         symbol: settings.symbol,
         from: toUnixTimestampSeconds(startOfDay(new Date())),
@@ -120,14 +120,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         take: this.take
       });
     });
-
-    this.resize
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        this.tableContainerHeight = data.height ?? 0;
-        this.tableContainerWidth = data.width!;
-        this.cdr.markForCheck();
-      });
   }
 
   public scrolled(): void {

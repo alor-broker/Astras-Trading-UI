@@ -31,7 +31,7 @@ import { Store } from '@ngrx/store';
 import { getSelectedInstrumentsWithBadges } from '../../store/instruments/instruments.selectors';
 import { getSelectedPortfolioKey } from '../../store/portfolios/portfolios.selectors';
 import { defaultInstrument } from '../../store/instruments/instruments.reducer';
-import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
+import { AllTradesSettings, allTradesWidgetColumns } from "../models/settings/all-trades-settings.model";
 import { NewsSettings } from "../models/settings/news-settings.model";
 import { ExchangeRateSettings } from "../models/settings/exchange-rate-settings.model";
 import {
@@ -263,7 +263,8 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       settingsType: 'AllTradesSettings',
       title: `Все сделки`,
-      titleIcon: 'unordered-list'
+      titleIcon: 'unordered-list',
+      allTradesColumns: allTradesWidgetColumns.filter(c => c.isDefault).map(col => col.columnId)
     } as AllTradesSettings;
   }
 
