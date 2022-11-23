@@ -26,7 +26,10 @@ describe('CsvFormatter', () => {
           { title: 'A', readFn: item => item.a }, { title: 'B', readFn: item => item.b },
         ],
         data: [{ a: 'a', b: 'b' }],
-        config: csvFormatterConfigDefaults,
+        config: {
+          ...csvFormatterConfigDefaults,
+          addBOM: false
+        },
         expectedResult: (meta: ExportColumnMeta<TestData>[], data: TestData[], config: CsvFormatterConfig) => {
           const expectedHeader = `${meta[0].title}${config.fieldSeparator}${meta[1].title}`;
           const expectedBody = `${data[0].a}${config.fieldSeparator}${data[0].b}`;
@@ -38,8 +41,11 @@ describe('CsvFormatter', () => {
         meta: [
           { title: 'A', readFn: item => item.a }, { title: 'B', readFn: item => item.b },
         ],
-        data: [{ a: 'a', b: 'b,c' }],
-        config: csvFormatterConfigDefaults,
+        data: [{ a: 'a', b: 'b;c' }],
+        config: {
+          ...csvFormatterConfigDefaults,
+          addBOM: false
+        },
         expectedResult: (meta: ExportColumnMeta<TestData>[], data: TestData[], config: CsvFormatterConfig) => {
           const expectedHeader = `${meta[0].title}${config.fieldSeparator}${meta[1].title}`;
           const expectedBody = `${data[0].a}${config.fieldSeparator}"${data[0].b}"`;
@@ -52,7 +58,10 @@ describe('CsvFormatter', () => {
           { title: 'A', readFn: item => item.a }, { title: 'B', readFn: item => item.b },
         ],
         data: [{ a: 'a', b: 'b"' }],
-        config: csvFormatterConfigDefaults,
+        config: {
+          ...csvFormatterConfigDefaults,
+          addBOM: false
+        },
         expectedResult: (meta: ExportColumnMeta<TestData>[], data: TestData[], config: CsvFormatterConfig) => {
           const expectedHeader = `${meta[0].title}${config.fieldSeparator}${meta[1].title}`;
           const expectedBody = `${data[0].a}${config.fieldSeparator}"${data[0].b}""`;
