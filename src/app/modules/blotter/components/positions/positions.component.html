@@ -56,14 +56,6 @@
 </div>
 
 <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown" *ngFor='let column of listOfColumns'>
-    <div class="search-box" *ngIf='column.hasSearch && column.isSearchVisible'>
-      <input
-        type="text" nz-input [placeholder]="column.searchDescription"
-        [ngModel]='getFilter(column.id)'
-        (ngModelChange)="filterChange($event, column.id)"/>
-    </div>
-  </div>
-  <button nz-button nzType="primary" nzSize="small" (click)="reset()">Сбросить</button>
+  <ats-table-filter [columns]="listOfColumns" (filterChange)="filterChange($event)"></ats-table-filter>
 </nz-dropdown-menu>
 
