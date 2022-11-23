@@ -9,12 +9,16 @@ import { NZ_I18N, ru_RU } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import ru from '@angular/common/locales/ru';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  HttpClientModule
+} from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { extModules } from "./build-specifics/ext-modules";
 import { ErrorHandlerService } from "./shared/services/handle-error/error-handler.service";
 import { EffectsModule } from '@ngrx/effects';
 import { ApplicationMetaModule } from './modules/application-meta/application-meta.module';
+import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
 
 registerLocaleData(ru);
 
@@ -37,6 +41,11 @@ registerLocaleData(ru);
   bootstrap: [AppComponent],
   providers: [
     { provide: NZ_I18N, useValue: ru_RU },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },
     { provide: ErrorHandler, useClass: ErrorHandlerService }
   ]
 })

@@ -12,7 +12,9 @@ import { ErrorHandlerService } from "../../../shared/services/handle-error/error
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AllTradesService {
   private allTradesUrl = environment.apiUrl + '/md/v2/Securities';
 

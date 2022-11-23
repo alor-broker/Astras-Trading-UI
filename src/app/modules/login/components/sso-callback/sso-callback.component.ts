@@ -16,10 +16,10 @@ export class SsoCallbackComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.account.setUser({
         refreshToken: params['refreshToken']?.trim(),
-        jwt: params['token'],
-        isLoggedOut: false
+        jwt: params['token']
       });
     });
+
     this.router.navigate(['/dashboard']);
   }
 

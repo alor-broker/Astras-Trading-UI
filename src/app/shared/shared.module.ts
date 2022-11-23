@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { AuthInterceptor } from '../shared/interceptors/auth.interceptor';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { GridsterModule } from 'angular-gridster2';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -70,7 +68,6 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule,
     GridsterModule,
     NgChartsModule,
     // Ng zorro
@@ -160,11 +157,6 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
         ShortNumberPipe,
     ],
   providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
     { provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true },
     { provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true },
     { provide: NOTIFICATIONS_PROVIDER, useClass: FeedbackNotificationsProvider, multi: true },
