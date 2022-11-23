@@ -1,18 +1,31 @@
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
+import {
+  discardPeriodicTasks,
+  fakeAsync,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from './auth.service';
 import { LocalStorageService } from "./local-storage.service";
 import { environment } from "../../../environments/environment";
 import { User } from "../models/user/user.model";
-import { of, skip, take } from "rxjs";
+import { take } from "rxjs";
+import { ErrorHandlerService } from './handle-error/error-handler.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
+
+  const refreshUrl = environment.clientDataUrl + '/auth/actions/refresh';
+
   let localStorageServiceSpy: any;
+  let windowAssignSpy = jasmine.createSpy('assign').and.callThrough();
 
   let userMock: User;
 
@@ -26,13 +39,12 @@ describe('AuthService', () => {
         clientid: '1',
         sub: 'login'
       })),
-      isLoggedOut: false,
       clientId: '1',
       portfolios: ['testPortfolio'],
     };
 
     localStorageServiceSpy = {
-      getItem: jasmine.createSpy('getItem').and.returnValue({}),
+      getItem: jasmine.createSpy('getItem').and.returnValue(undefined),
       setItem: jasmine.createSpy('setItem').and.callThrough(),
       removeItem: jasmine.createSpy('removeItem').and.callThrough()
     };
@@ -52,8 +64,14 @@ describe('AuthService', () => {
           provide: Window,
           useValue: {
             location: {
-              assign: jasmine.createSpy('assign').and.callThrough()
+              assign: windowAssignSpy
             }
+          }
+        },
+        {
+          provide: ErrorHandlerService,
+          useValue: {
+            handleError: jasmine.createSpy('handleError').and.callThrough()
           }
         }
       ]
@@ -81,104 +99,43 @@ describe('AuthService', () => {
   });
 
   it('should logout when logout call', () => {
-    service.currentUser$.pipe(
-      skip(1),
-      take(1)
-    )
-      .subscribe(user => {
-        expect(user).toEqual({
-          login: '',
-          jwt: '',
-          clientId: '',
-          refreshToken: '',
-          portfolios: [],
-          isLoggedOut: true
-        });
-      });
-
+    service.accessToken$.pipe(take(1)).subscribe();
     service.logout();
     expect(localStorageServiceSpy.removeItem).toHaveBeenCalled();
-  });
-
-  it('should correctly check authorization', () => {
-    let expDate = new Date();
-    expDate.setDate(expDate.getDate() + 1);
-    let expTimestamp = expDate.getTime()/1000;
-
-    userMock.jwt = 'login.' + btoa(JSON.stringify({
-      portfolios: 'testPortfolio',
-      clientid: '1',
-      exp: expTimestamp
-    }));
-
-    expect(service.isAuthorised(userMock)).toBeTruthy();
-
-    expDate = new Date();
-    expDate.setDate(expDate.getDate() - 1);
-    expTimestamp = expDate.getTime()/1000;
-
-    userMock.jwt = 'login.' + btoa(JSON.stringify({
-      portfolios: 'testPortfolio',
-      clientid: '1',
-      exp: expTimestamp
-    }));
-
-    expect(service.isAuthorised(userMock)).toBeFalsy();
+    expect(windowAssignSpy).toHaveBeenCalled();
   });
 
   it('should correctly check auth request', () => {
     let authUrl = environment.clientDataUrl + '/auth/actions/login';
     expect(service.isAuthRequest(authUrl)).toBeTruthy();
 
-    authUrl = environment.clientDataUrl + '/auth/actions/refresh';
+    authUrl = refreshUrl;
     expect(service.isAuthRequest(authUrl)).toBeTruthy();
 
     authUrl = environment.clientDataUrl + '/auth/actions/not-auth';
     expect(service.isAuthRequest(authUrl)).toBeFalsy();
   });
 
-  it('should refresh token', () => {
-    const refreshRes = { jwt: 'test.' + btoa(JSON.stringify({
-        portfolios: 'testPortfolio2',
-        clientid: '2'
-      }))
-    };
+  it('should redirect to login if token expired', () => {
+    let expDate = new Date();
+    expDate.setDate(expDate.getDate() - 1);
+    let expTimestamp = expDate.getTime() / 1000;
+
+    userMock.jwt = 'login.' + btoa(JSON.stringify({
+      portfolios: 'testPortfolio',
+      clientid: '1',
+      exp: expTimestamp
+    }));
 
     service.setUser(userMock);
-    const setUserSpy = spyOn(service, 'setUser').and.callThrough();
-
-    service.refresh()
-      .subscribe(() => {
-        expect(setUserSpy).toHaveBeenCalledOnceWith({ ...userMock, ...refreshRes });
-      });
-
-    const req = httpTestingController.expectOne(environment.clientDataUrl + '/auth/actions/refresh');
-
-    expect(req.request.method).toEqual('POST');
-    expect(req.request.body).toEqual({ oldJwt: userMock.jwt, refreshToken: userMock.refreshToken });
-
-    req.flush(refreshRes);
+    service.accessToken$.pipe(take(1)).subscribe();
+    expect(windowAssignSpy).toHaveBeenCalled();
   });
 
-  it('should not refresh token', () => {
-    service.setUser({...userMock, isLoggedOut: true});
-    service.redirectToSso = jasmine.createSpy('redirectToSso').and.callThrough();
-
-    const setUserSpy = spyOn(service, 'setUser').and.callThrough();
-
-    service.refresh()
-      .subscribe(() => {
-      });
-    expect(setUserSpy).not.toHaveBeenCalled();
-    expect(service.redirectToSso).toHaveBeenCalled();
-  });
-
-  it('should correctly return access token', fakeAsync(() => {
-    service.refresh = jasmine.createSpy('refresh').and.returnValue(of(null));
-
+  it('should refresh token at start', () => {
     let expDate = new Date();
     expDate.setDate(expDate.getDate() + 1);
-    let expTimestamp = expDate.getTime()/1000;
+    let expTimestamp = expDate.getTime() / 1000;
 
     userMock.jwt = 'login.' + btoa(JSON.stringify({
       portfolios: 'testPortfolio',
@@ -187,35 +144,36 @@ describe('AuthService', () => {
     }));
 
     service.setUser(userMock);
+    service.accessToken$.pipe(take(1)).subscribe();
 
-    service.accessToken$
-      .pipe(take(1))
-      .subscribe(res => expect(res).toEqual(userMock.jwt));
+    const request = httpTestingController.expectOne(refreshUrl);
+    expect(request.request.method).toEqual('POST');
+  });
 
-    tick();
+  it('should refresh token after expiration', fakeAsync(() => {
+      let expDate = new Date();
+      expDate.setMinutes(expDate.getMinutes() + 1);
+      let expTimestamp = expDate.getTime() / 1000;
 
-    expect(service.refresh).not.toHaveBeenCalled();
+      userMock.jwt = 'login.' + btoa(JSON.stringify({
+        portfolios: 'testPortfolio',
+        clientid: '1',
+        exp: expTimestamp
+      }));
 
-    expDate = new Date();
-    expDate.setDate(expDate.getDate() - 1);
-    expTimestamp = expDate.getTime()/1000;
+      service.setUser(userMock);
+      service.accessToken$.pipe(take(1)).subscribe();
 
-    userMock.jwt = 'login.' + btoa(JSON.stringify({
-      portfolios: 'testPortfolio',
-      clientid: '1',
-      exp: expTimestamp
-    }));
+      const firstRefresh = httpTestingController.expectOne(refreshUrl);
+      firstRefresh.flush({
+        jwt: userMock.jwt
+      });
 
-    service.setUser(userMock);
+      tick(5 * 60 * 1000);
 
-    service.accessToken$
-      .pipe(take(1))
-      .subscribe(res => expect(res).toBeFalsy());
-
-    tick();
-
-    expect(service.refresh).toHaveBeenCalled();
-
-    discardPeriodicTasks();
-  }));
+      const requests = httpTestingController.match(refreshUrl);
+      expect(requests.length).toBeGreaterThan(1);
+      discardPeriodicTasks();
+    })
+  );
 });

@@ -10,6 +10,7 @@ import {
 import { SharedModule } from '../shared.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
+import { HttpClientModule } from '@angular/common/http';
 
 /**
  * Create async observable that emits-once and completes  after a JS engine turn
@@ -148,7 +149,8 @@ export const ngZorroMockComponents = [
 export const sharedModuleImportForTests: Array<Type<any> | ModuleWithProviders<{}> | any[]> = [
   StoreModule.forRoot({}),
   EffectsModule.forRoot(),
-  SharedModule
+  SharedModule,
+  HttpClientModule
 ];
 
 /**

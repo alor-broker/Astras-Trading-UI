@@ -19,10 +19,10 @@ import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import {
   of,
+  Subject,
   take
 } from 'rxjs';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { Quote } from '../../../../shared/models/quotes/quote.model';
 import { OrderService } from '../../../../shared/services/orders/order.service';
 import { OrderType } from '../../models/order-form.model';
 import { LimitOrderFormValue } from '../order-forms/limit-order-form/limit-order-form.component';
@@ -89,6 +89,11 @@ describe('OrderSubmitComponent', () => {
         {
           provide: InstrumentsService,
           useValue: { getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of(defaultInstrument)) }
+        },
+        {
+          provide: QuotesService, useValue: {
+            getQuotes: jasmine.createSpy('getQuotes').and.returnValue(new Subject())
+          }
         },
         { provide: OrderService, useValue: orderServiceSpy },
         {

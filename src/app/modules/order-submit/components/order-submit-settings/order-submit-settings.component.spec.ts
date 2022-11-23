@@ -6,10 +6,10 @@ import {
 import { OrderSubmitSettingsComponent } from './order-submit-settings.component';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { of } from 'rxjs';
-import { TechChartSettings } from '../../../../shared/models/settings/tech-chart-settings.model';
 import { OrderSubmitModule } from '../../order-submit.module';
 import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { OrderSubmitSettings } from '../../../../shared/models/settings/order-submit-settings.model';
 
 describe('OrderSubmitSettingsComponent', () => {
   let component: OrderSubmitSettingsComponent;
@@ -26,7 +26,7 @@ describe('OrderSubmitSettingsComponent', () => {
         {
           provide: WidgetSettingsService,
           useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({} as TechChartSettings)),
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({} as OrderSubmitSettings)),
             updateSettings: jasmine.createSpy('getSettings').and.callThrough(),
           }
         }

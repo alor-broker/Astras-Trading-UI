@@ -1,50 +1,91 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, EMPTY, Observable, of, timer } from 'rxjs';
+import {
+  BehaviorSubject,
+  interval,
+  NEVER,
+  of,
+  shareReplay,
+  take,
+} from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
-import { catchError, map, mergeMap, switchMap} from 'rxjs/operators';
+import {
+  distinct,
+  filter,
+  map,
+  switchMap
+} from 'rxjs/operators';
 import { RefreshToken } from '../models/user/refresh-token.model';
 import { RefreshTokenResponse } from '../models/user/refresh-token-response.model';
 import { JwtBody } from '../models/user/jwt.model';
 import { BaseUser } from '../models/user/base-user.model';
 import { LocalStorageService } from "./local-storage.service";
+import {
+  catchHttpError,
+  mapWith
+} from '../utils/observable-helper';
+import { ErrorHandlerService } from './handle-error/error-handler.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private readonly userStorage = 'user';
-  private accountUrl = environment.clientDataUrl + '/auth/actions';
-  private ssoUrl = environment.ssoUrl;
-  private currentUser = new BehaviorSubject<User>({
-    login: '',
-    jwt: '',
-    refreshToken: '',
-    clientId: '',
-    portfolios: [],
-    isLoggedOut: false
-  });
+  private readonly accountUrl = environment.clientDataUrl + '/auth/actions';
+  private readonly ssoUrl = environment.ssoUrl;
+  private readonly currentUserSub = new BehaviorSubject<User | null>(null);
 
-  currentUser$ = this.currentUser.asObservable();
-  accessToken$ = this.getAccessToken();
+  readonly currentUser$ = this.currentUserSub.asObservable().pipe(
+    filter((x): x is User => !!x)
+  );
+
+  readonly accessToken$ = this.currentUserSub.pipe(
+    switchMap((user, index) => {
+      if (this.isAuthorised(user)) {
+        if (index === 0) {
+          this.refreshToken(user!);
+          return NEVER;
+        }
+      }
+      else {
+        this.localStorage.removeItem(this.userStorage);
+        this.redirectToSso();
+        return NEVER;
+      }
+
+      return of(user);
+    }),
+    mapWith(() => interval(1000), (user,) => user),
+    switchMap(user => {
+      if (this.isAuthorised(user)) {
+        return of(user);
+      }
+
+      this.refreshToken(user!);
+      return NEVER;
+    }),
+    shareReplay(1),
+    filter(user => this.isAuthorised(user)),
+    map(user => user!.jwt),
+    distinct()
+  );
 
   constructor(
     private readonly http: HttpClient,
     private readonly localStorage: LocalStorageService,
-    private readonly window: Window
+    private readonly window: Window,
+    private readonly errorHandlerService: ErrorHandlerService
   ) {
     const user = localStorage.getItem<User>(this.userStorage);
-    if(user) {
-      this.setCurrentUser(user);
-    }
+    this.setCurrentUser(user ?? null);
   }
 
   public setUser(baseUser: BaseUser) {
     const portfolios = this.extractPortfolios(baseUser.jwt);
     const clientId = this.extractClientId(baseUser.jwt);
     const login = this.extractUserLogin(baseUser.jwt);
-    const user : User = {
+    const user: User = {
       ...baseUser,
       clientId,
       portfolios,
@@ -56,94 +97,53 @@ export class AuthService {
   }
 
   public logout() {
-    this.localStorage.removeItem('user');
-    this.currentUser.next({
-      login: '',
-      jwt: '',
-      clientId: '',
-      refreshToken: '',
-      portfolios: [],
-      isLoggedOut: true
-    });
-
-    this.redirectToSso();
-  }
-
-  public isAuthorised(user?: User): boolean {
-    if (!user) {
-      user = this.currentUser.getValue();
-    }
-    if (user && user.jwt) {
-      return this.checkTokenTime(user.jwt);
-    }
-    return false;
+    this.setCurrentUser(null);
   }
 
   public isAuthRequest(url: string) {
     return url == `${this.accountUrl}/login` || url == `${this.accountUrl}/refresh`;
   }
 
-  public refresh() : Observable<string> {
-    const user = this.currentUser.getValue();
-    if (!user || user.isLoggedOut) {
-      this.redirectToSso();
-      return EMPTY;
-    }
+  private redirectToSso() {
+    this.window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
+  }
 
-    const refreshModel : RefreshToken = {
+  private isAuthorised(user?: User | null): boolean {
+    if (user?.jwt) {
+      return this.checkTokenTime(user.jwt);
+    }
+    return false;
+  }
+
+  private refreshToken(user: User) {
+    const refreshModel: RefreshToken = {
       oldJwt: user.jwt,
       refreshToken: user.refreshToken,
     };
 
     return this.http
-      .post<RefreshTokenResponse>(`${this.accountUrl}/refresh`, refreshModel)
-      .pipe(
-        map((res: RefreshTokenResponse) => {
-          if (res) {
-            user.jwt = res.jwt;
-            this.setUser(user);
-            return user.jwt;
-          }
-
-          throw Error('Can\'t refresh token');
-        })
-      );
-  }
-
-  private getAccessToken(): Observable<string> {
-    return this.currentUser$.pipe(
-      switchMap(user => timer(0, 1000).pipe(
-        map(() => user))
-      ),
-      mergeMap(user => {
-        if (this.isAuthorised(user)) {
-          return of(user.jwt);
+      .post<RefreshTokenResponse>(`${this.accountUrl}/refresh`, refreshModel).pipe(
+        catchHttpError<RefreshTokenResponse | null>(null, this.errorHandlerService),
+        take(1)
+      )
+      .subscribe(response => {
+        if (response) {
+          this.setUser({
+            ...user,
+            jwt: response.jwt
+          });
         }
-        else {
-          return this.refresh().pipe(
-            map(t => t),
-            catchError(e => {
-              this.redirectToSso();
-              throw e;
-            })
-          );
-        }
-      })
-    );
+      });
   }
 
-  redirectToSso() {
-    this.window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
-  }
-
-  private extractPortfolios(jwt: string) : string[] {
+  private extractPortfolios(jwt: string): string[] {
     if (jwt) {
       return this.decodeJwtBody(jwt).portfolios?.split(' ') || [];
     }
     return [];
   }
 
-  private extractClientId(jwt: string | undefined) : string {
+  private extractClientId(jwt: string | undefined): string {
     if (jwt) {
       let decoded = this.decodeJwtBody(jwt);
       return decoded.clientid;
@@ -151,14 +151,14 @@ export class AuthService {
     return '';
   }
 
-  private extractUserLogin(jwt: string | undefined) : string {
+  private extractUserLogin(jwt: string | undefined): string {
     if (jwt) {
       return this.decodeJwtBody(jwt).sub;
     }
     return '';
   }
 
-  private decodeJwtBody(jwt: string) : JwtBody {
+  private decodeJwtBody(jwt: string): JwtBody {
     const mainPart = jwt.split('.')[1];
     const decodedString = atob(mainPart);
     return JSON.parse(decodedString);
@@ -173,7 +173,7 @@ export class AuthService {
     return false;
   }
 
-  private setCurrentUser(user: User) {
-    this.currentUser.next(user);
+  private setCurrentUser(user: User | null) {
+    this.currentUserSub.next(user);
   }
 }
