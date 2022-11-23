@@ -77,11 +77,16 @@ export class InfoService {
         if (d.securityType == 'unknown') {
           d.securityType = exchangeInfo.type;
         }
-        return {
-          ...d,
-          marginbuy: exchangeInfo?.marginbuy,
-          marginsell: exchangeInfo?.marginsell
-        };
+
+        if(d.securityType !== 'stock' && d.securityType !== 'bond') {
+          return {
+            ...d,
+            marginbuy: exchangeInfo?.marginbuy,
+            marginsell: exchangeInfo?.marginsell
+          };
+        }
+
+        return d;
       }),
     catchError(() => of(null)),
   );
