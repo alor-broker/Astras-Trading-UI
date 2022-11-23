@@ -1,16 +1,19 @@
 export class CsvFormatterConstants {
   public static EOL = "\r\n";
-  public static DEFAULT_FIELD_SEPARATOR = ',';
+  public static DEFAULT_FIELD_SEPARATOR = ';';
+  public static BOM_PREFIX = '\ufeff';
 }
 
 export interface CsvFormatterConfig {
   readonly fieldSeparator: string;
   readonly endOfLine: string;
+  readonly addBOM: boolean;
 }
 
 export const csvFormatterConfigDefaults: CsvFormatterConfig = {
   fieldSeparator: CsvFormatterConstants.DEFAULT_FIELD_SEPARATOR,
-  endOfLine: CsvFormatterConstants.EOL
+  endOfLine: CsvFormatterConstants.EOL,
+  addBOM: true
 };
 
 export interface ExportColumnMeta<T> {
@@ -26,7 +29,14 @@ export class CsvFormatter {
 
     data.forEach(row => rows.push(this.generateItemRow(meta, row, config)));
 
-    return rows.join(config.endOfLine);
+    let res = '';
+    if(config.addBOM) {
+      res += CsvFormatterConstants.BOM_PREFIX;
+    }
+
+    res += rows.join(config.endOfLine);
+
+    return res;
   }
 
   private static generateHeaderRow<T>(meta: ExportColumnMeta<T>[], config: CsvFormatterConfig) {
