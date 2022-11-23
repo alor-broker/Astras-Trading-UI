@@ -11,7 +11,7 @@ import { of } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { mockComponent, ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('TradesComponent', () => {
   let component: TradesComponent;
@@ -41,7 +41,8 @@ describe('TradesComponent', () => {
       ],
       declarations: [
         TradesComponent,
-        ...ngZorroMockComponents
+        ...ngZorroMockComponents,
+        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] })
       ]
     }).compileComponents();
   });

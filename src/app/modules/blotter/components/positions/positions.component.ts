@@ -272,12 +272,8 @@ export class PositionsComponent implements OnInit, OnDestroy {
     this.searchFilter.next({});
   }
 
-  filterChange(text: string, option: string) {
-    const newFilter = this.searchFilter.getValue();
-    if (option) {
-      newFilter[option as keyof PositionFilter] = text;
-      this.searchFilter.next(newFilter);
-    }
+  filterChange(newFilter: PositionFilter) {
+    this.searchFilter.next(newFilter);
   }
 
   getFilter(columnId: string) {

@@ -10,6 +10,7 @@ import { CommonSummaryComponent } from './components/common-summary/common-summa
 import { StopOrdersComponent } from './components/stop-orders/stop-orders.component';
 import { ForwardSummaryComponent } from './components/forward-summary/forward-summary.component';
 import { NzInputModule } from "ng-zorro-antd/input";
+import { TableFilterComponent } from "./components/table-filter/table-filter.component";
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { NzInputModule } from "ng-zorro-antd/input";
     StopOrdersComponent,
     BlotterSettingsComponent,
     CommonSummaryComponent,
-    ForwardSummaryComponent
+    ForwardSummaryComponent,
+    TableFilterComponent
   ],
     imports: [
         SharedModule,

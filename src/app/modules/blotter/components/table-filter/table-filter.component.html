@@ -1,0 +1,12 @@
+<div class="ant-table-filter-dropdown custom-filter">
+  <ng-container *ngFor='let column of columns'>
+    <div class="search-box" *ngIf='column.hasSearch && column.isSearchVisible' [formGroup]="filtersForm">
+      <input
+        class="filter-input"
+        type="text" nz-input [placeholder]="column.searchDescription"
+        [formControlName]="column.id"
+      />
+    </div>
+  </ng-container>
+  <button nz-button nzType="text" nzSize="small" (click)="reset()">Сбросить</button>
+</div>

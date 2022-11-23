@@ -5,7 +5,7 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 import { PositionsComponent } from './positions.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { ngZorroMockComponents, sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import { mockComponent, ngZorroMockComponents, sharedModuleImportForTests } from "../../../../shared/utils/testing";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -34,6 +34,7 @@ describe('PositionsComponent', () => {
       ],
       declarations: [
         PositionsComponent,
+        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] })
       ]
     })
       .compileComponents();

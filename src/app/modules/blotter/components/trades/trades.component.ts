@@ -229,12 +229,8 @@ export class TradesComponent implements OnInit, OnDestroy {
     this.searchFilter.next({});
   }
 
-  filterChange(text: string, option: string) {
-    const newFilter = this.searchFilter.getValue();
-    if (option) {
-      newFilter[option as keyof TradeFilter] = text;
-      this.searchFilter.next(newFilter);
-    }
+  filterChange(newFilter: TradeFilter) {
+    this.searchFilter.next(newFilter);
   }
 
   getFilter(columnId: string) {

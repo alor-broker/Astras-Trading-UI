@@ -369,12 +369,8 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
     this.searchFilter.next({});
   }
 
-  filterChange(text: string, option: string) {
-    const newFilter = this.searchFilter.getValue();
-    if (option) {
-      newFilter[option as keyof OrderFilter] = text;
-      this.searchFilter.next(newFilter);
-    }
+  filterChange(newFilter: OrderFilter) {
+    this.searchFilter.next(newFilter);
   }
 
   getFilter(columnId: string) {
