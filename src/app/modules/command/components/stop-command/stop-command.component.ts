@@ -33,6 +33,8 @@ import { TimezoneConverterService } from '../../../../shared/services/timezone-c
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
+import { AtsValidators } from "../../../../shared/utils/form-validators";
+import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 
 @Component({
   selector: 'ats-stop-command',
@@ -148,7 +150,8 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)
+          Validators.max(inputNumberValidation.max),
+          AtsValidators.priceStepMultiplicity((initialParameters.instrument as Instrument).minstep || 0)
         ]
       ),
       triggerPrice: new FormControl(
@@ -157,6 +160,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max),
+          AtsValidators.priceStepMultiplicity((initialParameters.instrument as Instrument).minstep || 0)
         ]
       ),
       stopEndUnixTime: new FormControl(!!initialParameters.stopEndUnixTime

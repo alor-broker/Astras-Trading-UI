@@ -36,6 +36,7 @@
             <span *ngIf="form.get('triggerPrice')?.errors?.required">Введите цену</span>
             <span *ngIf="form.get('triggerPrice')?.errors?.min">Слишком мало</span>
             <span *ngIf="form.get('triggerPrice')?.errors?.max">Слишком много</span>
+            <span *ngIf="form.get('triggerPrice')?.errors?.priceStepMultiplicity">Значение должно быть кратно шагу цены ({{instrument.minstep}})</span>
           </ng-template>
         </nz-form-item>
       </div>
@@ -76,6 +77,7 @@
               <span *ngIf="form.get('price')?.errors?.required">Введите цену</span>
               <span *ngIf="form.get('price')?.errors?.min">Слишком мало</span>
               <span *ngIf="form.get('price')?.errors?.max">Слишком много</span>
+              <span *ngIf="form.get('price')?.errors?.priceStepMultiplicity">Значение должно быть кратно шагу цены ({{instrument.minstep}})</span>
             </ng-template>
           </nz-form-control>
         </nz-form-item>

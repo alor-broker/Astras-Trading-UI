@@ -24,6 +24,7 @@ import { LimitEdit } from '../../models/limit-edit.model';
 import { CommandContextModel } from '../../models/command-context.model';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
+import { AtsValidators } from "../../../../shared/utils/form-validators";
 
 @Component({
   selector: 'ats-limit-edit',
@@ -89,7 +90,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
   }
 
   private initCommandForm(commandContext: CommandContextModel<EditParams>) {
-    this.form = this.buildForm(commandContext.commandParameters);
+    this.form = this.buildForm(commandContext);
     this.setLimitEditCommand(commandContext);
 
     this.form.valueChanges.pipe(
@@ -103,21 +104,22 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buildForm(initialParameters: EditParams): FormGroup<ControlsOf<LimitFormData>> {
+  private buildForm(initialParameters: CommandContextModel<EditParams>): FormGroup<ControlsOf<LimitFormData>> {
     return new FormGroup<ControlsOf<LimitFormData>>({
       quantity: new FormControl(
-        initialParameters.quantity ?? 1,
+        initialParameters.commandParameters.quantity ?? 1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max)
         ]),
       price: new FormControl(
-        initialParameters.price ?? 1,
+        initialParameters.commandParameters.price ?? 1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)
+          Validators.max(inputNumberValidation.max),
+          AtsValidators.priceStepMultiplicity(initialParameters.instrument.minstep || 0)
         ])
     });
   }

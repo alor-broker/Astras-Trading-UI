@@ -6,6 +6,7 @@ import { OrderFormBaseComponent } from "../order-form-base.component";
 import {
   FormControl,
   FormGroup,
+  ValidatorFn,
   Validators
 } from "@angular/forms";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
@@ -13,12 +14,14 @@ import { LimitOrder } from "../../../../command/models/order.model";
 import {
   BehaviorSubject,
   filter,
-  take
+  take,
+  takeUntil
 } from "rxjs";
 import { EvaluationBaseProperties } from "../../../../command/models/evaluation-base-properties.model";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../../shared/models/form.model';
+import { AtsValidators } from "../../../../../shared/utils/form-validators";
 
 export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
@@ -28,11 +31,16 @@ export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { in
   styleUrls: ['./limit-order-form.component.less']
 })
 export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFormValue> implements OnDestroy {
+  private priceStepMultiplicityFn: ValidatorFn | null = null;
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
     this.evaluation$.complete();
+  }
+
+  protected onFormCreated() {
+    this.subscribeToInstrumentChange();
   }
 
   protected buildForm(instrument: Instrument): FormGroup<ControlsOf<LimitOrderFormValue>> {
@@ -42,7 +50,7 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)
+          Validators.max(inputNumberValidation.max),
         ]
       ),
       price: new FormControl(
@@ -97,5 +105,22 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
     if (!!values && !!values.price && this.form) {
       this.form.controls.price.setValue(values.price);
     }
+  }
+
+  private subscribeToInstrumentChange() {
+    this.instrument$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(instrument => {
+        const priceCtrl = this.form?.get('price');
+
+        if (priceCtrl) {
+          if (this.priceStepMultiplicityFn && priceCtrl.hasValidator(this.priceStepMultiplicityFn)) {
+            priceCtrl.removeValidators(this.priceStepMultiplicityFn);
+          }
+          this.priceStepMultiplicityFn = AtsValidators.priceStepMultiplicity(instrument!.minstep);
+          priceCtrl.addValidators(this.priceStepMultiplicityFn);
+          priceCtrl.updateValueAndValidity();
+        }
+      });
   }
 }
