@@ -1,9 +1,9 @@
 <ats-infinite-scroll-table
-  [tableContainerHeight]="tableContainerHeight"
-  [tableContainerWidth]="tableContainerWidth"
+  [tableContainerHeight]="contentSize?.height || 0"
+  [tableContainerWidth]="contentSize?.width || 0"
   [data]="(tradesList$ | async) ?? []"
   [isLoading]="(isLoading$ | async) ?? true"
-  [columns]="columns"
+  [columns]="displayedColumns"
   (scrolled)="scrolled()"
   (filterApplied)="applyFilter($event)"
 ></ats-infinite-scroll-table>
