@@ -74,7 +74,8 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
           tradesColumns: new UntypedFormControl(settings.tradesColumns),
           positionsColumns: new UntypedFormControl(settings.positionsColumns),
           currency: new UntypedFormControl(this.currencyToCode(settings.currency)),
-          isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden),
+          isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden ?? false),
+          cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false)
         });
       }
     });
