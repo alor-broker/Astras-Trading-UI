@@ -229,7 +229,8 @@ export class WidgetFactoryService {
       stopOrdersColumns: allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       linkToActive: true,
       badgeColor: defaultBadgeColor,
-      isSoldPositionsHidden: true
+      isSoldPositionsHidden: true,
+      cancelOrdersWithoutConfirmation: false
     } as BlotterSettings;
   }
 

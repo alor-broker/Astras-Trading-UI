@@ -9,7 +9,8 @@ export interface BlotterSettings extends WidgetSettings {
   stopOrdersColumns: string[],
   tradesColumns: string[],
   positionsColumns: string[],
-  isSoldPositionsHidden: boolean
+  isSoldPositionsHidden: boolean,
+  cancelOrdersWithoutConfirmation?: boolean
 }
 
 export interface ColumnIds  {
