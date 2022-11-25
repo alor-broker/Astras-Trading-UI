@@ -109,30 +109,16 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
   }
 
   protected getFormValue(): StopOrderFormValue | null {
-    const formValue = this.form?.value;
+    const formValue = super.getFormValue();
     if (!formValue) {
-      return null;
-    }
-
-    if (isNaN(parseFloat(formValue.triggerPrice?.toString() || ''))) {
-      this.form?.get('triggerPrice')?.setValue(null);
-    }
-
-    if (formValue.withLimit && isNaN(parseFloat(formValue.price?.toString() || ''))) {
-      this.form?.get('price')?.setValue(null);
-    }
-
-    if (this.form?.invalid) {
-      return null;
+      return formValue;
     }
 
     return {
       ...formValue,
-      condition: formValue.condition!,
-      withLimit: formValue.withLimit!,
       quantity: Number(formValue.quantity),
-      triggerPrice: parseFloat(formValue.triggerPrice!.toString()),
-      price: (!!formValue.price ? parseFloat(formValue.price!.toString()) : formValue.price) as number,
+      triggerPrice: Number(formValue.triggerPrice),
+      price: (!!formValue.price ? Number(formValue.price) : formValue.price) as number,
       stopEndUnixTime: !!formValue.stopEndUnixTime
         ? this.timezoneConverter.terminalToUtc0Date(formValue.stopEndUnixTime as Date)
         : undefined,

@@ -89,10 +89,10 @@ export class StopEditComponent implements OnInit, OnDestroy {
     const formValue = this.form.getRawValue() as StopFormData;
 
     if (initialParameters && initialParameters.user) {
-      const price = parseFloat(formValue.price?.toString() ?? '');
+      const price = Number(formValue.price);
       const newCommand: StopEdit = {
         quantity: Number(formValue.quantity),
-        triggerPrice: parseFloat(formValue.triggerPrice.toString()),
+        triggerPrice: Number(formValue.triggerPrice),
         condition: formValue.condition,
         stopEndUnixTime: !!formValue.stopEndUnixTime
           ? this.timezoneConverter.terminalToUtc0Date(formValue.stopEndUnixTime).getTime() / 1000
@@ -127,21 +127,11 @@ export class StopEditComponent implements OnInit, OnDestroy {
       distinctUntilChanged((prev, curr) =>
         JSON.stringify(prev) === JSON.stringify(curr)
       ),
-    ).subscribe(() => {
-      const val = this.form.getRawValue();
-
-      if (val.withLimit && !parseFloat(val.price?.toString() ?? '')) {
-        this.form.get('price')?.setValue(null);
-      }
-
-      if (!parseFloat(val.triggerPrice?.toString() ?? '')) {
-        this.form.get('triggerPrice')?.setValue(null);
-      }
-
+    ).subscribe((val) => {
       this.setStopEdit({
         ...initialParameters,
         ...val,
-        price: parseFloat(val.price?.toString() || ''),
+        price: Number(val.price),
         quantity: val.quantity!,
         side: val.side!
       });

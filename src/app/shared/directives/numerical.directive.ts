@@ -12,48 +12,26 @@ export class NumericalDirective {
   constructor(private _el: ElementRef) {
   }
 
-  @HostListener('input', ['$event']) onInputChange(event: Event) {
-    if (!this._el.nativeElement.value) {
+  @HostListener('beforeinput', ['$event']) onBeforeInputChange(event: InputEvent) {
+    if (!event.data) {
       return;
     }
 
-    const initialValue = this._el.nativeElement.value;
-    this._el.nativeElement.value = initialValue.replace(/[^0-9.,]/g, '');
-    this._el.nativeElement.value = this._el.nativeElement.value.replace(/[,]/g, '.');
-    this._el.nativeElement.value = this.removeExtraDots(this._el.nativeElement.value);
-
-    if (initialValue !== this._el.nativeElement.value) {
+    let inputSymbol = event.data.replace(/[^0-9.,]/g, '');
+    if (this.isInvalidValue(inputSymbol)) {
       event.stopPropagation();
+      event.preventDefault();
+      return;
     }
-
+    if (inputSymbol === ',') {
+      event.stopPropagation();
+      event.preventDefault();
+      this._el.nativeElement.value = this._el.nativeElement.value + '.';
+      this._el.nativeElement.dispatchEvent(new Event('input'));
+    }
   }
 
-  private removeExtraDots(input: string): string {
-    const dots = [...input].reduce((previousValue: number[], currentValue, currentIndex) => {
-        if (currentValue === '.') {
-          return [...previousValue, currentIndex];
-        }
-
-        return previousValue;
-      },
-      []
-    );
-
-    if (dots.length <= 1) {
-      return input;
-    }
-
-    let normalizedValue = '';
-    if (dots.length > 1) {
-      for (let i = 0; i < input.length; i++) {
-        if (dots.indexOf(i) > 0) {
-          continue;
-        }
-
-        normalizedValue += input[i];
-      }
-    }
-
-    return normalizedValue;
+  isInvalidValue(newSymbol: string): boolean {
+    return !newSymbol || ['.', ','].includes(newSymbol) && (this._el.nativeElement.value.includes('.') || !this._el.nativeElement.value);
   }
 }

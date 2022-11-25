@@ -72,7 +72,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     if (commandContext.commandParameters && commandContext.commandParameters.user) {
       const newCommand: LimitEdit = {
         quantity: Number(formValue.quantity),
-        price: parseFloat(formValue.price.toString()),
+        price: Number(formValue.price),
         instrument: {
           ...commandContext.commandParameters.instrument,
         },
@@ -98,11 +98,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
         prev?.price == curr?.price
         && prev?.quantity == curr?.quantity
       )
-    ).subscribe((val) => {
-      if (!parseFloat(val.price?.toString() ?? '')) {
-        this.form.get('price')?.setValue(null);
-      }
-
+    ).subscribe(() => {
       this.setLimitEditCommand(commandContext);
     });
   }
