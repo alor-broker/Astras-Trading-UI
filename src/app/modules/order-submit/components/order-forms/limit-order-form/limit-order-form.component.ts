@@ -13,12 +13,13 @@ import { LimitOrder } from "../../../../command/models/order.model";
 import {
   BehaviorSubject,
   filter,
-  take
+  take,
 } from "rxjs";
 import { EvaluationBaseProperties } from "../../../../command/models/evaluation-base-properties.model";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../../shared/models/form.model';
+import { AtsValidators } from "../../../../../shared/utils/form-validators";
 
 export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
@@ -42,7 +43,7 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)
+          Validators.max(inputNumberValidation.max),
         ]
       ),
       price: new FormControl(
@@ -50,7 +51,8 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)
+          Validators.max(inputNumberValidation.max),
+          AtsValidators.priceStepMultiplicity(instrument!.minstep)
         ]
       ),
       instrumentGroup: new FormControl(instrument.instrumentGroup ?? ''),

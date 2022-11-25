@@ -125,12 +125,12 @@ describe('LimitEditComponent', () => {
       {
         control: 'quantity',
         setValue: () => -1,
-        expectedError: 'Введите кол-во'
+        expectedError: 'Слишком мало'
       },
       {
         control: 'quantity',
         setValue: () => 1000000001,
-        expectedError: 'Введите кол-во'
+        expectedError: 'Слишком много'
       },
       {
         control: 'price',
@@ -140,12 +140,12 @@ describe('LimitEditComponent', () => {
       {
         control: 'price',
         setValue: () => -1,
-        expectedError: 'Введите цену'
+        expectedError: 'Слишком мало'
       },
       {
         control: 'price',
         setValue: () => 1000000001,
-        expectedError: 'Введите цену'
+        expectedError: 'Слишком много'
       }
     ];
 

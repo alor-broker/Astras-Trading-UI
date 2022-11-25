@@ -24,6 +24,8 @@ import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandContextModel } from '../../models/command-context.model';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
+import { AtsValidators } from "../../../../shared/utils/form-validators";
+import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 
 @Component({
   selector: 'ats-limit-command',
@@ -101,7 +103,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)
+          Validators.max(inputNumberValidation.max),
         ]
       ),
       price: new FormControl(
@@ -109,7 +111,8 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)
+          Validators.max(inputNumberValidation.max),
+          AtsValidators.priceStepMultiplicity((initialParameters.instrument as Instrument).minstep || 0)
         ]
       ),
       instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),

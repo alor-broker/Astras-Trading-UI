@@ -23,6 +23,7 @@ import { TimezoneConverterService } from "../../../../../shared/services/timezon
 import { map } from "rxjs/operators";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../../shared/models/form.model';
+import { AtsValidators } from "../../../../../shared/utils/form-validators";
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'>
@@ -85,7 +86,8 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)
+          Validators.max(inputNumberValidation.max),
+          AtsValidators.priceStepMultiplicity(instrument.minstep)
         ]
       ),
       triggerPrice: new FormControl(
@@ -94,6 +96,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max),
+          AtsValidators.priceStepMultiplicity(instrument.minstep)
         ]
       ),
       stopEndUnixTime: new FormControl(additions!.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),

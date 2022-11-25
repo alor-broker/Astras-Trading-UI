@@ -3,7 +3,7 @@
     <div nz-row [nzGutter]="12">
       <div nz-col [nzSm]="12" [nzXs]="24">
         <nz-form-item class="compact">
-          <nz-form-control nzErrorTip="Введите кол-во" [nzValidateStatus]="form.get('quantity')!">
+          <nz-form-control [nzErrorTip]="quantityError" [nzValidateStatus]="form.get('quantity')!">
             <nz-form-label [nzNoColon]="true" nzRequired nzFor="quantity">
               Кол-во лотов
               <span *ngIf="(commandContext.instrument?.lotsize ?? -1) !== 1" class="lot-size-hint">
@@ -12,14 +12,25 @@
             </nz-form-label>
             <input atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
           </nz-form-control>
+          <ng-template #quantityError>
+            <span *ngIf="form.get('quantity')?.errors?.required">Введите кол-во</span>
+            <span *ngIf="form.get('quantity')?.errors?.min">Слишком мало</span>
+            <span *ngIf="form.get('quantity')?.errors?.max">Слишком много</span>
+          </ng-template>
         </nz-form-item>
       </div>
       <div nz-col [nzSm]="12" [nzXs]="24">
         <nz-form-item class="compact">
-          <nz-form-control nzErrorTip="Введите цену" [nzValidateStatus]="form.get('price')!">
+          <nz-form-control [nzErrorTip]="priceError"  [nzValidateStatus]="form.get('price')!">
             <nz-form-label [nzNoColon]="true" [nzSm]="6" [nzXs]="24" nzRequired nzFor="price">Цена</nz-form-label>
             <input atsNumerical formControlName="price" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
           </nz-form-control>
+          <ng-template #priceError>
+            <span *ngIf="form.get('price')?.errors?.required">Введите цену</span>
+            <span *ngIf="form.get('price')?.errors?.min">Слишком мало</span>
+            <span *ngIf="form.get('price')?.errors?.max">Слишком много</span>
+            <span *ngIf="form.get('price')?.errors?.priceStepMultiplicity">Значение должно быть кратно шагу цены ({{commandContext.instrument.minstep}})</span>
+          </ng-template>
         </nz-form-item>
       </div>
     </div>
