@@ -25,6 +25,7 @@ describe('LimitCommandComponent', () => {
 
   let spyCommands: any;
   const priceSelected$ = new Subject<number>();
+  const quantitySelected$ = new Subject<number>();
 
   const getDefaultCommandContext: () => CommandContextModel<CommandParams> = () => {
     const instrument = TestData.instruments[0];
@@ -68,8 +69,9 @@ describe('LimitCommandComponent', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand', 'priceSelected$']);
+    spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand', 'priceSelected$', 'quantitySelected$']);
     spyCommands.priceSelected$ = priceSelected$;
+    spyCommands.quantitySelected$ = quantitySelected$;
 
     await TestBed.configureTestingModule({
       imports: [
@@ -253,6 +255,29 @@ describe('LimitCommandComponent', () => {
       expect(inputs.price.value).toEqual(expectedCommand.price.toString());
     }
   );
+
+  it('should update quantity', () => {
+    const commandContext = getDefaultCommandContext();
+    component.commandContext = commandContext;
+    fixture.detectChanges();
+
+    const inputs = getFormInputs();
+    const expectedCommand: LimitCommand = {
+      price: Number(inputs.price.value),
+      quantity: 432,
+      instrument: {
+        ...commandContext.commandParameters.instrument,
+        instrumentGroup: inputs.instrumentGroup.value
+      },
+      user: commandContext.commandParameters.user
+    };
+
+    quantitySelected$.next(expectedCommand.quantity);
+    fixture.detectChanges();
+
+    expect(spyCommands.setLimitCommand).toHaveBeenCalledWith(expectedCommand);
+    expect(inputs.quantity.value).toEqual(expectedCommand.quantity.toString());
+  });
 
   it('should update evaluation', (done) => {
       const commandContext = getDefaultCommandContext();

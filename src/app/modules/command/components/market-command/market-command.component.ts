@@ -68,6 +68,12 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       this.initCommandForm(context.commandParameters);
       this.initEvaluationUpdates(context);
     });
+
+    this.service.quantitySelected$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(qty => {
+      this.form.get('quantity')?.setValue(qty);
+    });
   }
 
   ngOnDestroy(): void {

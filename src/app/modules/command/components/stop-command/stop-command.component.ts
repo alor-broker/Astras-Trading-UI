@@ -76,6 +76,18 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           });
         }
       });
+
+    this.service.priceSelected$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(price => {
+      this.form.get('price')?.setValue(price);
+    });
+
+    this.service.quantitySelected$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(qty => {
+      this.form.get('quantity')?.setValue(qty);
+    });
   }
 
   ngOnDestroy(): void {

@@ -18,7 +18,7 @@ import { EvaluationBaseProperties } from "../../models/evaluation-base-propertie
 import { MarketCommandComponent } from "./market-command.component";
 import { MarketCommand } from "../../models/market-command.model";
 import { Quote } from "../../../../shared/models/quotes/quote.model";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 
 describe('MarketCommandComponent', () => {
@@ -26,6 +26,8 @@ describe('MarketCommandComponent', () => {
   let fixture: ComponentFixture<MarketCommandComponent>;
 
   let spyCommands: any;
+  const quantitySelected$ = new Subject<number>();
+
 
   const expectedPrice = 103;
   const quoteMock = new BehaviorSubject<Quote>({
@@ -72,7 +74,8 @@ describe('MarketCommandComponent', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    spyCommands = jasmine.createSpyObj('CommandsService', ['setMarketCommand']);
+    spyCommands = jasmine.createSpyObj('CommandsService', ['setMarketCommand', 'quantitySelected$']);
+    spyCommands.quantitySelected$ = quantitySelected$;
 
     await TestBed.configureTestingModule({
       imports: [
@@ -218,6 +221,28 @@ describe('MarketCommandComponent', () => {
       expect(spyCommands.setMarketCommand).toHaveBeenCalledWith(expectedCommand);
     }
   );
+
+  it('should update quantity', () => {
+    const commandContext = getDefaultCommandContext();
+    component.commandContext = commandContext;
+    fixture.detectChanges();
+
+    const inputs = getFormInputs();
+    const expectedCommand: MarketCommand = {
+      quantity: 353,
+      instrument: {
+        ...commandContext.commandParameters.instrument,
+        instrumentGroup: inputs.instrumentGroup.value
+      },
+      user: commandContext.commandParameters.user
+    };
+
+    quantitySelected$.next(expectedCommand.quantity);
+    fixture.detectChanges();
+
+    expect(spyCommands.setMarketCommand).toHaveBeenCalledWith(expectedCommand);
+    expect(inputs.quantity.value).toEqual(expectedCommand.quantity.toString());
+  });
 
   it('should update evaluation', (done) => {
       const commandContext = getDefaultCommandContext();

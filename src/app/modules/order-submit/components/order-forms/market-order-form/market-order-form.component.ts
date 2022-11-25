@@ -142,4 +142,10 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
         takeUntil(isDeactivated$)
       );
   }
+
+  protected applyInitialValues(values: Partial<MarketOrderFormValue> | null) {
+    if (!!values?.quantity) {
+      this.form?.controls.quantity.setValue(values.quantity);
+    }
+  }
 }

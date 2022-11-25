@@ -94,8 +94,11 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
   }
 
   protected applyInitialValues(values: Partial<LimitOrderFormValue> | null) {
-    if (!!values && !!values.price && this.form) {
-      this.form.controls.price.setValue(values.price);
+    if (!!values?.price) {
+      this.form?.controls.price.setValue(values.price);
+    }
+    if (!!values?.quantity) {
+      this.form?.controls.quantity.setValue(values.quantity);
     }
   }
 }
