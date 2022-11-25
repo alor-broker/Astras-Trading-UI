@@ -1,4 +1,5 @@
 @import "theme-mixin";
+@import "buy-sell-button-mixin";
 
 .themeMixin({
   :host {
@@ -34,43 +35,20 @@
     }
 
     .footer {
-      .ant-btn {
-        color: white;
-
-        &[disabled] {
-          border: none;
-        }
-      }
-
-      .buy-button {
+      .buy-button, .sell-button {
         width: 50%;
-        background: @buy-color;
-
-        &[disabled] {
-          color: @buy-color-disabled;
-          background: @buy-color-background-disabled;
-        }
-
-        &:hover:not([disabled]) {
-          border-color: fade(@buy-color, 20%);
-          background: fade(@buy-color, 90%);
-        }
       }
+    }
 
-      .sell-button {
-        width: 50%;
-        background: @sell-color;
+    .buy-button,
+    .buttons-group.buy ::ng-deep .ant-btn
+    {
+      .buySellButton(@buy-color, white, @buy-color-disabled, @buy-color-background-disabled);
+    }
 
-        &[disabled] {
-          color: @sell-color-disabled;
-          background: @sell-color-background-disabled;
-        }
-
-        &:hover:not([disabled]) {
-          border-color: fade(@sell-color, 20%);
-          background: fade(@sell-color, 90%);
-        }
-      }
+    .sell-button,
+    .buttons-group.sell ::ng-deep .ant-btn{
+      .buySellButton(@sell-color, white, @sell-color-disabled, @sell-color-background-disabled);
     }
   }
 });
@@ -100,6 +78,20 @@
 
   .ant-btn {
     flex-grow: 1;
-    border-radius: 4px;
+  }
+}
+
+#limit-orders-price-change-buttons {
+  margin-top: @margin;
+  display: flex;
+  gap: 6px;
+
+  .buttons-group {
+    width: 50%;
+
+    ::ng-deep .ant-btn {
+      padding: 0;
+      min-width: 26px;
+    }
   }
 }

@@ -17,6 +17,7 @@ import { CommandModule } from "../command/command.module";
 import { MarketOrderFormComponent } from './components/order-forms/market-order-form/market-order-form.component';
 import { StopOrderFormComponent } from './components/order-forms/stop-order-form/stop-order-form.component';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { LimitOrderPriceChangeComponent } from './components/limit-order-price-change/limit-order-price-change.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
     OrderSubmitComponent,
     LimitOrderFormComponent,
     MarketOrderFormComponent,
-    StopOrderFormComponent
+    StopOrderFormComponent,
+    LimitOrderPriceChangeComponent
   ],
     imports: [
         CommonModule,
