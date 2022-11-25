@@ -1,5 +1,6 @@
 import {
   BehaviorSubject,
+  distinctUntilChanged,
   filter,
   Observable,
   of,
@@ -96,6 +97,9 @@ export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements On
     this.form = this.buildForm(instrument, additions);
 
     this.formValueChangeSubscription = this.form.valueChanges.pipe(
+      distinctUntilChanged((prev, curr) =>
+        JSON.stringify(prev) === JSON.stringify(curr)
+      ),
       takeUntil(this.destroy$)
     ).subscribe(() => {
       this.emitFormValue();

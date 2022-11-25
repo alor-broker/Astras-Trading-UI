@@ -78,7 +78,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     if (commandContext.commandParameters && commandContext.commandParameters.user) {
       const newCommand: LimitCommand = {
         quantity: Number(formValue.quantity),
-        price: Number(formValue.price),
+        price: parseFloat(formValue.price.toString()),
         instrument: {
           ...commandContext.commandParameters.instrument,
           instrumentGroup: formValue.instrumentGroup ?? commandContext.commandParameters.instrument.instrumentGroup
@@ -142,7 +142,11 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         && prev?.quantity == curr?.quantity
         && prev?.instrumentGroup == curr?.instrumentGroup
       )
-    ).subscribe(() => {
+    ).subscribe((val) => {
+      if (!parseFloat(val.price?.toString() ?? '')) {
+        this.form.get('price')?.setValue(null);
+      }
+
       this.setLimitCommand(commandContext);
     });
   }

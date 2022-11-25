@@ -18,7 +18,8 @@ export class NumericalDirective {
     }
 
     const initialValue = this._el.nativeElement.value;
-    this._el.nativeElement.value = initialValue.replace(/[^0-9.]/g, '');
+    this._el.nativeElement.value = initialValue.replace(/[^0-9.,]/g, '');
+    this._el.nativeElement.value = this._el.nativeElement.value.replace(/[,]/g, '.');
     this._el.nativeElement.value = this.removeExtraDots(this._el.nativeElement.value);
 
     if (initialValue !== this._el.nativeElement.value) {

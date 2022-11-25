@@ -106,10 +106,10 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     const formValue = this.form.value;
 
     if (initialParameters && initialParameters.user) {
-      const price = Number(formValue.price);
+      const price = parseFloat(formValue.price!.toString());
       const newCommand: StopCommand = {
         quantity: Number(formValue.quantity),
-        triggerPrice: Number(formValue.triggerPrice),
+        triggerPrice: parseFloat(formValue.triggerPrice!.toString()),
         condition: formValue.condition!,
         stopEndUnixTime: !!formValue.stopEndUnixTime
           ? this.timezoneConverter.terminalToUtc0Date(formValue.stopEndUnixTime)
@@ -185,7 +185,15 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         prev?.quantity == curr?.quantity &&
         prev?.triggerPrice == curr?.triggerPrice &&
         prev?.stopEndUnixTime == curr?.stopEndUnixTime),
-    ).subscribe(() => {
+    ).subscribe((val) => {
+      if (val.withLimit && !parseFloat(val.price?.toString() ?? '')) {
+        this.form.get('price')?.setValue(null);
+      }
+
+      if (!parseFloat(val.triggerPrice?.toString() ?? '')) {
+        this.form.get('triggerPrice')?.setValue(null);
+      }
+
       this.setStopCommand(initialParameters);
     });
   }

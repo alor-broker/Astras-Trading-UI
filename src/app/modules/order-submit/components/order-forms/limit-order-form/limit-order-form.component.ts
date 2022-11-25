@@ -63,10 +63,15 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
       return formValue;
     }
 
+    if (!parseFloat(formValue.price.toString())) {
+      this.form?.get('price')?.setValue(null);
+      return null;
+    }
+
     return {
       ...formValue,
       quantity: Number(formValue.quantity),
-      price: Number(formValue.price),
+      price: parseFloat(formValue.price.toString()),
     };
   }
 
@@ -81,7 +86,7 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
       take(1)
     ).subscribe(instrument => {
       this.evaluation$.next({
-        price: value.price,
+        price: parseFloat(value.price.toString()),
         lotQuantity: value.quantity,
         instrument: {
           symbol: instrument.symbol,
