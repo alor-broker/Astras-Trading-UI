@@ -8,7 +8,6 @@ import { Instrument } from "../../../../../shared/models/instruments/instrument.
 import {
   FormControl,
   FormGroup,
-  ValidatorFn,
   Validators
 } from "@angular/forms";
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
@@ -19,7 +18,7 @@ import {
   toUnixTime
 } from "../../../../../shared/utils/datetime";
 import { StopOrderCondition } from "../../../../../shared/models/enums/stoporder-conditions";
-import { Observable, takeUntil } from "rxjs";
+import { Observable } from "rxjs";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { map } from "rxjs/operators";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
@@ -39,7 +38,6 @@ export type StopOrderFormValue =
 export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderFormValue, { timezoneConverter: TimezoneConverter }> {
   public canSelectNow = true;
   private timezoneConverter!: TimezoneConverter;
-  private priceStepMultiplicityFn: ValidatorFn | null = null;
 
   constructor(
     private readonly timezoneConverterService: TimezoneConverterService,
@@ -68,7 +66,6 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
 
   protected onFormCreated() {
     this.checkPriceAvailability();
-    this.subscribeToInstrumentChange();
   }
 
   protected buildForm(instrument: Instrument, additions: { timezoneConverter: TimezoneConverter } | null): FormGroup<ControlsOf<StopOrderFormValue>> {
@@ -89,7 +86,8 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)
+          Validators.max(inputNumberValidation.max),
+          AtsValidators.priceStepMultiplicity(instrument.minstep)
         ]
       ),
       triggerPrice: new FormControl(
@@ -98,6 +96,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max),
+          AtsValidators.priceStepMultiplicity(instrument.minstep)
         ]
       ),
       stopEndUnixTime: new FormControl(additions!.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
@@ -145,30 +144,5 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     const now = new Date();
     const convertedNow = this.timezoneConverter.toTerminalDate(now);
     this.canSelectNow = convertedNow.toUTCString() === now.toUTCString();
-  }
-
-  private subscribeToInstrumentChange() {
-    this.instrument$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(instrument => {
-        const priceCtrl = this.form?.get('price');
-        const triggerPriceCtrl = this.form?.get('triggerPrice');
-
-        if (priceCtrl && triggerPriceCtrl) {
-          if (this.priceStepMultiplicityFn) {
-            if (priceCtrl.hasValidator(this.priceStepMultiplicityFn)) {
-              priceCtrl.removeValidators(this.priceStepMultiplicityFn);
-            }
-            if (triggerPriceCtrl.hasValidator(this.priceStepMultiplicityFn)) {
-              triggerPriceCtrl.removeValidators(this.priceStepMultiplicityFn);
-            }
-          }
-          this.priceStepMultiplicityFn = AtsValidators.priceStepMultiplicity(instrument!.minstep);
-          priceCtrl.addValidators(this.priceStepMultiplicityFn);
-          triggerPriceCtrl.addValidators(this.priceStepMultiplicityFn);
-          priceCtrl.updateValueAndValidity();
-          triggerPriceCtrl.updateValueAndValidity();
-        }
-      });
   }
 }
