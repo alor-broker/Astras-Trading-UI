@@ -16,6 +16,7 @@ import { SharedModule } from "../../shared/shared.module";
 import { CommandModule } from "../command/command.module";
 import { MarketOrderFormComponent } from './components/order-forms/market-order-form/market-order-form.component';
 import { StopOrderFormComponent } from './components/order-forms/stop-order-form/stop-order-form.component';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 
 
 @NgModule({
@@ -27,19 +28,20 @@ import { StopOrderFormComponent } from './components/order-forms/stop-order-form
     MarketOrderFormComponent,
     StopOrderFormComponent
   ],
-  imports: [
-    CommonModule,
-    NzFormModule,
-    NzSelectModule,
-    NzCollapseModule,
-    NzWaveModule,
-    ReactiveFormsModule,
-    NzInputModule,
-    NzButtonModule,
-    NzTabsModule,
-    SharedModule,
-    CommandModule
-  ],
+    imports: [
+        CommonModule,
+        NzFormModule,
+        NzSelectModule,
+        NzCollapseModule,
+        NzWaveModule,
+        ReactiveFormsModule,
+        NzInputModule,
+        NzButtonModule,
+        NzTabsModule,
+        SharedModule,
+        CommandModule,
+        NzInputNumberModule
+    ],
   exports: [OrderSubmitWidgetComponent]
 })
 export class OrderSubmitModule {

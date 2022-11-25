@@ -335,7 +335,9 @@ export class WidgetFactoryService {
       settingsType: 'OrderSubmitSettings',
       title: 'Выставить заявку',
       titleIcon: 'send',
-      linkToActive: true
+      linkToActive: true,
+      enableLimitOrdersFastEditing: false,
+      limitOrderPriceMoveSteps: [1, 2 , 5, 10]
     } as OrderSubmitSettings;
   }
 }

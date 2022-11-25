@@ -1,28 +1,86 @@
 <p>Настройки</p>
-<form (ngSubmit)="submitForm()" [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
-  <nz-form-item class='compact'>
-    <nz-form-control nzErrorTip="Выберите тикер">
-      <nz-form-label nzRequired nzFor="instrument">Тикер</nz-form-label>
-      <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
-    </nz-form-control>
-  </nz-form-item>
-  <nz-form-item class="compact">
-    <nz-form-control>
-      <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
-      <input formControlName='exchange' class='ant-input'>
-    </nz-form-control>
-  </nz-form-item>
-  <nz-collapse [nzBordered]="false" class="compact">
-    <nz-collapse-panel nzHeader="Продвинутые">
-      <nz-form-control nzErrorTip="Введите режим торгов">
-        <nz-form-label nzFor="instrumentGroup" nzRequired>Режим торгов</nz-form-label>
-        <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="instrumentGroup" placeholder="Режим торгов"/>
+<div *ngIf="form">
+  <form (ngSubmit)="submitForm()" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+    <nz-form-item class='compact'>
+      <nz-form-label nzFor="instrument" nzRequired>Тикер</nz-form-label>
+      <nz-form-control nzErrorTip="Выберите тикер">
+        <ats-instrument-search (instrumentSelected)="instrumentSelected($event)"
+                               formControlName="instrument"></ats-instrument-search>
       </nz-form-control>
-    </nz-collapse-panel>
-  </nz-collapse>
-  <nz-form-item>
-    <nz-form-control>
-      <button [disabled]="!form.valid" nz-button nzType="primary" type='submit'>Сохранить</button>
-    </nz-form-control>
-  </nz-form-item>
-</form>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="exchange" nzRequired>Биржа</nz-form-label>
+      <nz-form-control>
+        <input class='ant-input' formControlName='exchange'>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="one-row">
+      <nz-form-label nzFor="enableLimitOrdersFastEditing">Отображать кнопки быстрого редактирования лимитных заявок
+      </nz-form-label>
+      <nz-form-control>
+        <nz-switch formControlName='enableLimitOrdersFastEditing'></nz-switch>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-collapse *ngIf="form.getRawValue().enableLimitOrdersFastEditing" [nzBordered]="false">
+        <nz-collapse-panel [nzActive]="true" [nzDisabled]="!asFormArray(form.controls.limitOrderPriceMoveSteps).valid"
+                           nzHeader="Настройки номиналов">
+          <nz-form-item>
+            <span nz-typography nzType="secondary">
+              Указанные ниже значения определяют набор кнопок для быстрого изменения цены в лимитных заявках.
+              Каждый номинал является множителем для стандартного шага цены выбранного инструмента.
+              Т.е. при номинале 2 и шаге цены 0.1 цена лимитной заявки будет изменена на <strong>2*0.1=0.2</strong>
+            </span>
+          </nz-form-item>
+          <nz-form-item>
+            <div *ngFor="let stepControl of asFormArray(form.controls.limitOrderPriceMoveSteps).controls; index as i"
+                 class="price-move-step-option">
+              <nz-form-label>Номинал {{i + 1}}:</nz-form-label>
+              <nz-form-control
+                nzErrorTip="Значение должно быть от {{validationOptions.limitOrderPriceMoveStep.min}} до {{validationOptions.limitOrderPriceMoveStep.max}}">
+                <nz-input-number (mousedown)="$event.stopPropagation()" [formControl]="asFormControl(stepControl)"
+                                 [nzMax]="validationOptions.limitOrderPriceMoveStep.max"
+                                 [nzMin]="validationOptions.limitOrderPriceMoveStep.min"
+                                 [nzPrecision]="0"
+                                 [nzPrecisionMode]="'cut'"
+                ></nz-input-number>
+              </nz-form-control>
+              <button
+                (click)="removeLimitOrderPriceMoveStep($event, i)"
+                [disabled]="form.getRawValue().limitOrderPriceMoveSteps.length <= 1"
+                class="move-step-remove-btn"
+                nz-button
+                nzType="dashed">
+                <i nz-icon nzType="minus"></i>
+              </button>
+            </div>
+            <button (click)="addLimitOrderPriceMoveStep($event)"
+                    [disabled]="!asFormArray(form.controls.limitOrderPriceMoveSteps).valid"
+                    class="add-move-step-btn"
+                    nz-button
+                    nzType="dashed">
+              <i nz-icon nzType="plus"></i>
+            </button>
+          </nz-form-item>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-collapse [nzBordered]="false" class="compact">
+        <nz-collapse-panel nzHeader="Продвинутые">
+          <nz-form-label nzFor="instrumentGroup">Режим торгов</nz-form-label>
+          <nz-form-control nzErrorTip="Введите режим торгов">
+            <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="instrumentGroup"
+                   placeholder="Режим торгов"/>
+          </nz-form-control>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-control>
+        <button [disabled]="!form.valid" nz-button nzType="primary" type='submit'>Сохранить</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</div>
+
