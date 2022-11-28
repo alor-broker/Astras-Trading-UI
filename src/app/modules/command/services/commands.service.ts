@@ -20,6 +20,8 @@ export class CommandsService {
   private marketCommand?: BehaviorSubject<MarketCommand | null>;
   private priceSelectedSubject$ = new Subject<number>();
   public priceSelected$ = this.priceSelectedSubject$.asObservable();
+  private quantitySelectedSubject$ = new Subject<number>();
+  public quantitySelected$ = this.quantitySelectedSubject$.asObservable();
   private commandErrorSubject$ = new Subject<boolean | null>();
   public commandError$ = this.commandErrorSubject$.asObservable();
 
@@ -99,6 +101,10 @@ export class CommandsService {
 
   setPriceSelected(price: number) {
     this.priceSelectedSubject$.next(price);
+  }
+
+  setQuantitySelected(qty: number) {
+    this.quantitySelectedSubject$.next(qty);
   }
 
   submitStop(side: Side): Observable<SubmitOrderResult> {

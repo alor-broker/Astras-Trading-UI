@@ -59,6 +59,12 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     ).subscribe(price => {
       this.form.get('price')?.setValue(price);
     });
+
+    this.service.quantitySelected$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(qty => {
+      this.form.get('quantity')?.setValue(qty);
+    });
   }
 
   ngOnDestroy(): void {

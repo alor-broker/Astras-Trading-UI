@@ -17,6 +17,7 @@
             <span
               class="position-badge"
               [class]="positionInfo.quantity > 0 ? 'long' : 'short'"
+              (click)="selectQuantity(positionInfo.abs)"
             >
               {{positionInfo.abs}}
             </span>
@@ -49,6 +50,7 @@
           <nz-tab #marketTab (nzSelect)="setSelectedCommandType(orderTypes.MarketOrder)" nzTitle="Рыночная">
             <ats-market-order-form (formValueChange)="setMarketOrderValue($event)"
                                    [activated]="marketTab.isActive"
+                                   [initialValues]="initialValues$ | async"
                                    [instrument]="currentInstrumentWithPortfolio.instrument"
             ></ats-market-order-form>
           </nz-tab>

@@ -1,6 +1,6 @@
 import {
-  ComponentFixture,
-  TestBed
+  ComponentFixture, fakeAsync,
+  TestBed, tick
 } from '@angular/core/testing';
 import {
   of,
@@ -37,6 +37,9 @@ describe('StopCommandComponent', () => {
   let fixture: ComponentFixture<StopCommandComponent>;
 
   let spyCommands: any;
+  const priceSelected$ = new Subject<number>();
+  const quantitySelected$ = new Subject<number>();
+
   let timezoneConverterServiceSpy: any;
   const commandError$ = new Subject<boolean | null>();
   const timezoneConverter = new TimezoneConverter(TimezoneDisplayOption.MskTime);
@@ -84,8 +87,10 @@ describe('StopCommandComponent', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    spyCommands = jasmine.createSpyObj('CommandsService', ['setStopCommand', 'commandError$']);
+    spyCommands = jasmine.createSpyObj('CommandsService', ['setStopCommand', 'commandError$', 'priceSelected$', 'quantitySelected$']);
     spyCommands.commandError$ = commandError$;
+    spyCommands.priceSelected$ = priceSelected$;
+    spyCommands.quantitySelected$ = quantitySelected$;
 
     timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(timezoneConverter));
@@ -278,5 +283,64 @@ describe('StopCommandComponent', () => {
     const errorElement = getValidationErrorElement(inputs.price);
 
     expect(errorElement?.textContent).toEqual('Введите цену');
+  });
+
+  it('should update price',fakeAsync(() => {
+    const commandContext = getDefaultCommandContext();
+    const stopEndUnixTimeVal = new Date((new Date).setMonth((new Date()).getMonth() + 1));
+    component.commandContext = commandContext;
+
+    component.form.controls.withLimit.setValue(true);
+    component.form.controls.stopEndUnixTime!.setValue(stopEndUnixTimeVal);
+    fixture.detectChanges();
+
+    const inputs = getFormInputs();
+    const expectedCommand: StopCommand = {
+      price: 308,
+      quantity: Number(inputs.quantity.value),
+      triggerPrice: Number(inputs.triggerPrice.value),
+      instrument: {
+        ...commandContext.commandParameters.instrument,
+      },
+      condition: StopOrderCondition.More,
+      user: commandContext.commandParameters.user,
+      stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndUnixTimeVal)
+    };
+
+    priceSelected$.next(expectedCommand.price!);
+    fixture.detectChanges();
+
+    expect(spyCommands.setStopCommand).toHaveBeenCalledWith(expectedCommand);
+    expect(inputs.price.value).toEqual(expectedCommand.price!.toString());
+  }));
+
+  it('should update quantity', () => {
+    const commandContext = getDefaultCommandContext();
+    const stopEndUnixTimeVal = new Date((new Date).setMonth((new Date()).getMonth() + 1));
+    component.commandContext = commandContext;
+
+    component.form.controls.withLimit.setValue(true);
+    component.form.controls.price!.setValue(commandContext.commandParameters.price);
+    component.form.controls.stopEndUnixTime!.setValue(stopEndUnixTimeVal);
+    fixture.detectChanges();
+
+    const inputs = getFormInputs();
+    const expectedCommand: StopCommand = {
+      price: Number(inputs.price.value),
+      triggerPrice: Number(inputs.triggerPrice.value),
+      quantity: 499,
+      instrument: {
+        ...commandContext.commandParameters.instrument,
+      },
+      condition: StopOrderCondition.More,
+      user: commandContext.commandParameters.user,
+      stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndUnixTimeVal)
+    };
+
+    quantitySelected$.next(expectedCommand.quantity);
+    fixture.detectChanges();
+
+    expect(spyCommands.setStopCommand).toHaveBeenCalledWith(expectedCommand);
+    expect(inputs.quantity.value).toEqual(expectedCommand.quantity.toString());
   });
 });
