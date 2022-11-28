@@ -73,7 +73,7 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
         instrumentGroup: new UntypedFormControl(settings.instrumentGroup),
         enableLimitOrdersFastEditing: new UntypedFormControl(settings.enableLimitOrdersFastEditing ?? false),
         limitOrderPriceMoveSteps: new FormArray(
-          [...settings.limitOrderPriceMoveSteps]
+          [...(settings.limitOrderPriceMoveSteps ?? [1])]
             .sort((a, b) => a - b)
             .map(x => this.createLimitOrderPriceMoveStepControl(x)
             )
