@@ -6,8 +6,8 @@
           <nz-form-control [nzErrorTip]="quantityError" [nzValidateStatus]="form.get('quantity')!">
             <nz-form-label [nzNoColon]="true" nzRequired nzFor="quantity">
               Кол-во лотов
-              <span *ngIf="(commandContext.instrument?.lotsize ?? -1) !== 1" class="lot-size-hint">
-                &nbsp;1 лот = {{commandContext.instrument.lotsize}} шт.
+              <span *ngIf="(commandContext.instrument?.lotsize ?? 1) !== 1" class="lot-size-hint">
+                &nbsp;1 лот = {{commandContext.instrument.lotsize | shortNumber}} шт.
               </span>
             </nz-form-label>
             <nz-input-group>
