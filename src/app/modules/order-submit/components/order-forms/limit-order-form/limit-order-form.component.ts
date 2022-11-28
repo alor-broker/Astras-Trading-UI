@@ -83,7 +83,7 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
       take(1)
     ).subscribe(instrument => {
       this.evaluation$.next({
-        price: value.price,
+        price: Number(value.price),
         lotQuantity: value.quantity,
         instrument: {
           symbol: instrument.symbol,

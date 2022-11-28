@@ -121,7 +121,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
       ...formValue,
       quantity: Number(formValue.quantity),
       triggerPrice: Number(formValue.triggerPrice),
-      price: !!formValue.price ? Number(formValue.price) : formValue.price,
+      price: (!!formValue.price ? Number(formValue.price) : formValue.price) as number,
       stopEndUnixTime: !!formValue.stopEndUnixTime
         ? this.timezoneConverter.terminalToUtc0Date(formValue.stopEndUnixTime as Date)
         : undefined,

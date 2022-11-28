@@ -126,16 +126,13 @@ export class StopEditComponent implements OnInit, OnDestroy {
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
       distinctUntilChanged((prev, curr) =>
-        prev?.condition == curr?.condition &&
-        prev?.price == curr?.price &&
-        prev?.quantity == curr?.quantity &&
-        prev?.triggerPrice == curr?.triggerPrice &&
-        prev?.stopEndUnixTime == curr?.stopEndUnixTime),
+        JSON.stringify(prev) === JSON.stringify(curr)
+      ),
     ).subscribe((val) => {
       this.setStopEdit({
         ...initialParameters.commandParameters,
         ...val,
-        price: val.price!,
+        price: Number(val.price),
         quantity: val.quantity!,
         side: val.side!
       });
