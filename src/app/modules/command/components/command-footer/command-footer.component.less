@@ -1,44 +1,18 @@
 @import "theme-mixin";
+@import "buy-sell-button-mixin";
 
 .themeMixin({
   :host {
     .ant-btn {
-      color: white;
       flex-grow: 1;
-      border-radius: 4px;
-      width: 100%;
-
-      &[disabled] {
-        border: none;
-      }
     }
 
     .buy-button {
-      background: @buy-color;
-
-      &[disabled] {
-        color: @buy-color-disabled;
-        background: @buy-color-background-disabled;
-      }
-
-      &:hover:not([disabled]) {
-        border-color: fade(@buy-color, 20%);
-        background: fade(@buy-color, 90%);
-      }
+      .buySellButton(@buy-color, white, @buy-color-disabled, @buy-color-background-disabled);
     }
 
     .sell-button {
-      background: @sell-color;
-
-      &[disabled] {
-        color: @sell-color-disabled;
-        background: @sell-color-background-disabled;
-      }
-
-      &:hover:not([disabled]) {
-        border-color: fade(@sell-color, 20%);
-        background: fade(@sell-color, 90%);
-      }
+      .buySellButton(@sell-color, white, @sell-color-disabled, @sell-color-background-disabled);
     }
   }
 });

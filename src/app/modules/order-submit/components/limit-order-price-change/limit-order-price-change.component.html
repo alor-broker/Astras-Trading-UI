@@ -1,0 +1,11 @@
+<div class="buttons-container"
+     nz-tooltip
+     [nzTooltipTitle]="disabledTooltip"
+     [nzTooltipTrigger]="disabled ? 'hover' : null"
+     [nzTooltipPlacement]="['left', 'right', 'bottom']"
+>
+  <div class="step-btn" *ngFor="let step of sortedSteps">
+    <button nz-button (click)="stepClick.emit(step)" [disabled]="disabled">+{{step}}</button>
+    <button nz-button (click)="stepClick.emit(-step)" [disabled]="disabled">-{{step}}</button>
+  </div>
+</div>

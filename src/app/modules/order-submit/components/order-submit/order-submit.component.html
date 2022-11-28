@@ -1,86 +1,110 @@
-<div *ngIf="currentInstrumentWithPortfolio$ | async as currentInstrumentWithPortfolio">
-  <!--use ngFor to completely rerender component when instrument changed-->
-  <ng-container *ngFor="let currentInstrumentWithPortfolio of [currentInstrumentWithPortfolio]">
-    <div class="header">
-      <div nz-row class="instrument-info">
-        <div nz-col>
-          <label class="portfolio">{{currentInstrumentWithPortfolio.portfolio}} ({{currentInstrumentWithPortfolio.instrument.exchange}})</label>
-        </div>
-        <ng-container *ngIf="positionInfo$ | async as positionInfo">
-          <div
-            nz-tooltip
-            nzTooltipTitle="Текущая позиция"
-            nz-col
-            nzSpan="3"
-            *ngIf="positionInfo.abs"
-          >
-            <span
-              class="position-badge"
-              [class]="positionInfo.quantity > 0 ? 'long' : 'short'"
-              (click)="selectQuantity(positionInfo.abs)"
+<ng-container *ngIf="settings$ | async as settings">
+  <div *ngIf="currentInstrumentWithPortfolio$ | async as currentInstrumentWithPortfolio">
+    <!--use ngFor to completely rerender component when instrument changed-->
+    <ng-container *ngFor="let currentInstrumentWithPortfolio of [currentInstrumentWithPortfolio]">
+      <div class="header">
+        <div nz-row class="instrument-info">
+          <div nz-col>
+            <label class="portfolio">{{currentInstrumentWithPortfolio.portfolio}} ({{currentInstrumentWithPortfolio.instrument.exchange}})</label>
+          </div>
+          <ng-container *ngIf="positionInfo$ | async as positionInfo">
+            <div
+              nz-tooltip
+              nzTooltipTitle="Текущая позиция"
+              nz-col
+              nzSpan="3"
+              *ngIf="positionInfo.abs"
             >
-              {{positionInfo.abs}}
-            </span>
-          </div>
-        </ng-container>
-        <ng-container *ngIf="priceData$ | async as priceData">
-          <div nz-col>
-            <label>Ask: </label>
-            <span class="selectable sell" (click)="selectPrice(priceData.ask)">{{priceData.ask}}</span>
-          </div>
-          <div nz-col>
-            <label>Bid: </label>
-            <span class="selectable buy" (click)="selectPrice(priceData.bid)">{{priceData.bid}}</span>
-          </div>
-        </ng-container>
+              <span
+                class="position-badge"
+                [class]="positionInfo.quantity > 0 ? 'long' : 'short'"
+                (click)="selectQuantity(positionInfo.abs)"
+              >
+                {{positionInfo.abs}}
+              </span>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="priceData$ | async as priceData">
+            <div nz-col>
+              <label>Ask: </label>
+              <span class="selectable sell" (click)="selectPrice(priceData.ask)">{{priceData.ask}}</span>
+            </div>
+            <div nz-col>
+              <label>Bid: </label>
+              <span class="selectable buy" (click)="selectPrice(priceData.bid)">{{priceData.bid}}</span>
+            </div>
+          </ng-container>
+        </div>
       </div>
-
-
-    </div>
-    <div class="body">
-      <ng-container *ngIf="positionInfo$ | async as positionInfo">
-        <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async">
-          <nz-tab #limitTab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" nzTitle="Лимитная">
-            <ats-limit-order-form (formValueChange)="setLimitOrderValue($event)"
-                                  [instrument]="currentInstrumentWithPortfolio.instrument"
-                                  [initialValues]="initialValues$ | async"
-                                  [activated]="limitTab.isActive"
-            ></ats-limit-order-form>
-          </nz-tab>
-          <nz-tab #marketTab (nzSelect)="setSelectedCommandType(orderTypes.MarketOrder)" nzTitle="Рыночная">
-            <ats-market-order-form (formValueChange)="setMarketOrderValue($event)"
-                                   [activated]="marketTab.isActive"
-                                   [initialValues]="initialValues$ | async"
+      <div class="body">
+          <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async">
+            <nz-tab #limitTab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" nzTitle="Лимитная">
+              <ats-limit-order-form (formValueChange)="setLimitOrderValue($event)"
+                                    [instrument]="currentInstrumentWithPortfolio.instrument"
+                                    [initialValues]="initialValues$ | async"
+                                    [activated]="limitTab.isActive"
+              ></ats-limit-order-form>
+            </nz-tab>
+            <nz-tab #marketTab (nzSelect)="setSelectedCommandType(orderTypes.MarketOrder)" nzTitle="Рыночная">
+              <ats-market-order-form (formValueChange)="setMarketOrderValue($event)"
+                                     [activated]="marketTab.isActive"
+                                     [initialValues]="initialValues$ | async"
+                                     [instrument]="currentInstrumentWithPortfolio.instrument"
+              ></ats-market-order-form>
+            </nz-tab>
+            <nz-tab #stopTab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" nzTitle="Условная">
+              <ats-stop-order-form (formValueChange)="setStopOrderValue($event)"
                                    [instrument]="currentInstrumentWithPortfolio.instrument"
-            ></ats-market-order-form>
-          </nz-tab>
-          <nz-tab #stopTab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" nzTitle="Условная">
-            <ats-stop-order-form (formValueChange)="setStopOrderValue($event)"
-                                 [instrument]="currentInstrumentWithPortfolio.instrument"
-                                 [initialValues]="initialValues$ | async"
-                                 [activated]="stopTab.isActive"
-            ></ats-stop-order-form>
-          </nz-tab>
-        </nz-tabset>
+                                   [initialValues]="initialValues$ | async"
+                                   [activated]="stopTab.isActive"
+              ></ats-stop-order-form>
+            </nz-tab>
+          </nz-tabset>
+      </div>
+    </ng-container>
+    <div class="footer">
+      <button
+        (click)="submitOrder(orderSides.Buy)"
+        [disabled]="(canSubmitOrder$ | async) === false"
+        [nzLoading]="(buyButtonLoading$ | async)"
+        class='buy-button'
+        nz-button
+        nzSize="large">Купить
+      </button>
+      <button
+        (click)="submitOrder(orderSides.Sell)"
+        [disabled]="(canSubmitOrder$ | async) === false"
+        [nzLoading]="(sellButtonLoading$ | async)"
+        class='sell-button'
+        nz-button
+        nzSize="large">Продать
+      </button>
+    </div>
+    <div class="addons">
+      <ng-container *ngIf="settings.enableLimitOrdersFastEditing && selectedOrderType=== orderTypes.LimitOrder">
+        <ng-container *ngIf="activeLimitOrders$ | async as activeLimitOrders">
+          <div id="limit-orders-price-change-buttons">
+            <div class="buttons-group buy">
+              <ats-limit-order-price-change
+                [disabled]="!hasOrdersWithSide(activeLimitOrders, orderSides.Buy)"
+                [steps]="settings.limitOrderPriceMoveSteps"
+                [disabledTooltip]="'Нет активных лимитных заявок на покупку'"
+                (stepClick)="updateLimitOrdersPrice($event, orderSides.Buy)"
+              >
+              </ats-limit-order-price-change>
+            </div>
+            <div class="buttons-group sell">
+              <ats-limit-order-price-change
+                [disabled]="!hasOrdersWithSide(activeLimitOrders, orderSides.Sell)"
+                [steps]="settings.limitOrderPriceMoveSteps"
+                [disabledTooltip]="'Нет активных лимитных заявок на продажу'"
+                (stepClick)="updateLimitOrdersPrice($event, orderSides.Sell)"
+              >
+              </ats-limit-order-price-change>
+            </div>
+          </div>
+        </ng-container>
       </ng-container>
     </div>
-  </ng-container>
-  <div class="footer">
-    <button
-      (click)="submitOrder(orderSides.Buy)"
-      [disabled]="(canSubmitOrder$ | async) === false"
-      [nzLoading]="(buyButtonLoading$ | async)"
-      class='buy-button'
-      nz-button
-      nzSize="large">Купить
-    </button>
-    <button
-      (click)="submitOrder(orderSides.Sell)"
-      [disabled]="(canSubmitOrder$ | async) === false"
-      [nzLoading]="(sellButtonLoading$ | async)"
-      class='sell-button'
-      nz-button
-      nzSize="large">Продать
-    </button>
   </div>
-</div>
+</ng-container>
