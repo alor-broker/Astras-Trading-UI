@@ -454,7 +454,9 @@ export function isEqualBlotterSettings(
       isArrayEqual(settings1.ordersColumns, settings2.ordersColumns, (a, b) => a === b) &&
       isArrayEqual(settings1.stopOrdersColumns, settings2.stopOrdersColumns, (a, b) => a === b) &&
       isArrayEqual(settings1.positionsColumns, settings2.positionsColumns, (a, b) => a === b) &&
-      isArrayEqual(settings1.tradesColumns, settings2.tradesColumns, (a, b) => a === b)
+      isArrayEqual(settings1.tradesColumns, settings2.tradesColumns, (a, b) => a === b) &&
+      settings1.isSoldPositionsHidden == settings2.isSoldPositionsHidden &&
+      settings1.cancelOrdersWithoutConfirmation == settings2.cancelOrdersWithoutConfirmation
     );
   } else return false;
 }

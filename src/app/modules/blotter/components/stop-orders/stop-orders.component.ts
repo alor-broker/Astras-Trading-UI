@@ -283,11 +283,12 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   ];
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
   selectedInstruments$: Observable<InstrumentBadges> = of({});
+  settings$!: Observable<BlotterSettings>;
+
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private cancelCommands = new Subject<CancelCommand>();
   private cancels$ = this.cancelCommands.asObservable();
   private orders: StopOrder[] = [];
-  private settings$!: Observable<BlotterSettings>;
   private badgeColor = defaultBadgeColor;
 
   constructor(

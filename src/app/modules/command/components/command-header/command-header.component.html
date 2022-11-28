@@ -1,8 +1,11 @@
 <div *ngIf="viewData$ | async as data" class="content">
   <div class='badge'>
-    <nz-badge [nzCount]="data.position.abs"
-              [nzOverflowCount]='1000000000'
-              [class]="data.position.quantity > 0 ? 'long' : 'short'">
+    <nz-badge
+      [nzCount]="data.position.abs"
+      [nzOverflowCount]='1000000000'
+      [class]="data.position.quantity > 0 ? 'long' : 'short'"
+      (click)="selectQuantity(data.position.abs)"
+    >
       <nz-avatar [nzSize]="64" [nzSrc]="'https://storage.alorbroker.ru/icon/' + data.instrument.symbol + '.png'"
                  [nzText]="data.instrument.symbol"
                  nzGap='4'></nz-avatar>

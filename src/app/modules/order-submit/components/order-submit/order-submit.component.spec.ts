@@ -74,7 +74,7 @@ describe('OrderSubmitComponent', () => {
         }),
         mockComponent({
           selector: 'ats-market-order-form',
-          inputs: ['instrument', 'activated']
+          inputs: ['instrument', 'initialValues', 'activated']
         }),
         mockComponent({
           selector: 'ats-stop-order-form',

@@ -34,6 +34,7 @@ import { StopEdit } from "../../models/stop-edit";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { Side } from '../../../../shared/models/enums/side.model';
+import { AtsValidators } from "../../../../shared/utils/form-validators";
 
 @Component({
   selector: 'ats-stop-edit',
@@ -64,7 +65,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
       withLatestFrom(this.timezoneConverterService.getConverter()),
       takeUntil(this.destroy$)
     ).subscribe(([context, converter]) => {
-      this.initCommandForm(context.commandParameters, converter);
+      this.initCommandForm(context, converter);
       this.checkNowTimeSelection(converter);
     });
   }
@@ -113,43 +114,40 @@ export class StopEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  private initCommandForm(initialParameters: EditParams | null, converter: TimezoneConverter) {
-    if (!initialParameters) {
+  private initCommandForm(initialParameters:  CommandContextModel<EditParams>, converter: TimezoneConverter) {
+    if (!initialParameters.commandParameters) {
       return;
     }
 
     this.timezoneConverter = converter;
     this.form = this.buildForm(initialParameters);
-    this.setStopEdit(initialParameters);
+    this.setStopEdit(initialParameters.commandParameters);
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
       distinctUntilChanged((prev, curr) =>
-        prev?.condition == curr?.condition &&
-        prev?.price == curr?.price &&
-        prev?.quantity == curr?.quantity &&
-        prev?.triggerPrice == curr?.triggerPrice &&
-        prev?.stopEndUnixTime == curr?.stopEndUnixTime),
+        JSON.stringify(prev) === JSON.stringify(curr)
+      ),
     ).subscribe((val) => {
       this.setStopEdit({
-        ...initialParameters,
+        ...initialParameters.commandParameters,
         ...val,
-        price: val.price!,
+        price: Number(val.price),
         quantity: val.quantity!,
         side: val.side!
       });
     });
   }
 
-  private buildForm(initialParameters: EditParams): FormGroup<ControlsOf<StopFormData & { side: Side }>> {
-    let price = initialParameters.price;
+  private buildForm(initialParameters: CommandContextModel<EditParams>): FormGroup<ControlsOf<StopFormData & { side: Side }>> {
+    let price = initialParameters.commandParameters.price;
     if (price == 1 || price == null) {
       price = 0;
     }
 
     return new FormGroup<ControlsOf<StopFormData & { side: Side }>>({
       quantity: new FormControl(
-        initialParameters.quantity ?? 1,
+        initialParameters.commandParameters.quantity ?? 1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
@@ -161,24 +159,26 @@ export class StopEditComponent implements OnInit, OnDestroy {
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)
+          Validators.max(inputNumberValidation.max),
+          AtsValidators.priceStepMultiplicity(initialParameters.instrument.minstep || 0)
         ]
       ),
       triggerPrice: new FormControl(
-        initialParameters.triggerPrice!,
+        initialParameters.commandParameters.triggerPrice!,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max),
+          AtsValidators.priceStepMultiplicity(initialParameters.instrument.minstep || 0)
         ]
       ),
-      stopEndUnixTime: new FormControl(!!initialParameters.stopEndUnixTime
-        ? new Date(initialParameters.stopEndUnixTime)
+      stopEndUnixTime: new FormControl(!!initialParameters.commandParameters.stopEndUnixTime
+        ? new Date(initialParameters.commandParameters.stopEndUnixTime)
         : this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
       ),
-      condition: new FormControl(initialParameters.condition || StopOrderCondition.More),
-      withLimit: new FormControl({ value: initialParameters.type === 'stoplimit', disabled: true }),
-      side: new FormControl(initialParameters.side)
+      condition: new FormControl(initialParameters.commandParameters.condition || StopOrderCondition.More),
+      withLimit: new FormControl({ value: initialParameters.commandParameters.type === 'stoplimit', disabled: true }),
+      side: new FormControl(initialParameters.commandParameters.side)
     });
   }
 

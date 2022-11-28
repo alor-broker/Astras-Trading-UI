@@ -225,6 +225,10 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     this.initialValues$.next({ price });
   }
 
+  selectQuantity(quantity: number) {
+    this.initialValues$.next({ quantity });
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();

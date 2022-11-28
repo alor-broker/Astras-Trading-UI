@@ -183,6 +183,7 @@ export class WidgetFactoryService {
       guid: newWidget.gridItem.label,
       settingsType: 'InstrumentSelectSettings',
       title: `Выбор инструмента`,
+      titleIcon: 'eye',
       instrumentColumns: allInstrumentsColumns.filter(c => c.isDefault).map(c => c.columnId),
       badgeColor: defaultBadgeColor
     } as InstrumentSelectSettings;
@@ -229,7 +230,8 @@ export class WidgetFactoryService {
       stopOrdersColumns: allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
       linkToActive: true,
       badgeColor: defaultBadgeColor,
-      isSoldPositionsHidden: true
+      isSoldPositionsHidden: true,
+      cancelOrdersWithoutConfirmation: false
     } as BlotterSettings;
   }
 
@@ -276,7 +278,8 @@ export class WidgetFactoryService {
     return {
       guid: newWidget.gridItem.label,
       settingsType: 'NewsSettings',
-      title: 'Новости'
+      title: 'Новости',
+      titleIcon: 'read'
     } as NewsSettings;
   }
 
@@ -288,7 +291,8 @@ export class WidgetFactoryService {
     return {
       guid: newWidget.gridItem.label,
       settingsType: 'ExchangeRateSettings',
-      title: 'Курс валют'
+      title: 'Курсы валют',
+      titleIcon: 'line-chart'
     } as ExchangeRateSettings;
   }
 
@@ -319,6 +323,7 @@ export class WidgetFactoryService {
       badgeColor: defaultBadgeColor,
       settingsType: 'AllInstrumentsSettings',
       title: 'Все инструменты',
+      titleIcon: 'profile',
       allInstrumentsColumns: allInstrumentsCols.filter(c => c.isDefault).map(col => col.columnId)
     } as AllInstrumentsSettings;
   }

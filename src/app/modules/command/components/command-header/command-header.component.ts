@@ -115,4 +115,8 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
   public selectPrice(price: number): void {
     this.commandsService.setPriceSelected(price);
   }
+
+  public selectQuantity(qty: number): void {
+    this.commandsService.setQuantitySelected(qty);
+  }
 }
