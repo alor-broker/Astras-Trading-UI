@@ -79,6 +79,10 @@ describe('OrderSubmitComponent', () => {
         mockComponent({
           selector: 'ats-stop-order-form',
           inputs: ['instrument', 'initialValues', 'guid', 'activated']
+        }),
+        mockComponent({
+          selector: 's-limit-order-price-change',
+          inputs: ['disabled', 'disabledTooltip', 'steps']
         })
       ],
       providers: [

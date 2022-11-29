@@ -1,3 +1,54 @@
-.compact {
-  margin: 0
+nz-form-item {
+  &.compact {
+    margin: 0
+  }
+
+  &.one-row {
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+
+    nz-form-label {
+      padding-right: 5px;
+      flex: initial;
+    }
+
+    nz-form-control {
+      align-items: flex-end;
+      padding-right: 5px;
+      flex: initial;
+    }
+  }
+}
+
+.price-move-step-option {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  column-gap: 5px;
+  padding-bottom: 5px;
+
+  .ant-form-item-label {
+    padding: 0;
+
+    ::ng-deep label {
+      line-height: 25px;
+      display: inline-block;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+
+  .ant-input-number {
+    width: 100%;
+  }
+}
+
+.add-move-step-btn {
+  width: 100%;
+  margin-top: 10px;
 }

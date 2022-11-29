@@ -44,6 +44,9 @@ import { WidgetsDataProviderService } from "../../../../shared/services/widgets-
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { Position } from "../../../../shared/models/positions/position.model";
+import { Order } from '../../../../shared/models/orders/order.model';
+import { mapWith } from '../../../../shared/utils/observable-helper';
+import { MathHelper } from '../../../../shared/utils/math-helper';
 
 @Component({
   selector: 'ats-order-submit[guid]',
@@ -62,12 +65,15 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly sellButtonLoading$ = new BehaviorSubject(false);
   readonly initialValues$ = new Subject<Partial<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue> | null>();
   selectedTabIndex$!: Observable<number>;
+  positionInfo$!: Observable<{ abs: number, quantity: number }>;
+  activeLimitOrders$!: Observable<Order[]>;
+  settings$!: Observable<OrderSubmitSettings>;
+  selectedOrderType: OrderType = OrderType.LimitOrder;
+
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  private selectedOrderType: OrderType = OrderType.LimitOrder;
   private limitOrderFormValue: LimitOrderFormValue | null = null;
   private marketOrderFormValue: MarketOrderFormValue | null = null;
   private stopOrderFormValue: StopOrderFormValue | null = null;
-  public positionInfo$!: Observable<{ abs: number, quantity: number }>;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -86,8 +92,9 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const settings$ = this.settingsService.getSettings<OrderSubmitSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualOrderSubmitSettings(previous, current))
+    this.settings$ = this.settingsService.getSettings<OrderSubmitSettings>(this.guid).pipe(
+      distinctUntilChanged((previous, current) => isEqualOrderSubmitSettings(previous, current)),
+      shareReplay(1)
     );
 
     const currentPortfolio$ = this.store.select(getSelectedPortfolioKey).pipe(
@@ -95,7 +102,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       map(p => p.portfolio),
     );
 
-    const currentInstrument = settings$.pipe(
+    const currentInstrument = this.settings$.pipe(
       switchMap(settings => this.instrumentService.getInstrument(settings)),
       filter((i): i is Instrument => !!i)
     );
@@ -111,7 +118,6 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     );
 
     this.positionInfo$ = this.currentInstrumentWithPortfolio$.pipe(
-      takeUntil(this.destroy$),
       switchMap(data =>
         this.portfolioSubscriptionsService.getAllPositionsSubscription(data.portfolio, data.instrument.exchange)
           .pipe(
@@ -145,10 +151,19 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     this.widgetsDataProvider.getDataProvider<SelectedPriceData>('selectedPrice')
       ?.pipe(
         takeUntil(this.destroy$),
-        withLatestFrom(settings$),
+        withLatestFrom(this.settings$),
         filter(([priceData, settings]) => priceData.badgeColor === settings.badgeColor)
       )
       .subscribe(([priceData]) => this.selectPrice(priceData.price));
+
+    this.activeLimitOrders$ = this.currentInstrumentWithPortfolio$.pipe(
+      mapWith(
+        x => this.portfolioSubscriptionsService.getOrdersSubscription(x.portfolio, x.instrument.exchange),
+        (instrument, orders) => ({ instrument, orders })
+      ),
+      map(s => s.orders.allOrders.filter(o => o.symbol === s.instrument.instrument.symbol && o.type === 'limit' && o.status === 'working')),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
   }
 
   setLimitOrderValue(value: LimitOrderFormValue | null) {
@@ -221,6 +236,40 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     this.canSubmitOrder$.complete();
     this.buyButtonLoading$.complete();
     this.sellButtonLoading$.complete();
+  }
+
+  hasOrdersWithSide(orders: Order[], side: Side): boolean {
+    return !!orders.find(o => o.side === side);
+  }
+
+  updateLimitOrdersPrice(step: number, side: Side) {
+    this.activeLimitOrders$.pipe(
+      withLatestFrom(this.currentInstrumentWithPortfolio$),
+      take(1)
+    ).subscribe(([orders, instrument]) => {
+      const ordersToUpdate = orders.filter(o => o.side === side);
+      if (ordersToUpdate.length === 0) {
+        return;
+      }
+
+      ordersToUpdate.forEach(order => {
+        const precision = MathHelper.getPrecision(instrument.instrument.minstep);
+
+        const newPrice = MathHelper.round(order.price + step * instrument.instrument.minstep, precision);
+        this.orderService.submitLimitOrderEdit(
+          {
+            id: order.id,
+            quantity: order.qtyBatch - order.filledQtyBatch,
+            price: newPrice,
+            instrument: {
+              symbol: order.symbol,
+              exchange: order.exchange
+            },
+          },
+          instrument.portfolio
+        ).subscribe();
+      });
+    });
   }
 
   private updateCanSubmitOrder() {

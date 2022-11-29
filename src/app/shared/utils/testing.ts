@@ -141,6 +141,10 @@ export const ngZorroMockComponents = [
   mockDirective({
     selector: '[nz-icon]',
     inputs: ['title', 'text', 'nzTwotoneColor', 'nzTheme', 'nzType', 'nzRotate']
+  }),
+  mockDirective({
+    selector: '[nz-tooltip]',
+    inputs: ['nzTooltipTitle', 'nzTooltipTrigger', 'nzTooltipPlacement']
   })
 ];
 
