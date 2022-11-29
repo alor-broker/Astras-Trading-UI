@@ -1,5 +1,7 @@
 import {
+  AfterViewInit,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -19,7 +21,14 @@ import {
   take,
   takeUntil
 } from 'rxjs';
-import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import {
+  catchError,
+  debounceTime,
+  map,
+  mergeMap,
+  startWith,
+  tap
+} from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
@@ -40,6 +49,7 @@ import { Store } from "@ngrx/store";
 import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
+import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -51,9 +61,12 @@ interface DisplayOrder extends StopOrder {
   templateUrl: './stop-orders.component.html',
   styleUrls: ['./stop-orders.component.less'],
 })
-export class StopOrdersComponent implements OnInit, OnDestroy {
+export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('nzTable')
   table?: NzTableComponent<DisplayOrder>;
+  @ViewChild('tableContainer')
+  tableContainer?: ElementRef<HTMLElement>;
+
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -284,6 +297,7 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
   selectedInstruments$: Observable<InstrumentBadges> = of({});
   settings$!: Observable<BlotterSettings>;
+  scrollHeight$: Observable<number> = of(100);
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private cancelCommands = new Subject<CancelCommand>();
@@ -300,6 +314,12 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
     private readonly store: Store,
     private readonly terminalSettingsService: TerminalSettingsService
   ) {
+  }
+
+  ngAfterViewInit(): void {
+    if(this.tableContainer) {
+      this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(this.tableContainer);
+    }
   }
 
   ngOnInit(): void {
@@ -320,6 +340,8 @@ export class StopOrdersComponent implements OnInit, OnDestroy {
 
     const orders$ = this.settings$.pipe(
       switchMap(settings => this.service.getStopOrders(settings)),
+      debounceTime(100),
+      startWith([]),
       tap(orders => this.orders = orders)
     );
 

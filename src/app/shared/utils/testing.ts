@@ -90,6 +90,7 @@ export const ngZorroMockComponents = [
       'nzVirtualMinBufferPx',
       'nzVirtualForTrackBy',
       'nzVirtualItemSize',
+      'nzFooter'
     ]
   }),
   mockComponent({

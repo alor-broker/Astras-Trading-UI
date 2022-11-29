@@ -1,5 +1,7 @@
 import {
+  AfterViewInit,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -19,7 +21,12 @@ import {
   take,
   takeUntil
 } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import {
+  debounceTime,
+  map,
+  mergeMap,
+  startWith
+} from 'rxjs/operators';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
 import { Column } from '../../models/column.model';
 import { TradeFilter } from '../../models/trade-filter.model';
@@ -31,6 +38,7 @@ import { BlotterSettings } from "../../../../shared/models/settings/blotter-sett
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
+import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -41,9 +49,11 @@ interface DisplayTrade extends Trade {
   templateUrl: './trades.component.html',
   styleUrls: ['./trades.component.less']
 })
-export class TradesComponent implements OnInit, OnDestroy {
+export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('nzTable')
   table?: NzTableComponent<DisplayTrade>;
+  @ViewChild('tableContainer')
+  tableContainer?: ElementRef<HTMLElement>;
 
   @Input()
   shouldShowSettings!: boolean;
@@ -176,6 +186,7 @@ export class TradesComponent implements OnInit, OnDestroy {
     },
   ];
   listOfColumns: Column<DisplayTrade, TradeFilter>[] = [];
+  scrollHeight$: Observable<number> = of(100);
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<BlotterSettings>;
 
@@ -183,6 +194,12 @@ export class TradesComponent implements OnInit, OnDestroy {
     private readonly settingsService: WidgetSettingsService,
     private readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService) {
+  }
+
+  ngAfterViewInit(): void {
+    if(this.tableContainer) {
+      this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(this.tableContainer);
+    }
   }
 
   ngOnInit(): void {
@@ -201,7 +218,9 @@ export class TradesComponent implements OnInit, OnDestroy {
     });
 
     const trades$ = this.settings$.pipe(
-      switchMap(settings => this.service.getTrades(settings))
+      switchMap(settings => this.service.getTrades(settings)),
+      debounceTime(100),
+      startWith([])
     );
 
     this.displayTrades$ = combineLatest([

@@ -1,5 +1,7 @@
 import {
+  AfterViewInit,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -19,7 +21,14 @@ import {
   take,
   takeUntil
 } from 'rxjs';
-import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import {
+  catchError,
+  debounceTime,
+  map,
+  mergeMap,
+  startWith,
+  tap
+} from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
@@ -39,6 +48,7 @@ import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/
 import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
 import { Store } from "@ngrx/store";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -50,9 +60,11 @@ interface DisplayOrder extends Order {
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.less'],
 })
-export class OrdersComponent implements OnInit, OnDestroy {
+export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('nzTable')
   table?: NzTableComponent<DisplayOrder>;
+  @ViewChild('tableContainer')
+  tableContainer?: ElementRef<HTMLElement>;
 
   @Input()
   shouldShowSettings!: boolean;
@@ -252,6 +264,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
   selectedInstruments$: Observable<InstrumentBadges> = of({});
   settings$!: Observable<BlotterSettings>;
+  scrollHeight$: Observable<number> = of(100);
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private cancelCommands = new Subject<CancelCommand>();
@@ -289,6 +302,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
     this.orders$ = this.settings$.pipe(
       switchMap(settings=>this.service.getOrders(settings)),
+      debounceTime(100),
+      startWith([]),
       tap(orders => this.orders = orders)
     );
 
@@ -463,5 +478,11 @@ export class OrdersComponent implements OnInit, OnDestroy {
       return 1;
     }
     return 0;
+  }
+
+  ngAfterViewInit(): void {
+    if(this.tableContainer) {
+      this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(this.tableContainer);
+    }
   }
 }

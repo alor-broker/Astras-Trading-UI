@@ -1,4 +1,4 @@
-<ng-container *ngIf="settings$ | async as settings">
+<div class="container" *ngIf="settings$ | async as settings">
 
   <ng-template #empty>
     <nz-empty
@@ -8,15 +8,17 @@
     </nz-empty>
   </ng-template>
 
-  <ng-container *ngIf="selectedInstruments$ | async as selectedInstruments">
+  <div class="table-container" #tableContainer *ngIf="selectedInstruments$ | async as selectedInstruments">
+    <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
     <nz-table *ngIf="displayOrders$ | async as orders" #nzTable [nzData]="orders"
-        #nzTableComponent
         [nzNoResult]="empty"
         nzTableLayout="fixed"
         nzSize="small"
         [nzFrontPagination]="false"
         [nzShowPagination]="false"
-        [nzScroll]="{ x: tableInnerWidth }">
+        [nzScroll]="{ x: tableInnerWidth, y: scrollHeight - 5 + 'px' }"
+        [nzVirtualItemSize]="20"
+        [nzFooter]="footer">
       <thead>
         <tr>
           <th nzWidth="5px"></th>
@@ -90,12 +92,16 @@
       </tbody>
     </nz-table>
   </ng-container>
-  <div class="export-button-container" *ngIf="canExport">
-    <button nz-button nzType="link" (click)="exportToFile()"><i nz-icon nzType="download"></i>Сохранить в файл</button>
   </div>
+
+  <ng-template #footer>
+    <div class="export-button-container">
+      <button nz-button nzType="link" *ngIf="canExport" (click)="exportToFile()"><i nz-icon nzType="download"></i>Сохранить в файл</button>
+    </div>
+  </ng-template>
 
   <nz-dropdown-menu #searchMenu="nzDropdownMenu">
     <ats-table-filter [columns]="listOfColumns" (filterChange)="filterChange($event)"></ats-table-filter>
   </nz-dropdown-menu>
 
-</ng-container>
+</div>

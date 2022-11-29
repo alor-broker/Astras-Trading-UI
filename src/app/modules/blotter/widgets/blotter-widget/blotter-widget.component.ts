@@ -9,13 +9,17 @@ import { NzTabChangeEvent } from 'ng-zorro-antd/tabs';
 import {
   Observable,
   of,
+  shareReplay,
   take
 } from 'rxjs';
 import {
   filter,
   map
 } from 'rxjs/operators';
-import { DashboardItem } from 'src/app/shared/models/dashboard-item.model';
+import {
+  DashboardItem,
+  DashboardItemContentSize
+} from 'src/app/shared/models/dashboard-item.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
@@ -48,6 +52,8 @@ export class BlotterWidgetComponent implements OnInit {
 
   marketType$?: Observable<MarketType | undefined>;
 
+  contentSize$!: Observable<DashboardItemContentSize>;
+
   constructor(private readonly settingsService: WidgetSettingsService, private readonly store: Store) {
   }
 
@@ -60,6 +66,14 @@ export class BlotterWidgetComponent implements OnInit {
     this.marketType$ = this.store.select(getSelectedPortfolioKey).pipe(
       filter((p): p is PortfolioKey => !!p),
       map(p => p.marketType)
+    );
+
+    this.contentSize$ = this.resize.pipe(
+      map(x => ({
+        height: x.height,
+        width: x.width
+      } as DashboardItemContentSize)),
+      shareReplay(1)
     );
   }
 
