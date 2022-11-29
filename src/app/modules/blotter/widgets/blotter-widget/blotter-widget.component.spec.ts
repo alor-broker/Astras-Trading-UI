@@ -10,6 +10,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { of } from "rxjs";
 import { mockComponent, ngZorroMockComponents, sharedModuleImportForTests } from "../../../../shared/utils/testing";
 import { Store } from "@ngrx/store";
+import { EventEmitter } from '@angular/core';
 
 const settings: BlotterSettings = {
   exchange: 'MOEX',
@@ -64,6 +65,7 @@ describe('BlotterWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BlotterWidgetComponent);
     component = fixture.componentInstance;
+    component.resize = new EventEmitter();
     fixture.detectChanges();
   });
 

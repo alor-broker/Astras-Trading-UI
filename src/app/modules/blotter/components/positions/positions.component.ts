@@ -1,5 +1,7 @@
 import {
+  AfterViewInit,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -19,8 +21,10 @@ import {
   takeUntil
 } from 'rxjs';
 import {
+  debounceTime,
   map,
-  mergeMap
+  mergeMap,
+  startWith
 } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
@@ -37,6 +41,7 @@ import { InstrumentBadges } from "../../../../shared/models/instruments/instrume
 import { Store } from "@ngrx/store";
 import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 
 interface PositionDisplay extends Position {
   volume: number
@@ -47,9 +52,12 @@ interface PositionDisplay extends Position {
   templateUrl: './positions.component.html',
   styleUrls: ['./positions.component.less']
 })
-export class PositionsComponent implements OnInit, OnDestroy {
+export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('nzTable')
   table?: NzTableComponent<PositionDisplay>;
+  @ViewChild('tableContainer')
+  tableContainer?: ElementRef<HTMLElement>;
+
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -61,6 +69,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
   searchFilter = new BehaviorSubject<PositionFilter>({});
   isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
   selectedInstruments$: Observable<InstrumentBadges> = of({});
+  scrollHeight$: Observable<number> = of(100);
 
   private settings$!: Observable<BlotterSettings>;
   private badgeColor = defaultBadgeColor;
@@ -220,6 +229,12 @@ export class PositionsComponent implements OnInit, OnDestroy {
   ) {
   }
 
+  ngAfterViewInit(): void {
+    if(this.tableContainer) {
+      this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(this.tableContainer);
+    }
+  }
+
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
@@ -239,6 +254,8 @@ export class PositionsComponent implements OnInit, OnDestroy {
 
     this.displayPositions$ = this.settings$.pipe(
       switchMap(settings => this.service.getPositions(settings)),
+      debounceTime(100),
+      startWith([]),
       map(positions => positions.map(p => <PositionDisplay>{
         ...p,
         volume: this.round(Number(p.avgPrice) * Math.abs(Number(p.qtyUnits)))

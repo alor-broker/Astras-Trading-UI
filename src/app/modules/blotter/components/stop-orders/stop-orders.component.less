@@ -36,21 +36,35 @@
   }
 });
 
+:host {
+  height: 100%;
+  .container {
+    height: 100%;
+
+    .table-container {
+      height: 100%;
+      overflow: hidden;
+      min-height: 20px;
+
+      .export-button-container {
+        min-height: 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      ::ng-deep .ant-table-header {
+        overflow: hidden !important;
+      }
+    }
+  }
+}
+
 .bold {
   font-weight: bold;
 }
 
 tr:hover {
   cursor: pointer;
-}
-
-.export-button-container {
-  display: flex;
-  justify-content: center;
-
-  button {
-    margin-top: 1em;
-  }
 }
 
 .symbol-name {

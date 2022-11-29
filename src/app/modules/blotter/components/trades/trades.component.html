@@ -1,51 +1,61 @@
-<ng-template #empty>
-  <nz-empty
-    class="ant-list-empty-text"
-    nzNotFoundImage="simple"
-    [nzNotFoundContent]='isFilterDisabled() ? "Сделок сегодня не было" : "С такими фильтрами ничего не найдено"'>
-  </nz-empty>
-</ng-template>
-<nz-table *ngIf="displayTrades$ | async as trades" #nzTable [nzData]="trades"
-    #nzTableComponent
-    [nzNoResult]="empty"
-    nzTableLayout="fixed"
-    nzSize="small"
-    [nzFrontPagination]="false"
-    [nzShowPagination]="false"
-    [nzScroll]="{ x: tableInnerWidth }">
-  <thead>
-    <tr>
-      <th *ngFor='let column of listOfColumns'
-          [nzCustomFilter]='column.hasSearch ? "": null'
-          [nzSortFn]='column.sortFn'
-          [nzFilters]="column.listOfFilter"
-          [nzShowFilter]="column.hasFilter"
-          [nzFilterFn]="column.filterFn">
-        <span nz-tooltip [nzTooltipTitle]="column.tooltip">{{column.name}}</span>
-        <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
-          <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
-        </nz-filter-trigger>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let ord of nzTable.data">
-      <td *ngIf='shouldShow("id")'>{{ ord.id }}</td>
-      <td *ngIf='shouldShow("orderno")'>{{ ord.orderno }}</td>
-      <td class='bold' *ngIf='shouldShow("symbol")'>{{ ord.symbol }}</td>
-      <td [class]='ord.side.toString() === "sell" ? "sell" : "buy"' *ngIf='shouldShow("side")'>{{ ord.side }}</td>
-      <td *ngIf='shouldShow("qty")'>{{ ord.qty | number }}</td>
-      <td *ngIf='shouldShow("price")'>{{ ord.price | number : '0.0-10' }}</td>
-      <td *ngIf='shouldShow("date")'>{{ formatDate(ord.date) }}</td>
-      <td *ngIf='shouldShow("volume")'>{{ ord.volume | number }}</td>
-    </tr>
-  </tbody>
-</nz-table>
+<div class="container">
+  <ng-template #empty>
+    <nz-empty
+      class="ant-list-empty-text"
+      nzNotFoundImage="simple"
+      [nzNotFoundContent]='isFilterDisabled() ? "Сделок сегодня не было" : "С такими фильтрами ничего не найдено"'>
+    </nz-empty>
+  </ng-template>
 
-<div class="export-button-container" *ngIf="canExport">
-  <button nz-button nzType="link" (click)="exportToFile()"><i nz-icon nzType="download"></i>Сохранить в файл</button>
+  <div class="table-container" #tableContainer>
+    <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
+      <nz-table *ngIf="displayTrades$ | async as trades" #nzTable [nzData]="trades"
+      [nzNoResult]="empty"
+      nzTableLayout="fixed"
+      nzSize="small"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      [nzScroll]="{ x: tableInnerWidth, y: scrollHeight - 5 + 'px' }"
+      [nzVirtualItemSize]="20"
+      [nzFooter]="footer">
+    <thead>
+      <tr>
+        <th *ngFor='let column of listOfColumns'
+            [nzCustomFilter]='column.hasSearch ? "": null'
+            [nzSortFn]='column.sortFn'
+            [nzFilters]="column.listOfFilter"
+            [nzShowFilter]="column.hasFilter"
+            [nzFilterFn]="column.filterFn">
+          <span nz-tooltip [nzTooltipTitle]="column.tooltip">{{column.name}}</span>
+          <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
+            <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
+          </nz-filter-trigger>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ord of nzTable.data">
+        <td *ngIf='shouldShow("id")'>{{ ord.id }}</td>
+        <td *ngIf='shouldShow("orderno")'>{{ ord.orderno }}</td>
+        <td class='bold' *ngIf='shouldShow("symbol")'>{{ ord.symbol }}</td>
+        <td [class]='ord.side.toString() === "sell" ? "sell" : "buy"' *ngIf='shouldShow("side")'>{{ ord.side }}</td>
+        <td *ngIf='shouldShow("qty")'>{{ ord.qty | number }}</td>
+        <td *ngIf='shouldShow("price")'>{{ ord.price | number : '0.0-10' }}</td>
+        <td *ngIf='shouldShow("date")'>{{ formatDate(ord.date) }}</td>
+        <td *ngIf='shouldShow("volume")'>{{ ord.volume | number }}</td>
+      </tr>
+    </tbody>
+  </nz-table>
+    </ng-container>
+  </div>
+
+  <ng-template #footer>
+    <div class="export-button-container">
+      <button nz-button nzType="link" *ngIf="canExport" (click)="exportToFile()"><i nz-icon nzType="download"></i>Сохранить в файл</button>
+    </div>
+  </ng-template>
+
+  <nz-dropdown-menu #searchMenu="nzDropdownMenu">
+    <ats-table-filter [columns]="listOfColumns" (filterChange)="filterChange($event)"></ats-table-filter>
+  </nz-dropdown-menu>
 </div>
-
-<nz-dropdown-menu #searchMenu="nzDropdownMenu">
-  <ats-table-filter [columns]="listOfColumns" (filterChange)="filterChange($event)"></ats-table-filter>
-</nz-dropdown-menu>
