@@ -68,6 +68,12 @@ export class StopEditComponent implements OnInit, OnDestroy {
       this.initCommandForm(context, converter);
       this.checkNowTimeSelection(converter);
     });
+
+    this.service.quantitySelected$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(qty => {
+      this.form.get('quantity')?.setValue(qty);
+    });
   }
 
   ngOnDestroy(): void {
