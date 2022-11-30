@@ -15,6 +15,9 @@ export class OrdersNotificationsService {
     if (order.status == 'filled' && seccondsPassed  < 5) {
       this.notificate(`Заявка ${order.id} исполнилась`);
     }
+    if (order.status == 'canceled' && seccondsPassed  < 5) {
+      this.notificate(`Заявка ${order.id} была отменена`);
+    }
   }
 
   notificateOrderChange(newOrder: Order, oldOrder: Order) {
