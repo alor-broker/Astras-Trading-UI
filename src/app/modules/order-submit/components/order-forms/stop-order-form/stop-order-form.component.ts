@@ -24,6 +24,10 @@ import { map } from "rxjs/operators";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../../shared/utils/form-validators";
+import {
+  OrderFormUpdate,
+  OrderType
+} from '../../../models/order-form.model';
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'>
@@ -128,7 +132,11 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     };
   }
 
-  protected applyInitialValues(values: Partial<StopOrderFormValue> | null) {
+  protected applyInitialValues(values: OrderFormUpdate<StopOrderFormValue>) {
+    if(!!values?.target && values.target !== OrderType.StopOrder) {
+      return;
+    }
+
     if (!!values?.price && this.form?.get('withLimit')?.value) {
       this.form!.get('price')?.setValue(values.price);
     }

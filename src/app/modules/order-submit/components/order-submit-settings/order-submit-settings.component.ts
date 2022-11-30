@@ -28,6 +28,7 @@ import { OrderSubmitSettings } from "../../../../shared/models/settings/order-su
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { inputNumberValidation } from '../../../../shared/utils/validation-options';
 
 @Component({
   selector: 'ats-order-submit-settings[settingsChange][guid]',
@@ -46,6 +47,10 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
     limitOrderPriceMoveStep: {
       min: 1,
       max: 200
+    },
+    workingVolume: {
+      min: 1,
+      max: inputNumberValidation.max
     }
   };
 
@@ -77,6 +82,13 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
             .sort((a, b) => a - b)
             .map(x => this.createLimitOrderPriceMoveStepControl(x)
             )
+        ),
+        showVolumePanel: new UntypedFormControl(settings.showVolumePanel ?? false),
+        workingVolumes: new FormArray(
+          [...(settings.workingVolumes ?? [])]
+            .sort((a, b) => a - b)
+            .map(x => this.createWorkingVolumeControl(x)
+            )
         )
       });
     });
@@ -92,7 +104,8 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
         ...formValue,
         symbol: formValue.instrument.symbol,
         exchange: formValue.instrument.exchange,
-        limitOrderPriceMoveSteps: formValue.limitOrderPriceMoveSteps.map((x: number) => Number(x))
+        limitOrderPriceMoveSteps: formValue.limitOrderPriceMoveSteps.map((x: number) => Number(x)),
+        workingVolumes: formValue.workingVolumes.map((x: number) => Number(x)),
       };
 
       delete newSettings.instrument;
@@ -137,6 +150,22 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
     stepsControl.push(this.createLimitOrderPriceMoveStepControl(defaultValue));
   }
 
+  removeWorkingVolume($event: MouseEvent, index: number) {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    this.asFormArray(this.form.controls.workingVolumes).removeAt(index);
+  }
+
+  addWorkingVolume($event: MouseEvent) {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    const workingVolumeControl = this.asFormArray(this.form.controls.workingVolumes);
+    const defaultValue = workingVolumeControl?.controls[workingVolumeControl.length - 1]?.value as number;
+    workingVolumeControl.push(this.createWorkingVolumeControl(defaultValue ?? 1));
+  }
+
   private createLimitOrderPriceMoveStepControl(defaultValue: number): FormControl<number | null> {
     return new FormControl(
       defaultValue,
@@ -144,6 +173,17 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
         Validators.required,
         Validators.min(this.validationOptions.limitOrderPriceMoveStep.min),
         Validators.max(this.validationOptions.limitOrderPriceMoveStep.max)
+      ]
+    );
+  }
+
+  private createWorkingVolumeControl(defaultValue: number): FormControl<number | null> {
+    return new FormControl(
+      defaultValue,
+      [
+        Validators.required,
+        Validators.min(this.validationOptions.workingVolume.min),
+        Validators.max(this.validationOptions.workingVolume.max)
       ]
     );
   }

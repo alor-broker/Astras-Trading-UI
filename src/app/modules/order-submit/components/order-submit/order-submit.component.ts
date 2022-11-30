@@ -23,7 +23,10 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { OrderSubmitSettings } from "../../../../shared/models/settings/order-submit-settings.model";
 import { isEqualOrderSubmitSettings } from "../../../../shared/utils/settings-helper";
-import { OrderType } from '../../models/order-form.model';
+import {
+  OrderFormUpdate,
+  OrderType
+} from '../../models/order-form.model';
 import { LimitOrderFormValue } from "../order-forms/limit-order-form/limit-order-form.component";
 import { MarketOrderFormValue } from "../order-forms/market-order-form/market-order-form.component";
 import { StopOrderFormValue } from "../order-forms/stop-order-form/stop-order-form.component";
@@ -47,6 +50,10 @@ import { Position } from "../../../../shared/models/positions/position.model";
 import { Order } from '../../../../shared/models/orders/order.model';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { MathHelper } from '../../../../shared/utils/math-helper';
+import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
+import { OrderbookData } from '../../../orderbook/models/orderbook-data.model';
+import { OrderbookRequest } from '../../../orderbook/models/orderbook-request.model';
+import { OrderBookDataFeedHelper } from '../../../orderbook/utils/order-book-data-feed.helper';
 
 @Component({
   selector: 'ats-order-submit[guid]',
@@ -63,10 +70,16 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly canSubmitOrder$ = new BehaviorSubject(false);
   readonly buyButtonLoading$ = new BehaviorSubject(false);
   readonly sellButtonLoading$ = new BehaviorSubject(false);
-  readonly initialValues$ = new Subject<Partial<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue> | null>();
+  readonly initialValues$ = new Subject<OrderFormUpdate<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue>>();
   selectedTabIndex$!: Observable<number>;
   positionInfo$!: Observable<{ abs: number, quantity: number }>;
   activeLimitOrders$!: Observable<Order[]>;
+
+  currentAskBid$!: Observable<{
+    ask: {volume: number, price: number} | null,
+    bid: {volume: number, price: number} | null,
+  } | null>;
+
   settings$!: Observable<OrderSubmitSettings>;
   selectedOrderType: OrderType = OrderType.LimitOrder;
 
@@ -83,6 +96,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     private readonly store: Store,
     private readonly widgetsDataProvider: WidgetsDataProviderService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
   ) {
   }
 
@@ -154,7 +168,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
         withLatestFrom(this.settings$),
         filter(([priceData, settings]) => priceData.badgeColor === settings.badgeColor)
       )
-      .subscribe(([priceData]) => this.selectPrice(priceData.price));
+      .subscribe(([priceData]) => this.setInitialValues(priceData.price));
 
     this.activeLimitOrders$ = this.currentInstrumentWithPortfolio$.pipe(
       mapWith(
@@ -164,6 +178,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       map(s => s.orders.allOrders.filter(o => o.symbol === s.instrument.instrument.symbol && o.type === 'limit' && o.status === 'working')),
       shareReplay({ bufferSize: 1, refCount: true })
     );
+
+    this.initCurrentAskBid();
   }
 
   setLimitOrderValue(value: LimitOrderFormValue | null) {
@@ -221,12 +237,12 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     });
   }
 
-  selectPrice(price: number) {
-    this.initialValues$.next({ price });
-  }
-
-  selectQuantity(quantity: number) {
-    this.initialValues$.next({ quantity });
+  setInitialValues(price?: number, quantity?: number, target?: OrderType) {
+    this.initialValues$.next({
+      price,
+      quantity,
+      target
+    });
   }
 
   ngOnDestroy(): void {
@@ -355,4 +371,40 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     return [OrderType.LimitOrder, OrderType.MarketOrder, OrderType.StopOrder].indexOf(orderType);
   }
 
+  private initCurrentAskBid() {
+    this.currentAskBid$ = this.settings$.pipe(
+      switchMap(settings => this.subscriptionsDataFeedService.subscribe<OrderbookRequest, OrderbookData>(
+        OrderBookDataFeedHelper.getRealtimeDateRequest(
+          settings.symbol,
+          settings.exchange,
+          settings.instrumentGroup,
+          1
+        ),
+        OrderBookDataFeedHelper.getOrderbookSubscriptionId
+      )),
+      filter(x => !!x),
+      map(orderbook => {
+          const bestAsk = orderbook.a[0];
+          const bestBid = orderbook.b[0];
+
+          return {
+            ask: !!bestAsk
+              ? {
+                price: bestAsk.p,
+                volume: bestAsk.v
+              }
+              : null,
+            bid: !!bestBid
+              ? {
+                price: bestBid.p,
+                volume: bestBid.v
+              }
+              : null
+          };
+        }
+      ),
+      startWith(null),
+      shareReplay({bufferSize: 1, refCount: true})
+    );
+  }
 }

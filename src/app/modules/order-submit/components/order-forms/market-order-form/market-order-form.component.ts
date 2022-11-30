@@ -25,10 +25,13 @@ import { EvaluationBaseProperties } from "../../../../command/models/evaluation-
 import { QuotesService } from "../../../../../shared/services/quotes.service";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
-import { GuidGenerator } from "../../../../../shared/utils/guid";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../../shared/models/form.model';
 import { distinct } from 'rxjs/operators';
+import {
+  OrderFormUpdate,
+  OrderType
+} from '../../../models/order-form.model';
 
 export type MarketOrderFormValue = Omit<MarketOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
@@ -40,7 +43,6 @@ export type MarketOrderFormValue = Omit<MarketOrder, 'instrument' | 'side'> & { 
 })
 export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrderFormValue> implements OnInit, OnDestroy {
   evaluation$!: Observable<EvaluationBaseProperties | null>;
-  private readonly componentGuid = GuidGenerator.newGuid();
   private lastFormValue$ = new BehaviorSubject<MarketOrderFormValue | null>(null);
 
   constructor(private readonly quoteService: QuotesService
@@ -143,7 +145,11 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
       );
   }
 
-  protected applyInitialValues(values: Partial<MarketOrderFormValue> | null) {
+  protected applyInitialValues(values: OrderFormUpdate<MarketOrderFormValue>) {
+    if(!!values?.target && values.target !== OrderType.MarketOrder) {
+      return;
+    }
+
     if (!!values?.quantity) {
       this.form?.controls.quantity.setValue(values.quantity);
     }

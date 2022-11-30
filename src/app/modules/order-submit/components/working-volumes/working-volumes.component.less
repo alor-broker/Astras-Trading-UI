@@ -1,0 +1,40 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .item {
+      border: @border-width-base @border-style-base @border-color-base;
+      border-radius: @tag-border-radius;
+
+      &:hover {
+        color: @heading-color;
+        border-color: @primary-color;
+      }
+
+      &.bid {
+        color: @buy-color;
+      }
+
+      &.ask {
+        color: @sell-color;
+      }
+    }
+  }
+});
+
+.container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 5px;
+
+  .item {
+    flex-grow: 1;
+    text-align: center;
+    cursor: pointer;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+}

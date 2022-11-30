@@ -37,6 +37,7 @@ import { MarketOrderFormValue } from '../order-forms/market-order-form/market-or
 import { StopOrderFormValue } from '../order-forms/stop-order-form/stop-order-form.component';
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
 
 describe('OrderSubmitComponent', () => {
   let component: OrderSubmitComponent;
@@ -81,8 +82,13 @@ describe('OrderSubmitComponent', () => {
           inputs: ['instrument', 'initialValues', 'guid', 'activated']
         }),
         mockComponent({
-          selector: 's-limit-order-price-change',
+          selector: 'ats-limit-order-price-change',
           inputs: ['disabled', 'disabledTooltip', 'steps']
+        }),
+        mockComponent({
+          selector: 'ats-working-volumes',
+          inputs: ['workingVolumes', 'ask', 'bid'],
+          outputs: ['itemSelected']
         })
       ],
       providers: [
@@ -104,6 +110,12 @@ describe('OrderSubmitComponent', () => {
           provide: PortfolioSubscriptionsService,
           useValue: {
             getAllPositionsSubscription: jasmine.createSpy('getAllPositionsSubscription').and.returnValue(of(null))
+          }
+        },
+        {
+          provide: SubscriptionsDataFeedService,
+          useValue: {
+            getAllPositionsSubscription: jasmine.createSpy('subscribe').and.returnValue(new Subject())
           }
         }
       ]

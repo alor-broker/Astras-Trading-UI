@@ -1,0 +1,7 @@
+<div class="container" nz-tooltip nzTooltipTitle="Объем (кол-во лотов)" [nzTooltipMouseEnterDelay]="1">
+  <ng-container *ngFor="let item of sortedVolumes">
+    <span class="item" (click)="emitItemSelected(item)">{{item}}</span>
+  </ng-container>
+  <span class="item bid" *ngIf="bid" (click)="emitItemSelected(bid.volume, bid.price)">Bid</span>
+  <span class="item ask" *ngIf="ask" (click)="emitItemSelected(ask.volume, ask.price)">Ask</span>
+</div>

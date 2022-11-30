@@ -3,3 +3,5 @@ export enum OrderType {
   MarketOrder = 'marketOrder',
   StopOrder = 'stopOrder'
 }
+
+export type OrderFormUpdate<T> = Partial<T> & { target?: OrderType } | null;

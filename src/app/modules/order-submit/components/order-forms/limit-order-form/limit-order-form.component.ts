@@ -20,6 +20,10 @@ import { InstrumentKey } from "../../../../../shared/models/instruments/instrume
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../../shared/utils/form-validators";
+import {
+  OrderFormUpdate,
+  OrderType
+} from '../../../models/order-form.model';
 
 export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
@@ -95,7 +99,11 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
     });
   }
 
-  protected applyInitialValues(values: Partial<LimitOrderFormValue> | null) {
+  protected applyInitialValues(values: OrderFormUpdate<LimitOrderFormValue>) {
+    if(!!values?.target && values.target !== OrderType.LimitOrder) {
+      return;
+    }
+
     if (!!values?.price) {
       this.form?.controls.price.setValue(values.price);
     }
