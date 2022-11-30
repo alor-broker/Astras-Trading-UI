@@ -26,6 +26,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
 import { FeedbackModule } from '../feedback/feedback.module';
 import { ApplicationMetaModule } from '../application-meta/application-meta.module';
 import { NzInputModule } from "ng-zorro-antd/input";
+import { ExternalLinkModule } from "../../shared/components/external-link/external-link.module";
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { NzInputModule } from "ng-zorro-antd/input";
         FeedbackModule,
         ApplicationMetaModule,
         NzInputModule,
+        ExternalLinkModule,
         // components
     ],
   providers: [
