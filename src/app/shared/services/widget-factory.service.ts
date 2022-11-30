@@ -342,7 +342,9 @@ export class WidgetFactoryService {
       titleIcon: 'send',
       linkToActive: true,
       enableLimitOrdersFastEditing: false,
-      limitOrderPriceMoveSteps: [1, 2 , 5, 10]
+      limitOrderPriceMoveSteps: [1, 2 , 5, 10],
+      showVolumePanel: false,
+      workingVolumes: [1, 5, 10, 20, 30, 40, 50, 100, 200]
     } as OrderSubmitSettings;
   }
 }

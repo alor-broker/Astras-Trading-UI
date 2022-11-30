@@ -20,6 +20,7 @@ import { Instrument } from "../../../../shared/models/instruments/instrument.mod
 import { FormGroup } from "@angular/forms";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { ControlsOf } from '../../../../shared/models/form.model';
+import { OrderFormUpdate } from '../../models/order-form.model';
 
 @Component({
   template: ''
@@ -32,7 +33,7 @@ export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements On
   public readonly instrument$ = new BehaviorSubject<Instrument | null>(null);
   protected destroy$: Subject<boolean> = new Subject<boolean>();
   protected formValueChangeSubscription?: Subscription;
-  protected readonly initialValues$ = new BehaviorSubject<Partial<T> | null>(null);
+  protected readonly valueUpdate$ = new BehaviorSubject<OrderFormUpdate<T>>(null);
 
   @Input()
   set instrument(value: Instrument) {
@@ -41,7 +42,7 @@ export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements On
 
   @Input()
   set initialValues(value: Partial<T> | null) {
-    this.initialValues$.next(value);
+    this.valueUpdate$.next(value);
   }
 
   @Input()
@@ -55,7 +56,7 @@ export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements On
 
     this.formValueChangeSubscription?.unsubscribe();
     this.instrument$?.complete();
-    this.initialValues$?.complete();
+    this.valueUpdate$?.complete();
     this.isActivated$.complete();
   }
 
@@ -89,7 +90,7 @@ export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements On
   protected onFormCreated() {
   }
 
-  protected applyInitialValues?(values: Partial<T> | null): void;
+  protected applyInitialValues?(values: OrderFormUpdate<T>): void;
 
   private initForm(instrument: Instrument, additions: A | null) {
     this.formValueChangeSubscription?.unsubscribe();
@@ -106,7 +107,7 @@ export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements On
     });
 
     if (this.applyInitialValues) {
-      const initialValuesSubscription = this.initialValues$.subscribe(value => this.applyInitialValues?.(value));
+      const initialValuesSubscription = this.valueUpdate$.subscribe(value => this.applyInitialValues?.(value));
       this.formValueChangeSubscription.add(initialValuesSubscription);
     }
 

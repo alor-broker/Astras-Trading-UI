@@ -21,8 +21,8 @@
         <nz-switch formControlName='enableLimitOrdersFastEditing'></nz-switch>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item>
-      <nz-collapse *ngIf="form.getRawValue().enableLimitOrdersFastEditing" [nzBordered]="false">
+    <nz-form-item *ngIf="form.getRawValue().enableLimitOrdersFastEditing">
+      <nz-collapse [nzBordered]="false">
         <nz-collapse-panel [nzActive]="true" [nzDisabled]="!asFormArray(form.controls.limitOrderPriceMoveSteps).valid"
                            nzHeader="Настройки номиналов">
           <nz-form-item>
@@ -48,7 +48,6 @@
               <button
                 (click)="removeLimitOrderPriceMoveStep($event, i)"
                 [disabled]="form.getRawValue().limitOrderPriceMoveSteps.length <= 1"
-                class="move-step-remove-btn"
                 nz-button
                 nzType="dashed">
                 <i nz-icon nzType="minus"></i>
@@ -57,6 +56,52 @@
             <button (click)="addLimitOrderPriceMoveStep($event)"
                     [disabled]="!asFormArray(form.controls.limitOrderPriceMoveSteps).valid"
                     class="add-move-step-btn"
+                    nz-button
+                    nzType="dashed">
+              <i nz-icon nzType="plus"></i>
+            </button>
+          </nz-form-item>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </nz-form-item>
+    <nz-form-item class="one-row">
+      <nz-form-label nzFor="enableLimitOrdersFastEditing">Отображать панель объемов
+      </nz-form-label>
+      <nz-form-control>
+        <nz-switch formControlName='showVolumePanel'></nz-switch>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item *ngIf="form.getRawValue().showVolumePanel">
+      <nz-collapse [nzBordered]="false">
+        <nz-collapse-panel [nzActive]="true" [nzDisabled]="!asFormArray(form.controls.workingVolumes).valid" nzHeader="Настройки объемов">
+          <nz-form-item>
+            <span nz-typography nzType="secondary">
+              Указанные ниже значения определяют набор кнопок для быстрого указания объема (кол-ва лотов) в лимитной заявке.
+            </span>
+          </nz-form-item>
+          <nz-form-item>
+            <div *ngFor="let volumeControl of asFormArray(form.controls.workingVolumes).controls; index as i"
+                 class="volume-option">
+              <nz-form-label>Объем {{i + 1}}:</nz-form-label>
+              <nz-form-control
+                nzErrorTip="Значение должно быть от {{validationOptions.workingVolume.min}} до {{validationOptions.workingVolume.max}}">
+                <nz-input-number (mousedown)="$event.stopPropagation()" [formControl]="asFormControl(volumeControl)"
+                                 [nzMax]="validationOptions.workingVolume.max"
+                                 [nzMin]="validationOptions.workingVolume.min"
+                                 [nzPrecision]="0"
+                                 [nzPrecisionMode]="'cut'"
+                ></nz-input-number>
+              </nz-form-control>
+              <button
+                (click)="removeWorkingVolume($event, i)"
+                nz-button
+                nzType="dashed">
+                <i nz-icon nzType="minus"></i>
+              </button>
+            </div>
+            <button (click)="addWorkingVolume($event)"
+                    [disabled]="!asFormArray(form.controls.workingVolumes).valid"
+                    class="add-volume-btn"
                     nz-button
                     nzType="dashed">
               <i nz-icon nzType="plus"></i>

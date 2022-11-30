@@ -542,7 +542,9 @@ export function isEqualOrderSubmitSettings(
       settings1.symbol == settings2.symbol &&
       settings1.exchange == settings2.exchange &&
       settings1.enableLimitOrdersFastEditing == settings2.enableLimitOrdersFastEditing &&
-      isArrayEqual(settings1.limitOrderPriceMoveSteps, settings2.limitOrderPriceMoveSteps, (a, b) => a === b)
+      isArrayEqual(settings1.limitOrderPriceMoveSteps, settings2.limitOrderPriceMoveSteps, (a, b) => a === b) &&
+      settings1.showVolumePanel == settings2.showVolumePanel &&
+      isArrayEqual(settings1.workingVolumes, settings2.workingVolumes, (a, b) => a === b)
     );
   } else return false;
 }

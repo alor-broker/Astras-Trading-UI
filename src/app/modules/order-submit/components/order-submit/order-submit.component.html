@@ -18,7 +18,7 @@
               <span
                 class="position-badge"
                 [class]="positionInfo.quantity > 0 ? 'long' : 'short'"
-                (click)="selectQuantity(positionInfo.abs)"
+                (click)="setInitialValues(undefined ,positionInfo.abs)"
               >
                 {{positionInfo.abs}}
               </span>
@@ -27,11 +27,11 @@
           <ng-container *ngIf="priceData$ | async as priceData">
             <div nz-col>
               <label>Ask: </label>
-              <span class="selectable sell" (click)="selectPrice(priceData.ask)">{{priceData.ask}}</span>
+              <span class="selectable sell" (click)="setInitialValues(priceData.ask)">{{priceData.ask}}</span>
             </div>
             <div nz-col>
               <label>Bid: </label>
-              <span class="selectable buy" (click)="selectPrice(priceData.bid)">{{priceData.bid}}</span>
+              <span class="selectable buy" (click)="setInitialValues(priceData.bid)">{{priceData.bid}}</span>
             </div>
           </ng-container>
         </div>
@@ -39,6 +39,15 @@
       <div class="body">
           <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async">
             <nz-tab #limitTab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" nzTitle="Лимитная">
+              <div *ngIf="settings.showVolumePanel" class="working-volumes-panel">
+                <ats-working-volumes
+                  [workingVolumes]="settings.workingVolumes"
+                  [ask]="(currentAskBid$ | async)?.ask ?? null"
+                  [bid]="(currentAskBid$ | async)?.bid ?? null"
+                  (itemSelected)="setInitialValues($event.price, $event.volume, orderTypes.LimitOrder)"
+                >
+                </ats-working-volumes>
+              </div>
               <ats-limit-order-form (formValueChange)="setLimitOrderValue($event)"
                                     [instrument]="currentInstrumentWithPortfolio.instrument"
                                     [initialValues]="initialValues$ | async"
