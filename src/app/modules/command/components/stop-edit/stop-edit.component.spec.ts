@@ -4,7 +4,7 @@ import { StopEditComponent } from './stop-edit.component';
 import { CommandsService } from "../../services/commands.service";
 import { NZ_I18N, ru_RU } from "ng-zorro-antd/i18n";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
-import { of } from "rxjs";
+import { of, Subject } from "rxjs";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
 import { Side } from "../../../../shared/models/enums/side.model";
@@ -21,6 +21,7 @@ describe('StopEditComponent', () => {
   const timezoneConverter = new TimezoneConverter(TimezoneDisplayOption.MskTime);
   const commandsServiceSpy = {
     setStopEdit: jasmine.createSpy('setStopEdit').and.callThrough(),
+    quantitySelected$: new Subject()
   };
 
   const initialCommandContext = {

@@ -18,6 +18,7 @@ import { LimitEditComponent } from "./limit-edit.component";
 import { EditParams } from "../../../../shared/models/commands/edit-params.model";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { LimitEdit } from "../../models/limit-edit.model";
+import { Subject } from "rxjs";
 
 describe('LimitEditComponent', () => {
   let component: LimitEditComponent;
@@ -68,7 +69,10 @@ describe('LimitEditComponent', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitEdit']);
+    spyCommands = {
+      setLimitEdit: jasmine.createSpy('setLimitEdit').and.callThrough(),
+      quantitySelected$: new Subject()
+    };
 
     await TestBed.configureTestingModule({
       imports: [
