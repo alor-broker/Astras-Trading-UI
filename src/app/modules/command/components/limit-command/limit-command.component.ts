@@ -25,7 +25,6 @@ import { CommandContextModel } from '../../models/command-context.model';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 
 @Component({
   selector: 'ats-limit-command',
@@ -102,10 +101,10 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     }
   }
 
-  private buildForm(initialParameters: CommandParams): FormGroup<ControlsOf<LimitFormData>> {
+  private buildForm(commandContext: CommandContextModel<CommandParams>): FormGroup<ControlsOf<LimitFormData>> {
     return new FormGroup<ControlsOf<LimitFormData>>({
       quantity: new FormControl(
-        initialParameters.quantity ?? 1,
+        commandContext.commandParameters.quantity ?? 1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
@@ -113,15 +112,15 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         ]
       ),
       price: new FormControl(
-        initialParameters.price ?? 1,
+        commandContext.commandParameters.price ?? 1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max),
-          AtsValidators.priceStepMultiplicity((initialParameters.instrument as Instrument).minstep || 0)
+          AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
         ]
       ),
-      instrumentGroup: new FormControl(initialParameters.instrument.instrumentGroup),
+      instrumentGroup: new FormControl(commandContext.commandParameters.instrument.instrumentGroup),
     });
   }
 
@@ -141,7 +140,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
   }
 
   private initCommandForm(commandContext: CommandContextModel<CommandParams>) {
-    this.form = this.buildForm(commandContext.commandParameters);
+    this.form = this.buildForm(commandContext);
     this.setLimitCommand(commandContext);
 
     this.form.valueChanges.pipe(
