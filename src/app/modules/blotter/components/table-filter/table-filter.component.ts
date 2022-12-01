@@ -32,6 +32,8 @@ export class TableFilterComponent implements OnChanges, OnInit {
   }
 
   reset() {
-    this.filtersForm.reset();
+    const activeCol = this.columns.find(col => col.isSearchVisible);
+
+    this.filtersForm.get(activeCol!.id)?.reset();
   }
 }

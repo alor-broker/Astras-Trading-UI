@@ -39,6 +39,7 @@ import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
+import { DefaultFilter } from "../../models/order-filter.model";
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -64,6 +65,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   tableInnerWidth = '1000px';
   displayTrades$: Observable<DisplayTrade[]> = of([]);
   searchFilter = new BehaviorSubject<TradeFilter>({});
+  defaultFilter = new BehaviorSubject<DefaultFilter>({});
   isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
   allColumns: Column<DisplayTrade, TradeFilter>[] = [
     {
@@ -75,7 +77,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: (trade, filter) => filter.id ? trade.id.toLowerCase().includes(filter.id.toLowerCase()) : false,
       isSearchVisible: false,
       hasSearch: true,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -90,7 +91,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: (trade, filter) => filter.orderno ? trade.orderno.toLowerCase().includes(filter.orderno.toLowerCase()) : false,
       isSearchVisible: false,
       hasSearch: true,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -105,7 +105,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: (trade, filter) => filter.symbol ? trade.symbol.toLowerCase().includes(filter.symbol.toLowerCase()) : false,
       isSearchVisible: false,
       hasSearch: true,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -119,7 +118,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: (list: string[], trade: DisplayTrade) => list.some(val => trade.side.toString().indexOf(val) !== -1),
       listOfFilter: [
         {text: 'Покупка', value: 'buy'},
         {text: 'Продажа', value: 'sell'}
@@ -136,7 +134,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -150,7 +147,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -164,7 +160,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -178,7 +173,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -236,6 +230,9 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       mergeMap(trades => this.searchFilter.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))
       )),
+      mergeMap(trades => this.defaultFilter.pipe(
+        map(f => trades.filter(t => this.justifyDefaultFilter(t, f)))
+      )),
     );
   }
 
@@ -252,6 +249,13 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.searchFilter.next(newFilter);
   }
 
+  defaultFilterChange(key: string, value: string[]) {
+    this.defaultFilter.next({
+      ...this.defaultFilter.getValue(),
+      [key]: value
+    });
+  }
+
   getFilter(columnId: string) {
     return this.searchFilter.getValue()[columnId as keyof TradeFilter];
   }
@@ -266,7 +270,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isFilterApplied(column: Column<DisplayTrade, TradeFilter>) {
     const filter = this.searchFilter.getValue();
-    return column.id in filter && filter[column.id] !== '';
+    return column.id in filter && !!filter[column.id];
   }
 
   get canExport(): boolean {
@@ -290,12 +294,27 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private justifyFilter(trade: DisplayTrade, filter: TradeFilter): boolean {
+    let isFiltered = true;
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof TradeFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
-        return column?.searchFn ? column.searchFn(trade, filter) : false;
+        if (!column!.searchFn!(trade, filter)) {
+          isFiltered = false;
+        }
       }
     }
-    return true;
+    return isFiltered;
+  }
+
+  private justifyDefaultFilter(order: DisplayTrade, filter: DefaultFilter): boolean {
+    let isFiltered = true;
+    for (const key of Object.keys(filter)) {
+      if (filter[key as keyof DefaultFilter]) {
+        if (filter[key]?.length && !filter[key]?.includes((order as any)[key])) {
+          isFiltered = false;
+        }
+      }
+    }
+    return isFiltered;
   }
 }
