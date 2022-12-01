@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
   Observable,
-  of,
   Subscription,
   switchMap,
   take
@@ -120,17 +119,9 @@ export class WatchInstrumentsService {
   }
 
   private initInstrumentSubscription(instrument: InstrumentKey) {
-    of({}).pipe(
-      switchMap(() => {
-        if (instrument.shortName) {
-          return of(instrument);
-        }
-
-        return this.instrumentSService.getInstrument(instrument).pipe(
-          take(1),
-          filter((x): x is Instrument => !!x)
-        );
-      }),
+    this.instrumentSService.getInstrument(instrument).pipe(
+      take(1),
+      filter((x): x is Instrument => !!x),
       switchMap(i => {
         return this.history.getDaysOpen(i)
           .pipe(

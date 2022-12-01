@@ -3,5 +3,4 @@ export interface InstrumentKey {
   symbol: string,
   exchange: string,
   isin?: string,
-  shortName?: string,
 }

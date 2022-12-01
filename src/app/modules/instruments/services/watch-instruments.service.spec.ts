@@ -28,7 +28,6 @@ describe('WatchInstrumentsService', () => {
   const daysOpenMock = new BehaviorSubject<Candle | null>({
     low: 0
   } as Candle);
-  const messagesMock = new Subject<BaseResponse<Quote>>();
 
   beforeEach(() => {
     historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getDaysOpen']);
@@ -38,6 +37,7 @@ describe('WatchInstrumentsService', () => {
     historyServiceSpy.getDaysOpen.and.returnValue(daysOpenMock.asObservable());
 
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
+    instrumentsServiceSpy.getInstrument.and.returnValue(new Subject());
 
     quotesServiceSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
     quotesServiceSpy.getQuotes.and.returnValue(new Subject());

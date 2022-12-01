@@ -56,8 +56,9 @@ export class InstrumentsEffects {
     this.actions$.pipe(
       ofType(selectNewInstrumentByBadge),
       mapWith(
-        action => this.instrumentsService.getInstrument(action.instrument)
-          .pipe(catchHttpError<Instrument | null>(null, this.errorHandlerService)),
+        action => this.instrumentsService.getInstrument(action.instrument).pipe(
+          catchHttpError<Instrument | null>(null, this.errorHandlerService)
+        ),
         (action, instrument) => ({badgeColor: action.badgeColor || defaultBadgeColor, instrument})
       ),
       filter(({instrument}) => !!instrument),
