@@ -23,7 +23,6 @@ export type InstrumentDependentSettings = AnySettings & {
   exchange: string;
   instrumentGroup?: string;
   linkedToActive: boolean;
-  shortName?: string;
 };
 
 /**

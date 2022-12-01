@@ -110,22 +110,22 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buildForm(initialParameters: CommandContextModel<EditParams>): FormGroup<ControlsOf<LimitFormData>> {
+  private buildForm(commandContext: CommandContextModel<EditParams>): FormGroup<ControlsOf<LimitFormData>> {
     return new FormGroup<ControlsOf<LimitFormData>>({
       quantity: new FormControl(
-        initialParameters.commandParameters.quantity ?? 1,
+        commandContext.commandParameters.quantity ?? 1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max)
         ]),
       price: new FormControl(
-        initialParameters.commandParameters.price ?? 1,
+        commandContext.commandParameters.price ?? 1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max),
-          AtsValidators.priceStepMultiplicity(initialParameters.instrument.minstep || 0)
+          AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
         ])
     });
   }

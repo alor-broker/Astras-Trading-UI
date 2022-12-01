@@ -45,7 +45,8 @@ import {
 } from "../models/settings/all-instruments-settings.model";
 import {
   defaultBadgeColor,
-  instrumentsBadges
+  instrumentsBadges,
+  toInstrumentKey
 } from "../utils/instruments";
 import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
 import { TimeframeValue } from '../../modules/light-chart/models/light-chart.models';
@@ -128,7 +129,7 @@ export class WidgetFactoryService {
     }
 
     return {
-      ...this.badges.yellow,
+      ...toInstrumentKey(this.badges.yellow),
       guid: newWidget.gridItem.label,
       settingsType: 'OrderbookSettings',
       title: `Стакан`,
@@ -150,7 +151,7 @@ export class WidgetFactoryService {
     }
 
     return {
-      ...this.badges.yellow,
+      ...toInstrumentKey(this.badges.yellow),
       guid: newWidget.gridItem.label,
       settingsType: 'ScalperOrderBookSettings',
       title: `Скальперский стакан`,
@@ -197,7 +198,7 @@ export class WidgetFactoryService {
     }
 
     return {
-      ...this.badges.yellow,
+      ...toInstrumentKey(this.badges.yellow),
       linkToActive: true,
       badgeColor: defaultBadgeColor,
       guid: newWidget.gridItem.label,
@@ -243,7 +244,7 @@ export class WidgetFactoryService {
     }
 
     return {
-      ...this.badges.yellow,
+      ...toInstrumentKey(this.badges.yellow),
       linkToActive: true,
       badgeColor: defaultBadgeColor,
       guid: newWidget.gridItem.label,
@@ -259,7 +260,7 @@ export class WidgetFactoryService {
     }
 
     return {
-      ...this.badges.yellow,
+      ...toInstrumentKey(this.badges.yellow),
       linkToActive: true,
       badgeColor: defaultBadgeColor,
       guid: newWidget.gridItem.label,
@@ -302,7 +303,7 @@ export class WidgetFactoryService {
     }
 
     return {
-      ...this.badges.yellow,
+      ...toInstrumentKey(this.badges.yellow),
       guid: newWidget.gridItem.label,
       settingsType: 'TechChartSettings',
       title: 'Тех. анализ',
@@ -334,7 +335,7 @@ export class WidgetFactoryService {
     }
 
       return {
-      ...this.badges.yellow,
+      ...toInstrumentKey(this.badges.yellow),
       guid: newWidget.gridItem.label,
       badgeColor: defaultBadgeColor,
       settingsType: 'OrderSubmitSettings',

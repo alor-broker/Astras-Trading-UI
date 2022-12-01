@@ -34,7 +34,6 @@ import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 
 @Component({
   selector: 'ats-stop-command',
@@ -62,7 +61,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       withLatestFrom(this.timezoneConverterService.getConverter()),
       takeUntil(this.destroy$)
     ).subscribe(([context, converter]) => {
-      this.initCommandForm(context.commandParameters, converter);
+      this.initCommandForm(context, converter);
       this.checkNowTimeSelection(converter);
     });
 
@@ -142,15 +141,15 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     }
   }
 
-  private buildForm(initialParameters: CommandParams): FormGroup<ControlsOf<StopFormData>> {
-    let price = initialParameters.price;
+  private buildForm(commandContext: CommandContextModel<CommandParams>): FormGroup<ControlsOf<StopFormData>> {
+    let price = commandContext.commandParameters.price;
     if (price == 1 || price == null) {
       price = 0;
     }
 
     return new FormGroup<ControlsOf<StopFormData>>({
       quantity: new FormControl(
-        initialParameters.quantity ?? 1,
+        commandContext.commandParameters.quantity ?? 1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
@@ -163,7 +162,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max),
-          AtsValidators.priceStepMultiplicity((initialParameters.instrument as Instrument).minstep || 0)
+          AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
         ]
       ),
       triggerPrice: new FormControl(
@@ -172,11 +171,11 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max),
-          AtsValidators.priceStepMultiplicity((initialParameters.instrument as Instrument).minstep || 0)
+          AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
         ]
       ),
-      stopEndUnixTime: new FormControl(!!initialParameters.stopEndUnixTime
-        ? new Date(initialParameters.stopEndUnixTime)
+      stopEndUnixTime: new FormControl(!!commandContext.commandParameters.stopEndUnixTime
+        ? new Date(commandContext.commandParameters.stopEndUnixTime)
         : this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
       ),
       condition: new FormControl(StopOrderCondition.More),
@@ -184,14 +183,14 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initCommandForm(initialParameters: CommandParams | null, converter: TimezoneConverter) {
-    if (!initialParameters) {
+  private initCommandForm(commandContext: CommandContextModel<CommandParams>, converter: TimezoneConverter) {
+    if (!commandContext.commandParameters) {
       return;
     }
 
     this.timezoneConverter = converter;
-    this.form = this.buildForm(initialParameters);
-    this.setStopCommand(initialParameters);
+    this.form = this.buildForm(commandContext);
+    this.setStopCommand(commandContext.commandParameters);
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
@@ -202,7 +201,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         prev?.triggerPrice == curr?.triggerPrice &&
         prev?.stopEndUnixTime == curr?.stopEndUnixTime),
     ).subscribe(() => {
-      this.setStopCommand(initialParameters);
+      this.setStopCommand(commandContext.commandParameters);
     });
   }
 }

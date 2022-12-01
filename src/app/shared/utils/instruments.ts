@@ -1,5 +1,6 @@
 import { InstrumentType } from "../models/enums/instrument-type.model";
 import { InstrumentKey } from "../models/instruments/instrument-key.model";
+import { Instrument } from '../models/instruments/instrument.model';
 
 /**
  * badge colors array
@@ -28,13 +29,17 @@ export function getTypeByCfi(cfi: string | undefined) {
   }
   if (cfi.startsWith('DB')) {
     return InstrumentType.Bond;
-  } else if (cfi.startsWith('E')) {
+  }
+  else if (cfi.startsWith('E')) {
     return InstrumentType.Stock;
-  } else if (cfi.startsWith('MRC')) {
+  }
+  else if (cfi.startsWith('MRC')) {
     return InstrumentType.CurrencyInstrument;
-  } else if (cfi.startsWith('F')) {
+  }
+  else if (cfi.startsWith('F')) {
     return InstrumentType.Futures;
-  } else if (cfi.startsWith('O')) {
+  }
+  else if (cfi.startsWith('O')) {
     return InstrumentType.Options;
   }
   return InstrumentType.Other;
@@ -57,4 +62,17 @@ export class InstrumentEqualityComparer {
       && a?.isin == b?.isin
       && a?.instrumentGroup == b?.instrumentGroup;
   }
+}
+
+export function toInstrumentKey(instrument: Instrument | InstrumentKey): InstrumentKey {
+  if (!instrument) {
+    return instrument;
+  }
+
+  return {
+    symbol: instrument.symbol,
+    instrumentGroup: instrument.instrumentGroup,
+    exchange: instrument.exchange,
+    isin: instrument.isin
+  };
 }

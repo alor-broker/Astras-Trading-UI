@@ -120,14 +120,14 @@ export class StopEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  private initCommandForm(initialParameters:  CommandContextModel<EditParams>, converter: TimezoneConverter) {
-    if (!initialParameters.commandParameters) {
+  private initCommandForm(commandContext:  CommandContextModel<EditParams>, converter: TimezoneConverter) {
+    if (!commandContext.commandParameters) {
       return;
     }
 
     this.timezoneConverter = converter;
-    this.form = this.buildForm(initialParameters);
-    this.setStopEdit(initialParameters.commandParameters);
+    this.form = this.buildForm(commandContext);
+    this.setStopEdit(commandContext.commandParameters);
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
@@ -136,7 +136,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
       ),
     ).subscribe((val) => {
       this.setStopEdit({
-        ...initialParameters.commandParameters,
+        ...commandContext.commandParameters,
         ...val,
         price: Number(val.price),
         quantity: val.quantity!,

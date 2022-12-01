@@ -227,8 +227,7 @@ describe('Widget Settings Store', () => {
         instrumentGroup: generateRandomString(4),
         // should be initially set to false because otherwise this setting will be updated with initial state selected instrument (SBER)
         linkToActive: false,
-        badgeColor: 'yellow',
-        shortName: 'shortName'
+        badgeColor: 'yellow'
       };
 
       const instrumentInDependentSettings: AnySettings = {

@@ -15,6 +15,7 @@ import { HttpClient } from '@angular/common/http';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
+import { toInstrumentKey } from '../../../shared/utils/instruments';
 
 @Injectable({
   providedIn: 'root'
@@ -100,7 +101,7 @@ export class WatchlistCollectionService {
       return;
     }
 
-    list.items.push(...items);
+    list.items.push(...items.map(x => toInstrumentKey(x)));
 
     const uniqueItems = new Map(list.items.map(x => [WatchlistCollectionService.getInstrumentKey(x), x])).values();
     list.items = Array.from(uniqueItems);

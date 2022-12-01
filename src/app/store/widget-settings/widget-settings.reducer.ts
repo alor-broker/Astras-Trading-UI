@@ -64,7 +64,6 @@ export const reducer = createReducer(
           exchange: badges[state.entities[s]?.badgeColor!]?.exchange,
           instrumentGroup: badges[state.entities[s]?.badgeColor!]?.instrumentGroup,
           isin: badges[state.entities[s]?.badgeColor!]?.isin,
-          shortName: badges[state.entities[s]?.badgeColor!]?.shortName,
         }
       }));
 
