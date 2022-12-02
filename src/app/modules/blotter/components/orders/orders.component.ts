@@ -24,7 +24,7 @@ import {
 import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
-import { DefaultFilter, OrderFilter } from '../../models/order-filter.model';
+import { OrderFilter } from '../../models/order-filter.model';
 import { Order } from '../../../../shared/models/orders/order.model';
 import { Column } from '../../models/column.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
@@ -66,9 +66,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayOrders$: Observable<DisplayOrder[]> = of([]);
-  searchFilter = new BehaviorSubject<OrderFilter>({});
-  defaultFilter = new BehaviorSubject<DefaultFilter>({});
-  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
+  filter = new BehaviorSubject<OrderFilter>({});
+  isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
   tableInnerWidth: string = '1000px';
   allColumns: Column<DisplayOrder, OrderFilter>[] = [
     {
@@ -291,11 +290,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.displayOrders$ = combineLatest([
       this.orders$,
-      this.searchFilter,
-      this.defaultFilter,
+      this.filter,
       this.timezoneConverterService.getConverter()
     ]).pipe(
-      map(([orders, f, d, converter]) => orders
+      map(([orders, f, converter]) => orders
         .map(o => ({
           ...o,
           residue: `${o.filled}/${o.qty}`,
@@ -304,7 +302,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
           endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime
         }))
         .filter(o => this.justifyFilter(o, f))
-        .filter(o => this.justifyDefaultFilter(o, d))
         .sort(this.sortOrders))
     );
 
@@ -335,15 +332,25 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   reset(): void {
-    this.searchFilter.next({});
+    this.filter.next({});
   }
 
   filterChange(newFilter: OrderFilter) {
-    this.searchFilter.next(newFilter);
+    this.filter.next({
+      ...this.filter.getValue(),
+      ...newFilter
+    });
+  }
+
+  defaultFilterChange(key: string, value: string[]) {
+    this.filter.next({
+      ...this.filter.getValue(),
+      [key]: value
+    });
   }
 
   getFilter(columnId: string) {
-    return this.searchFilter.getValue()[columnId as keyof OrderFilter];
+    return this.filter.getValue()[columnId as keyof OrderFilter];
   }
 
   cancelOrder(orderId: string) {
@@ -408,7 +415,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   isFilterApplied(column: Column<DisplayOrder, OrderFilter>) {
-    const filter = this.searchFilter.getValue();
+    const filter = this.filter.getValue();
     return column.id in filter && !!filter[column.id];
   }
 
@@ -443,19 +450,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof OrderFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
-        if (!column!.searchFn!(order, filter)) {
-          isFiltered = false;
-        }
-      }
-    }
-    return isFiltered;
-  }
-
-  private justifyDefaultFilter(order: DisplayOrder, filter: DefaultFilter): boolean {
-    let isFiltered = true;
-    for (const key of Object.keys(filter)) {
-      if (filter[key as keyof DefaultFilter]) {
-        if (filter[key]?.length && !filter[key]?.includes((order as any)[key])) {
+        if (
+          column?.hasSearch && !column.searchFn!(order, filter) ||
+          column?.hasFilter && filter[key]?.length  && !filter[key]?.includes((order as any)[key])
+        ) {
           isFiltered = false;
         }
       }
@@ -477,13 +475,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       return 1;
     }
     return 0;
-  }
-
-  defaultFilterChange(key: string, value: string[]) {
-    this.defaultFilter.next({
-      ...this.defaultFilter.getValue(),
-      [key]: value
-    });
   }
 
   ngAfterViewInit(): void {

@@ -23,7 +23,9 @@ export class TableFilterComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.columns) {
       this.filtersForm = new UntypedFormGroup(
-        this.columns.reduce((acc, curr) => {
+        this.columns
+          .filter(col => col.hasSearch)
+          .reduce((acc, curr) => {
           acc[curr.id] = new UntypedFormControl('');
           return acc;
         }, {} as any)

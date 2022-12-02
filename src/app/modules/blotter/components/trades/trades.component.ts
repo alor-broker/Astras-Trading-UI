@@ -39,7 +39,6 @@ import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
-import { DefaultFilter } from "../../models/order-filter.model";
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -64,9 +63,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   shouldShowSettingsChange = new EventEmitter<boolean>();
   tableInnerWidth = '1000px';
   displayTrades$: Observable<DisplayTrade[]> = of([]);
-  searchFilter = new BehaviorSubject<TradeFilter>({});
-  defaultFilter = new BehaviorSubject<DefaultFilter>({});
-  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
+  filter = new BehaviorSubject<TradeFilter>({});
+  isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
   allColumns: Column<DisplayTrade, TradeFilter>[] = [
     {
       id: 'id',
@@ -227,12 +225,9 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
         volume: MathHelper.round(t.qtyUnits * t.price, 2),
         date: converter.toTerminalDate(t.date)
       })),
-      mergeMap(trades => this.searchFilter.pipe(
+      mergeMap(trades => this.filter.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))
-      )),
-      mergeMap(trades => this.defaultFilter.pipe(
-        map(f => trades.filter(t => this.justifyDefaultFilter(t, f)))
-      )),
+      ))
     );
   }
 
@@ -242,22 +237,25 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   reset(): void {
-    this.searchFilter.next({});
+    this.filter.next({});
   }
 
   filterChange(newFilter: TradeFilter) {
-    this.searchFilter.next(newFilter);
+    this.filter.next({
+      ...this.filter.getValue(),
+      ...newFilter
+    });
   }
 
   defaultFilterChange(key: string, value: string[]) {
-    this.defaultFilter.next({
-      ...this.defaultFilter.getValue(),
+    this.filter.next({
+      ...this.filter.getValue(),
       [key]: value
     });
   }
 
   getFilter(columnId: string) {
-    return this.searchFilter.getValue()[columnId as keyof TradeFilter];
+    return this.filter.getValue()[columnId as keyof TradeFilter];
   }
 
   shouldShow(column: string) {
@@ -269,7 +267,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   isFilterApplied(column: Column<DisplayTrade, TradeFilter>) {
-    const filter = this.searchFilter.getValue();
+    const filter = this.filter.getValue();
     return column.id in filter && !!filter[column.id];
   }
 
@@ -298,19 +296,10 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof TradeFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
-        if (!column!.searchFn!(trade, filter)) {
-          isFiltered = false;
-        }
-      }
-    }
-    return isFiltered;
-  }
-
-  private justifyDefaultFilter(order: DisplayTrade, filter: DefaultFilter): boolean {
-    let isFiltered = true;
-    for (const key of Object.keys(filter)) {
-      if (filter[key as keyof DefaultFilter]) {
-        if (filter[key]?.length && !filter[key]?.includes((order as any)[key])) {
+        if (
+          column?.hasSearch && !column.searchFn!(trade, filter) ||
+          column?.hasFilter && filter[key]?.length  && !filter[key]?.includes((trade as any)[key])
+        ) {
           isFiltered = false;
         }
       }
