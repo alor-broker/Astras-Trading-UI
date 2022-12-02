@@ -248,10 +248,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   defaultFilterChange(key: string, value: string[]) {
-    this.filter.next({
-      ...this.filter.getValue(),
-      [key]: value
-    });
+    this.filterChange({ [key]: value });
   }
 
   getFilter(columnId: string) {
