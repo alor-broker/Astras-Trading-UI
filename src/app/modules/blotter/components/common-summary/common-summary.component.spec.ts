@@ -7,6 +7,7 @@ import { BlotterService } from '../../services/blotter.service';
 
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { CommonSummaryComponent } from './common-summary.component';
+import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
 describe('CommonSummaryComponent', () => {
   let component: CommonSummaryComponent;
@@ -32,6 +33,14 @@ describe('CommonSummaryComponent', () => {
         {
           provide: WidgetSettingsService,
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({
+              portfoliosCurrency: []
+            }))
+          }
         }
       ]
     }).compileComponents();

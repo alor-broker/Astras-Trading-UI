@@ -8,6 +8,7 @@ import { of } from "rxjs";
 import { BlotterService } from "../../services/blotter.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { EventEmitter } from "@angular/core";
+import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
 describe('ForwardSummaryComponent', () => {
   let component: ForwardSummaryComponent;
@@ -32,6 +33,14 @@ describe('ForwardSummaryComponent', () => {
         {
           provide: WidgetSettingsService,
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({
+              portfoliosCurrency: []
+            }))
+          }
         }
       ]
     })

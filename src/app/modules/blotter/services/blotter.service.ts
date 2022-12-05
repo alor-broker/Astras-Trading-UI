@@ -90,13 +90,13 @@ export class BlotterService {
     );
   }
 
-  getCommonSummary(settings: BlotterSettings): Observable<CommonSummaryView> {
-    if (settings.currency != CurrencyInstrument.RUB) {
+  getCommonSummary(settings: BlotterSettings, currency: string ): Observable<CommonSummaryView> {
+    if (currency != CurrencyInstrument.RUB) {
       return combineLatest([
         this.portfolioSubscriptionsService.getSummariesSubscription(settings.portfolio, settings.exchange),
-        this.quotes.getQuotes(settings.currency, 'MOEX')
+        this.quotes.getQuotes(currency, 'MOEX')
       ]).pipe(
-        map(([summary, quote]) => this.formatCommonSummary(summary, settings.currency, quote.last_price))
+        map(([summary, quote]) => this.formatCommonSummary(summary, currency, quote.last_price))
       );
     }
     else {
@@ -106,13 +106,13 @@ export class BlotterService {
     }
   }
 
-  getForwardRisks(settings: BlotterSettings): Observable<ForwardRisksView> {
-    if (settings.currency != CurrencyInstrument.RUB) {
+  getForwardRisks(settings: BlotterSettings, currency: string): Observable<ForwardRisksView> {
+    if (currency != CurrencyInstrument.RUB) {
       return combineLatest([
         this.portfolioSubscriptionsService.getSpectraRisksSubscription(settings.portfolio, settings.exchange),
-        this.quotes.getQuotes(settings.currency, 'MOEX')
+        this.quotes.getQuotes(currency, 'MOEX')
       ]).pipe(
-        map(([risks, quote]) => this.formatForwardRisks(risks, settings.currency, quote.last_price))
+        map(([risks, quote]) => this.formatForwardRisks(risks, currency, quote.last_price))
       );
     }
     else {

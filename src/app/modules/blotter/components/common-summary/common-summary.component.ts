@@ -18,6 +18,9 @@ import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
+import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
+import { CurrencyInstrument } from "../../../../shared/models/enums/currencies.model";
 
 @Component({
   selector: 'ats-common-summary[guid][resize]',
@@ -40,13 +43,36 @@ export class CommonSummaryComponent implements OnInit {
 
   private resizeSub?: Subscription;
 
-  constructor(private readonly settingsService: WidgetSettingsService, private readonly service: BlotterService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly service: BlotterService,
+    private readonly terminalSettingsService: TerminalSettingsService
+  ) {
   }
 
   ngOnInit(): void {
     this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
-      switchMap(settings => this.service.getCommonSummary(settings))
+      mapWith(
+        () => this.terminalSettingsService.getSettings(),
+        (blotterSettings, ts) => {
+          const portfolioCurrency = ts.portfoliosCurrency?.find(pc =>
+            pc.portfolio.portfolio === blotterSettings.portfolio && pc.portfolio.exchange === blotterSettings.exchange
+          );
+          if (portfolioCurrency) {
+            return {
+              blotterSettings,
+              currency: portfolioCurrency.currency
+            };
+          }
+
+          return {
+            blotterSettings,
+            currency: blotterSettings.exchange === 'MOEX' ? CurrencyInstrument.RUB : CurrencyInstrument.USD
+          };
+        }
+      ),
+      switchMap(data => this.service.getCommonSummary(data.blotterSettings, data.currency))
     );
 
     this.resizeSub = this.resize.subscribe(i => {
