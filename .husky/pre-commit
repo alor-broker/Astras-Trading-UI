@@ -5,3 +5,4 @@
 
 yarn lint
 yarn test --browsers=ChromeHeadless --watch=false
+yarn build --configuration production
