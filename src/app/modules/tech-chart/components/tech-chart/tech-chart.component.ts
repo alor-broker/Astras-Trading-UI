@@ -70,7 +70,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private settings$?: Observable<ExtendedSettings>;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
-  private chartStudyTemplate?: object;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -182,8 +181,9 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private createChart(settings: TechChartSettings, theme: ThemeSettings) {
     if (this.chart) {
-      this.clearChartEventsSubscription(this.chart);
-      this.chart?.remove();
+      this.chart.activeChart().setSymbol(`${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`);
+
+      return;
     }
 
     if (!this.chartContainer) {
@@ -247,46 +247,15 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       'mainSeriesProperties.candleStyle.borderDownColor': theme.themeColors.sellColor
     });
 
-    this.chart.onChartReady(() => {
-      if (this.chartStudyTemplate) {
-        this.chart?.activeChart().applyStudyTemplate(this.chartStudyTemplate);
-      }
-    });
-
-    this.subscribeToChartEvents(settings);
+    this.subscribeToChartEvents();
   }
 
-  private subscribeToChartEvents(settings: TechChartSettings) {
-    this.subscribeToChartEvent(
-      this.chart!,
-      'drawing',
-      () => this.settingsService.updateIsLinked(settings.guid, false)
-    );
-
+  private subscribeToChartEvents() {
     this.subscribeToChartEvent(
       this.chart!,
       'onPlusClick',
       (params: PlusClickParams) => this.selectPrice(params.price)
     );
-
-    this.subscribeToChartEvent(
-      this.chart!,
-      'study_event',
-      () => this.saveIndicators()
-    );
-
-    this.subscribeToChartEvent(
-      this.chart!,
-      'study_properties_changed',
-      () => this.saveIndicators()
-    );
-  }
-
-  private saveIndicators() {
-    this.chartStudyTemplate = this.chart?.activeChart().createStudyTemplate({
-      saveSymbol: false,
-      saveInterval: false
-    });
   }
 
   private subscribeToChartEvent(target: IChartingLibraryWidget, event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap]) {
