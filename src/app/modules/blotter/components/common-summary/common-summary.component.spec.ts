@@ -25,6 +25,7 @@ describe('CommonSummaryComponent', () => {
   };
 
   beforeAll(() => TestBed.resetTestingModule());
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CommonSummaryComponent],
