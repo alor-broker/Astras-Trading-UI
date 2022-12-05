@@ -63,8 +63,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   shouldShowSettingsChange = new EventEmitter<boolean>();
   tableInnerWidth = '1000px';
   displayTrades$: Observable<DisplayTrade[]> = of([]);
-  searchFilter = new BehaviorSubject<TradeFilter>({});
-  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
+  filter = new BehaviorSubject<TradeFilter>({});
+  isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
   allColumns: Column<DisplayTrade, TradeFilter>[] = [
     {
       id: 'id',
@@ -75,7 +75,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: (trade, filter) => filter.id ? trade.id.toLowerCase().includes(filter.id.toLowerCase()) : false,
       isSearchVisible: false,
       hasSearch: true,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -90,7 +89,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: (trade, filter) => filter.orderno ? trade.orderno.toLowerCase().includes(filter.orderno.toLowerCase()) : false,
       isSearchVisible: false,
       hasSearch: true,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -105,7 +103,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: (trade, filter) => filter.symbol ? trade.symbol.toLowerCase().includes(filter.symbol.toLowerCase()) : false,
       isSearchVisible: false,
       hasSearch: true,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -119,7 +116,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: (list: string[], trade: DisplayTrade) => list.some(val => trade.side.toString().indexOf(val) !== -1),
       listOfFilter: [
         {text: 'Покупка', value: 'buy'},
         {text: 'Продажа', value: 'sell'}
@@ -136,7 +132,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -150,7 +145,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -164,7 +158,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -178,7 +171,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -233,9 +225,9 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
         volume: MathHelper.round(t.qtyUnits * t.price, 2),
         date: converter.toTerminalDate(t.date)
       })),
-      mergeMap(trades => this.searchFilter.pipe(
+      mergeMap(trades => this.filter.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))
-      )),
+      ))
     );
   }
 
@@ -245,15 +237,22 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   reset(): void {
-    this.searchFilter.next({});
+    this.filter.next({});
   }
 
   filterChange(newFilter: TradeFilter) {
-    this.searchFilter.next(newFilter);
+    this.filter.next({
+      ...this.filter.getValue(),
+      ...newFilter
+    });
+  }
+
+  defaultFilterChange(key: string, value: string[]) {
+    this.filterChange({ [key]: value });
   }
 
   getFilter(columnId: string) {
-    return this.searchFilter.getValue()[columnId as keyof TradeFilter];
+    return this.filter.getValue()[columnId as keyof TradeFilter];
   }
 
   shouldShow(column: string) {
@@ -265,8 +264,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   isFilterApplied(column: Column<DisplayTrade, TradeFilter>) {
-    const filter = this.searchFilter.getValue();
-    return column.id in filter && filter[column.id] !== '';
+    const filter = this.filter.getValue();
+    return column.id in filter && !!filter[column.id];
   }
 
   get canExport(): boolean {
@@ -290,12 +289,18 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private justifyFilter(trade: DisplayTrade, filter: TradeFilter): boolean {
+    let isFiltered = true;
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof TradeFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
-        return column?.searchFn ? column.searchFn(trade, filter) : false;
+        if (
+          column?.hasSearch && !column.searchFn!(trade, filter) ||
+          column?.hasFilter && filter[key]?.length  && !filter[key]?.includes((trade as any)[key])
+        ) {
+          isFiltered = false;
+        }
       }
     }
-    return true;
+    return isFiltered;
   }
 }

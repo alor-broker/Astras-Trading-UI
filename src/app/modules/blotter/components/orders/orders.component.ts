@@ -21,14 +21,7 @@ import {
   take,
   takeUntil
 } from 'rxjs';
-import {
-  catchError,
-  debounceTime,
-  map,
-  mergeMap,
-  startWith,
-  tap
-} from 'rxjs/operators';
+import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
@@ -73,8 +66,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayOrders$: Observable<DisplayOrder[]> = of([]);
-  searchFilter = new BehaviorSubject<OrderFilter>({});
-  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
+  filter = new BehaviorSubject<OrderFilter>({});
+  isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
   tableInnerWidth: string = '1000px';
   allColumns: Column<DisplayOrder, OrderFilter>[] = [
     {
@@ -86,7 +79,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: (order, filter) => filter.id ? order.id.toLowerCase().includes(filter.id.toLowerCase()) : false,
       isSearchVisible: false,
       hasSearch: true,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -101,7 +93,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: (order, filter) => filter.symbol ? order.symbol.toLowerCase().includes(filter.symbol.toLowerCase()) : false,
       isSearchVisible: false,
       hasSearch: true,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -115,7 +106,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: (list: string[], order: Order) => list.some(val => order.side.toString().indexOf(val) !== -1),
       listOfFilter: [
         { text: 'Покупка', value: 'buy' },
         { text: 'Продажа', value: 'sell' }
@@ -132,7 +122,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -146,7 +135,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -160,7 +148,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -174,7 +161,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -188,7 +174,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: (list: string[], order: DisplayOrder) => list.some(val => order.status.toString().indexOf(val) !== -1),
       listOfFilter: [
         { text: 'Исполнена', value: 'filled' },
         { text: 'Активна', value: 'working' },
@@ -206,7 +191,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -220,7 +204,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: (list: string[], order: DisplayOrder) => list.some(val => order.exchange.toString().indexOf(val) !== -1),
       listOfFilter: [
         { text: 'ММВБ', value: 'MOEX' },
         { text: 'СПБ', value: 'SPBX' }
@@ -237,7 +220,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: (list: string[], order: DisplayOrder) => list.some(val => order.type.toString().indexOf(val) !== -1),
       listOfFilter: [
         { text: 'Лимит', value: 'limit' },
         { text: 'Рыночн.', value: 'market' }
@@ -254,7 +236,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -309,7 +290,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.displayOrders$ = combineLatest([
       this.orders$,
-      this.searchFilter,
+      this.filter,
       this.timezoneConverterService.getConverter()
     ]).pipe(
       map(([orders, f, converter]) => orders
@@ -351,15 +332,22 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   reset(): void {
-    this.searchFilter.next({});
+    this.filter.next({});
   }
 
   filterChange(newFilter: OrderFilter) {
-    this.searchFilter.next(newFilter);
+    this.filter.next({
+      ...this.filter.getValue(),
+      ...newFilter
+    });
+  }
+
+  defaultFilterChange(key: string, value: string[]) {
+    this.filterChange({ [key]: value });
   }
 
   getFilter(columnId: string) {
-    return this.searchFilter.getValue()[columnId as keyof OrderFilter];
+    return this.filter.getValue()[columnId as keyof OrderFilter];
   }
 
   cancelOrder(orderId: string) {
@@ -424,8 +412,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   isFilterApplied(column: Column<DisplayOrder, OrderFilter>) {
-    const filter = this.searchFilter.getValue();
-    return column.id in filter && filter[column.id] !== '';
+    const filter = this.filter.getValue();
+    return column.id in filter && !!filter[column.id];
   }
 
   get canExport(): boolean {
@@ -455,13 +443,19 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {
+    let isFiltered = true;
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof OrderFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
-        return column?.searchFn ? column.searchFn(order, filter) : false;
+        if (
+          column?.hasSearch && !column.searchFn!(order, filter) ||
+          column?.hasFilter && filter[key]?.length  && !filter[key]?.includes((order as any)[key])
+        ) {
+          isFiltered = false;
+        }
       }
     }
-    return true;
+    return isFiltered;
   }
 
   private sortOrders(a: DisplayOrder, b: DisplayOrder) {

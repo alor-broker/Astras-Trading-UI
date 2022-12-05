@@ -84,7 +84,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: (position, filter) => filter.symbol ? position.symbol.toLowerCase().includes(filter.symbol.toLowerCase()) : false,
       isSearchVisible: false,
       hasSearch: true,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -99,7 +98,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: (position, filter) => filter.shortName ? position.shortName.toLowerCase().includes(filter.shortName.toLowerCase()) : false,
       isSearchVisible: false,
       hasSearch: true,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -113,7 +111,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -127,7 +124,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -141,7 +137,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -155,7 +150,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -169,7 +163,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -183,7 +176,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -197,7 +189,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -211,7 +202,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       searchFn: null,
       isSearchVisible: false,
       hasSearch: false,
-      filterFn: null,
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
@@ -285,10 +275,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  reset(): void {
-    this.searchFilter.next({});
-  }
-
   filterChange(newFilter: PositionFilter) {
     this.searchFilter.next(newFilter);
   }
@@ -317,7 +303,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isFilterApplied(column: Column<PositionDisplay, PositionFilter>) {
     const filter = this.searchFilter.getValue();
-    return column.id in filter && filter[column.id] !== '';
+    return column.id in filter && !!filter[column.id];
   }
 
   get canExport(): boolean {
@@ -336,12 +322,15 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private justifyFilter(position: PositionDisplay, filter: PositionFilter): boolean {
+    let isFiltered = true;
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof PositionFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
-        return column?.searchFn ? column.searchFn(position, filter) : false;
+        if (!column!.searchFn!(position, filter)) {
+          isFiltered = false;
+        }
       }
     }
-    return true;
+    return isFiltered;
   }
 }

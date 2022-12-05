@@ -36,9 +36,10 @@
                   [nzSortFn]='column.sortFn'
                   [nzFilters]="column.listOfFilter"
                   [nzShowFilter]="column.hasFilter"
-                  [nzFilterFn]="column.filterFn">
+                  (nzFilterChange)="defaultFilterChange(column.id, $event)"
+              >
                 <span nz-tooltip [nzTooltipTitle]="column.tooltip">{{column.name}}</span>
-                <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
+                <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!filter" [nzDropdownMenu]="searchMenu">
                   <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon nzType="search"></i>
                 </nz-filter-trigger>
               </th>

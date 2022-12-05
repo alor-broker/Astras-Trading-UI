@@ -1,4 +1,4 @@
-import { NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder } from 'ng-zorro-antd/table';
+import { NzTableFilterList, NzTableSortFn, NzTableSortOrder } from 'ng-zorro-antd/table';
 
 export interface Column<T, F> {
   id: string;
@@ -13,7 +13,6 @@ export interface Column<T, F> {
   hasSearch: boolean;
   // filter from existing values
   listOfFilter: NzTableFilterList;
-  filterFn: NzTableFilterFn<T> | null;
   isFilterVisible: boolean;
   hasFilter: boolean;
   tooltip?: string;
