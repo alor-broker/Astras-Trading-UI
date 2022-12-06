@@ -14,6 +14,7 @@ import {
   Observable,
   shareReplay,
   Subject,
+  Subscription,
   take,
   takeUntil
 } from 'rxjs';
@@ -26,6 +27,7 @@ import {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
   InitialSettingsMap,
+  IPositionLineAdapter,
   ISettingsAdapter,
   PlusClickParams,
   ResolutionString,
@@ -37,6 +39,7 @@ import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.ser
 import { DashboardItemContentSize } from '../../../../shared/models/dashboard-item.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import {
+  ThemeColors,
   ThemeSettings,
   ThemeType
 } from '../../../../shared/models/settings/theme-settings.model';
@@ -48,8 +51,40 @@ import { SelectedPriceData } from '../../../../shared/models/orders/selected-ord
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { MathHelper } from '../../../../shared/utils/math-helper';
+import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
+import { Store } from '@ngrx/store';
+import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
+import { getSelectedPortfolioKey } from '../../../../store/portfolios/portfolios.selectors';
+import { Position } from '../../../../shared/models/positions/position.model';
+import {
+  map,
+  startWith
+} from 'rxjs/operators';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
+
+class PositionLabelState {
+  positionLine: IPositionLineAdapter | null = null;
+
+  constructor(private tearDown: Subscription) {
+    tearDown.add(() => {
+      try {
+        this.positionLine?.remove();
+      } catch {
+      }
+    });
+  }
+
+  destroy() {
+    this.tearDown.unsubscribe();
+  }
+}
+
+interface ChartState {
+  widget: IChartingLibraryWidget;
+  positionState?: PositionLabelState;
+}
 
 @Component({
   selector: 'ats-tech-chart[guid][shouldShowSettings][contentSize]',
@@ -66,10 +101,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('chartContainer', { static: true })
   chartContainer?: ElementRef<HTMLElement>;
   private readonly selectedPriceProviderName = 'selectedPrice';
-  private chart?: IChartingLibraryWidget;
+  private chartState?: ChartState;
   private settings$?: Observable<ExtendedSettings>;
+  private allActivePositions$?: Observable<Position[]>;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
+  private lastTheme?: ThemeSettings;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -77,20 +114,23 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly themeService: ThemeService,
     private readonly instrumentsService: InstrumentsService,
     private readonly widgetsDataProvider: WidgetsDataProviderService,
-    private readonly modalService: ModalService
+    private readonly modalService: ModalService,
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    private readonly store: Store
   ) {
   }
 
   ngOnInit(): void {
     this.initSettingsStream();
+    this.initPositionStream();
 
     this.widgetsDataProvider.addNewDataProvider<SelectedPriceData>(this.selectedPriceProviderName);
   }
 
   ngOnDestroy() {
-    if (this.chart) {
-      this.clearChartEventsSubscription(this.chart);
-      this.chart?.remove();
+    if (this.chartState) {
+      this.clearChartEventsSubscription(this.chartState.widget);
+      this.chartState.widget.remove();
     }
 
     this.techChartDatafeedService.clear();
@@ -115,7 +155,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     ]).pipe(
       takeUntil(this.destroy$),
     ).subscribe(([settings, theme]) => {
-      this.createChart(settings.widgetSettings, theme);
+      this.createChart(
+        settings.widgetSettings,
+        theme,
+        this.lastTheme && this.lastTheme.theme !== theme.theme);
+
+      this.lastTheme = theme;
     });
   }
 
@@ -131,6 +176,22 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedSettings)
       ),
       shareReplay(1)
+    );
+  }
+
+  private initPositionStream() {
+    this.allActivePositions$ = combineLatest([
+        this.settings$!,
+        this.getCurrentPortfolio()
+      ]
+    ).pipe(
+      filter(([settings, portfolio]) => settings.instrument.exchange === portfolio.exchange),
+      mapWith(
+        ([, portfolio]) => this.portfolioSubscriptionsService.getAllPositionsSubscription(portfolio.portfolio, portfolio.exchange),
+        (a, positions) => positions
+      ),
+      map((positions => positions.filter(p => p.avgPrice && p.qtyTFutureBatch))),
+      startWith([])
     );
   }
 
@@ -179,11 +240,19 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 
-  private createChart(settings: TechChartSettings, theme: ThemeSettings) {
-    if (this.chart) {
-      this.chart.activeChart().setSymbol(`${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`);
+  private createChart(settings: TechChartSettings, theme: ThemeSettings, forceRecreate: boolean = false) {
+    if (this.chartState) {
+      if (forceRecreate) {
+        this.chartState.widget?.remove();
+      }
+      else {
+        this.chartState.widget.activeChart().setSymbol(
+          `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
+          () => this.initChartPositionUpdate(settings, theme.themeColors)
+        );
 
-      return;
+        return;
+      }
     }
 
     if (!this.chartContainer) {
@@ -233,9 +302,9 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       ]
     };
 
-    this.chart = new widget(config);
+    const chartWidget = new widget(config);
 
-    this.chart.applyOverrides({
+    chartWidget.applyOverrides({
       'paneProperties.background': theme.themeColors.componentBackground,
       'paneProperties.backgroundType': 'solid',
       'paneProperties.vertGridProperties.color': theme.themeColors.chartGridColor,
@@ -247,12 +316,23 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       'mainSeriesProperties.candleStyle.borderDownColor': theme.themeColors.sellColor
     });
 
-    this.subscribeToChartEvents();
+    this.subscribeToChartEvents(chartWidget);
+
+    this.chartState = {
+      widget: chartWidget
+    };
+
+    chartWidget.onChartReady(() => {
+      this.chartState?.widget!.activeChart().dataReady(() => {
+          this.initChartPositionUpdate(settings, theme.themeColors);
+        }
+      );
+    });
   }
 
-  private subscribeToChartEvents() {
+  private subscribeToChartEvents(widget: IChartingLibraryWidget) {
     this.subscribeToChartEvent(
-      this.chart!,
+      widget,
       'onPlusClick',
       (params: PlusClickParams) => this.selectPrice(params.price)
     );
@@ -293,5 +373,64 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         });
       }
     });
+  }
+
+  private getCurrentPortfolio(): Observable<PortfolioKey> {
+    return this.store.select(getSelectedPortfolioKey)
+      .pipe(
+        filter((p): p is PortfolioKey => !!p)
+      );
+  }
+
+  private initChartPositionUpdate(instrument: InstrumentKey, themeColors: ThemeColors) {
+    if (this.chartState!.positionState) {
+      this.chartState!.positionState.destroy();
+    }
+
+    const tearDown = new Subscription();
+    this.chartState!.positionState = new PositionLabelState(tearDown);
+
+    const subscription = this.allActivePositions$!.pipe(
+      map(x => x.find(p => p.symbol === instrument.symbol)),
+      distinctUntilChanged((p, c) => p?.avgPrice === c?.avgPrice && p?.qtyTFutureBatch === c?.qtyTFutureBatch),
+    ).subscribe(position => {
+      const positionState = this.chartState!.positionState!;
+      if (!position) {
+        positionState.positionLine?.remove();
+
+        return;
+      }
+
+      if (!positionState.positionLine) {
+        try {
+          positionState.positionLine = this.chartState!.widget.activeChart()
+            .createPositionLine()
+            .setText('Поз.');
+        } catch {
+          return;
+        }
+      }
+
+      const color = position.qtyTFutureBatch >= 0
+        ? themeColors.buyColor
+        : themeColors.sellColor;
+
+      const backgroundColor = position.qtyTFutureBatch >= 0
+        ? themeColors.buyColorBackground
+        : themeColors.sellColorBackground;
+
+      positionState.positionLine
+        .setQuantity(position.qtyTFutureBatch.toString())
+        .setPrice(position.avgPrice)
+        .setLineColor(color)
+        .setBodyBackgroundColor(themeColors.componentBackground)
+        .setBodyBorderColor(color)
+        .setQuantityBackgroundColor(color)
+        .setQuantityBorderColor(backgroundColor)
+        .setQuantityTextColor(themeColors.chartPrimaryTextColor)
+        .setBodyTextColor(themeColors.chartPrimaryTextColor);
+    });
+
+    tearDown.add(subscription);
   }
 }

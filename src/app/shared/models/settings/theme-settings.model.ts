@@ -14,6 +14,7 @@ export interface ThemeColors {
   errorColor: string;
   chartGridColor: string;
   chartLabelsColor: string;
+  chartPrimaryTextColor: string;
 }
 
 export interface ThemeSettings {
