@@ -23,7 +23,7 @@
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="priceError"  [nzValidateStatus]="form.get('price')!">
             <nz-form-label [nzNoColon]="true" [nzSm]="6" [nzXs]="24" nzRequired nzFor="price">Цена</nz-form-label>
-            <input atsNumerical formControlName="price" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
+            <input [atsNumerical]="commandContext.instrument.minstep" formControlName="price" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
           </nz-form-control>
           <ng-template #priceError>
             <span *ngIf="form.get('price')?.errors?.required">Введите цену</span>

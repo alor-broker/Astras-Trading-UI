@@ -34,7 +34,7 @@
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="triggerPriceError" [nzValidateStatus]="form.get('triggerPrice')!">
             <nz-form-label [nzNoColon]="true" nzFor="triggerPrice" nzRequired>Сигнальная цена</nz-form-label>
-            <input (mousedown)="$event.stopPropagation()" atsNumerical
+            <input (mousedown)="$event.stopPropagation()" [atsNumerical]="commandContext.instrument.minstep"
                    formControlName="triggerPrice" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #triggerPriceError>
@@ -77,7 +77,7 @@
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="priceError" [nzValidateStatus]="form.get('price')!">
             <nz-form-label [nzNoColon]="true" nzFor="price" nzRequired>Цена</nz-form-label>
-            <input (mousedown)="$event.stopPropagation()" atsNumerical formControlName="price" nz-input placeholder="0"/>
+            <input (mousedown)="$event.stopPropagation()" [atsNumerical]="commandContext.instrument.minstep" formControlName="price" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #priceError>
             <span *ngIf="form.get('price')?.errors?.required">Введите цену</span>
