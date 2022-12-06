@@ -1,7 +1,7 @@
 <p>Настройки</p>
 <div>
   <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
-    <nz-form-item class="compact">
+    <nz-form-item>
       <nz-form-control nzErrorTip="Введите портфель">
         <nz-form-label nzRequired nzFor="portfolio">Портфель</nz-form-label>
         <nz-input-group>
@@ -10,7 +10,7 @@
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item class="compact">
+    <nz-form-item>
       <nz-form-control nzErrorTip="Выберите биржу">
         <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
         <nz-input-group>
@@ -20,7 +20,7 @@
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item class="compact">
+    <nz-form-item>
       <nz-form-control nzErrorTip="Выберите колонки">
         <nz-form-label nzRequired nzFor="ordersColumns">Колонки заявок</nz-form-label>
         <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
@@ -29,7 +29,7 @@
         </nz-select>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item class="compact">
+    <nz-form-item>
       <nz-form-control nzErrorTip="Выберите колонки">
         <nz-form-label nzRequired nzFor="stopOrdersColumns">Колонки стоп-заявок</nz-form-label>
         <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
@@ -38,7 +38,7 @@
         </nz-select>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item class="compact">
+    <nz-form-item>
       <nz-form-control nzErrorTip="Выберите колонки">
         <nz-form-label nzRequired nzFor="ordersColumns">Колонки сделок</nz-form-label>
         <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
@@ -47,7 +47,7 @@
         </nz-select>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item class="compact">
+    <nz-form-item>
       <nz-form-control nzErrorTip="Выберите колонки">
         <nz-form-label nzRequired nzFor="ordersColumns">Колонки позиций</nz-form-label>
         <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
@@ -57,7 +57,7 @@
         </nz-select>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item class="compact">
+    <nz-form-item>
       <nz-form-control nzErrorTip="Выберите валюту">
         <nz-form-label nzRequired nzFor="currency">Валюта</nz-form-label>
         <nz-select formControlName="currency">
@@ -75,7 +75,7 @@
       <nz-form-label nzFor="cancelOrdersWithoutConfirmation">Отменять заявки без подтверждения</nz-form-label>
       <nz-switch formControlName='cancelOrdersWithoutConfirmation'></nz-switch>
     </nz-form-item>
-    <nz-form-item class="compact">
+    <nz-form-item>
       <nz-form-control>
         <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
       </nz-form-control>
