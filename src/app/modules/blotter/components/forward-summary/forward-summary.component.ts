@@ -16,9 +16,6 @@ import { ForwardRisksView } from "../../models/forward-risks-view.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { CurrencyInstrument } from "../../../../shared/models/enums/currencies.model";
-import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-forward-summary[guid][resize]',
@@ -42,33 +39,13 @@ export class ForwardSummaryComponent implements OnInit {
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly service: BlotterService,
-    private readonly terminalSettingsService: TerminalSettingsService
   ) {
   }
 
   ngOnInit(): void {
     this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
-      mapWith(
-        () => this.terminalSettingsService.getSettings(),
-        (blotterSettings, ts) => {
-          const portfolioCurrency = ts.portfoliosCurrency?.find(pc =>
-            pc.portfolio.portfolio === blotterSettings.portfolio && pc.portfolio.exchange === blotterSettings.exchange
-          );
-          if (portfolioCurrency) {
-            return {
-              blotterSettings,
-              currency: portfolioCurrency.currency
-            };
-          }
-
-          return {
-            blotterSettings,
-            currency: blotterSettings.exchange === 'MOEX' ? CurrencyInstrument.RUB : CurrencyInstrument.USD
-          };
-        }
-      ),
-      switchMap(data => this.service.getForwardRisks(data.blotterSettings, data.currency))
+      switchMap(settings => this.service.getForwardRisks(settings))
     );
 
     this.resizeSub = this.resize.subscribe(i => {
