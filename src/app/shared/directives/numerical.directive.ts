@@ -45,7 +45,8 @@ export class NumericalDirective {
     if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
       event.stopPropagation();
       event.preventDefault();
-      this._el.nativeElement.value = this.getStepSum(step);
+      const value = this.getStepSum(step);
+      this._el.nativeElement.value = value > 0 ? value : 0;
       this._el.nativeElement.dispatchEvent(new Event('input'));
     }
   }
