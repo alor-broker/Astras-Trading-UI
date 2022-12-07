@@ -25,7 +25,6 @@ import {
 } from '../models/settings/blotter-settings.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { WidgetNames } from '../models/enums/widget-names';
-import { CurrencyInstrument } from '../models/enums/currencies.model';
 import { InfoSettings } from '../models/settings/info-settings.model';
 import { Store } from '@ngrx/store';
 import { getSelectedInstrumentsWithBadges } from '../../store/instruments/instruments.selectors';
@@ -224,7 +223,6 @@ export class WidgetFactoryService {
       settingsType: 'BlotterSettings',
       title: `Блоттер`,
       titleIcon: 'table',
-      currency: CurrencyInstrument.USD,
       tradesColumns: allTradesColumns.filter(c => c.isDefault).map(c => c.columnId),
       positionsColumns: allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId),
       ordersColumns: allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),

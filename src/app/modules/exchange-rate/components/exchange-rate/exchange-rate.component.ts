@@ -6,7 +6,7 @@ import {
   Output
 } from '@angular/core';
 import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
-import { ExchangeRateService } from "../../services/exchange-rate.service";
+import { ExchangeRateService } from "../../../../shared/services/exchange-rate.service";
 import {
   combineLatest,
   map,

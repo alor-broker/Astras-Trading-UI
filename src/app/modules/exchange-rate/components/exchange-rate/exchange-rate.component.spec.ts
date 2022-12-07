@@ -4,7 +4,7 @@ import {
 } from '@angular/core/testing';
 
 import { ExchangeRateComponent } from './exchange-rate.component';
-import { ExchangeRateService } from "../../services/exchange-rate.service";
+import { ExchangeRateService } from "../../../../shared/services/exchange-rate.service";
 import { of } from "rxjs";
 import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
 
