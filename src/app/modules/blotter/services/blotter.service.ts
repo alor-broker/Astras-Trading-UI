@@ -3,6 +3,8 @@ import { Store } from '@ngrx/store';
 import {
   combineLatest,
   Observable,
+  of,
+  switchMap,
   tap,
 } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -21,6 +23,7 @@ import { ForwardRisks } from "../models/forward-risks.model";
 import { ForwardRisksView } from "../models/forward-risks-view.model";
 import { selectNewInstrumentByBadge } from "../../../store/instruments/instruments.actions";
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
+import { TerminalSettingsService } from "../../terminal-settings/services/terminal-settings.service";
 
 @Injectable()
 export class BlotterService {
@@ -29,7 +32,9 @@ export class BlotterService {
     private readonly notification: OrdersNotificationsService,
     private readonly store: Store,
     private readonly quotes: QuotesService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService) {
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    private readonly terminalSettingsService: TerminalSettingsService
+  ) {
   }
 
   selectNewInstrument(symbol: string, exchange: string, badgeColor: string) {
@@ -91,35 +96,43 @@ export class BlotterService {
   }
 
   getCommonSummary(settings: BlotterSettings): Observable<CommonSummaryView> {
-    if (settings.currency != CurrencyInstrument.RUB) {
-      return combineLatest([
-        this.portfolioSubscriptionsService.getSummariesSubscription(settings.portfolio, settings.exchange),
-        this.quotes.getQuotes(settings.currency, 'MOEX')
-      ]).pipe(
-        map(([summary, quote]) => this.formatCommonSummary(summary, settings.currency, quote.last_price))
-      );
-    }
-    else {
-      return this.portfolioSubscriptionsService.getSummariesSubscription(settings.portfolio, settings.exchange).pipe(
-        map(summary => this.formatCommonSummary(summary, CurrencyInstrument.RUB, 1))
-      );
-    }
+    return combineLatest([
+      this.portfolioSubscriptionsService.getSummariesSubscription(settings.portfolio, settings.exchange),
+      this.getExchangeRate(settings.portfolio, settings.exchange)
+    ]).pipe(
+      map(([summary, quoteData]) => this.formatCommonSummary(summary, quoteData.currency, quoteData.quote))
+    );
   }
 
   getForwardRisks(settings: BlotterSettings): Observable<ForwardRisksView> {
-    if (settings.currency != CurrencyInstrument.RUB) {
       return combineLatest([
         this.portfolioSubscriptionsService.getSpectraRisksSubscription(settings.portfolio, settings.exchange),
-        this.quotes.getQuotes(settings.currency, 'MOEX')
+        this.getExchangeRate(settings.portfolio, settings.exchange)
       ]).pipe(
-        map(([risks, quote]) => this.formatForwardRisks(risks, settings.currency, quote.last_price))
+        map(([risks, quoteData]) => this.formatForwardRisks(risks, quoteData.currency, quoteData.quote))
       );
-    }
-    else {
-      return this.portfolioSubscriptionsService.getSpectraRisksSubscription(settings.portfolio, settings.exchange).pipe(
-        map(risks => this.formatForwardRisks(risks, CurrencyInstrument.RUB, 1))
+  }
+
+  private getExchangeRate(portfolio: string, exchange: string): Observable<{ currency: string, quote: number }> {
+    return this.terminalSettingsService.getSettings()
+      .pipe(
+        switchMap(settings => {
+          const portfolioCurrency = settings.portfoliosCurrency?.find(pc =>
+            pc.portfolio.portfolio === portfolio && pc.portfolio.exchange === exchange
+          );
+
+          const currency = portfolioCurrency?.currency || (exchange === 'MOEX' ? CurrencyInstrument.RUB : CurrencyInstrument.USD);
+
+          if (currency === CurrencyInstrument.RUB) {
+            return of({ currency, quote: 1 });
+          }
+
+          return this.quotes.getQuotes(currency, 'MOEX')
+            .pipe(
+              map(quote => ({ currency, quote: quote.last_price }))
+            );
+        })
       );
-    }
   }
 
   private formatCommonSummary(summary: CommonSummaryModel, currency: string, exchangeRate: number): CommonSummaryView {
