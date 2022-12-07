@@ -14,7 +14,6 @@ import {
   allTradesColumns,
   BlotterSettings
 } from "../models/settings/blotter-settings.model";
-import { CurrencyInstrument } from "../models/enums/currencies.model";
 import { InfoSettings } from "../models/settings/info-settings.model";
 import { AllTradesSettings } from "../models/settings/all-trades-settings.model";
 import { NewsSettings } from "../models/settings/news-settings.model";
@@ -108,7 +107,6 @@ describe('WidgetFactoryService', () => {
 
     expect(blotterSettings.settingsType).toBe('BlotterSettings');
     expect(blotterSettings.activeTabIndex).toBe(0);
-    expect(blotterSettings.currency).toBe(CurrencyInstrument.USD);
     expect(blotterSettings.portfolio).toBe('test portfolio');
     expect(blotterSettings.exchange).toBe(defaultInstrument.exchange);
     expect(blotterSettings.tradesColumns).toEqual(allTradesColumns.filter(c => c.isDefault).map(c => c.columnId));

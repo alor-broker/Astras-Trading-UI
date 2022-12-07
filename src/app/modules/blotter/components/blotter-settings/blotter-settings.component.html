@@ -57,16 +57,6 @@
         </nz-select>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item class="compact">
-      <nz-form-control nzErrorTip="Выберите валюту">
-        <nz-form-label nzRequired nzFor="currency">Валюта</nz-form-label>
-        <nz-select formControlName="currency">
-          <nz-option [nzValue]="'RUB'" nzLabel="RUB"></nz-option>
-          <nz-option [nzValue]="'USD'" nzLabel="USD"></nz-option>
-          <nz-option [nzValue]="'EUR'" nzLabel="EUR"></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
     <nz-form-item>
       <nz-form-label nzFor="isSoldPositionsHidden">Скрыть проданные</nz-form-label>
       <nz-switch formControlName='isSoldPositionsHidden'></nz-switch>

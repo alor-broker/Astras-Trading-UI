@@ -4,7 +4,6 @@ export interface BlotterSettings extends WidgetSettings {
   activeTabIndex: number,
   exchange: string,
   portfolio: string,
-  currency: string,
   ordersColumns: string[],
   stopOrdersColumns: string[],
   tradesColumns: string[],

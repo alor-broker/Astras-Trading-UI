@@ -11,7 +11,6 @@ import {
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import { CurrencyInstrument } from 'src/app/shared/models/enums/currencies.model';
 import {
   allOrdersColumns,
   allPositionsColumns,
@@ -73,34 +72,11 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
           stopOrdersColumns: new UntypedFormControl(settings.stopOrdersColumns),
           tradesColumns: new UntypedFormControl(settings.tradesColumns),
           positionsColumns: new UntypedFormControl(settings.positionsColumns),
-          currency: new UntypedFormControl(this.currencyToCode(settings.currency)),
           isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden ?? false),
           cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false)
         });
       }
     });
-  }
-
-  codeToCurrency(code: string) {
-    switch (code) {
-      case 'USD':
-        return CurrencyInstrument.USD;
-      case 'EUR':
-        return CurrencyInstrument.EUR;
-      default:
-        return CurrencyInstrument.RUB;
-    }
-  }
-
-  currencyToCode(currency: CurrencyInstrument) {
-    switch (currency) {
-      case CurrencyInstrument.USD:
-        return 'USD';
-      case CurrencyInstrument.EUR:
-        return 'EUR';
-      default:
-        return 'RUB';
-    }
   }
 
   submitForm(): void {
@@ -109,7 +85,6 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
     ).subscribe(initialSettings => {
       const newSettings = {
           ...this.form.value,
-          currency: this.codeToCurrency(this.form.value.currency)
       };
 
       newSettings.linkToActive = initialSettings.linkToActive && this.isPortfolioEqual(initialSettings, newSettings);

@@ -13,13 +13,32 @@ export function formatCurrency(number: number, currency: string, maxFractionDigi
   }
   let formatCode = 'RUB';
   let locale = 'ru';
-  if (currency == CurrencyInstrument.USD) {
-    formatCode = 'USD';
-    locale = 'en';
+  switch (currency) {
+    case CurrencyInstrument.USD:
+      formatCode = 'USD';
+      locale = 'en';
+      break;
+    case CurrencyInstrument.EUR:
+      formatCode = 'EUR';
+      locale = 'de';
+      break;
+    case CurrencyInstrument.CHF:
+      formatCode = 'CHF';
+      locale = 'ch';
+      break;
+    case CurrencyInstrument.CNY:
+      formatCode = 'CNY';
+      locale = 'zh';
+      break;
+    case CurrencyInstrument.TRY:
+      formatCode = 'TRY';
+      locale = 'tr';
+      break;
+    case CurrencyInstrument.HKD:
+      formatCode = 'HKD';
+      locale = 'zh-hk';
+      break;
   }
-  else if (currency == CurrencyInstrument.EUR) {
-    formatCode = 'EUR';
-    locale = 'de';
-  }
+
   return Intl.NumberFormat(locale, { style: 'currency', currency: formatCode, maximumFractionDigits: maxFractionDigits }).format(number);
 }

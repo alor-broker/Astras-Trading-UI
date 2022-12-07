@@ -40,7 +40,10 @@ export class CommonSummaryComponent implements OnInit {
 
   private resizeSub?: Subscription;
 
-  constructor(private readonly settingsService: WidgetSettingsService, private readonly service: BlotterService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly service: BlotterService,
+  ) {
   }
 
   ngOnInit(): void {
