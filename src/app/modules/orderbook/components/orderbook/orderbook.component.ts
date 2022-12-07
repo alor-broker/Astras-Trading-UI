@@ -42,10 +42,17 @@ import { WidgetsDataProviderService } from "../../../../shared/services/widgets-
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
+import { MathHelper } from "../../../../shared/utils/math-helper";
 
 interface Size {
   width: string;
   height: string;
+}
+
+interface SpreadDiffData {
+  diffPercents: number;
+  diff: number
+  textColor: string;
 }
 
 @Component({
@@ -65,10 +72,16 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
+  private minSpreadDiffPercentForColorChange = 0.3;
+  private maxSpreadDiffPercentForColorChange = 1;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+
+
   shouldShowYield$: Observable<boolean> = of(false);
   shouldShowTable$: Observable<boolean> = of(true);
   shouldShowVolumes$: Observable<boolean> = of(false);
   ob$: Observable<OrderBook | null> = of(null);
+  spreadDiffData$: Observable<SpreadDiffData | null> = of(null);
   maxVolume: number = 1;
   themeSettings?: ThemeSettings;
 
@@ -76,7 +89,6 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     width: '100%',
     height: '100%',
   });
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -132,6 +144,45 @@ export class OrderBookComponent implements OnInit, OnDestroy {
         },
         bidVolumes: 0,
         askVolumes: 0,
+      })
+    );
+
+    this.spreadDiffData$ = this.ob$.pipe(
+      map(ob => {
+        const bestBid = ob?.rows[0]?.bid;
+        const bestAsk = ob?.rows[0]?.ask;
+
+        if (!bestBid || !bestAsk) {
+          return null;
+        }
+
+        const decimalsCount = Math.max(MathHelper.getPrecision(bestAsk), MathHelper.getPrecision(bestBid));
+        const diff = MathHelper.round(bestAsk - bestBid, decimalsCount);
+        const diffPercents = MathHelper.round((diff / bestBid) * 100, 3);
+
+        const colorRatio = MathHelper.round(
+          (
+            (diffPercents - this.minSpreadDiffPercentForColorChange) /
+            (this.maxSpreadDiffPercentForColorChange - this.minSpreadDiffPercentForColorChange)
+          ) * 255,
+          0
+        );
+        let textColor: string;
+
+        if (colorRatio <= 0) {
+          textColor = '#fff';
+        } else if (colorRatio >= 255) {
+          textColor = '#f00';
+        } else {
+          textColor = `rgb(255, ${255 - colorRatio}, ${255 - colorRatio})`;
+        }
+
+        return {
+          diffPercents,
+          diff,
+          textColor
+        };
+
       })
     );
 

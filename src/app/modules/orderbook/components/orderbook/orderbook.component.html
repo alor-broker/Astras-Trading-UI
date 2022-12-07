@@ -10,8 +10,17 @@
         <tr>
           <th [nzWidth]="'20px'">Vol</th>
           <th nzAlign="right">Bid</th>
+          <th
+            *ngIf="spreadDiffData$ | async as spreadDiffData"
+            colSpan="2"
+          >
+            <span [ngStyle]="{color: spreadDiffData.textColor}" nz-tooltip nzTooltipTitle="Размер спреда">
+              {{spreadDiffData.diff}} ({{spreadDiffData.diffPercents}}%)
+            </span>
+          </th>
+          <th class="empty-cell"></th>
           <th>Ask</th>
-          <th [nzWidth]="'20px'">Vol</th>
+          <th [nzWidth]="'20%'" nzAlign="right">Vol</th>
         </tr>
       </thead>
       <tbody (click)="newLimitOrder($event, 0)">
@@ -29,35 +38,40 @@
             </td>
             <td *ngIf="(shouldShowYield$ | async) === false"
               class='row-cell--bid'
+              colspan="2"
               (click)="newLimitOrder($event, row.bid ?? 0)"
               [ngStyle]='getBidStyle(row.bidVolume ?? 0)'>
               {{row.bid}}
             </td>
             <td *ngIf="(shouldShowYield$ | async) === true"
               class='row-cell--bid'
+              colspan="2"
               (click)="newLimitOrder($event, row.bid ?? 0)"
               [ngStyle]='getBidStyle(row.bidVolume ?? 0)'>
               {{row.yieldBid}}
             </td>
           </ng-container>
           <ng-template #zeroBid>
-            <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+            <td [ngStyle]="{background: 'unset'}" colspan="3"></td>
           </ng-template>
 
           <ng-container *ngIf="row.ask ?? 0 > 0; else zeroAsk">
             <td *ngIf="(shouldShowYield$ | async) === false"
               class='row-cell--ask'
+              colspan="2"
               (click)="newLimitOrder($event, row.ask ?? 0)"
               [ngStyle]='getAskStyle(row.askVolume ?? 0)'>
               {{row.ask}}
             </td>
             <td *ngIf="(shouldShowYield$ | async) === true"
               class='row-cell--ask'
+              colspan="2"
               (click)="newLimitOrder($event, row.ask ?? 0)"
               [ngStyle]='getAskStyle(row.askVolume ?? 0)'>
               {{row.yieldAsk}}
             </td>
-            <td [ngStyle]="{background: 'unset'}" class='row-cell' nzAlign='right' (click)="newLimitOrder($event, row.ask ?? 0)">
+            <td [ngStyle]="{background: 'unset'}"></td>
+            <td [ngStyle]="{background: 'unset'}" class='row-cell row-cell--ask-volume' nzAlign='right' (click)="newLimitOrder($event, row.ask ?? 0)">
               <span class="cell-value">
                 {{row.askVolume}}
               </span>
@@ -69,7 +83,7 @@
             </td>
           </ng-container>
           <ng-template #zeroAsk>
-            <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+            <td [ngStyle]="{background: 'unset'}" colspan="3"></td>
           </ng-template>
         </tr>
       </tbody>
