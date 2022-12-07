@@ -30,7 +30,7 @@
         <nz-form-item class="compact">
           <nz-form-label nzFor="triggerPrice" nzRequired>Сигнальная цена</nz-form-label>
           <nz-form-control [nzErrorTip]="triggerPriceError">
-            <input (mousedown)="$event.stopPropagation()" [atsNumerical]="instrument.minstep" class='ant-input' formControlName="triggerPrice" nz-input placeholder="0"/>
+            <input (mousedown)="$event.stopPropagation()" atsNumerical [step]="instrument.minstep" class='ant-input' formControlName="triggerPrice" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #triggerPriceError>
             <span *ngIf="form.get('triggerPrice')?.errors?.required">Введите цену</span>
@@ -72,7 +72,7 @@
         <nz-form-item class="compact">
           <nz-form-label nzFor="price" nzRequired>Цена</nz-form-label>
           <nz-form-control [nzErrorTip]="priceError">
-            <input (mousedown)="$event.stopPropagation()" [atsNumerical]="instrument.minstep" class='ant-input' formControlName="price" nz-input placeholder="0"/>
+            <input (mousedown)="$event.stopPropagation()" atsNumerical [step]="instrument.minstep" class='ant-input' formControlName="price" nz-input placeholder="0"/>
             <ng-template #priceError>
               <span *ngIf="form.get('price')?.errors?.required">Введите цену</span>
               <span *ngIf="form.get('price')?.errors?.min">Слишком мало</span>

@@ -11,7 +11,7 @@ import { MathHelper } from "../utils/math-helper";
 })
 export class NumericalDirective {
 
-  @Input() atsNumerical: string | number | boolean = 1;
+  @Input() step: number = 1;
 
   constructor(private _el: ElementRef) {
   }
@@ -36,7 +36,7 @@ export class NumericalDirective {
   }
 
   @HostListener('keydown', ['$event']) onKeyDown(event: KeyboardEvent) {
-    let step = +(this.atsNumerical || 1);
+    let step = this.step || 1;
 
     if (event.code === 'ArrowDown') {
       step = -step;
