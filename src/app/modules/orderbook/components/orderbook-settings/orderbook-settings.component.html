@@ -1,19 +1,19 @@
 <p>Настройки</p>
 <div>
   <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
-    <nz-form-item class="compact">
+    <nz-form-item>
       <nz-form-control nzErrorTip="Выберите тикер">
         <nz-form-label nzRequired nzFor="instrument">Тикер</nz-form-label>
         <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item class="compact">
+    <nz-form-item>
       <nz-form-control>
         <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
         <input formControlName='exchange' nz-input>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item class="compact">
+    <nz-form-item>
       <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationOptions.depth.min}} до {{validationOptions.depth.max}}">
         <nz-form-label nzRequired nzFor="depth">Глубина</nz-form-label>
         <nz-input-group>
@@ -51,19 +51,20 @@
       <nz-form-label nzFor="showYieldForBonds">Показывать дох. облигаций</nz-form-label>
       <nz-switch formControlName='showYieldForBonds'></nz-switch>
     </nz-form-item>
-    <nz-collapse [nzBordered]="false" class="compact">
-      <nz-collapse-panel nzHeader="Продвинутые">
-        <nz-form-control nzErrorTip="Группа">
-          <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
-          <nz-input-group>
-            <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-              nz-input placeholder="Режим торгов" />
-          </nz-input-group>
-        </nz-form-control>
-      </nz-collapse-panel>
-    </nz-collapse>
-    <br />
-    <nz-form-item class="compact">
+    <nz-form-item>
+      <nz-collapse [nzBordered]="false" nzGhost>
+        <nz-collapse-panel nzHeader="Продвинутые">
+          <nz-form-control nzErrorTip="Группа">
+            <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
+            <nz-input-group>
+              <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+                nz-input placeholder="Режим торгов" />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </nz-form-item>
+    <nz-form-item>
       <nz-form-control>
         <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
       </nz-form-control>

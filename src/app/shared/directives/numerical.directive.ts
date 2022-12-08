@@ -1,13 +1,17 @@
 import {
   Directive,
   ElementRef,
-  HostListener
+  HostListener,
+  Input
 } from '@angular/core';
+import { MathHelper } from "../utils/math-helper";
 
 @Directive({
   selector: 'input[atsNumerical]'
 })
 export class NumericalDirective {
+
+  @Input() step: number = 1;
 
   constructor(private _el: ElementRef) {
   }
@@ -31,7 +35,29 @@ export class NumericalDirective {
     }
   }
 
-  isInvalidValue(newSymbol: string): boolean {
+  @HostListener('keydown', ['$event']) onKeyDown(event: KeyboardEvent) {
+    let step = this.step || 1;
+
+    if (event.code === 'ArrowDown') {
+      step = -step;
+    }
+
+    if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
+      event.stopPropagation();
+      event.preventDefault();
+      const value = this.getStepSum(step);
+      this._el.nativeElement.value = value > 0 ? value : 0;
+      this._el.nativeElement.dispatchEvent(new Event('input'));
+    }
+  }
+
+  private isInvalidValue(newSymbol: string): boolean {
     return !newSymbol || ['.', ','].includes(newSymbol) && (this._el.nativeElement.value.includes('.') || !this._el.nativeElement.value);
+  }
+
+  private getStepSum(step: number): number {
+    const inputValueNumber = +this._el.nativeElement.value || 0;
+    const roundingDecimals = Math.max(MathHelper.getPrecision(step), MathHelper.getPrecision(inputValueNumber));
+    return MathHelper.round(inputValueNumber + step, roundingDecimals);
   }
 }

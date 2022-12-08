@@ -1,5 +1,6 @@
 ﻿import { TimezoneDisplayOption } from '../enums/timezone-display-option';
 import { ThemeType } from '../settings/theme-settings.model';
+import { PortfolioKey } from "../portfolio-key.model";
 
 export interface HotKeysSettings {
   cancelOrdersKey?: string;
@@ -27,4 +28,5 @@ export interface TerminalSettings {
   badgesBind?: boolean;
   hotKeysSettings?: HotKeysSettings;
   designSettings?: DesignSettings;
+  portfoliosCurrency?: {portfolio: PortfolioKey; currency: string}[]
 }

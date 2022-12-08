@@ -26,6 +26,14 @@ import { ThemeType } from 'src/app/shared/models/settings/theme-settings.model';
 import { TabNames } from "../../models/terminal-settings.model";
 import { DashboardService } from "../../../../shared/services/dashboard.service";
 import { ModalService } from "../../../../shared/services/modal.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
+import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
+import { CurrencyInstrument } from "../../../../shared/models/enums/currencies.model";
+import { Store } from "@ngrx/store";
+import { getAllPortfolios } from "../../../../store/portfolios/portfolios.selectors";
+import { ExchangeRateService } from "../../../../shared/services/exchange-rate.service";
+import { ExchangeRate } from "../../../exchange-rate/models/exchange-rate.model";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -57,6 +65,8 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     secondName: ''
   });
 
+  currencies$!: Observable<ExchangeRate[]>;
+
   get hotKeysForm(): UntypedFormGroup {
     return this.settingsForm.get('hotKeysSettings') as UntypedFormGroup;
   }
@@ -69,15 +79,32 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     return this.settingsForm.get('designSettings') as UntypedFormGroup;
   }
 
+  get portfoliosFormArr(): UntypedFormArray {
+    return this.settingsForm.get('portfoliosCurrency') as UntypedFormArray;
+  }
+
   constructor(
     private readonly service: TerminalSettingsService,
     private readonly dashboardService: DashboardService,
+    private readonly store: Store,
+    private readonly exchangeRateService: ExchangeRateService,
     private modal: ModalService,
   ) {
   }
 
   ngOnInit(): void {
     this.fullName$ = this.service.getFullName();
+    this.currencies$ = this.exchangeRateService.getCurrencies()
+      .pipe(
+        map(cur => ([
+          ...cur.filter(c => c.secondCode === 'RUB'),
+          {
+            firstCode: 'RUB',
+            secondCode: 'RUB',
+            symbolTom: CurrencyInstrument.RUB
+          }
+        ]))
+      );
     this.initForm();
   }
 
@@ -104,6 +131,10 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     this.workingVolumes.removeAt(index);
   }
 
+  getPortfoliosControl(i: number): UntypedFormControl {
+    return this.portfoliosFormArr.at(i).get('currency') as UntypedFormControl;
+  }
+
   clearDashboard() {
     this.modal.openConfirmModal({
       nzTitle: 'Вы уверены, что хотите сделать полный сброс?',
@@ -126,23 +157,42 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   private initForm() {
     this.service.getSettings()
       .pipe(
+        mapWith(
+          () => this.store.select(getAllPortfolios),
+          (settings, portfolios) => ({settings, portfolios})
+        ),
         take(1)
-      ).subscribe(settings => {
-      this.settingsForm = this.buildForm(settings);
+      ).subscribe(({settings, portfolios}) => {
+      this.settingsForm = this.buildForm(settings, portfolios);
       this.formChange.emit( { value: this.settingsForm?.value, isInitial: true });
-    });
-
-    this.settingsForm.valueChanges
-      .pipe(
-        takeUntil(this.destroy$)
-      )
-      .subscribe(value => {
+      this.settingsForm.valueChanges
+        .pipe(
+          takeUntil(this.destroy$)
+        )
+        .subscribe(value => {
           this.formChange.emit({value: this.settingsForm?.valid ? value : null, isInitial: false });
-      });
+        });
+    });
   }
 
-  private buildForm(currentSettings: TerminalSettings): TerminalSettingsFormGroup {
+  private buildForm(currentSettings: TerminalSettings, portfolios: PortfolioExtended[]): TerminalSettingsFormGroup {
+    const portfoliosWithCurrency = portfolios.map(p => {
+      const existingSettings = currentSettings.portfoliosCurrency?.find(
+        pc => pc.portfolio.portfolio === p.portfolio && pc.portfolio.exchange === p.exchange
+      );
+      return existingSettings || {
+        portfolio: p,
+        currency: p.exchange === 'MOEX' ? CurrencyInstrument.RUB : CurrencyInstrument.USD
+      };
+    });
+
     return new UntypedFormGroup({
+      portfoliosCurrency: new UntypedFormArray(
+        portfoliosWithCurrency.map(p => new UntypedFormGroup({
+          currency: new UntypedFormControl(p.currency, Validators.required),
+          portfolio: new UntypedFormControl(p.portfolio)
+        }))
+      ),
       designSettings: new UntypedFormGroup({
         theme: new UntypedFormControl(currentSettings.designSettings?.theme)
       }),

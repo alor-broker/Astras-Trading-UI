@@ -76,6 +76,28 @@
               </p>
             </ng-template>
           </nz-form-item>
+
+          <h3>Валюта по-умолчанию для портфелей</h3>
+
+          <ng-container *ngIf="currencies$ | async as currencies">
+            <ng-container *ngFor="let ctrl of portfoliosFormArr.controls; let i = index">
+              <nz-form-item>
+                <nz-form-label nzRequired>
+                  {{ctrl.value.portfolio?.exchange}} {{ctrl.value.portfolio?.portfolio}}
+                </nz-form-label>
+                <nz-form-control>
+                  <nz-select [formControl]="getPortfoliosControl(i)">
+                    <nz-option
+                      *ngFor="let cur of currencies"
+                      [nzValue]="cur.symbolTom"
+                      [nzLabel]="cur.firstCode"
+                    ></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </ng-container>
+          </ng-container>
+
           <nz-form-item>
             <nz-form-control>
               <button nz-button nzType="link" (click)="clearDashboard()" nzDanger>
