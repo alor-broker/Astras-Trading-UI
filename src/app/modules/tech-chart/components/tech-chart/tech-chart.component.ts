@@ -61,8 +61,7 @@ import { Position } from '../../../../shared/models/positions/position.model';
 import {
   debounceTime,
   map,
-  startWith,
-  tap
+  startWith
 } from 'rxjs/operators';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { Order } from '../../../../shared/models/orders/order.model';
@@ -146,7 +145,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private chartState?: ChartState;
   private settings$?: Observable<ExtendedSettings>;
   private allActivePositions$?: Observable<Position[]>;
-  private allOrders$?: Observable<{ limits: Order[], stops: StopOrder[] }>;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
   private lastTheme?: ThemeSettings;
@@ -167,7 +165,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.initSettingsStream();
     this.initPositionStream();
-    this.initOrdersStream();
 
     this.widgetsDataProvider.addNewDataProvider<SelectedPriceData>(this.selectedPriceProviderName);
   }
@@ -231,31 +228,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       switchMap(portfolio => this.portfolioSubscriptionsService.getAllPositionsSubscription(portfolio.portfolio, portfolio.exchange)),
       map((positions => positions.filter(p => p.avgPrice && p.qtyTFutureBatch))),
       startWith([])
-    );
-  }
-
-  private initOrdersStream() {
-    const portfolio$ = this.getCurrentPortfolio().pipe(
-      tap(() => this.chartState?.ordersState?.clear()),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
-
-    const limits$ = portfolio$.pipe(
-      switchMap(portfolio => this.portfolioSubscriptionsService.getOrdersSubscription(portfolio.portfolio, portfolio.exchange)),
-      map(orders => orders.allOrders.filter(o => o.type === 'limit')),
-      debounceTime(100),
-      startWith([])
-    );
-
-    const stops$ = portfolio$.pipe(
-      switchMap(portfolio => this.portfolioSubscriptionsService.getStopOrdersSubscription(portfolio.portfolio, portfolio.exchange)),
-      map(orders => orders.allOrders),
-      debounceTime(100),
-      startWith([])
-    );
-
-    this.allOrders$ = combineLatest([limits$, stops$]).pipe(
-      map(([limits, stops]) => ({ limits, stops }))
     );
   }
 
