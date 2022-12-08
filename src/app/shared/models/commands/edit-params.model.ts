@@ -14,4 +14,5 @@ export interface EditParams {
   stopEndUnixTime?: Date | number | null,
   triggerPrice?: number | null,
   condition?: StopOrderCondition | null,
+  cancelled?: () => void
 }

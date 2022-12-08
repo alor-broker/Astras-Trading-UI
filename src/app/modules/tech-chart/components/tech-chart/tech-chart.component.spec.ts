@@ -25,6 +25,7 @@ import {
 import { WidgetsDataProviderService } from '../../../../shared/services/widgets-data-provider.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
+import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -86,8 +87,17 @@ describe('TechChartComponent', () => {
 
     modalServiceSpy = jasmine.createSpyObj('ModalService', ['openCommandModal']);
 
-    portfolioSubscriptionsServiceSpy = jasmine.createSpyObj('PortfolioSubscriptionsService', ['getAllPositionsSubscription']);
+    portfolioSubscriptionsServiceSpy = jasmine.createSpyObj(
+      'PortfolioSubscriptionsService',
+      [
+        'getAllPositionsSubscription',
+        'getOrdersSubscription',
+        'getStopOrdersSubscription'
+      ]);
+
     portfolioSubscriptionsServiceSpy.getAllPositionsSubscription.and.returnValue(new Subject());
+    portfolioSubscriptionsServiceSpy.getOrdersSubscription.and.returnValue(new Subject());
+    portfolioSubscriptionsServiceSpy.getStopOrdersSubscription.and.returnValue(new Subject());
   });
 
   beforeEach(async () => {
@@ -102,6 +112,12 @@ describe('TechChartComponent', () => {
         { provide: WidgetsDataProviderService, useValue: widgetsDataProviderServiceSpy },
         { provide: ModalService, useValue: modalServiceSpy },
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
+        {
+          provide: OrderCancellerService,
+          useValue: {
+            cancelOrder: jasmine.createSpy('cancelOrder').and.returnValue(new Subject())
+          }
+        },
       ]
     })
       .compileComponents();
