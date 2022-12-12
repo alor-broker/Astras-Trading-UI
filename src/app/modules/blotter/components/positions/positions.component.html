@@ -14,7 +14,7 @@
           nzSize="small"
           [nzFrontPagination]="false"
           [nzShowPagination]="false"
-          [nzScroll]="{ x: tableInnerWidth, y: scrollHeight - 5 + 'px' }"
+          [nzScroll]="{ x: tableInnerWidth + 'px', y: scrollHeight - 5 + 'px' }"
           [nzVirtualItemSize]="20"
           [nzFooter]="footer">
         <thead>
@@ -24,6 +24,11 @@
                 [nzSortFn]='column.sortFn'
                 [nzFilters]="column.listOfFilter"
                 [nzShowFilter]="column.hasFilter"
+                [nzWidth]="column.width ? column.width + 'px': null"
+                [atsResizeColumn]
+                [minWidth]="50"
+                (atsWidthChanged)="saveColumnWidth(column.id, $event)"
+                (atsWidthChanging)="recalculateTableWidth($event)"
             >
               <span nz-tooltip [nzTooltipTitle]="column.tooltip">{{column.name}}</span>
               <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">

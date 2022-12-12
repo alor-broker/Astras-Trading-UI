@@ -37,8 +37,11 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
-import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
+import {
+  isEqualPortfolioDependedSettings
+} from "../../../../shared/utils/settings-helper";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
+import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -50,6 +53,8 @@ interface DisplayTrade extends Trade {
   styleUrls: ['./trades.component.less']
 })
 export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly columnDefaultWidth = 100;
+
   @ViewChild('nzTable')
   table?: NzTableComponent<DisplayTrade>;
   @ViewChild('tableContainer')
@@ -61,7 +66,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  tableInnerWidth = '1000px';
+  tableInnerWidth: number = 1000;
   displayTrades$: Observable<DisplayTrade[]> = of([]);
   filter = new BehaviorSubject<TradeFilter>({});
   isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
@@ -196,16 +201,25 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
+      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       shareReplay()
     );
 
     this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(s => {
-      if (s.ordersColumns) {
-        this.listOfColumns = this.allColumns.filter(c => s.tradesColumns.includes(c.id));
-        this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
+      const tableSettings = s.tradesTable ?? TableSettingHelper.toTableDisplaySettings(s.tradesColumns);
+
+      if (tableSettings) {
+        this.listOfColumns = this.allColumns
+          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
+          .filter(c => !!c.columnSettings)
+          .map(c => ({
+            ...c.column,
+            width: c.columnSettings!.columnWidth
+          }));
+
+        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + (cur.width ?? this.columnDefaultWidth) , 0);
       }
     });
 
@@ -286,6 +300,33 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
         valueTranslators
       );
     });
+  }
+
+  saveColumnWidth(columnId: string, width: number) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      const tableSettings = settings.tradesTable ?? TableSettingHelper.toTableDisplaySettings(settings.tradesColumns);
+      if (tableSettings) {
+        this.settingsService.updateSettings<BlotterSettings>(
+          settings.guid,
+          {
+            tradesTable: TableSettingHelper.updateColumn(
+              columnId,
+              tableSettings,
+              {
+                columnWidth: width
+              }
+            )
+          }
+        );
+      }
+    });
+  }
+
+  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
+    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
+    this.tableInnerWidth += delta;
   }
 
   private justifyFilter(trade: DisplayTrade, filter: TradeFilter): boolean {

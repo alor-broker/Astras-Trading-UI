@@ -15,13 +15,13 @@
             nzSize="small"
             [nzFrontPagination]="false"
             [nzShowPagination]="false"
-            [nzScroll]="{ x: tableInnerWidth, y: scrollHeight - 5 + 'px' }"
+            [nzScroll]="{ x: tableInnerWidth + 'px', y: scrollHeight - 5 + 'px' }"
             [nzVirtualItemSize]="20"
             [nzFooter]="footer">
           <thead>
             <tr>
               <th nzWidth="5px"></th>
-              <th>
+              <th nzWidth="65px">
                 <span>
                   <a nz-popconfirm
                      nzPopconfirmTitle="Точно отменить?"
@@ -37,6 +37,11 @@
                   [nzFilters]="column.listOfFilter"
                   [nzShowFilter]="column.hasFilter"
                   (nzFilterChange)="defaultFilterChange(column.id, $event)"
+                  [nzWidth]="column.width ? column.width + 'px': null"
+                  [atsResizeColumn]
+                  [minWidth]="50"
+                  (atsWidthChanged)="saveColumnWidth(column.id, $event)"
+                  (atsWidthChanging)="recalculateTableWidth($event)"
               >
                 <span nz-tooltip [nzTooltipTitle]="column.tooltip">{{column.name}}</span>
                 <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!filter" [nzDropdownMenu]="searchMenu">
@@ -47,7 +52,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let ord of nzTable.data" (click)="selectInstrument(ord.symbol, ord.exchange)">
-              <td nzWidth='5px'>
+              <td>
                 <span
                   [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'
                   [class.cancelled-status]="ord.status.toString() === 'canceled'"

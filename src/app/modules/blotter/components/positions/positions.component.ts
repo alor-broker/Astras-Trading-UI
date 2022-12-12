@@ -10,7 +10,8 @@ import {
   ViewChild
 } from '@angular/core';
 import {
-  BehaviorSubject, combineLatest,
+  BehaviorSubject,
+  combineLatest,
   distinctUntilChanged,
   Observable,
   of,
@@ -35,13 +36,14 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
-import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
+import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
 import { Store } from "@ngrx/store";
 import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
+import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 
 interface PositionDisplay extends Position {
   volume: number
@@ -53,6 +55,8 @@ interface PositionDisplay extends Position {
   styleUrls: ['./positions.component.less']
 })
 export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly columnDefaultWidth = 100;
+
   @ViewChild('nzTable')
   table?: NzTableComponent<PositionDisplay>;
   @ViewChild('tableContainer')
@@ -64,12 +68,12 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  tableInnerWidth = '1000px';
   displayPositions$: Observable<PositionDisplay[]> = of([]);
   searchFilter = new BehaviorSubject<PositionFilter>({});
   isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
   selectedInstruments$: Observable<InstrumentBadges> = of({});
   scrollHeight$: Observable<number> = of(100);
+  tableInnerWidth: number = 1000;
 
   private settings$!: Observable<BlotterSettings>;
   private badgeColor = defaultBadgeColor;
@@ -220,24 +224,33 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    if(this.tableContainer) {
+    if (this.tableContainer) {
       this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(this.tableContainer);
     }
   }
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
+      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       shareReplay()
     );
 
     this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(s => {
-        if (s.positionsColumns) {
-          this.listOfColumns = this.allColumns.filter(c => s.positionsColumns.includes(c.id));
-          this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
+        const tableSettings = s.positionsTable ?? TableSettingHelper.toTableDisplaySettings(s.positionsColumns);
+
+        if (tableSettings) {
+          this.listOfColumns = this.allColumns
+            .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
+          .filter(c => !!c.columnSettings)
+            .map(c => ({
+              ...c.column,
+              width: c.columnSettings!.columnWidth
+            }));
         }
+
+        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + (cur.width ?? this.columnDefaultWidth) , 0);
         this.badgeColor = s.badgeColor!;
       }
     );
@@ -265,7 +278,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
           if (settings.badgesBind) {
             return badges;
           }
-          return {[defaultBadgeColor]: badges[defaultBadgeColor]};
+          return { [defaultBadgeColor]: badges[defaultBadgeColor] };
         })
       );
   }
@@ -319,6 +332,33 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.listOfColumns
       );
     });
+  }
+
+  saveColumnWidth(columnId: string, width: number) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      const tableSettings = settings.positionsTable ?? TableSettingHelper.toTableDisplaySettings(settings.positionsColumns);
+      if (tableSettings) {
+        this.settingsService.updateSettings<BlotterSettings>(
+          settings.guid,
+          {
+            positionsTable: TableSettingHelper.updateColumn(
+              columnId,
+              tableSettings,
+              {
+                columnWidth: width
+              }
+            )
+          }
+        );
+      }
+    });
+  }
+
+  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
+    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
+    this.tableInnerWidth += delta;
   }
 
   private justifyFilter(position: PositionDisplay, filter: PositionFilter): boolean {

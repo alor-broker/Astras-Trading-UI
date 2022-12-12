@@ -35,13 +35,16 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { ExportHelper } from "../../utils/export-helper";
 import { NzTableComponent } from 'ng-zorro-antd/table';
-import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
+import {
+  isEqualPortfolioDependedSettings
+} from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
 import { Store } from "@ngrx/store";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
+import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -54,6 +57,8 @@ interface DisplayOrder extends Order {
   styleUrls: ['./orders.component.less'],
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly columnDefaultWidth = 100;
+
   @ViewChild('nzTable')
   table?: NzTableComponent<DisplayOrder>;
   @ViewChild('tableContainer')
@@ -68,7 +73,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   displayOrders$: Observable<DisplayOrder[]> = of([]);
   filter = new BehaviorSubject<OrderFilter>({});
   isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
-  tableInnerWidth: string = '1000px';
+  tableInnerWidth: number = 1000;
   allColumns: Column<DisplayOrder, OrderFilter>[] = [
     {
       id: 'id',
@@ -267,16 +272,25 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
+      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       shareReplay()
     );
 
     this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(s => {
-      if (s.ordersColumns) {
-        this.listOfColumns = this.allColumns.filter(c => s.ordersColumns.includes(c.id));
-        this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
+      const tableSettings = s.ordersTable ?? TableSettingHelper.toTableDisplaySettings(s.ordersTable);
+
+      if (tableSettings) {
+        this.listOfColumns = this.allColumns
+          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
+          .filter(c => !!c.columnSettings)
+          .map(c => ({
+            ...c.column,
+            width: c.columnSettings!.columnWidth
+          }));
+
+        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + (cur.width ?? this.columnDefaultWidth) , 0) + 70;
       }
       this.badgeColor = s.badgeColor!;
     });
@@ -440,6 +454,33 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isMarketOrder(order: DisplayOrder): boolean {
     return order.type === 'market';
+  }
+
+  saveColumnWidth(columnId: string, width: number) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      const tableSettings = settings.ordersTable ?? TableSettingHelper.toTableDisplaySettings(settings.ordersColumns);
+      if (tableSettings) {
+        this.settingsService.updateSettings<BlotterSettings>(
+          settings.guid,
+          {
+            ordersTable: TableSettingHelper.updateColumn(
+              columnId,
+              tableSettings,
+              {
+                columnWidth: width
+              }
+            )
+          }
+        );
+      }
+    });
+  }
+
+  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
+    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
+    this.tableInnerWidth += delta;
   }
 
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {
