@@ -74,12 +74,18 @@ export class ResizeColumnDirective implements OnInit, OnDestroy {
 
     this.ngZone.runOutsideAngular(() => {
       fromEvent<MouseEvent>(resizer, 'mousedown').pipe(
-        tap(e => e.preventDefault()),
+        tap(e => {
+          e.preventDefault();
+          e.stopPropagation();
+        }),
         switchMap(() => {
           const { width, right } = this.column.getBoundingClientRect();
 
           return fromEvent<MouseEvent>(this.documentRef, 'mousemove').pipe(
-            tap(e => e.preventDefault()),
+            tap(e => {
+              e.preventDefault();
+              e.stopPropagation();
+            }),
             map(({ clientX }) => width + clientX - right),
             map(w => Math.round(w)),
             filter(w => w >= 0 && w >= this.minWidth),

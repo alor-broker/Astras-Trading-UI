@@ -15,7 +15,6 @@ import {
   distinctUntilChanged,
   Observable,
   of,
-  shareReplay,
   Subject,
   switchMap,
   take,
@@ -42,6 +41,8 @@ import {
 } from "../../../../shared/utils/settings-helper";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -200,12 +201,10 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
-      shareReplay()
-    );
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
 
     this.settings$.pipe(
+      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)),
       takeUntil(this.destroy$)
     ).subscribe(s => {
       const tableSettings = s.tradesTable ?? TableSettingHelper.toTableDisplaySettings(s.tradesColumns);
@@ -214,16 +213,19 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.listOfColumns = this.allColumns
           .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
           .filter(c => !!c.columnSettings)
-          .map(c => ({
-            ...c.column,
-            width: c.columnSettings!.columnWidth
-          }));
+          .map((column, index) => ({
+            ...column.column,
+            width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
+            order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+          }))
+          .sort((a, b) => a.order - b.order);
 
-        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + (cur.width ?? this.columnDefaultWidth) , 0);
+        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + cur.width! , 0);
       }
     });
 
     const trades$ = this.settings$.pipe(
+      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getTrades(settings)),
       debounceTime(100),
       startWith([])
@@ -327,6 +329,23 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
     const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
     this.tableInnerWidth += delta;
+  }
+
+  changeColumnOrder(event: CdkDragDrop<any>) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      this.settingsService.updateSettings<BlotterSettings>(
+        settings.guid,
+        {
+          tradesTable: BlotterTablesHelper.changeColumnOrder(
+            event,
+            settings.tradesTable ?? TableSettingHelper.toTableDisplaySettings(settings.tradesColumns)!,
+            this.listOfColumns
+          )
+        }
+      );
+    });
   }
 
   private justifyFilter(trade: DisplayTrade, filter: TradeFilter): boolean {

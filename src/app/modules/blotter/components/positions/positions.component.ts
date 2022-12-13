@@ -15,7 +15,6 @@ import {
   distinctUntilChanged,
   Observable,
   of,
-  shareReplay,
   Subject,
   switchMap,
   take,
@@ -44,6 +43,8 @@ import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 
 interface PositionDisplay extends Position {
   volume: number
@@ -55,13 +56,10 @@ interface PositionDisplay extends Position {
   styleUrls: ['./positions.component.less']
 })
 export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
-  private readonly columnDefaultWidth = 100;
-
   @ViewChild('nzTable')
   table?: NzTableComponent<PositionDisplay>;
   @ViewChild('tableContainer')
   tableContainer?: ElementRef<HTMLElement>;
-
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -70,14 +68,9 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayPositions$: Observable<PositionDisplay[]> = of([]);
   searchFilter = new BehaviorSubject<PositionFilter>({});
-  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
   selectedInstruments$: Observable<InstrumentBadges> = of({});
   scrollHeight$: Observable<number> = of(100);
   tableInnerWidth: number = 1000;
-
-  private settings$!: Observable<BlotterSettings>;
-  private badgeColor = defaultBadgeColor;
-
   allColumns: Column<PositionDisplay, PositionFilter>[] = [
     {
       id: 'symbol',
@@ -213,6 +206,9 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
     },
   ];
   listOfColumns: Column<PositionDisplay, PositionFilter>[] = [];
+  private readonly columnDefaultWidth = 100;
+  private settings$!: Observable<BlotterSettings>;
+  private badgeColor = defaultBadgeColor;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -223,6 +219,12 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
   }
 
+  get canExport(): boolean {
+    return !!this.table?.data && this.table.data.length > 0;
+  }
+
+  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
+
   ngAfterViewInit(): void {
     if (this.tableContainer) {
       this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(this.tableContainer);
@@ -230,32 +232,33 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
-      shareReplay()
-    );
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
 
     this.settings$.pipe(
+      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)),
       takeUntil(this.destroy$)
     ).subscribe(s => {
         const tableSettings = s.positionsTable ?? TableSettingHelper.toTableDisplaySettings(s.positionsColumns);
 
         if (tableSettings) {
           this.listOfColumns = this.allColumns
-            .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
-          .filter(c => !!c.columnSettings)
-            .map(c => ({
-              ...c.column,
-              width: c.columnSettings!.columnWidth
-            }));
+            .map(c => ({ column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id) }))
+            .filter(c => !!c.columnSettings)
+            .map((column, index) => ({
+              ...column.column,
+              width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
+              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+            }))
+            .sort((a, b) => a.order - b.order);
         }
 
-        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + (cur.width ?? this.columnDefaultWidth) , 0);
+        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) => prev + cur.width!, 0);
         this.badgeColor = s.badgeColor!;
       }
     );
 
     this.displayPositions$ = this.settings$.pipe(
+      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getPositions(settings)),
       debounceTime(100),
       startWith([]),
@@ -296,10 +299,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.searchFilter.getValue()[columnId as keyof PositionFilter];
   }
 
-  shouldShow(column: string) {
-    return this.listOfColumns.map(c => c.id).includes(column);
-  }
-
   round(number: number) {
     return MathHelper.round(number, 2);
   }
@@ -317,10 +316,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   isFilterApplied(column: Column<PositionDisplay, PositionFilter>) {
     const filter = this.searchFilter.getValue();
     return column.id in filter && !!filter[column.id];
-  }
-
-  get canExport(): boolean {
-    return !!this.table?.data && this.table.data.length > 0;
   }
 
   exportToFile() {
@@ -359,6 +354,23 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
     const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
     this.tableInnerWidth += delta;
+  }
+
+  changeColumnOrder(event: CdkDragDrop<any>) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      this.settingsService.updateSettings<BlotterSettings>(
+        settings.guid,
+        {
+          positionsTable: BlotterTablesHelper.changeColumnOrder(
+            event,
+            settings.positionsTable ?? TableSettingHelper.toTableDisplaySettings(settings.positionsColumns)!,
+            this.listOfColumns
+          )
+        }
+      );
+    });
   }
 
   private justifyFilter(position: PositionDisplay, filter: PositionFilter): boolean {

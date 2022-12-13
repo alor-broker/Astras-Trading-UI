@@ -15,7 +15,6 @@ import {
   distinctUntilChanged,
   Observable,
   of,
-  shareReplay,
   Subject,
   switchMap,
   take,
@@ -53,6 +52,8 @@ import { TerminalSettingsService } from "../../../terminal-settings/services/ter
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -314,12 +315,10 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
-      shareReplay()
-    );
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
 
     this.settings$.pipe(
+      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)),
       takeUntil(this.destroy$)
     ).subscribe(s => {
       const tableSettings = s.stopOrdersTable ?? TableSettingHelper.toTableDisplaySettings(s.stopOrdersColumns);
@@ -328,17 +327,20 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.listOfColumns = this.allColumns
           .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
           .filter(c => !!c.columnSettings)
-          .map(c => ({
-            ...c.column,
-            width: c.columnSettings!.columnWidth
-          }));
+          .map((column, index) => ({
+            ...column.column,
+            width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
+            order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+          }))
+          .sort((a, b) => a.order - b.order);
 
-        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + (cur.width ?? this.columnDefaultWidth) , 0) + 70;
+        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + cur.width! , 0) + 70;
       }
       this.badgeColor = s.badgeColor!;
     });
 
     const orders$ = this.settings$.pipe(
+      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getStopOrders(settings)),
       debounceTime(100),
       startWith([]),
@@ -408,7 +410,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   cancelOrder(orderId: string) {
-    this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
       this.cancelCommands?.next({
@@ -526,6 +528,23 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
     const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
     this.tableInnerWidth += delta;
+  }
+
+  changeColumnOrder(event: CdkDragDrop<any>) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      this.settingsService.updateSettings<BlotterSettings>(
+        settings.guid,
+        {
+          stopOrdersTable: BlotterTablesHelper.changeColumnOrder(
+            event,
+            settings.stopOrdersTable ?? TableSettingHelper.toTableDisplaySettings(settings.stopOrdersColumns)!,
+            this.listOfColumns
+          )
+        }
+      );
+    });
   }
 
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {

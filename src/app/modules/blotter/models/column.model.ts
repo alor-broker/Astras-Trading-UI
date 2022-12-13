@@ -17,4 +17,5 @@ export interface Column<T, F> {
   hasFilter: boolean;
   tooltip?: string;
   width?: number | null;
+  order?: number | null;
 }

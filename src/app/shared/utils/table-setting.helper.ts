@@ -50,4 +50,25 @@ export class TableSettingHelper {
 
     return updated;
   }
+
+  /**
+   * Generates default column order
+   * @param columnIndex column index in columns array
+   * @param target target table settings
+   * @returns default column order
+   */
+  static getDefaultColumnOrder(columnIndex: number): number {
+    // we just have to be sure that the default order will be at the end of the list.
+    return 10000 + columnIndex;
+  }
+
+  /**
+   * Checks if table display settings are equal
+   * @param settings1 first settings
+   * @param settings2 second settings
+   * @returns true is equal, false if not
+   */
+  static isTableSettingsEqual(settings1?: TableDisplaySettings | null, settings2?: TableDisplaySettings | null) {
+    return JSON.stringify(settings1) === JSON.stringify(settings2);
+  }
 }
