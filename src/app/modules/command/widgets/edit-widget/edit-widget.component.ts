@@ -81,7 +81,14 @@ export class EditWidgetComponent implements OnInit, OnDestroy {
   }
 
   handleCancel(): void {
-    const close = () => this.modal.closeEditModal();
+    const close = () => {
+      this.modal.closeEditModal();
+      this.commandContext$?.pipe(
+        take(1),
+        filter(x => !!x.commandParameters.cancelled)
+      ).subscribe(x => x.commandParameters.cancelled!());
+    };
+
     close();
   }
 

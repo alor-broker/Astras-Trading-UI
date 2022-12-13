@@ -6,7 +6,10 @@ import {
 import { TechChartComponent } from './tech-chart.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { TechChartDatafeedService } from "../../services/tech-chart-datafeed.service";
-import { of } from "rxjs";
+import {
+  of,
+  Subject
+} from "rxjs";
 import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
 import {
   ThemeColors,
@@ -15,9 +18,14 @@ import {
 } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { TestData } from '../../../../shared/utils/testing';
+import {
+  sharedModuleImportForTests,
+  TestData
+} from '../../../../shared/utils/testing';
 import { WidgetsDataProviderService } from '../../../../shared/services/widgets-data-provider.service';
 import { ModalService } from '../../../../shared/services/modal.service';
+import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
+import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -29,6 +37,7 @@ describe('TechChartComponent', () => {
   let instrumentsServiceSpy: any;
   let widgetsDataProviderServiceSpy: any;
   let modalServiceSpy: any;
+  let portfolioSubscriptionsServiceSpy: any;
 
   beforeEach(() => {
     widgetSettingsServiceSpy = jasmine.createSpyObj(
@@ -77,10 +86,23 @@ describe('TechChartComponent', () => {
     widgetsDataProviderServiceSpy = jasmine.createSpyObj('WidgetsDataProviderService', ['addNewDataProvider', 'setDataProviderValue']);
 
     modalServiceSpy = jasmine.createSpyObj('ModalService', ['openCommandModal']);
+
+    portfolioSubscriptionsServiceSpy = jasmine.createSpyObj(
+      'PortfolioSubscriptionsService',
+      [
+        'getAllPositionsSubscription',
+        'getOrdersSubscription',
+        'getStopOrdersSubscription'
+      ]);
+
+    portfolioSubscriptionsServiceSpy.getAllPositionsSubscription.and.returnValue(new Subject());
+    portfolioSubscriptionsServiceSpy.getOrdersSubscription.and.returnValue(new Subject());
+    portfolioSubscriptionsServiceSpy.getStopOrdersSubscription.and.returnValue(new Subject());
   });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [...sharedModuleImportForTests],
       declarations: [TechChartComponent],
       providers: [
         { provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy },
@@ -89,6 +111,13 @@ describe('TechChartComponent', () => {
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         { provide: WidgetsDataProviderService, useValue: widgetsDataProviderServiceSpy },
         { provide: ModalService, useValue: modalServiceSpy },
+        { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
+        {
+          provide: OrderCancellerService,
+          useValue: {
+            cancelOrder: jasmine.createSpy('cancelOrder').and.returnValue(new Subject())
+          }
+        },
       ]
     })
       .compileComponents();
