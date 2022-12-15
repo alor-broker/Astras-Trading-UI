@@ -26,13 +26,13 @@
                 [nzShowFilter]="column.hasFilter"
                 [nzWidth]="column.width ? column.width + 'px': null"
                 [atsResizeColumn]
-                [minWidth]="50"
+                [minWidth]="column.minWidth ?? 50"
                 (atsWidthChanged)="saveColumnWidth(column.id, $event)"
                 (atsWidthChanging)="recalculateTableWidth($event)"
                 cdkDrag
                 cdkDragLockAxis="x"
             >
-              <span nz-tooltip [nzTooltipTitle]="column.tooltip">{{column.name}}</span>
+              <span nz-tooltip [nzTooltipTitle]="column.tooltip" [nzTooltipPlacement]="['top', 'topLeft', 'topRight']">{{column.name}}</span>
               <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
                 <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon nzType="search"></i>
               </nz-filter-trigger>

@@ -20,7 +20,6 @@ import {
   takeUntil
 } from 'rxjs';
 import {
-  filter,
   finalize,
   map,
   tap
@@ -88,7 +87,7 @@ export class ResizeColumnDirective implements OnInit, OnDestroy {
             }),
             map(({ clientX }) => width + clientX - right),
             map(w => Math.round(w)),
-            filter(w => w >= 0 && w >= this.minWidth),
+            map(w => w > 0 && w >= this.minWidth ? w : this.minWidth),
             distinctUntilChanged(),
             takeUntil(fromEvent(this.documentRef, 'mouseup')),
             finalize(() => {

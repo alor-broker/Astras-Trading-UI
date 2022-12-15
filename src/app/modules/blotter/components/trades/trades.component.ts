@@ -98,7 +98,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Номер заявки'
+      tooltip: 'Номер заявки',
+      minWidth: 80
     },
     {
       id: 'symbol',
@@ -112,7 +113,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Биржевой идентификатор ценной бумаги'
+      tooltip: 'Биржевой идентификатор ценной бумаги',
+      minWidth: 75
     },
     {
       id: 'side',
@@ -128,7 +130,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Сторона сделки (покупка/продажа)'
+      tooltip: 'Сторона сделки (покупка/продажа)',
+      minWidth: 75
     },
     {
       id: 'qty',
@@ -141,7 +144,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество сделок'
+      tooltip: 'Количество сделок',
+      minWidth: 65
     },
     {
       id: 'price',
@@ -167,7 +171,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Время совершения сделки'
+      tooltip: 'Время совершения сделки',
+      minWidth: 60
     },
     {
       id: 'volume',
@@ -180,7 +185,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Объём'
+      tooltip: 'Объём',
+      minWidth: 60
     },
   ];
   listOfColumns: Column<DisplayTrade, TradeFilter>[] = [];

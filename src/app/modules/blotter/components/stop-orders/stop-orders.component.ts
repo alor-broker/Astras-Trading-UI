@@ -111,7 +111,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Биржевой идентификатор ценной бумаги'
+      tooltip: 'Биржевой идентификатор ценной бумаги',
+      minWidth: 75
     },
     {
       id: 'side',
@@ -127,7 +128,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Сторона заявки (покупка/продажа)'
+      tooltip: 'Сторона заявки (покупка/продажа)',
+      minWidth: 85
     },
     {
       id: 'residue',
@@ -140,7 +142,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Отношение невыполненных заявок к общему количеству'
+      tooltip: 'Отношение невыполненных заявок к общему количеству',
+      minWidth: 70
     },
     {
       id: 'volume',
@@ -153,7 +156,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Объем'
+      tooltip: 'Объем',
+      minWidth: 60
     },
     {
       id: 'qty',
@@ -166,7 +170,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество заявок'
+      tooltip: 'Количество заявок',
+      minWidth: 65
     },
     {
       id: 'price',
@@ -179,7 +184,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Цена'
+      tooltip: 'Цена',
+      minWidth: 55
     },
     {
       id: 'triggerPrice',
@@ -192,7 +198,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Сигнальная цена (заявка выставится, когда цена упадёт/поднимется до указанного значения)'
+      tooltip: 'Сигнальная цена (заявка выставится, когда цена упадёт/поднимется до указанного значения)',
     },
     {
       id: 'status',
@@ -209,7 +215,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Стаус заявки'
+      tooltip: 'Стаус заявки',
+      minWidth: 80
     },
     {
       id: 'conditionType',
@@ -225,7 +232,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Условие, при котором будет выставлена заявка'
+      tooltip: 'Условие, при котором будет выставлена заявка',
+      minWidth: 85
     },
     {
       id: 'transTime',
@@ -238,7 +246,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Время совершения заявки'
+      tooltip: 'Время совершения заявки',
+      minWidth: 60
     },
     {
       id: 'exchange',
@@ -254,7 +263,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Наименование биржи'
+      tooltip: 'Наименование биржи',
+      minWidth: 80
     },
     {
       id: 'type',
@@ -270,7 +280,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Тип заявки (лимитная/рыночная)'
+      tooltip: 'Тип заявки (лимитная/рыночная)',
+      minWidth: 65
     },
     {
       id: 'endTime',
@@ -283,7 +294,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Срок действия заявки'
+      tooltip: 'Срок действия заявки',
+      minWidth: 65
     },
   ];
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];

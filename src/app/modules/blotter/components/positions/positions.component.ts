@@ -84,7 +84,8 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Биржевой идентификатор ценной бумаги'
+      tooltip: 'Биржевой идентификатор ценной бумаги',
+      minWidth: 75
     },
     {
       id: 'shortName',
@@ -98,7 +99,8 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Наименование позиции'
+      tooltip: 'Наименование позиции',
+      minWidth: 70
     },
     {
       id: 'avgPrice',
@@ -111,7 +113,8 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Средняя цена'
+      tooltip: 'Средняя цена',
+      minWidth: 70
     },
     {
       id: 'qtyT0',
@@ -124,7 +127,8 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество позиций с учётом сегодняшних расчётов'
+      tooltip: 'Количество позиций с учётом сегодняшних расчётов',
+      minWidth: 65
     },
     {
       id: 'qtyT1',
@@ -137,7 +141,8 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество позиций с учётом завтрашних расчётов'
+      tooltip: 'Количество позиций с учётом завтрашних расчётов',
+      minWidth: 65
     },
     {
       id: 'qtyT2',
@@ -150,7 +155,8 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество позиций с учётом послезавтрашних расчётов'
+      tooltip: 'Количество позиций с учётом послезавтрашних расчётов',
+      minWidth: 65
     },
     {
       id: 'qtyTFuture',
@@ -163,7 +169,8 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество позиций с учётом всех заявок'
+      tooltip: 'Количество позиций с учётом всех заявок',
+      minWidth: 65
     },
     {
       id: 'volume',
@@ -176,7 +183,8 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Объём'
+      tooltip: 'Объём',
+      minWidth: 60
     },
     {
       id: 'unrealisedPl',
@@ -189,7 +197,8 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Соотношение прибыли и убытка'
+      tooltip: 'Соотношение прибыли и убытка',
+      minWidth: 60
     },
     {
       id: 'dailyUnrealisedPl',
@@ -202,7 +211,8 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Соотношение прибыли и убытка за сегодня'
+      tooltip: 'Соотношение прибыли и убытка за сегодня',
+      minWidth: 60
     },
   ];
   listOfColumns: Column<PositionDisplay, PositionFilter>[] = [];
