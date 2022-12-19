@@ -49,6 +49,7 @@ import {
 } from "../utils/instruments";
 import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
 import { TimeframeValue } from '../../modules/light-chart/models/light-chart.models';
+import { TableSettingHelper } from '../utils/table-setting.helper';
 
 @Injectable({
   providedIn: 'root',
@@ -223,10 +224,10 @@ export class WidgetFactoryService {
       settingsType: 'BlotterSettings',
       title: `Блоттер`,
       titleIcon: 'table',
-      tradesColumns: allTradesColumns.filter(c => c.isDefault).map(c => c.columnId),
-      positionsColumns: allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId),
-      ordersColumns: allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
-      stopOrdersColumns: allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId),
+      tradesTable: TableSettingHelper.toTableDisplaySettings(allTradesColumns.filter(c => c.isDefault).map(c => c.columnId)),
+      positionsTable: TableSettingHelper.toTableDisplaySettings(allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId)),
+      ordersTable: TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId)),
+      stopOrdersTable: TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId)),
       linkToActive: true,
       badgeColor: defaultBadgeColor,
       isSoldPositionsHidden: true,

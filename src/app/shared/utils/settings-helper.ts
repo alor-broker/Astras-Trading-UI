@@ -22,7 +22,6 @@ export type InstrumentDependentSettings = AnySettings & {
   symbol: string;
   exchange: string;
   instrumentGroup?: string;
-  linkedToActive: boolean;
 };
 
 /**
@@ -31,7 +30,6 @@ export type InstrumentDependentSettings = AnySettings & {
 export type PortfolioDependentSettings = AnySettings & {
   portfolio: string;
   exchange: string;
-  linkedToActive: boolean;
 };
 
 /**
@@ -257,48 +255,6 @@ export function isOrderSubmitSettings(settings: AnySettings): settings is OrderS
   return settings.settingsType === 'OrderSubmitSettings';
 }
 
-/**
- * Checks the equality of settings by value
- * @param settings1 first settings
- * @param settings2 second settings
- * @returns true if they are equal, false if not
- */
-export function isEqual(settings1: AnySettings, settings2: AnySettings) : boolean {
-  if (isOrderbookSettings(settings1) && isOrderbookSettings(settings2)) {
-    return isEqualOrderbookSettings(settings1, settings2);
-  }
-  if (isScalperOrderBookSettings(settings1) && isScalperOrderBookSettings(settings2)) {
-    return isEqualScalperOrderBookSettings(settings1, settings2);
-  }
-  if (isLightChartSettings(settings1) && isLightChartSettings(settings2)) {
-    return isEqualLightChartSettings(settings1, settings2);
-  }
-  if (isBlotterSettings(settings1) && isBlotterSettings(settings2)) {
-    return isEqualBlotterSettings(settings1, settings2);
-  }
-  if (isInfoSettings(settings1) && isInfoSettings(settings2)) {
-    return isEqualInfoSettings(settings1, settings2);
-  }
-  if (isInstrumentSelectSettings(settings1) && isInstrumentSelectSettings(settings2)) {
-    return isEqualInstrumentSelectSettings(settings1, settings2);
-  }
-  if (isTechChartSettings(settings1) && isTechChartSettings(settings2)) {
-    return isEqualTechChartSettings(settings1, settings2);
-  }
-
-  if (isOrderSubmitSettings(settings1) && isOrderSubmitSettings(settings2)) {
-    return isEqualOrderSubmitSettings(settings1, settings2);
-  }
-
-  return (
-    settings1.guid == settings2.guid && settings1.title == settings2.title
-  );
-}
-/**
- * Returns a widget name by settings type
- * @param settings Settings
- * @returns widget name
- */
 export function getTypeBySettings(settings: AnySettings): WidgetNames | null {
   if (isInstrumentSelectSettings(settings)) {
     return WidgetNames.instrumentSelect;
@@ -340,32 +296,6 @@ export function getTypeBySettings(settings: AnySettings): WidgetNames | null {
   }
 
   return null;
-}
-
-/**
- * Checks if orderbook settings are equal
- * @param settings1 first settings
- * @param settings2 second settings
- * @returns true is equal, false if not
- */
-export function isEqualOrderbookSettings(
-  settings1: OrderbookSettings,
-  settings2: OrderbookSettings
-) : boolean {
-  if (settings1 && settings2) {
-    return (
-      settings1.guid == settings2.guid &&
-      settings1.symbol == settings2.symbol &&
-      settings1.instrumentGroup == settings2.instrumentGroup &&
-      settings1.linkToActive == settings2.linkToActive &&
-      settings1.exchange == settings2.exchange &&
-      settings1.depth == settings2.depth &&
-      settings1.showChart == settings2.showChart &&
-      settings1.showTable == settings2.showTable &&
-      settings1.showYieldForBonds == settings2.showYieldForBonds &&
-      settings1.badgeColor == settings2.badgeColor
-    );
-  } else return false;
 }
 
 /**
@@ -434,75 +364,6 @@ export function isEqualLightChartSettings(
 }
 
 /**
- * Checks if blotter settings are equal
- * @param settings1 first settings
- * @param settings2 second settings
- * @returns true is equal, false if not
- */
-export function isEqualBlotterSettings(
-  settings1?: BlotterSettings,
-  settings2?: BlotterSettings
-) {
-  if (settings1 && settings2) {
-    return (
-      settings1.linkToActive == settings2.linkToActive &&
-      settings1.exchange == settings2.exchange &&
-      settings1.portfolio == settings2.portfolio &&
-      settings1.guid == settings2.guid &&
-      settings1.badgeColor == settings2.badgeColor &&
-      isArrayEqual(settings1.ordersColumns, settings2.ordersColumns, (a, b) => a === b) &&
-      isArrayEqual(settings1.stopOrdersColumns, settings2.stopOrdersColumns, (a, b) => a === b) &&
-      isArrayEqual(settings1.positionsColumns, settings2.positionsColumns, (a, b) => a === b) &&
-      isArrayEqual(settings1.tradesColumns, settings2.tradesColumns, (a, b) => a === b) &&
-      settings1.isSoldPositionsHidden == settings2.isSoldPositionsHidden &&
-      settings1.cancelOrdersWithoutConfirmation == settings2.cancelOrdersWithoutConfirmation
-    );
-  } else return false;
-}
-
-/**
- * Checks if instrument-select settings are equal
- * @param settings1 first settings
- * @param settings2 second settings
- * @returns true is equal, false if not
- */
-export function isEqualInstrumentSelectSettings(
-  settings1?: InstrumentSelectSettings,
-  settings2?: InstrumentSelectSettings
-) {
-  if (settings1 && settings2) {
-    return (
-      settings1.linkToActive == settings2.linkToActive &&
-      settings1.guid == settings2.guid &&
-      settings1.activeListId == settings2.activeListId &&
-      settings1.instrumentColumns == settings2.instrumentColumns &&
-      settings1.badgeColor == settings2.badgeColor
-    );
-  } else return false;
-}
-
-/**
- * Checks if info settings are equal
- * @param settings1 first settings
- * @param settings2 second settings
- * @returns true is equal, false if not
- */
-export function isEqualInfoSettings(
-  settings1?: InfoSettings,
-  settings2?: InfoSettings
-) {
-  if (settings1 && settings2) {
-    return (
-      settings1.linkToActive == settings2.linkToActive &&
-      settings1.guid == settings2.guid &&
-      settings1.symbol == settings2.symbol &&
-      settings1.exchange == settings2.exchange &&
-      settings1.badgeColor == settings2.badgeColor
-    );
-  } else return false;
-}
-
-/**
  * Checks if tech chart settings are equal
  * @param settings1 first settings
  * @param settings2 second settings
@@ -546,6 +407,19 @@ export function isEqualOrderSubmitSettings(
       isArrayEqual(settings1.workingVolumes, settings2.workingVolumes, (a, b) => a === b)
     );
   } else return false;
+}
+
+/**
+ * Checks if portfolio depended settings are equal
+ * @param settings1 first settings
+ * @param settings2 second settings
+ * @returns true is equal, false if not
+ */
+export function isEqualPortfolioDependedSettings(settings1?: PortfolioDependentSettings | null, settings2?: PortfolioDependentSettings | null) {
+  return settings1?.portfolio === settings2?.portfolio
+    && settings1?.exchange == settings2?.exchange
+    && settings1?.linkToActive == settings2?.linkToActive
+    && settings1?.badgeColor == settings2?.badgeColor;
 }
 
 /**

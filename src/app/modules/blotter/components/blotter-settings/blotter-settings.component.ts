@@ -28,6 +28,8 @@ import {
   takeUntil
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
+import { TableDisplaySettings } from '../../../../shared/models/settings/table-display-settings.model';
+import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 
 @Component({
   selector: 'ats-blotter-settings[guid]',
@@ -62,16 +64,17 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
     ).subscribe(settings => {
       if (settings) {
         this.prevSettings = settings;
+
         this.form = new UntypedFormGroup({
           portfolio: new UntypedFormControl(settings.portfolio, [
             Validators.required,
             Validators.minLength(4)
           ]),
           exchange: new UntypedFormControl(settings.exchange, Validators.required),
-          ordersColumns: new UntypedFormControl(settings.ordersColumns),
-          stopOrdersColumns: new UntypedFormControl(settings.stopOrdersColumns),
-          tradesColumns: new UntypedFormControl(settings.tradesColumns),
-          positionsColumns: new UntypedFormControl(settings.positionsColumns),
+          ordersColumns: new UntypedFormControl(this.toTableSettings(settings.ordersTable, settings.ordersColumns)?.columns?.map(c => c.columnId)),
+          stopOrdersColumns: new UntypedFormControl(this.toTableSettings(settings.stopOrdersTable, settings.stopOrdersColumns)?.columns?.map(c => c.columnId)),
+          tradesColumns: new UntypedFormControl(this.toTableSettings(settings.tradesTable, settings.tradesColumns)?.columns?.map(c => c.columnId)),
+          positionsColumns: new UntypedFormControl(this.toTableSettings(settings.positionsTable, settings.positionsColumns)?.columns?.map(c => c.columnId)),
           isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden ?? false),
           cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false)
         });
@@ -84,8 +87,17 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe(initialSettings => {
       const newSettings = {
-          ...this.form.value,
+        ...this.form.value,
       };
+
+      newSettings.ordersTable = this.updateTableSettings(newSettings.ordersColumns, initialSettings.ordersTable);
+      delete newSettings.ordersColumns;
+      newSettings.stopOrdersTable = this.updateTableSettings(newSettings.stopOrdersColumns, initialSettings.stopOrdersTable);
+      delete newSettings.stopOrdersColumns;
+      newSettings.tradesTable = this.updateTableSettings(newSettings.tradesColumns, initialSettings.tradesTable);
+      delete newSettings.tradesColumns;
+      newSettings.positionsTable = this.updateTableSettings(newSettings.positionsColumns, initialSettings.positionsTable);
+      delete newSettings.positionsColumns;
 
       newSettings.linkToActive = initialSettings.linkToActive && this.isPortfolioEqual(initialSettings, newSettings);
 
@@ -102,5 +114,35 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   private isPortfolioEqual(settings1: BlotterSettings, settings2: BlotterSettings) {
     return settings1.portfolio === settings2.portfolio
       && settings1.exchange === settings2.exchange;
+  }
+
+  private toTableSettings(tableSettings?: TableDisplaySettings | null, columnIds?: string[]): TableDisplaySettings | undefined {
+    if (tableSettings) {
+      return tableSettings;
+    }
+
+    if (columnIds) {
+      return TableSettingHelper.toTableDisplaySettings(columnIds);
+    }
+
+    return undefined;
+  }
+
+  private updateTableSettings(columnIds: string[], currentSettings?: TableDisplaySettings): TableDisplaySettings {
+    const newSettings = this.toTableSettings(null, columnIds)!;
+
+    if (currentSettings) {
+      newSettings.columns.forEach((column, index) => {
+        const matchedColumn = currentSettings!.columns.find(x => x.columnId === column.columnId);
+        if (matchedColumn) {
+          newSettings.columns[index] = {
+            ...column,
+            ...matchedColumn
+          };
+        }
+      });
+    }
+
+    return newSettings!;
   }
 }

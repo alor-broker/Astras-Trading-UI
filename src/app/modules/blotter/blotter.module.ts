@@ -11,6 +11,7 @@ import { StopOrdersComponent } from './components/stop-orders/stop-orders.compon
 import { ForwardSummaryComponent } from './components/forward-summary/forward-summary.component';
 import { NzInputModule } from "ng-zorro-antd/input";
 import { TableFilterComponent } from "./components/table-filter/table-filter.component";
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { TableFilterComponent } from "./components/table-filter/table-filter.com
     imports: [
         SharedModule,
         BlotterRoutingModule,
-        NzInputModule
+        NzInputModule,
+        DragDropModule
     ],
   exports: [
     BlotterWidgetComponent
