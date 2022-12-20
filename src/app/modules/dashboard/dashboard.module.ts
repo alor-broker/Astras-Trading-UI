@@ -27,6 +27,7 @@ import { FeedbackModule } from '../feedback/feedback.module';
 import { ApplicationMetaModule } from '../application-meta/application-meta.module';
 import { NzInputModule } from "ng-zorro-antd/input";
 import { ExternalLinkModule } from "../../shared/components/external-link/external-link.module";
+import { OrdersBasketModule } from '../orders-basket/orders-basket.module';
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ import { ExternalLinkModule } from "../../shared/components/external-link/extern
         ApplicationMetaModule,
         NzInputModule,
         ExternalLinkModule,
+        OrdersBasketModule
         // components
     ],
   providers: [

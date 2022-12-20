@@ -5,18 +5,16 @@ import {
 
 import { ExchangeRateComponent } from './exchange-rate.component';
 import { ExchangeRateService } from "../../../../shared/services/exchange-rate.service";
-import { of } from "rxjs";
+import {
+  of,
+  Subject
+} from "rxjs";
 import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
+import { QuotesService } from '../../../../shared/services/quotes.service';
 
 describe('ExchangeRateComponent', () => {
   let component: ExchangeRateComponent;
   let fixture: ComponentFixture<ExchangeRateComponent>;
-
-  let subscriptionsDataFeedServiceSpy: any;
-
-  beforeEach(() => {
-    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
-  });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -29,8 +27,10 @@ describe('ExchangeRateComponent', () => {
           }
         },
         {
-          provide: SubscriptionsDataFeedService,
-          useValue: subscriptionsDataFeedServiceSpy
+          provide: QuotesService,
+          useValue: {
+            getQuotes: jasmine.createSpy('getQuotes').and.returnValue(new Subject())
+          }
         }
       ]
     })

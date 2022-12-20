@@ -24,6 +24,7 @@ import { selectNewPortfolio } from "../../store/portfolios/portfolios.actions";
 import { TechChartSettings } from "../models/settings/tech-chart-settings.model";
 import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
 import { TimeframeValue } from '../../modules/light-chart/models/light-chart.models';
+import { OrdersBasketSettings } from '../models/settings/orders-basket-settings.model';
 
 describe('WidgetFactoryService', () => {
   let service: WidgetFactoryService;
@@ -175,6 +176,15 @@ describe('WidgetFactoryService', () => {
     }) as OrderSubmitSettings;
 
     expect(settings.settingsType).toBe('OrderSubmitSettings');
+    expect(settings.guid).toBe('testGuid');
+  });
+
+  it('should create new orders basket settings', () => {
+    const settings: OrdersBasketSettings = service.createNewSettings({
+      gridItem: {x: 0, y: 0, rows: 1, cols: 1, type: WidgetNames.ordersBasket, label: 'testGuid'}
+    }) as OrdersBasketSettings;
+
+    expect(settings.settingsType).toBe('OrdersBasketSettings');
     expect(settings.guid).toBe('testGuid');
   });
 

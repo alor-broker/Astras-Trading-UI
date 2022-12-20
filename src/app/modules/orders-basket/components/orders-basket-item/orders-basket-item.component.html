@@ -1,0 +1,84 @@
+<div #container [ngClass]="displayMode$ | async" class="container">
+  <ng-container *ngIf="form">
+    <form [formGroup]="form" nz-form nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label *ngIf="showLabels$ | async" nzFor="instrumentKey" nzRequired>Инструмент</nz-form-label>
+        <nz-form-control nzErrorTip="Выберите инструмент">
+          <ats-instrument-search
+            (instrumentSelected)="onTouched()"
+            [exchange]="exchange"
+            [optionsBoxWidth]="(containerWidth$ | async) ?? 100"
+            formControlName="instrumentKey"
+          ></ats-instrument-search>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label *ngIf="showLabels$ | async" nzFor="quota" nzRequired>Процент</nz-form-label>
+        <nz-form-control
+          nzErrorTip="Значение должно быть от {{validationOptions.quota.min}} до {{validationOptions.quota.max}}">
+          <nz-input-group nzSuffix="%">
+            <input
+              (blur)="onTouched()"
+              (mousedown)="$event.stopPropagation()"
+              [step]="0.1"
+              atsNumerical
+              formControlName="quota"
+              nz-input
+              placeholder="Введите процент"
+            />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label *ngIf="showLabels$ | async" nzFor="price" nzRequired>Цена</nz-form-label>
+        <nz-form-control
+          [nzErrorTip]="priceError">
+          <input
+            (blur)="onTouched()"
+            (mousedown)="$event.stopPropagation()"
+            [step]="(instrument$ | async)?.minstep ?? 1"
+            atsNumerical
+            formControlName="price"
+            nz-input
+            placeholder="Введите цену"
+          />
+          <ng-template #priceError>
+            <span *ngIf="form.get('price')?.errors?.required">Введите цену</span>
+            <span *ngIf="form.get('price')?.errors?.min">Значение должно быть от {{validationOptions.price.min}}
+              до {{validationOptions.price.max}}</span>
+            <span *ngIf="form.get('price')?.errors?.max">Значение должно быть от {{validationOptions.price.min}}
+              до {{validationOptions.price.max}}</span>
+            <span
+              *ngIf="form.get('price')?.errors?.priceStepMultiplicity">Значение должно быть кратно шагу цены ({{form.get('price')!.errors!.priceStepMultiplicity!.step}}
+              )</span>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label *ngIf="showLabels$ | async" nzFor="quantity" nzRequired>Объем заявки</nz-form-label>
+        <nz-form-control [nzValidateStatus]="(quantityValidationStatus$ | async) ?? 'success'" nzHasFeedback>
+          <input
+            (blur)="onTouched()"
+            (mousedown)="$event.stopPropagation()"
+            atsNumerical
+            class="ant-input-disabled"
+            formControlName="quantity"
+            nz-input
+            placeholder="Объем"
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+    <button (click)="delete.emit()"
+            [class.with-labels]="(showLabels$ | async)===true"
+            [disabled]="!enableDelete"
+            id="remove-item-btn"
+            nz-button
+            nzType="link"
+    >
+      <span nz-icon nzType="close"></span>
+    </button>
+  </ng-container>
+</div>
+

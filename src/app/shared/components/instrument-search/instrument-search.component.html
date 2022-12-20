@@ -3,7 +3,7 @@
     <input #searchInput
            (blur)="checkInstrumentSelection()"
            (mousedown)="$event.stopPropagation()"
-           (ngModelChange)="filterChanged(searchInput.value)"
+           (input)="filterChanged(searchInput.value)"
            [ngModel]="currentValue?.symbol"
            [nzAutocomplete]="auto"
            class='whole ant-input'
@@ -17,23 +17,34 @@
   <ng-template #searchHelp>
     <span>Введите краткое наименование инструмента, Seccode или ISIN. Далее появится выпадающий список с инструментами, удовлетворяющий Вашему запросу.</span>
     <br/>
-    <span>Также вы можете искать инструмент на определённой бирже и с определённым режимом торгов. Формат такой:</span>
-    <br/>
-    <span nz-typography><code>[Exchange]:[Ticker]:[Board]</code></span>
-    <br/>
-    <span nz-typography>Например MOEX:SBER:SMAL</span>
-    <br/>
-    <span>либо если борд по-умолчанию, то</span>
-    <br/>
-    <span nz-typography><code>[Exchange]:[Ticker]</code></span>
-    <br/>
-    <span nz-typography>Например MOEX:SBER</span>
+    <ng-container *ngIf="!exchange">
+      <span>Также вы можете искать инструмент на определённой бирже и с определённым режимом торгов. Формат такой:</span>
+      <br/>
+      <span nz-typography><code>[Exchange]:[Ticker]:[Board]</code></span>
+      <br/>
+      <span nz-typography>Например MOEX:SBER:SMAL</span>
+      <br/>
+      <span>либо если борд по-умолчанию, то</span>
+      <br/>
+      <span nz-typography><code>[Exchange]:[Ticker]</code></span>
+      <br/>
+      <span nz-typography>Например MOEX:SBER</span>
+    </ng-container>
+
+    <ng-container *ngIf="exchange">
+      <span>Также вы можете искать инструмент с определённым режимом торгов. Формат такой:</span>
+      <br/>
+      <span nz-typography><code>[Ticker]:[Board]</code></span>
+      <br/>
+      <span nz-typography>Например SBER:SMAL</span>
+    </ng-container>
+
   </ng-template>
-  <nz-autocomplete #auto>
+  <nz-autocomplete #auto [nzWidth]="optionsBoxWidth">
     <nz-auto-option
       (selectionChange)='onSelect($event, option)' *ngFor="let option of filteredInstruments$ | async"
       [nzLabel]="option.symbol"
-      [nzValue]="option.description">
+      [nzValue]="option.symbol">
       <span class='search-row'>
         <nz-tag>{{ option.symbol }}</nz-tag>
         <span class='row-center'>{{ option.shortName }}</span>

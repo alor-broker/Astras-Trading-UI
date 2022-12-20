@@ -1,0 +1,67 @@
+<div *ngIf="settings$ | async as settings">
+  <ng-container *ngIf="form">
+    <form [formGroup]="form" nz-form nzLayout="vertical">
+      <div class="basket-items-container">
+        <div *ngFor="let itemControl of asFormArray(form.controls.items).controls; index as i" class="basket-item">
+          <div class="item-control">
+            <ats-orders-basket-item
+              [exchange]="settings.exchange"
+              [formControl]="asFormControl(itemControl)"
+              [totalBudget]="getBudget(form)"
+              [itemIndex]="i"
+              [enableDelete]="asFormArray(form.controls.items).controls.length > 1"
+              (delete)="asFormArray(form.controls.items).removeAt(i)"
+            ></ats-orders-basket-item>
+          </div>
+        </div>
+        <span *ngIf="form.controls.items.errors?.max100Percent" nz-typography nzType="danger">
+          Сумма указанных процентов больше 100 ({{form.controls.items.errors?.max100Percent.actual}})
+        </span>
+        <div>
+          <button (click)="addItemDraft(asFormArray(form.controls.items))"
+                  id="add-item-btn"
+                  nz-button
+                  nzBlock
+                  nzType="dashed">
+            <span nz-icon nzType="plus"></span>
+          </button>
+        </div>
+      </div>
+      <div class="budget-container">
+        <div nz-col>
+          <nz-form-item>
+            <nz-form-label nzRequired>Сумма на все заявки</nz-form-label>
+            <nz-form-control [nzErrorTip]="budgetError">
+              <input
+                (mousedown)="$event.stopPropagation()"
+                atsNumerical
+                formControlName="budget"
+                nz-input placeholder="Введите сумму"
+              />
+              <ng-template #budgetError>
+                <span *ngIf="form.controls.budget?.errors?.required">Введите сумму</span>
+                <span *ngIf="form.controls.budget?.errors?.min">Слишком мало</span>
+                <span *ngIf="form.controls.budget?.errors?.max">Слишком много</span>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div>
+          <nz-form-item>
+            <nz-form-label>&nbsp;</nz-form-label>
+            <nz-form-control>
+              <button
+                [disabled]="(canSubmit$ | async)===false"
+                [nzLoading]="processing$ | async"
+                (click)="submitOrders()"
+                class="submit-orders-btn"
+                nz-button>
+                Выставить
+              </button>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+</div>

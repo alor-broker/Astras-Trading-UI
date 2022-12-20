@@ -29,7 +29,6 @@ import {
 } from "rxjs";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 
 @Component({
   selector: 'ats-light-chart-settings[guid]',
@@ -93,7 +92,7 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  instrumentSelected(instrument: Instrument | null) {
+  instrumentSelected(instrument: InstrumentKey | null) {
     this.form.controls.exchange.setValue(instrument?.exchange ?? null);
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }

@@ -49,6 +49,7 @@ import {
 } from "../utils/instruments";
 import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
 import { TimeframeValue } from '../../modules/light-chart/models/light-chart.models';
+import { OrdersBasketSettings } from '../models/settings/orders-basket-settings.model';
 
 @Injectable({
   providedIn: 'root',
@@ -115,7 +116,11 @@ export class WidgetFactoryService {
       case WidgetNames.orderSubmit:
         settings = this.createOrderSubmit(newWidget);
         break;
+      case WidgetNames.ordersBasket:
+        settings = this.createOrdersBasket(newWidget);
+        break;
     }
+
     if (settings) {
       return { ...settings, ...additionalSettings };
     }
@@ -345,5 +350,21 @@ export class WidgetFactoryService {
       showVolumePanel: false,
       workingVolumes: [1, 5, 10, 20, 30, 40, 50, 100, 200]
     } as OrderSubmitSettings;
+  }
+
+  private createOrdersBasket(newWidget: NewWidget | Widget): OrdersBasketSettings {
+    if (!newWidget.gridItem.label) {
+      newWidget.gridItem.label = GuidGenerator.newGuid();
+    }
+
+    return {
+      ...(this.selectedPortfolio ?? { portfolio: 'D', exchange: 'MOEX' }),
+      guid: newWidget.gridItem.label,
+      settingsType: 'OrdersBasketSettings',
+      title: `Корзина заявок`,
+      titleIcon: 'calculator',
+      linkToActive: true,
+      badgeColor: defaultBadgeColor,
+    } as OrdersBasketSettings;
   }
 }

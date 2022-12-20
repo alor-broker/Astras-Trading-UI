@@ -82,6 +82,13 @@
   >
     <span><i nz-icon nzType="send" nzTheme="outline"></i><label> Выставление заявки</label></span>
   </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.ordersBasket)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.ordersBasket)"
+  >
+    <span><i nz-icon nzType="calculator" nzTheme="outline"></i><label> Корзина заявок</label></span>
+  </li>
 
   <ng-container *ngIf="!showedWidgets.length">
     <li nz-menu-divider></li>
@@ -91,7 +98,7 @@
       (click)="resetDashboard.emit()"
       *ngIf="showResetItem"
     >
-      <span><i nz-icon nzType="appstore" nzTheme="outline"></i><label> Стандартный вид </label></span>
+      <span><i nz-icon nzType="appstore" nzTheme="outline"></i><label> Стандартный вид</label></span>
     </li>
   </ng-container>
 </ul>

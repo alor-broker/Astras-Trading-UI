@@ -21,7 +21,6 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
-import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
 @Component({
@@ -85,7 +84,7 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  instrumentSelected(instrument: Instrument | null) {
+  instrumentSelected(instrument: InstrumentKey | null) {
     this.form.controls.exchange.setValue(instrument?.exchange ?? null);
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
