@@ -15,13 +15,13 @@
             nzSize="small"
             [nzFrontPagination]="false"
             [nzShowPagination]="false"
-            [nzScroll]="{ x: tableInnerWidth, y: scrollHeight - 5 + 'px' }"
+            [nzScroll]="{ x: tableInnerWidth + 'px', y: scrollHeight - 5 + 'px' }"
             [nzVirtualItemSize]="20"
             [nzFooter]="footer">
           <thead>
-            <tr>
+            <tr cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="changeColumnOrder($event)">
               <th nzWidth="5px"></th>
-              <th>
+              <th nzWidth="65px">
                 <span>
                   <a nz-popconfirm
                      nzPopconfirmTitle="Точно отменить?"
@@ -37,8 +37,15 @@
                   [nzFilters]="column.listOfFilter"
                   [nzShowFilter]="column.hasFilter"
                   (nzFilterChange)="defaultFilterChange(column.id, $event)"
+                  [nzWidth]="column.width ? column.width + 'px': null"
+                  [atsResizeColumn]
+                  [minWidth]="column.minWidth ?? 50"
+                  (atsWidthChanged)="saveColumnWidth(column.id, $event)"
+                  (atsWidthChanging)="recalculateTableWidth($event)"
+                  cdkDrag
+                  cdkDragLockAxis="x"
               >
-                <span nz-tooltip [nzTooltipTitle]="column.tooltip">{{column.name}}</span>
+                <span nz-tooltip [nzTooltipTitle]="column.tooltip" [nzTooltipPlacement]="['top', 'topLeft', 'topRight']">{{column.name}}</span>
                 <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!filter" [nzDropdownMenu]="searchMenu">
                   <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon nzType="search"></i>
                 </nz-filter-trigger>
@@ -47,12 +54,11 @@
           </thead>
           <tbody>
             <tr *ngFor="let ord of nzTable.data" (click)="selectInstrument(ord.symbol, ord.exchange)">
-              <td nzWidth='5px'>
+              <td>
                 <span
                   [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'
                   [class.cancelled-status]="ord.status.toString() === 'canceled'"
-                >
-                  &nbsp;
+                >                  &nbsp;
                 </span>
               </td>
               <td>
@@ -69,25 +75,27 @@
                   <i nz-icon nzType="close-circle" nzTheme="outline"></i>
                 </a>
               </td>
-              <td *ngIf='shouldShow("id")'>{{ ord.id }}</td>
-              <td class='bold' *ngIf='shouldShow("symbol")'>
-                <span class="symbol-name">{{ ord.symbol }}</span>
-                <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
-                  <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === ord.symbol && item.value.exchange === ord.exchange"></nz-badge>
-                </ng-container>
-              </td>
-              <td [class]='ord.side.toString() === "sell" ? "sell" : "buy"' *ngIf='shouldShow("side")'>{{ ord.side }}</td>
-              <td *ngIf='shouldShow("residue")'>{{ ord.residue }}</td>
-              <td *ngIf='shouldShow("volume")'>{{ isMarketOrder(ord) ? '' : (ord.volume | number) }}</td>
-              <td *ngIf='shouldShow("qty")'>{{ ord.qty | number}}</td>
-              <td *ngIf='shouldShow("price")'>{{ isMarketOrder(ord) ? '' :  (ord.price | number : '0.0-10' ) }}</td>
-              <td [class]='ord.status.toString() === "filled"
+              <ng-container *ngFor='let column of listOfColumns'>
+                <td *ngIf='column.id === "id"'>{{ ord.id }}</td>
+                <td class='bold' *ngIf='column.id === "symbol"'>
+                  <span class="symbol-name">{{ ord.symbol }}</span>
+                  <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
+                    <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === ord.symbol && item.value.exchange === ord.exchange"></nz-badge>
+                  </ng-container>
+                </td>
+                <td *ngIf='column.id === "side"' [class]='ord.side.toString() === "sell" ? "sell" : "buy"'>{{ ord.side }}</td>
+                <td *ngIf='column.id === "residue"'>{{ ord.residue }}</td>
+                <td *ngIf='column.id === "volume"'>{{ isMarketOrder(ord) ? '' : (ord.volume | number) }}</td>
+                <td *ngIf='column.id === "qty"'>{{ ord.qty | number}}</td>
+                <td *ngIf='column.id === "price"'>{{ isMarketOrder(ord) ? '' :  (ord.price | number : '0.0-10' ) }}</td>
+                <td *ngIf='column.id === "status"' [class]='ord.status.toString() === "filled"
                 ? (ord.status.toString() === "sell" ? "sell" : "buy") :
-                (ord.status.toString() === "canceled" ? "cancelled" : "bold" )' *ngIf='shouldShow("status")'>{{ translateStatus(ord.status) }}</td>
-              <td *ngIf='shouldShow("transTime")'>{{ formatDate(ord.transTime) }}</td>
-              <td *ngIf='shouldShow("exchange")'>{{ ord.exchange }}</td>
-              <td *ngIf='shouldShow("type")'>{{ ord.type }}</td>
-              <td *ngIf='shouldShow("endTime")'>{{ formatDate(ord.endTime) }}</td>
+                (ord.status.toString() === "canceled" ? "cancelled" : "bold" )'>{{ translateStatus(ord.status) }}</td>
+                <td *ngIf='column.id === "transTime"'>{{ formatDate(ord.transTime) }}</td>
+                <td *ngIf='column.id === "exchange"'>{{ ord.exchange }}</td>
+                <td *ngIf='column.id === "type"'>{{ ord.type }}</td>
+                <td *ngIf='column.id === "endTime"'>{{ formatDate(ord.endTime) }}</td>
+              </ng-container>
             </tr>
           </tbody>
         </nz-table>

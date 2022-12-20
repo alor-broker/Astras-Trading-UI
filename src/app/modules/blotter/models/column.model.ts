@@ -16,4 +16,7 @@ export interface Column<T, F> {
   isFilterVisible: boolean;
   hasFilter: boolean;
   tooltip?: string;
+  width?: number | null;
+  minWidth?: number | null;
+  order?: number | null;
 }

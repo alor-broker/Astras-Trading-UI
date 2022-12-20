@@ -25,6 +25,7 @@ import { TechChartSettings } from "../models/settings/tech-chart-settings.model"
 import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
 import { TimeframeValue } from '../../modules/light-chart/models/light-chart.models';
 import { OrdersBasketSettings } from '../models/settings/orders-basket-settings.model';
+import { TableSettingHelper } from '../utils/table-setting.helper';
 
 describe('WidgetFactoryService', () => {
   let service: WidgetFactoryService;
@@ -110,10 +111,10 @@ describe('WidgetFactoryService', () => {
     expect(blotterSettings.activeTabIndex).toBe(0);
     expect(blotterSettings.portfolio).toBe('test portfolio');
     expect(blotterSettings.exchange).toBe(defaultInstrument.exchange);
-    expect(blotterSettings.tradesColumns).toEqual(allTradesColumns.filter(c => c.isDefault).map(c => c.columnId));
-    expect(blotterSettings.positionsColumns).toEqual(allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId));
-    expect(blotterSettings.ordersColumns).toEqual(allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId));
-    expect(blotterSettings.stopOrdersColumns).toEqual(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId));
+    expect(blotterSettings.tradesTable).toEqual(TableSettingHelper.toTableDisplaySettings(allTradesColumns.filter(c => c.isDefault).map(c => c.columnId)));
+    expect(blotterSettings.positionsTable).toEqual(TableSettingHelper.toTableDisplaySettings(allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId)));
+    expect(blotterSettings.ordersTable).toEqual(TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId)));
+    expect(blotterSettings.stopOrdersTable).toEqual(TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId)));
     expect(blotterSettings.guid).toBe('testGuid');
   });
 

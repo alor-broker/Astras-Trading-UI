@@ -14,18 +14,25 @@
           nzSize="small"
           [nzFrontPagination]="false"
           [nzShowPagination]="false"
-          [nzScroll]="{ x: tableInnerWidth, y: scrollHeight - 5 + 'px' }"
+          [nzScroll]="{ x: tableInnerWidth + 'px', y: scrollHeight - 5 + 'px' }"
           [nzVirtualItemSize]="20"
           [nzFooter]="footer">
         <thead>
-          <tr>
+          <tr cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="changeColumnOrder($event)">
             <th *ngFor='let column of listOfColumns'
                 [nzCustomFilter]='column.hasSearch'
                 [nzSortFn]='column.sortFn'
                 [nzFilters]="column.listOfFilter"
                 [nzShowFilter]="column.hasFilter"
+                [nzWidth]="column.width ? column.width + 'px': null"
+                [atsResizeColumn]
+                [minWidth]="column.minWidth ?? 50"
+                (atsWidthChanged)="saveColumnWidth(column.id, $event)"
+                (atsWidthChanging)="recalculateTableWidth($event)"
+                cdkDrag
+                cdkDragLockAxis="x"
             >
-              <span nz-tooltip [nzTooltipTitle]="column.tooltip">{{column.name}}</span>
+              <span nz-tooltip [nzTooltipTitle]="column.tooltip" [nzTooltipPlacement]="['top', 'topLeft', 'topRight']">{{column.name}}</span>
               <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
                 <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon nzType="search"></i>
               </nz-filter-trigger>
@@ -34,21 +41,23 @@
         </thead>
         <tbody>
           <tr *ngFor="let ord of nzTable.data" (click)="selectInstrument(ord.symbol, ord.exchange)">
-            <td class='bold' *ngIf='shouldShow("symbol")'>
-              <span class="symbol-name">{{ ord.symbol }}</span>
-              <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
-                <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === ord.symbol && item.value.exchange === ord.exchange"></nz-badge>
-              </ng-container>
-            </td>
-            <td *ngIf='shouldShow("shortName")'>{{ ord.shortName }}</td>
-            <td *ngIf='shouldShow("avgPrice")'>{{ roundPrice(ord.avgPrice) | number }}</td>
-            <td *ngIf='shouldShow("qtyT0")' [class]='ord.qtyT0 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT0) | number }}</td>
-            <td *ngIf='shouldShow("qtyT1")' [class]='ord.qtyT1 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT1) | number }}</td>
-            <td *ngIf='shouldShow("qtyT2")' [class]='ord.qtyT2 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT2) | number }}</td>
-            <td *ngIf='shouldShow("qtyTFuture")' [class]='ord.qtyTFuture < 0 ? "sell" : "buy"'>{{ round(ord.qtyTFuture) | number }}</td>
-            <td *ngIf='shouldShow("volume")'>{{ ord.volume | number }}</td>
-            <td *ngIf='shouldShow("unrealisedPl")' [class]='ord.unrealisedPl < 0 ? "sell" : "buy"'>{{ round(ord.unrealisedPl) | number }}</td>
-            <td *ngIf='shouldShow("dailyUnrealisedPl")' [class]='ord.dailyUnrealisedPl < 0 ? "sell" : "buy"'>{{ round(ord.dailyUnrealisedPl) | number }}</td>
+            <ng-container *ngFor='let column of listOfColumns'>
+              <td class='bold' *ngIf='column.id === "symbol"'>
+                <span class="symbol-name">{{ ord.symbol }}</span>
+                <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
+                  <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === ord.symbol && item.value.exchange === ord.exchange"></nz-badge>
+                </ng-container>
+              </td>
+              <td *ngIf='column.id === "shortName"'>{{ ord.shortName }}</td>
+              <td *ngIf='column.id === "avgPrice"'>{{ roundPrice(ord.avgPrice) | number }}</td>
+              <td *ngIf='column.id === "qtyT0"' [class]='ord.qtyT0 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT0) | number }}</td>
+              <td *ngIf='column.id === "qtyT1"' [class]='ord.qtyT1 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT1) | number }}</td>
+              <td *ngIf='column.id === "qtyT2"' [class]='ord.qtyT2 < 0 ? "sell" : "buy"'>{{ round(ord.qtyT2) | number }}</td>
+              <td *ngIf='column.id === "qtyTFuture"'  [class]='ord.qtyTFuture < 0 ? "sell" : "buy"'>{{ round(ord.qtyTFuture) | number }}</td>
+              <td *ngIf='column.id === "volume"' >{{ ord.volume | number }}</td>
+              <td *ngIf='column.id === "unrealisedPl"' [class]='ord.unrealisedPl < 0 ? "sell" : "buy"'>{{ round(ord.unrealisedPl) | number }}</td>
+              <td *ngIf='column.id === "dailyUnrealisedPl"' [class]='ord.dailyUnrealisedPl < 0 ? "sell" : "buy"'>{{ round(ord.dailyUnrealisedPl) | number }}</td>
+            </ng-container>
           </tr>
         </tbody>
       </nz-table>

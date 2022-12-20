@@ -51,6 +51,7 @@ import { NOTIFICATIONS_PROVIDER } from '../modules/notifications/services/notifi
 import { FeedbackNotificationsProvider } from '../modules/feedback/services/feedback-notifications-provider';
 import { InstrumentSearchComponent } from './components/instrument-search/instrument-search.component';
 import { NzDividerModule } from "ng-zorro-antd/divider";
+import { ResizeColumnDirective } from './directives/resize-column.directive';
 
 
 @NgModule({
@@ -62,7 +63,8 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
     WidgetMenuComponent,
     ColorPickerInputComponent,
     ShortNumberPipe,
-    InstrumentSearchComponent
+    InstrumentSearchComponent,
+    ResizeColumnDirective
   ],
   imports: [
     CommonModule,
@@ -155,6 +157,7 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
         // directives
         NumericalDirective,
         ShortNumberPipe,
+        ResizeColumnDirective,
     ],
   providers: [
     { provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true },

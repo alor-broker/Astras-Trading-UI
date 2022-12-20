@@ -15,7 +15,6 @@ import {
   distinctUntilChanged,
   Observable,
   of,
-  shareReplay,
   Subject,
   switchMap,
   take,
@@ -35,13 +34,18 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { ExportHelper } from "../../utils/export-helper";
 import { NzTableComponent } from 'ng-zorro-antd/table';
-import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
+import {
+  isEqualPortfolioDependedSettings
+} from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
 import { Store } from "@ngrx/store";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
+import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -54,6 +58,8 @@ interface DisplayOrder extends Order {
   styleUrls: ['./orders.component.less'],
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly columnDefaultWidth = 100;
+
   @ViewChild('nzTable')
   table?: NzTableComponent<DisplayOrder>;
   @ViewChild('tableContainer')
@@ -68,7 +74,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   displayOrders$: Observable<DisplayOrder[]> = of([]);
   filter = new BehaviorSubject<OrderFilter>({});
   isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
-  tableInnerWidth: string = '1000px';
+  tableInnerWidth: number = 1000;
   allColumns: Column<DisplayOrder, OrderFilter>[] = [
     {
       id: 'id',
@@ -96,7 +102,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Биржевой идентификатор ценной бумаги'
+      tooltip: 'Биржевой идентификатор ценной бумаги',
+      minWidth: 75
     },
     {
       id: 'side',
@@ -112,7 +119,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Сторона заявки (покупка/продажа)'
+      tooltip: 'Сторона заявки (покупка/продажа)',
+      minWidth: 85
     },
     {
       id: 'residue',
@@ -125,7 +133,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Отношение невыполненных заявок к общему количеству'
+      tooltip: 'Отношение невыполненных заявок к общему количеству',
+      minWidth: 70
     },
     {
       id: 'volume',
@@ -138,7 +147,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Объем'
+      tooltip: 'Объем',
+      minWidth: 60
     },
     {
       id: 'qty',
@@ -151,7 +161,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество заявок'
+      tooltip: 'Количество заявок',
+      minWidth: 65
     },
     {
       id: 'price',
@@ -164,7 +175,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Цена заявки'
+      tooltip: 'Цена заявки',
+      minWidth: 55
     },
     {
       id: 'status',
@@ -181,7 +193,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Стаус заявки'
+      tooltip: 'Стаус заявки',
+      minWidth: 80
     },
     {
       id: 'transTime',
@@ -194,7 +207,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Время совершения заявки'
+      tooltip: 'Время совершения заявки',
+      minWidth: 60
     },
     {
       id: 'exchange',
@@ -210,7 +224,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Наименование биржи'
+      tooltip: 'Наименование биржи',
+      minWidth: 80
     },
     {
       id: 'type',
@@ -226,7 +241,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Тип заявки (лимитная/рыночная)'
+      tooltip: 'Тип заявки (лимитная/рыночная)',
+      minWidth: 65
     },
     {
       id: 'endTime',
@@ -239,7 +255,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Срок действия заявки'
+      tooltip: 'Срок действия заявки',
+      minWidth: 65
     },
   ];
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
@@ -266,22 +283,32 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
-      shareReplay()
-    );
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
 
     this.settings$.pipe(
+      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)),
       takeUntil(this.destroy$)
     ).subscribe(s => {
-      if (s.ordersColumns) {
-        this.listOfColumns = this.allColumns.filter(c => s.ordersColumns.includes(c.id));
-        this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
+      const tableSettings = s.ordersTable ?? TableSettingHelper.toTableDisplaySettings(s.ordersTable);
+
+      if (tableSettings) {
+        this.listOfColumns = this.allColumns
+          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
+          .filter(c => !!c.columnSettings)
+          .map((column, index) => ({
+            ...column.column,
+            width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
+            order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+          }))
+          .sort((a, b) => a.order - b.order);
+
+        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + cur.width! , 0) + 70;
       }
       this.badgeColor = s.badgeColor!;
     });
 
     this.orders$ = this.settings$.pipe(
+      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings=>this.service.getOrders(settings)),
       debounceTime(100),
       startWith([]),
@@ -351,7 +378,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   cancelOrder(orderId: string) {
-    this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
       this.cancelCommands?.next({
@@ -440,6 +467,50 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isMarketOrder(order: DisplayOrder): boolean {
     return order.type === 'market';
+  }
+
+  saveColumnWidth(columnId: string, width: number) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      const tableSettings = settings.ordersTable ?? TableSettingHelper.toTableDisplaySettings(settings.ordersColumns);
+      if (tableSettings) {
+        this.settingsService.updateSettings<BlotterSettings>(
+          settings.guid,
+          {
+            ordersTable: TableSettingHelper.updateColumn(
+              columnId,
+              tableSettings,
+              {
+                columnWidth: width
+              }
+            )
+          }
+        );
+      }
+    });
+  }
+
+  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
+    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
+    this.tableInnerWidth += delta;
+  }
+
+  changeColumnOrder(event: CdkDragDrop<any>) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      this.settingsService.updateSettings<BlotterSettings>(
+        settings.guid,
+        {
+          ordersTable: BlotterTablesHelper.changeColumnOrder(
+            event,
+            settings.ordersTable ?? TableSettingHelper.toTableDisplaySettings(settings.ordersColumns)!,
+            this.listOfColumns
+          )
+        }
+      );
+    });
   }
 
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {
