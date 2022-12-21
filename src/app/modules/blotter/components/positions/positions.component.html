@@ -32,8 +32,12 @@
                 cdkDrag
                 cdkDragLockAxis="x"
             >
-              <span nz-tooltip [nzTooltipTitle]="t('blotterPositions.columns.' + column.id + '.tooltip')" [nzTooltipPlacement]="['top', 'topLeft', 'topRight']">
-                {{t('blotterPositions.columns.' + column.id + '.name')}}
+              <span
+                nz-tooltip
+                [nzTooltipTitle]="t('blotterPositions.columns.' + column.id + '.tooltip', { fallback: column.tooltip })"
+                [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+              >
+                {{t('blotterPositions.columns.' + column.id + '.name', { fallback: column.name })}}
               </span>
               <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
                 <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon nzType="search"></i>

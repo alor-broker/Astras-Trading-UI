@@ -48,10 +48,10 @@
                 >
                   <span
                     nz-tooltip
-                    [nzTooltipTitle]="t('blotterOrders.columns.' + column.id + '.tooltip')"
+                    [nzTooltipTitle]="t('blotterOrders.columns.' + column.id + '.tooltip', { fallback: column.tooltip })"
                     [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
                   >
-                    {{t('blotterOrders.columns.' + column.id + '.name')}}
+                    {{t('blotterOrders.columns.' + column.id + '.name', { fallback: column.name })}}
                   </span>
                   <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!filter" [nzDropdownMenu]="searchMenu">
                     <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon nzType="search"></i>
@@ -98,7 +98,7 @@
                   <td *ngIf='column.id === "status"'[class]='ord.status.toString() === "filled"
                     ? (ord.status.toString() === "sell" ? "sell" : "buy") :
                     (ord.status.toString() === "canceled" ? "cancelled" : "bold" )' >
-                    {{ t('blotterOrders.orderStatus.' + ord.status) }}
+                    {{ t('blotterOrders.orderStatus.' + ord.status, { fallback: ord.status }) }}
                   </td>
                   <td *ngIf='column.id === "transTime"'>{{ formatDate(ord.transTime) }}</td>
                   <td *ngIf='column.id === "exchange"'>{{ ord.exchange }}</td>

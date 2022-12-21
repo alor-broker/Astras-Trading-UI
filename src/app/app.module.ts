@@ -20,6 +20,13 @@ import { EffectsModule } from '@ngrx/effects';
 import { ApplicationMetaModule } from './modules/application-meta/application-meta.module';
 import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
 import { TranslocoRootModule } from './transloco-root.module';
+import { TRANSLOCO_MISSING_HANDLER, TranslocoConfig, TranslocoMissingHandler } from "@ngneat/transloco";
+
+class CustomHandler implements TranslocoMissingHandler {
+  handle(key: string, config: TranslocoConfig, params?: any) {
+    return params?.fallback || '';
+  }
+}
 
 registerLocaleData(ru);
 
@@ -48,7 +55,11 @@ registerLocaleData(ru);
       useClass: AuthInterceptor,
       multi: true
     },
-    { provide: ErrorHandler, useClass: ErrorHandlerService }
+    { provide: ErrorHandler, useClass: ErrorHandlerService },
+    {
+      provide: TRANSLOCO_MISSING_HANDLER,
+      useClass: CustomHandler
+    }
   ]
 })
 export class AppModule {

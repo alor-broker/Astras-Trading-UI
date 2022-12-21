@@ -9,8 +9,8 @@
     <thead *transloco="let t; scope: 'instruments/select'">
       <tr>
         <th [nzSortFn]="sortFns[col.columnId]" *ngFor="let col of displayedColumns">
-          <span nz-tooltip [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.columnId + '.tooltip')">
-            {{t('instrumentsSelect.columns.' + col.columnId + '.name')}}
+          <span nz-tooltip [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.columnId + '.tooltip', { fallback: col.tooltip })">
+            {{t('instrumentsSelect.columns.' + col.columnId + '.name', { fallback: col.name })}}
           </span>
         </th>
         <th><span nz-tooltip nzTooltipTitle="Убрать из наблюдения">Удл.</span></th>

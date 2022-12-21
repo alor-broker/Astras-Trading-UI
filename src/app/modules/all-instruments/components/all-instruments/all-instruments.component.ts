@@ -191,7 +191,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
           .filter(col => settings.allInstrumentsColumns.includes(col.name))
           .map(col => ({
               ...col,
-              displayName: this.translocoService.translate('allInstrumentsAllInstruments.columns.' + col.name)
+              displayName: this.translocoService.translate('allInstrumentsAllInstruments.columns.' + col.name, { fallback: col.displayName })
             })
           ));
         this.badgeColor = settings.badgeColor!;

@@ -126,7 +126,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
           .filter(col => settings.allTradesColumns.includes(col.name))
           .map(col => ({
               ...col,
-              displayName: this.translocoService.translate('allTradesAllTrades.columns.' + col.name)
+              displayName: this.translocoService.translate('allTradesAllTrades.columns.' + col.name, { fallback: col.displayName })
             })
           );
 

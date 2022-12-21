@@ -88,7 +88,7 @@ export class WidgetHeaderComponent implements OnInit {
 
         return this.translocoService.langChanges$.pipe(
           switchMap((lang) => this.translocoService.load(lang)),
-          map(() => this.translocoService.translate('widgetHeaders.' + settings.settingsType))
+          map(() => this.translocoService.translate('widgetHeaders.' + settings.settingsType, { fallback: settings.title }))
         );
       })
     );

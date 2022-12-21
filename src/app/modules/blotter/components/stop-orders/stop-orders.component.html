@@ -46,8 +46,12 @@
                 cdkDrag
                 cdkDragLockAxis="x"
             >
-              <span nz-tooltip [nzTooltipTitle]="t('blotterStopOrders.columns.' + column.id + '.tooltip')" [nzTooltipPlacement]="['top', 'topLeft', 'topRight']">
-                {{t('blotterStopOrders.columns.' + column.id + '.name')}}
+              <span
+                nz-tooltip
+                [nzTooltipTitle]="t('blotterStopOrders.columns.' + column.id + '.tooltip', { fallback: column.tooltip })"
+                [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+              >
+                {{t('blotterStopOrders.columns.' + column.id + '.name', { fallback: column.name })}}
               </span>
               <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!filter" [nzDropdownMenu]="searchMenu">
                 <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
@@ -93,7 +97,7 @@
             <td *ngIf='column.id === "status"'[class]='ord.status.toString() === "filled"
               ? (ord.status.toString() === "sell" ? "sell" : "buy") :
               (ord.status.toString() === "canceled" ? "cancelled" : "bold" )' >
-              {{ t('blotterStopOrders.orderStatus.' + ord.status) }}
+              {{ t('blotterStopOrders.orderStatuss.' + ord.status, { fallback: ord.status }) }}
             </td>
             <td *ngIf='column.id === "conditionType"'>{{ ord.conditionType }}</td>
             <td *ngIf='column.id === "transTime"'>{{ formatDate(ord.transTime) }}</td>
