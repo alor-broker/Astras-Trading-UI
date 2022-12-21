@@ -1,0 +1,28 @@
+{
+  "settingsHeader": "Settings",
+  "helpHeader": "Help",
+
+  "saveBtnText": "Save",
+  "okBtnText": "OK",
+  "cancelBtnText": "Cancel",
+  "editBtnText": "Edit",
+  "yes": "Yes",
+  "no": "No",
+
+  "maxTagPlaceholder": "and {{count}} more selected",
+
+  "widgetHeaders": {
+    "OrderbookSettings": "Orderbook",
+    "ScalperOrderBookSettings": "Scalper orderbook",
+    "InstrumentSelectSettings": "Instrument select",
+    "LightChartSettings": "Chart",
+    "BlotterSettings": "Blotter",
+    "InfoSettings": "Info",
+    "AllTradesSettings": "All trades",
+    "NewsSettings": "News",
+    "ExchangeRateSettings": "Exchange rate",
+    "TechChartSettings": "Tech chart",
+    "AllInstrumentsSettings": "All instruments",
+    "OrderSubmitSettings": "Order submit"
+  }
+}

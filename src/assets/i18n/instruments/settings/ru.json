@@ -1,0 +1,11 @@
+{
+  "instrumentsListsTab": "Списки инструментов",
+  "selectColumnsError": "Выберите колонки",
+  "selectColumnsLabel": "Колонки инструментов",
+  "selectColumnsPlaceholder": "Выберите...",
+  "watchListError": "Введите название списка не более 100 символов",
+  "watchListPlaceholder": "Название нового списка",
+  "addWatchlistBtnTooltip": "Добавить новый список",
+  "standardListPlaceholder": "Выберите стандартный список",
+  "removeConfirmText": "Точно удалить?"
+}

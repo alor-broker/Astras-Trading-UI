@@ -1,0 +1,45 @@
+{
+  "searchPlaceHolder": "Поиск...",
+  "columns": {
+    "symbol": {
+      "name": "Тикер",
+      "tooltip": "Биржевой идентификатор ценной бумаги"
+    },
+    "shortName": {
+      "name": "Назв.",
+      "tooltip": "Название тикера"
+    },
+    "price": {
+      "name": "Цена",
+      "tooltip": "Цена последней сделки"
+    },
+    "dayChange": {
+      "name": "Д.изм.",
+      "tooltip": "Изменение за день"
+    },
+    "dayChangePerPrice": {
+      "name": "Д.изм.,%",
+      "tooltip": "Изменение за день в %"
+    },
+    "maxPrice": {
+      "name": "Д.макс.",
+      "tooltip": "Максимальная цена за день"
+    },
+    "minPrice": {
+      "name": "Д.мин.",
+      "tooltip": "Минимальная цена за день"
+    },
+    "volume": {
+      "name": "Объём",
+      "tooltip": "Объём"
+    },
+    "openPrice": {
+      "name": "Откр.",
+      "tooltip": "Цена на начало дня"
+    },
+    "closePrice": {
+      "name": "Закр.",
+      "tooltip": "Цена на конец предыдущего дня"
+    }
+  }
+}

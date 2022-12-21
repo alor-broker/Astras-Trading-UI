@@ -51,6 +51,7 @@ import { NOTIFICATIONS_PROVIDER } from '../modules/notifications/services/notifi
 import { FeedbackNotificationsProvider } from '../modules/feedback/services/feedback-notifications-provider';
 import { InstrumentSearchComponent } from './components/instrument-search/instrument-search.component';
 import { NzDividerModule } from "ng-zorro-antd/divider";
+import { TranslocoModule } from "@ngneat/transloco";
 
 
 @NgModule({
@@ -70,6 +71,7 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
     ReactiveFormsModule,
     GridsterModule,
     NgChartsModule,
+    TranslocoModule,
     // Ng zorro
     NzTableModule,
     NzButtonModule,
@@ -108,7 +110,8 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
     NzDividerModule,
   ],
     exports: [
-        // Ng zorro
+        TranslocoModule,
+      // Ng zorro
         NzTableModule,
         NzButtonModule,
         NzIconModule,

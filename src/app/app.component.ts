@@ -22,6 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'astras';
 
   private themeChangeSubscription?: Subscription;
+  private langChangeSubscription?: Subscription;
 
   constructor(
     private readonly store: Store,
@@ -39,11 +40,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.sessionTrackService.startTracking();
 
     this.themeChangeSubscription = this.themeService.subscribeToThemeChanges();
+    this.langChangeSubscription = this.terminalSettings.subscribeToLangChanges();
   }
 
   ngOnDestroy(): void {
     this.sessionTrackService.stopTracking();
 
     this.themeChangeSubscription?.unsubscribe();
+    this.langChangeSubscription?.unsubscribe();
   }
 }

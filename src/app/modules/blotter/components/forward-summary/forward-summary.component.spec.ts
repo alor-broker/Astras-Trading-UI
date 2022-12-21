@@ -9,6 +9,7 @@ import { BlotterService } from "../../services/blotter.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { EventEmitter } from "@angular/core";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { getTranslocoModule } from "../../../../shared/utils/testing";
 
 describe('ForwardSummaryComponent', () => {
   let component: ForwardSummaryComponent;
@@ -28,6 +29,9 @@ describe('ForwardSummaryComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ForwardSummaryComponent],
+      imports: [
+        getTranslocoModule()
+      ],
       providers: [
         { provide: BlotterService, useValue: spyBlotter },
         {

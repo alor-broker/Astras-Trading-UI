@@ -1,0 +1,28 @@
+{
+  "settingsHeader": "Настройки",
+  "helpHeader": "Справка",
+
+  "saveBtnText": "Сохранить",
+  "okBtnText": "ОК",
+  "cancelBtnText": "Отмена",
+  "editBtnText": "Изменить",
+  "yes": "Да",
+  "no": "Нет",
+
+  "maxTagPlaceholder": "и ещё {{count}} выбранных",
+
+  "widgetHeaders": {
+    "OrderbookSettings": "Стакан",
+    "ScalperOrderBookSettings": "Скальперский стакан",
+    "InstrumentSelectSettings": "Выбор инструмента",
+    "LightChartSettings": "График",
+    "BlotterSettings": "Блоттер",
+    "InfoSettings": "Инфо",
+    "AllTradesSettings": "Все сделки",
+    "NewsSettings": "Новости",
+    "ExchangeRateSettings": "Курсы валют",
+    "TechChartSettings": "Тех. анализ",
+    "AllInstrumentsSettings": "Все инстурменты",
+    "OrderSubmitSettings": "Выставить заявку"
+  }
+}

@@ -1,44 +1,62 @@
 <ng-container *ngIf="issue$ | async as issue; else empty">
-  <ng-container *ngIf="(isLoading$ | async) === false">
-    <nz-descriptions [nzColumn]="columns" [nzSize]="columns === 1 ? 'small' : 'default'" nzBordered>
-      <nz-descriptions-item nzTitle="Номинал">{{issue.facevalue | currency: issue.nearestCoupon.currency:'symbol-narrow'| slice: 0:-3 }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Тек. номинал">{{issue.currentFaceValue | currency: issue.nearestCoupon.currency:'symbol-narrow'}}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Объем выпуска">{{issue.issueVol | number }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Стоимость выпуска">{{issue.issueVal | currency: issue.nearestCoupon.currency:'symbol-narrow' | slice: 0:-3}}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Дата рег. выпуска">{{issue.issueDate | date }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Дата погашения">{{issue.maturityDate | date}}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Рыночный объем">{{issue.marketVol | number }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Рыночная ном. стоимость">{{issue.marketVal | currency: issue.nearestCoupon.currency:'symbol-narrow'| slice: 0:-3}}</nz-descriptions-item>
+  <ng-container *transloco="let t; scope: 'info/issue'">
+    <ng-container *ngIf="(isLoading$ | async) === false">
+      <nz-descriptions [nzColumn]="columns" [nzSize]="columns === 1 ? 'small' : 'default'" nzBordered>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.faceValue')">{{issue.facevalue | currency: issue.nearestCoupon.currency:'symbol-narrow'| slice: 0:-3 }}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.currentFaceValue')">{{issue.currentFaceValue | currency: issue.nearestCoupon.currency:'symbol-narrow'}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('infoIssue.issueVol')">{{issue.issueVol | number }}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.issueVal')">{{issue.issueVal | currency: issue.nearestCoupon.currency:'symbol-narrow' | slice: 0:-3}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('infoIssue.issueDate')">{{issue.issueDate | date }}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.maturityDate')">{{issue.maturityDate | date}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('infoIssue.marketVol')">{{issue.marketVol | number }}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.marketVal')">{{issue.marketVal | currency: issue.nearestCoupon.currency:'symbol-narrow'| slice: 0:-3}}</nz-descriptions-item>
 
-      <nz-descriptions-item nzTitle="Текущая дох.">{{issue.currentYield | percent:'1.0-2' }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="YTM">{{issue.yieldToMaturity | percent:'1.0-2'}}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.currentYield')">{{issue.currentYield | percent:'1.0-2' }}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.yieldToMaturity')">{{issue.yieldToMaturity | percent:'1.0-2'}}</nz-descriptions-item>
 
-      <nz-descriptions-item [nzTitle]="nearestAmortization" nzSpan="2"></nz-descriptions-item>
-      <nz-descriptions-item nzTitle="% от номинала">{{issue.nearestAmortization.parFraction  | percent:'1.0-2'}}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Сумма">{{issue.nearestAmortization.amount  | currency: issue.nearestAmortization.currency:'symbol-narrow'}}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Дата">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="nearestAmortization" nzSpan="2"></nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.nearestAmortizationParFraction')">{{issue.nearestAmortization.parFraction  | percent:'1.0-2'}}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.nearestAmortizationAmount')">{{issue.nearestAmortization.amount  | currency: issue.nearestAmortization.currency:'symbol-narrow'}}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.date')">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
 
-      <nz-descriptions-item [nzTitle]="nearestCall" nzSpan="2"></nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Дох. к оферте">{{0.05 | percent:'1.0-2'}}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Дата">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="nearestCall" nzSpan="2"></nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('infoIssue.yieldToOffer')">{{0.05 | percent:'1.0-2'}}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.date')">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
 
-      <nz-descriptions-item [nzTitle]="nearestPut" nzSpan="2"></nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Дох. к оферте">{{0.07 | percent:'1.0-2'}}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Дата">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="nearestPut" nzSpan="2"></nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('infoIssue.yieldToOffer')">{{0.07 | percent:'1.0-2'}}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.date')">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
 
-      <nz-descriptions-item [nzTitle]="nearestCoupon" nzSpan="2"></nz-descriptions-item>
-      <nz-descriptions-item nzTitle="НКД">{{issue.nearestCoupon.accruedInterest  | number}}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Период, дней">{{issue.nearestCoupon.intervalInDays  | number}}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Тип">{{issue.nearestCoupon.couponType }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Сумма">{{issue.nearestCoupon.amount  | currency: issue.nearestAmortization.currency:'symbol-narrow'}}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Дата">{{issue.nearestCoupon.date | date}}</nz-descriptions-item>
-    </nz-descriptions>
+        <nz-descriptions-item [nzTitle]="nearestCoupon" nzSpan="2"></nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.accruedInterest')">{{issue.nearestCoupon.accruedInterest  | number}}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.intervalInDays')">{{issue.nearestCoupon.intervalInDays  | number}}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.couponType')">{{issue.nearestCoupon.couponType }}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzTitle]="t('infoIssue.couponAmount')">{{issue.nearestCoupon.amount  | currency: issue.nearestAmortization.currency:'symbol-narrow'}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('infoIssue.date')">{{issue.nearestCoupon.date | date}}</nz-descriptions-item>
+      </nz-descriptions>
+    </ng-container>
+
+    <ng-template #nearestAmortization let-data><strong>{{t('infoIssue.nearestAmortization')}}</strong></ng-template>
+    <ng-template #nearestCoupon let-data><strong>{{t('infoIssue.nearestCoupon')}}</strong></ng-template>
+    <ng-template #nearestCall let-data><strong>{{t('infoIssue.nearestCall')}}</strong></ng-template>
+    <ng-template #nearestPut let-data><strong>{{t('infoIssue.nearestPut')}}</strong></ng-template>
   </ng-container>
-
-  <ng-template #nearestAmortization let-data><strong>Ближайшая Амортизация</strong></ng-template>
-  <ng-template #nearestCoupon let-data><strong>Ближайший купон</strong></ng-template>
-  <ng-template #nearestCall let-data><strong>Ближайший Call</strong></ng-template>
-  <ng-template #nearestPut let-data><strong>Ближайший Put</strong></ng-template>
 </ng-container>
 
 <ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>

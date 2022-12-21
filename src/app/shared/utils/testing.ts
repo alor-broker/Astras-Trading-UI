@@ -11,6 +11,8 @@ import { SharedModule } from '../shared.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { HttpClientModule } from '@angular/common/http';
+import { TranslocoTestingModule, TranslocoTestingOptions } from "@ngneat/transloco";
+import ru from '../../../assets/i18n/ru.json';
 
 /**
  * Create async observable that emits-once and completes  after a JS engine turn
@@ -97,7 +99,7 @@ export const ngZorroMockComponents = [
     selector: 'nz-tabset',
     inputs: ['nzSelectedIndex', 'nzAnimated']
   }),
-  mockComponent({ selector: 'nz-tab' }),
+  mockComponent({ selector: 'nz-tab', inputs: ['nzTitle'] }),
   mockComponent({ selector: 'nz-layout' }),
   mockComponent({ selector: 'nz-empty' }),
   mockComponent({ selector: 'nz-content' }),
@@ -209,4 +211,22 @@ export function getRandomInt(min: number, max: number) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+}
+
+/**
+ * Getting a transloco testing module
+ * @param options transoloco options
+ * @returns the value is no lower than min (or the next integer greater than min if min isn't an integer), and is less than (but not equal to) max
+ */
+export function getTranslocoModule(options: TranslocoTestingOptions = {}) {
+  const { langs } = options;
+
+  return TranslocoTestingModule.forRoot({
+    langs: { ru, ...langs },
+    translocoConfig: {
+      availableLangs: ['ru'],
+      defaultLang: 'ru',
+    },
+    preloadLangs: true,
+  });
 }

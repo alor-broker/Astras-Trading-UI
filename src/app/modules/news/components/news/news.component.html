@@ -3,7 +3,7 @@
   [tableContainerWidth]="tableContainerWidth"
   [data]="newsList"
   [isLoading]="isLoading"
-  [columns]="columns"
+  [columns]="(columns$ | async) || []"
   (scrolled)="scrolled()"
   (rowClick)="openNewsModal($event)"
 ></ats-infinite-scroll-table>

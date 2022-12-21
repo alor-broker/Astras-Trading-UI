@@ -19,6 +19,7 @@ import { ErrorHandlerService } from "./shared/services/handle-error/error-handle
 import { EffectsModule } from '@ngrx/effects';
 import { ApplicationMetaModule } from './modules/application-meta/application-meta.module';
 import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
+import { TranslocoRootModule } from './transloco-root.module';
 
 registerLocaleData(ru);
 
@@ -36,7 +37,8 @@ registerLocaleData(ru);
     StoreModule.forRoot({}),
     EffectsModule.forRoot(),
     ...extModules,
-    ApplicationMetaModule
+    ApplicationMetaModule,
+    TranslocoRootModule
   ],
   bootstrap: [AppComponent],
   providers: [

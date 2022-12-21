@@ -1,0 +1,11 @@
+{
+  "portfolioLiquidationTitle": "Portfolio liquidation",
+  "portfolioEvaluationTitle": "Portfolio evaluation",
+  "profitTitle": "Daily profit",
+  "profitRateTitle": "Daily profit rate, %",
+  "buyingPowerAtMorningTitle": "Buying power at morning",
+  "initialMarginTitle": "Initial margin",
+  "riskBeforeForcePositionClosingTitle": "RCR2 (before closing)",
+  "commissionTitle": "Commission",
+  "buyingPowerTitle": "Buying power"
+}

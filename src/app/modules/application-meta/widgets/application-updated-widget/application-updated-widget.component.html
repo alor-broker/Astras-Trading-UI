@@ -1,5 +1,6 @@
 <ng-container *ngIf="currentVersion$ | async as currentVersion">
   <nz-modal
+    *transloco="let tAppMeta; scope: 'application-meta/application-updated-widget'"
     (nzOnCancel)="handleClose()"
     (nzOnOk)="handleClose()"
     [nzTitle]="header"
@@ -9,37 +10,41 @@
     </ng-template>
     <ng-container *nzModalContent>
       <p>
-      <span>Подробнее перечень изменений/исправлений в текущей версии можно посмотреть по <ats-external-link [href]="getLinkToRelease(currentVersion)">ссылке</ats-external-link>.</span>
+      <span>
+        {{tAppMeta('applicationMetaApplicationUpdatedWidget.detailsText')}}
+        <ats-external-link [href]="getLinkToRelease(currentVersion)">{{tAppMeta('applicationMetaApplicationUpdatedWidget.detailsLink')}}</ats-external-link>.</span>
       </p>
       <p>
       <span [nzType]="'warning'" nz-typography>
-        Мы стараемся развивать наше приложение чтобы удовлетворять потребности пользователей. Однако некторые изменения могут быть несовместимыми
-        с сохраненными персональнымим настройками.
+        {{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsWarning')}}
       </span>
         <br/>
         <span [nzType]="'warning'" nz-typography>
-        Если Вы столкнулись с какой-либо проблемой при загрузке или отображении приложения, пожалуйста, попробуйте выполнить следующие шаги:
+        {{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStepsTitle')}}
       </span>
       </p>
       <div>
-        <span>1. Попробуйте привести дашборд к стандартному виду, кликнув кнопку "Стандартный вид" в меню виджетов </span>
+        <span>{{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStep1')}}</span>
       </div>
       <div>
-        <span>2. Если шаг 1 не решил проблему, попробуйте сделать полный сброс, кликнув кнопку "Полный сброс" в меню профиля.</span>
+        <span>{{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStep2')}}</span>
       </div>
       <div>
-        <span>3. Если шаг 2 не решил проблему, попробуйте удалить данные сайта.</span>
+        <span>{{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStep3')}}</span>
         <br/>
-        <span [nzType]="'secondary'" nz-typography> В браузере Google Chrome это можно сделать при помощи следующей последовательности действий:
-        нажать F12,
-        перейти на вкладку "Приложение",
-        слева выбрать Приложение->Хранилище,
-        нажать кнопку "Удалить данные сайта".
-      </span>
+        <span [nzType]="'secondary'" nz-typography>
+          {{tAppMeta('applicationMetaApplicationUpdatedWidget.clearSiteDataText')}}
+        </span>
       </div>
     </ng-container>
     <ng-container *nzModalFooter>
-      <button (click)="handleConfirmedClose()" nz-button nzType="primary">ОК</button>
+      <button
+        (click)="handleConfirmedClose()"
+        nz-button
+        nzType="primary"
+      >
+        {{tAppMeta('okBtnText')}}
+      </button>
     </ng-container>
   </nz-modal>
 </ng-container>

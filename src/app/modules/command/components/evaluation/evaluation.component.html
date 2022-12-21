@@ -1,11 +1,13 @@
 <ng-container *ngIf="evaluation$ | async as evaluation">
+  <ng-container *transloco="let t; scope: 'command'">
       <nz-descriptions nzSize="small" nzBordered *ngIf="!!evaluation">
         <nz-descriptions-item [nzSpan]="2"
-                              nzTitle="Стоимость">{{evaluation.orderEvaluation  | currency: evaluation.currency:'symbol-narrow'}}</nz-descriptions-item>
+                              [nzTitle]="t('command.evaluationCost')">{{evaluation.orderEvaluation  | currency: evaluation.currency:'symbol-narrow'}}</nz-descriptions-item>
         <nz-descriptions-item [nzSpan]="2"
-                              nzTitle="Комиссия">{{evaluation.commission | currency: evaluation.currency:'symbol-narrow'}}</nz-descriptions-item>
-        <nz-descriptions-item [nzSpan]="2" nzTitle="К покупке">{{evaluation.quantityToBuy}}</nz-descriptions-item>
-        <nz-descriptions-item [nzSpan]="2" nzTitle="К продаже">{{evaluation.quantityToSell}}</nz-descriptions-item>
+                              [nzTitle]="t('command.evaluationCommission')">{{evaluation.commission | currency: evaluation.currency:'symbol-narrow'}}</nz-descriptions-item>
+        <nz-descriptions-item [nzSpan]="2" [nzTitle]="t('command.quantityToBuy')">{{evaluation.quantityToBuy}}</nz-descriptions-item>
+        <nz-descriptions-item [nzSpan]="2" [nzTitle]="t('command.quantityToSell')">{{evaluation.quantityToSell}}</nz-descriptions-item>
       </nz-descriptions>
+  </ng-container>
 </ng-container>
 

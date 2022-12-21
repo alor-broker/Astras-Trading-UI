@@ -28,6 +28,7 @@ import { mapWith } from '../../../../shared/utils/observable-helper';
 import { filter, map } from 'rxjs/operators';
 import { InstrumentBadges } from '../../../../shared/models/instruments/instrument.model';
 import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import { TranslocoService } from "@ngneat/transloco";
 
 @Component({
   selector: 'ats-all-instruments',
@@ -137,7 +138,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     { name: 'priceScale', displayName: 'Шаг цены', width: '90px', sortFn: this.getSortFn('priceScale') },
     { name: 'yield', displayName: 'Доходность', width: '100px', sortFn: this.getSortFn('yield') },
   ];
-  public displayedColumns: ColumnsSettings[] = [];
+  public displayedColumns$: BehaviorSubject<ColumnsSettings[]> = new BehaviorSubject<ColumnsSettings[]>([]);
   public contextMenu: ContextMenu[] = [];
   public instrumentsDisplay$!: Observable<AllInstruments[]>;
   private instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
@@ -152,11 +153,16 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     private readonly service: AllInstrumentsService,
     private readonly store: Store,
     private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly translocoService: TranslocoService
   ) {
   }
 
   ngOnInit(): void {
+    const translateLoaded$ = this.translocoService.langChanges$.pipe(
+      switchMap((lang) => this.translocoService.load('all-instruments/all-instruments/' + lang))
+    );
+
     this.initInstruments();
     this.initContextMenu();
 
@@ -173,9 +179,21 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     );
 
     this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        mapWith(
+          () => translateLoaded$,
+          (settings) => settings
+        ),
+        takeUntil(this.destroy$),
+      )
       .subscribe(settings => {
-        this.displayedColumns = this.allColumns.filter(col => settings.allInstrumentsColumns.includes(col.name));
+        this.displayedColumns$.next(this.allColumns
+          .filter(col => settings.allInstrumentsColumns.includes(col.name))
+          .map(col => ({
+              ...col,
+              displayName: this.translocoService.translate('allInstrumentsAllInstruments.columns.' + col.name)
+            })
+          ));
         this.badgeColor = settings.badgeColor!;
       });
 

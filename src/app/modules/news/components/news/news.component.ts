@@ -3,9 +3,10 @@ import { NewsService } from "../../services/news.service";
 import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { NewsListItem } from "../../models/news.model";
-import { map, Subject, takeUntil } from "rxjs";
+import { map, Observable, of, Subject, switchMap, takeUntil } from "rxjs";
 import { DatePipe } from "@angular/common";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Component({
   selector: 'ats-news',
@@ -27,17 +28,12 @@ export class NewsComponent implements OnInit, OnDestroy {
   public newsList: Array<NewsListItem> = [];
   public isLoading = false;
 
-  public columns: ColumnsSettings[] = [
-    {
-      name: 'header',
-      displayName: 'Новость',
-      transformFn: (data: NewsListItem) => `${this.datePipe.transform(data.publishDate, '[HH:mm]')} ${data.header}`
-    },
-  ];
+  public columns$: Observable<ColumnsSettings[]> = of([]);
 
   constructor(
     private newsService: NewsService,
     private modalService: ModalService,
+    private readonly translocoService: TranslocoService,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
@@ -50,6 +46,19 @@ export class NewsComponent implements OnInit, OnDestroy {
       this.tableContainerWidth = data.width ?? 0;
       this.cdr.markForCheck();
     });
+
+    this.columns$ = this.translocoService.langChanges$.pipe(
+      switchMap((lang) => this.translocoService.load('news/' + lang)),
+      map(() => ([
+          {
+            name: 'header',
+            displayName: this.translocoService.translate('news.newsColumn'),
+            transformFn: (data: NewsListItem) => `${this.datePipe.transform(data.publishDate, '[HH:mm]')} ${data.header}`
+          }
+        ])
+      )
+    );
+
 
     this.newsService.getNewNews()
       .pipe(

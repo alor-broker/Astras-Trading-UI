@@ -1,0 +1,39 @@
+{
+  "columns": {
+    "id": {
+      "name": "Id",
+      "tooltip": "Trade identification number"
+    },
+    "orderno": {
+      "name": "Trade",
+      "tooltip": "Trade number"
+    },
+    "symbol": {
+      "name": "Ticker",
+      "tooltip": "Exchange identifier of the security"
+    },
+    "side": {
+      "name": "Side",
+      "tooltip": "Trade side (buy/sell)"
+    },
+    "qty": {
+      "name": "Quantity",
+      "tooltip": "Trades quantity"
+    },
+    "price": {
+      "name": "Price",
+      "tooltip": "Trade price"
+    },
+    "date": {
+      "name": "Time",
+      "tooltip": "Trade time"
+    },
+    "volume": {
+      "name": "Value",
+      "tooltip": "Trade value"
+    }
+  },
+  "emptyTrades": "There's no trades today",
+  "emptyTradesWithFilters": "Nothing found with these filters",
+  "exportToFile": "Export to file"
+}

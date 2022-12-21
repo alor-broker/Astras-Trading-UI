@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WorkingVolumesComponent } from './working-volumes.component';
-import { ngZorroMockComponents } from '../../../../shared/utils/testing';
+import { getTranslocoModule, ngZorroMockComponents } from '../../../../shared/utils/testing';
 
 describe('WorkingVolumesComponent', () => {
   let component: WorkingVolumesComponent;
@@ -12,6 +12,9 @@ describe('WorkingVolumesComponent', () => {
       declarations: [
         ...ngZorroMockComponents,
         WorkingVolumesComponent
+      ],
+      imports: [
+        getTranslocoModule()
       ]
     })
     .compileComponents();

@@ -1,0 +1,47 @@
+{
+  "columns": {
+    "symbol": {
+      "name": "Ticker",
+      "tooltip": "Exchange identifier of the security"
+    },
+    "shortName": {
+      "name": "Name",
+      "tooltip": "Position name"
+    },
+    "avgPrice": {
+      "name": "Average",
+      "tooltip": "Average price"
+    },
+    "qtyT0": {
+      "name": "Quantity Т0",
+      "tooltip": "Positions quantity, taking into account today"
+    },
+    "qtyT1": {
+      "name": "Quantity Т1",
+      "tooltip": "Positions quantity, taking into account tomorrow"
+    },
+    "qtyT2": {
+      "name": "Quantity Т2",
+      "tooltip": "Positions quantity, taking into account day after tomorrow"
+    },
+    "qtyTFuture": {
+      "name": "Quantity ТFuture",
+      "tooltip": "Positions quantity, taking into account all orders"
+    },
+    "volume": {
+      "name": "Value",
+      "tooltip": "Value"
+    },
+    "unrealisedPl": {
+      "name": "P/L total",
+      "tooltip": "Profit to Loss ratio"
+    },
+    "dailyUnrealisedPl": {
+      "name": "P/L daily",
+      "tooltip": "Profit to Loss ratio for today"
+    }
+  },
+  "emptyPositions": "There's no positions",
+  "emptyPositionsWithFilters": "Nothing found with these filters",
+  "exportToFile": "Export to file"
+}

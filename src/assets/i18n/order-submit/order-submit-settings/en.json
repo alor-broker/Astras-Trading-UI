@@ -1,0 +1,17 @@
+{
+  "tickerLabel": "Ticker",
+  "tickerError": "Select ticker",
+  "exchangeLabel": "Exchange",
+  "limitOrdersFastEditingLabel": "Display buttons for quick editing of limit orders",
+  "denominationSettings": "Denomination settings",
+  "denominationSettingsHint": "The values below define a set of buttons for quickly changing the price in limit orders. Each denomination is a multiplier for the standard price step of the selected instrument. I.e. at par value 2 and price step 0.1, the price of a limit order will be changed to",
+  "denominationLabel": "Denomination",
+  "intervalError": "Value should be from {{min}} to {{max}}",
+  "showVolumePanel": "Show volume panel",
+  "volumeSettings": "Volume settings",
+  "volumeSettingsHint": "The values below define a set of buttons for quickly changing the volume (number of lots) in a limit order.",
+  "volumeLabel": "Volume",
+  "advancedHeader": "Advanced",
+  "instrumentGroupLabel": "Trading mode",
+  "instrumentGroupError": "Input trading mode"
+}

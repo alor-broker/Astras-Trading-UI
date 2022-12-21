@@ -1,0 +1,62 @@
+{
+  "columns": {
+    "id": {
+      "name": "Id",
+      "tooltip": "Order identification number"
+    },
+    "symbol": {
+      "name": "Ticker",
+      "tooltip": "Exchange identifier of the security"
+    },
+    "side": {
+      "name": "Side",
+      "tooltip": "Order side (buy/sell)"
+    },
+    "residue": {
+      "name": "Residue",
+      "tooltip": "The ratio of outstanding orders to the total"
+    },
+    "volume": {
+      "name": "Volume",
+      "tooltip": "Volume"
+    },
+    "qty": {
+      "name": "Quantity",
+      "tooltip": "Orders quantity"
+    },
+    "price": {
+      "name": "Price",
+      "tooltip": "Order price"
+    },
+    "status": {
+      "name": "Status",
+      "tooltip": "Order status"
+    },
+    "transTime": {
+      "name": "Time",
+      "tooltip": "Order time"
+    },
+    "exchange": {
+      "name": "Exchange",
+      "tooltip": "Exchange name"
+    },
+    "type": {
+      "name": "Type",
+      "tooltip": "Order type (limit/market)"
+    },
+    "endTime": {
+      "name": "End time",
+      "tooltip": "Order validity period"
+    }
+  },
+  "orderStatus": {
+    "filled": "Done",
+    "canceled": "Canceled",
+    "working":  "Active"
+  },
+  "emptyOrders": "There's no orders today",
+  "emptyOrdersWithFilters": "Nothing found with these filters",
+  "cancelConfirm": "Are you sure?",
+  "cancelAll": "Cancel all",
+  "exportToFile": "Export to file"
+}

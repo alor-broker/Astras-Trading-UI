@@ -204,6 +204,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
           Validators.min(this.validationSettings.userIdleDurationMin.min),
           Validators.max(this.validationSettings.userIdleDurationMin.max)
         ]),
+      language: new UntypedFormControl(currentSettings.language || ''),
       badgesBind: new UntypedFormControl(currentSettings.badgesBind),
       hotKeysSettings: new UntypedFormGroup({
         cancelOrdersKey: new UntypedFormControl(currentSettings.hotKeysSettings?.cancelOrdersKey),

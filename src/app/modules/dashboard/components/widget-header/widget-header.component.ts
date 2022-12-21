@@ -32,6 +32,7 @@ import { TerminalSettings } from "../../../../shared/models/terminal-settings/te
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { TranslocoService } from "@ngneat/transloco";
 
 
 @Component({
@@ -65,7 +66,8 @@ export class WidgetHeaderComponent implements OnInit {
     private readonly dashboardService: DashboardService,
     private readonly modal: ModalService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly instrumentService: InstrumentsService
+    private readonly instrumentService: InstrumentsService,
+    private readonly translocoService: TranslocoService
   ) {
   }
 
@@ -84,7 +86,10 @@ export class WidgetHeaderComponent implements OnInit {
           return this.getInstrumentDependentTitle(settings);
         }
 
-        return of(settings.title ?? null);
+        return this.translocoService.langChanges$.pipe(
+          switchMap((lang) => this.translocoService.load(lang)),
+          map(() => this.translocoService.translate('widgetHeaders.' + settings.settingsType))
+        );
       })
     );
   }
