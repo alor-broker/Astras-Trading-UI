@@ -51,6 +51,7 @@ import { NOTIFICATIONS_PROVIDER } from '../modules/notifications/services/notifi
 import { FeedbackNotificationsProvider } from '../modules/feedback/services/feedback-notifications-provider';
 import { InstrumentSearchComponent } from './components/instrument-search/instrument-search.component';
 import { NzDividerModule } from "ng-zorro-antd/divider";
+import { ResizeColumnDirective } from './directives/resize-column.directive';
 import { TranslocoModule } from "@ngneat/transloco";
 
 
@@ -63,7 +64,8 @@ import { TranslocoModule } from "@ngneat/transloco";
     WidgetMenuComponent,
     ColorPickerInputComponent,
     ShortNumberPipe,
-    InstrumentSearchComponent
+    InstrumentSearchComponent,
+    ResizeColumnDirective
   ],
   imports: [
     CommonModule,
@@ -110,7 +112,6 @@ import { TranslocoModule } from "@ngneat/transloco";
     NzDividerModule,
   ],
     exports: [
-        TranslocoModule,
       // Ng zorro
         NzTableModule,
         NzButtonModule,
@@ -148,7 +149,8 @@ import { TranslocoModule } from "@ngneat/transloco";
         ReactiveFormsModule,
         GridsterModule,
         NgChartsModule,
-        // components
+        TranslocoModule,
+      // components
         PriceTickComponent,
         LoadingIndicatorComponent,
         InfiniteScrollTableComponent,
@@ -158,6 +160,7 @@ import { TranslocoModule } from "@ngneat/transloco";
         // directives
         NumericalDirective,
         ShortNumberPipe,
+        ResizeColumnDirective,
     ],
   providers: [
     { provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true },

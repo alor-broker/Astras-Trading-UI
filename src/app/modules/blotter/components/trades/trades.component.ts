@@ -15,7 +15,6 @@ import {
   distinctUntilChanged,
   Observable,
   of,
-  shareReplay,
   Subject,
   switchMap,
   take,
@@ -37,8 +36,13 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
-import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
+import {
+  isEqualPortfolioDependedSettings
+} from "../../../../shared/utils/settings-helper";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
+import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -50,6 +54,8 @@ interface DisplayTrade extends Trade {
   styleUrls: ['./trades.component.less']
 })
 export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly columnDefaultWidth = 100;
+
   @ViewChild('nzTable')
   table?: NzTableComponent<DisplayTrade>;
   @ViewChild('tableContainer')
@@ -61,7 +67,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  tableInnerWidth = '1000px';
+  tableInnerWidth: number = 1000;
   displayTrades$: Observable<DisplayTrade[]> = of([]);
   filter = new BehaviorSubject<TradeFilter>({});
   isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
@@ -92,7 +98,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Номер заявки'
+      tooltip: 'Номер заявки',
+      minWidth: 80
     },
     {
       id: 'symbol',
@@ -106,7 +113,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Биржевой идентификатор ценной бумаги'
+      tooltip: 'Биржевой идентификатор ценной бумаги',
+      minWidth: 75
     },
     {
       id: 'side',
@@ -122,7 +130,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Сторона сделки (покупка/продажа)'
+      tooltip: 'Сторона сделки (покупка/продажа)',
+      minWidth: 75
     },
     {
       id: 'qty',
@@ -135,7 +144,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество сделок'
+      tooltip: 'Количество сделок',
+      minWidth: 65
     },
     {
       id: 'price',
@@ -161,7 +171,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Время совершения сделки'
+      tooltip: 'Время совершения сделки',
+      minWidth: 60
     },
     {
       id: 'volume',
@@ -174,7 +185,8 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Объём'
+      tooltip: 'Объём',
+      minWidth: 60
     },
   ];
   listOfColumns: Column<DisplayTrade, TradeFilter>[] = [];
@@ -195,21 +207,31 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
-      shareReplay()
-    );
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
 
     this.settings$.pipe(
+      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)),
       takeUntil(this.destroy$)
     ).subscribe(s => {
-      if (s.ordersColumns) {
-        this.listOfColumns = this.allColumns.filter(c => s.tradesColumns.includes(c.id));
-        this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
+      const tableSettings = s.tradesTable ?? TableSettingHelper.toTableDisplaySettings(s.tradesColumns);
+
+      if (tableSettings) {
+        this.listOfColumns = this.allColumns
+          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
+          .filter(c => !!c.columnSettings)
+          .map((column, index) => ({
+            ...column.column,
+            width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
+            order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+          }))
+          .sort((a, b) => a.order - b.order);
+
+        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + cur.width! , 0);
       }
     });
 
     const trades$ = this.settings$.pipe(
+      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getTrades(settings)),
       debounceTime(100),
       startWith([])
@@ -284,6 +306,50 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
         [...this.table?.data ?? []],
         this.listOfColumns,
         valueTranslators
+      );
+    });
+  }
+
+  saveColumnWidth(columnId: string, width: number) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      const tableSettings = settings.tradesTable ?? TableSettingHelper.toTableDisplaySettings(settings.tradesColumns);
+      if (tableSettings) {
+        this.settingsService.updateSettings<BlotterSettings>(
+          settings.guid,
+          {
+            tradesTable: TableSettingHelper.updateColumn(
+              columnId,
+              tableSettings,
+              {
+                columnWidth: width
+              }
+            )
+          }
+        );
+      }
+    });
+  }
+
+  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
+    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
+    this.tableInnerWidth += delta;
+  }
+
+  changeColumnOrder(event: CdkDragDrop<any>) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      this.settingsService.updateSettings<BlotterSettings>(
+        settings.guid,
+        {
+          tradesTable: BlotterTablesHelper.changeColumnOrder(
+            event,
+            settings.tradesTable ?? TableSettingHelper.toTableDisplaySettings(settings.tradesColumns)!,
+            this.listOfColumns
+          )
+        }
       );
     });
   }
