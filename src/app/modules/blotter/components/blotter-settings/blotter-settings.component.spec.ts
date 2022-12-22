@@ -6,7 +6,9 @@ import {
 import { BlotterSettingsComponent } from './blotter-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import {
+  sharedModuleImportForTests
+} from "../../../../shared/utils/testing";
 import { ReactiveFormsModule } from "@angular/forms";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzSwitchModule } from "ng-zorro-antd/switch";
@@ -29,13 +31,13 @@ describe('BlotterSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         BlotterSettingsComponent,
-        ...ngZorroMockComponents,
       ],
       imports: [
         NoopAnimationsModule,
         ReactiveFormsModule,
         NzSelectModule,
-        NzSwitchModule
+        NzSwitchModule,
+        ...sharedModuleImportForTests
       ],
       providers: [
         {

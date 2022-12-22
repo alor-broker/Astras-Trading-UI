@@ -2,22 +2,33 @@
 <div>
   <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
     <nz-form-item>
-      <nz-form-control nzErrorTip="Введите портфель">
+      <nz-form-control nzErrorTip="Выберите портфель">
         <nz-form-label nzRequired nzFor="portfolio">Портфель</nz-form-label>
-        <nz-input-group>
-          <input formControlName="portfolio" (mousedown)="$event.stopPropagation()" nz-input
-            placeholder="Портфель" />
-        </nz-input-group>
+        <nz-select
+          formControlName="portfolio"
+          nzAllowClear
+          nzPlaceHolder="Портфель"
+          nzShowSearch
+          (ngModelChange)="portfolioChanged($event)"
+          *ngIf="availablePortfolios$ | async as availablePortfolios">
+          <ng-container *ngFor="let agreement of availablePortfolios.keys()">
+            <nz-option-group [nzLabel]="agreement">
+              <ng-container *ngIf="availablePortfolios.get(agreement) as portfolios">
+                <ng-container *ngFor="let portfolio of portfolios">
+                  <nz-option [nzValue]="toPortfolioKey(portfolio)" [nzLabel]="portfolio.market + ' ' +  portfolio.portfolio"></nz-option>
+                </ng-container>
+              </ng-container>
+            </nz-option-group>
+          </ng-container>
+        </nz-select>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
       <nz-form-control nzErrorTip="Выберите биржу">
-        <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
-        <nz-input-group>
-          <nz-select formControlName='exchange'>
-            <nz-option  *ngFor='let exchange of exchanges' [nzValue]="exchange" [nzLabel]="exchange"></nz-option>
-          </nz-select>
-        </nz-input-group>
+        <nz-form-label nzFor="exchange" nzRequired>Биржа</nz-form-label>
+        <nz-form-control>
+          <input class='ant-input' formControlName='exchange' nz-input>
+        </nz-form-control>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>

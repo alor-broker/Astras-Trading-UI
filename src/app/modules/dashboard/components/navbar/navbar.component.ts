@@ -34,6 +34,7 @@ import {
 import { EntityStatus } from '../../../../shared/models/enums/entity-status';
 import { FormControl } from "@angular/forms";
 import { DashboardHelper } from '../../../../shared/utils/dashboard-helper';
+import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios';
 
 @Component({
   selector: 'ats-navbar',
@@ -62,7 +63,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
       filter(p => p.status === EntityStatus.Success),
-      map(portfolios => this.groupPortfolios(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x)))
+      map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x)))
     );
 
     this.selectedPortfolio$ = this.store.select(getSelectedPortfolio).pipe(
@@ -134,29 +135,5 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   portfoliosTrackByFn(index: number, item: PortfolioExtended) {
     return item.market + item.portfolio;
-  }
-
-  private groupPortfolios(portfolios: PortfolioExtended[]): Map<string, PortfolioExtended[]> {
-    const extendedPortfoliosByAgreement = new Map<string, PortfolioExtended[]>();
-
-    portfolios.forEach(value => {
-      const existing = extendedPortfoliosByAgreement.get(value.agreement);
-      if (existing) {
-        existing.push(value);
-      }
-      else {
-        extendedPortfoliosByAgreement.set(value.agreement, [value]);
-      }
-    });
-
-    const sortedPortfolios = new Map<string, PortfolioExtended[]>();
-    Array.from(extendedPortfoliosByAgreement.keys())
-      .sort((a, b) => a.localeCompare(b))
-      .forEach(key => {
-        const portfolios = extendedPortfoliosByAgreement.get(key)?.sort((a, b) => a.market.localeCompare(b.market)) ?? [];
-        sortedPortfolios.set(key, portfolios);
-      });
-
-    return sortedPortfolios;
   }
 }
