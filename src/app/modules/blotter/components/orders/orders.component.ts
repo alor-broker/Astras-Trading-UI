@@ -393,7 +393,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   editOrder(order: Order) {
     this.modal.openEditModal({
       type: order.type,
-      quantity: order.qty,
+      quantity: order.qty - (order.filledQtyBatch ?? 0),
       orderId: order.id,
       price: order.price,
       instrument: {

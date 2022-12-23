@@ -561,7 +561,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private fillOrderBaseParameters(order: Order, orderLineAdapter: IOrderLineAdapter, themeColors: ThemeColors) {
     orderLineAdapter
-      .setQuantity(order.qtyBatch.toString())
+      .setQuantity((order.qtyBatch - (order.filledQtyBatch ?? 0)).toString())
       .setQuantityBackgroundColor(themeColors.componentBackground)
       .setQuantityTextColor(themeColors.chartPrimaryTextColor)
       .setQuantityBorderColor(themeColors.primaryColor)
