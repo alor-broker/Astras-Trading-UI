@@ -58,7 +58,11 @@
         <nz-form-label nzFor="highlightHighVolume">{{t('orderbookSettings.highlightHighVolumeLabel')}}</nz-form-label>
         <nz-form-control>
           <nz-select [nzDisabled]="hasVolumeHighlightOptionsErrors()" formControlName='volumeHighlightMode'>
-            <nz-option *ngFor='let option of availableVolumeHighlightModes' [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+            <nz-option
+              *ngFor='let option of availableVolumeHighlightModes'
+              [nzLabel]="t('orderbookSettings.highlightHighVolumeOptions.' + option, { fallback: option })"
+              [nzValue]="option"
+            ></nz-option>
           </nz-select>
           <span *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.BiggestVolume" nz-typography nzType="secondary">
             {{t('orderbookSettings.biggestVolumeHint')}}

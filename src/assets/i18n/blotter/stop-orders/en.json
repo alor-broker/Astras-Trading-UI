@@ -2,11 +2,13 @@
   "columns": {
     "id": {
       "name": "Id",
-      "tooltip": "Order identification number"
+      "tooltip": "Order identification number",
+      "searchDescription": "Search by Id"
     },
     "symbol": {
       "name": "Ticker",
-      "tooltip": "Exchange identifier of the security"
+      "tooltip": "Exchange identifier of the security",
+      "searchDescription": "Search by Ticker"
     },
     "side": {
       "name": "Side",

@@ -13,7 +13,11 @@
             {{t('instrumentsSelect.columns.' + col.columnId + '.name', { fallback: col.name })}}
           </span>
         </th>
-        <th><span nz-tooltip nzTooltipTitle="Убрать из наблюдения">Удл.</span></th>
+        <th>
+          <span nz-tooltip [nzTooltipTitle]="t('instrumentsSelect.columns.delete.tooltip')">
+            {{t('instrumentsSelect.columns.delete.name')}}
+          </span>
+        </th>
       </tr>
     </thead>
     <tbody>

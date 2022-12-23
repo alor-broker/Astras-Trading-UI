@@ -2156,9 +2156,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngneat/transloco@npm:4.1.1":
-  version: 4.1.1
-  resolution: "@ngneat/transloco@npm:4.1.1"
+"@ngneat/transloco@npm:4.2.1":
+  version: 4.2.1
+  resolution: "@ngneat/transloco@npm:4.2.1"
   dependencies:
     "@ngneat/transloco-utils": ^3.0.1
     flat: 5.0.2
@@ -2169,7 +2169,7 @@ __metadata:
   peerDependencies:
     "@angular/core": ">=13.0.0"
     rxjs: ">=6.0.0"
-  checksum: 1b67690a8c22e7c6f886c7501533bad7a917219ba631b0d91423fdba3b372e0fb8fb3fd8e8042e7d689ef23bfd4480f40dd35cf2bfff1aeb9f37f6aba64923e5
+  checksum: ecf192777ebb10da20c4917335714d410b193348219440e37c9a98710e152917beaf170ad0e7427029766f073ff607d77d06ee6bf7f1ce0bde4effaaeebeedf7
   languageName: node
   linkType: hard
 
@@ -3293,7 +3293,7 @@ __metadata:
     "@angular/platform-browser": ^14.2.4
     "@angular/platform-browser-dynamic": ^14.2.4
     "@angular/router": ^14.2.4
-    "@ngneat/transloco": 4.1.1
+    "@ngneat/transloco": 4.2.1
     "@ngrx/component-store": ^14.3.2
     "@ngrx/effects": ^14.3.2
     "@ngrx/entity": ^14.3.2

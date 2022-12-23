@@ -48,10 +48,10 @@
                 >
                   <span
                     nz-tooltip
-                    [nzTooltipTitle]="t('blotterOrders.columns.' + column.id + '.tooltip', { fallback: column.tooltip })"
+                    [nzTooltipTitle]="column.tooltip"
                     [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
                   >
-                    {{t('blotterOrders.columns.' + column.id + '.name', { fallback: column.name })}}
+                    {{column.name}}
                   </span>
                   <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!filter" [nzDropdownMenu]="searchMenu">
                     <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon nzType="search"></i>

@@ -48,10 +48,10 @@
             >
               <span
                 nz-tooltip
-                [nzTooltipTitle]="t('blotterStopOrders.columns.' + column.id + '.tooltip', { fallback: column.tooltip })"
+                [nzTooltipTitle]="column.tooltip"
                 [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
               >
-                {{t('blotterStopOrders.columns.' + column.id + '.name', { fallback: column.name })}}
+                {{column.name}}
               </span>
               <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!filter" [nzDropdownMenu]="searchMenu">
                 <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
@@ -73,9 +73,9 @@
               </a>
               &nbsp;
               <a *ngIf='ord.status.toString() === "working"' nz-popconfirm
-                 nzPopconfirmTitle="Точно отменить?"
-                 nzOkText="Да"
-                 nzCancelText="Нет"
+                 [nzPopconfirmTitle]="t('blotterStopOrders.cancelConfirm')"
+                 [nzOkText]="t('yes')"
+                 [nzCancelText]="t('no')"
                  [nzCondition]="settings.cancelOrdersWithoutConfirmation ?? false"
                  (nzOnConfirm)="cancelOrder(ord.id)">
                 <i nz-icon nzType="close-circle" nzTheme="outline"></i>
@@ -97,7 +97,7 @@
             <td *ngIf='column.id === "status"'[class]='ord.status.toString() === "filled"
               ? (ord.status.toString() === "sell" ? "sell" : "buy") :
               (ord.status.toString() === "canceled" ? "cancelled" : "bold" )' >
-              {{ t('blotterStopOrders.orderStatuss.' + ord.status, { fallback: ord.status }) }}
+              {{ t('blotterStopOrders.orderStatus.' + ord.status, { fallback: ord.status }) }}
             </td>
             <td *ngIf='column.id === "conditionType"'>{{ ord.conditionType }}</td>
             <td *ngIf='column.id === "transTime"'>{{ formatDate(ord.transTime) }}</td>

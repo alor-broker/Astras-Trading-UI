@@ -2,11 +2,13 @@
   "columns": {
     "symbol": {
       "name": "Тикер",
-      "tooltip": "Биржевой идентификатор ценной бумаги"
+      "tooltip": "Биржевой идентификатор ценной бумаги",
+      "searchDescription": "Поиск по Тикеру"
     },
     "shortName": {
       "name": "Имя",
-      "tooltip": "Наименование позиции"
+      "tooltip": "Наименование позиции",
+      "searchDescription": "Поиск по имени"
     },
     "avgPrice": {
       "name": "Средняя",

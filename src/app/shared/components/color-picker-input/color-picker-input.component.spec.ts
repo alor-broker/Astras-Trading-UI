@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ColorPickerInputComponent } from './color-picker-input.component';
-import { ngZorroMockComponents } from "../../utils/testing";
+import { getTranslocoModule, ngZorroMockComponents } from "../../utils/testing";
+import ruColorPickerInput from "../../../../assets/i18n/shared/color-picker-input/ru.json";
 
 describe('ColorPickerInputComponent', () => {
   let component: ColorPickerInputComponent;
@@ -12,6 +13,13 @@ describe('ColorPickerInputComponent', () => {
       declarations: [
         ColorPickerInputComponent,
         ...ngZorroMockComponents
+      ],
+      imports: [
+        getTranslocoModule({
+          langs: {
+            'shared/color-picker-input/ru': ruColorPickerInput,
+          }
+        }),
       ]
     })
     .compileComponents();

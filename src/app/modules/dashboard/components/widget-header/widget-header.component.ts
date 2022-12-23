@@ -32,7 +32,8 @@ import { TerminalSettings } from "../../../../shared/models/terminal-settings/te
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslatorService } from "../../../../shared/services/translator.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 
 @Component({
@@ -67,14 +68,25 @@ export class WidgetHeaderComponent implements OnInit {
     private readonly modal: ModalService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly instrumentService: InstrumentsService,
-    private readonly translocoService: TranslocoService
+    private readonly translatorService: TranslatorService
   ) {
   }
 
   ngOnInit() {
     this.terminalSettings$ = this.terminalSettingsService.getSettings();
     this.settings$ = this.settingsService.getSettings(this.guid).pipe(
-      shareReplay(1)
+      shareReplay(1),
+      mapWith(
+        () => this.translatorService.getTranslator(''),
+        (settings, translate) => ({ settings, translate })
+      ),
+      map(({ settings, translate }) => ({
+        ...settings,
+        title: translate(
+          ['widgetHeaders', settings.settingsType!],
+          { fallback: settings.title }
+        )
+      }))
     );
 
     this.title$ = this.settings$.pipe(
@@ -86,10 +98,7 @@ export class WidgetHeaderComponent implements OnInit {
           return this.getInstrumentDependentTitle(settings);
         }
 
-        return this.translocoService.langChanges$.pipe(
-          switchMap((lang) => this.translocoService.load(lang)),
-          map(() => this.translocoService.translate('widgetHeaders.' + settings.settingsType, { fallback: settings.title }))
-        );
+        return of(settings.title ?? null);
       })
     );
   }

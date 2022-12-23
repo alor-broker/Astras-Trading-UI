@@ -136,6 +136,7 @@ export const ngZorroMockComponents = [
   mockDirective({selector: '[text]', inputs: ['text']}),
   mockDirective({selector: '[nzLayout]', inputs: ['nzLayout']}),
   mockDirective({selector: '[nzPopoverContent]', inputs: ['nzPopoverContent']}),
+  mockDirective({selector: '[nzPopoverTitle]', inputs: ['nzPopoverTitle']}),
   mockDirective({
     selector: '[nz-button]',
     inputs: ['nzDropdownMenu', 'title', 'text', 'nzLoading', 'nzType']

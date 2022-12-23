@@ -6,23 +6,26 @@
   "okBtnText": "OK",
   "cancelBtnText": "Cancel",
   "editBtnText": "Edit",
+  "resetBtnText": "Reset",
   "yes": "Yes",
   "no": "No",
+  "from": "from",
+  "to": "to",
 
   "maxTagPlaceholder": "and {{count}} more selected",
 
   "widgetHeaders": {
     "OrderbookSettings": "Orderbook",
-    "ScalperOrderBookSettings": "Scalper orderbook",
-    "InstrumentSelectSettings": "Instrument select",
+    "ScalperOrderBookSettings": "Scalper Orderbook",
+    "InstrumentSelectSettings": "Instrument Select",
     "LightChartSettings": "Chart",
     "BlotterSettings": "Blotter",
     "InfoSettings": "Info",
-    "AllTradesSettings": "All trades",
+    "AllTradesSettings": "All Trades",
     "NewsSettings": "News",
-    "ExchangeRateSettings": "Exchange rate",
-    "TechChartSettings": "Tech chart",
-    "AllInstrumentsSettings": "All instruments",
-    "OrderSubmitSettings": "Order submit"
+    "ExchangeRateSettings": "Exchange Rate",
+    "TechChartSettings": "Tech Chart",
+    "AllInstrumentsSettings": "All Instruments",
+    "OrderSubmitSettings": "Order Submit"
   }
 }

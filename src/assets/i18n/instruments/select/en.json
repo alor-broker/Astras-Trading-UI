@@ -40,6 +40,10 @@
     "closePrice": {
       "name": "Close price",
       "tooltip": "Price at the end of the previous day"
+    },
+    "delete": {
+      "name": "Del.",
+      "tooltip": "Delete from watchlist"
     }
   }
 }

@@ -18,6 +18,11 @@
   "disableHotkeysLabel": "Turn off hotkeys",
   "enableMouseClickSilentOrdersLabel": "Buy by click without notification",
   "highlightHighVolumeLabel": "Volume highlighting",
+  "highlightHighVolumeOptions": {
+    "off": "Off",
+    "biggestVolume": "Relative to the largest volume",
+    "volumeBoundsWithFixedValue":  "By borders (more than volume)"
+  },
   "biggestVolumeHint": "The volume cell will be highlighted with standard buy/sell colors. The percentage of cell filling with color is determined by the ratio of the cell volume to the maximum volume in the orderbook.",
   "VolumeBoundsWithFixedValueHint": "The color of the cell is determined by the settings below. For selection, the option with the largest volume will be selected, for which the condition is met: cell volume >= option volume. The percentage of cell filling with color is determined by the ratio of the cell volume to the value of the \"Volume bar fullness\" setting.",
   "volumeHighlightSettingsLabel": "Volume selection settings",

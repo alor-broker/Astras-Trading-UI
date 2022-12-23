@@ -51,7 +51,15 @@
       </ul>
     </nz-list-item>
     <nz-list-item *ngFor="let list of collection">
-      <span (nzContentChange)="changeListTitle($event, list)" [nzContent]="list.title" nz-typography nzEditable>{{list.title}}</span>
+      <span
+        (nzContentChange)="changeListTitle($event, list)"
+        [nzContent]="list.title"
+        nz-typography
+        nzEditable
+        [nzEditTooltip]="t('instrumentsSettings.editWatchlistTooltip')"
+      >
+        {{list.title}}
+      </span>
       <ul nz-list-item-actions>
         <nz-list-item-action *ngIf="!list.isDefault">
           <button (nzOnConfirm)="removeList(list.id)"

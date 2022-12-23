@@ -6,8 +6,11 @@
   "okBtnText": "ОК",
   "cancelBtnText": "Отмена",
   "editBtnText": "Изменить",
+  "resetBtnText": "Сбросить",
   "yes": "Да",
   "no": "Нет",
+  "from": "c",
+  "to": "по",
 
   "maxTagPlaceholder": "и ещё {{count}} выбранных",
 

@@ -14,7 +14,7 @@ import { filter, map, tap } from "rxjs/operators";
 import {
   BehaviorSubject,
   Observable,
-  Subject, switchMap,
+  Subject,
   take,
   takeUntil,
   withLatestFrom
@@ -22,7 +22,7 @@ import {
 import { AllTradesFilters, AllTradesItem } from "../../models/all-trades.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 @Component({
   selector: 'ats-all-trades[guid]',
@@ -98,15 +98,11 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   constructor(
     private readonly allTradesService: AllTradesService,
     private readonly settingsService: WidgetSettingsService,
-    private readonly translocoService: TranslocoService
+    private readonly translatorService: TranslatorService
   ) {
   }
 
   ngOnInit(): void {
-    const translateLoaded$ = this.translocoService.langChanges$.pipe(
-      switchMap((lang) => this.translocoService.load('all-trades/all-trades/' + lang))
-    );
-
     this.settings$ = this.settingsService.getSettings<AllTradesSettings>(this.guid)
       .pipe(
         takeUntil(this.destroy$)
@@ -117,16 +113,19 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     this.settings$
       .pipe(
         mapWith(
-          () => translateLoaded$,
-          (settings) => (settings)
+          () => this.translatorService.getTranslator('all-trades/all-trades'),
+          (settings, translate) => ({ settings, translate })
         ),
       )
-      .subscribe(settings => {
+      .subscribe(({ settings, translate }) => {
         this.displayedColumns = this.allColumns
           .filter(col => settings.allTradesColumns.includes(col.name))
           .map(col => ({
               ...col,
-              displayName: this.translocoService.translate('allTradesAllTrades.columns.' + col.name, { fallback: col.displayName })
+              displayName: translate(
+                ['columns', col.name],
+                { fallback: col.displayName }
+              )
             })
           );
 

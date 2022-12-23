@@ -1,5 +1,5 @@
 {
-  "instrumentsListsTab": "instruments lists",
+  "instrumentsListsTab": "instruments Lists",
   "selectColumnsError": "Select columns",
   "selectColumnsLabel": "Instruments table columns",
   "selectColumnsPlaceholder": "Select...",
@@ -7,5 +7,6 @@
   "watchListPlaceholder": "Name of the new list",
   "addWatchlistBtnTooltip": "Add new list",
   "standardListPlaceholder": "Select standard list",
-  "removeConfirmText": "Are you sure?"
+  "removeConfirmText": "Are you sure?",
+  "editWatchlistTooltip": "Edit"
 }

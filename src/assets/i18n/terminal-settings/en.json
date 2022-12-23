@@ -25,6 +25,10 @@
   "badgesBindHint3": "Widgets in which data will change depending on the selected instrument",
   "defaultCurrencyHeader": "Default currency for portfolios",
   "hardRebootBtnText": "Reset all settings",
+  "hardRebootWarningTitle": "Are you sure you want to do a hard reset?",
+  "hardRebootWarningDesc": "A hard reset will delete all your settings, watchlists, widgets, and so on.",
+  "yesBtnText": "Yes",
+  "noBtnText": "No",
 
   "hotkeysTab": "Hotkeys",
   "allOrderbooksHeader": "Common for all open orderbooks",

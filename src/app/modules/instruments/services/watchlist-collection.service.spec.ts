@@ -6,6 +6,7 @@ import { WatchlistCollection } from '../models/watchlist.model';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
+import { TranslocoTestingModule } from "@ngneat/transloco";
 
 describe('WatchListCollectionService', () => {
   const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
@@ -45,7 +46,8 @@ describe('WatchListCollectionService', () => {
 
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        TranslocoTestingModule
       ],
       providers: [
         WatchlistCollectionService,
