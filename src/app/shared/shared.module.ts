@@ -52,6 +52,7 @@ import { FeedbackNotificationsProvider } from '../modules/feedback/services/feed
 import { InstrumentSearchComponent } from './components/instrument-search/instrument-search.component';
 import { NzDividerModule } from "ng-zorro-antd/divider";
 import { ResizeColumnDirective } from './directives/resize-column.directive';
+import { TranslocoModule } from "@ngneat/transloco";
 
 
 @NgModule({
@@ -72,6 +73,7 @@ import { ResizeColumnDirective } from './directives/resize-column.directive';
     ReactiveFormsModule,
     GridsterModule,
     NgChartsModule,
+    TranslocoModule,
     // Ng zorro
     NzTableModule,
     NzButtonModule,
@@ -110,7 +112,7 @@ import { ResizeColumnDirective } from './directives/resize-column.directive';
     NzDividerModule,
   ],
     exports: [
-        // Ng zorro
+      // Ng zorro
         NzTableModule,
         NzButtonModule,
         NzIconModule,
@@ -147,7 +149,8 @@ import { ResizeColumnDirective } from './directives/resize-column.directive';
         ReactiveFormsModule,
         GridsterModule,
         NgChartsModule,
-        // components
+        TranslocoModule,
+      // components
         PriceTickComponent,
         LoadingIndicatorComponent,
         InfiniteScrollTableComponent,

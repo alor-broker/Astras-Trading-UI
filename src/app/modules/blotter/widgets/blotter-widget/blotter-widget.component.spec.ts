@@ -7,7 +7,12 @@ import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings
 import { BlotterWidgetComponent } from './blotter-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { mockComponent, ngZorroMockComponents, sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import {
+  getTranslocoModule,
+  mockComponent,
+  ngZorroMockComponents,
+  sharedModuleImportForTests
+} from "../../../../shared/utils/testing";
 import { Store } from "@ngrx/store";
 import { EventEmitter } from '@angular/core';
 
@@ -43,6 +48,9 @@ describe('BlotterWidgetComponent', () => {
         mockComponent({selector: 'ats-trades', inputs: ['shouldShowSettings', 'guid']}),
         ...ngZorroMockComponents
       ],
+      imports: [
+        getTranslocoModule()
+      ]
     }).compileComponents();
 
     TestBed.overrideComponent(BlotterWidgetComponent, {

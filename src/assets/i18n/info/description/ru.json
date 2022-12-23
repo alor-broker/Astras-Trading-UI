@@ -1,0 +1,10 @@
+{
+  "description": "Описание",
+  "sector": "Сектор",
+  "isin": "ISIN",
+  "baseCurrency": "Базовая валюта",
+  "type": "Тип",
+  "lotSize": "Размер лота",
+  "marginBuy": "ГО на покупку",
+  "marginSell": "ГО на продажу"
+}

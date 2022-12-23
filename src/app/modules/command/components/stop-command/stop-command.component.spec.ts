@@ -11,6 +11,7 @@ import { CommandsService } from '../../services/commands.service';
 import { CommandContextModel } from "../../models/command-context.model";
 import { CommandParams } from "../../../../shared/models/commands/command-params.model";
 import {
+  getTranslocoModule,
   sharedModuleImportForTests,
   TestData
 } from "../../../../shared/utils/testing";
@@ -31,6 +32,7 @@ import {
   ru_RU
 } from "ng-zorro-antd/i18n";
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
+import ruCommand from "../../../../../assets/i18n/command/ru.json";
 
 describe('StopCommandComponent', () => {
   let component: StopCommandComponent;
@@ -98,6 +100,11 @@ describe('StopCommandComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ...sharedModuleImportForTests,
+        getTranslocoModule({
+          langs: {
+            'command/ru': ruCommand,
+          }
+        }),
         BrowserAnimationsModule
       ],
       declarations: [StopCommandComponent],

@@ -1,9 +1,10 @@
 <div *ngIf="voteParams$ | async as voteParams">
   <nz-modal
+    *transloco="let t; scope: 'feedback'"
     (nzOnCancel)="handleClose()"
     [nzFooter]="null"
     [nzVisible]='isVisible$ | async'
-    nzTitle="Оцените приложение"
+    [nzTitle]="t('feedback.title')"
   >
     <ng-container *nzModalContent>
       <div>
@@ -15,10 +16,10 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
-            <nz-form-label nzFor="comment">Комментарий</nz-form-label>
+            <nz-form-label nzFor="comment">{{t('feedback.commentLabel')}}</nz-form-label>
             <nz-form-control
               [nzValidateStatus]="askComment ? 'warning' : 'success'"
-              [nzWarningTip]="askComment ? 'Пожалуйста, расскажите, что нам следует доработать.' : ''">
+              [nzWarningTip]="askComment ? t('feedback.commentWarning') : ''">
               <nz-textarea-count [nzMaxCharacterCount]="commentMaxLength">
                 <textarea (ngModelChange)="checkAskComment()" formControlName="comment" nz-input rows="4"></textarea>
               </nz-textarea-count>
@@ -30,7 +31,7 @@
             (click)="submitFeedback()"
             [disabled]="!form?.valid"
             class="ant-btn ant-btn-primary">
-            Отправить отзыв
+            {{t('feedback.sendBtnText')}}
           </button>
         </div>
       </div>

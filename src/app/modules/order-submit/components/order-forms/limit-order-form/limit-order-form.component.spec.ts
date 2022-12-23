@@ -9,6 +9,7 @@ import {
 } from './limit-order-form.component';
 import { OrderSubmitModule } from '../../../order-submit.module';
 import {
+  getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
   TestData
@@ -20,6 +21,7 @@ import {
   take
 } from 'rxjs';
 import { EvaluationBaseProperties } from '../../../../command/models/evaluation-base-properties.model';
+import ruCommand from "../../../../../../assets/i18n/command/ru.json";
 
 describe('LimitOrderFormComponent', () => {
   let component: LimitOrderFormComponent;
@@ -59,7 +61,12 @@ describe('LimitOrderFormComponent', () => {
       imports: [
         OrderSubmitModule,
         NoopAnimationsModule,
-        ...sharedModuleImportForTests
+        ...sharedModuleImportForTests,
+        getTranslocoModule({
+          langs: {
+            'command/ru': ruCommand,
+          }
+        }),
       ],
       declarations: [
         mockComponent({

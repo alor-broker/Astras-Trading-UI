@@ -64,10 +64,10 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
   exchanges: string[] = exchangesList;
-  readonly availableVolumeHighlightModes: { label: string, value: string }[] = [
-    { label: 'Отключено', value: VolumeHighlightMode.Off },
-    { label: 'Относительно наибольшего объема', value: VolumeHighlightMode.BiggestVolume },
-    { label: 'По границам (более объема)', value: VolumeHighlightMode.VolumeBoundsWithFixedValue },
+  readonly availableVolumeHighlightModes: string[] = [
+    VolumeHighlightMode.Off,
+    VolumeHighlightMode.BiggestVolume,
+    VolumeHighlightMode.VolumeBoundsWithFixedValue,
   ];
 
   private settings$!: Observable<ScalperOrderBookSettings>;

@@ -1,6 +1,6 @@
-<div>
+<div *transloco="let t; scope: 'terminal-settings'">
   <nz-modal
-    nzTitle="Профиль"
+    [nzTitle]="t('terminalSettings.profileHeader')"
     [nzVisible]='isVisible$ | async'
     (nzOnCancel)="handleClose()">
     <!-- [nzBodyStyle]="{overflowY: 'auto', height: '300px' }"  -->
@@ -9,8 +9,8 @@
     </ng-container>
     <div *nzModalFooter>
       <ng-container *ngIf="selectedTab !== tabNames.usefulLinks">
-        <button nz-button nzType="primary" (click)="saveSettingsChanges()" [disabled]="isSaveDisabled">Сохранить</button>
-        <button nz-button nzType="default" class="secondary-btn" (click)="handleClose()">Отмена</button>
+        <button nz-button nzType="primary" (click)="saveSettingsChanges()" [disabled]="isSaveDisabled">{{t('saveBtnText')}}</button>
+        <button nz-button nzType="default" class="secondary-btn" (click)="handleClose()">{{t('cancelBtnText')}}</button>
       </ng-container>
     </div>
   </nz-modal>

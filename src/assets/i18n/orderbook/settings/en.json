@@ -1,0 +1,45 @@
+{
+  "tickerLabel": "Ticker",
+  "tickerError": "Select ticker",
+  "exchangeLabel": "Exchange",
+  "depthLabel": "Depth",
+  "intervalError": "Value should be from {{min}} to {{max}}",
+  "intervalPlaceholder": "Value from {{min}} to {{max}}",
+
+  "useOrderWidgetLabel": "Use order submit widget",
+  "useOrderWidgetPopover": "When clicking on a price from the orderbook, an order pop-up will not appear, but the information in the order submit widget will change",
+  "displayChartLabel": "Display chart",
+  "displayTableLabel": "Display table",
+  "displayVolumeLabel": "Show cumulative volume",
+  "displayYieldForBondsLabel": "Display yield for bonds",
+
+  "showZeroVolumeItemsLabel": "Show order prices with zero volume",
+  "showSpreadItemsLabel": "Show prices between the best buy/sell prices",
+  "disableHotkeysLabel": "Turn off hotkeys",
+  "enableMouseClickSilentOrdersLabel": "Buy by click without notification",
+  "highlightHighVolumeLabel": "Volume highlighting",
+  "highlightHighVolumeOptions": {
+    "off": "Off",
+    "biggestVolume": "Relative to the largest volume",
+    "volumeBoundsWithFixedValue":  "By borders (more than volume)"
+  },
+  "biggestVolumeHint": "The volume cell will be highlighted with standard buy/sell colors. The percentage of cell filling with color is determined by the ratio of the cell volume to the maximum volume in the orderbook.",
+  "VolumeBoundsWithFixedValueHint": "The color of the cell is determined by the settings below. For selection, the option with the largest volume will be selected, for which the condition is met: cell volume >= option volume. The percentage of cell filling with color is determined by the ratio of the cell volume to the value of the \"Volume bar fullness\" setting.",
+  "volumeHighlightSettingsLabel": "Volume selection settings",
+  "volumeHighlightFullness": "Volume bar fullness",
+  "volumeLabel": "Volume",
+  "colorError": "Select color",
+  "colorLabel": "Highlight color",
+  "workingVolumesHeader": "Working volumes",
+  "workingVolumesHint": "Used to quickly place orders with the given volume",
+  "workingVolumeLabel": "Working volume",
+  "workingVolumeRequiredError": "Input value",
+  "workingVolumeMinError": "Value should be greater than zero",
+  "autoAlignIntervalLabel": "Orderbook auto alignment interval, sec.",
+  "autoAlignIntervalHint": "Input '0' or leave blank field to disable auto alignment",
+
+  "advanced": "Advanced",
+  "instrumentGroupError": "Input trading mode",
+  "instrumentGroupLabel": "Group",
+  "instrumentGroupPlaceholder": "Trading mode"
+}

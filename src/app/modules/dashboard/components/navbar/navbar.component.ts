@@ -17,7 +17,6 @@ import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from '@ngrx/store';
 import { selectNewPortfolio } from '../../../../store/portfolios/portfolios.actions';
-import { joyrideContent } from '../../models/joyride';
 import { PortfolioExtended } from 'src/app/shared/models/user/portfolio-extended.model';
 import { getSelectedInstrumentByBadge } from "../../../../store/instruments/instruments.selectors";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
@@ -44,7 +43,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
   names = WidgetNames;
-  joyrideContent = joyrideContent;
   themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
   private destroy$: Subject<boolean> = new Subject<boolean>();

@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from "@ngrx/store";
 import {
+  getTranslocoModule,
   mockComponent,
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
@@ -71,7 +72,8 @@ describe('NavbarComponent', () => {
         NoopAnimationsModule,
         RouterModule.forRoot([]),
         NzSelectModule,
-        FormsModule
+        FormsModule,
+        getTranslocoModule()
       ]
     }).compileComponents();
   });

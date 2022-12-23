@@ -1,52 +1,70 @@
 <div *ngIf="fullName$ | async as name">
-  <h1 class="profile-name">
-    <i nz-icon nzType="ats-user"></i>
-    {{name.firstName}}&nbsp;{{name.lastName}}
-  </h1>
+  <ng-container *transloco="let t; scope: 'terminal-settings'">
+    <h1 class="profile-name">
+      <i nz-icon nzType="ats-user"></i>
+      {{name.firstName}}&nbsp;{{name.lastName}}
+    </h1>
     <nz-tabset>
-      <nz-tab nzTitle="Полезные ссылки" (nzSelect)="tabChange.emit(tabNames.usefulLinks)">
+      <nz-tab [nzTitle]="t('terminalSettings.usefulLinksTab')" (nzSelect)="tabChange.emit(tabNames.usefulLinks)">
         <div class="useful-links">
           <div nz-row [nzGutter]="[16, 24]">
             <div nz-col nzMd="12"  nzXs="24" class="group">
-              <div><h3>Общие</h3></div>
-              <ats-external-link class="group-item" href="https://www.alorbroker.ru">Официальный сайт</ats-external-link>
-              <ats-external-link class="group-item" href="https://www.alorbroker.ru/trading/leverage">Ставки риска</ats-external-link>
+              <div><h3>{{t('terminalSettings.generalHeader')}}</h3></div>
+              <ats-external-link class="group-item" href="https://www.alorbroker.ru">{{t('terminalSettings.officialSiteLink')}}</ats-external-link>
+              <ats-external-link class="group-item" href="https://www.alorbroker.ru/trading/leverage">{{t('terminalSettings.riskRatesLink')}}</ats-external-link>
             </div>
 
             <div nz-col nzMd="12" nzXs="24" class="group">
-              <div><h3>Операции в кабинете клиента</h3></div>
-              <ats-external-link class="group-item" href="https://lk.alor.ru/main">Личный кабинет</ats-external-link>
-              <ats-external-link class="group-item" href="https://lk.alor.ru/operations/money">Денежные средства</ats-external-link>
-              <ats-external-link class="group-item" href="https://lk.alor.ru/products/services">Услуги</ats-external-link>
+              <div><h3>{{t('terminalSettings.personalAccountOperationsHeader')}}</h3></div>
+              <ats-external-link class="group-item" href="https://lk.alor.ru/main">{{t('terminalSettings.personalAccountLink')}}</ats-external-link>
+              <ats-external-link class="group-item" href="https://lk.alor.ru/operations/money">{{t('terminalSettings.bankrollLink')}}</ats-external-link>
+              <ats-external-link class="group-item" href="https://lk.alor.ru/products/services">{{t('terminalSettings.servicesLink')}}</ats-external-link>
             </div>
           </div>
         </div>
       </nz-tab>
-      <nz-tab nzTitle="Общие"  (nzSelect)="tabChange.emit(tabNames.main)">
+      <nz-tab [nzTitle]="t('terminalSettings.generalHeader')"  (nzSelect)="tabChange.emit(tabNames.main)">
         <form nz-form [nzLayout]="'vertical'" [formGroup]="settingsForm" *ngIf="settingsForm">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="language">{{t('terminalSettings.langLabel')}}</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName='language'>
+                <nz-option nzHide nzDisabled [nzValue]="''" [nzLabel]="t('terminalSettings.notSelectedOption')"></nz-option>
+                <nz-option  [nzValue]="'en'" nzLabel="English"></nz-option>
+                <nz-option  [nzValue]="'ru'" nzLabel="Русский"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
           <ng-container [formGroup]="designSettingsForm">
             <nz-form-item>
-              <nz-form-label nzRequired nzFor="theme">Тема</nz-form-label>
+              <nz-form-label nzRequired nzFor="theme">{{t('terminalSettings.themeLabel')}}</nz-form-label>
               <nz-form-control>
                 <nz-select formControlName='theme'>
-                  <nz-option  [nzValue]="themeTypes.dark" nzLabel="Темная"></nz-option>
-                  <nz-option  [nzValue]="themeTypes.default" nzLabel="Светлая"></nz-option>
+                  <nz-option  [nzValue]="themeTypes.dark" [nzLabel]="t('terminalSettings.darkThemeOption')"></nz-option>
+                  <nz-option  [nzValue]="themeTypes.default" [nzLabel]="t('terminalSettings.lightThemeOption')"></nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
           </ng-container>
             <nz-form-item>
-              <nz-form-label nzRequired nzFor="timezoneDisplayOption">Часовой пояс отображения времени</nz-form-label>
+              <nz-form-label nzRequired nzFor="timezoneDisplayOption">{{t('terminalSettings.timezoneLabel')}}</nz-form-label>
               <nz-form-control>
                 <nz-select formControlName='timezoneDisplayOption'>
-                  <nz-option  [nzValue]="timezoneDisplayOption.MskTime" nzLabel="Москва (MSK)"></nz-option>
-                  <nz-option  [nzValue]="timezoneDisplayOption.LocalTime" nzLabel="Локальное время"></nz-option>
+                  <nz-option  [nzValue]="timezoneDisplayOption.MskTime" [nzLabel]="t('terminalSettings.mskTimezoneOption')"></nz-option>
+                  <nz-option  [nzValue]="timezoneDisplayOption.LocalTime" [nzLabel]="t('terminalSettings.localTimezoneOption')"></nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-              <nz-form-label nzRequired nzFor="userIdleDurationMin">Время бездействия до приостановки сеанса, мин.</nz-form-label>
-              <nz-form-control nzErrorTip="Значение должно быть от {{validationSettings.userIdleDurationMin.min}} до {{validationSettings.userIdleDurationMin.max}}">
+              <nz-form-label nzRequired nzFor="userIdleDurationMin">{{t('terminalSettings.userIdleDurationLabel')}}</nz-form-label>
+              <nz-form-control
+                [nzErrorTip]="t(
+                'terminalSettings.intervalError',
+                 {
+                  min: validationSettings.userIdleDurationMin.min,
+                  max: validationSettings.userIdleDurationMin.max
+                 })"
+              >
                 <input atsNumerical formControlName="userIdleDurationMin" (mousedown)="$event.stopPropagation()" nz-input/>
               </nz-form-control>
             </nz-form-item>
@@ -56,7 +74,7 @@
               nz-checkbox
               formControlName="badgesBind"
             >
-              Включить привязку инструментов к лейблам
+              {{t('terminalSettings.badgesBindLabel')}}
               <span
                 nz-icon
                 nz-popover
@@ -67,17 +85,17 @@
             </label>
 
             <ng-template #badgeBindHint>
-              <p> Выбрав инструмент в виджете с бейджем определённого цвета, поменяется выбранный инструмент во всех виджетах с бейджем этого же цвета </p>
+              <p> {{t('terminalSettings.badgesBindHint1')}} </p>
               <p>
-                <nz-badge nzColor="yellow" class="square-badge"></nz-badge> - Виджеты, в которых можно выбрать инструмент
+                <nz-badge nzColor="yellow" class="square-badge"></nz-badge> - {{t('terminalSettings.badgesBindHint2')}}
               </p>
               <p>
-                <nz-badge nzColor="yellow"></nz-badge> - Виджеты, в которых будут меняться данные, в зависимости от выбранного инструмента
+                <nz-badge nzColor="yellow"></nz-badge> - {{t('terminalSettings.badgesBindHint3')}}
               </p>
             </ng-template>
           </nz-form-item>
 
-          <h3>Валюта по-умолчанию для портфелей</h3>
+          <h3>{{t('terminalSettings.defaultCurrencyHeader')}}</h3>
 
           <ng-container *ngIf="currencies$ | async as currencies">
             <ng-container *ngFor="let ctrl of portfoliosFormArr.controls; let i = index">
@@ -102,20 +120,20 @@
             <nz-form-control>
               <button nz-button nzType="link" (click)="clearDashboard()" nzDanger>
                 <i nz-icon nzType="delete" nzTheme="outline"></i>
-                Сбросить все настройки
+                {{t('terminalSettings.hardRebootBtnText')}}
               </button>
             </nz-form-control>
           </nz-form-item>
         </form>
       </nz-tab>
 
-      <nz-tab nzTitle="Горячие клавиши"  (nzSelect)="tabChange.emit(tabNames.hotKeys)">
+      <nz-tab [nzTitle]="t('terminalSettings.hotkeysTab')"  (nzSelect)="tabChange.emit(tabNames.hotKeys)">
         <div [formGroup]="hotKeysForm">
-          <h3>Общие для всех открытых стаканов</h3>
+          <h3>{{t('terminalSettings.allOrderbooksHeader')}}</h3>
 
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="cancelOrdersKey">Снять лимитные заявки</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="cancelOrdersKey">{{t('terminalSettings.removeLimitOrdersLabel')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="cancelOrdersKey"
                 (mousedown)="$event.stopPropagation()"
@@ -126,8 +144,8 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="closePositionsKey">Закрыть позиции по рынку</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="closePositionsKey">{{t('terminalSettings.closeAllPositions')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="closePositionsKey"
                 (mousedown)="$event.stopPropagation()"
@@ -138,8 +156,8 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="centerOrderbookKey">Отцентровать стаканы по спреду</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="centerOrderbookKey">{{t('terminalSettings.centerAllOrderbooks')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="centerOrderbookKey"
                 (mousedown)="$event.stopPropagation()"
@@ -150,11 +168,11 @@
             </nz-form-control>
           </nz-form-item>
 
-          <h3>Для стакана, на который наведена мышь</h3>
+          <h3>{{t('terminalSettings.mouseHoverOrderbookHeader')}}</h3>
 
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="cancelOrderbookOrders">Снять лимитные заявки</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="cancelOrderbookOrders">{{t('terminalSettings.removeLimitOrdersLabel')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="cancelOrderbookOrders"
                 (mousedown)="$event.stopPropagation()"
@@ -165,8 +183,8 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="closeOrderbookPositions">Закрыть позицию по рынку</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="closeOrderbookPositions">{{t('terminalSettings.closePosition')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="closeOrderbookPositions"
                 (mousedown)="$event.stopPropagation()"
@@ -177,8 +195,8 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="reverseOrderbookPositions">Переворот позиции по рынку</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="reverseOrderbookPositions">{{t('terminalSettings.reverseMarketPosition')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="reverseOrderbookPositions"
                 (mousedown)="$event.stopPropagation()"
@@ -189,8 +207,8 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="buyMarket">Купить по рынку</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="buyMarket">{{t('terminalSettings.buyByMarket')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="buyMarket"
                 (mousedown)="$event.stopPropagation()"
@@ -201,8 +219,8 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="sellMarket">Продать по рынку</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="sellMarket">{{t('terminalSettings.sellByMarket')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="sellMarket"
                 (mousedown)="$event.stopPropagation()"
@@ -214,8 +232,8 @@
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="sellBestOrder">Выставить лучшую заявку на продажу</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="sellBestOrder">{{t('terminalSettings.sellBestOrder')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="sellBestOrder"
                 (mousedown)="$event.stopPropagation()"
@@ -226,8 +244,8 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="buyBestOrder">Выставить лучшую заявку на покупку</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="buyBestOrder">{{t('terminalSettings.buyBestOrder')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="buyBestOrder"
                 (mousedown)="$event.stopPropagation()"
@@ -239,8 +257,8 @@
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="sellBestBid">Продать по лучшей цене из BID</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="sellBestBid">{{t('terminalSettings.sellBestBid')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="sellBestBid"
                 (mousedown)="$event.stopPropagation()"
@@ -251,8 +269,8 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
-            <nz-form-label nzRequired nzFor="buyBestAsk">Купить по лучшей цене из ASK</nz-form-label>
-            <nz-form-control nzErrorTip="Введите значение">
+            <nz-form-label nzRequired nzFor="buyBestAsk">{{t('terminalSettings.buyBestAsk')}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
               <input
                 formControlName="buyBestAsk"
                 (mousedown)="$event.stopPropagation()"
@@ -268,8 +286,8 @@
           <ng-container *ngIf="hotKeysForm.value.workingVolumes">
             <div class="working-volume" *ngFor="let ctrl of workingVolumes.controls; let i = index">
               <nz-form-item class="form-item">
-                <nz-form-label nzRequired nzFor="selectWorkingVolume1">Выбрать рабочий объём {{i + 1}}</nz-form-label>
-                <nz-form-control nzErrorTip="Введите значение">
+                <nz-form-label nzRequired nzFor="selectWorkingVolume1">{{t('terminalSettings.selectWorkingVolumeLabel')}} {{i + 1}}</nz-form-label>
+                <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
                   <input
                     (mousedown)="$event.stopPropagation()"
                     readonly
@@ -294,4 +312,5 @@
         </div>
       </nz-tab>
     </nz-tabset>
+  </ng-container>
 </div>

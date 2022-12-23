@@ -1,26 +1,28 @@
 <div *ngIf="instrument$ | async as instrument">
-  <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
-    <nz-form-item class="compact">
-      <nz-form-label nzFor="quantity" nzRequired>Кол-во лотов</nz-form-label>
-      <nz-form-control [nzErrorTip]="quantityError">
-        <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="quantity" nz-input placeholder="0"/>
-        <span *ngIf="(instrument?.lotsize ?? 1) !== 1">1 лот = {{instrument.lotsize | shortNumber}} шт.</span>
-      </nz-form-control>
-      <ng-template #quantityError>
-        <span *ngIf="form.get('quantity')?.errors?.required">Введите кол-во</span>
-        <span *ngIf="form.get('quantity')?.errors?.min">Слишком мало</span>
-        <span *ngIf="form.get('quantity')?.errors?.max">Слишком много</span>
-      </ng-template>
-    </nz-form-item>
-    <nz-collapse [nzBordered]="false" class="compact" nzGhost>
-      <nz-collapse-panel nzHeader="Продвинутые">
-        <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
-        <nz-form-control nzErrorTip="Группа">
-          <input (mousedown)="$event.stopPropagation()" formControlName="instrumentGroup" nz-input placeholder="Режим торгов"/>
+  <ng-container *transloco="let t; scope: 'command'">
+    <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+      <nz-form-item class="compact">
+        <nz-form-label nzFor="quantity" nzRequired>{{t('command.quantityLabel')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="quantityError">
+          <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="quantity" nz-input placeholder="0"/>
+          <span *ngIf="(instrument?.lotsize ?? 1) !== 1">1 {{t('command.lot')}} = {{instrument.lotsize | shortNumber}} {{t('command.pcs')}}</span>
         </nz-form-control>
-      </nz-collapse-panel>
-    </nz-collapse>
-  </form>
+        <ng-template #quantityError>
+          <span *ngIf="form.get('quantity')?.errors?.required">{{t('command.emptyQuantityError')}}</span>
+          <span *ngIf="form.get('quantity')?.errors?.min">{{t('command.tooLittle')}}</span>
+          <span *ngIf="form.get('quantity')?.errors?.max">{{t('command.tooMuch')}}</span>
+        </ng-template>
+      </nz-form-item>
+      <nz-collapse [nzBordered]="false" class="compact" nzGhost>
+        <nz-collapse-panel [nzHeader]="t('command.advanced')">
+          <nz-form-label nzFor="instrumentGroup">{{t('command.instrumentGroupLabel')}}</nz-form-label>
+          <nz-form-control [nzErrorTip]="t('command.instrumentGroupError')">
+            <input (mousedown)="$event.stopPropagation()" formControlName="instrumentGroup" nz-input [placeholder]="t('command.instrumentGroupPlaceholder')"/>
+          </nz-form-control>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </form>
+  </ng-container>
   <ng-container *ngIf="evaluation$ | async as evaluation">
     <ats-evaluation [evaluationProperties]="evaluation"></ats-evaluation>
   </ng-container>

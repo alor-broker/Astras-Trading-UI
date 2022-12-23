@@ -3,9 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AllTradesComponent } from './all-trades.component';
 import { AllTradesService } from "../../services/all-trades.service";
 import { of } from "rxjs";
-import { EventEmitter } from "@angular/core";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { mockComponent } from "../../../../shared/utils/testing";
+import { getTranslocoModule, mockComponent } from "../../../../shared/utils/testing";
 
 describe('AllTradesComponent', () => {
   let component: AllTradesComponent;
@@ -15,6 +14,9 @@ describe('AllTradesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [
+        getTranslocoModule()
+      ],
       declarations: [
         AllTradesComponent,
         mockComponent({

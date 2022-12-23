@@ -46,6 +46,7 @@ import {
   ThemeType
 } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
+import { TranslocoTestingModule } from "@ngneat/transloco";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -165,6 +166,7 @@ describe('ScalperOrderBookComponent', () => {
         ScalperOrderBookComponent,
         ...ngZorroMockComponents
       ],
+      imports: [TranslocoTestingModule],
       providers: [
         { provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy },
         { provide: TerminalSettingsService, useValue: terminalSettingsServiceSpy },

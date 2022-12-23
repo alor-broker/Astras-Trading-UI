@@ -66,7 +66,7 @@
 </nz-table>
 
 <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown custom-filter">
+  <div class="ant-table-filter-dropdown custom-filter" *transloco="let t">
     <div *ngFor='let column of columns'>
       <div *ngIf='!!column.filterData && activeFilterName === column.filterData.filterName'>
         <input
@@ -82,18 +82,18 @@
             nz-input
             class="filter-input"
             type="text"
-            [placeholder]="column.displayName + ', с'"
+            [placeholder]="column.displayName + ', ' + t('from')"
             [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
           />
           <input
             nz-input
             class="filter-input"
             type="text"
-            [placeholder]="column.displayName + ', по'"
+            [placeholder]="column.displayName + ', ' + t('to')"
             [formControl]="getFilterControl(column.filterData.intervalEndName!)!"
           />
         </ng-template>
-        <button nz-button nzType="text" nzSize="small" (click)="resetFilter(column.filterData)">Сбросить</button>
+        <button nz-button nzType="text" nzSize="small" (click)="resetFilter(column.filterData)">{{t('resetBtnText')}}</button>
       </div>
     </div>
   </div>

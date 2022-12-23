@@ -9,6 +9,7 @@ import { LimitCommandComponent } from './limit-command.component';
 import { CommandContextModel } from "../../models/command-context.model";
 import { CommandParams } from "../../../../shared/models/commands/command-params.model";
 import {
+  getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
   TestData
@@ -18,6 +19,7 @@ import { CommandType } from "../../../../shared/models/enums/command-type.model"
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { LimitCommand } from "../../models/limit-command.model";
 import { EvaluationBaseProperties } from "../../models/evaluation-base-properties.model";
+import ruCommand from '../../../../../assets/i18n/command/ru.json';
 
 describe('LimitCommandComponent', () => {
   let component: LimitCommandComponent;
@@ -76,6 +78,11 @@ describe('LimitCommandComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ...sharedModuleImportForTests,
+        getTranslocoModule({
+          langs: {
+            'command/ru': ruCommand,
+          }
+        }),
         BrowserAnimationsModule
       ],
       declarations: [

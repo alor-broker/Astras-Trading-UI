@@ -1,32 +1,32 @@
 <div *ngIf="commandContext$ | async as commandContext">
-  <form nz-form [formGroup]="form">
+  <form nz-form [formGroup]="form" *transloco="let t; scope: 'command'">
     <div nz-row [nzGutter]="12">
       <div nz-col [nzSm]="12" [nzXs]="24">
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="quantityError" [nzValidateStatus]="form.get('quantity')!">
             <nz-form-label [nzNoColon]="true" nzRequired nzFor="quantity">
-              Кол-во лотов
+              {{t('command.quantityLabel')}}
               <span *ngIf="(commandContext.instrument.lotsize ?? 1) !== 1" class="lot-size-hint">
-                &nbsp;1 лот = {{commandContext.instrument.lotsize | shortNumber}} шт.
+                &nbsp;1 {{t('command.lot')}} = {{commandContext.instrument.lotsize | shortNumber}} {{t('command.pcs')}}
               </span>
             </nz-form-label>
             <input class='ant-input' atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
           </nz-form-control>
           <ng-template #quantityError>
-            <span *ngIf="form.get('quantity')?.errors?.required">Введите кол-во</span>
-            <span *ngIf="form.get('quantity')?.errors?.min">Слишком мало</span>
-            <span *ngIf="form.get('quantity')?.errors?.max">Слишком много</span>
+            <span *ngIf="form.get('quantity')?.errors?.required">{{t('command.emptyQuantityError')}}</span>
+            <span *ngIf="form.get('quantity')?.errors?.min">{{t('command.tooLittle')}}</span>
+            <span *ngIf="form.get('quantity')?.errors?.max">{{t('command.tooMuch')}}</span>
           </ng-template>
         </nz-form-item>
       </div>
 
       <div [nzSm]="12" [nzXs]="24" nz-col>
         <nz-form-item class="compact">
-          <nz-form-control nzErrorTip="Выберите условие исполнения">
-            <nz-form-label [nzNoColon]="true" nzFor="condition" nzRequired>Условие</nz-form-label>
+          <nz-form-control [nzErrorTip]="t('command.conditionError')">
+            <nz-form-label [nzNoColon]="true" nzFor="condition" nzRequired>{{t('command.conditionLabel')}}</nz-form-label>
             <nz-select formControlName="condition">
-              <nz-option [nzValue]="'More'" nzLabel="Больше"></nz-option>
-              <nz-option [nzValue]="'Less'" nzLabel="Меньше"></nz-option>
+              <nz-option [nzValue]="'More'" [nzLabel]="t('command.more')"></nz-option>
+              <nz-option [nzValue]="'Less'" [nzLabel]="t('command.less')"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -35,29 +35,32 @@
       <div [nzSm]="12" [nzXs]="24" nz-col>
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="triggerPriceError" [nzValidateStatus]="form.get('triggerPrice')!">
-            <nz-form-label [nzNoColon]="true" nzFor="triggerPrice" nzRequired>Сигнальная цена</nz-form-label>
+            <nz-form-label [nzNoColon]="true" nzFor="triggerPrice" nzRequired>{{t('command.triggerPriceLabel')}}</nz-form-label>
             <input (mousedown)="$event.stopPropagation()" atsNumerical [step]="commandContext.instrument.minstep" class='ant-input'
                    formControlName="triggerPrice" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #triggerPriceError>
-            <span *ngIf="form.get('triggerPrice')?.errors?.required">Введите цену</span>
-            <span *ngIf="form.get('triggerPrice')?.errors?.min">Слишком мало</span>
-            <span *ngIf="form.get('triggerPrice')?.errors?.max">Слишком много</span>
-            <span *ngIf="form.get('triggerPrice')?.errors?.priceStepMultiplicity">Значение должно быть кратно шагу цены ({{commandContext.instrument.minstep}})</span>
+            <span *ngIf="form.get('triggerPrice')?.errors?.required">{{t('command.emptyPriceError')}}</span>
+            <span *ngIf="form.get('triggerPrice')?.errors?.min">{{t('command.tooLittle')}}</span>
+            <span *ngIf="form.get('triggerPrice')?.errors?.max">{{t('command.tooMuch')}}</span>
+            <span *ngIf="form.get('triggerPrice')?.errors?.priceStepMultiplicity">
+              {{t('command.priceStepMultiplicityError')}} ({{commandContext.instrument.minstep}})
+            </span>
           </ng-template>
         </nz-form-item>
       </div>
 
       <div [nzSm]="12" [nzXs]="24" nz-col>
         <nz-form-item class="compact">
-          <nz-form-control nzErrorTip="Введите дату">
-            <nz-form-label [nzNoColon]="true" nzFor="stopEndUnixTime">Действ. до</nz-form-label>
+          <nz-form-control [nzErrorTip]="t('command.stopEndTimeError')">
+            <nz-form-label [nzNoColon]="true" nzFor="stopEndUnixTime">{{t('command.stopEndTimeLabel')}}</nz-form-label>
             <nz-date-picker
               formControlName="stopEndUnixTime"
               nzFormat="yyyy-MM-dd HH:mm:ss"
               nzShowTime
               [nzDisabledDate]="disabledDate"
               [nzShowNow]="canSelectNow"
+              [nzPlaceHolder]="t('command.stopEndTimePlaceholder')"
             >
             </nz-date-picker>
           </nz-form-control>
@@ -69,7 +72,7 @@
       <div nz-col [nzSm]="12" [nzXs]="24">
         <nz-form-item class="compact">
           <nz-form-control>
-            <nz-form-label [nzNoColon]="true" nzFor="withLimit" nzRequired>Тип стопа</nz-form-label>
+            <nz-form-label [nzNoColon]="true" nzFor="withLimit" nzRequired>{{t('command.withLimitLabel')}}</nz-form-label>
             <nz-radio-group formControlName="withLimit">
               <label [nzValue]="true" nz-radio-button>Limit</label>
               <label [nzValue]="false" nz-radio-button>Market</label>
@@ -80,22 +83,23 @@
       <div nz-col [nzSm]="12" [nzXs]="24" *ngIf="form.getRawValue().withLimit">
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="priceError" [nzValidateStatus]="form.get('price')!">
-            <nz-form-label [nzNoColon]="true" nzFor="price" nzRequired>Цена</nz-form-label>
+            <nz-form-label [nzNoColon]="true" nzFor="price" nzRequired>{{t('command.priceLabel')}}</nz-form-label>
             <input (mousedown)="$event.stopPropagation()" atsNumerical [step]="commandContext.instrument.minstep" class='ant-input' formControlName="price" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #priceError>
-            <span *ngIf="form.get('price')?.errors?.required">Введите цену</span>
-            <span *ngIf="form.get('price')?.errors?.min">Слишком мало</span>
-            <span *ngIf="form.get('price')?.errors?.max">Слишком много</span>
-            <span *ngIf="form.get('price')?.errors?.priceStepMultiplicity">Значение должно быть кратно шагу цены ({{commandContext.instrument.minstep}})</span>
+            <span *ngIf="form.get('price')?.errors?.required">{{t('command.emptyPriceError')}}</span>
+            <span *ngIf="form.get('price')?.errors?.min">{{t('command.tooLittle')}}</span>
+            <span *ngIf="form.get('price')?.errors?.max">{{t('command.tooMuch')}}</span>
+            <span *ngIf="form.get('price')?.errors?.priceStepMultiplicity">
+              {{t('command.priceStepMultiplicityError')}} ({{commandContext.instrument.minstep}})
+            </span>
           </ng-template>
         </nz-form-item>
       </div>
     </div>
 
     <span nz-typography nzType="warning">
-      Выставление стоп заявок происходит через новый сервис Sparker. Из-за этого могут быть ошибки,
-      которые мы по какой-то причине не заметили. Будьте аккуратны, пожалуйста.
+      {{t('command.stopOrderWarning')}}
     </span>
   </form>
 </div>
