@@ -8,8 +8,8 @@
             nzSize='small'
             joyrideStep="step2"
             nzType="text"
-            [title]="joyrideContent.step2.title"
-            [text]="joyrideContent.step2.text">
+            [title]="t('joyride.step2.title')"
+            [text]="t('joyride.step2.text')">
       <i nz-icon nzType="appstore-add" nzTheme="outline" [nzRotate]="-90" class="left-side-icon"></i>
       {{t('dashboardNavbar.widgetsLabel')}}
     </button>
@@ -19,8 +19,8 @@
     <button nz-button [nzType]="'text'"
             (click)="newOrder()"
             joyrideStep="step3"
-            [title]="joyrideContent.step3.title"
-            [text]="joyrideContent.step3.text">
+            [title]="t('joyride.step3.title')"
+            [text]="t('joyride.step3.text')">
       <i nz-icon nzType="plus-circle" nzTheme="outline" class="left-side-icon"></i>
       {{t('dashboardNavbar.orderLabel')}}
     </button>
@@ -36,8 +36,8 @@
       nzType="text"
       [nzDropdownMenu]="portfoliosDropdown"
       joyrideStep="step1"
-      [title]="joyrideContent.step1.title"
-      [text]="joyrideContent.step1.text"
+      [title]="t('joyride.step1.title')"
+      [text]="t('joyride.step1.text')"
     >
       <span>
         {{selectedPortfolio.market}} {{selectedPortfolio.portfolio}}

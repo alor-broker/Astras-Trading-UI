@@ -24,7 +24,6 @@ import {
   isPortfolioDependent
 } from 'src/app/shared/utils/settings-helper';
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
-import { joyrideContent } from '../../models/joyride';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { instrumentsBadges } from "../../../../shared/utils/instruments";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
@@ -55,7 +54,6 @@ export class WidgetHeaderComponent implements OnInit {
   @Output()
   linkChangedEvent = new EventEmitter<boolean>();
 
-  joyrideContent = joyrideContent;
   settings$!: Observable<AnySettings>;
   terminalSettings$!: Observable<TerminalSettings>;
   badges = instrumentsBadges;
