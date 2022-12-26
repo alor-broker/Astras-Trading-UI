@@ -32,6 +32,20 @@
       background-color: fade(@buy-color, 20%);
     }
   }
+
+  .value-wrapper {
+    position: relative;
+
+    .value {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+
+      &.red {
+        color: @sell-color
+      }
+    }
+  }
 });
 
 .order-book {
@@ -74,4 +88,15 @@ tbody:hover {
 .empty-cell {
   width: 0;
   padding: 0;
+}
+
+.spread-size-row {
+  display: flex;
+  margin: 5px 0;
+
+  div {
+    flex-grow: 2;
+    flex-shrink: 2;
+    width: 100%;
+  }
 }

@@ -52,7 +52,7 @@ interface Size {
 interface SpreadDiffData {
   diffPercents: number;
   diff: number
-  textColor: string;
+  colorRatio: number;
 }
 
 @Component({
@@ -164,25 +164,15 @@ export class OrderBookComponent implements OnInit, OnDestroy {
           (
             (diffPercents - this.minSpreadDiffPercentForColorChange) /
             (this.maxSpreadDiffPercentForColorChange - this.minSpreadDiffPercentForColorChange)
-          ) * 255,
-          0
+          ),
+          2
         );
-        let textColor: string;
-
-        if (colorRatio <= 0) {
-          textColor = '#fff';
-        } else if (colorRatio >= 255) {
-          textColor = '#f00';
-        } else {
-          textColor = `rgb(255, ${255 - colorRatio}, ${255 - colorRatio})`;
-        }
 
         return {
           diffPercents,
           diff,
-          textColor
+          colorRatio
         };
-
       })
     );
 
