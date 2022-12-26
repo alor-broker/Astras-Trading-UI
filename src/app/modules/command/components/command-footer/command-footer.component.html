@@ -1,4 +1,4 @@
-<div class="buttons-wrapper">
+<div class="buttons-wrapper" *transloco="let t; scope: 'command'">
   <button
     (click)="buy()"
     [disabled]="isButtonsLocked || (command$ | async) === null"
@@ -7,7 +7,7 @@
     nz-button
     nzSize="large"
   >
-    Купить
+    {{t('command.buyBtnText')}}
   </button>
   <button
     (click)="sell()"
@@ -17,6 +17,6 @@
     nz-button
     nzSize="large"
   >
-    Продать
+    {{t('command.sellBtnText')}}
   </button>
 </div>

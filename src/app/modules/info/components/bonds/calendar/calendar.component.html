@@ -1,58 +1,88 @@
 <ng-container *ngIf="calendar$ | async as calendar; else empty">
   <div *ngIf="(isLoading$ | async) === false">
-    <nz-table  #couponsTable [nzData]="calendar.coupons" #nzTableComponent nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Купоны">
-      <thead>
-      <tr>
-        <th>Дата</th>
-        <th>Кол-во</th>
-        <th>Тип купона</th>
-        <th>НКД</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let coupon of couponsTable.data">
-        <td>{{ coupon.date | date }}</td>
-        <td>{{ coupon.amount | currency: coupon.currency:'symbol-narrow'}}</td>
-        <td>{{ coupon.couponType }}</td>
-        <td>{{ coupon.accruedInterest | currency: coupon.currency:'symbol-narrow'}}</td>
-      </tr>
-      </tbody>
-    </nz-table>
-    <br />
-    <nz-table #amortizationsTable [nzData]="calendar.amortizations" #nzTableComponent nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Амортизация">
-      <thead>
-      <tr>
-        <th>Дата</th>
-        <th>Кол-во</th>
-        <th>% номинала</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let amort of amortizationsTable.data">
-        <td>{{ amort.date | date }}</td>
-        <td>{{ amort.amount | currency: amort.currency:'symbol-narrow'}}</td>
-        <td>{{ amort.parFraction }}</td>
-      </tr>
-      </tbody>
-    </nz-table>
-    <br />
-    <nz-table #offersTable [nzData]="calendar.offers" #nzTableComponent nzTableLayout="fixed" nzSize="small" [nzFrontPagination]="false" [nzShowPagination]="false" nzTitle="Оферты">
-      <thead>
-      <tr>
-        <th>Дата</th>
-        <th>Тип</th>
-        <th>Описание</th>
-        <th>НКД</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let offer of offersTable.data">
-        <td>{{ offer.date | date }}</td>
-        <td>{{ offer.type }}</td>
-        <td>{{ offer.description }}</td>
-      </tr>
-      </tbody>
-    </nz-table>
+    <ng-container *transloco="let t; scope: 'info/calendar'">
+      <nz-table
+        #couponsTable
+        [nzData]="calendar.coupons"
+        #nzTableComponent
+        nzTableLayout="fixed"
+        nzSize="small"
+        [nzFrontPagination]="false"
+        [nzShowPagination]="false"
+        [nzTitle]="t('infoCalendar.couponsTable')"
+      >
+        <thead>
+        <tr>
+          <th>{{t('infoCalendar.date')}}</th>
+          <th>{{t('infoCalendar.qty')}}</th>
+          <th>{{t('infoCalendar.couponType')}}</th>
+          <th>{{t('infoCalendar.accruedInterest')}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let coupon of couponsTable.data">
+          <td>{{ coupon.date | date }}</td>
+          <td>{{ coupon.amount | currency: coupon.currency:'symbol-narrow'}}</td>
+          <td>{{ coupon.couponType }}</td>
+          <td>{{ coupon.accruedInterest | currency: coupon.currency:'symbol-narrow'}}</td>
+        </tr>
+        </tbody>
+      </nz-table>
+      <br/>
+      <nz-table
+        #amortizationsTable
+        [nzData]="calendar.amortizations"
+        #nzTableComponent
+        nzTableLayout="fixed"
+        nzSize="small"
+        [nzFrontPagination]="false"
+        [nzShowPagination]="false"
+        [nzTitle]="t('infoCalendar.amortizationTable')"
+      >
+        <thead>
+        <tr>
+          <th>{{t('infoCalendar.date')}}</th>
+          <th>{{t('infoCalendar.qty')}}</th>
+          <th>{{t('infoCalendar.parFraction')}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let amort of amortizationsTable.data">
+          <td>{{ amort.date | date }}</td>
+          <td>{{ amort.amount | currency: amort.currency:'symbol-narrow'}}</td>
+          <td>{{ amort.parFraction }}</td>
+        </tr>
+        </tbody>
+      </nz-table>
+      <br/>
+      <nz-table
+        #offersTable
+        [nzData]="calendar.offers"
+        #nzTableComponent
+        nzTableLayout="fixed"
+        nzSize="small"
+        [nzFrontPagination]="false"
+        [nzShowPagination]="false"
+        [nzTitle]="t('infoCalendar.offersTable')"
+      >
+        <thead>
+        <tr>
+          <th>{{t('infoCalendar.date')}}</th>
+          <th>{{t('infoCalendar.type')}}</th>
+          <th>{{t('infoCalendar.description')}}</th>
+          <th>{{t('infoCalendar.accruedInterest')}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let offer of offersTable.data">
+          <td>{{ offer.date | date }}</td>
+          <td>{{ offer.type }}</td>
+          <td>{{ offer.description }}</td>
+        </tr>
+        </tbody>
+      </nz-table>
+    </ng-container>
+
   </div>
 </ng-container>
 <ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>

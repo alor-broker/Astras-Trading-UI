@@ -1,0 +1,11 @@
+{
+  "positionTooltip": "Текущая позиция",
+  "limitTab": "Лимитная",
+  "marketTab": "Рыночная",
+  "stopTab": "Условная",
+  "buyBtnText": "Купить",
+  "sellBtnText": "Продать",
+  "noBuyOrdersTooltip": "Нет активных лимитных заявок на покупку",
+  "noSellOrdersTooltip": "Нет активных лимитных заявок на продажу",
+  "workingVolumeTooltip": "Объем (кол-во лотов)"
+}

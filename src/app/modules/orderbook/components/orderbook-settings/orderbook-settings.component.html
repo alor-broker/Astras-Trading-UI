@@ -1,73 +1,81 @@
-<p>Настройки</p>
-<div>
-  <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
-    <nz-form-item>
-      <nz-form-control nzErrorTip="Выберите тикер">
-        <nz-form-label nzRequired nzFor="instrument">Тикер</nz-form-label>
-        <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-control>
-        <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
-        <input formControlName='exchange' nz-input>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-control nzErrorTip="Значение глубины должно быть от {{validationOptions.depth.min}} до {{validationOptions.depth.max}}">
-        <nz-form-label nzRequired nzFor="depth">Глубина</nz-form-label>
-        <nz-input-group>
-          <input atsNumerical formControlName="depth" (mousedown)="$event.stopPropagation()" nz-input placeholder="7" />
-        </nz-input-group>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="useOrderWidget">
-        Использовать виджет заявок
-        <span
-          class="popover-hint"
-          nz-icon
-          nz-popover
-          nzPopoverContent="При клике по цене из стакана не будет появляться всплывающее окно заявки, а будет меняться информация в виджете выставления заявки"
-          nzType="info-circle"
-          nzTheme="outline"
-        ></span>
-      </nz-form-label>
-      <nz-switch formControlName='useOrderWidget'></nz-switch>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="showChart">Показывать график</nz-form-label>
-      <nz-switch formControlName='showChart'></nz-switch>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="showTable">Показывать таблицу</nz-form-label>
-      <nz-switch formControlName='showTable'></nz-switch>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="showTable">Показывать совокупный объём</nz-form-label>
-      <nz-switch formControlName='showVolume'></nz-switch>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="showYieldForBonds">Показывать дох. облигаций</nz-form-label>
-      <nz-switch formControlName='showYieldForBonds'></nz-switch>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-collapse [nzBordered]="false" nzGhost>
-        <nz-collapse-panel nzHeader="Продвинутые">
-          <nz-form-control nzErrorTip="Группа">
-            <nz-form-label nzFor="instrumentGroup">Группа</nz-form-label>
-            <nz-input-group>
-              <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-                nz-input placeholder="Режим торгов" />
-            </nz-input-group>
-          </nz-form-control>
-        </nz-collapse-panel>
-      </nz-collapse>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-control>
-        <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
-      </nz-form-control>
-    </nz-form-item>
-  </form>
-</div>
+<ng-container *transloco="let t; scope: 'orderbook/settings'">
+  <p>{{t('settingsHeader')}}</p>
+  <div>
+    <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('orderbookSettings.tickerError')">
+          <nz-form-label nzRequired nzFor="instrument">{{t('orderbookSettings.tickerLabel')}}</nz-form-label>
+          <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control>
+          <nz-form-label nzRequired nzFor="exchange">{{t('orderbookSettings.exchangeLabel')}}</nz-form-label>
+          <input formControlName='exchange' nz-input>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('orderbookSettings.depthError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
+          <nz-form-label nzRequired nzFor="depth">{{t('orderbookSettings.depthLabel')}}</nz-form-label>
+          <nz-input-group>
+            <input
+              atsNumerical
+              formControlName="depth"
+              (mousedown)="$event.stopPropagation()"
+              nz-input
+              [placeholder]="t('orderbookSettings.depthPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"
+            />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="useOrderWidget">
+          {{t('orderbookSettings.useOrderWidgetLabel')}}
+          <span
+            class="popover-hint"
+            nz-icon
+            nz-popover
+            [nzPopoverContent]="t('orderbookSettings.useOrderWidgetPopover')"
+            nzType="info-circle"
+            nzTheme="outline"
+          ></span>
+        </nz-form-label>
+        <nz-switch formControlName='useOrderWidget'></nz-switch>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="showChart">{{t('orderbookSettings.displayChartLabel')}}</nz-form-label>
+        <nz-switch formControlName='showChart'></nz-switch>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="showTable">{{t('orderbookSettings.displayTableLabel')}}</nz-form-label>
+        <nz-switch formControlName='showTable'></nz-switch>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="showVolume">{{t('orderbookSettings.displayVolumeLabel')}}</nz-form-label>
+        <nz-switch formControlName='showVolume'></nz-switch>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="showYieldForBonds">{{t('orderbookSettings.displayYieldForBondsLabel')}}</nz-form-label>
+        <nz-switch formControlName='showYieldForBonds'></nz-switch>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-collapse [nzBordered]="false" nzGhost>
+          <nz-collapse-panel [nzHeader]="t('orderbookSettings.advanced')">
+            <nz-form-control [nzErrorTip]="t('orderbookSettings.instrumentGroupError')">
+              <nz-form-label nzFor="instrumentGroup">{{t('orderbookSettings.instrumentGroupLabel')}}</nz-form-label>
+              <nz-input-group>
+                <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
+                  nz-input [placeholder]="t('orderbookSettings.instrumentGroupPlaceholder')" />
+              </nz-input-group>
+            </nz-form-control>
+          </nz-collapse-panel>
+        </nz-collapse>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control>
+          <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">{{t('saveBtnText')}}</button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </div>
+</ng-container>

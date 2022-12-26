@@ -10,6 +10,8 @@ import { NewFeedback } from '../../models/feedback.model';
 import { FeedbackModule } from '../../feedback.module';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import ruFeedback from '../../../../../assets/i18n/feedback/ru.json';
+import { getTranslocoModule } from "../../../../shared/utils/testing";
 
 
 describe('FeedbackWidgetComponent', () => {
@@ -20,7 +22,12 @@ describe('FeedbackWidgetComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         FeedbackModule,
-        NoopAnimationsModule
+        NoopAnimationsModule,
+        getTranslocoModule({
+          langs: {
+            'feedback/ru': ruFeedback,
+          }
+        }),
       ],
       declarations: [FeedbackWidgetComponent],
       providers: [

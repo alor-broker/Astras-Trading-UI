@@ -1,0 +1,14 @@
+{
+  "portfolioError": "Input portfolio",
+  "portfolioLabel": "Portfolio",
+  "exchangeError": "Select exchange",
+  "exchangeLabel": "Exchange",
+  "selectColumnsError": "Select columns",
+  "selectPlaceholder": "Select...",
+  "ordersColumnsLabel": "Orders columns",
+  "stopOrdersColumnsLabel": "Stop-orders columns",
+  "tradesColumnsLabel": "Trades columns",
+  "positionsColumnsLabel": "Positions columns",
+  "hideSoldLabel": "Hide sold",
+  "cancelWithoutConfirmLabel": "Cancel orders without confirm"
+}

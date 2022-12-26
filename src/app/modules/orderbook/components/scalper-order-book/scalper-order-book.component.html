@@ -17,8 +17,9 @@
     </div>
     <div class="auto-align-button" *ngIf="(isAutoAlignAvailable$ | async) === true">
       <nz-tag
+        *transloco="let t; scope: 'orderbook/scalper-orderbook'"
         (click)="switchEnableAutoAlign()"
-        [nz-tooltip]="'Автоматически выравнивать по спреду'"
+        [nz-tooltip]="t('orderbookScalperOrderbook.autoAlignTooltip')"
         [nzColor]="(enableAutoAlign$ | async) === true ? 'cyan' : 'default'"
         [nzTooltipMouseEnterDelay]="1"
       >
@@ -72,26 +73,42 @@
       </tbody>
     </nz-table>
   </div>
-  <div class="footer">
+  <div class="footer" *transloco="let t; scope: 'orderbook/scalper-orderbook'">
     <div *ngIf="orderBookPosition$ | async as position" class="position-state">
-      <div><span [nz-tooltip]="'Средняя цена позиции'" [nzTooltipMouseEnterDelay]="1">{{position.price}}</span></div>
-      <div [ngClass]="{
-      'qty': true,
-      'positive': position.qty >= 0,
-      'negative': position.qty < 0
-      }">
-        <span [nz-tooltip]="'Кол-во лотов'" [nzTooltipMouseEnterDelay]="1">{{position.qty}}л.</span>
+      <div>
+          <span
+            [nz-tooltip]="t('orderbookScalperOrderbook.avgPositionPriceTooltip')"
+            [nzTooltipMouseEnterDelay]="1"
+          >
+            {{position.price}}
+          </span>
       </div>
       <div [ngClass]="{
-      'loss-or-profit': true,
-      'positive': position.lossOrProfit > 0,
-      'negative': position.lossOrProfit < 0
-      }">
-        <span [nz-tooltip]="'Прибыль/Убыток'" [nzTooltipMouseEnterDelay]="1">{{position.lossOrProfit}}п.</span>
+        'qty': true,
+        'positive': position.qty >= 0,
+        'negative': position.qty < 0
+        }">
+          <span
+            [nz-tooltip]="t('orderbookScalperOrderbook.lotsQtyTooltip')"
+            [nzTooltipMouseEnterDelay]="1"
+          >
+            {{position.qty}}{{t('orderbookScalperOrderbook.lots')}}.
+          </span>
+      </div>
+      <div [ngClass]="{
+        'loss-or-profit': true,
+        'positive': position.lossOrProfit > 0,
+        'negative': position.lossOrProfit < 0
+        }">
+          <span
+            [nz-tooltip]="t('orderbookScalperOrderbook.lossOrProfitTooltip')"
+            [nzTooltipMouseEnterDelay]="1"
+          >
+            {{position.lossOrProfit}}{{t('orderbookScalperOrderbook.positions')}}.
+          </span>
       </div>
     </div>
   </div>
-
 </div>
 
 

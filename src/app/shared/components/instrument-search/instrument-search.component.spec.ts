@@ -6,8 +6,8 @@ import {
 import { InstrumentSearchComponent } from './instrument-search.component';
 import { InstrumentsService } from '../../../modules/instruments/services/instruments.service';
 import { of } from 'rxjs';
-import { SharedModule } from '../../shared.module';
-import { sharedModuleImportForTests } from '../../utils/testing';
+import { getTranslocoModule, sharedModuleImportForTests } from '../../utils/testing';
+import ruInstrumentSearch from "../../../../assets/i18n/shared/instrument-search/ru.json";
 
 describe('InstrumentSearchComponent', () => {
   let component: InstrumentSearchComponent;
@@ -22,7 +22,14 @@ describe('InstrumentSearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [...sharedModuleImportForTests],
+      imports: [
+        ...sharedModuleImportForTests,
+        getTranslocoModule({
+          langs: {
+            'shared/instrument-search/ru': ruInstrumentSearch,
+          }
+        }),
+      ],
       declarations: [InstrumentSearchComponent],
       providers: [
         {

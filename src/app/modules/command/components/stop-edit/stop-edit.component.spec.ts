@@ -9,10 +9,11 @@ import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { sharedModuleImportForTests, TestData } from "../../../../shared/utils/testing";
+import { getTranslocoModule, sharedModuleImportForTests, TestData } from "../../../../shared/utils/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { StopEdit } from "../../models/stop-edit";
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
+import ruCommand from "../../../../../assets/i18n/command/ru.json";
 
 describe('StopEditComponent', () => {
   let component: StopEditComponent;
@@ -49,7 +50,12 @@ describe('StopEditComponent', () => {
       ],
       imports: [
         BrowserAnimationsModule,
-        ...sharedModuleImportForTests
+        ...sharedModuleImportForTests,
+        getTranslocoModule({
+          langs: {
+            'command/ru': ruCommand,
+          }
+        })
       ],
       providers: [
         {provide: NZ_I18N, useValue: ru_RU},

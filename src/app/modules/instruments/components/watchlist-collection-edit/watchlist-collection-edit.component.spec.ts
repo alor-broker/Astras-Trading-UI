@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { WatchlistCollectionEditComponent } from './watchlist-collection-edit.component';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { of, Subject } from 'rxjs';
+import { getTranslocoModule } from "../../../../shared/utils/testing";
 
 describe('WatchlistCollectionEditComponent', () => {
   let component: WatchlistCollectionEditComponent;
@@ -25,6 +26,9 @@ describe('WatchlistCollectionEditComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [WatchlistCollectionEditComponent],
+      imports: [
+        getTranslocoModule()
+      ],
       providers: [
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy }
       ]

@@ -1,0 +1,12 @@
+{
+  "moneyFreeTitle": "Свободные ДС",
+  "moneyBlockedTitle": "ГО",
+  "feeTitle": "Комиссия",
+  "moneyOldTitle": "Всего ДС",
+  "moneyAmountTitle": "Текущий лимит",
+  "moneyPledgeAmountTitle": "Залоги",
+  "vmInterClTitle": "Вар. маржа",
+  "vmCurrentPositionsTitle": "Вар. маржа по позициям",
+  "varMarginTitle": "Итоговая вар. маржа",
+  "isLimitsSetTitle": "Денежные и залоговые лимиты"
+}

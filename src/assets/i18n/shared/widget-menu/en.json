@@ -1,0 +1,15 @@
+{
+  "order-book": "Orderbook",
+  "scalper-order-book": "Scalper Orderbook",
+  "instrument-select": "Instrument Select",
+  "light-chart": "Chart",
+  "blotter": "Blotter",
+  "instrument-info": "Info",
+  "all-trades": "All Trades",
+  "news": "News",
+  "exchange-rate": "Exchange Rate",
+  "tech-chart": "Tech Analysis",
+  "all-instruments": "All Instruments",
+  "order-submit": "Order Submit",
+  "standardView": "Standard View"
+}

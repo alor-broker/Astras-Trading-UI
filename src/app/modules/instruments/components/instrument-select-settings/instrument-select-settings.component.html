@@ -1,29 +1,43 @@
-<div>
-  <nz-tabset>
-    <nz-tab nzTitle="Настройки">
-      <div>
-        <form (ngSubmit)="saveSettings()" [formGroup]="settingsForm" [nzLayout]="'horizontal'" nz-form>
-          <nz-form-item class="compact">
-            <nz-form-control nzErrorTip="Выберите колонки">
-              <nz-form-label nzRequired nzFor="instrumentColumns">Колонки инструментов</nz-form-label>
-              <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
-                         nzPlaceHolder="Выберите..." formControlName="instrumentColumns">
-                <nz-option *ngFor="let item of allInstrumentColumns" [nzLabel]="item.name" [nzValue]="item.columnId"></nz-option>
-              </nz-select>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-control>
-              <button type='submit' nz-button nzType="primary" [disabled]="!settingsForm.valid">Сохранить</button>
-            </nz-form-control>
-          </nz-form-item>
-        </form>
-      </div>
-    </nz-tab>
-    <nz-tab nzTitle="Списки инструментов">
-      <ats-watchlist-collection-edit></ats-watchlist-collection-edit>
-    </nz-tab>
-  </nz-tabset>
-</div>
+<ng-container *transloco="let t; scope: 'instruments/settings'">
+  <div>
+    <nz-tabset>
+      <nz-tab [nzTitle]="t('settingsHeader')">
+        <div>
+          <form (ngSubmit)="saveSettings()" [formGroup]="settingsForm" [nzLayout]="'horizontal'" nz-form>
+            <nz-form-item class="compact">
+              <nz-form-control [nzErrorTip]="t('instrumentsSettings.selectColumnsError')">
+                <nz-form-label nzRequired nzFor="instrumentColumns">{{t('instrumentsSettings.selectColumnsLabel')}}</nz-form-label>
+                <nz-select
+                  *transloco="let tSelect; scope: 'instruments/select'"
+                  [nzMaxTagCount]="10"
+                  [nzMaxTagPlaceholder]="tagPlaceHolder"
+                  nzMode="multiple"
+                  [nzPlaceHolder]="t('instrumentsSettings.selectColumnsPlaceholder')"
+                  formControlName="instrumentColumns"
+                >
+                  <nz-option
+                    *ngFor="let item of allInstrumentColumns"
+                    [nzLabel]="tSelect('instrumentsSelect.columns.' + item.columnId + '.name')"
+                    [nzValue]="item.columnId"
+                  ></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-control>
+                <button type='submit' nz-button nzType="primary" [disabled]="!settingsForm.valid">{{t('saveBtnText')}}</button>
+              </nz-form-control>
+            </nz-form-item>
+          </form>
+        </div>
+      </nz-tab>
+      <nz-tab [nzTitle]="t('instrumentsSettings.instrumentsListsTab')">
+        <ats-watchlist-collection-edit></ats-watchlist-collection-edit>
+      </nz-tab>
+    </nz-tabset>
+  </div>
 
-<ng-template #tagPlaceHolder let-selectedList>and {{ selectedList.length }} more selected</ng-template>
+  <ng-template #tagPlaceHolder let-selectedList>
+    {{t('maxTagPlaceholder', { count: selectedList.length })}}
+  </ng-template>
+</ng-container>

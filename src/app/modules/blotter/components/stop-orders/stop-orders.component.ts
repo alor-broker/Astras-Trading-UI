@@ -15,7 +15,6 @@ import {
   distinctUntilChanged,
   Observable,
   of,
-  shareReplay,
   Subject,
   switchMap,
   take,
@@ -42,7 +41,9 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
-import { isEqualBlotterSettings } from "../../../../shared/utils/settings-helper";
+import {
+  isEqualPortfolioDependedSettings
+} from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
 import { Store } from "@ngrx/store";
@@ -50,6 +51,11 @@ import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
+import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
+import { TranslatorService } from "../../../../shared/services/translator.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -62,6 +68,8 @@ interface DisplayOrder extends StopOrder {
   styleUrls: ['./stop-orders.component.less'],
 })
 export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly columnDefaultWidth = 100;
+
   @ViewChild('nzTable')
   table?: NzTableComponent<DisplayOrder>;
   @ViewChild('tableContainer')
@@ -77,7 +85,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   filter = new BehaviorSubject<OrderFilter>({});
   isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
 
-  tableInnerWidth: string = '1000px';
+  tableInnerWidth: number = 1000;
   allColumns: Column<DisplayOrder, OrderFilter>[] = [
     {
       id: 'id',
@@ -105,7 +113,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Биржевой идентификатор ценной бумаги'
+      tooltip: 'Биржевой идентификатор ценной бумаги',
+      minWidth: 75
     },
     {
       id: 'side',
@@ -121,7 +130,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Сторона заявки (покупка/продажа)'
+      tooltip: 'Сторона заявки (покупка/продажа)',
+      minWidth: 85
     },
     {
       id: 'residue',
@@ -134,7 +144,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Отношение невыполненных заявок к общему количеству'
+      tooltip: 'Отношение невыполненных заявок к общему количеству',
+      minWidth: 70
     },
     {
       id: 'volume',
@@ -147,7 +158,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Объем'
+      tooltip: 'Объем',
+      minWidth: 60
     },
     {
       id: 'qty',
@@ -160,7 +172,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Количество заявок'
+      tooltip: 'Количество заявок',
+      minWidth: 65
     },
     {
       id: 'price',
@@ -173,7 +186,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Цена'
+      tooltip: 'Цена',
+      minWidth: 55
     },
     {
       id: 'triggerPrice',
@@ -186,7 +200,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Сигнальная цена (заявка выставится, когда цена упадёт/поднимется до указанного значения)'
+      tooltip: 'Сигнальная цена (заявка выставится, когда цена упадёт/поднимется до указанного значения)',
     },
     {
       id: 'status',
@@ -203,7 +217,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Стаус заявки'
+      tooltip: 'Стаус заявки',
+      minWidth: 80
     },
     {
       id: 'conditionType',
@@ -219,7 +234,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Условие, при котором будет выставлена заявка'
+      tooltip: 'Условие, при котором будет выставлена заявка',
+      minWidth: 85
     },
     {
       id: 'transTime',
@@ -232,7 +248,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Время совершения заявки'
+      tooltip: 'Время совершения заявки',
+      minWidth: 60
     },
     {
       id: 'exchange',
@@ -248,7 +265,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Наименование биржи'
+      tooltip: 'Наименование биржи',
+      minWidth: 80
     },
     {
       id: 'type',
@@ -264,7 +282,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       ],
       isFilterVisible: false,
       hasFilter: true,
-      tooltip: 'Тип заявки (лимитная/рыночная)'
+      tooltip: 'Тип заявки (лимитная/рыночная)',
+      minWidth: 65
     },
     {
       id: 'endTime',
@@ -277,7 +296,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       listOfFilter: [],
       isFilterVisible: false,
       hasFilter: false,
-      tooltip: 'Срок действия заявки'
+      tooltip: 'Срок действия заявки',
+      minWidth: 65
     },
   ];
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
@@ -298,7 +318,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly store: Store,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -309,22 +330,39 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualBlotterSettings(previous, current)),
-      shareReplay()
-    );
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
 
     this.settings$.pipe(
+      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)),
+      mapWith(
+        () => this.translatorService.getTranslator('blotter/stop-orders'),
+        (s, t) => ({ s, t })
+      ),
       takeUntil(this.destroy$)
-    ).subscribe(s => {
-      if (s.stopOrdersColumns) {
-        this.listOfColumns = this.allColumns.filter(c => s.stopOrdersColumns.includes(c.id));
-        this.tableInnerWidth = `${this.listOfColumns.length * 100}px`;
+    ).subscribe(({ s, t }) => {
+      const tableSettings = s.stopOrdersTable ?? TableSettingHelper.toTableDisplaySettings(s.stopOrdersColumns);
+
+      if (tableSettings) {
+        this.listOfColumns = this.allColumns
+          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
+          .filter(c => !!c.columnSettings)
+          .map((column, index) => ({
+            ...column.column,
+            name: t(['columns', column.column.id, 'name'], { fallback: column.column.name }),
+            tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
+            searchDescription: t(['columns', column.column.id, 'searchDescription'], { fallback: column.column.searchDescription }),
+            width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
+            order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+          }))
+          .sort((a, b) => a.order - b.order);
+
+        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + cur.width! , 0) + 70;
       }
       this.badgeColor = s.badgeColor!;
     });
 
     const orders$ = this.settings$.pipe(
+      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getStopOrders(settings)),
       debounceTime(100),
       startWith([]),
@@ -394,7 +432,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   cancelOrder(orderId: string) {
-    this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
       this.cancelCommands?.next({
@@ -483,6 +521,50 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         [...this.table?.data ?? []],
         this.listOfColumns,
         valueTranslators
+      );
+    });
+  }
+
+  saveColumnWidth(columnId: string, width: number) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      const tableSettings = settings.stopOrdersTable ?? TableSettingHelper.toTableDisplaySettings(settings.stopOrdersColumns);
+      if (tableSettings) {
+        this.settingsService.updateSettings<BlotterSettings>(
+          settings.guid,
+          {
+            stopOrdersTable: TableSettingHelper.updateColumn(
+              columnId,
+              tableSettings,
+              {
+                columnWidth: width
+              }
+            )
+          }
+        );
+      }
+    });
+  }
+
+  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
+    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
+    this.tableInnerWidth += delta;
+  }
+
+  changeColumnOrder(event: CdkDragDrop<any>) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      this.settingsService.updateSettings<BlotterSettings>(
+        settings.guid,
+        {
+          stopOrdersTable: BlotterTablesHelper.changeColumnOrder(
+            event,
+            settings.stopOrdersTable ?? TableSettingHelper.toTableDisplaySettings(settings.stopOrdersColumns)!,
+            this.listOfColumns
+          )
+        }
       );
     });
   }

@@ -9,6 +9,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { ExternalLinkModule } from '../../shared/components/external-link/external-link.module';
+import { TranslocoModule } from "@ngneat/transloco";
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { ExternalLinkModule } from '../../shared/components/external-link/extern
     NzButtonModule,
     NzTypographyModule,
     NzIconModule,
-    ExternalLinkModule
+    ExternalLinkModule,
+    TranslocoModule
   ],
   exports: [
     ApplicationUpdatedWidgetComponent

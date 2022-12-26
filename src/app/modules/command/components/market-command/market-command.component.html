@@ -1,11 +1,11 @@
 <div *ngIf="commandContext$ | async as commandContext">
-<form nz-form [nzLayout]="'horizontal'" [formGroup]="form">
+<form nz-form [nzLayout]="'horizontal'" [formGroup]="form" *transloco="let t; scope: 'command'">
   <nz-form-item class="compact">
     <nz-form-control [nzErrorTip]="quantityError" [nzValidateStatus]="form.get('quantity')!">
       <nz-form-label [nzNoColon]="true" nzRequired nzFor="quantity">
-        Кол-во лотов
+        {{t('command.quantityLabel')}}
         <span *ngIf="(commandContext.instrument.lotsize ?? 1) !== 1" class="lot-size-hint">
-          &nbsp;1 лот = {{commandContext.instrument.lotsize | shortNumber}} шт.
+          &nbsp;1 {{t('command.lot')}} = {{commandContext.instrument.lotsize | shortNumber}} {{t('command.pcs')}}
         </span>
       </nz-form-label>
       <nz-input-group>
@@ -13,17 +13,17 @@
       </nz-input-group>
     </nz-form-control>
     <ng-template #quantityError>
-      <span *ngIf="form.get('quantity')?.errors?.required">Введите кол-во</span>
-      <span *ngIf="form.get('quantity')?.errors?.min">Слишком мало</span>
-      <span *ngIf="form.get('quantity')?.errors?.max">Слишком много</span>
+      <span *ngIf="form.get('quantity')?.errors?.required">{{t('command.emptyQuantityError')}}</span>
+      <span *ngIf="form.get('quantity')?.errors?.min">{{t('command.tooLittle')}}</span>
+      <span *ngIf="form.get('quantity')?.errors?.max">{{t('command.tooMuch')}}</span>
     </ng-template>
   </nz-form-item>
   <nz-collapse nzGhost [nzBordered]="false" class="compact">
-    <nz-collapse-panel nzHeader="Продвинутые">
-      <nz-form-control nzErrorTip="Группа">
-        <nz-form-label [nzNoColon]="true" nzFor="instrumentGroup">Группа</nz-form-label>
+    <nz-collapse-panel [nzHeader]="t('command.advanced')">
+      <nz-form-control [nzErrorTip]="t('command.instrumentGroupError')">
+        <nz-form-label [nzNoColon]="true" nzFor="instrumentGroup">{{t('command.instrumentGroupLabel')}}</nz-form-label>
         <nz-input-group>
-          <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()" nz-input placeholder="Режим торгов" />
+          <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()" nz-input [placeholder]="t('command.instrumentGroupPlaceholder')" />
         </nz-input-group>
       </nz-form-control>
     </nz-collapse-panel>

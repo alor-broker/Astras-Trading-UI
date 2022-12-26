@@ -126,8 +126,8 @@ export class SubscriptionsDataFeedService {
     const state = this.subscriptionsMap.get(subscriptionId);
 
     if (state) {
-      state.subscription.unsubscribe();
       this.subscriptionsMap.delete(subscriptionId);
+      state.subscription.unsubscribe();
     }
   }
 

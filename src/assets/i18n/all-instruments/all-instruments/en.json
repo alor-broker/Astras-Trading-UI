@@ -1,0 +1,17 @@
+{
+  "columns": {
+    "name":  "Ticker",
+    "shortName": "Name",
+    "currency":  "Currency",
+    "dailyGrowth": "Daily growth",
+    "tradeVolume":  "Trade Volume",
+    "exchange": "Exchange",
+    "market":  "Market",
+    "lotSize": "Lot size",
+    "price": "Price",
+    "priceMax":  "Max price",
+    "priceMin": "Min price",
+    "priceScale":  "Price scale",
+    "yield": "Yield"
+  }
+}

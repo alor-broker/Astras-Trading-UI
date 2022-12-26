@@ -14,6 +14,8 @@ import {
   Observable,
   shareReplay,
   Subject,
+  Subscription,
+  switchMap,
   take,
   takeUntil
 } from 'rxjs';
@@ -26,6 +28,8 @@ import {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
   InitialSettingsMap,
+  IOrderLineAdapter,
+  IPositionLineAdapter,
   ISettingsAdapter,
   PlusClickParams,
   ResolutionString,
@@ -37,6 +41,7 @@ import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.ser
 import { DashboardItemContentSize } from '../../../../shared/models/dashboard-item.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import {
+  ThemeColors,
   ThemeSettings,
   ThemeType
 } from '../../../../shared/models/settings/theme-settings.model';
@@ -48,8 +53,80 @@ import { SelectedPriceData } from '../../../../shared/models/orders/selected-ord
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { MathHelper } from '../../../../shared/utils/math-helper';
+import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
+import { Store } from '@ngrx/store';
+import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
+import { getSelectedPortfolioKey } from '../../../../store/portfolios/portfolios.selectors';
+import { Position } from '../../../../shared/models/positions/position.model';
+import {
+  debounceTime,
+  map,
+  startWith
+} from 'rxjs/operators';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { Order } from '../../../../shared/models/orders/order.model';
+import { StopOrder } from '../../../../shared/models/orders/stop-order.model';
+import { Side } from '../../../../shared/models/enums/side.model';
+import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
+import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
+import { TranslocoService } from "@ngneat/transloco";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
+
+class PositionState {
+  positionLine: IPositionLineAdapter | null = null;
+
+  constructor(private tearDown: Subscription) {
+    tearDown.add(() => {
+      try {
+        this.positionLine?.remove();
+      } catch {
+      }
+    });
+  }
+
+  destroy() {
+    this.tearDown.unsubscribe();
+  }
+}
+
+class OrdersState {
+  readonly limitOrders = new Map<string, IOrderLineAdapter>();
+  readonly stopOrders = new Map<string, IOrderLineAdapter>();
+
+  constructor(private tearDown: Subscription) {
+  }
+
+  destroy() {
+    this.tearDown.add(() => {
+      this.clear();
+    });
+
+    this.tearDown.unsubscribe();
+  }
+
+  clear() {
+    this.clearOrders(this.limitOrders);
+    this.clearOrders(this.stopOrders);
+  }
+
+  private clearOrders(orders: Map<string, IOrderLineAdapter>) {
+    orders.forEach(value => {
+      try {
+        value.remove();
+      } catch {
+      }
+    });
+
+    orders.clear();
+  }
+}
+
+interface ChartState {
+  widget: IChartingLibraryWidget;
+  positionState?: PositionState;
+  ordersState?: OrdersState;
+}
 
 @Component({
   selector: 'ats-tech-chart[guid][shouldShowSettings][contentSize]',
@@ -66,11 +143,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('chartContainer', { static: true })
   chartContainer?: ElementRef<HTMLElement>;
   private readonly selectedPriceProviderName = 'selectedPrice';
-  private chart?: IChartingLibraryWidget;
+  private chartState?: ChartState;
   private settings$?: Observable<ExtendedSettings>;
+  private allActivePositions$?: Observable<Position[]>;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
-  private chartStudyTemplate?: object;
+  private lastTheme?: ThemeSettings;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -78,20 +156,27 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly themeService: ThemeService,
     private readonly instrumentsService: InstrumentsService,
     private readonly widgetsDataProvider: WidgetsDataProviderService,
-    private readonly modalService: ModalService
+    private readonly modalService: ModalService,
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    private readonly store: Store,
+    private readonly orderCancellerService: OrderCancellerService,
+    private readonly translocoService: TranslocoService
   ) {
   }
 
   ngOnInit(): void {
     this.initSettingsStream();
+    this.initPositionStream();
 
     this.widgetsDataProvider.addNewDataProvider<SelectedPriceData>(this.selectedPriceProviderName);
   }
 
   ngOnDestroy() {
-    if (this.chart) {
-      this.clearChartEventsSubscription(this.chart);
-      this.chart?.remove();
+    if (this.chartState) {
+      this.clearChartEventsSubscription(this.chartState.widget);
+      this.chartState.ordersState?.destroy();
+      this.chartState.positionState?.destroy();
+      this.chartState.widget.remove();
     }
 
     this.techChartDatafeedService.clear();
@@ -112,11 +197,18 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     combineLatest([
       chartSettings$,
-      this.themeService.getThemeSettings()
+      this.themeService.getThemeSettings(),
+      this.translocoService.langChanges$
     ]).pipe(
       takeUntil(this.destroy$),
-    ).subscribe(([settings, theme]) => {
-      this.createChart(settings.widgetSettings, theme);
+    ).subscribe(([settings, theme, lang]) => {
+      this.createChart(
+        settings.widgetSettings,
+        theme,
+        this.lastTheme && this.lastTheme.theme !== theme.theme,
+        lang as 'ru' | 'en');
+
+      this.lastTheme = theme;
     });
   }
 
@@ -132,6 +224,14 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedSettings)
       ),
       shareReplay(1)
+    );
+  }
+
+  private initPositionStream() {
+    this.allActivePositions$ = this.getCurrentPortfolio().pipe(
+      switchMap(portfolio => this.portfolioSubscriptionsService.getAllPositionsSubscription(portfolio.portfolio, portfolio.exchange)),
+      map((positions => positions.filter(p => p.avgPrice && p.qtyTFutureBatch))),
+      startWith([])
     );
   }
 
@@ -180,10 +280,22 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 
-  private createChart(settings: TechChartSettings, theme: ThemeSettings) {
-    if (this.chart) {
-      this.clearChartEventsSubscription(this.chart);
-      this.chart?.remove();
+  private createChart(settings: TechChartSettings, theme: ThemeSettings, forceRecreate: boolean = false, lang: 'ru' | 'en' = 'ru') {
+    if (this.chartState) {
+      if (forceRecreate) {
+        this.chartState.widget?.remove();
+      }
+      else {
+        this.chartState.widget.activeChart().setSymbol(
+          `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
+          () => {
+            this.initPositionDisplay(settings, theme.themeColors);
+            this.initOrdersDisplay(settings, theme.themeColors);
+          }
+        );
+
+        return;
+      }
     }
 
     if (!this.chartContainer) {
@@ -197,7 +309,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       container: this.chartContainer.nativeElement,
       symbol: `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
       interval: (settings.chartSettings?.['chart.lastUsedTimeBasedResolution'] ?? '1D') as ResolutionString,
-      locale: 'ru',
+      locale: lang,
       library_path: '/assets/charting_library/',
       custom_css_url: '../tv-custom-styles.css',
       datafeed: this.techChartDatafeedService,
@@ -233,9 +345,9 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       ]
     };
 
-    this.chart = new widget(config);
+    const chartWidget = new widget(config);
 
-    this.chart.applyOverrides({
+    chartWidget.applyOverrides({
       'paneProperties.background': theme.themeColors.componentBackground,
       'paneProperties.backgroundType': 'solid',
       'paneProperties.vertGridProperties.color': theme.themeColors.chartGridColor,
@@ -247,46 +359,27 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       'mainSeriesProperties.candleStyle.borderDownColor': theme.themeColors.sellColor
     });
 
-    this.chart.onChartReady(() => {
-      if (this.chartStudyTemplate) {
-        this.chart?.activeChart().applyStudyTemplate(this.chartStudyTemplate);
-      }
-    });
+    this.subscribeToChartEvents(chartWidget);
 
-    this.subscribeToChartEvents(settings);
+    this.chartState = {
+      widget: chartWidget
+    };
+
+    chartWidget.onChartReady(() => {
+      this.chartState?.widget!.activeChart().dataReady(() => {
+          this.initPositionDisplay(settings, theme.themeColors);
+          this.initOrdersDisplay(settings, theme.themeColors);
+        }
+      );
+    });
   }
 
-  private subscribeToChartEvents(settings: TechChartSettings) {
+  private subscribeToChartEvents(widget: IChartingLibraryWidget) {
     this.subscribeToChartEvent(
-      this.chart!,
-      'drawing',
-      () => this.settingsService.updateIsLinked(settings.guid, false)
-    );
-
-    this.subscribeToChartEvent(
-      this.chart!,
+      widget,
       'onPlusClick',
       (params: PlusClickParams) => this.selectPrice(params.price)
     );
-
-    this.subscribeToChartEvent(
-      this.chart!,
-      'study_event',
-      () => this.saveIndicators()
-    );
-
-    this.subscribeToChartEvent(
-      this.chart!,
-      'study_properties_changed',
-      () => this.saveIndicators()
-    );
-  }
-
-  private saveIndicators() {
-    this.chartStudyTemplate = this.chart?.activeChart().createStudyTemplate({
-      saveSymbol: false,
-      saveInterval: false
-    });
   }
 
   private subscribeToChartEvent(target: IChartingLibraryWidget, event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap]) {
@@ -324,5 +417,252 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         });
       }
     });
+  }
+
+  private getCurrentPortfolio(): Observable<PortfolioKey> {
+    return this.store.select(getSelectedPortfolioKey)
+      .pipe(
+        filter((p): p is PortfolioKey => !!p)
+      );
+  }
+
+  private initPositionDisplay(instrument: InstrumentKey, themeColors: ThemeColors) {
+    this.chartState!.positionState?.destroy();
+
+    const tearDown = new Subscription();
+    this.chartState!.positionState = new PositionState(tearDown);
+
+    const subscription = this.allActivePositions$!.pipe(
+      map(x => x.find(p => p.symbol === instrument.symbol && p.exchange === instrument.exchange)),
+      distinctUntilChanged((p, c) => p?.avgPrice === c?.avgPrice && p?.qtyTFutureBatch === c?.qtyTFutureBatch),
+    ).subscribe(position => {
+      const positionState = this.chartState!.positionState!;
+      if (!position) {
+        positionState.positionLine?.remove();
+        positionState.positionLine = null;
+        return;
+      }
+
+      if (!positionState.positionLine) {
+        try {
+          positionState.positionLine = this.chartState!.widget.activeChart()
+            .createPositionLine()
+            .setText('Поз.');
+        } catch {
+          return;
+        }
+      }
+
+      const color = position.qtyTFutureBatch >= 0
+        ? themeColors.buyColor
+        : themeColors.sellColor;
+
+      const backgroundColor = position.qtyTFutureBatch >= 0
+        ? themeColors.buyColorBackground
+        : themeColors.sellColorBackground;
+
+      positionState.positionLine
+        .setQuantity(position.qtyTFutureBatch.toString())
+        .setPrice(position.avgPrice)
+        .setLineColor(color)
+        .setBodyBackgroundColor(themeColors.componentBackground)
+        .setBodyBorderColor(color)
+        .setQuantityBackgroundColor(color)
+        .setQuantityBorderColor(backgroundColor)
+        .setQuantityTextColor(themeColors.chartPrimaryTextColor)
+        .setBodyTextColor(themeColors.chartPrimaryTextColor);
+    });
+
+    tearDown.add(subscription);
+  }
+
+  private initOrdersDisplay(instrument: InstrumentKey, themeColors: ThemeColors) {
+    this.chartState!.ordersState?.destroy();
+
+    const tearDown = new Subscription();
+    this.chartState!.ordersState = new OrdersState(tearDown);
+
+    tearDown.add(this.setupOrdersUpdate(
+      this.getLimitOrdersStream(instrument),
+      this.chartState!.ordersState.limitOrders,
+      (order, orderLineAdapter) => {
+        this.fillOrderBaseParameters(order, orderLineAdapter, themeColors);
+        this.fillLimitOrder(order, orderLineAdapter);
+      }
+    ));
+
+    tearDown.add(this.setupOrdersUpdate(
+      this.getStopOrdersStream(instrument),
+      this.chartState!.ordersState.stopOrders,
+      (order, orderLineAdapter) => {
+        this.fillOrderBaseParameters(order, orderLineAdapter, themeColors);
+        this.fillStopOrder(order, orderLineAdapter);
+      }
+    ));
+  }
+
+  private setupOrdersUpdate<T extends Order>(
+    data$: Observable<T[]>,
+    state: Map<string, IOrderLineAdapter>,
+    fillOrderLine: (order: T, orderLineAdapter: IOrderLineAdapter) => void): Subscription {
+    const removeItem = (itemKey: string) => {
+      try {
+        state.get(itemKey)?.remove();
+      } catch {
+      }
+
+      state.delete(itemKey);
+    };
+
+    return data$.subscribe(
+      orders => {
+        Array.from(state.keys()).forEach(orderId => {
+          if (!orders.find(o => o.id === orderId)) {
+            removeItem(orderId);
+          }
+        });
+
+        orders.forEach(order => {
+          const existingOrderLine = state.get(order.id);
+          if (order.status !== 'working') {
+            if (existingOrderLine) {
+              removeItem(order.id);
+
+            }
+
+            return;
+          }
+
+          if (!existingOrderLine) {
+            const orderLine = this.chartState!.widget.activeChart().createOrderLine();
+            fillOrderLine(order, orderLine);
+            state.set(order.id, orderLine);
+          }
+        });
+      }
+    );
+  }
+
+  private getLimitOrdersStream(instrumentKey: InstrumentKey): Observable<Order[]> {
+    return this.getCurrentPortfolio().pipe(
+      switchMap(portfolio => this.portfolioSubscriptionsService.getOrdersSubscription(portfolio.portfolio, portfolio.exchange)),
+      map(orders => orders.allOrders.filter(o => o.type === 'limit')),
+      debounceTime(100),
+      map(orders => orders.filter(o => o.symbol === instrumentKey.symbol && o.exchange === instrumentKey.exchange)),
+      startWith([])
+    );
+  }
+
+  private getStopOrdersStream(instrumentKey: InstrumentKey): Observable<StopOrder[]> {
+    return this.getCurrentPortfolio().pipe(
+      switchMap(portfolio => this.portfolioSubscriptionsService.getStopOrdersSubscription(portfolio.portfolio, portfolio.exchange)),
+      map(orders => orders.allOrders),
+      debounceTime(100),
+      map(orders => orders.filter(o => o.symbol === instrumentKey.symbol && o.exchange === instrumentKey.exchange)),
+      startWith([])
+    );
+  }
+
+  private fillOrderBaseParameters(order: Order, orderLineAdapter: IOrderLineAdapter, themeColors: ThemeColors) {
+    orderLineAdapter
+      .setQuantity(order.qtyBatch.toString())
+      .setQuantityBackgroundColor(themeColors.componentBackground)
+      .setQuantityTextColor(themeColors.chartPrimaryTextColor)
+      .setQuantityBorderColor(themeColors.primaryColor)
+      .setBodyBorderColor(themeColors.primaryColor)
+      .setBodyBackgroundColor(themeColors.componentBackground)
+      .setLineStyle(2)
+      .setLineColor(themeColors.primaryColor)
+      .setCancelButtonBackgroundColor(themeColors.componentBackground)
+      .setCancelButtonBorderColor('transparent')
+      .setCancelButtonIconColor(themeColors.primaryColor)
+      .setBodyTextColor(order.side === Side.Buy ? themeColors.buyColor : themeColors.sellColor);
+  }
+
+  private fillLimitOrder(order: Order, orderLineAdapter: IOrderLineAdapter) {
+    const getEditCommand = () => ({
+      type: order.type,
+      quantity: order.qty,
+      orderId: order.id,
+      price: order.price,
+      instrument: {
+        symbol: order.symbol,
+        exchange: order.exchange
+      },
+      user: {
+        portfolio: order.portfolio,
+        exchange: order.exchange
+      },
+      side: order.side
+    });
+
+    orderLineAdapter.setText('L')
+      .setTooltip(`${order.side === Side.Buy ? 'Покупка' : 'Продажа'} Лимит`)
+      .setPrice(order.price)
+      .onCancel(() => this.orderCancellerService.cancelOrder({
+          orderid: order.id,
+          portfolio: order.portfolio,
+          exchange: order.exchange,
+          stop: false
+        }).subscribe()
+      )
+      .onModify(() => this.modalService.openEditModal(getEditCommand()))
+      .onMove(() => this.modalService.openEditModal({
+          ...getEditCommand(),
+          price: orderLineAdapter.getPrice(),
+          cancelled: () => orderLineAdapter.setPrice(order.price)
+        })
+      );
+  }
+
+  private fillStopOrder(order: StopOrder, orderLineAdapter: IOrderLineAdapter) {
+    const orderText = 'S'
+      + (order.type === 'stoplimit' ? 'L' : 'M')
+      + ' '
+      + (order.conditionType === 'more' ? '(>)' : '(<)');
+
+    const orderTooltip = (order.side === Side.Buy ? 'Покупка' : 'Продажа')
+      + ' Стоп'
+      + (order.type === 'stoplimit' ? 'лимит' : 'рынок')
+      + ' '
+      + (order.conditionType === 'more' ? '(больше)' : '(меньше)');
+
+    const getEditCommand = () => ({
+      type: order.type,
+      quantity: order.qty,
+      orderId: order.id,
+      price: order.price,
+      instrument: {
+        symbol: order.symbol,
+        exchange: order.exchange
+      },
+      user: {
+        portfolio: order.portfolio,
+        exchange: order.exchange
+      },
+      side: order.side,
+      triggerPrice: order.triggerPrice,
+      stopEndUnixTime: order.endTime,
+      condition: order.conditionType === 'less' ? StopOrderCondition.Less : StopOrderCondition.More
+    });
+
+    orderLineAdapter
+      .setText(orderText)
+      .setTooltip(orderTooltip)
+      .setPrice(order.triggerPrice)
+      .onCancel(() => this.orderCancellerService.cancelOrder({
+          orderid: order.id,
+          portfolio: order.portfolio,
+          exchange: order.exchange,
+          stop: true
+        }).subscribe()
+      )
+      .onModify(() => this.modalService.openEditModal(getEditCommand()))
+      .onMove(() => this.modalService.openEditModal({
+          ...getEditCommand(),
+          triggerPrice: orderLineAdapter.getPrice(),
+          cancelled: () => orderLineAdapter.setPrice(order.triggerPrice)
+        })
+      );
   }
 }

@@ -1,0 +1,45 @@
+{
+  "newOrderHeader": "New order",
+  "editOrderHeader": "Edit order",
+
+  "limitTab": "Limit",
+  "marketTab": "Market",
+  "stopTab": "Conditional",
+
+  "dayChangeLabel": "Diff.",
+  "dayChangePerPriceLabel": "Diff.%",
+
+  "buyBtnText": "Buy",
+  "sellBtnText": "Sell",
+
+  "evaluationCost": "Cost",
+  "evaluationCommission": "Commission",
+  "quantityToBuy": "For purchase",
+  "quantityToSell": "For sale",
+
+  "quantityLabel": "Lots quantity",
+  "lot": "lot",
+  "pcs": "pcs",
+  "emptyQuantityError": "Fill the quantity field",
+  "tooLittle": "Too little",
+  "tooMuch": "Too much",
+  "priceLabel": "Price",
+  "emptyPriceError": "Fill the price field",
+  "triggerPriceLabel": "Trigger price",
+  "priceStepMultiplicityError": "The value must be a multiple of the price step",
+  "conditionLabel": "Condition",
+  "conditionError": "Select condition",
+  "more": "More",
+  "less": "Less",
+  "stopEndTimeLabel": "Expiration date",
+  "stopEndTimeError": "Fill expiration date input",
+  "stopEndTimePlaceholder": "Select date",
+  "withLimitLabel": "Stop type",
+
+  "stopOrderWarning": "Stop orders are placed through the new Sparker service. Because of this, there may be errors that we for some reason did not notice. Please be careful.",
+
+  "advanced": "Advanced",
+  "instrumentGroupLabel": "Group",
+  "instrumentGroupError": "Fill the group field",
+  "instrumentGroupPlaceholder": "Trading mode"
+}

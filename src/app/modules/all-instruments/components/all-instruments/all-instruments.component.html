@@ -3,7 +3,7 @@
   [tableContainerWidth]="contentSize?.width || 0"
   [data]="(instrumentsDisplay$ | async) ?? []"
   [isLoading]="(isLoading$ | async) ?? false"
-  [columns]="displayedColumns"
+  [columns]="(displayedColumns$ | async)!"
   [contextMenu]="contextMenu"
   (scrolled)="scrolled()"
   (filterApplied)="applyFilter($event)"

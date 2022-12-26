@@ -6,7 +6,7 @@ import {
 import { BlotterSettingsComponent } from './blotter-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { ReactiveFormsModule } from "@angular/forms";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzSwitchModule } from "ng-zorro-antd/switch";
@@ -35,7 +35,8 @@ describe('BlotterSettingsComponent', () => {
         NoopAnimationsModule,
         ReactiveFormsModule,
         NzSelectModule,
-        NzSwitchModule
+        NzSwitchModule,
+        getTranslocoModule()
       ],
       providers: [
         {

@@ -12,7 +12,10 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class TerminalSettingsService {
-  constructor(private readonly profile: AccountService, private readonly store: Store) {
+  constructor(
+    private readonly profile: AccountService,
+    private readonly store: Store
+  ) {
   }
 
   getFullName(): Observable<FullName> {

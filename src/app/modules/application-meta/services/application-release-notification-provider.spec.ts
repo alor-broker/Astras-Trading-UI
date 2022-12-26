@@ -4,6 +4,8 @@ import { ApplicationMetaService } from './application-meta.service';
 import { ModalService } from '../../../shared/services/modal.service';
 import { BehaviorSubject, take } from 'rxjs';
 import { ReleaseMeta } from '../models/application-release.model';
+import { getTranslocoModule } from "../../../shared/utils/testing";
+import ruApplicationMetaService from '../../../../assets/i18n/application-meta/application-meta-service/ru.json';
 
 describe('ApplicationReleaseNotificationProvider', () => {
   let service: ApplicationReleaseNotificationProvider;
@@ -19,6 +21,13 @@ describe('ApplicationReleaseNotificationProvider', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [
+        getTranslocoModule({
+          langs: {
+            'application-meta/application-meta-service': ruApplicationMetaService
+          }
+        })
+      ],
       providers: [
         ApplicationReleaseNotificationProvider,
         {
