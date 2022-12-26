@@ -160,13 +160,20 @@ export class OrderBookComponent implements OnInit, OnDestroy {
         const diff = MathHelper.round(bestAsk - bestBid, decimalsCount);
         const diffPercents = MathHelper.round((diff / bestBid) * 100, 3);
 
-        const colorRatio = MathHelper.round(
+        let colorRatio = MathHelper.round(
           (
             (diffPercents - this.minSpreadDiffPercentForColorChange) /
             (this.maxSpreadDiffPercentForColorChange - this.minSpreadDiffPercentForColorChange)
           ),
           2
         );
+
+        if (colorRatio < 0) {
+          colorRatio = 0;
+        }
+        if (colorRatio > 1) {
+          colorRatio = 1;
+        }
 
         return {
           diffPercents,
