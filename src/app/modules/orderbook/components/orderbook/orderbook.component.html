@@ -5,13 +5,35 @@
       <span class="bid-volume">{{ob.bidVolumes}}</span>
       <span class="ask-volume">{{ob.askVolumes}}</span>
     </div>
+
+    <div *ngIf="spreadDiffData$ | async as spreadDiffData" class="spread-size-row">
+      <div *transloco="let t; scope: 'orderbook/orderbook'">
+        {{t('orderbookOrderbook.spreadSize')}}:
+      </div>
+      <div class="value-wrapper">
+        <span
+          [ngStyle]="{opacity: 1 - spreadDiffData.colorRatio}"
+          class="value"
+        >
+          {{spreadDiffData.diff}} ({{spreadDiffData.diffPercents}}%)
+        </span>
+        <span
+          [ngStyle]="{opacity: spreadDiffData.colorRatio}"
+          class="value red"
+        >
+          {{spreadDiffData.diff}} ({{spreadDiffData.diffPercents}}%)
+        </span>
+      </div>
+      <div></div>
+    </div>
+
     <nz-table *ngIf="shouldShowTable$ | async" #basicTable [nzData]="ob.rows" nzSize="small" [nzFrontPagination]="false">
       <thead>
         <tr>
           <th [nzWidth]="'20px'">Vol</th>
           <th nzAlign="right">Bid</th>
           <th>Ask</th>
-          <th [nzWidth]="'20px'">Vol</th>
+          <th [nzWidth]="'20px'" nzAlign="right">Vol</th>
         </tr>
       </thead>
       <tbody (click)="newLimitOrder($event, 0)">
@@ -57,7 +79,7 @@
               [ngStyle]='getAskStyle(row.askVolume ?? 0)'>
               {{row.yieldAsk}}
             </td>
-            <td [ngStyle]="{background: 'unset'}" class='row-cell' nzAlign='right' (click)="newLimitOrder($event, row.ask ?? 0)">
+            <td [ngStyle]="{background: 'unset'}" class='row-cell row-cell--ask-volume' nzAlign='right' (click)="newLimitOrder($event, row.ask ?? 0)">
               <span class="cell-value">
                 {{row.askVolume}}
               </span>
