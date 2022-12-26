@@ -29,7 +29,7 @@
     "@ngrx/store": "^14.3.2",
     "@ngrx/store-devtools": "^14.3.2",
     "angular-gridster2": "^14.1.2",
-    "chart.js": "^3.7.0",
+    "chart.js": "^4.1.1",
     "lightweight-charts": "^3.8.0",
     "ng-zorro-antd": "^14.3.0",
     "ng2-charts": "^4.1.1",
