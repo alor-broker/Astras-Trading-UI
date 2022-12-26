@@ -22,6 +22,7 @@ import {
 import { AllTradesFilters, AllTradesItem } from "../../models/all-trades.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 @Component({
   selector: 'ats-all-trades[guid]',
@@ -97,6 +98,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   constructor(
     private readonly allTradesService: AllTradesService,
     private readonly settingsService: WidgetSettingsService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -109,8 +111,23 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     this.initTrades();
 
     this.settings$
-      .subscribe(settings => {
-        this.displayedColumns = this.allColumns.filter(col => settings.allTradesColumns.includes(col.name));
+      .pipe(
+        mapWith(
+          () => this.translatorService.getTranslator('all-trades/all-trades'),
+          (settings, translate) => ({ settings, translate })
+        ),
+      )
+      .subscribe(({ settings, translate }) => {
+        this.displayedColumns = this.allColumns
+          .filter(col => settings.allTradesColumns.includes(col.name))
+          .map(col => ({
+              ...col,
+              displayName: translate(
+                ['columns', col.name],
+                { fallback: col.displayName }
+              )
+            })
+          );
 
         this.applyFilter({
         exchange: settings.exchange,

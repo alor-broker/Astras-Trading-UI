@@ -1,0 +1,10 @@
+{
+  "columns": {
+    "qty":  "Quantity",
+    "price": "Price",
+    "timestamp": "Time",
+    "side": "Side",
+    "oi":  "Opened interest",
+    "existing": "New event"
+  }
+}

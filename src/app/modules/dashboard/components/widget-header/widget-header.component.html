@@ -48,7 +48,7 @@
     </div>
   </div>
 
-  <div class="buttons-group">
+  <div class="buttons-group" *transloco="let t">
     <button *ngIf='s.linkToActive !== undefined' nz-button nzSize="small"
       (mousedown)="linkToActive($event, !s.linkToActive)"
       (touchstart)="linkToActive($event, !s.linkToActive)"
@@ -56,32 +56,32 @@
       <i nz-icon
         [nzType]="'link'"
         [nzTheme]="'outline'"
-        joyrideStep="step7"
-        [title]="joyrideContent.step7.title"
-        [text]="joyrideContent.step7.text"
+        joyrideStep="step6"
+        [title]="t('joyride.step6.title')"
+        [text]="t('joyride.step6.text')"
         [class.active]="s.linkToActive"></i>
     </button>
     <button *ngIf="hasSettings" nz-button nzSize="small" (click)="switchSettings($event)">
       <i nz-icon
          nzType="setting"
          [nzTheme]="'outline'"
-         joyrideStep="step8"
-         [title]="joyrideContent.step8.title"
-         [text]="joyrideContent.step8.text"></i>
+         joyrideStep="step7"
+         [title]="t('joyride.step7.title')"
+         [text]="t('joyride.step7.text')"></i>
     </button>
     <button *ngIf="hasHelp" nz-button nzSize="small" (click)="openHelp()">
       <i nz-icon nzType="question-circle" [nzTheme]="'outline'"
-      joyrideStep="step6"
-      [title]="joyrideContent.step6.title"
-      [text]="joyrideContent.step6.text"></i>
+      joyrideStep="step5"
+      [title]="t('joyride.step5.title')"
+      [text]="t('joyride.step5.text')"></i>
     </button>
     <button nz-button
       nzSize="small"
       (mousedown)="removeItem($event)"
       (touchstart)="removeItem($event)"
-      joyrideStep="step5"
-      [title]="joyrideContent.step5.title"
-      [text]="joyrideContent.step5.text">
+      joyrideStep="step4"
+      [title]="t('joyride.step4.title')"
+      [text]="t('joyride.step4.text')">
       <i nz-icon nzType="close-circle" [nzTheme]="'outline'"></i>
     </button>
   </div>

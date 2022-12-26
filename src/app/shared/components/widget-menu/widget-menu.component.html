@@ -1,86 +1,86 @@
-<ul nz-menu>
+<ul nz-menu *transloco="let t; scope: 'shared/widget-menu'">
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.instrumentSelect)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.instrumentSelect)"
   >
-    <span><i nz-icon nzType="eye" nzTheme="outline"></i><label>&nbsp;Выбор инструмента</label></span>
+    <span><i nz-icon nzType="eye" nzTheme="outline"></i><label>&nbsp;{{t('sharedWidgetMenu.' + widgetNames.instrumentSelect)}}</label></span>
   </li>
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.orderBook)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.orderBook)"
   >
-    <span><i nz-icon nzType="ordered-list" nzTheme="outline"></i> <label>&nbsp;Стакан</label></span>
+    <span><i nz-icon nzType="ordered-list" nzTheme="outline"></i> <label>&nbsp;{{t('sharedWidgetMenu.' + widgetNames.orderBook)}}</label></span>
   </li>
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.scalperOrderBook)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.scalperOrderBook)"
   >
-    <span><i nz-icon nzType="ordered-list" nzTheme="outline"></i> <label>&nbsp;Скальперский стакан</label></span>
+    <span><i nz-icon nzType="ordered-list" nzTheme="outline"></i> <label>&nbsp;{{t('sharedWidgetMenu.' + widgetNames.scalperOrderBook)}}</label></span>
   </li>
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.lightChart)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.lightChart)"
   >
-    <span><i nz-icon nzType="sliders" nzTheme="outline"></i><label>&nbsp;График</label></span>
+    <span><i nz-icon nzType="sliders" nzTheme="outline"></i><label>&nbsp;{{t('sharedWidgetMenu.' + widgetNames.lightChart)}}</label></span>
   </li>
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.techChart)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.techChart)"
   >
-    <span><i nz-icon nzType="fund" nzTheme="outline"></i><label> Тех. анализ</label></span>
+    <span><i nz-icon nzType="fund" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.' + widgetNames.techChart)}}</label></span>
   </li>
   <li nz-menu-item
       (click)="selected.emit(widgetNames.blotter)"
       *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.blotter)"
   >
-    <span><i nz-icon nzType="table" nzTheme="outline"></i><label>&nbsp;Блоттер</label></span>
+    <span><i nz-icon nzType="table" nzTheme="outline"></i><label>&nbsp;{{t('sharedWidgetMenu.' + widgetNames.blotter)}}</label></span>
   </li>
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.instrumentInfo)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.instrumentInfo)"
   >
-    <span><i nz-icon nzType="info" nzTheme="outline"></i><label>&nbsp;Инфо</label></span>
+    <span><i nz-icon nzType="info" nzTheme="outline"></i><label>&nbsp;{{t('sharedWidgetMenu.' + widgetNames.instrumentInfo)}}</label></span>
   </li>
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.news)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.news)"
   >
-    <span><i nz-icon nzType="read" nzTheme="outline"></i><label> Новости</label></span>
+    <span><i nz-icon nzType="read" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.' + widgetNames.news)}}</label></span>
   </li>
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.allTrades)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.allTrades)"
   >
-    <span><i nz-icon nzType="unordered-list" nzTheme="outline"></i><label> Все сделки</label></span>
+    <span><i nz-icon nzType="unordered-list" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.' + widgetNames.allTrades)}}</label></span>
   </li>
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.exchangeRate)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.exchangeRate)"
   >
-    <span><i nz-icon nzType="line-chart" nzTheme="outline"></i><label> Курсы валют</label></span>
+    <span><i nz-icon nzType="line-chart" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.' + widgetNames.exchangeRate)}}</label></span>
   </li>
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.allInstruments)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.allInstruments)"
   >
-    <span><i nz-icon nzType="profile" nzTheme="outline"></i><label> Все инструменты</label></span>
+    <span><i nz-icon nzType="profile" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.' + widgetNames.allInstruments)}}</label></span>
   </li>
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.orderSubmit)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.orderSubmit)"
   >
-    <span><i nz-icon nzType="send" nzTheme="outline"></i><label> Выставление заявки</label></span>
+    <span><i nz-icon nzType="send" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.' + widgetNames.orderSubmit)}}</label></span>
   </li>
 
   <ng-container *ngIf="!showedWidgets.length">
@@ -91,7 +91,7 @@
       (click)="resetDashboard.emit()"
       *ngIf="showResetItem"
     >
-      <span><i nz-icon nzType="appstore" nzTheme="outline"></i><label> Стандартный вид </label></span>
+      <span><i nz-icon nzType="appstore" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.standardView')}} </label></span>
     </li>
   </ng-container>
 </ul>

@@ -8,6 +8,7 @@ import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { CommonSummaryComponent } from './common-summary.component';
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { getTranslocoModule } from "../../../../shared/utils/testing";
 
 describe('CommonSummaryComponent', () => {
   let component: CommonSummaryComponent;
@@ -29,6 +30,9 @@ describe('CommonSummaryComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CommonSummaryComponent],
+      imports: [
+        getTranslocoModule(),
+      ],
       providers: [
         { provide: BlotterService, useValue: spyBlotter },
         {

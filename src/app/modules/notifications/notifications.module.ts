@@ -8,6 +8,7 @@ import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { TranslocoModule } from "@ngneat/transloco";
 
 
 @NgModule({
@@ -17,16 +18,17 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
   exports: [
     NotificationButtonComponent
   ],
-  imports: [
-    CommonModule,
-    NzBadgeModule,
-    NzButtonModule,
-    NzIconModule,
-    NzPopoverModule,
-    NzCardModule,
-    NzTableModule,
-    NzTypographyModule
-  ]
+    imports: [
+        CommonModule,
+        NzBadgeModule,
+        NzButtonModule,
+        NzIconModule,
+        NzPopoverModule,
+        NzCardModule,
+        NzTableModule,
+        NzTypographyModule,
+        TranslocoModule
+    ]
 })
 export class NotificationsModule {
 }

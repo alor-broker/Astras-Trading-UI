@@ -1,11 +1,14 @@
 <div *ngIf="helpParams$ | async as name">
-  <nz-modal (nzOnCancel)="handleClose()"
-            (nzOnOk)="handleClose()"
-            [nzCancelText]="null"
-            [nzVisible]='isVisible$ | async'
-            [nzWidth]="(windowSize$ | async) ?? defaultWindowSize"
-            nzOkText="Ок"
-            nzTitle="Справка">
+  <nz-modal
+    *transloco="let t"
+    (nzOnCancel)="handleClose()"
+    (nzOnOk)="handleClose()"
+    [nzCancelText]="null"
+    [nzVisible]='isVisible$ | async'
+    [nzWidth]="(windowSize$ | async) ?? defaultWindowSize"
+    [nzOkText]="t('okBtnText')"
+    [nzTitle]="t('helpHeader')"
+  >
     <ng-container *nzModalContent>
       <ats-help [name]="name"></ats-help>
     </ng-container>

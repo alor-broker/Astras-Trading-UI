@@ -28,6 +28,7 @@ import { mapWith } from '../../../../shared/utils/observable-helper';
 import { filter, map } from 'rxjs/operators';
 import { InstrumentBadges } from '../../../../shared/models/instruments/instrument.model';
 import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 @Component({
   selector: 'ats-all-instruments',
@@ -137,7 +138,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     { name: 'priceScale', displayName: 'Шаг цены', width: '90px', sortFn: this.getSortFn('priceScale') },
     { name: 'yield', displayName: 'Доходность', width: '100px', sortFn: this.getSortFn('yield') },
   ];
-  public displayedColumns: ColumnsSettings[] = [];
+  public displayedColumns$: BehaviorSubject<ColumnsSettings[]> = new BehaviorSubject<ColumnsSettings[]>([]);
   public contextMenu: ContextMenu[] = [];
   public instrumentsDisplay$!: Observable<AllInstruments[]>;
   private instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
@@ -152,7 +153,8 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     private readonly service: AllInstrumentsService,
     private readonly store: Store,
     private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -173,9 +175,24 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     );
 
     this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(settings => {
-        this.displayedColumns = this.allColumns.filter(col => settings.allInstrumentsColumns.includes(col.name));
+      .pipe(
+        mapWith(
+          () => this.translatorService.getTranslator('all-instruments/all-instruments'),
+          (settings, translate) => ({ settings, translate })
+        ),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(({ settings, translate }) => {
+        this.displayedColumns$.next(this.allColumns
+          .filter(col => settings.allInstrumentsColumns.includes(col.name))
+          .map(col => ({
+              ...col,
+              displayName: translate(
+                ['columns', col.name],
+                { fallback: col.displayName }
+              )
+            })
+          ));
         this.badgeColor = settings.badgeColor!;
       });
 

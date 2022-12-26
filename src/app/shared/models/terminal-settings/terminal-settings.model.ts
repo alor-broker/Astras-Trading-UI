@@ -25,6 +25,7 @@ export interface DesignSettings {
 export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;
   userIdleDurationMin?: number;
+  language?: 'en' | 'ru' | null;
   badgesBind?: boolean;
   hotKeysSettings?: HotKeysSettings;
   designSettings?: DesignSettings;

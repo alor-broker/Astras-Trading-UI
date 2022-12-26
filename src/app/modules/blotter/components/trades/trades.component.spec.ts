@@ -15,6 +15,7 @@ import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { mockComponent, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 describe('TradesComponent', () => {
   let component: TradesComponent;
@@ -40,7 +41,13 @@ describe('TradesComponent', () => {
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
         },
         { provide: BlotterService, useClass: MockServiceBlotter },
-        { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy }
+        { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+          }
+        }
       ],
       declarations: [
         TradesComponent,

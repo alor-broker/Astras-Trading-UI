@@ -1,0 +1,12 @@
+{
+  "moneyFreeTitle": "Free cash",
+  "moneyBlockedTitle": "Collaterals for guarantees",
+  "feeTitle": "Fee",
+  "moneyOldTitle": "Total cash",
+  "moneyAmountTitle": "Current limit",
+  "moneyPledgeAmountTitle": "Pledges",
+  "vmInterClTitle": "Variation margin",
+  "vmCurrentPositionsTitle": "Position variation margin",
+  "varMarginTitle": "Total variation margin",
+  "isLimitsSetTitle": "Cash and pledge limits"
+}

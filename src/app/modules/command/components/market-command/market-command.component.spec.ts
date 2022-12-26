@@ -7,6 +7,7 @@ import { CommandsService } from '../../services/commands.service';
 import { CommandContextModel } from "../../models/command-context.model";
 import { CommandParams } from "../../../../shared/models/commands/command-params.model";
 import {
+  getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
   TestData
@@ -20,6 +21,7 @@ import { MarketCommand } from "../../models/market-command.model";
 import { Quote } from "../../../../shared/models/quotes/quote.model";
 import { BehaviorSubject, Subject } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
+import ruCommand from '../../../../../assets/i18n/command/ru.json';
 
 describe('MarketCommandComponent', () => {
   let component: MarketCommandComponent;
@@ -80,6 +82,11 @@ describe('MarketCommandComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ...sharedModuleImportForTests,
+        getTranslocoModule({
+          langs: {
+            'command/ru': ruCommand,
+          }
+        }),
         BrowserAnimationsModule
       ],
       declarations: [

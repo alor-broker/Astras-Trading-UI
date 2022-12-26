@@ -5,6 +5,7 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { CommandWidgetComponent } from './command-widget.component';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { getTranslocoModule } from "../../../../shared/utils/testing";
 
 describe('CommandWidgetComponent', () => {
   let component: CommandWidgetComponent;
@@ -20,6 +21,9 @@ describe('CommandWidgetComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CommandWidgetComponent],
+      imports: [
+        getTranslocoModule()
+      ],
       providers: [
         { provide: ModalService, useValue: modalSpy },
         { provide: InstrumentsService, useValue: instrumentServiceSpy }

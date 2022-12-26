@@ -1,0 +1,45 @@
+{
+  "newOrderHeader": "Выставить заявку",
+  "editOrderHeader": "Изменить заявку",
+
+  "limitTab": "Лимитная",
+  "marketTab": "Рыночная",
+  "stopTab": "Условная",
+
+  "dayChangeLabel": "Изм.",
+  "dayChangePerPriceLabel": "Дн.%",
+
+  "buyBtnText": "Купить",
+  "sellBtnText": "Продать",
+
+  "evaluationCost": "Стоимость",
+  "evaluationCommission": "Комиссия",
+  "quantityToBuy": "К покупке",
+  "quantityToSell": "К продаже",
+
+  "quantityLabel": "Кол-во лотов",
+  "lot": "лот",
+  "pcs": "шт.",
+  "emptyQuantityError": "Введите кол-во",
+  "tooLittle": "Слишком мало",
+  "tooMuch": "Слишком много",
+  "priceLabel": "Цена",
+  "emptyPriceError": "Введите цену",
+  "triggerPriceLabel": "Сигнальная цена",
+  "priceStepMultiplicityError": "Значение должно быть кратно шагу цены",
+  "conditionLabel": "Условие",
+  "conditionError": "Выберите условие исполнения",
+  "more": "Больше",
+  "less": "Меньше",
+  "stopEndTimeLabel": "Действ. до",
+  "stopEndTimeError": "Введите дату",
+  "stopEndTimePlaceholder": "Выберите дату",
+  "withLimitLabel": "Тип стопа",
+
+  "stopOrderWarning": "Выставление стоп заявок происходит через новый сервис Sparker. Из-за этого могут быть ошибки, которые мы по какой-то причине не заметили. Будьте аккуратны, пожалуйста.",
+
+  "advanced": "Продвинутые",
+  "instrumentGroupLabel": "Группа",
+  "instrumentGroupError": "Введите группу",
+  "instrumentGroupPlaceholder": "Режим торгов"
+}

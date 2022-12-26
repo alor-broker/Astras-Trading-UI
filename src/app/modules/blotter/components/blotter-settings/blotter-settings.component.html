@@ -1,76 +1,125 @@
-<p>Настройки</p>
-<div>
-  <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
-    <nz-form-item>
-      <nz-form-control nzErrorTip="Введите портфель">
-        <nz-form-label nzRequired nzFor="portfolio">Портфель</nz-form-label>
-        <nz-input-group>
-          <input formControlName="portfolio" (mousedown)="$event.stopPropagation()" nz-input
-            placeholder="Портфель" />
-        </nz-input-group>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-control nzErrorTip="Выберите биржу">
-        <nz-form-label nzRequired nzFor="exchange">Биржа</nz-form-label>
-        <nz-input-group>
-          <nz-select formControlName='exchange'>
-            <nz-option  *ngFor='let exchange of exchanges' [nzValue]="exchange" [nzLabel]="exchange"></nz-option>
+<ng-container *transloco="let t; scope: 'blotter/settings'">
+  <p>{{t('settingsHeader')}}</p>
+  <div>
+    <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('blotterSettings.portfolioError')">
+          <nz-form-label nzRequired nzFor="portfolio">{{t('blotterSettings.portfolioLabel')}}</nz-form-label>
+          <nz-input-group>
+            <input formControlName="portfolio" (mousedown)="$event.stopPropagation()" nz-input
+              [placeholder]="t('blotterSettings.portfolioLabel')" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('blotterSettings.exchangeError')">
+          <nz-form-label nzRequired nzFor="exchange">{{t('blotterSettings.exchangeLabel')}}</nz-form-label>
+          <nz-input-group>
+            <nz-select formControlName='exchange'>
+              <nz-option  *ngFor='let exchange of exchanges' [nzValue]="exchange" [nzLabel]="exchange"></nz-option>
+            </nz-select>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
+          <nz-form-label nzRequired nzFor="ordersColumns">
+            {{t('blotterSettings.ordersColumnsLabel')}}
+          </nz-form-label>
+          <nz-select
+            *transloco="let tOrders; scope: 'blotter/orders'"
+            [nzMaxTagCount]="10"
+            [nzMaxTagPlaceholder]="tagPlaceHolder"
+            nzMode="multiple"
+            [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
+            formControlName="ordersColumns"
+          >
+            <nz-option
+              *ngFor="let item of allOrdersColumns"
+              [nzLabel]="tOrders('blotterOrders.columns.' + item.columnId + '.name')"
+              [nzValue]="item.columnId"
+            ></nz-option>
           </nz-select>
-        </nz-input-group>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-control nzErrorTip="Выберите колонки">
-        <nz-form-label nzRequired nzFor="ordersColumns">Колонки заявок</nz-form-label>
-        <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
-          nzPlaceHolder="Выберите..." formControlName="ordersColumns">
-          <nz-option *ngFor="let item of allOrdersColumns" [nzLabel]="item.name" [nzValue]="item.columnId"></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-control nzErrorTip="Выберите колонки">
-        <nz-form-label nzRequired nzFor="stopOrdersColumns">Колонки стоп-заявок</nz-form-label>
-        <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
-          nzPlaceHolder="Выберите..." formControlName="stopOrdersColumns">
-          <nz-option *ngFor="let item of allStopOrdersColumns" [nzLabel]="item.name" [nzValue]="item.columnId"></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-control nzErrorTip="Выберите колонки">
-        <nz-form-label nzRequired nzFor="ordersColumns">Колонки сделок</nz-form-label>
-        <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
-          nzPlaceHolder="Выберите..." formControlName="tradesColumns">
-          <nz-option *ngFor="let item of allTradesColumns" [nzLabel]="item.name" [nzValue]="item.columnId"></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-control nzErrorTip="Выберите колонки">
-        <nz-form-label nzRequired nzFor="ordersColumns">Колонки позиций</nz-form-label>
-        <nz-select [nzMaxTagCount]="10" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple"
-          nzPlaceHolder="Выберите..." formControlName="positionsColumns">
-          <nz-option *ngFor="let item of allPositionsColumns" [nzLabel]="item.name" [nzValue]="item.columnId">
-          </nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="isSoldPositionsHidden">Скрыть проданные</nz-form-label>
-      <nz-switch formControlName='isSoldPositionsHidden'></nz-switch>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="cancelOrdersWithoutConfirmation">Отменять заявки без подтверждения</nz-form-label>
-      <nz-switch formControlName='cancelOrdersWithoutConfirmation'></nz-switch>
-    </nz-form-item>
-    <nz-form-item>
-      <nz-form-control>
-        <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">Сохранить</button>
-      </nz-form-control>
-    </nz-form-item>
-  </form>
-</div>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
+          <nz-form-label nzRequired nzFor="stopOrdersColumns">
+            {{t('blotterSettings.stopOrdersColumnsLabel')}}
+          </nz-form-label>
+          <nz-select
+            *transloco="let tStopOrders; scope: 'blotter/stop-orders'"
+            [nzMaxTagCount]="10"
+            [nzMaxTagPlaceholder]="tagPlaceHolder"
+            nzMode="multiple"
+            [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
+            formControlName="stopOrdersColumns"
+          >
+            <nz-option
+              *ngFor="let item of allStopOrdersColumns"
+              [nzLabel]="tStopOrders('blotterStopOrders.columns.' + item.columnId + '.name')"
+              [nzValue]="item.columnId"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
+          <nz-form-label nzRequired nzFor="ordersColumns">
+            {{t('blotterSettings.tradesColumnsLabel')}}
+          </nz-form-label>
+          <nz-select
+            *transloco="let tTrades; scope: 'blotter/trades'"
+            [nzMaxTagCount]="10"
+            [nzMaxTagPlaceholder]="tagPlaceHolder"
+            nzMode="multiple"
+            [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
+            formControlName="tradesColumns"
+          >
+            <nz-option
+              *ngFor="let item of allTradesColumns"
+              [nzLabel]="tTrades('blotterTrades.columns.' + item.columnId + '.name')"
+              [nzValue]="item.columnId"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
+          <nz-form-label nzRequired nzFor="ordersColumns">
+            {{t('blotterSettings.positionsColumnsLabel')}}
+          </nz-form-label>
+          <nz-select
+            *transloco="let tPositions; scope: 'blotter/positions'"
+            [nzMaxTagCount]="10"
+            [nzMaxTagPlaceholder]="tagPlaceHolder"
+            nzMode="multiple"
+            [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
+            formControlName="positionsColumns"
+          >
+            <nz-option
+              *ngFor="let item of allPositionsColumns"
+              [nzLabel]="tPositions('blotterPositions.columns.' + item.columnId + '.name')"
+              [nzValue]="item.columnId"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="isSoldPositionsHidden">{{t('blotterSettings.hideSoldLabel')}}</nz-form-label>
+        <nz-switch formControlName='isSoldPositionsHidden'></nz-switch>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="cancelOrdersWithoutConfirmation">{{t('blotterSettings.cancelWithoutConfirmLabel')}}</nz-form-label>
+        <nz-switch formControlName='cancelOrdersWithoutConfirmation'></nz-switch>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control>
+          <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">{{t('saveBtnText')}}</button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </div>
 
-<ng-template #tagPlaceHolder let-selectedList>and {{ selectedList.length }} more selected</ng-template>
+  <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
+</ng-container>

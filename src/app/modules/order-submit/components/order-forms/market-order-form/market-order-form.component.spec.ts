@@ -3,12 +3,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MarketOrderFormComponent, MarketOrderFormValue } from './market-order-form.component';
 import { OrderSubmitModule } from '../../../order-submit.module';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { mockComponent, sharedModuleImportForTests, TestData } from '../../../../../shared/utils/testing';
+import {
+  getTranslocoModule,
+  mockComponent,
+  sharedModuleImportForTests,
+  TestData
+} from '../../../../../shared/utils/testing';
 import { Instrument } from '../../../../../shared/models/instruments/instrument.model';
 import { BehaviorSubject, shareReplay, take } from 'rxjs';
 import { Quote } from '../../../../../shared/models/quotes/quote.model';
 import { QuotesService } from '../../../../../shared/services/quotes.service';
 import { EvaluationBaseProperties } from '../../../../command/models/evaluation-base-properties.model';
+import ruCommand from "../../../../../../assets/i18n/command/ru.json";
 
 describe('MarketOrderFormComponent', () => {
   let component: MarketOrderFormComponent;
@@ -52,7 +58,12 @@ describe('MarketOrderFormComponent', () => {
       imports: [
         OrderSubmitModule,
         NoopAnimationsModule,
-        ...sharedModuleImportForTests
+        ...sharedModuleImportForTests,
+        getTranslocoModule({
+          langs: {
+            'command/ru': ruCommand,
+          }
+        }),
       ],
       declarations: [
         mockComponent({

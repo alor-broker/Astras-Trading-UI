@@ -6,6 +6,7 @@ import { CommandsService } from '../../services/commands.service';
 
 import { CommandContextModel } from "../../models/command-context.model";
 import {
+  getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
   TestData
@@ -19,6 +20,7 @@ import { EditParams } from "../../../../shared/models/commands/edit-params.model
 import { Side } from "../../../../shared/models/enums/side.model";
 import { LimitEdit } from "../../models/limit-edit.model";
 import { Subject } from "rxjs";
+import ruCommand from '../../../../../assets/i18n/command/ru.json';
 
 describe('LimitEditComponent', () => {
   let component: LimitEditComponent;
@@ -77,6 +79,11 @@ describe('LimitEditComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ...sharedModuleImportForTests,
+        getTranslocoModule({
+          langs: {
+            'command/ru': ruCommand,
+          }
+        }),
         BrowserAnimationsModule
       ],
       declarations: [

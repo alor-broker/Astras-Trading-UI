@@ -1,17 +1,19 @@
-<nz-descriptions
-  *ngIf="summary$ | async as summary"
-  nzBordered
-  [nzColumn]="columns"
-  [nzSize]="columns === 1 ? 'small' : 'default'"
->
-  <nz-descriptions-item nzTitle="Свободные ДС">{{summary.moneyFree}}</nz-descriptions-item>
-  <nz-descriptions-item nzTitle="ГО">{{summary.moneyBlocked}}</nz-descriptions-item>
-  <nz-descriptions-item nzTitle="Комиссия">{{summary.fee}}</nz-descriptions-item>
-  <nz-descriptions-item nzTitle="Всего ДС">{{summary.moneyOld}}</nz-descriptions-item>
-  <nz-descriptions-item nzTitle="Текущий лимит">{{summary.moneyAmount}}</nz-descriptions-item>
-  <nz-descriptions-item nzTitle="Залоги">{{summary.moneyPledgeAmount}}</nz-descriptions-item>
-  <nz-descriptions-item nzTitle="Вар. маржа">{{summary.vmInterCl}}</nz-descriptions-item>
-  <nz-descriptions-item nzTitle="Вар. маржа по позициям">{{summary.vmCurrentPositions}}</nz-descriptions-item>
-  <nz-descriptions-item nzTitle="Итоговая вар. маржа">{{summary.varMargin}}</nz-descriptions-item>
-  <nz-descriptions-item nzTitle="Денежные и залоговые лимиты">{{summary.isLimitsSet ? 'Да' : 'Нет'}}</nz-descriptions-item>
-</nz-descriptions>
+<ng-container *transloco="let t; scope: 'blotter/forward-summary'">
+  <nz-descriptions
+    *ngIf="summary$ | async as summary"
+    nzBordered
+    [nzColumn]="columns"
+    [nzSize]="columns === 1 ? 'small' : 'default'"
+  >
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyFreeTitle')">{{summary.moneyFree}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyBlockedTitle')">{{summary.moneyBlocked}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.feeTitle')">{{summary.fee}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyOldTitle')">{{summary.moneyOld}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyAmountTitle')">{{summary.moneyAmount}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyPledgeAmountTitle')">{{summary.moneyPledgeAmount}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.vmInterClTitle')">{{summary.vmInterCl}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.vmCurrentPositionsTitle')">{{summary.vmCurrentPositions}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.varMarginTitle')">{{summary.varMargin}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.isLimitsSetTitle')">{{summary.isLimitsSet ? 'Да' : 'Нет'}}</nz-descriptions-item>
+  </nz-descriptions>
+</ng-container>

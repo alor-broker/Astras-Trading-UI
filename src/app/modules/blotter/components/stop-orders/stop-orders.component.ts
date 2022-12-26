@@ -54,6 +54,8 @@ import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior'
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
+import { TranslatorService } from "../../../../shared/services/translator.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -316,7 +318,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly store: Store,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -331,8 +334,12 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.settings$.pipe(
       distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)),
+      mapWith(
+        () => this.translatorService.getTranslator('blotter/stop-orders'),
+        (s, t) => ({ s, t })
+      ),
       takeUntil(this.destroy$)
-    ).subscribe(s => {
+    ).subscribe(({ s, t }) => {
       const tableSettings = s.stopOrdersTable ?? TableSettingHelper.toTableDisplaySettings(s.stopOrdersColumns);
 
       if (tableSettings) {
@@ -341,6 +348,9 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
           .filter(c => !!c.columnSettings)
           .map((column, index) => ({
             ...column.column,
+            name: t(['columns', column.column.id, 'name'], { fallback: column.column.name }),
+            tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
+            searchDescription: t(['columns', column.column.id, 'searchDescription'], { fallback: column.column.searchDescription }),
             width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
             order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
           }))

@@ -1,30 +1,32 @@
-<div *ngIf="info$ | async as info">
-  <ats-info-header [info]="info"></ats-info-header>
-  <nz-tabset *ngIf="info.type === 'bond'" nzTabPosition="top" nzSize="small" (mousedown)='$event.stopPropagation()'>
-    <nz-tab nzTitle="Об инструменте" #tab>
-      <ats-description [guid]="guid" [activated]="tab.isActive"></ats-description>
-    </nz-tab>
-    <nz-tab *ngIf="info.exchange !== 'SPBX'" nzTitle="О выпуске" #tab>
-      <ats-about-issue [guid]="guid" [activated]="tab.isActive"></ats-about-issue>
-    </nz-tab>
-    <nz-tab *ngIf="info.exchange !== 'SPBX'"  nzTitle="Выплаты" #tab>
-      <ats-calendar [guid]="guid" [activated]="tab.isActive"></ats-calendar>
-    </nz-tab>
-  </nz-tabset>
-  <nz-tabset #stocksTabs *ngIf="info.type === 'stock'" nzTabPosition="top" nzSize="small" (mousedown)='$event.stopPropagation()'>
-    <nz-tab nzTitle="Об инструменте" #tab>
-      <ats-description [guid]="guid" [activated]="tab.isActive"></ats-description>
-    </nz-tab>
-    <nz-tab *ngIf="info.exchange === 'SPBX'"  nzTitle="Финансы" #tab>
-      <ats-finance [guid]="guid" [activated]="tab.isActive"></ats-finance>
-    </nz-tab>
-    <nz-tab *ngIf="info.exchange === 'SPBX'" nzTitle="Дивиденды" #tab>
-      <ats-dividends [guid]="guid" [activated]="tab.isActive"></ats-dividends>
-    </nz-tab>
-  </nz-tabset>
-  <nz-tabset #unkownTabs *ngIf="info.type !== 'stock' && info.type !== 'bond'" nzTabPosition="top" nzSize="small" (mousedown)='$event.stopPropagation()'>
-    <nz-tab nzTitle="Об инструменте" #tab>
-      <ats-description [guid]="guid" [activated]="tab.isActive"></ats-description>
-    </nz-tab>
-  </nz-tabset>
-</div>
+<ng-container *transloco="let t; scope: 'info'">
+  <div *ngIf="info$ | async as info">
+    <ats-info-header [info]="info"></ats-info-header>
+    <nz-tabset *ngIf="info.type === 'bond'" nzTabPosition="top" nzSize="small" (mousedown)='$event.stopPropagation()'>
+      <nz-tab [nzTitle]="t('info.instrumentTab')" #tab>
+        <ats-description [guid]="guid" [activated]="tab.isActive"></ats-description>
+      </nz-tab>
+      <nz-tab *ngIf="info.exchange !== 'SPBX'" [nzTitle]="t('info.issueTab')" #tab>
+        <ats-about-issue [guid]="guid" [activated]="tab.isActive"></ats-about-issue>
+      </nz-tab>
+      <nz-tab *ngIf="info.exchange !== 'SPBX'"  [nzTitle]="t('info.paymentsTab')" #tab>
+        <ats-calendar [guid]="guid" [activated]="tab.isActive"></ats-calendar>
+      </nz-tab>
+    </nz-tabset>
+    <nz-tabset #stocksTabs *ngIf="info.type === 'stock'" nzTabPosition="top" nzSize="small" (mousedown)='$event.stopPropagation()'>
+      <nz-tab [nzTitle]="t('info.instrumentTab')" #tab>
+        <ats-description [guid]="guid" [activated]="tab.isActive"></ats-description>
+      </nz-tab>
+      <nz-tab *ngIf="info.exchange === 'SPBX'"  [nzTitle]="t('info.financeTab')" #tab>
+        <ats-finance [guid]="guid" [activated]="tab.isActive"></ats-finance>
+      </nz-tab>
+      <nz-tab *ngIf="info.exchange === 'SPBX'" [nzTitle]="t('info.dividendsTab')" #tab>
+        <ats-dividends [guid]="guid" [activated]="tab.isActive"></ats-dividends>
+      </nz-tab>
+    </nz-tabset>
+    <nz-tabset #unkownTabs *ngIf="info.type !== 'stock' && info.type !== 'bond'" nzTabPosition="top" nzSize="small" (mousedown)='$event.stopPropagation()'>
+      <nz-tab [nzTitle]="t('info.instrumentTab')" #tab>
+        <ats-description [guid]="guid" [activated]="tab.isActive"></ats-description>
+      </nz-tab>
+    </nz-tabset>
+  </div>
+</ng-container>

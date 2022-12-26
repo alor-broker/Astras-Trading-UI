@@ -6,13 +6,10 @@ import {
 import { OrderbookSettingsComponent } from './orderbook-settings.component';
 import { of } from 'rxjs';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ReactiveFormsModule } from "@angular/forms";
-import { NzSwitchModule } from "ng-zorro-antd/switch";
 import {
-  ngZorroMockComponents,
+  getTranslocoModule,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
-import { NzSelectModule } from "ng-zorro-antd/select";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 
 describe('OrderbookSettingsComponent', () => {
@@ -27,7 +24,8 @@ describe('OrderbookSettingsComponent', () => {
       ],
       imports: [
         NoopAnimationsModule,
-        ...sharedModuleImportForTests
+        ...sharedModuleImportForTests,
+        getTranslocoModule()
       ],
       providers: [
         {

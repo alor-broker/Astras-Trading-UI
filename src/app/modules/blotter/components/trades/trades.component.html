@@ -1,9 +1,9 @@
-<div class="container">
+<div class="container" *transloco="let t; scope: 'blotter/trades'">
   <ng-template #empty>
     <nz-empty
       class="ant-list-empty-text"
       nzNotFoundImage="simple"
-      [nzNotFoundContent]='isFilterDisabled() ? "Сделок сегодня не было" : "С такими фильтрами ничего не найдено"'>
+      [nzNotFoundContent]="isFilterDisabled() ? t('blotterTrades.emptyTrades') : t('blotterTrades.emptyTradesWithFilters')">
     </nz-empty>
   </ng-template>
 
@@ -34,7 +34,13 @@
             cdkDrag
             cdkDragLockAxis="x"
         >
-          <span nz-tooltip [nzTooltipTitle]="column.tooltip" [nzTooltipPlacement]="['top', 'topLeft', 'topRight']">{{column.name}}</span>
+          <span
+            nz-tooltip
+            [nzTooltipTitle]="column.tooltip"
+            [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+          >
+            {{column.name}}
+          </span>
           <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!filter" [nzDropdownMenu]="searchMenu">
             <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
           </nz-filter-trigger>
@@ -61,7 +67,10 @@
 
   <ng-template #footer>
     <div class="export-button-container">
-      <button nz-button nzType="link" *ngIf="canExport" (click)="exportToFile()"><i nz-icon nzType="download"></i>Сохранить в файл</button>
+      <button nz-button nzType="link" *ngIf="canExport" (click)="exportToFile()">
+        <i nz-icon nzType="download"></i>
+        {{t('blotterTrades.exportToFile')}}
+      </button>
     </div>
   </ng-template>
 
