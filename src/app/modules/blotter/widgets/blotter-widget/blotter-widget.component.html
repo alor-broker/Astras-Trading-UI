@@ -2,10 +2,11 @@
   <nz-tabset
     nzTabPosition="top"
     nzSize="small"
+    *transloco="let t; scope: 'blotter'"
     (mousedown)='$event.stopPropagation()' [nzSelectedIndex]="activeTabIndex$ | async"
     (nzSelectChange)="onIndexChange($event)"
     [nzAnimated]="false">
-    <nz-tab nzTitle="О портфеле">
+    <nz-tab [nzTitle]="t('blotter.infoTab')">
       <ng-template nz-tab>
         <ng-container *ngIf="marketType$ | async as marketType">
           <div class="w-100 show-scroll">
@@ -22,28 +23,28 @@
         </ng-container>
       </ng-template>
     </nz-tab>
-    <nz-tab nzTitle="Заявки">
+    <nz-tab [nzTitle]="t('blotter.ordersTab')">
       <ng-template nz-tab>
         <ats-orders
           [guid]="guid"
           [(shouldShowSettings)]="shouldShowSettings"></ats-orders>
       </ng-template>
     </nz-tab>
-    <nz-tab nzTitle="Стопы" nzForceRender>
+    <nz-tab [nzTitle]="t('blotter.stopOrdersTab')" nzForceRender>
       <ng-template nz-tab>
         <ats-stop-orders
           [guid]="guid"
           [(shouldShowSettings)]="shouldShowSettings"></ats-stop-orders>
       </ng-template>
     </nz-tab>
-    <nz-tab nzTitle="Позиции" nzForceRender>
+    <nz-tab [nzTitle]="t('blotter.positionsTab')" nzForceRender>
       <ng-template nz-tab>
         <ats-positions
           [guid]="guid"
           [(shouldShowSettings)]="shouldShowSettings"></ats-positions>
       </ng-template>
     </nz-tab>
-    <nz-tab nzTitle="Сделки">
+    <nz-tab [nzTitle]="t('blotter.tradesTab')">
       <ng-template nz-tab>
         <ats-trades
           [guid]="guid"

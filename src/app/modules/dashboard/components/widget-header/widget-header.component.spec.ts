@@ -14,6 +14,7 @@ import {
 } from 'rxjs';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
+  getTranslocoModule,
   ngZorroMockComponents,
   TestData
 } from "../../../../shared/utils/testing";
@@ -42,6 +43,9 @@ describe('WidgetHeaderComponent', () => {
       declarations: [
         WidgetHeaderComponent,
         ...ngZorroMockComponents
+      ],
+      imports: [
+        getTranslocoModule()
       ],
       providers: [
         {

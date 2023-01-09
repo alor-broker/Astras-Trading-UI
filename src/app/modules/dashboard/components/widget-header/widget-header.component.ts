@@ -24,7 +24,6 @@ import {
   isPortfolioDependent
 } from 'src/app/shared/utils/settings-helper';
 import { AnySettings } from '../../../../shared/models/settings/any-settings.model';
-import { joyrideContent } from '../../models/joyride';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { instrumentsBadges } from "../../../../shared/utils/instruments";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
@@ -32,6 +31,8 @@ import { TerminalSettings } from "../../../../shared/models/terminal-settings/te
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { TranslatorService } from "../../../../shared/services/translator.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 
 @Component({
@@ -53,7 +54,6 @@ export class WidgetHeaderComponent implements OnInit {
   @Output()
   linkChangedEvent = new EventEmitter<boolean>();
 
-  joyrideContent = joyrideContent;
   settings$!: Observable<AnySettings>;
   terminalSettings$!: Observable<TerminalSettings>;
   badges = instrumentsBadges;
@@ -65,14 +65,26 @@ export class WidgetHeaderComponent implements OnInit {
     private readonly dashboardService: DashboardService,
     private readonly modal: ModalService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly instrumentService: InstrumentsService
+    private readonly instrumentService: InstrumentsService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
   ngOnInit() {
     this.terminalSettings$ = this.terminalSettingsService.getSettings();
     this.settings$ = this.settingsService.getSettings(this.guid).pipe(
-      shareReplay(1)
+      shareReplay(1),
+      mapWith(
+        () => this.translatorService.getTranslator(''),
+        (settings, translate) => ({ settings, translate })
+      ),
+      map(({ settings, translate }) => ({
+        ...settings,
+        title: translate(
+          ['widgetHeaders', settings.settingsType!],
+          { fallback: settings.title }
+        )
+      }))
     );
 
     this.title$ = this.settings$.pipe(

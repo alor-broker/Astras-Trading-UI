@@ -1,0 +1,63 @@
+{
+  "settingsHeader": "Settings",
+  "helpHeader": "Help",
+
+  "saveBtnText": "Save",
+  "okBtnText": "OK",
+  "cancelBtnText": "Cancel",
+  "editBtnText": "Edit",
+  "resetBtnText": "Reset",
+  "yes": "Yes",
+  "no": "No",
+  "from": "from",
+  "to": "to",
+
+  "maxTagPlaceholder": "and {{count}} more selected",
+
+  "widgetHeaders": {
+    "OrderbookSettings": "Orderbook",
+    "ScalperOrderBookSettings": "Scalper Orderbook",
+    "InstrumentSelectSettings": "Instrument Select",
+    "LightChartSettings": "Chart",
+    "BlotterSettings": "Blotter",
+    "InfoSettings": "Info",
+    "AllTradesSettings": "All Trades",
+    "NewsSettings": "News",
+    "ExchangeRateSettings": "Exchange Rate",
+    "TechChartSettings": "Tech Chart",
+    "AllInstrumentsSettings": "All Instruments",
+    "OrderSubmitSettings": "Order Submit",
+    "OrdersBasketSettings": "Orders Basket"
+  },
+
+  "joyride": {
+    "step1": {
+      "title": "Portfolio select",
+      "text": "The portfolio you have selected is displayed here. Orders will be made on behalf of the portfolio"
+    },
+    "step3": {
+      "title": "New order",
+      "text": "Create a new order. You can also create an order by clicking on the line in the orderbook"
+    },
+    "step2": {
+      "title": "Add widget",
+      "text": "Here you can add a new widget"
+    },
+    "step4": {
+      "title": "Remove",
+      "text": "Removes the widget from the dashboard. You can add it again via the panel above"
+    },
+    "step5": {
+      "title": "Help",
+      "text": "Shows help for the widget"
+    },
+    "step6": {
+      "title": "Link to active",
+      "text": "If the lock is closed, then the widget monitors the active instrument and/or portfolio and changes when it changes"
+    },
+    "step7": {
+      "title": "Settings",
+      "text": "Here you can change the settings of a widget"
+    }
+  }
+}

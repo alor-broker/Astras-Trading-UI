@@ -1,0 +1,16 @@
+{
+  "order-book": "Стакан",
+  "scalper-order-book": "Скальперский стакан",
+  "instrument-select": "Выбор инструмента",
+  "light-chart": "График",
+  "blotter": "Блоттер",
+  "instrument-info": "Инфо",
+  "all-trades": "Все сделки",
+  "news": "Новости",
+  "exchange-rate": "Курсы валют",
+  "tech-chart": "Тех. анализ",
+  "all-instruments": "Все инстурменты",
+  "order-submit": "Выставление заявки",
+  "orders-basket": "Корзина заявок",
+  "standardView": "Стандартный вид"
+}

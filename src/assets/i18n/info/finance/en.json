@@ -1,0 +1,29 @@
+{
+  "mainIndicators": "Main indicators",
+  "costEstimate": "Cost estimate",
+  "profitability": "Profitability",
+  "dividends": "Dividends",
+  "trading": "Trading",
+
+  "EBITDA": "EBITDA",
+  "capitalization": "Capitalization",
+
+  "priceToEarnings": "P/E",
+  "pricePerShare": "P/S",
+  "dilutedEarningsPerShare": "EPS dil.",
+
+  "returnOnEquity": "ROE",
+  "returnOnAssets": "ROA",
+  "debtPerEquity": "Debt per equity",
+
+  "payoutRation": "Payout ratio",
+  "averageDividendFor5years": "Avg for 5 years",
+  "lastDividendYield": "Last",
+
+  "closePrice": "Close price",
+  "maxFor52Weeks": "Max 52 weeks",
+  "minFor52Weeks": "Min 52 weeks",
+
+  "averageTurnoverPerDay": "Turnover per day",
+  "averageTurnoverPerMonth": "Turnover per month"
+}

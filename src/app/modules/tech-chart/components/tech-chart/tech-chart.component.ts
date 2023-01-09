@@ -69,6 +69,7 @@ import { StopOrder } from '../../../../shared/models/orders/stop-order.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
+import { TranslocoService } from "@ngneat/transloco";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -158,7 +159,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly modalService: ModalService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly store: Store,
-    private readonly orderCancellerService: OrderCancellerService
+    private readonly orderCancellerService: OrderCancellerService,
+    private readonly translocoService: TranslocoService
   ) {
   }
 
@@ -195,14 +197,16 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     combineLatest([
       chartSettings$,
-      this.themeService.getThemeSettings()
+      this.themeService.getThemeSettings(),
+      this.translocoService.langChanges$
     ]).pipe(
       takeUntil(this.destroy$),
-    ).subscribe(([settings, theme]) => {
+    ).subscribe(([settings, theme, lang]) => {
       this.createChart(
         settings.widgetSettings,
         theme,
-        this.lastTheme && this.lastTheme.theme !== theme.theme);
+        this.lastTheme && this.lastTheme.theme !== theme.theme,
+        lang as 'ru' | 'en');
 
       this.lastTheme = theme;
     });
@@ -276,7 +280,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 
-  private createChart(settings: TechChartSettings, theme: ThemeSettings, forceRecreate: boolean = false) {
+  private createChart(settings: TechChartSettings, theme: ThemeSettings, forceRecreate: boolean = false, lang: 'ru' | 'en' = 'ru') {
     if (this.chartState) {
       if (forceRecreate) {
         this.chartState.widget?.remove();
@@ -305,7 +309,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       container: this.chartContainer.nativeElement,
       symbol: `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
       interval: (settings.chartSettings?.['chart.lastUsedTimeBasedResolution'] ?? '1D') as ResolutionString,
-      locale: 'ru',
+      locale: lang,
       library_path: '/assets/charting_library/',
       custom_css_url: '../tv-custom-styles.css',
       datafeed: this.techChartDatafeedService,
@@ -561,7 +565,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private fillOrderBaseParameters(order: Order, orderLineAdapter: IOrderLineAdapter, themeColors: ThemeColors) {
     orderLineAdapter
-      .setQuantity(order.qtyBatch.toString())
+      .setQuantity((order.qtyBatch - (order.filledQtyBatch ?? 0)).toString())
       .setQuantityBackgroundColor(themeColors.componentBackground)
       .setQuantityTextColor(themeColors.chartPrimaryTextColor)
       .setQuantityBorderColor(themeColors.primaryColor)

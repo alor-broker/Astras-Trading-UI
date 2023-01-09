@@ -1,8 +1,9 @@
 <div
+  *transloco="let t; scope: 'shared/color-picker-input'"
   class="ant-input preview" [ngStyle]="{'background-color': value}"
   [nzPopoverContent]="selectVolumeHighlightColor"
   nz-popover
-  nzPopoverTitle="Выберите цвет"
+  [nzPopoverTitle]="t('sharedColorPickerInput.selectColorTitle')"
   nzPopoverTrigger="click"
 >
 </div>

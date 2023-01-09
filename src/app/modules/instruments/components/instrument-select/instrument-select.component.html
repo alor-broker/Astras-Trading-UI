@@ -1,5 +1,5 @@
 <ng-container *ngIf="settings$ | async as settings">
-  <div class="header">
+  <div class="header" *transloco="let t; scope: 'instruments/select'">
     <div (mousedown)='$event.stopPropagation()' class="search-field">
       <input #inputEl
              (mousedown)="$event.stopPropagation()"
@@ -8,7 +8,7 @@
              [nzAutocomplete]="auto"
              class='whole'
              nz-input
-             placeholder='Поиск...'
+             [placeholder]="t('instrumentsSelect.searchPlaceHolder')"
       />
       <nz-autocomplete #auto>
         <nz-auto-option

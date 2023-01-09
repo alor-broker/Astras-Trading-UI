@@ -1,50 +1,52 @@
-<div (mousedown)='$event.stopPropagation()' class="search-field">
+<div
+  *transloco="let t; scope: 'shared/instrument-search'"
+  (mousedown)='$event.stopPropagation()'
+  class="search-field"
+>
   <nz-input-group [nzSuffix]="suffixIcon">
     <input #searchInput
            (blur)="checkInstrumentSelection()"
            (mousedown)="$event.stopPropagation()"
-           (input)="filterChanged(searchInput.value)"
+           (ngModelChange)="filterChanged(searchInput.value)"
            [ngModel]="currentValue?.symbol"
            [nzAutocomplete]="auto"
            class='whole ant-input'
            nz-input
-           placeholder='Поиск...'
+           [placeholder]="t('sharedInstrumentSearch.searchPlaceholder')"
     />
   </nz-input-group>
   <ng-template #suffixIcon>
     <span [nzTooltipTitle]="searchHelp" nz-icon nz-tooltip nzType="question-circle"></span>
   </ng-template>
   <ng-template #searchHelp>
-    <span>Введите краткое наименование инструмента, Seccode или ISIN. Далее появится выпадающий список с инструментами, удовлетворяющий Вашему запросу.</span>
+    <span>{{t('sharedInstrumentSearch.helpParagraph1')}}</span>
     <br/>
     <ng-container *ngIf="!exchange">
-      <span>Также вы можете искать инструмент на определённой бирже и с определённым режимом торгов. Формат такой:</span>
+      <span>{{t('sharedInstrumentSearch.helpParagraph2')}}</span>
       <br/>
       <span nz-typography><code>[Exchange]:[Ticker]:[Board]</code></span>
       <br/>
-      <span nz-typography>Например MOEX:SBER:SMAL</span>
+      <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} MOEX:SBER:SMAL</span>
       <br/>
-      <span>либо если борд по-умолчанию, то</span>
+      <span>{{t('sharedInstrumentSearch.helpParagraph3')}}</span>
       <br/>
       <span nz-typography><code>[Exchange]:[Ticker]</code></span>
       <br/>
-      <span nz-typography>Например MOEX:SBER</span>
+      <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} MOEX:SBER</span>
     </ng-container>
-
     <ng-container *ngIf="exchange">
-      <span>Также вы можете искать инструмент с определённым режимом торгов. Формат такой:</span>
+      <span>{{t('sharedInstrumentSearch.helpParagraph2')}}</span>
       <br/>
       <span nz-typography><code>[Ticker]:[Board]</code></span>
       <br/>
-      <span nz-typography>Например SBER:SMAL</span>
+      <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} SBER:SMAL</span>
     </ng-container>
-
   </ng-template>
-  <nz-autocomplete #auto [nzWidth]="optionsBoxWidth">
+  <nz-autocomplete #auto>
     <nz-auto-option
       (selectionChange)='onSelect($event, option)' *ngFor="let option of filteredInstruments$ | async"
       [nzLabel]="option.symbol"
-      [nzValue]="option.symbol">
+      [nzValue]="option.description">
       <span class='search-row'>
         <nz-tag>{{ option.symbol }}</nz-tag>
         <span class='row-center'>{{ option.shortName }}</span>

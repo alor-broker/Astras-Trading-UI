@@ -7,14 +7,14 @@ import { map } from 'rxjs/operators';
 import { GuidGenerator } from '../../../shared/utils/guid';
 import { ModalService } from '../../../shared/services/modal.service';
 import { mapWith } from '../../../shared/utils/observable-helper';
+import { TranslatorService } from "../../../shared/services/translator.service";
 
 @Injectable()
 export class ApplicationReleaseNotificationProvider implements NotificationsProvider {
-
-
   constructor(
     private readonly applicationMetaService: ApplicationMetaService,
-    private readonly modalService: ModalService
+    private readonly modalService: ModalService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -24,7 +24,13 @@ export class ApplicationReleaseNotificationProvider implements NotificationsProv
         savedVersion,
         currentVersion
       })),
-      map(({ savedVersion, currentVersion }) => {
+      mapWith(
+        () => this.translatorService.getTranslator('application-meta/application-meta-service'),
+        (versionData, translate) => ({ versionData, translate })
+      ),
+      map(({ versionData, translate }) => {
+        const { savedVersion, currentVersion } = versionData;
+
         if (!currentVersion || currentVersion.id === savedVersion) {
           return [];
         }
@@ -32,8 +38,8 @@ export class ApplicationReleaseNotificationProvider implements NotificationsProv
         return [
           {
             id: GuidGenerator.newGuid(),
-            title: 'Приложение обновлено',
-            description: 'Вышла новая версия приложения. Нажмите для просмотра деталей.',
+            title: translate(['appUpdatedTitle']),
+            description: translate(['appUpdatedDescription']),
             date: new Date(),
             showDate: false,
             isRead: false,

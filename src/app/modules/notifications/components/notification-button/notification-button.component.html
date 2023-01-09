@@ -12,9 +12,9 @@
 </nz-badge>
 
 <ng-template #titleTemplate>
-  <div class="dialog-title">
+  <div class="dialog-title" *transloco="let t; scope: 'notifications'">
     <div>
-      <h3>Уведомления</h3>
+      <h3>{{t('notifications.header')}}</h3>
     </div>
     <div>
       <button (click)="isTableVisible = false" aria-label="Close" nz-button>

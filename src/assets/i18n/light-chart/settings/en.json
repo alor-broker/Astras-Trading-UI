@@ -1,0 +1,13 @@
+{
+  "tickerError": "Select ticker",
+  "tickerLabel": "Ticker",
+  "exchangeLabel": "Exchange",
+  "timeframeLabel": "Timeframe",
+  "timeframeDisplayLabel": "Timeframe display",
+  "timeframeDisplayButtons": "Buttons",
+  "timeframeDisplayMenu": "Menu",
+  "timeframeDisplayHide": "None",
+  "advanced": "Advanced",
+  "instrumentGroupLabel": "Instrument group",
+  "instrumentGroupError": "Fill instrument group field"
+}

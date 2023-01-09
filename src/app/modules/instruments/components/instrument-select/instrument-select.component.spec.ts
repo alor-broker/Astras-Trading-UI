@@ -5,6 +5,7 @@ import {
 import { InstrumentsService } from '../../services/instruments.service';
 import { InstrumentSelectComponent } from './instrument-select.component';
 import {
+  getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
@@ -30,7 +31,10 @@ describe('InstrumentSelectComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [...sharedModuleImportForTests],
+      imports: [
+        ...sharedModuleImportForTests,
+        getTranslocoModule()
+      ],
       declarations: [
         InstrumentSelectComponent,
         mockComponent({

@@ -8,7 +8,7 @@ import {
 } from 'rxjs';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { WatchlistTableComponent } from './watchlist-table.component';
-import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import { getTranslocoModule, sharedModuleImportForTests } from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -35,7 +35,10 @@ describe('WatchlistTableComponent', () => {
   });
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [...sharedModuleImportForTests],
+      imports: [
+        ...sharedModuleImportForTests,
+        getTranslocoModule()
+      ],
       declarations: [WatchlistTableComponent],
       providers: [
         {

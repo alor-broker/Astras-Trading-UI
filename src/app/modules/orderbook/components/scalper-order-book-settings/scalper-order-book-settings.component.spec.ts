@@ -6,6 +6,7 @@ import {
 import { ScalperOrderBookSettingsComponent } from './scalper-order-book-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
+import { getTranslocoModule } from "../../../../shared/utils/testing";
 
 describe('ScalperOrderBookSettingsComponent', () => {
   let component: ScalperOrderBookSettingsComponent;
@@ -14,6 +15,9 @@ describe('ScalperOrderBookSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ScalperOrderBookSettingsComponent],
+      imports: [
+        getTranslocoModule()
+      ],
       providers: [
         {
           provide: WidgetSettingsService,

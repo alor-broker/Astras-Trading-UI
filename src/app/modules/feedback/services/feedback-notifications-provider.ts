@@ -20,6 +20,8 @@ import {
 } from 'rxjs/operators';
 import { addMinutes } from '../../../shared/utils/datetime';
 import { NewFeedback } from '../models/feedback.model';
+import { TranslatorService } from "../../../shared/services/translator.service";
+import { mapWith } from "../../../shared/utils/observable-helper";
 
 @Injectable()
 export class FeedbackNotificationsProvider implements NotificationsProvider {
@@ -27,7 +29,8 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
 
   constructor(
     private readonly modalService: ModalService,
-    private readonly feedbackService: FeedbackService
+    private readonly feedbackService: FeedbackService,
+    private readonly translatorService: TranslatorService
   ) {
     this.feedbackService.unansweredFeedbackRemoved$
       .subscribe(() => this.readFeedbackMeta$.next(true));
@@ -67,7 +70,11 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
             return of(null);
           }
         }),
-        map(f => {
+        mapWith(
+          () => this.translatorService.getTranslator('feedback'),
+          (f, t) => ({ f, t })
+        ),
+        map(({ f, t }) => {
           if (!f) {
             return [];
           }
@@ -76,7 +83,7 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
             {
               id: GuidGenerator.newGuid(),
               date: !!f.date ? new Date(f.date) : new Date(),
-              title: 'Оценить приложение',
+              title: t(['title']),
               description: f.description.length > 100
                 ? f.description.substring(0, 100) + '...'
                 : f.description,

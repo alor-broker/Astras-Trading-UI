@@ -9,6 +9,7 @@ import {
 } from './stop-order-form.component';
 import { Instrument } from '../../../../../shared/models/instruments/instrument.model';
 import {
+  getTranslocoModule,
   sharedModuleImportForTests,
   TestData
 } from '../../../../../shared/utils/testing';
@@ -31,6 +32,7 @@ import {
   getUtcNow
 } from '../../../../../shared/utils/datetime';
 import { StopOrderCondition } from '../../../../../shared/models/enums/stoporder-conditions';
+import ruCommand from "../../../../../../assets/i18n/command/ru.json";
 
 describe('StopOrderFormComponent', () => {
   let component: StopOrderFormComponent;
@@ -84,7 +86,12 @@ describe('StopOrderFormComponent', () => {
       imports: [
         OrderSubmitModule,
         NoopAnimationsModule,
-        ...sharedModuleImportForTests
+        ...sharedModuleImportForTests,
+        getTranslocoModule({
+          langs: {
+            'command/ru': ruCommand,
+          }
+        }),
       ],
       providers: [
         { provide: NZ_I18N, useValue: ru_RU },

@@ -1,0 +1,11 @@
+{
+  "positionTooltip": "Current position",
+  "limitTab": "Limit",
+  "marketTab": "Market",
+  "stopTab": "Conditional",
+  "buyBtnText": "Buy",
+  "sellBtnText": "Sell",
+  "noBuyOrdersTooltip": "No active limit buy orders",
+  "noSellOrdersTooltip": "No active limit sell orders",
+  "workingVolumeTooltip": "Volume (lots quantity)"
+}

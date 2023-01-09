@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { mockComponent, ngZorroMockComponents, sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import { mockComponent, sharedModuleImportForTests } from "../../../../shared/utils/testing";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;

@@ -1,0 +1,8 @@
+{
+  "tickerLabel": "Ticker",
+  "tickerError": "Select ticker",
+  "exchangeLabel": "Exchange",
+  "advanced": "Advanced",
+  "instrumentGroupError": "Input trade mode",
+  "instrumentGroupLabel": "Trade mode"
+}

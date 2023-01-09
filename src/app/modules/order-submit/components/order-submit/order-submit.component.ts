@@ -275,7 +275,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
         this.orderService.submitLimitOrderEdit(
           {
             id: order.id,
-            quantity: order.qtyBatch - order.filledQtyBatch,
+            quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
             price: newPrice,
             instrument: {
               symbol: order.symbol,

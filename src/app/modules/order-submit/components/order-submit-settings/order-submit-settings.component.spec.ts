@@ -7,7 +7,7 @@ import { OrderSubmitSettingsComponent } from './order-submit-settings.component'
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { of } from 'rxjs';
 import { OrderSubmitModule } from '../../order-submit.module';
-import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import { getTranslocoModule, sharedModuleImportForTests } from '../../../../shared/utils/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { OrderSubmitSettings } from '../../../../shared/models/settings/order-submit-settings.model';
 
@@ -20,7 +20,8 @@ describe('OrderSubmitSettingsComponent', () => {
       imports: [
         OrderSubmitModule,
         ...sharedModuleImportForTests,
-        NoopAnimationsModule
+        NoopAnimationsModule,
+        getTranslocoModule()
       ],
       providers: [
         {
