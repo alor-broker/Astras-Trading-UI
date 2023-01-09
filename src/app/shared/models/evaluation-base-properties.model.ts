@@ -6,3 +6,4 @@ export interface EvaluationBaseProperties {
   instrument: InstrumentKey,
   instrumentCurrency?: string
 }
+

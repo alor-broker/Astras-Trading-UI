@@ -15,7 +15,6 @@ import {
   filter,
   take,
 } from "rxjs";
-import { EvaluationBaseProperties } from "../../../../command/models/evaluation-base-properties.model";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../../shared/models/form.model';
@@ -24,6 +23,7 @@ import {
   OrderFormUpdate,
   OrderType
 } from '../../../models/order-form.model';
+import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
 
 export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 

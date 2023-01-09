@@ -23,7 +23,6 @@ import {
 } from 'rxjs';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { MarketFormData } from '../../models/market-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { MarketCommand } from '../../models/market-command.model';
@@ -31,6 +30,7 @@ import { distinct } from 'rxjs/operators';
 import { CommandContextModel } from '../../models/command-context.model';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
+import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
 
 @Component({
   selector: 'ats-market-command',

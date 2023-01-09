@@ -17,7 +17,6 @@ import {
 } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
-import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { LimitEdit } from '../../models/limit-edit.model';
@@ -25,6 +24,7 @@ import { CommandContextModel } from '../../models/command-context.model';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
+import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
 
 @Component({
   selector: 'ats-limit-edit',
