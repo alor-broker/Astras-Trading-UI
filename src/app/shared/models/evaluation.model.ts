@@ -6,4 +6,6 @@ export interface Evaluation {
   quantityToBuy: number;
   orderEvaluation: number;
   commission: number;
+
+  price?: number;
 }

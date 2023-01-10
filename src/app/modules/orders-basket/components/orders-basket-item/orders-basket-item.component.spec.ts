@@ -9,8 +9,11 @@ import {
 import { QuotesService } from '../../../../shared/services/quotes.service';
 import {
   mockComponent,
-  ngZorroMockComponents
+  ngZorroMockComponents,
+  sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
+import { FormsModule } from '@angular/forms';
+import { OrdersBasketModule } from '../../orders-basket.module';
 
 describe('OrdersBasketItemComponent', () => {
   let component: OrdersBasketItemComponent;
@@ -18,6 +21,10 @@ describe('OrdersBasketItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [
+        OrdersBasketModule,
+        ...sharedModuleImportForTests
+      ],
       declarations: [
         OrdersBasketItemComponent,
         mockComponent({ selector: 'ats-instrument-search', inputs: ['exchange', 'optionsBoxWidth'] }),

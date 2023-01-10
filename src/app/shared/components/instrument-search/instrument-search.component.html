@@ -7,7 +7,7 @@
     <input #searchInput
            (blur)="checkInstrumentSelection()"
            (mousedown)="$event.stopPropagation()"
-           (ngModelChange)="filterChanged(searchInput.value)"
+           (input)="filterChanged(searchInput.value)"
            [ngModel]="currentValue?.symbol"
            [nzAutocomplete]="auto"
            class='whole ant-input'
@@ -42,11 +42,11 @@
       <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} SBER:SMAL</span>
     </ng-container>
   </ng-template>
-  <nz-autocomplete #auto>
+  <nz-autocomplete #auto [nzWidth]="optionsBoxWidth">
     <nz-auto-option
       (selectionChange)='onSelect($event, option)' *ngFor="let option of filteredInstruments$ | async"
       [nzLabel]="option.symbol"
-      [nzValue]="option.description">
+      [nzValue]="option.symbol">
       <span class='search-row'>
         <nz-tag>{{ option.symbol }}</nz-tag>
         <span class='row-center'>{{ option.shortName }}</span>

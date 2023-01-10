@@ -56,7 +56,7 @@
       </nz-form-item>
       <nz-form-item>
         <nz-form-label *ngIf="showLabels$ | async" nzFor="quantity" nzRequired>Объем заявки</nz-form-label>
-        <nz-form-control [nzValidateStatus]="(quantityValidationStatus$ | async) ?? 'success'" nzHasFeedback>
+        <nz-form-control [nzValidateStatus]="form.get('quantity')!.valid ? 'success' : 'warning'" nzHasFeedback>
           <input
             (blur)="onTouched()"
             (mousedown)="$event.stopPropagation()"

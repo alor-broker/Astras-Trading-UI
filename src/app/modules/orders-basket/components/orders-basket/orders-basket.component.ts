@@ -35,14 +35,19 @@ import {
   OrdersBasketItem
 } from '../../models/orders-basket-form.model';
 import {
+  debounceTime,
   filter,
-  finalize
+  finalize,
+  map
 } from 'rxjs/operators';
 import { OrderService } from '../../../../shared/services/orders/order.service';
 import { LimitOrder } from '../../../command/models/order.model';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { MathHelper } from '../../../../shared/utils/math-helper';
+import { EvaluationService } from '../../../../shared/services/evaluation.service';
+import { GuidGenerator } from '../../../../shared/utils/guid';
+import { mapWith } from '../../../../shared/utils/observable-helper';
 
 @Component({
   selector: 'ats-orders-basket[guid]',
@@ -63,7 +68,8 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly orderService: OrderService
+    private readonly orderService: OrderService,
+    private readonly evaluationService: EvaluationService
   ) {
   }
 
@@ -87,11 +93,6 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       this.initForm(settings);
       this.restoreFormValue(settings!);
     });
-  }
-
-  getBudget(form: UntypedFormGroup): number | null {
-    const value = Number(form.controls.budget.value);
-    return isNaN(value) ? null : value;
   }
 
   asFormArray(control: AbstractControl): FormArray {
@@ -200,12 +201,68 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       });
     });
 
-    const valueSub = this.form.valueChanges.subscribe(() => this.saveBasket(settings));
-    this.formSubscriptions.add(valueSub);
+    const saveSub = this.form.valueChanges.subscribe(() => this.saveBasket(settings));
+
+    this.formSubscriptions.add(saveSub);
+    this.formSubscriptions.add(this.initQuantityCalculation(settings));
+  }
+
+  private initQuantityCalculation(settings: OrdersBasketSettings) {
+    return this.form!.valueChanges.pipe(
+      debounceTime(500),
+
+      map(formValue => {
+        const items = formValue.items as Partial<OrdersBasketItem>[];
+        const totalBudget = Number(formValue.budget);
+        const hasEvaluationParams = (item: Partial<OrdersBasketItem>) => {
+          return !!item.instrumentKey && !!item.quota && !!item.price;
+        };
+
+        const allItems = items.map(item => ({
+          id: item.id!,
+          evaluationParams: !isNaN(totalBudget) && totalBudget > 0 && hasEvaluationParams(item)
+            ? {
+              instrumentKey: item.instrumentKey!,
+              budget: Math.floor(totalBudget * Number(item.quota) / 100),
+              price: item.price!
+            }
+            : null
+        }));
+
+        return {
+          itemsToEvaluate: allItems.filter(x => !!x.evaluationParams),
+          skippedItems: allItems.filter(x => !x.evaluationParams),
+        };
+      }),
+      mapWith(
+        items => this.evaluationService.evaluateQuantity(settings.portfolio, items.itemsToEvaluate.map(x => x.evaluationParams!)),
+        (items, evaluation) => ({ items, evaluation: evaluation ?? [] })
+      )
+    ).subscribe(({ items, evaluation }) => {
+      const setQuantity = (id: string, quantity: number) => {
+        const itemsControl = this.asFormArray(this.form!.controls.items);
+        const targetControl = itemsControl.controls.find(c => c.value.id === id);
+        if (targetControl && targetControl.value.quantity !== quantity) {
+          targetControl.patchValue({ quantity: quantity });
+        }
+      };
+
+      evaluation.forEach((item, index) => {
+        const targetItem = items.itemsToEvaluate[index];
+        setQuantity(targetItem.id, item.quantityToBuy);
+      });
+
+      items.skippedItems.forEach(i => {
+        setQuantity(i.id, 0);
+      });
+    });
   }
 
   private createItemDraftControl(item: Partial<OrdersBasketItem>): FormControl<Partial<OrdersBasketItem> | null> {
-    return new FormControl<Partial<OrdersBasketItem>>(item);
+    return new FormControl<Partial<OrdersBasketItem>>({
+      ...item,
+      id: GuidGenerator.newGuid()
+    });
   }
 
   private allItemsAreValidValidator(itemsControl: FormArray<FormControl<Partial<OrdersBasketItem> | null>>): ValidationErrors | null {

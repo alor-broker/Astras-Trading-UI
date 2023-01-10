@@ -40,7 +40,6 @@ import {
   map,
 } from 'rxjs/operators';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { mapWith } from '../../../../shared/utils/observable-helper';
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { QuotesService } from '../../../../shared/services/quotes.service';
@@ -48,7 +47,7 @@ import { OrdersBasketItem } from '../../models/orders-basket-form.model';
 import { AtsValidators } from '../../../../shared/utils/form-validators';
 
 @Component({
-  selector: 'ats-orders-basket-item[totalBudget][exchange]',
+  selector: 'ats-orders-basket-item[exchange]',
   templateUrl: './orders-basket-item.component.html',
   styleUrls: ['./orders-basket-item.component.less'],
   providers: [
@@ -67,6 +66,10 @@ import { AtsValidators } from '../../../../shared/utils/form-validators';
 export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestroy, ControlValueAccessor, Validator {
   @Input()
   exchange!: string;
+
+  @Input()
+  portfolio!: string;
+
   @Input()
   enableDelete: boolean = true;
   @Output()
@@ -93,7 +96,6 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
   displayMode$?: Observable<'table-item' | 'compact' | 'ultra-compact'>;
   showLabels$?: Observable<boolean>;
   itemIndex$ = new BehaviorSubject<number>(0);
-  quantityValidationStatus$ = new BehaviorSubject<'success' | 'warning'>('warning');
   private readonly onChangeSubs: Subscription[] = [];
   private totalBudget$ = new BehaviorSubject<number | null>(null);
   private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -146,7 +148,6 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
     this.initForm();
     this.initInstrumentUpdate();
     this.initPriceUpdate();
-    this.initQuantityRecalculation();
   }
 
   ngAfterViewInit(): void {
@@ -185,7 +186,6 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
 
     this.itemIndex$.complete();
     this.totalBudget$.complete();
-    this.quantityValidationStatus$.complete();
   }
 
   registerOnChange(onChange: any): void {
@@ -206,9 +206,10 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
 
   writeValue(formValue: Partial<OrdersBasketItem>): void {
     Object.keys(formValue).forEach(key => {
-      const value = (formValue as any)[key];
-      if (value) {
-        this.form.controls[key].setValue(value,);
+      const newValue = (formValue as any)[key];
+      const oldValue = this.form.controls[key]?.value;
+      if (newValue !== oldValue) {
+        this.form.controls[key].setValue(newValue);
       }
     });
   }
@@ -245,37 +246,6 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
     this.form.controls.price.addAsyncValidators(AtsValidators.priceStepMultiplicityAsync(this.instrument$.pipe(map(x => x?.minstep ?? null))));
   }
 
-  private initQuantityRecalculation() {
-    this.form.valueChanges.pipe(
-      distinctUntilChanged((previous, current) => {
-        return isInstrumentEqual(previous.instrumentKey, current.instrumentKey) &&
-          previous.quota === current.quota &&
-          previous.price === current.price;
-      }),
-      mapWith(
-        () => this.instrument$,
-        (formValue, instrument) => ({ formValue, instrument })
-      ),
-      mapWith(
-        () => this.totalBudget$,
-        (source, totalBudget) => ({ formValue: source.formValue, instrument: source.instrument, totalBudget })
-      ),
-      takeUntil(this.destroy$)
-    ).subscribe(({ formValue, instrument, totalBudget }) => {
-      let quantityValue = 0;
-      if (totalBudget && formValue.instrumentKey && formValue.quota && formValue.price) {
-        const instrumentBudget = totalBudget * Number(formValue.quota) / 100;
-        const availableUnits = Math.floor(instrumentBudget / Number(formValue.price));
-        const availableLots = Math.floor(availableUnits / instrument!.lotsize!);
-
-        quantityValue = isFinite(availableLots) ? availableLots : 0;
-      }
-
-      this.form.controls.quantity.setValue(quantityValue);
-      this.quantityValidationStatus$.next(quantityValue > 0 ? 'success' : 'warning');
-    });
-  }
-
   private initForm() {
     this.form = new FormGroup({
       instrumentKey: new FormControl<InstrumentKey | null>(null, Validators.required),
@@ -302,7 +272,8 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
           Validators.min(this.validationOptions.price.min),
           Validators.max(this.validationOptions.price.max)
         ]
-      )
+      ),
+      id: new FormControl(null, Validators.required)
     });
   }
 

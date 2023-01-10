@@ -5,6 +5,7 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { Subject } from 'rxjs';
 import { OrderService } from '../../../../shared/services/orders/order.service';
 import { mockComponent } from '../../../../shared/utils/testing';
+import { EvaluationService } from '../../../../shared/services/evaluation.service';
 
 describe('OrdersBasketComponent', () => {
   let component: OrdersBasketComponent;
@@ -27,6 +28,12 @@ describe('OrdersBasketComponent', () => {
           provide: OrderService,
           useValue: {
             getSettings: jasmine.createSpy('submitLimitOrder').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: EvaluationService,
+          useValue: {
+            getSettings: jasmine.createSpy('evaluateQuantity').and.returnValue(new Subject())
           }
         }
       ]

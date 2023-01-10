@@ -7,3 +7,9 @@ export interface EvaluationBaseProperties {
   instrumentCurrency?: string
 }
 
+export interface QuantityEvaluationProperties {
+  instrumentKey: InstrumentKey,
+  budget: number,
+  price?: number
+}
+

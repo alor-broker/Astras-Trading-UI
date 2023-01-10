@@ -7,7 +7,6 @@
             <ats-orders-basket-item
               [exchange]="settings.exchange"
               [formControl]="asFormControl(itemControl)"
-              [totalBudget]="getBudget(form)"
               [itemIndex]="i"
               [enableDelete]="asFormArray(form.controls.items).controls.length > 1"
               (delete)="asFormArray(form.controls.items).removeAt(i)"

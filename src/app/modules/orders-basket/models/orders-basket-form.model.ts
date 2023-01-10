@@ -7,6 +7,8 @@ export interface OrdersBasketItem {
   quantity: number;
 
   price: number;
+
+  id: string;
 }
 
 export interface OrdersBasket {
