@@ -180,6 +180,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       budget: new FormControl<number>(
         0,
         [
+          Validators.required,
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max)
         ]),

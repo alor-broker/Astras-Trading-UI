@@ -1,0 +1,8 @@
+{
+  "budgetLabel": "Сумма на все заявки",
+  "budgetPlaceholder": "Введите сумму",
+  "tooLittle": "Слишком мало",
+  "tooMuch": "Слишком много",
+  "moreThan100Percents": "Сумма указанных процентов больше 100",
+  "submitLabel": "Выставить"
+}
