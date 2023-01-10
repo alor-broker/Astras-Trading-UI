@@ -7,6 +7,8 @@ import { BlotterSettingsComponent } from './blotter-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import {
+  getTranslocoModule,
+  ngZorroMockComponents,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -30,14 +32,15 @@ describe('BlotterSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
-        BlotterSettingsComponent,
+        BlotterSettingsComponent
       ],
       imports: [
         NoopAnimationsModule,
         ReactiveFormsModule,
         NzSelectModule,
         NzSwitchModule,
-        ...sharedModuleImportForTests
+        ...sharedModuleImportForTests,
+        getTranslocoModule()
       ],
       providers: [
         {

@@ -19,6 +19,7 @@ import {
   UnansweredFeedback
 } from '../models/feedback.model';
 import { NotificationMeta } from '../../notifications/models/notification.model';
+import { TranslatorService } from "../../../shared/services/translator.service";
 
 describe('FeedbackNotificationsProvider', () => {
   let provider: FeedbackNotificationsProvider;
@@ -62,6 +63,12 @@ describe('FeedbackNotificationsProvider', () => {
         {
           provide: ModalService,
           useValue: modalServiceSpy
+        },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+          }
         }
       ]
     });

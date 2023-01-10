@@ -13,7 +13,7 @@ import {
   of,
   throwError
 } from "rxjs";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('CommandFooterComponent', () => {
   let component: CommandFooterComponent;
@@ -31,6 +31,9 @@ describe('CommandFooterComponent', () => {
       declarations: [
         CommandFooterComponent,
         ...ngZorroMockComponents
+      ],
+      imports: [
+        getTranslocoModule()
       ],
       providers: [
         { provide: CommandsService, useValue: commandSpy },

@@ -6,6 +6,7 @@ import { CommandsService } from '../../services/commands.service';
 import { EditWidgetComponent } from './edit-widget.component';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { getTranslocoModule } from "../../../../shared/utils/testing";
 
 describe('EditWidgetComponent', () => {
   let component: EditWidgetComponent;
@@ -22,6 +23,9 @@ describe('EditWidgetComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditWidgetComponent],
+      imports: [
+        getTranslocoModule()
+      ],
       providers: [
         { provide: ModalService, useValue: modalSpy },
         { provide: CommandsService, useValue: commandSpy },

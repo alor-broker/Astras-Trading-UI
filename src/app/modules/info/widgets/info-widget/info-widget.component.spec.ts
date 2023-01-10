@@ -5,6 +5,7 @@ import {
 import { InfoService } from '../../services/info.service';
 
 import { InfoWidgetComponent } from './info-widget.component';
+import { getTranslocoModule } from "../../../../shared/utils/testing";
 
 describe('InfoWidgetComponent', () => {
   let component: InfoWidgetComponent;
@@ -16,6 +17,9 @@ describe('InfoWidgetComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [InfoWidgetComponent],
+      imports: [
+        getTranslocoModule()
+      ]
     })
       .compileComponents();
 

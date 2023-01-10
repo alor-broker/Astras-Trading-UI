@@ -8,6 +8,7 @@ import { BehaviorSubject } from 'rxjs';
 import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
+  getTranslocoModule,
   mockComponent,
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
@@ -34,7 +35,8 @@ describe('InstrumentSelectSettingsComponent', () => {
       imports: [
         NoopAnimationsModule,
         NzSelectModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        getTranslocoModule()
       ],
       providers: [
         {

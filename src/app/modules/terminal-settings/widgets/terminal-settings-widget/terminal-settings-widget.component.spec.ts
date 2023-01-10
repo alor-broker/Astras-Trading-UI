@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalService } from 'src/app/shared/services/modal.service';
 
 import { TerminalSettingsWidgetComponent } from './terminal-settings-widget.component';
-import { sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import { getTranslocoModule, sharedModuleImportForTests } from "../../../../shared/utils/testing";
 
 describe('TerminalSettingsWidgetComponent', () => {
   let component: TerminalSettingsWidgetComponent;
@@ -16,7 +16,8 @@ describe('TerminalSettingsWidgetComponent', () => {
         TerminalSettingsWidgetComponent,
       ],
       imports: [
-        ...sharedModuleImportForTests
+        ...sharedModuleImportForTests,
+        getTranslocoModule()
       ],
       providers: [
         { provide: ModalService, useValue: modalSpy }

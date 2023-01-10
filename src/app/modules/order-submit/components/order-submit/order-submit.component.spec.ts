@@ -9,6 +9,7 @@ import { OrderSubmitComponent } from './order-submit.component';
 import { QuotesService } from '../../../../shared/services/quotes.service';
 import { Store } from '@ngrx/store';
 import {
+  getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
   TestData
@@ -38,6 +39,7 @@ import { StopOrderFormValue } from '../order-forms/stop-order-form/stop-order-fo
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
+import ruOrderSubmit from "../../../../../assets/i18n/order-submit/order-submit/ru.json";
 
 describe('OrderSubmitComponent', () => {
   let component: OrderSubmitComponent;
@@ -65,6 +67,11 @@ describe('OrderSubmitComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ...sharedModuleImportForTests,
+        getTranslocoModule({
+          langs: {
+            'order-submit/order-submit/ru': ruOrderSubmit,
+          }
+        }),
         BrowserAnimationsModule
       ],
       declarations: [

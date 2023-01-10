@@ -16,6 +16,7 @@ import { ErrorHandlerService } from '../../../shared/services/handle-error/error
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
 import { toInstrumentKey } from '../../../shared/utils/instruments';
+import { TranslocoService } from "@ngneat/transloco";
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,8 @@ export class WatchlistCollectionService {
   constructor(
     private readonly http: HttpClient,
     private readonly localStorage: LocalStorageService,
-    private readonly errorHandlerService: ErrorHandlerService
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly translocoService: TranslocoService
   ) {
   }
 
@@ -150,7 +152,7 @@ export class WatchlistCollectionService {
       collection: [
         {
           id: GuidGenerator.newGuid(),
-          title: 'Список по-умолчанию',
+          title: this.translocoService.getActiveLang() === 'ru' ? 'Список по-умолчанию' : 'Default list',
           isDefault: true,
           items: oldWatchlist
         } as Watchlist

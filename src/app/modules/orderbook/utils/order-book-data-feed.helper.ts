@@ -34,7 +34,7 @@ export class OrderBookDataFeedHelper {
       exchange: order.exchange,
       portfolio: order.portfolio,
       price: order.price,
-      volume: order.qty,
+      volume: order.qty - (order.filledQtyBatch ?? 0),
       type: order.type
     } as CurrentOrder;
   }

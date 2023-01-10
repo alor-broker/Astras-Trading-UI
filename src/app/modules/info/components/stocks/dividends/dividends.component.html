@@ -1,22 +1,23 @@
 <ng-container *ngIf="dividends$ | async as dividends">
-  <nz-table #nzTable *ngIf="(isLoading$ | async) === false" [nzData]="dividends"
-            [nzFrontPagination]="false" [nzShowPagination]="false" nzSize="small" nzTableLayout="fixed">
-    <thead>
-    <tr>
-      <th>Дата фикс.</th>
-      <th>Дивиденд</th>
-      <th>Див. дох.</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let dividend of nzTable.data">
-      <td>{{ dividend.recordDate | date }}</td>
-      <td>{{ dividend.dividendPerShare | currency: dividend.currency:'symbol-narrow'}}</td>
-      <td>{{ dividend.dividendYield | percent:'1.1-2'}}</td>
-    </tr>
-    </tbody>
-  </nz-table>
+  <ng-container *transloco="let t; scope: 'info/dividends'">
+    <nz-table #nzTable *ngIf="(isLoading$ | async) === false" [nzData]="dividends"
+              [nzFrontPagination]="false" [nzShowPagination]="false" nzSize="small" nzTableLayout="fixed">
+      <thead>
+      <tr>
+        <th>{{t('infoDividends.recordDate')}}</th>
+        <th>{{t('infoDividends.dividendPerShare')}}</th>
+        <th>{{t('infoDividends.dividendYield')}}</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let dividend of nzTable.data">
+        <td>{{ dividend.recordDate | date }}</td>
+        <td>{{ dividend.dividendPerShare | currency: dividend.currency:'symbol-narrow'}}</td>
+        <td>{{ dividend.dividendYield | percent:'1.1-2'}}</td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </ng-container>
 </ng-container>
 <ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>
-
 

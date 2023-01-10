@@ -26,7 +26,7 @@ export class OnboardingService {
           take(1)
         ).subscribe(theme => {
           this.joyride.startTour({
-            steps: Array(8).fill(1).map((_, i) => `step${i + 1}`),
+            steps: Array(7).fill(1).map((_, i) => `step${i + 1}`),
             themeColor: theme.themeColors.buyColor
           });
           this.setIsCompleted(true);

@@ -34,6 +34,7 @@ import { getAllPortfolios } from "../../../../store/portfolios/portfolios.select
 import { ExchangeRateService } from "../../../../shared/services/exchange-rate.service";
 import { ExchangeRate } from "../../../exchange-rate/models/exchange-rate.model";
 import { map } from "rxjs/operators";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -89,6 +90,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     private readonly store: Store,
     private readonly exchangeRateService: ExchangeRateService,
     private modal: ModalService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -136,17 +138,23 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   }
 
   clearDashboard() {
-    this.modal.openConfirmModal({
-      nzTitle: 'Вы уверены, что хотите сделать полный сброс?',
-      nzContent: 'При полном сбросе удалятся все Ваши настройки, списки наблюдения, виджеты и так далее.',
-      nzOkText: 'Да',
-      nzOkType: 'primary',
-      nzOkDanger: true,
-      nzOnOk: () => this.dashboardService.clearDashboard(),
-      nzCancelText: 'Нет',
-      nzOnCancel: () => {
-      }
-    });
+    this.translatorService.getTranslator('terminal-settings')
+      .pipe(
+        take(1)
+      )
+      .subscribe(t => {
+        this.modal.openConfirmModal({
+          nzTitle: t(['hardRebootWarningTitle']),
+          nzContent: t(['hardRebootWarningDesc']),
+          nzOkText: t(['yesBtnText']),
+          nzOkType: 'primary',
+          nzOkDanger: true,
+          nzOnOk: () => this.dashboardService.clearDashboard(),
+          nzCancelText: t(['noBtnText']),
+          nzOnCancel: () => {
+          }
+        });
+      });
   }
 
   ngOnDestroy() {
@@ -204,6 +212,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
           Validators.min(this.validationSettings.userIdleDurationMin.min),
           Validators.max(this.validationSettings.userIdleDurationMin.max)
         ]),
+      language: new UntypedFormControl(currentSettings.language || ''),
       badgesBind: new UntypedFormControl(currentSettings.badgesBind),
       hotKeysSettings: new UntypedFormGroup({
         cancelOrdersKey: new UntypedFormControl(currentSettings.hotKeysSettings?.cancelOrdersKey),

@@ -1,4 +1,4 @@
-<nz-header>
+<nz-header *transloco="let t; scope: 'dashboard/navbar'">
   <div class="logo">
     <a [routerLink]="['/']"></a>
   </div>
@@ -8,10 +8,10 @@
             nzSize='small'
             joyrideStep="step2"
             nzType="text"
-            [title]="joyrideContent.step2.title"
-            [text]="joyrideContent.step2.text">
+            [title]="t('joyride.step2.title')"
+            [text]="t('joyride.step2.text')">
       <i nz-icon nzType="appstore-add" nzTheme="outline" [nzRotate]="-90" class="left-side-icon"></i>
-      Виджеты
+      {{t('dashboardNavbar.widgetsLabel')}}
     </button>
   </div>
 
@@ -19,10 +19,10 @@
     <button nz-button [nzType]="'text'"
             (click)="newOrder()"
             joyrideStep="step3"
-            [title]="joyrideContent.step3.title"
-            [text]="joyrideContent.step3.text">
+            [title]="t('joyride.step3.title')"
+            [text]="t('joyride.step3.text')">
       <i nz-icon nzType="plus-circle" nzTheme="outline" class="left-side-icon"></i>
-      Заявка
+      {{t('dashboardNavbar.orderLabel')}}
     </button>
   </div>
 
@@ -36,8 +36,8 @@
       nzType="text"
       [nzDropdownMenu]="portfoliosDropdown"
       joyrideStep="step1"
-      [title]="joyrideContent.step1.title"
-      [text]="joyrideContent.step1.text"
+      [title]="t('joyride.step1.title')"
+      [text]="t('joyride.step1.text')"
     >
       <span>
         {{selectedPortfolio.market}} {{selectedPortfolio.portfolio}}
@@ -56,12 +56,12 @@
         nzPopoverPlacement="bottom"
         [nzPopoverContent]="emptyPortfolioPopover"
       >
-        Нет портфелей
+        {{t('dashboardNavbar.emptyPortfolioBtn')}}
       </button>
 
       <ng-template #emptyPortfolioPopover>
-        <p>Портфели с позициями отсутствуют. </p>
-        <p>Вы можете перевести деньги или бумаги <ats-external-link href="https://lk.alor.ru/main">здесь</ats-external-link></p>
+        <p>{{t('dashboardNavbar.emptyPortfolioPopover')}}</p>
+        <p>{{t('dashboardNavbar.emptyPortfolioPopoverHint')}} <ats-external-link href="https://lk.alor.ru/main">{{t('dashboardNavbar.emptyPortfolioPopoverLink')}}</ats-external-link></p>
       </ng-template>
     </ng-template>
 
@@ -72,7 +72,7 @@
             type="text"
             nz-input
             class="portfolio-search"
-            placeholder="Поиск по портфелю"
+            [placeholder]="t('dashboardNavbar.searchPortfolioPlaceholder')"
             [formControl]="searchControl"
           />
         </li>
@@ -102,46 +102,46 @@
       </button>
     </div>
   </div>
+
+
+  <nz-dropdown-menu #widgetsMenu="nzDropdownMenu">
+    <ats-widget-menu
+      [showResetItem]="true"
+      (selected)="addItem($event)"
+      (resetDashboard)="resetDashboard()"
+    ></ats-widget-menu>
+  </nz-dropdown-menu>
+
+  <nz-dropdown-menu #rightMenu="nzDropdownMenu">
+    <ul nz-menu>
+      <li nz-menu-item (click)="openTerminalSettings()" class='menu-item' >
+        <span><i nz-icon nzType="user" nzTheme="outline"></i> <label>&nbsp;{{t('dashboardNavbar.profile')}}</label></span>
+      </li>
+      <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://lk.alor.ru/reports/broker')">
+        <span>
+          <i nz-icon nzType="audit" nzTheme="outline"></i>
+          <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbar.reports')}"></ng-container>
+        </span>
+      </li>
+      <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://warp.alor.dev/ru/releases/astras')">
+        <span>
+          <i nz-icon nzType="history" nzTheme="outline"></i>
+          <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbar.releases')}"></ng-container>
+        </span>
+      </li>
+      <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://t.me/+oM0i9QbtD4cwMzNi')">
+        <span>
+          <i nz-icon nzType="customer-service" nzTheme="outline"></i>
+          <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbar.support')}"></ng-container>
+        </span>
+      </li>
+      <li nz-menu-item (click)="logout()" class='menu-item' >
+        <span><i nz-icon nzType="logout" nzTheme="outline"></i> <label>&nbsp;{{t('dashboardNavbar.exit')}}</label></span>
+      </li>
+    </ul>
+
+    <ng-template #externalLink let-name='name'>
+      <span class="link-label"><label>&nbsp;{{name}} </label><span nz-icon nzType="ats-external-link" nzTheme="outline"></span></span>
+    </ng-template>
+  </nz-dropdown-menu>
 </nz-header>
-
-
-<nz-dropdown-menu #widgetsMenu="nzDropdownMenu">
-  <ats-widget-menu
-    [showResetItem]="true"
-    (selected)="addItem($event)"
-    (resetDashboard)="resetDashboard()"
-  ></ats-widget-menu>
-</nz-dropdown-menu>
-
-<nz-dropdown-menu #rightMenu="nzDropdownMenu">
-  <ul nz-menu>
-    <li nz-menu-item (click)="openTerminalSettings()" class='menu-item' >
-      <span><i nz-icon nzType="user" nzTheme="outline"></i> <label>&nbsp;Профиль</label></span>
-    </li>
-    <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://lk.alor.ru/reports/broker')">
-      <span>
-        <i nz-icon nzType="audit" nzTheme="outline"></i>
-        <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name:'Отчеты'}"></ng-container>
-      </span>
-    </li>
-    <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://warp.alor.dev/ru/releases/astras')">
-      <span>
-        <i nz-icon nzType="history" nzTheme="outline"></i>
-        <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name:'Релизы'}"></ng-container>
-      </span>
-    </li>
-    <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://t.me/+oM0i9QbtD4cwMzNi')">
-      <span>
-        <i nz-icon nzType="customer-service" nzTheme="outline"></i>
-        <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name:'Техподдержка'}"></ng-container>
-      </span>
-    </li>
-    <li nz-menu-item (click)="logout()" class='menu-item' >
-      <span><i nz-icon nzType="logout" nzTheme="outline"></i> <label>&nbsp;Выйти</label></span>
-    </li>
-  </ul>
-
-  <ng-template #externalLink let-name='name'>
-    <span class="link-label"><label>&nbsp;{{name}} </label><span nz-icon nzType="ats-external-link" nzTheme="outline"></span></span>
-  </ng-template>
-</nz-dropdown-menu>

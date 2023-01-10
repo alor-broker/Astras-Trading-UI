@@ -1,0 +1,13 @@
+{
+  "couponsTable": "Coupons",
+  "amortizationTable": "Amortization",
+  "offersTable": "Offers",
+
+  "date": "Date",
+  "qty": "Quantity",
+  "couponType": "Coupon type",
+  "accruedInterest": "NAC",
+  "parFraction": "% of face value",
+  "type": "Type",
+  "description": "Description"
+}

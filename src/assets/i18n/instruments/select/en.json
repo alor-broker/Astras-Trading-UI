@@ -1,0 +1,49 @@
+{
+  "searchPlaceHolder": "Search...",
+  "columns": {
+    "symbol": {
+      "name": "Ticker",
+      "tooltip": "Exchange identifier of the security"
+    },
+    "shortName": {
+      "name": "Name",
+      "tooltip": "Ticker name"
+    },
+    "price": {
+      "name": "Price",
+      "tooltip": "Last order price"
+    },
+    "dayChange": {
+      "name": "Day change",
+      "tooltip": "Change per day"
+    },
+    "dayChangePerPrice": {
+      "name": "Day change,%",
+      "tooltip": "Change per day in %"
+    },
+    "maxPrice": {
+      "name": "Max price",
+      "tooltip": "Maximal price per day"
+    },
+    "minPrice": {
+      "name": "Min price.",
+      "tooltip": "Minimal price per day"
+    },
+    "volume": {
+      "name": "Value",
+      "tooltip": "Value"
+    },
+    "openPrice": {
+      "name": "Open price",
+      "tooltip": "Price at the beginning of the day"
+    },
+    "closePrice": {
+      "name": "Close price",
+      "tooltip": "Price at the end of the previous day"
+    },
+    "delete": {
+      "name": "Del.",
+      "tooltip": "Delete from watchlist"
+    }
+  }
+}

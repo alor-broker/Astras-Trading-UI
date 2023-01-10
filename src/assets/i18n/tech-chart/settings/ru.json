@@ -1,0 +1,8 @@
+{
+  "tickerLabel": "Тикер",
+  "tickerError": "Выберите тикер",
+  "exchangeLabel": "Биржа",
+  "advanced": "Продвинутые",
+  "instrumentGroupError": "Введите режим торгов",
+  "instrumentGroupLabel": "Режим торгов"
+}

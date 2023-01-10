@@ -1,0 +1,10 @@
+{
+  "description": "Description",
+  "sector": "Sector",
+  "isin": "ISIN",
+  "baseCurrency": "Base currency",
+  "type": "Type",
+  "lotSize": "Lot size",
+  "marginBuy": "Margin buy",
+  "marginSell": "Margin sell"
+}

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WidgetMenuComponent } from './widget-menu.component';
+import { getTranslocoModule } from "../../utils/testing";
 
 describe('WidgetMenuComponent', () => {
   let component: WidgetMenuComponent;
@@ -8,7 +9,8 @@ describe('WidgetMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ WidgetMenuComponent ]
+      declarations: [ WidgetMenuComponent ],
+      imports: [getTranslocoModule()]
     })
     .compileComponents();
   });
