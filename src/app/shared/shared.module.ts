@@ -53,6 +53,7 @@ import { InstrumentSearchComponent } from './components/instrument-search/instru
 import { NzDividerModule } from "ng-zorro-antd/divider";
 import { ResizeColumnDirective } from './directives/resize-column.directive';
 import { TranslocoModule } from "@ngneat/transloco";
+import { InstrumentBoardSelectComponent } from './components/instrument-board-select/instrument-board-select.component';
 
 
 @NgModule({
@@ -65,7 +66,8 @@ import { TranslocoModule } from "@ngneat/transloco";
     ColorPickerInputComponent,
     ShortNumberPipe,
     InstrumentSearchComponent,
-    ResizeColumnDirective
+    ResizeColumnDirective,
+    InstrumentBoardSelectComponent
   ],
   imports: [
     CommonModule,
@@ -112,7 +114,7 @@ import { TranslocoModule } from "@ngneat/transloco";
     NzDividerModule,
   ],
     exports: [
-      // Ng zorro
+        // Ng zorro
         NzTableModule,
         NzButtonModule,
         NzIconModule,
@@ -150,13 +152,14 @@ import { TranslocoModule } from "@ngneat/transloco";
         GridsterModule,
         NgChartsModule,
         TranslocoModule,
-      // components
+        // components
         PriceTickComponent,
         LoadingIndicatorComponent,
         InfiniteScrollTableComponent,
         WidgetMenuComponent,
         ColorPickerInputComponent,
         InstrumentSearchComponent,
+        InstrumentBoardSelectComponent,
         // directives
         NumericalDirective,
         ShortNumberPipe,

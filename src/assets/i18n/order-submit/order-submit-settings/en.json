@@ -13,5 +13,5 @@
   "volumeLabel": "Volume",
   "advancedHeader": "Advanced",
   "instrumentGroupLabel": "Trading mode",
-  "instrumentGroupError": "Input trading mode"
+  "instrumentGroupError": "Select trading mode"
 }

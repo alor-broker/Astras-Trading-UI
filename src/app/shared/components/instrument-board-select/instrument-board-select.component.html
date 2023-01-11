@@ -1,0 +1,13 @@
+<nz-select
+  (ngModelChange)="selectBoard($event)"
+  [ngModel]="currentValue"
+  nzAllowClear
+  nzShowSearch
+  [nzPlaceHolder]="placeholder ?? ''"
+>
+  <ng-container *ngIf="availableBoards$ | async as availableBoards">
+    <ng-container *ngFor="let board of availableBoards">
+      <nz-option [nzLabel]="board" [nzValue]="board"></nz-option>
+    </ng-container>
+  </ng-container>
+</nz-select>
