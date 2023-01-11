@@ -40,5 +40,9 @@ export function formatCurrency(number: number, currency: string, maxFractionDigi
       break;
   }
 
+  if (locale === 'ch') {
+    return Intl.NumberFormat(locale).format(number) + ' ₣';
+  }
+
   return Intl.NumberFormat(locale, { style: 'currency', currency: formatCode, maximumFractionDigits: maxFractionDigits }).format(number);
 }
