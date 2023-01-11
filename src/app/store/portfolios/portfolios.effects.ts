@@ -30,6 +30,7 @@ import {
   getSelectedPortfolioKey
 } from './portfolios.selectors';
 import { PortfolioKey } from '../../shared/models/portfolio-key.model';
+import { MarketService } from "../../shared/services/market.service";
 
 export interface SavedPortfolioState {
   lastActivePortfolio: PortfolioKey;
@@ -71,7 +72,7 @@ export class PortfoliosEffects {
           }
         }
 
-        const defaultPortfolio = portfolios.find(p => p.exchange === 'MOEX' && p.portfolio.startsWith('D'))
+        const defaultPortfolio = portfolios.find(p => this.marketService.getExchangeSettings(p.exchange).isDefault && p.portfolio.startsWith('D'))
           ?? (portfolios.length > 0 ? portfolios[0] : null);
         return selectNewPortfolio({
           portfolio: !!defaultPortfolio
@@ -114,6 +115,7 @@ export class PortfoliosEffects {
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly localStorage: LocalStorageService,
     private readonly store: Store,
+    private readonly marketService: MarketService
   ) {
   }
 

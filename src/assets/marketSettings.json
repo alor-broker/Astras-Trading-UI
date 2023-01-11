@@ -1,0 +1,24 @@
+{
+  "MOEX": {
+    "isWithIsin": true,
+    "isShowIssueTab": true,
+    "isShowPaymentsTab": true,
+    "isMOEX": true,
+    "currencyInstrument": "RUB",
+    "isDefault": true,
+    "market": {
+      "CURR": {},
+      "FOND": {},
+      "FORTS": {}
+    }
+  },
+  "SPBX": {
+    "isInternational": true,
+    "isShowFinanceTab": true,
+    "isShowDividendsTab": true,
+    "currencyInstrument": "USD000UTSTOM",
+    "market": {
+      "SPBX": {}
+    }
+  }
+}

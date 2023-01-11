@@ -7,7 +7,6 @@ import {
   shareReplay,
   switchMap
 } from 'rxjs';
-import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
 import { InfoSettings } from 'src/app/shared/models/settings/info-settings.model';
@@ -23,6 +22,7 @@ import { catchError, distinct } from 'rxjs/operators';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { getTypeByCfi } from 'src/app/shared/utils/instruments';
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
+import { MarketService } from "../../../shared/services/market.service";
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,
@@ -39,7 +39,9 @@ export class InfoService {
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService) {
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly marketService: MarketService
+  ) {
   }
 
   init(guid: string) {
@@ -66,7 +68,7 @@ export class InfoService {
     }
 
     return this.settings$!.pipe(
-      map(s => s.info),
+      map(s => ({...s.info, exchangeSettings: this.marketService.getExchangeSettings(s.info.exchange)})),
       distinct()
     );
   }
@@ -124,12 +126,12 @@ export class InfoService {
 
   private getInstrumentEntity<T>(exchangeInfo: ExchangeInfo, path: string): Observable<T> {
     let identifier = exchangeInfo.symbol;
-    if (exchangeInfo.exchange == Exchanges.MOEX && exchangeInfo.isin) {
+    if (this.marketService.getExchangeSettings(exchangeInfo.exchange).isWithIsin && exchangeInfo.isin) {
       identifier = exchangeInfo.isin;
     }
     return this.http.get<T>(
       this.instrumentUrl +
-      (exchangeInfo.exchange == Exchanges.SPBX ? "/international/" : "/") +
+      (this.marketService.getExchangeSettings(exchangeInfo.exchange).isInternational ? "/international/" : "/") +
       `${identifier}/` +
       path);
   }

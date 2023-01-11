@@ -35,6 +35,7 @@ import { ExchangeRateService } from "../../../../shared/services/exchange-rate.s
 import { ExchangeRate } from "../../../exchange-rate/models/exchange-rate.model";
 import { map } from "rxjs/operators";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { MarketService } from "../../../../shared/services/market.service";
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -90,7 +91,8 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     private readonly store: Store,
     private readonly exchangeRateService: ExchangeRateService,
     private modal: ModalService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly marketService: MarketService
   ) {
   }
 
@@ -190,7 +192,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
       );
       return existingSettings || {
         portfolio: p,
-        currency: p.exchange === 'MOEX' ? CurrencyInstrument.RUB : CurrencyInstrument.USD
+        currency: this.marketService.getExchangeSettings(p.exchange).currencyInstrument
       };
     });
 
