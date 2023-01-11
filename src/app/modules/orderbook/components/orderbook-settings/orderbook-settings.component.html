@@ -15,7 +15,7 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-control [nzErrorTip]="t('orderbookSettings.depthError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
+        <nz-form-control [nzErrorTip]="t('orderbookSettings.intervalError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
           <nz-form-label nzRequired nzFor="depth">{{t('orderbookSettings.depthLabel')}}</nz-form-label>
           <nz-input-group>
             <input
@@ -23,7 +23,7 @@
               formControlName="depth"
               (mousedown)="$event.stopPropagation()"
               nz-input
-              [placeholder]="t('orderbookSettings.depthPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"
+              [placeholder]="t('orderbookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"
             />
           </nz-input-group>
         </nz-form-control>
