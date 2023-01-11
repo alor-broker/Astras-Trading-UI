@@ -1,32 +1,12 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 
 import { BlotterWidgetComponent } from './blotter-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import {
-  getTranslocoModule,
-  mockComponent,
-  ngZorroMockComponents,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
+import { getTranslocoModule, mockComponent, ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { Store } from "@ngrx/store";
 import { EventEmitter } from '@angular/core';
-
-const settings: BlotterSettings = {
-  exchange: 'MOEX',
-  portfolio: 'D39004',
-  guid: '1230',
-  ordersColumns: ['ticker'],
-  stopOrdersColumns: ['ticker'],
-  tradesColumns: ['ticker'],
-  positionsColumns: ['ticker'],
-  activeTabIndex: 0,
-  isSoldPositionsHidden: false
-};
 
 describe('BlotterWidgetComponent', () => {
   let component: BlotterWidgetComponent;

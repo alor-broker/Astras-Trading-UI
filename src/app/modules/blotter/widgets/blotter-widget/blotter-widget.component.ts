@@ -2,6 +2,7 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output
 } from '@angular/core';
@@ -10,12 +11,11 @@ import {
   Observable,
   of,
   shareReplay,
-  take
+  Subject,
+  take,
+  takeUntil
 } from 'rxjs';
-import {
-  filter,
-  map
-} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import {
   DashboardItem,
   DashboardItemContentSize
@@ -23,12 +23,7 @@ import {
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
-import {
-  MarketType,
-  PortfolioKey
-} from "../../../../shared/models/portfolio-key.model";
-import { Store } from "@ngrx/store";
-import { getSelectedPortfolioKey } from "../../../../store/portfolios/portfolios.selectors";
+import { MarketType } from "../../../../shared/models/portfolio-key.model";
 
 @Component({
   selector: 'ats-blotter-widget[shouldShowSettings][guid][resize]',
@@ -38,8 +33,11 @@ import { getSelectedPortfolioKey } from "../../../../store/portfolios/portfolios
     BlotterService
   ]
 })
-export class BlotterWidgetComponent implements OnInit {
+export class BlotterWidgetComponent implements OnInit, OnDestroy {
   readonly marketTypes = MarketType;
+  private settings$!: Observable<BlotterSettings>;
+  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
+
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -54,19 +52,24 @@ export class BlotterWidgetComponent implements OnInit {
 
   contentSize$!: Observable<DashboardItemContentSize>;
 
-  constructor(private readonly settingsService: WidgetSettingsService, private readonly store: Store) {
+  constructor(private readonly settingsService: WidgetSettingsService) {
   }
 
   ngOnInit(): void {
-    this.activeTabIndex$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid)
+      .pipe(
+        takeUntil(this.destroy$)
+      );
+
+    this.activeTabIndex$ = this.settings$.pipe(
       map(s => s.activeTabIndex),
       take(1)
     );
 
-    this.marketType$ = this.store.select(getSelectedPortfolioKey).pipe(
-      filter((p): p is PortfolioKey => !!p),
-      map(p => p.marketType)
-    );
+    this.marketType$ = this.settings$
+      .pipe(
+        map(s => s.marketType)
+      );
 
     this.contentSize$ = this.resize.pipe(
       map(x => ({
@@ -83,5 +86,10 @@ export class BlotterWidgetComponent implements OnInit {
 
   onIndexChange(event: NzTabChangeEvent) {
     this.settingsService.updateSettings(this.guid, { activeTabIndex: event.index ?? 0 });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }

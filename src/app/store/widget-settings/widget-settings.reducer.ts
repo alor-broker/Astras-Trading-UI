@@ -116,6 +116,7 @@ export const reducer = createReducer(
           ...state.entities[s],
           portfolio: newPortfolioKey.portfolio,
           exchange: newPortfolioKey.exchange,
+          marketType: newPortfolioKey.marketType
         }
       }));
 
