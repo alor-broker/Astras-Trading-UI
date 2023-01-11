@@ -2,7 +2,9 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Inject,
   Input,
+  OnDestroy,
   OnInit,
   Output,
   ViewChild
@@ -11,10 +13,13 @@ import { Store } from '@ngrx/store';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
 import {
   BehaviorSubject,
+  fromEvent,
   Observable,
   of,
   shareReplay,
-  take
+  Subject,
+  take,
+  takeUntil
 } from 'rxjs';
 import {
   debounceTime,
@@ -32,15 +37,17 @@ import { WatchlistCollectionService } from '../../services/watchlist-collection.
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentSelectSettings } from "../../../../shared/models/settings/instrument-select-settings.model";
 import { WatchlistCollection } from '../../models/watchlist.model';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'ats-instrument-select[shouldShowSettings][guid]',
   templateUrl: './instrument-select.component.html',
   styleUrls: ['./instrument-select.component.less']
 })
-export class InstrumentSelectComponent implements OnInit {
+export class InstrumentSelectComponent implements OnInit, OnDestroy {
+  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
-  @ViewChild('inputEl') inputEl!: ElementRef;
+  @ViewChild('inputEl') inputEl!: ElementRef<HTMLInputElement>;
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -57,7 +64,8 @@ export class InstrumentSelectComponent implements OnInit {
     private readonly service: InstrumentsService,
     private readonly store: Store,
     private readonly settingsService: WidgetSettingsService,
-    private readonly watchlistCollectionService: WatchlistCollectionService) {
+    private readonly watchlistCollectionService: WatchlistCollectionService,
+    @Inject(DOCUMENT) private readonly document: Document) {
 
   }
 
@@ -122,6 +130,16 @@ export class InstrumentSelectComponent implements OnInit {
       startWith(null),
       map(() => this.watchlistCollectionService.getWatchlistCollection()),
     );
+
+    fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
+      filter(e => e.ctrlKey && e.code === 'KeyF' && !e.cancelBubble),
+      takeUntil(this.destroy$)
+    ).subscribe((e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      this.inputEl.nativeElement.value = '';
+      this.inputEl.nativeElement.select();
+    });
   }
 
   watch(instrument: InstrumentKey) {
@@ -152,5 +170,10 @@ export class InstrumentSelectComponent implements OnInit {
         this.settingsService.updateSettings(this.guid, { activeListId: defaultList.id });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }
