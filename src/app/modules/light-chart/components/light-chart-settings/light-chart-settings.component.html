@@ -35,9 +35,12 @@
       <nz-collapse [nzBordered]="false" nzGhost>
         <nz-collapse-panel [nzHeader]="t('lightChartSettings.advanced')">
           <nz-form-control [nzErrorTip]="t('lightChartSettings.instrumentGroupError')">
-            <nz-form-label nzRequired nzFor="instrumentGroup">{{t('lightChartSettings.instrumentGroupLabel')}}</nz-form-label>
-            <input formControlName="instrumentGroup" (mousedown)="$event.stopPropagation()"
-                   nz-input [placeholder]="t('lightChartSettings.instrumentGroupLabel')" />
+            <nz-form-label nzFor="instrumentGroup">{{t('lightChartSettings.instrumentGroupLabel')}}</nz-form-label>
+            <ats-instrument-board-select
+              [symbol]="form.value?.instrument?.symbol ?? null"
+              [placeholder]="t('lightChartSettings.instrumentGroupLabel')"
+              formControlName="instrumentGroup">
+            </ats-instrument-board-select>
           </nz-form-control>
         </nz-collapse-panel>
       </nz-collapse>

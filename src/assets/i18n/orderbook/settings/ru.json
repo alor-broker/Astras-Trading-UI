@@ -39,7 +39,6 @@
   "autoAlignIntervalHint": "Введите '0' или оставьте поле пустым, чтобы отключить авто-выравнивание",
 
   "advanced": "Продвинутые",
-  "instrumentGroupError": "Введите группу",
-  "instrumentGroupLabel": "Группа",
-  "instrumentGroupPlaceholder": "Режим торгов"
+  "instrumentGroupLabel": "Режим торгов",
+  "instrumentGroupError": "Выберите режим торгов"
 }

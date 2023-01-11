@@ -18,12 +18,11 @@
         <nz-collapse-panel [nzHeader]="t('techChartSettings.advanced')">
           <nz-form-control [nzErrorTip]="t('techChartSettings.instrumentGroupError')">
             <nz-form-label nzFor="instrumentGroup" nzRequired>{{t('techChartSettings.instrumentGroupLabel')}}</nz-form-label>
-            <input
-              (mousedown)="$event.stopPropagation()"
-              formControlName="instrumentGroup"
-              nz-input
+            <ats-instrument-board-select
+              [symbol]="form.value?.instrument?.symbol ?? null"
               [placeholder]="t('techChartSettings.instrumentGroupLabel')"
-            />
+              formControlName="instrumentGroup">
+            </ats-instrument-board-select>
           </nz-form-control>
         </nz-collapse-panel>
       </nz-collapse>

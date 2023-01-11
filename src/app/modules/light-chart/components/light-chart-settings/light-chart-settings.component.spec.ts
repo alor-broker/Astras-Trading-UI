@@ -4,7 +4,11 @@ import { LightChartSettingsComponent } from './light-chart-settings.component';
 import { of } from 'rxjs';
 import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { AppModule } from 'src/app/app.module';
-import { getTranslocoModule, sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import {
+  getTranslocoModule,
+  mockComponent,
+  sharedModuleImportForTests
+} from '../../../../shared/utils/testing';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('LightChartSettingsComponent', () => {
@@ -25,7 +29,10 @@ describe('LightChartSettingsComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach((async () => {
     await TestBed.configureTestingModule({
-      declarations: [LightChartSettingsComponent],
+      declarations: [
+        LightChartSettingsComponent,
+        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['symbol', 'placeholder'] })
+      ],
       imports: [
         ...sharedModuleImportForTests,
         AppModule,

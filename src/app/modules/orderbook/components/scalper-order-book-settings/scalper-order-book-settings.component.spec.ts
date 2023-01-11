@@ -6,7 +6,10 @@ import {
 import { ScalperOrderBookSettingsComponent } from './scalper-order-book-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { getTranslocoModule } from "../../../../shared/utils/testing";
+import {
+  getTranslocoModule,
+  mockComponent
+} from "../../../../shared/utils/testing";
 
 describe('ScalperOrderBookSettingsComponent', () => {
   let component: ScalperOrderBookSettingsComponent;
@@ -14,7 +17,10 @@ describe('ScalperOrderBookSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ScalperOrderBookSettingsComponent],
+      declarations: [
+        ScalperOrderBookSettingsComponent,
+        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['symbol', 'placeholder'] })
+      ],
       imports: [
         getTranslocoModule()
       ],
