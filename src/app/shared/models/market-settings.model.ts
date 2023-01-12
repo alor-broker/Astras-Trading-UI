@@ -3,13 +3,13 @@ export interface ExchangeSettings {
     [marketName: string]: MarketSettings
   },
   currencyInstrument: string;
-  isShowIssueTab?: boolean;
-  isShowPaymentsTab?: boolean;
-  isShowFinanceTab?: boolean;
-  isShowDividendsTab?: boolean;
+  hasIssue?: boolean;
+  hasPayments?: boolean;
+  hasFinance?: boolean;
+  hasDividends?: boolean;
   isInternational?: boolean;
   isDefault?: boolean;
-  isWithIsin?: boolean;
+  usesIsin?: boolean;
 }
 
 export interface MarketSettings {}

@@ -7,7 +7,7 @@ import {
   getSelectedPortfolioKey
 } from "./portfolios.selectors";
 import {
-  BehaviorSubject,
+  BehaviorSubject, of,
   take
 } from "rxjs";
 import {
@@ -19,6 +19,7 @@ import { AccountService } from '../../shared/services/account.service';
 import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.model';
 import { ErrorHandlerService } from '../../shared/services/handle-error/error-handler.service';
 import { SavedPortfolioState } from './portfolios.effects';
+import { MarketService } from "../../shared/services/market.service";
 
 describe('Portfolios Store', () => {
   let store: Store;
@@ -80,6 +81,13 @@ describe('Portfolios Store', () => {
         { provide: AccountService, useValue: accountServiceSpy },
         { provide: LocalStorageService, useValue: localStorageServiceSpy },
         { provide: ErrorHandlerService, useValue: errorHandlerServiceSpy },
+        {
+          provide: MarketService,
+          useValue: {
+            getExchangeSettings: jasmine.createSpy('getExchangeSettings')
+              .and.callFake(e => of(e === 'MOEX' ? {isDefault: true} : {}))
+          }
+        }
       ]
     });
 

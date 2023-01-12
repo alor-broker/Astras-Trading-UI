@@ -17,7 +17,7 @@ import { Dividend } from '../models/dividend.model';
 import { ExchangeInfo } from '../models/exchange-info.model';
 import { Finance } from '../models/finance.model';
 import { Issue } from '../models/issue.model';
-import { catchHttpError } from '../../../shared/utils/observable-helper';
+import { catchHttpError, mapWith } from '../../../shared/utils/observable-helper';
 import { catchError, distinct } from 'rxjs/operators';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { getTypeByCfi } from 'src/app/shared/utils/instruments';
@@ -68,7 +68,14 @@ export class InfoService {
     }
 
     return this.settings$!.pipe(
-      map(s => ({...s.info, exchangeSettings: this.marketService.getExchangeSettings(s.info.exchange)})),
+      mapWith(
+        (s) => this.marketService.getExchangeSettings(s.info.exchange),
+        (s, es) => ({s, es})
+      ),
+      map(({s, es}) => ({
+        ...s.info,
+        exchangeSettings: es
+      })),
       distinct()
     );
   }
@@ -125,15 +132,20 @@ export class InfoService {
   }
 
   private getInstrumentEntity<T>(exchangeInfo: ExchangeInfo, path: string): Observable<T> {
-    let identifier = exchangeInfo.symbol;
-    if (this.marketService.getExchangeSettings(exchangeInfo.exchange).isWithIsin && exchangeInfo.isin) {
-      identifier = exchangeInfo.isin;
-    }
-    return this.http.get<T>(
-      this.instrumentUrl +
-      (this.marketService.getExchangeSettings(exchangeInfo.exchange).isInternational ? "/international/" : "/") +
-      `${identifier}/` +
-      path);
+    return this.marketService.getExchangeSettings(exchangeInfo.exchange)
+      .pipe(
+        switchMap(exchangeSettings => {
+          let identifier = exchangeInfo.symbol;
+          if (exchangeSettings.usesIsin && exchangeInfo.isin) {
+            identifier = exchangeInfo.isin;
+          }
+          return this.http.get<T>(
+            this.instrumentUrl +
+            (exchangeSettings.isInternational ? "/international/" : "/") +
+            `${identifier}/` +
+            path);
+        })
+      );
   }
 
   private getExchangeInfoReq(key: InstrumentKey): Observable<ExchangeInfo> {

@@ -3,8 +3,11 @@ import {
   OnInit, Output
 } from '@angular/core';
 import {
+  forkJoin,
   Observable,
-  of, Subject,
+  of,
+  Subject,
+  switchMap,
   take, takeUntil
 } from 'rxjs';
 import { FullName } from '../../../../shared/models/user/full-name.model';
@@ -13,7 +16,10 @@ import {
   TerminalSettingsFormControls,
   TerminalSettingsFormGroup
 } from '../../models/terminal-settings-form.model';
-import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import {
+  PortfolioCurrency,
+  TerminalSettings
+} from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import {
   AbstractControl,
   UntypedFormArray,
@@ -27,7 +33,6 @@ import { TabNames } from "../../models/terminal-settings.model";
 import { DashboardService } from "../../../../shared/services/dashboard.service";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
 import { CurrencyInstrument } from "../../../../shared/models/enums/currencies.model";
 import { Store } from "@ngrx/store";
 import { getAllPortfolios } from "../../../../store/portfolios/portfolios.selectors";
@@ -168,8 +173,21 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     this.service.getSettings()
       .pipe(
         mapWith(
-          () => this.store.select(getAllPortfolios),
-          (settings, portfolios) => ({settings, portfolios})
+          (currentSettings) => this.store.select(getAllPortfolios)
+            .pipe(
+              switchMap(portfolios => forkJoin(
+                portfolios.map(portfolio =>
+                  this.marketService.getExchangeSettings(portfolio.exchange)
+                    .pipe(map(p => {
+                      const existingSettings = currentSettings.portfoliosCurrency?.find(
+                        pc => pc.portfolio.portfolio === portfolio.portfolio && pc.portfolio.exchange === portfolio.exchange
+                      );
+                      return existingSettings || { portfolio, currency: p.currencyInstrument };
+                    }))
+                )
+              ))
+            ),
+          (settings, portfolios: PortfolioCurrency[]) => ({settings, portfolios})
         ),
         take(1)
       ).subscribe(({settings, portfolios}) => {
@@ -185,20 +203,10 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buildForm(currentSettings: TerminalSettings, portfolios: PortfolioExtended[]): TerminalSettingsFormGroup {
-    const portfoliosWithCurrency = portfolios.map(p => {
-      const existingSettings = currentSettings.portfoliosCurrency?.find(
-        pc => pc.portfolio.portfolio === p.portfolio && pc.portfolio.exchange === p.exchange
-      );
-      return existingSettings || {
-        portfolio: p,
-        currency: this.marketService.getExchangeSettings(p.exchange).currencyInstrument
-      };
-    });
-
+  private buildForm(currentSettings: TerminalSettings, portfolios: PortfolioCurrency[]): TerminalSettingsFormGroup {
     return new UntypedFormGroup({
       portfoliosCurrency: new UntypedFormArray(
-        portfoliosWithCurrency.map(p => new UntypedFormGroup({
+        portfolios.map(p => new UntypedFormGroup({
           currency: new UntypedFormControl(p.currency, Validators.required),
           portfolio: new UntypedFormControl(p.portfolio)
         }))
