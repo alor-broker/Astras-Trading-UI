@@ -1,4 +1,4 @@
-import { CancelCommand } from "src/app/shared/models/commands/cancel-command.model";
+import { CurrentOrder } from './scalper-order-book.model';
 
 export interface OrderBookViewRow {
   bidVolume?: number,
@@ -9,6 +9,7 @@ export interface OrderBookViewRow {
   askVolume?: number,
   askOrderVolume?: number,
   bidOrderVolume?: number,
-  askCancels?: CancelCommand[],
-  bidCancels?: CancelCommand[],
+
+  askOrders: CurrentOrder[],
+  bidOrders: CurrentOrder[]
 }
