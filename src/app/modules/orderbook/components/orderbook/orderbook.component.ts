@@ -31,7 +31,6 @@ import {
 } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
-import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { getTypeByCfi } from 'src/app/shared/utils/instruments';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
@@ -43,6 +42,7 @@ import { SelectedPriceData } from "../../../../shared/models/orders/selected-ord
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { MathHelper } from "../../../../shared/utils/math-helper";
+import { CurrentOrder } from '../../models/scalper-order-book.model';
 
 interface Size {
   width: string;
@@ -213,10 +213,10 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     };
   }
 
-  cancelOrder(event: MouseEvent, cancells: CancelCommand[]) {
+  cancelOrder(event: MouseEvent, orders: CurrentOrder[]) {
     event.stopPropagation();
-    for (const cancel of cancells) {
-      this.service.cancelOrder(cancel);
+    for (const order of orders) {
+      this.service.cancelOrder(order);
     }
   }
 
@@ -241,5 +241,23 @@ export class OrderBookComponent implements OnInit, OnDestroy {
 
   getTrackKey(index: number): number {
     return index;
+  }
+
+  updateOrderPrice(order: CurrentOrder, price: number) {
+    this.modal.openEditModal({
+      type: order.type,
+      quantity: order.volume,
+      orderId: order.orderId,
+      price: price,
+      instrument: {
+        symbol: order.symbol,
+        exchange: order.exchange
+      },
+      user: {
+        portfolio: order.portfolio,
+        exchange: order.exchange
+      },
+      side: order.side
+    });
   }
 }

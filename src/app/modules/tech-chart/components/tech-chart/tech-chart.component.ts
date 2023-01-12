@@ -582,7 +582,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private fillLimitOrder(order: Order, orderLineAdapter: IOrderLineAdapter) {
     const getEditCommand = () => ({
       type: order.type,
-      quantity: order.qty,
+      quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
       orderId: order.id,
       price: order.price,
       instrument: {
@@ -629,7 +629,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const getEditCommand = () => ({
       type: order.type,
-      quantity: order.qty,
+      quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
       orderId: order.id,
       price: order.price,
       instrument: {
