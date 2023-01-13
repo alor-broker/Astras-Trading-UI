@@ -7,7 +7,9 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  ViewChild
+  QueryList,
+  ViewChild,
+  ViewChildren
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -60,8 +62,9 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('nzTable')
   table?: NzTableComponent<DisplayTrade>;
-  @ViewChild('tableContainer')
-  tableContainer?: ElementRef<HTMLElement>;
+
+  @ViewChildren('tableContainer')
+  tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
   @Input()
   shouldShowSettings!: boolean;
@@ -205,8 +208,14 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    if(this.tableContainer) {
-      this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(this.tableContainer);
+    const initHeightWatching = (ref: ElementRef<HTMLElement>) => this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
+
+    if(this.tableContainer.length > 0) {
+      initHeightWatching(this.tableContainer!.first);
+    } else {
+      this.tableContainer.changes.pipe(
+        take(1)
+      ).subscribe((x: QueryList<ElementRef<HTMLElement>>) => initHeightWatching(x.first));
     }
   }
 
@@ -282,14 +291,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   defaultFilterChange(key: string, value: string[]) {
     this.filterChange({ [key]: value });
-  }
-
-  getFilter(columnId: string) {
-    return this.filter.getValue()[columnId as keyof TradeFilter];
-  }
-
-  shouldShow(column: string) {
-    return this.listOfColumns.map(c => c.id).includes(column);
   }
 
   formatDate(date: Date) {

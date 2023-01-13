@@ -1,4 +1,4 @@
-<ng-container *ngIf="settings$ | async as settings">
+<div class="container" *ngIf="settings$ | async as settings" [style.height]="(contentSize$ | async)?.height + 'px'">
   <div class="header" *transloco="let t; scope: 'instruments/select'">
     <div (mousedown)='$event.stopPropagation()' class="search-field">
       <input #inputEl
@@ -37,5 +37,7 @@
       </nz-dropdown-menu>
     </div>
   </div>
-  <ats-watchlist-table [guid]="guid"></ats-watchlist-table>
-</ng-container>
+  <div class="list">
+    <ats-watchlist-table [guid]="guid"></ats-watchlist-table>
+  </div>
+</div>

@@ -1,11 +1,13 @@
-<ng-container *ngIf="selectedInstruments$ | async as selectedInstruments">
+<div *ngIf="selectedInstruments$ | async as selectedInstruments" #tableContainer class="table-container">
   <nz-table *ngIf="watchedInstruments$ | async as instruments"
     #nzTable
     [nzData]="instruments"
     nzTableLayout="fixed"
     nzSize="small"
     [nzFrontPagination]="false"
-    [nzShowPagination]="false">
+    [nzShowPagination]="false"
+    [nzScroll]="{ y: ((scrollHeight$ | async) ?? 0) - 5 + 'px'}"
+    [nzVirtualItemSize]="20">
     <thead *transloco="let t; scope: 'instruments/select'">
       <tr>
         <th [nzSortFn]="sortFns[col.columnId]" *ngFor="let col of displayedColumns">
@@ -56,7 +58,7 @@
       </tr>
     </tbody>
   </nz-table>
-</ng-container>
+</div>
 
 <nz-dropdown-menu #menu="nzDropdownMenu">
   <ats-widget-menu [showedWidgets]="showedWidgetNames" (selected)="addWidget($event)"></ats-widget-menu>
