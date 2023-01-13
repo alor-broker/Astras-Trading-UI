@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { MarketService } from './market.service';
 import { HttpClient } from "@angular/common/http";
+import { of } from "rxjs";
 
 describe('MarketService', () => {
   let service: MarketService;
@@ -12,7 +13,7 @@ describe('MarketService', () => {
         {
           provide: HttpClient,
           useValue: {
-            get: jasmine.createSpy('get').and.callThrough()
+            get: jasmine.createSpy('get').and.returnValue(of({}))
           }
         }
       ]
