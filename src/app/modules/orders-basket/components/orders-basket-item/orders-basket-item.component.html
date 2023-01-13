@@ -1,4 +1,4 @@
-<div #container [ngClass]="displayMode$ | async" class="container">
+<div [ngClass]="displayMode$ | async" class="container" nzResizeObserver (nzResizeObserve)="containerWidthChanged($event)">
   <ng-container *ngIf="form">
     <ng-container *transloco="let t; scope: 'orders-basket/orders-basket-item'">
       <form [formGroup]="form" nz-form nzLayout="vertical">

@@ -63,6 +63,8 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   canSubmit$ = new BehaviorSubject<boolean>(false);
   processing$ = new BehaviorSubject(false);
 
+  submitResult$ = new BehaviorSubject<'success' | 'failed' | null>(null);
+
   private readonly savedBaskets = new Map<string, OrdersBasket>();
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -80,6 +82,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     this.formSubscriptions?.unsubscribe();
     this.canSubmit$.complete();
     this.processing$.complete();
+    this.submitResult$.complete();
   }
 
   ngOnInit(): void {
@@ -108,6 +111,8 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   }
 
   submitOrders() {
+    this.submitResult$.next(null);
+
     this.settings$.pipe(
       take(1),
       filter(() => !!this.form?.valid),
@@ -132,7 +137,9 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       }),
       finalize(() => this.processing$.next(false)),
       take(1)
-    ).subscribe();
+    ).subscribe(results => {
+      this.submitResult$.next(results.every(x => !!x && x.isSuccess) ? 'success' : 'failed');
+    });
   }
 
   private saveBasket(settings: OrdersBasketSettings | null) {
@@ -177,8 +184,8 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     this.formSubscriptions?.unsubscribe();
 
     this.form = new UntypedFormGroup({
-      budget: new FormControl<number>(
-        0,
+      budget: new FormControl<number | null>(
+        null,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),

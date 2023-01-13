@@ -63,6 +63,10 @@
             </nz-form-item>
           </div>
         </div>
+        <div *ngIf="submitResult$ | async as submitResult">
+          <span *ngIf="submitResult === 'success'" nz-typography nzType="success">{{t('ordersBasketOrdersBasket.submitSuccessMessage')}}</span>
+          <span *ngIf="submitResult === 'failed'" nz-typography nzType="warning">{{t('ordersBasketOrdersBasket.submitFailedMessage')}}</span>
+        </div>
       </form>
     </ng-container>
   </ng-container>

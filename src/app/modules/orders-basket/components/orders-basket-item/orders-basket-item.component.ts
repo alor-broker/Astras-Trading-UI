@@ -1,13 +1,10 @@
 import {
-  AfterViewInit,
   Component,
-  ElementRef,
   EventEmitter,
   Input,
   OnDestroy,
   OnInit,
-  Output,
-  ViewChild
+  Output
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -35,10 +32,7 @@ import {
   switchMap,
   takeUntil
 } from 'rxjs';
-import {
-  finalize,
-  map,
-} from 'rxjs/operators';
+import { map, } from 'rxjs/operators';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
@@ -63,7 +57,7 @@ import { AtsValidators } from '../../../../shared/utils/form-validators';
     },
   ]
 })
-export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestroy, ControlValueAccessor, Validator {
+export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValueAccessor, Validator {
   @Input()
   exchange!: string;
 
@@ -74,8 +68,7 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
   enableDelete: boolean = true;
   @Output()
   delete = new EventEmitter();
-  @ViewChild('container')
-  container?: ElementRef<HTMLElement>;
+
   readonly validationOptions = {
     quota: {
       min: 0.1,
@@ -91,7 +84,7 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
     }
   };
   form!: UntypedFormGroup;
-  containerWidth$: Observable<number> = of(0);
+  containerWidth$ = new BehaviorSubject<number>(0);
   instrument$!: Observable<Instrument | null>;
   displayMode$?: Observable<'table-item' | 'compact' | 'ultra-compact'>;
   showLabels$?: Observable<boolean>;
@@ -145,35 +138,10 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnInit(): void {
+    this.initSizeDependedState();
     this.initForm();
     this.initInstrumentUpdate();
     this.initPriceUpdate();
-  }
-
-  ngAfterViewInit(): void {
-    this.containerWidth$ = this.getContainerWidth();
-
-    this.displayMode$ = this.containerWidth$.pipe(
-      map(w => {
-        if (w < 250) {
-          return 'ultra-compact';
-        }
-
-        if (w < 450) {
-          return 'compact';
-        }
-
-        return 'table-item';
-      })
-    );
-
-    this.showLabels$ = combineLatest([
-      this.displayMode$,
-      this.itemIndex$
-    ]).pipe(
-      map(([displayMode, itemIndex]) => displayMode === 'compact' || displayMode === 'ultra-compact' || itemIndex === 0),
-      shareReplay(1)
-    );
   }
 
   ngOnDestroy(): void {
@@ -184,6 +152,7 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
       sub.unsubscribe();
     }
 
+    this.containerWidth$.complete();
     this.itemIndex$.complete();
     this.totalBudget$.complete();
   }
@@ -216,6 +185,36 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
 
   onTouched: Function = () => {
   };
+
+  containerWidthChanged(entries: ResizeObserverEntry[]) {
+    entries.forEach(x => {
+      this.containerWidth$.next(Math.floor(x.contentRect.width));
+    });
+  }
+
+  private initSizeDependedState() {
+    this.displayMode$ = this.containerWidth$.pipe(
+      map(w => {
+        if (w < 250) {
+          return 'ultra-compact';
+        }
+
+        if (w < 450) {
+          return 'compact';
+        }
+
+        return 'table-item';
+      })
+    );
+
+    this.showLabels$ = combineLatest([
+      this.displayMode$,
+      this.itemIndex$
+    ]).pipe(
+      map(([displayMode, itemIndex]) => displayMode === 'compact' || displayMode === 'ultra-compact' || itemIndex === 0),
+      shareReplay(1)
+    );
+  }
 
   private initInstrumentUpdate() {
     this.instrument$ = this.form.valueChanges.pipe(
@@ -250,7 +249,7 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
     this.form = new FormGroup({
       instrumentKey: new FormControl<InstrumentKey | null>(null, Validators.required),
       quota: new FormControl(
-        0,
+        null,
         [
           Validators.required,
           Validators.min(this.validationOptions.quota.min),
@@ -266,7 +265,7 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
         ]
       ),
       price: new FormControl(
-        0,
+        null,
         [
           Validators.required,
           Validators.min(this.validationOptions.price.min),
@@ -275,26 +274,5 @@ export class OrdersBasketItemComponent implements OnInit, AfterViewInit, OnDestr
       ),
       id: new FormControl(null, Validators.required)
     });
-  }
-
-  private getContainerWidth(): Observable<number> {
-    const subject = new Subject<number>();
-    const resizeObserver = new ResizeObserver(entries => {
-      entries.forEach(x => {
-        subject.next(Math.floor(x.contentRect.width));
-      });
-    });
-
-    resizeObserver.observe(this.container!.nativeElement);
-
-    return subject.pipe(
-      finalize(() => {
-        if (!!this.container) {
-          resizeObserver.unobserve(this.container.nativeElement);
-        }
-
-        resizeObserver.disconnect();
-      })
-    );
   }
 }

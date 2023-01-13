@@ -14,6 +14,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { SharedModule } from '../../shared/shared.module';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 
 
 
@@ -33,7 +34,8 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
         NzFormModule,
         NzInputModule,
         SharedModule,
-        NzInputNumberModule
+        NzInputNumberModule,
+        NzResizeObserverModule
     ],
   exports: [
     OrdersBasketWidgetComponent
