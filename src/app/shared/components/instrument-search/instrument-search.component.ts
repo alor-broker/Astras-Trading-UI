@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Input,
   OnDestroy,
   OnInit,
   Output,
@@ -9,7 +10,6 @@ import {
 } from '@angular/core';
 import { SearchFilter } from '../../../modules/instruments/models/search-filter.model';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
-import { Instrument } from '../../models/instruments/instrument.model';
 import { InstrumentsService } from '../../../modules/instruments/services/instruments.service';
 import {
   BehaviorSubject,
@@ -26,6 +26,7 @@ import {
   NG_VALUE_ACCESSOR
 } from '@angular/forms';
 import { InstrumentKey } from '../../models/instruments/instrument-key.model';
+import { Instrument } from '../../models/instruments/instrument.model';
 
 @Component({
   selector: 'ats-instrument-search',
@@ -40,12 +41,21 @@ import { InstrumentKey } from '../../models/instruments/instrument-key.model';
   ]
 })
 export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValueAccessor {
+  @Input()
+  optionsBoxWidth?: number;
+
+  @Input()
+  exchange?: string;
+
   @ViewChild('searchInput') searchInput?: ElementRef;
   filteredInstruments$: Observable<Instrument[]> = of([]);
   currentValue?: InstrumentKey | null;
   selectedValue?: InstrumentKey | null;
   @Output()
-  instrumentSelected = new EventEmitter<Instrument | null>();
+  instrumentSelected = new EventEmitter<InstrumentKey | null>();
+
+  @Output()
+
   private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
   private touched = false;
 
@@ -69,12 +79,20 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
       limit: 20
     } as SearchFilter;
 
+    filter.exchange = this.exchange;
+
     if (value.includes(':')) {
       const parts = value.split(':');
 
-      filter.exchange = parts[0].toUpperCase();
-      filter.query = parts[1];
-      filter.instrumentGroup = parts[2]?.toUpperCase() ?? '';
+      let nextPartIndex = 0;
+      if(!this.exchange) {
+        filter.exchange = parts[nextPartIndex].toUpperCase();
+        nextPartIndex++;
+      }
+
+      filter.query = parts[nextPartIndex];
+      nextPartIndex++;
+      filter.instrumentGroup = parts[nextPartIndex]?.toUpperCase() ?? '';
     }
     else {
       filter.query = value;
@@ -83,7 +101,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     this.filter$.next(filter);
   }
 
-  onSelect(event: NzOptionSelectionChange, val: Instrument) {
+  onSelect(event: NzOptionSelectionChange, val: InstrumentKey) {
     if (event.isUserInput) {
       this.emitValue(val);
     }
@@ -93,7 +111,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     this.filter$.complete();
   }
 
-  registerOnChange(fn: (value: Instrument | null) => void): void {
+  registerOnChange(fn: (value: InstrumentKey | null) => void): void {
     this.onValueChanged = fn;
   }
 
@@ -112,13 +130,13 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     }
   }
 
-  private emitValue(value: Instrument | null) {
+  private emitValue(value: InstrumentKey | null) {
     this.selectedValue = value;
     this.onValueChanged(value);
     this.instrumentSelected.emit(value);
   }
 
-  private onValueChanged: (value: Instrument | null) => void = () => {
+  private onValueChanged: (value: InstrumentKey | null) => void = () => {
   };
 
   private onTouched = () => {
@@ -128,7 +146,8 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     if (!this.touched) {
       this.onTouched();
       this.touched = true;
-      this.selectedValue = null;
     }
+
+    this.selectedValue = null;
   }
 }

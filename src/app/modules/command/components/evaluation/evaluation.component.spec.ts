@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { EvaluationService } from '../../services/evaluation.service';
 
 import { EvaluationComponent } from './evaluation.component';
+import { EvaluationService } from '../../../../shared/services/evaluation.service';
 
 describe('EvaluationComponent', () => {
   let component: EvaluationComponent;

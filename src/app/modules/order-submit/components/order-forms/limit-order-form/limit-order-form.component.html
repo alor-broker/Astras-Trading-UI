@@ -26,7 +26,7 @@
                 <span *ngIf="form.get('price')?.errors?.min">{{t('command.tooLittle')}}</span>
                 <span *ngIf="form.get('price')?.errors?.max">{{t('command.tooMuch')}}</span>
                 <span *ngIf="form.get('price')?.errors?.priceStepMultiplicity">
-                  {{t('command.priceStepMultiplicityError')}} ({{instrument.minstep}})
+                  {{t('command.priceStepMultiplicityError')}} ({{form.get('price')!.errors!.priceStepMultiplicity!.step}})
                 </span>
               </ng-template>
             </nz-form-control>

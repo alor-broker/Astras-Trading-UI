@@ -26,7 +26,8 @@
     "ExchangeRateSettings": "Курсы валют",
     "TechChartSettings": "Тех. анализ",
     "AllInstrumentsSettings": "Все инстурменты",
-    "OrderSubmitSettings": "Выставить заявку"
+    "OrderSubmitSettings": "Выставить заявку",
+    "OrdersBasketSettings": "Корзина заявок"
   },
 
   "joyride": {

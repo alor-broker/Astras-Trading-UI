@@ -13,8 +13,8 @@ import { Instrument } from '../../../../../shared/models/instruments/instrument.
 import { BehaviorSubject, shareReplay, take } from 'rxjs';
 import { Quote } from '../../../../../shared/models/quotes/quote.model';
 import { QuotesService } from '../../../../../shared/services/quotes.service';
-import { EvaluationBaseProperties } from '../../../../command/models/evaluation-base-properties.model';
 import ruCommand from "../../../../../../assets/i18n/command/ru.json";
+import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
 
 describe('MarketOrderFormComponent', () => {
   let component: MarketOrderFormComponent;

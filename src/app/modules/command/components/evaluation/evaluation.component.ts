@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BehaviorSubject, filter, Observable, switchMap } from 'rxjs';
-import { EvaluationBaseProperties } from '../../models/evaluation-base-properties.model';
-import { Evaluation } from '../../models/evaluation.model';
-import { EvaluationService } from '../../services/evaluation.service';
 import { map } from 'rxjs/operators';
+import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
+import { EvaluationService } from '../../../../shared/services/evaluation.service';
+import { Evaluation } from '../../../../shared/models/evaluation.model';
 
 type EvaluationDisplay = Evaluation & { currency: string };
 

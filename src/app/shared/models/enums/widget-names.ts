@@ -11,4 +11,5 @@ export class WidgetNames {
   static readonly techChart = 'tech-chart';
   static readonly allInstruments = 'all-instruments';
   static readonly orderSubmit = 'order-submit';
+  static readonly ordersBasket = 'orders-basket';
 }

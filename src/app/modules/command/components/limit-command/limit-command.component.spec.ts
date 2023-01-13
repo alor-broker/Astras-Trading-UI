@@ -18,8 +18,8 @@ import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { CommandType } from "../../../../shared/models/enums/command-type.model";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { LimitCommand } from "../../models/limit-command.model";
-import { EvaluationBaseProperties } from "../../models/evaluation-base-properties.model";
 import ruCommand from '../../../../../assets/i18n/command/ru.json';
+import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
 
 describe('LimitCommandComponent', () => {
   let component: LimitCommandComponent;

@@ -1,0 +1,12 @@
+{
+  "tickerLabel": "Ticker",
+  "tickerError": "Select ticker",
+  "quotaLabel": "Percent",
+  "quotaPlaceholder": "Enter persent",
+  "intervalError": "Value should be from {{min}} to {{max}}",
+  "priceLabel": "Price",
+  "pricePlaceholder": "Enter price",
+  "priceStepMultiplicityError": "The value must be a multiple of the price step",
+  "quantityLabel": "Order Volume",
+  "quantityPlaceholder": "Volume"
+}

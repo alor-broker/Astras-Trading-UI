@@ -7,7 +7,7 @@
     <input #searchInput
            (blur)="checkInstrumentSelection()"
            (mousedown)="$event.stopPropagation()"
-           (ngModelChange)="filterChanged(searchInput.value)"
+           (input)="filterChanged(searchInput.value)"
            [ngModel]="currentValue?.symbol"
            [nzAutocomplete]="auto"
            class='whole ant-input'
@@ -21,23 +21,32 @@
   <ng-template #searchHelp>
     <span>{{t('sharedInstrumentSearch.helpParagraph1')}}</span>
     <br/>
-    <span>{{t('sharedInstrumentSearch.helpParagraph2')}}</span>
-    <br/>
-    <span nz-typography><code>[Exchange]:[Ticker]:[Board]</code></span>
-    <br/>
-    <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} MOEX:SBER:SMAL</span>
-    <br/>
-    <span>{{t('sharedInstrumentSearch.helpParagraph3')}}</span>
-    <br/>
-    <span nz-typography><code>[Exchange]:[Ticker]</code></span>
-    <br/>
-    <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} MOEX:SBER</span>
+    <ng-container *ngIf="!exchange">
+      <span>{{t('sharedInstrumentSearch.helpParagraph2')}}</span>
+      <br/>
+      <span nz-typography><code>[Exchange]:[Ticker]:[Board]</code></span>
+      <br/>
+      <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} MOEX:SBER:SMAL</span>
+      <br/>
+      <span>{{t('sharedInstrumentSearch.helpParagraph3')}}</span>
+      <br/>
+      <span nz-typography><code>[Exchange]:[Ticker]</code></span>
+      <br/>
+      <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} MOEX:SBER</span>
+    </ng-container>
+    <ng-container *ngIf="exchange">
+      <span>{{t('sharedInstrumentSearch.helpParagraph2')}}</span>
+      <br/>
+      <span nz-typography><code>[Ticker]:[Board]</code></span>
+      <br/>
+      <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} SBER:SMAL</span>
+    </ng-container>
   </ng-template>
-  <nz-autocomplete #auto>
+  <nz-autocomplete #auto [nzWidth]="optionsBoxWidth">
     <nz-auto-option
       (selectionChange)='onSelect($event, option)' *ngFor="let option of filteredInstruments$ | async"
       [nzLabel]="option.symbol"
-      [nzValue]="option.description">
+      [nzValue]="option.symbol">
       <span class='search-row'>
         <nz-tag>{{ option.symbol }}</nz-tag>
         <span class='row-center'>{{ option.shortName }}</span>

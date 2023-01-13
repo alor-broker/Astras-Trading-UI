@@ -1,5 +1,15 @@
-import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  ValidationErrors,
+  ValidatorFn
+} from "@angular/forms";
 import { MathHelper } from "./math-helper";
+import {
+  Observable,
+  take
+} from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export class AtsValidators {
   /**
@@ -17,7 +27,11 @@ export class AtsValidators {
       const value = Math.abs(+ctrl.value);
 
       if (MathHelper.getPrecision(value) > priceStepDecimals) {
-        return { priceStepMultiplicity: true };
+        return {
+          priceStepMultiplicity: {
+            step: priceStep
+          }
+        };
       }
 
       const precision = 10 ** priceStepDecimals;
@@ -27,7 +41,31 @@ export class AtsValidators {
         return null;
       }
 
-      return { priceStepMultiplicity: true };
+      return {
+        priceStepMultiplicity: {
+          step: priceStep
+        }
+      };
+    };
+  }
+
+  /**
+   * Validating control value for price step multiplicity
+   * @param priceStep$ observable with min step of price
+   * @returns validator function
+   */
+  static priceStepMultiplicityAsync(priceStep$: Observable<number | null>): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      return priceStep$.pipe(
+        take(1),
+        map(step => {
+          if (!step) {
+            return null;
+          }
+
+          return AtsValidators.priceStepMultiplicity(step)(control);
+        })
+      );
     };
   }
 }

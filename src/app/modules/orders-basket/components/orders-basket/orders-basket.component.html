@@ -1,0 +1,73 @@
+<div *ngIf="settings$ | async as settings">
+  <ng-container *ngIf="form">
+    <ng-container *transloco="let t; scope: 'orders-basket/orders-basket'">
+      <form [formGroup]="form" nz-form nzLayout="vertical">
+        <div class="basket-items-container">
+          <div *ngFor="let itemControl of asFormArray(form.controls.items).controls; index as i" class="basket-item">
+            <div class="item-control">
+              <ats-orders-basket-item
+                (delete)="asFormArray(form.controls.items).removeAt(i)"
+                [enableDelete]="asFormArray(form.controls.items).controls.length > 1"
+                [exchange]="settings.exchange"
+                [formControl]="asFormControl(itemControl)"
+                [itemIndex]="i"
+              ></ats-orders-basket-item>
+            </div>
+          </div>
+          <span *ngIf="form.controls.items.errors?.max100Percent" nz-typography nzType="danger">
+          {{t('ordersBasketOrdersBasket.moreThan100Percents')}} ({{form.controls.items.errors?.max100Percent.actual}})
+        </span>
+          <div>
+            <button (click)="addItemDraft(asFormArray(form.controls.items))"
+                    id="add-item-btn"
+                    nz-button
+                    nzBlock
+                    nzType="dashed">
+              <span nz-icon nzType="plus"></span>
+            </button>
+          </div>
+        </div>
+        <div class="budget-container">
+          <div nz-col>
+            <nz-form-item>
+              <nz-form-label nzRequired>{{t('ordersBasketOrdersBasket.budgetLabel')}}</nz-form-label>
+              <nz-form-control [nzErrorTip]="budgetError">
+                <input
+                  (mousedown)="$event.stopPropagation()"
+                  atsNumerical
+                  formControlName="budget"
+                  nz-input
+                  [placeholder]="t('ordersBasketOrdersBasket.budgetPlaceholder')"
+                />
+                <ng-template #budgetError>
+                  <span *ngIf="form.controls.budget?.errors?.required">{{t('ordersBasketOrdersBasket.budgetPlaceholder')}}</span>
+                  <span *ngIf="form.controls.budget?.errors?.min">{{t('ordersBasketOrdersBasket.tooLittle')}}</span>
+                  <span *ngIf="form.controls.budget?.errors?.max">{{t('ordersBasketOrdersBasket.tooMuch')}}</span>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div>
+            <nz-form-item>
+              <nz-form-label>&nbsp;</nz-form-label>
+              <nz-form-control>
+                <button
+                  (click)="submitOrders()"
+                  [disabled]="(canSubmit$ | async)===false"
+                  [nzLoading]="processing$ | async"
+                  class="submit-orders-btn"
+                  nz-button>
+                  {{t('ordersBasketOrdersBasket.submitLabel')}}
+                </button>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div *ngIf="submitResult$ | async as submitResult">
+          <span *ngIf="submitResult === 'success'" nz-typography nzType="success">{{t('ordersBasketOrdersBasket.submitSuccessMessage')}}</span>
+          <span *ngIf="submitResult === 'failed'" nz-typography nzType="warning">{{t('ordersBasketOrdersBasket.submitFailedMessage')}}</span>
+        </div>
+      </form>
+    </ng-container>
+  </ng-container>
+</div>

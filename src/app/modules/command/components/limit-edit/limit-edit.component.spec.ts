@@ -14,13 +14,13 @@ import {
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { CommandType } from "../../../../shared/models/enums/command-type.model";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { EvaluationBaseProperties } from "../../models/evaluation-base-properties.model";
 import { LimitEditComponent } from "./limit-edit.component";
 import { EditParams } from "../../../../shared/models/commands/edit-params.model";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { LimitEdit } from "../../models/limit-edit.model";
 import { Subject } from "rxjs";
 import ruCommand from '../../../../../assets/i18n/command/ru.json';
+import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
 
 describe('LimitEditComponent', () => {
   let component: LimitEditComponent;

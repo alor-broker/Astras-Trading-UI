@@ -21,7 +21,6 @@ import {
   switchMap,
   takeUntil
 } from "rxjs";
-import { EvaluationBaseProperties } from "../../../../command/models/evaluation-base-properties.model";
 import { QuotesService } from "../../../../../shared/services/quotes.service";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
@@ -32,6 +31,7 @@ import {
   OrderFormUpdate,
   OrderType
 } from '../../../models/order-form.model';
+import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
 
 export type MarketOrderFormValue = Omit<MarketOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 

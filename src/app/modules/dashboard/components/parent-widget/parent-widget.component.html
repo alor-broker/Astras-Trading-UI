@@ -75,6 +75,11 @@
                                      [guid]="getGuid()"
                                      [(shouldShowSettings)]="shouldShowSettings"
       ></ats-order-submit-widget>
+      <ats-orders-basket-widget
+        *ngSwitchCase="'orders-basket'"
+        [guid]="getGuid()">
+
+      </ats-orders-basket-widget>
   </ng-container>
 
   </div>

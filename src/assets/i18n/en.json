@@ -26,7 +26,8 @@
     "ExchangeRateSettings": "Exchange Rate",
     "TechChartSettings": "Tech Chart",
     "AllInstrumentsSettings": "All Instruments",
-    "OrderSubmitSettings": "Order Submit"
+    "OrderSubmitSettings": "Order Submit",
+    "OrdersBasketSettings": "Orders Basket"
   },
 
   "joyride": {

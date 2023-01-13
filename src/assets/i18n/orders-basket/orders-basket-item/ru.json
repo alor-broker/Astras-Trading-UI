@@ -1,0 +1,12 @@
+{
+  "tickerLabel": "Тикер",
+  "tickerError": "Выберите тикер",
+  "quotaLabel": "Процент",
+  "quotaPlaceholder": "Введите процент",
+  "intervalError": "Значение должно быть от {{min}} до {{max}}",
+  "priceLabel": "Цена",
+  "pricePlaceholder": "Введите цену",
+  "priceStepMultiplicityError": "Значение должно быть кратно шагу цены",
+  "quantityLabel": "Объем заявки",
+  "quantityPlaceholder": "Объем"
+}

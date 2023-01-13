@@ -1,8 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { EvaluationService } from './evaluation.service';
-import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
-import { sharedModuleImportForTests } from '../../../shared/utils/testing';
+import { sharedModuleImportForTests } from '../utils/testing';
+import { ErrorHandlerService } from './handle-error/error-handler.service';
 
 describe('EvaluationService', () => {
   let service: EvaluationService;

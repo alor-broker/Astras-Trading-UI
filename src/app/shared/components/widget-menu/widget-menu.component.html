@@ -82,6 +82,13 @@
   >
     <span><i nz-icon nzType="send" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.' + widgetNames.orderSubmit)}}</label></span>
   </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.ordersBasket)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.ordersBasket)"
+  >
+    <span><i nz-icon nzType="calculator" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.' + widgetNames.ordersBasket)}}</label></span>
+  </li>
 
   <ng-container *ngIf="!showedWidgets.length">
     <li nz-menu-divider></li>
