@@ -52,24 +52,24 @@
   .ant-table-content {
     overflow-y: hidden;
 
-    .row-cell {
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-      white-space: nowrap;
+    tbody {
+      td {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        white-space: nowrap;
 
-      &--ask {
-        &:extend(.row-cell);
-      }
+        .row-cell {
+          &--bid {
+            text-align: right;
+          }
 
-      &--bid {
-        &:extend(.row-cell);
-        text-align: right;
-      }
-
-      &--ask-volume {
-        width: 38px;
+          &--ask-volume {
+            width: 38px;
+          }
+        }
       }
     }
+
 
     tr:hover {
       cursor: pointer;
