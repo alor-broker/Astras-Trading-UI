@@ -38,6 +38,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { InstrumentSelectSettings } from "../../../../shared/models/settings/instrument-select-settings.model";
 import { WatchlistCollection } from '../../models/watchlist.model';
 import { DOCUMENT } from '@angular/common';
+import { DashboardItemContentSize } from '../../../../shared/models/dashboard-item.model';
 
 @Component({
   selector: 'ats-instrument-select[shouldShowSettings][guid]',
@@ -52,12 +53,23 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
   shouldShowSettings!: boolean;
   @Input()
   guid!: string;
+
+  @Input()
+  set contentSize(value: DashboardItemContentSize | null) {
+    if (!!value) {
+      this.contentSize$.next(value);
+    }
+  }
+
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   filteredInstruments$: Observable<Instrument[]> = of([]);
   inputValue?: string;
   collection$?: Observable<WatchlistCollection>;
   settings$!: Observable<InstrumentSelectSettings>;
+
+  readonly contentSize$ = new BehaviorSubject<DashboardItemContentSize>({ height: 100, width: 0 });
+
   private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
 
   constructor(

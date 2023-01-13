@@ -36,6 +36,7 @@
       ></ats-light-chart-widget>
       <ats-instrument-select-widget *ngSwitchCase="'instrument-select'"
                                     [guid]="getGuid()"
+                                    [resize]="widgetResize"
                                     [(shouldShowSettings)]="shouldShowSettings"></ats-instrument-select-widget>
       <ats-blotter-widget *ngSwitchCase="'blotter'"
                           [guid]="getGuid()"

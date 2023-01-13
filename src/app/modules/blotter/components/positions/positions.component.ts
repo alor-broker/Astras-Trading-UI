@@ -7,7 +7,9 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  ViewChild
+  QueryList,
+  ViewChild,
+  ViewChildren
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -60,8 +62,8 @@ interface PositionDisplay extends Position {
 export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('nzTable')
   table?: NzTableComponent<PositionDisplay>;
-  @ViewChild('tableContainer')
-  tableContainer?: ElementRef<HTMLElement>;
+  @ViewChildren('tableContainer')
+  tableContainer!: QueryList<ElementRef<HTMLElement>>;
   @Input()
   shouldShowSettings!: boolean;
   @Input()
@@ -239,8 +241,14 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
 
   ngAfterViewInit(): void {
-    if (this.tableContainer) {
-      this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(this.tableContainer);
+    const initHeightWatching = (ref: ElementRef<HTMLElement>) => this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
+
+    if(this.tableContainer.length > 0) {
+      initHeightWatching(this.tableContainer!.first);
+    } else {
+      this.tableContainer.changes.pipe(
+        take(1)
+      ).subscribe((x: QueryList<ElementRef<HTMLElement>>) => initHeightWatching(x.first));
     }
   }
 
@@ -313,10 +321,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   filterChange(newFilter: PositionFilter) {
     this.searchFilter.next(newFilter);
-  }
-
-  getFilter(columnId: string) {
-    return this.searchFilter.getValue()[columnId as keyof PositionFilter];
   }
 
   round(number: number) {

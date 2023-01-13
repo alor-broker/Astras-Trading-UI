@@ -1,5 +1,8 @@
-
 <ats-instrument-select *ngIf="!shouldShowSettings"
 [guid]="guid"
-[(shouldShowSettings)]="shouldShowSettings"></ats-instrument-select>
+[(shouldShowSettings)]="shouldShowSettings"
+[contentSize]="contentSize$ | async"
+>
+
+</ats-instrument-select>
 <ats-instrument-select-settings *ngIf="shouldShowSettings" [guid]='guid' (settingsChange)="onSettingsChange()"></ats-instrument-select-settings>

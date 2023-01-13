@@ -1,7 +1,12 @@
 import {
+  AfterViewInit,
   Component,
-  Input, OnDestroy,
-  OnInit
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChildren
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
@@ -36,18 +41,24 @@ import { InstrumentBadges } from "../../../../shared/models/instruments/instrume
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { DashboardHelper } from '../../../../shared/utils/dashboard-helper';
+import { TableAutoHeightBehavior } from '../../../blotter/utils/table-auto-height.behavior';
 
 @Component({
   selector: 'ats-watchlist-table[guid]',
   templateUrl: './watchlist-table.component.html',
   styleUrls: ['./watchlist-table.component.less']
 })
-export class WatchlistTableComponent implements OnInit, OnDestroy {
+export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
   guid!: string;
 
+  @ViewChildren('tableContainer')
+  tableContainer!: QueryList<ElementRef<HTMLElement>>;
+
   watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
   selectedInstruments$: Observable<InstrumentBadges> = of({});
+
+  scrollHeight$: Observable<number> = of(100);
   displayedColumns: ColumnIds[] = [];
   badgeColor: string = '';
 
@@ -109,6 +120,18 @@ export class WatchlistTableComponent implements OnInit, OnDestroy {
           return {[defaultBadgeColor]: badges[defaultBadgeColor]};
         })
       );
+  }
+
+  ngAfterViewInit(): void {
+    const initHeightWatching = (ref: ElementRef<HTMLElement>) => this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
+
+    if(this.tableContainer.length > 0) {
+      initHeightWatching(this.tableContainer!.first);
+    } else {
+      this.tableContainer?.changes.pipe(
+        take(1)
+      ).subscribe((x: QueryList<ElementRef<HTMLElement>>) => initHeightWatching(x.first));
+    }
   }
 
   ngOnDestroy(): void {

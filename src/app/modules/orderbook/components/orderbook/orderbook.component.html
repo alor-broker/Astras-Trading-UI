@@ -39,7 +39,7 @@
       <tbody (click)="newLimitOrder($event, 0)" cdkDropListGroup>
         <tr *ngFor='let row of basicTable.data; trackBy: getTrackKey'>
           <ng-container *ngIf="row.bid ?? 0 > 0; else zeroBid">
-            <td  class='row-cell'
+            <td
                  [ngStyle]="{background: 'unset'}"
                  (click)="newLimitOrder($event, row.bid ?? 0)"
                  cdkDropList
@@ -92,7 +92,7 @@
               {{row.yieldAsk}}
             </td>
             <td [ngStyle]="{background: 'unset'}"
-                class='row-cell row-cell--ask-volume'
+                class='row-cell--ask-volume'
                 nzAlign='right'
                 (click)="newLimitOrder($event, row.ask ?? 0)"
                 cdkDropList
