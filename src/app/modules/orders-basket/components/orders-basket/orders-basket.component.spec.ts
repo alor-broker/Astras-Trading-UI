@@ -4,7 +4,10 @@ import { OrdersBasketComponent } from './orders-basket.component';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { Subject } from 'rxjs';
 import { OrderService } from '../../../../shared/services/orders/order.service';
-import { mockComponent } from '../../../../shared/utils/testing';
+import {
+  getTranslocoModule,
+  mockComponent
+} from '../../../../shared/utils/testing';
 import { EvaluationService } from '../../../../shared/services/evaluation.service';
 
 describe('OrdersBasketComponent', () => {
@@ -13,6 +16,9 @@ describe('OrdersBasketComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [
+        getTranslocoModule()
+      ],
       declarations: [
         OrdersBasketComponent,
         mockComponent({ selector: 'ats-orders-basket-item', inputs: ['exchange', 'formControl', 'totalBudget', 'itemIndex', 'enableDelete'] })

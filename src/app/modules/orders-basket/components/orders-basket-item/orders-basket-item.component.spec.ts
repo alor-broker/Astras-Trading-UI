@@ -8,6 +8,7 @@ import {
 } from 'rxjs';
 import { QuotesService } from '../../../../shared/services/quotes.service';
 import {
+  getTranslocoModule,
   mockComponent,
   ngZorroMockComponents,
   sharedModuleImportForTests
@@ -23,7 +24,8 @@ describe('OrdersBasketItemComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         OrdersBasketModule,
-        ...sharedModuleImportForTests
+        ...sharedModuleImportForTests,
+        getTranslocoModule()
       ],
       declarations: [
         OrdersBasketItemComponent,
