@@ -100,7 +100,9 @@ describe('ScalperOrdersService', () => {
           exchange: generateRandomString(4),
           portfolio: generateRandomString(5),
           type: 'limit',
-          volume: 10
+          volume: 10,
+          side: Side.Buy,
+          symbol: 'TEST'
         };
 
         orderCancellerServiceSpy.cancelOrder.and.callFake((command: CancelCommand) => {

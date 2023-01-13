@@ -116,8 +116,11 @@
           <nz-collapse-panel [nzHeader]="t('orderSubmitOrderSubmitSettings.advancedHeader')">
             <nz-form-label nzFor="instrumentGroup">{{t('orderSubmitOrderSubmitSettings.instrumentGroupLabel')}}</nz-form-label>
             <nz-form-control [nzErrorTip]="t('orderSubmitOrderSubmitSettings.instrumentGroupError')">
-              <input (mousedown)="$event.stopPropagation()" class='ant-input' formControlName="instrumentGroup"
-                     [placeholder]="t('orderSubmitOrderSubmitSettings.instrumentGroupLabel')"/>
+              <ats-instrument-board-select
+                [symbol]="form.value?.instrument?.symbol ?? null"
+                [placeholder]="t('orderSubmitOrderSubmitSettings.instrumentGroupLabel')"
+                formControlName="instrumentGroup">
+              </ats-instrument-board-select>
             </nz-form-control>
           </nz-collapse-panel>
         </nz-collapse>

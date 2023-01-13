@@ -3,6 +3,6 @@
   "tickerError": "Select ticker",
   "exchangeLabel": "Exchange",
   "advanced": "Advanced",
-  "instrumentGroupError": "Input trade mode",
-  "instrumentGroupLabel": "Trade mode"
+  "instrumentGroupLabel": "Trading mode",
+  "instrumentGroupError": "Select trading mode"
 }

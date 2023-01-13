@@ -8,6 +8,7 @@ import { of } from 'rxjs';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   getTranslocoModule,
+  mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
@@ -21,6 +22,7 @@ describe('OrderbookSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         OrderbookSettingsComponent,
+        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['symbol', 'placeholder'] })
       ],
       imports: [
         NoopAnimationsModule,

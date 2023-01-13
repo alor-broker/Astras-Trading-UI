@@ -1,17 +1,7 @@
 import { Store } from "@ngrx/store";
-import {
-  fakeAsync,
-  TestBed,
-  tick
-} from "@angular/core/testing";
-import {
-  generateRandomString,
-  sharedModuleImportForTests
-} from "../../shared/utils/testing";
-import {
-  of,
-  take
-} from "rxjs";
+import { fakeAsync, TestBed, tick } from "@angular/core/testing";
+import { generateRandomString, sharedModuleImportForTests } from "../../shared/utils/testing";
+import { of, take } from "rxjs";
 import { LocalStorageService } from "../../shared/services/local-storage.service";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
 import { selectWidgetSettingsState } from "./widget-settings.selectors";
@@ -27,7 +17,7 @@ import {
 } from "./widget-settings.actions";
 import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
 import { InstrumentsService } from "../../modules/instruments/services/instruments.service";
-import { PortfolioKey } from "../../shared/models/portfolio-key.model";
+import { MarketType, PortfolioKey } from "../../shared/models/portfolio-key.model";
 import { selectNewPortfolio } from "../portfolios/portfolios.actions";
 import { selectNewInstrumentByBadge } from "../instruments/instruments.actions";
 
@@ -356,6 +346,7 @@ describe('Widget Settings Store', () => {
       const newPortfolioKey: PortfolioKey = {
         portfolio: 'G3214',
         exchange: Math.random() > 0.5 ? 'MOEX' : 'SPBX',
+        marketType: MarketType.Stock
       };
 
       localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, AnySettings][]) => {

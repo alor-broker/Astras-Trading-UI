@@ -160,12 +160,11 @@
             <nz-form-item>
               <nz-form-label nzFor="instrumentGroup">{{t('orderbookSettings.instrumentGroupLabel')}}</nz-form-label>
               <nz-form-control [nzErrorTip]="t('orderbookSettings.instrumentGroupError')">
-                <input
-                  (mousedown)="$event.stopPropagation()"
-                  nz-input
-                  formControlName="instrumentGroup"
-                  [placeholder]="t('orderbookSettings.instrumentGroupPlaceholder')"
-                />
+                <ats-instrument-board-select
+                  [symbol]="form.value?.instrument?.symbol ?? null"
+                  [placeholder]="t('orderbookSettings.instrumentGroupLabel')"
+                  formControlName="instrumentGroup">
+                </ats-instrument-board-select>
               </nz-form-control>
               <nz-form-label nzFor="autoAlignIntervalSec" class="auto-align-label">
                 {{t('orderbookSettings.autoAlignIntervalLabel')}}

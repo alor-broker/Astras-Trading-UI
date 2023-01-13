@@ -1,3 +1,5 @@
+import { Side } from '../../../shared/models/enums/side.model';
+
 export interface CurrentOrder {
   orderId: string;
   exchange: string;
@@ -5,6 +7,8 @@ export interface CurrentOrder {
   volume: number;
   price: number;
   type: string;
+  side: Side;
+  symbol: string;
 }
 
 export enum ScalperOrderBookRowType {

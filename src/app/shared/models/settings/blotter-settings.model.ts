@@ -1,10 +1,12 @@
 import { WidgetSettings } from "../widget-settings.model";
 import { TableDisplaySettings } from './table-display-settings.model';
+import { MarketType } from "../portfolio-key.model";
 
 export interface BlotterSettings extends WidgetSettings {
   activeTabIndex: number,
   exchange: string,
   portfolio: string,
+  marketType: MarketType,
   ordersTable?: TableDisplaySettings,
   stopOrdersTable?: TableDisplaySettings,
   tradesTable?: TableDisplaySettings,

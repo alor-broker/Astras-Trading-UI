@@ -25,11 +25,20 @@ import {
   shareReplay,
   Subject,
   take,
-  takeUntil
+  takeUntil,
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { TableDisplaySettings } from '../../../../shared/models/settings/table-display-settings.model';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
+import { Store } from '@ngrx/store';
+import { PortfolioExtended } from '../../../../shared/models/user/portfolio-extended.model';
+import { selectPortfoliosState } from '../../../../store/portfolios/portfolios.selectors';
+import {
+  filter,
+  map
+} from 'rxjs/operators';
+import { EntityStatus } from '../../../../shared/models/enums/entity-status';
+import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios';
 
 @Component({
   selector: 'ats-blotter-settings[guid]',
@@ -48,10 +57,16 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   allPositionsColumns: ColumnIds[] = allPositionsColumns;
   prevSettings?: BlotterSettings;
   exchanges: string[] = exchangesList;
+
+  availablePortfolios$!: Observable<Map<string, PortfolioExtended[]>>;
+
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<BlotterSettings>;
 
-  constructor(private readonly settingsService: WidgetSettingsService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly store: Store
+  ) {
   }
 
   ngOnInit() {
@@ -66,11 +81,8 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
         this.prevSettings = settings;
 
         this.form = new UntypedFormGroup({
-          portfolio: new UntypedFormControl(settings.portfolio, [
-            Validators.required,
-            Validators.minLength(4)
-          ]),
-          exchange: new UntypedFormControl(settings.exchange, Validators.required),
+          portfolio: new UntypedFormControl(this.toPortfolioKey(settings), Validators.required),
+          exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
           ordersColumns: new UntypedFormControl(this.toTableSettings(settings.ordersTable, settings.ordersColumns)?.columns?.map(c => c.columnId)),
           stopOrdersColumns: new UntypedFormControl(this.toTableSettings(settings.stopOrdersTable, settings.stopOrdersColumns)?.columns?.map(c => c.columnId)),
           tradesColumns: new UntypedFormControl(this.toTableSettings(settings.tradesTable, settings.tradesColumns)?.columns?.map(c => c.columnId)),
@@ -80,14 +92,27 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
         });
       }
     });
+
+    this.availablePortfolios$ = this.store.select(selectPortfoliosState).pipe(
+      filter(p => p.status === EntityStatus.Success),
+      map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x)))
+    );
+  }
+
+  portfolioChanged(portfolio: string) {
+    this.form.controls.exchange.setValue(this.getPortfolioKey(portfolio).exchange);
   }
 
   submitForm(): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
+      const portfolio = this.getPortfolioKey(this.form.value.portfolio);
+
       const newSettings = {
         ...this.form.value,
+        portfolio: portfolio.portfolio,
+        exchange: portfolio.exchange
       };
 
       newSettings.ordersTable = this.updateTableSettings(newSettings.ordersColumns, initialSettings.ordersTable);
@@ -109,6 +134,10 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+  }
+
+  toPortfolioKey(portfolio: {portfolio: string, exchange: string}): string {
+    return `${portfolio.portfolio}:${portfolio.exchange}`;
   }
 
   private isPortfolioEqual(settings1: BlotterSettings, settings2: BlotterSettings) {
@@ -144,5 +173,12 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
     }
 
     return newSettings!;
+  }
+  private getPortfolioKey(portfolio: string): {portfolio: string, exchange: string} {
+    const parts = portfolio.split(':');
+    return {
+      portfolio: parts[0],
+      exchange: parts[1]
+    };
   }
 }

@@ -39,7 +39,6 @@
   "autoAlignIntervalHint": "Input '0' or leave blank field to disable auto alignment",
 
   "advanced": "Advanced",
-  "instrumentGroupError": "Input trading mode",
-  "instrumentGroupLabel": "Group",
-  "instrumentGroupPlaceholder": "Trading mode"
+  "instrumentGroupLabel": "Trading mode",
+  "instrumentGroupError": "Select trading mode"
 }

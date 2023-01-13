@@ -17,7 +17,6 @@ import {
   ChartPoint,
   OrderBook
 } from '../models/orderbook.model';
-import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { Store } from '@ngrx/store';
@@ -29,6 +28,7 @@ import { OrderBookDataFeedHelper } from "../utils/order-book-data-feed.helper";
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 import { OrderbookRequest } from '../models/orderbook-request.model';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
+import { CurrentOrder } from '../models/scalper-order-book.model';
 
 @Injectable()
 export class OrderbookService {
@@ -65,14 +65,6 @@ export class OrderbookService {
           const sumAsk = askOrders
             .map((o) => o.volume)
             .reduce((prev, curr) => prev + curr, 0);
-          const askCancels = askOrders.map(
-            (o): CancelCommand => ({
-              orderid: o.orderId,
-              exchange: o.exchange,
-              portfolio: o.portfolio,
-              stop: false,
-            })
-          );
 
           const bidOrders = !!row.bid
             ? OrderBookDataFeedHelper.getCurrentOrdersForItem(row.bid, Side.Buy, orders)
@@ -82,19 +74,10 @@ export class OrderbookService {
             .map((o) => o.volume)
             .reduce((prev, curr) => prev + curr, 0);
 
-          const bidCancels = bidOrders.map(
-            (o): CancelCommand => ({
-              orderid: o.orderId,
-              exchange: o.exchange,
-              portfolio: o.portfolio,
-              stop: false,
-            })
-          );
-
           row.askOrderVolume = sumAsk;
-          row.askCancels = askCancels;
+          row.askOrders = askOrders;
           row.bidOrderVolume = sumBid;
-          row.bidCancels = bidCancels;
+          row.bidOrders = bidOrders;
           return row;
         });
         return { ...ob, rows: withOrdersRows };
@@ -102,8 +85,13 @@ export class OrderbookService {
     );
   }
 
-  cancelOrder(cancel: CancelCommand) {
-    this.canceller.cancelOrder(cancel).subscribe();
+  cancelOrder(order: CurrentOrder) {
+    this.canceller.cancelOrder({
+      exchange: order.exchange,
+      portfolio: order.portfolio,
+      orderid: order.orderId,
+      stop: false
+    }).subscribe();
   }
 
   private toOrderBookRows(orderBookData: OrderbookData): OrderBookViewRow[] {
@@ -121,6 +109,8 @@ export class OrderbookService {
         bid: orderBookData.b[i]?.p ?? 0,
         bidVolume: orderBookData.b[i]?.v ?? 0,
         yieldBid: orderBookData.b[i]?.y ?? 0,
+        askOrders: [],
+        bidOrders: []
       };
 
       rows.push(row);

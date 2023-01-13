@@ -13,5 +13,5 @@
   "volumeLabel": "Объём",
   "advancedHeader": "Продвинутые",
   "instrumentGroupLabel": "Режим торгов",
-  "instrumentGroupError": "Введите режим торгов"
+  "instrumentGroupError": "Выберите режим торгов"
 }

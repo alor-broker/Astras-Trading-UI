@@ -72,4 +72,10 @@ export class InstrumentsService {
       })
     );
   }
+
+  getInstrumentBoards(symbol: string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.url}/${symbol}/availableBoards`).pipe(
+      catchHttpError<string[]>([], this.errorHandlerService),
+    );
+  }
 }

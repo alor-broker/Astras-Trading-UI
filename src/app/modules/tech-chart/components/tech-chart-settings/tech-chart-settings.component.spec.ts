@@ -9,7 +9,11 @@ import { of } from "rxjs";
 import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
 import { TechChartModule } from "../../tech-chart.module";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { getTranslocoModule, sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import {
+  getTranslocoModule,
+  mockComponent,
+  sharedModuleImportForTests
+} from '../../../../shared/utils/testing';
 
 describe('TechChartSettingsComponent', () => {
   let component: TechChartSettingsComponent;
@@ -17,7 +21,10 @@ describe('TechChartSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TechChartSettingsComponent],
+      declarations: [
+        TechChartSettingsComponent,
+        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['symbol', 'placeholder'] })
+      ],
       imports: [
         TechChartModule,
         BrowserAnimationsModule,

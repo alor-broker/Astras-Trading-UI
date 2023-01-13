@@ -3,6 +3,6 @@
   "tickerError": "Выберите тикер",
   "exchangeLabel": "Биржа",
   "advanced": "Продвинутые",
-  "instrumentGroupError": "Введите режим торгов",
-  "instrumentGroupLabel": "Режим торгов"
+  "instrumentGroupLabel": "Режим торгов",
+  "instrumentGroupError": "Выберите режим торгов"
 }
