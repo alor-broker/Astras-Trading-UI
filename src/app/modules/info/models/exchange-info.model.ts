@@ -1,3 +1,5 @@
+import { ExchangeSettings } from "../../../shared/models/market-settings.model";
+
 export interface ExchangeInfo {
   symbol: string,
   shortName: string,
@@ -10,4 +12,5 @@ export interface ExchangeInfo {
   lotsize: number;
   marginbuy?: number;
   marginsell?: number;
+  exchangeSettings?: ExchangeSettings;
 }

@@ -7,7 +7,6 @@ import {
   shareReplay,
   switchMap
 } from 'rxjs';
-import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
 import { InfoSettings } from 'src/app/shared/models/settings/info-settings.model';
@@ -18,11 +17,12 @@ import { Dividend } from '../models/dividend.model';
 import { ExchangeInfo } from '../models/exchange-info.model';
 import { Finance } from '../models/finance.model';
 import { Issue } from '../models/issue.model';
-import { catchHttpError } from '../../../shared/utils/observable-helper';
+import { catchHttpError, mapWith } from '../../../shared/utils/observable-helper';
 import { catchError, distinct } from 'rxjs/operators';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { getTypeByCfi } from 'src/app/shared/utils/instruments';
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
+import { MarketService } from "../../../shared/services/market.service";
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,
@@ -39,7 +39,9 @@ export class InfoService {
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService) {
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly marketService: MarketService
+  ) {
   }
 
   init(guid: string) {
@@ -66,7 +68,14 @@ export class InfoService {
     }
 
     return this.settings$!.pipe(
-      map(s => s.info),
+      mapWith(
+        (s) => this.marketService.getExchangeSettings(s.info.exchange),
+        (s, es) => ({s, es})
+      ),
+      map(({s, es}) => ({
+        ...s.info,
+        exchangeSettings: es
+      })),
       distinct()
     );
   }
@@ -123,15 +132,20 @@ export class InfoService {
   }
 
   private getInstrumentEntity<T>(exchangeInfo: ExchangeInfo, path: string): Observable<T> {
-    let identifier = exchangeInfo.symbol;
-    if (exchangeInfo.exchange == Exchanges.MOEX && exchangeInfo.isin) {
-      identifier = exchangeInfo.isin;
-    }
-    return this.http.get<T>(
-      this.instrumentUrl +
-      (exchangeInfo.exchange == Exchanges.SPBX ? "/international/" : "/") +
-      `${identifier}/` +
-      path);
+    return this.marketService.getExchangeSettings(exchangeInfo.exchange)
+      .pipe(
+        switchMap(exchangeSettings => {
+          let identifier = exchangeInfo.symbol;
+          if (exchangeSettings.usesIsin && exchangeInfo.isin) {
+            identifier = exchangeInfo.isin;
+          }
+          return this.http.get<T>(
+            this.instrumentUrl +
+            (exchangeSettings.isInternational ? "/international/" : "/") +
+            `${identifier}/` +
+            path);
+        })
+      );
   }
 
   private getExchangeInfoReq(key: InstrumentKey): Observable<ExchangeInfo> {

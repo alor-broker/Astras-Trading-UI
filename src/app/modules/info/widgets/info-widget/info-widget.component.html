@@ -5,10 +5,10 @@
       <nz-tab [nzTitle]="t('info.instrumentTab')" #tab>
         <ats-description [guid]="guid" [activated]="tab.isActive"></ats-description>
       </nz-tab>
-      <nz-tab *ngIf="info.exchange !== 'SPBX'" [nzTitle]="t('info.issueTab')" #tab>
+      <nz-tab *ngIf="info.exchangeSettings?.hasIssue" [nzTitle]="t('info.issueTab')" #tab>
         <ats-about-issue [guid]="guid" [activated]="tab.isActive"></ats-about-issue>
       </nz-tab>
-      <nz-tab *ngIf="info.exchange !== 'SPBX'"  [nzTitle]="t('info.paymentsTab')" #tab>
+      <nz-tab *ngIf="info.exchangeSettings?.hasPayments"  [nzTitle]="t('info.paymentsTab')" #tab>
         <ats-calendar [guid]="guid" [activated]="tab.isActive"></ats-calendar>
       </nz-tab>
     </nz-tabset>
@@ -16,10 +16,10 @@
       <nz-tab [nzTitle]="t('info.instrumentTab')" #tab>
         <ats-description [guid]="guid" [activated]="tab.isActive"></ats-description>
       </nz-tab>
-      <nz-tab *ngIf="info.exchange === 'SPBX'"  [nzTitle]="t('info.financeTab')" #tab>
+      <nz-tab *ngIf="info.exchangeSettings?.hasFinance"  [nzTitle]="t('info.financeTab')" #tab>
         <ats-finance [guid]="guid" [activated]="tab.isActive"></ats-finance>
       </nz-tab>
-      <nz-tab *ngIf="info.exchange === 'SPBX'" [nzTitle]="t('info.dividendsTab')" #tab>
+      <nz-tab *ngIf="info.exchangeSettings?.hasDividends" [nzTitle]="t('info.dividendsTab')" #tab>
         <ats-dividends [guid]="guid" [activated]="tab.isActive"></ats-dividends>
       </nz-tab>
     </nz-tabset>

@@ -19,6 +19,7 @@ import {
   selectNewPortfolio
 } from './portfolios.actions';
 import {
+  forkJoin,
   switchMap,
   take,
   withLatestFrom
@@ -30,6 +31,7 @@ import {
   getSelectedPortfolioKey
 } from './portfolios.selectors';
 import { PortfolioKey } from '../../shared/models/portfolio-key.model';
+import { MarketService } from "../../shared/services/market.service";
 
 export interface SavedPortfolioState {
   lastActivePortfolio: PortfolioKey;
@@ -52,7 +54,15 @@ export class PortfoliosEffects {
     this.actions$.pipe(
       ofType(initPortfoliosSuccess),
       withLatestFrom(this.store.select(getAllPortfolios)),
-      map(([, portfolios]) => {
+      switchMap(([, portfolios]) => forkJoin(
+        portfolios.map(portfolio =>
+          this.marketService.getExchangeSettings(portfolio.exchange)
+            .pipe(
+              map(p => ({...portfolio, isDefault: p.isDefault}))
+            )
+        )
+      )),
+      map((portfolios) => {
         const lastActivePortfolio = this.getSavedPortfolioState()?.lastActivePortfolio;
         if (lastActivePortfolio) {
           const matchedPortfolio = portfolios.find(p =>
@@ -71,7 +81,7 @@ export class PortfoliosEffects {
           }
         }
 
-        const defaultPortfolio = portfolios.find(p => p.exchange === 'MOEX' && p.portfolio.startsWith('D'))
+        const defaultPortfolio = portfolios.find(p => p.isDefault && p.portfolio.startsWith('D'))
           ?? (portfolios.length > 0 ? portfolios[0] : null);
         return selectNewPortfolio({
           portfolio: !!defaultPortfolio
@@ -114,6 +124,7 @@ export class PortfoliosEffects {
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly localStorage: LocalStorageService,
     private readonly store: Store,
+    private readonly marketService: MarketService
   ) {
   }
 

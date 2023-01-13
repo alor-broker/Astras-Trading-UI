@@ -24,6 +24,8 @@ import { ForwardRisksView } from "../models/forward-risks-view.model";
 import { selectNewInstrumentByBadge } from "../../../store/instruments/instruments.actions";
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { TerminalSettingsService } from "../../terminal-settings/services/terminal-settings.service";
+import { MarketService } from "../../../shared/services/market.service";
+import { mapWith } from "../../../shared/utils/observable-helper";
 
 @Injectable()
 export class BlotterService {
@@ -33,7 +35,8 @@ export class BlotterService {
     private readonly store: Store,
     private readonly quotes: QuotesService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly marketService: MarketService
   ) {
   }
 
@@ -116,12 +119,16 @@ export class BlotterService {
   private getExchangeRate(portfolio: string, exchange: string): Observable<{ currency: string, quote: number }> {
     return this.terminalSettingsService.getSettings()
       .pipe(
-        switchMap(settings => {
+        mapWith(
+          () => this.marketService.getExchangeSettings(exchange),
+          (settings, exchangeSettings) => ({settings, exchangeSettings})
+        ),
+        switchMap(({settings, exchangeSettings}) => {
           const portfolioCurrency = settings.portfoliosCurrency?.find(pc =>
             pc.portfolio.portfolio === portfolio && pc.portfolio.exchange === exchange
           );
 
-          const currency = portfolioCurrency?.currency || (exchange === 'MOEX' ? CurrencyInstrument.RUB : CurrencyInstrument.USD);
+          const currency = portfolioCurrency?.currency || exchangeSettings.currencyInstrument;
 
           if (currency === CurrencyInstrument.RUB) {
             return of({ currency, quote: 1 });

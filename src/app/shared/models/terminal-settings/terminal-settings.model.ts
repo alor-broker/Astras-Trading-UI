@@ -21,6 +21,10 @@ export interface HotKeysSettings {
 export interface DesignSettings {
   theme?: ThemeType;
 }
+export interface PortfolioCurrency {
+  portfolio: PortfolioKey;
+  currency: string;
+}
 
 export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;
@@ -29,5 +33,5 @@ export interface TerminalSettings {
   badgesBind?: boolean;
   hotKeysSettings?: HotKeysSettings;
   designSettings?: DesignSettings;
-  portfoliosCurrency?: {portfolio: PortfolioKey; currency: string}[]
+  portfoliosCurrency?: PortfolioCurrency[]
 }
