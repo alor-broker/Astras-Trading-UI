@@ -31,6 +31,7 @@
     "angular-gridster2": "^15.0.0",
     "chart.js": "^4.1.1",
     "lightweight-charts": "^3.8.0",
+    "marked": "^4.2.12",
     "ng-zorro-antd": "^15.0.2",
     "ng2-charts": "^4.1.1",
     "ngx-color": "8.0.3",
