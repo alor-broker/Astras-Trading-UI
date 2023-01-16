@@ -65,6 +65,7 @@ import { Position } from '../../../../shared/models/positions/position.model';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { MathHelper } from "../../../../shared/utils/math-helper";
+import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
 
 type ExtendedSettings = { widgetSettings: ScalperOrderBookSettings, instrument: Instrument };
 
@@ -499,7 +500,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
           this.isLoading$.next(true);
           this.scalperOrderBookStore.extendTop(addedItemsCount => {
             ScalperOrderBookTableHelper.scrollTableToIndex(
-              this.table?.cdkVirtualScrollViewport,
+              <CdkVirtualScrollViewport | null | undefined>this.table?.cdkVirtualScrollViewport,
               this.tableRowHeight,
               x.index + addedItemsCount,
               false,
@@ -808,7 +809,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
   private alignTable() {
     ScalperOrderBookTableHelper.alignTable(
-      this.table?.cdkVirtualScrollViewport,
+      <CdkVirtualScrollViewport | null | undefined>this.table?.cdkVirtualScrollViewport,
       this.tableRowHeight,
       this.orderBookTableData$
     );
