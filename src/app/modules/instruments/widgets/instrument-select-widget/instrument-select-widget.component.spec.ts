@@ -15,7 +15,7 @@ describe('InstrumentSelectWidgetComponent', () => {
         InstrumentSelectWidgetComponent,
         mockComponent({
           selector: 'ats-instrument-select',
-          inputs: ['guid', 'shouldShowSettings']
+          inputs: ['guid', 'shouldShowSettings', 'contentSize']
         })
       ]
     }).compileComponents();
