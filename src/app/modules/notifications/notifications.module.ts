@@ -9,14 +9,18 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { TranslocoModule } from "@ngneat/transloco";
+import { SharedModule } from "../../shared/shared.module";
+import { NotificationsListComponent } from './components/notifications-list/notifications-list.component';
 
 
 @NgModule({
   declarations: [
-    NotificationButtonComponent
+    NotificationButtonComponent,
+    NotificationsListComponent
   ],
   exports: [
-    NotificationButtonComponent
+    NotificationButtonComponent,
+    NotificationsListComponent
   ],
     imports: [
         CommonModule,
@@ -27,7 +31,8 @@ import { TranslocoModule } from "@ngneat/transloco";
         NzCardModule,
         NzTableModule,
         NzTypographyModule,
-        TranslocoModule
+        TranslocoModule,
+        SharedModule
     ]
 })
 export class NotificationsModule {

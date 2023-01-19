@@ -34,6 +34,7 @@ import { EntityStatus } from '../../../../shared/models/enums/entity-status';
 import { FormControl } from "@angular/forms";
 import { DashboardHelper } from '../../../../shared/utils/dashboard-helper';
 import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios';
+import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
   selector: 'ats-navbar',
@@ -41,6 +42,9 @@ import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios'
   styleUrls: ['./navbar.component.less'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  deviceInfo$!: Observable<{isMobile: boolean}>;
+  isSideMenuVisible = false;
+
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
   names = WidgetNames;
@@ -54,11 +58,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private store: Store,
     private auth: AuthService,
     private modal: ModalService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private readonly deviceService: DeviceService
   ) {
   }
 
   ngOnInit(): void {
+    this.deviceInfo$ = this.deviceService.deviceInfo$;
+
     this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
       filter(p => p.status === EntityStatus.Success),
       map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x)))
@@ -87,6 +94,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   resetDashboard() {
     this.service.resetDashboard();
+    this.closeSideMenu();
   }
 
   logout() {
@@ -99,6 +107,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   addItem(type: string): void {
     DashboardHelper.addWidget(this.service, type);
+    this.closeSideMenu();
   }
 
   newOrder() {
@@ -121,6 +130,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   openTerminalSettings() {
     this.modal.openTerminalSettingsModal();
+    this.closeSideMenu();
   }
 
   openThirdPartyLink(link: string) {
@@ -133,5 +143,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   portfoliosTrackByFn(index: number, item: PortfolioExtended) {
     return item.market + item.portfolio;
+  }
+
+  openSideMenu(): void {
+    this.isSideMenuVisible = true;
+  }
+
+  closeSideMenu(): void {
+    this.isSideMenuVisible = false;
   }
 }

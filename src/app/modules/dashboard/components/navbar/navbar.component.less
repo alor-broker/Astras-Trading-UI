@@ -3,16 +3,25 @@
 .themeMixin({
   :host {
     .ant-layout-header {
-      ::ng-deep .ant-btn {
-        color: @layout-header-color;
+      ::ng-deep {
+        .ant-btn {
+          color: @layout-header-color;
 
-        &.empty-portfolio {
-          color: @error-color;
+          &.empty-portfolio {
+            color: @error-color;
+          }
         }
       }
     }
   }
 });
+
+::ng-deep {
+  .ant-menu-submenu-title {
+    padding: 10px 0 !important;
+    box-sizing: content-box ;
+  }
+}
 
 @navbar-height: 5vh;
 @logo-height: 30px;
@@ -63,11 +72,6 @@ nz-header {
     display: flex;
     gap: 0 10px;
 
-    @media (max-width: 420px) {
-      flex-direction: column;
-      gap: 5px 0;
-    }
-
     ::ng-deep {
       .ant-btn {
         i {
@@ -99,5 +103,44 @@ nz-header {
     border-right: none;
     outline: none;
     box-shadow: none;
+  }
+}
+
+::ng-deep .side-menu {
+  .actions-menu {
+    border-right: none;
+
+    .ant-menu-submenu-title {
+      .anticon {
+        font-size: 16px;
+      }
+    }
+
+    .menu-item {
+      padding-left: 0;
+    }
+  }
+
+  .menu-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+
+    .close-btn {
+      font-size: 16px;
+
+    }
+  }
+
+  .side-menu-item {
+    font-size: 16px;
+  }
+
+  .ant-menu-submenu-arrow {
+    display: none;
+  }
+
+  .ant-menu {
+    border-right: 0;
   }
 }

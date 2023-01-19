@@ -84,6 +84,8 @@ export const ngZorroMockComponents = [
       'nzFrontPagination',
       'nzNoResult',
       'nzShowPagination',
+      'nzPaginationType',
+      'nzPageSize',
       'nzScroll',
       'nzData',
       'nzLoading',
@@ -93,6 +95,15 @@ export const ngZorroMockComponents = [
       'nzVirtualForTrackBy',
       'nzVirtualItemSize',
       'nzFooter'
+    ]
+  }),
+  mockComponent({
+    selector: 'nz-drawer',
+    inputs: [
+      'nzClosable',
+      'nzVisible',
+      'nzPlacement',
+      'nzWrapClassName'
     ]
   }),
   mockComponent({

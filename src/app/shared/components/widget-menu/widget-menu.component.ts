@@ -1,12 +1,15 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { WidgetNames } from "../../models/enums/widget-names";
+import { Observable } from "rxjs";
+import { DeviceService } from "../../services/device.service";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: 'ats-widget-menu',
   templateUrl: './widget-menu.component.html',
   styleUrls: ['./widget-menu.component.less']
 })
-export class WidgetMenuComponent {
+export class WidgetMenuComponent implements OnInit {
 
   @Input() public showedWidgets: string[] = [];
   @Input() public showResetItem: boolean = false;
@@ -14,7 +17,15 @@ export class WidgetMenuComponent {
   @Output() public resetDashboard = new EventEmitter<void>();
 
   public widgetNames = WidgetNames;
+  public isMobile$!: Observable<boolean>;
 
-  constructor() { }
+  constructor(
+    private readonly deviceService: DeviceService
+  ) {}
 
+  ngOnInit() {
+    this.isMobile$ = this.deviceService.deviceInfo$.pipe(
+      map(info => info.isMobile)
+    );
+  }
 }
