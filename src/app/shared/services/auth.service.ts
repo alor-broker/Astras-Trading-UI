@@ -27,6 +27,11 @@ import {
 } from '../utils/observable-helper';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 
+interface UserState {
+  user: User | null;
+  isExited: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -34,27 +39,28 @@ export class AuthService {
   private readonly userStorage = 'user';
   private readonly accountUrl = environment.clientDataUrl + '/auth/actions';
   private readonly ssoUrl = environment.ssoUrl;
-  private readonly currentUserSub = new BehaviorSubject<User | null>(null);
+  private readonly currentUserSub = new BehaviorSubject<UserState | null>(null);
 
   readonly currentUser$ = this.currentUserSub.asObservable().pipe(
+    map(x => x?.user),
     filter((x): x is User => !!x)
   );
 
   readonly accessToken$ = this.currentUserSub.pipe(
-    switchMap((user, index) => {
-      if (this.isAuthorised(user)) {
+    switchMap((userState, index) => {
+      if (this.isAuthorised(userState?.user)) {
         if (index === 0) {
-          this.refreshToken(user!);
+          this.refreshToken(userState!.user!);
           return NEVER;
         }
       }
       else {
         this.localStorage.removeItem(this.userStorage);
-        this.redirectToSso();
+        this.redirectToSso(userState?.isExited ?? false);
         return NEVER;
       }
 
-      return of(user);
+      return of(userState?.user);
     }),
     mapWith(() => interval(1000), (user,) => user),
     switchMap(user => {
@@ -78,7 +84,10 @@ export class AuthService {
     private readonly errorHandlerService: ErrorHandlerService
   ) {
     const user = localStorage.getItem<User>(this.userStorage);
-    this.setCurrentUser(user ?? null);
+    this.setCurrentUser({
+      user: user ?? null,
+      isExited: false
+    });
   }
 
   public setUser(baseUser: BaseUser) {
@@ -93,19 +102,25 @@ export class AuthService {
     };
 
     this.localStorage.setItem(this.userStorage, user);
-    this.setCurrentUser(user);
+    this.setCurrentUser({
+      user: user,
+      isExited: false
+    });
   }
 
   public logout() {
-    this.setCurrentUser(null);
+    this.setCurrentUser({
+      user: null,
+      isExited: true
+    });
   }
 
   public isAuthRequest(url: string) {
     return url == `${this.accountUrl}/login` || url == `${this.accountUrl}/refresh`;
   }
 
-  private redirectToSso() {
-    this.window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras`);
+  private redirectToSso(isExit: boolean) {
+    this.window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras` + (isExit ? '&exit=1' : ''));
   }
 
   private isAuthorised(user?: User | null): boolean {
@@ -173,7 +188,7 @@ export class AuthService {
     return false;
   }
 
-  private setCurrentUser(user: User | null) {
-    this.currentUserSub.next(user);
+  private setCurrentUser(userState: UserState) {
+    this.currentUserSub.next(userState);
   }
 }
