@@ -1,4 +1,5 @@
-<ul nz-menu *transloco="let t; scope: 'shared/widget-menu'">
+<ul nz-menu nzMode="inline" *transloco="let t; scope: 'shared/widget-menu'">
+  <li nz-menu-divider *ngIf="isMobile$ | async"></li>
   <li
     nz-menu-item
     (click)="selected.emit(widgetNames.instrumentSelect)"

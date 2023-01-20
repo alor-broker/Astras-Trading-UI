@@ -12,6 +12,7 @@ import { map, Observable } from 'rxjs';
 import { Widget } from 'src/app/shared/models/widget.model';
 import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { DashboardService } from 'src/app/shared/services/dashboard.service';
+import { mobileBreakpoint } from "../../../../shared/utils/device-helper";
 
 interface Safe extends GridsterConfig {
   draggable: Draggable;
@@ -45,7 +46,7 @@ export class DashboardComponent implements OnInit {
       outerMarginBottom: null,
       outerMarginLeft: null,
       useTransformPositioning: true,
-      mobileBreakpoint: 640,
+      mobileBreakpoint,
       minCols: 50,
       maxCols: 100,
       minRows: 30,

@@ -8,7 +8,8 @@ import {
 } from './notifications-provider';
 import {
   combineLatest,
-  Observable
+  Observable,
+  shareReplay
 } from 'rxjs';
 import { NotificationMeta } from '../models/notification.model';
 import { map } from 'rxjs/operators';
@@ -38,6 +39,8 @@ export class NotificationsService {
   }
 
   getNotifications(): Observable<NotificationMeta[]> {
-    return this.notifications;
+    return this.notifications.pipe(
+      shareReplay(1)
+    );
   }
 }

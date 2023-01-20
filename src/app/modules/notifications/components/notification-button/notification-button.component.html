@@ -1,15 +1,31 @@
-<nz-badge [(nzPopoverVisible)]="isTableVisible" [nzCount]="(notReadNotificationsCount$ | async) || 0"
-          [nzOffset]="[-2, 10]"
-          [nzPopoverContent]="contentTemplate"
-          [nzPopoverTitle]="titleTemplate"
-          nz-popover
-          nzPopoverPlacement="leftBottom"
-          nzPopoverTrigger="click"
->
-  <button nz-button [nzType]="'text'">
-    <i nz-icon nzType="ats-bell"></i>
-  </button>
-</nz-badge>
+<ng-container *ngIf="deviceInfo$ | async as deviceInfo">
+  <nz-badge
+    *ngIf="!deviceInfo.isMobile"
+    [(nzPopoverVisible)]="isTableVisible"
+    [nzCount]="(notReadNotificationsCount$ | async) || 0"
+    [nzOffset]="[-2, 10]"
+    [nzPopoverContent]="contentTemplate"
+    [nzPopoverTitle]="titleTemplate"
+    nz-popover
+    nzPopoverPlacement="bottomRight"
+    nzPopoverTrigger="click"
+  >
+    <button nz-button [nzType]="'text'">
+      <i nz-icon nzType="ats-bell"></i>
+    </button>
+  </nz-badge>
+
+  <nz-badge
+    *ngIf="deviceInfo.isMobile"
+    [nzCount]="(notReadNotificationsCount$ | async) || 0"
+    [nzOffset]="[-10, 5]"
+    nzSize="small"
+  >
+    <button nz-button [nzType]="'text'" class="mobile-notifications-btn">
+      <i nz-icon nzType="ats-bell"></i>
+    </button>
+  </nz-badge>
+</ng-container>
 
 <ng-template #titleTemplate>
   <div class="dialog-title" *transloco="let t; scope: 'notifications'">
@@ -25,43 +41,5 @@
 </ng-template>
 
 <ng-template #contentTemplate>
-  <ng-container *ngIf="sortedNotifications$ | async as notifications">
-  <nz-table #table
-            [nzData]="notifications"
-            [nzPageSize]="5"
-            [nzShowPagination]="notifications.length > table.nzPageSize"
-            [nzPaginationType]="'small'"
-            class="notifications-table"
-  >
-    <tbody>
-    <tr *ngFor="let data of table.data">
-      <td>
-        <div (click)="clickNotification(data)"
-             [ngClass]="{
-             'notification': true,
-             'read': data.isRead
-             }"
-        >
-          <div class="read-status">
-            <nz-badge [nzStatus]="data.isRead ? 'default' : 'processing'"></nz-badge>
-          </div>
-          <div class="main">
-            <div class="header">
-              <div class="title">
-                <h4>{{data.title}}</h4>
-              </div>
-              <div *ngIf="data.showDate" class="date">
-                <span>{{data.date | date : 'dd MMM в HH:mm' :undefined: 'ru'}}</span>
-              </div>
-            </div>
-            <div class="body">
-              <span nz-typography nzType="secondary">{{data.description}}</span>
-            </div>
-          </div>
-        </div>
-      </td>
-    </tr>
-    </tbody>
-  </nz-table>
-  </ng-container>
+  <ats-notifications-list></ats-notifications-list>
 </ng-template>
