@@ -18,7 +18,6 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import {
   ChartData,
@@ -56,7 +55,7 @@ interface SpreadDiffData {
 }
 
 @Component({
-  selector: 'ats-order-book[guid][resize][shouldShowSettings]',
+  selector: 'ats-order-book[guid]',
   templateUrl: './orderbook.component.html',
   styleUrls: ['./orderbook.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,11 +63,8 @@ interface SpreadDiffData {
 })
 export class OrderBookComponent implements OnInit, OnDestroy {
   @Input()
-  shouldShowSettings!: boolean;
-  @Input()
   guid!: string;
-  @Input()
-  resize!: EventEmitter<DashboardItem>;
+
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 

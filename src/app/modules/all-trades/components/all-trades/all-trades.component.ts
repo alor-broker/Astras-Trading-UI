@@ -4,7 +4,6 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { DashboardItemContentSize } from "../../../../shared/models/dashboard-item.model";
 import { AllTradesService } from "../../services/all-trades.service";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { DatePipe } from "@angular/common";
@@ -23,6 +22,7 @@ import { AllTradesFilters, AllTradesItem } from "../../models/all-trades.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 
 @Component({
   selector: 'ats-all-trades[guid]',
@@ -31,8 +31,8 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 })
 export class AllTradesComponent implements OnInit, OnDestroy {
   @Input() guid!: string;
-  @Input() contentSize!: DashboardItemContentSize | null;
 
+  contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private datePipe = new DatePipe('ru-RU');
   private take = 50;
@@ -192,6 +192,16 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     this.tradesList$.complete();
     this.isLoading$.complete();
     this.filters$.complete();
+    this.contentSize$.complete();
+  }
+
+  containerSizeChanged(entries: ResizeObserverEntry[]) {
+    entries.forEach(x => {
+      this.contentSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
   }
 
   private updateFilters(update: (curr: AllTradesFilters) => AllTradesFilters) {

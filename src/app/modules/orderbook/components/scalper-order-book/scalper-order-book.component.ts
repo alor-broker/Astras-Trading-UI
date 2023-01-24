@@ -53,7 +53,6 @@ import { ScalperOrdersService } from "../../services/scalper-orders.service";
 import { ScalperOrderBookCommands } from "../../models/scalper-order-book-commands";
 import { TerminalCommand } from "../../../../shared/models/terminal-command";
 import { ScalperOrderBookService } from "../../services/scalper-order-book.service";
-import { DashboardItemContentSize } from '../../../../shared/models/dashboard-item.model';
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { OrderbookData } from '../../models/orderbook-data.model';
 import { OrderbookDataRow } from '../../models/orderbook-data-row.model';
@@ -70,7 +69,7 @@ type ExtendedSettings = { widgetSettings: ScalperOrderBookSettings, instrument: 
 
 
 @Component({
-  selector: 'ats-scalper-order-book[guid][shouldShowSettings][contentSize]',
+  selector: 'ats-scalper-order-book[guid]',
   templateUrl: './scalper-order-book.component.html',
   styleUrls: ['./scalper-order-book.component.less'],
   providers: [ScalperOrderBookComponentStore]
@@ -84,8 +83,6 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   orderBookTableContainer?: ElementRef<HTMLElement>;
   @ViewChild('table')
   table?: NzTableComponent<any>;
-
-  @Input() shouldShowSettings!: boolean;
   @Input() guid!: string;
 
   @Input()
@@ -94,7 +91,6 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   orderBookTableContainerHeight$?: Observable<number>;
   readonly isLoading$ = new BehaviorSubject(true);
   orderBookTableData$!: Observable<ScalperOrderBookRow[]>;
-  readonly contentSize$ = new BehaviorSubject<DashboardItemContentSize>({ height: 100, width: 0 });
   maxVolume: number = 1;
   workingVolumes: number[] = [];
   activeWorkingVolume$ = new BehaviorSubject<number | null>(null);
@@ -124,13 +120,6 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   ) {
   }
 
-  @Input()
-  set contentSize(value: DashboardItemContentSize | null) {
-    if (!!value) {
-      this.contentSize$.next(value);
-    }
-  }
-
   ngOnInit(): void {
     this.initOrderBookContext();
     this.orderBookTableData$ = this.getOrderBookTableData().pipe(
@@ -158,7 +147,6 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     this.destroy$.complete();
 
     this.activeWorkingVolume$.complete();
-    this.contentSize$.complete();
     this.enableAutoAlign$.complete();
   }
 

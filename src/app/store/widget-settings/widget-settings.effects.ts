@@ -36,7 +36,7 @@ export class WidgetSettingsEffects {
       ofType(
         WidgetSettingsActions.addWidgetSettings,
         WidgetSettingsActions.updateWidgetSettings,
-        WidgetSettingsActions.updateWidgetSettingsInstrumentWithBadge,
+        WidgetSettingsActions.updateWidgetSettingsInstrument,
         WidgetSettingsActions.updateWidgetSettingsPortfolio,
         WidgetSettingsActions.removeWidgetSettings,
         WidgetSettingsActions.removeAllWidgetSettings

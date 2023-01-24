@@ -6,7 +6,7 @@ export interface BlotterSettings extends WidgetSettings {
   activeTabIndex: number,
   exchange: string,
   portfolio: string,
-  marketType: MarketType,
+  marketType?: MarketType,
   ordersTable?: TableDisplaySettings,
   stopOrdersTable?: TableDisplaySettings,
   tradesTable?: TableDisplaySettings,

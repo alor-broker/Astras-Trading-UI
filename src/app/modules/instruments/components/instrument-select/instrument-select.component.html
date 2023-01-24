@@ -1,4 +1,5 @@
-<div class="container" *ngIf="settings$ | async as settings" [style.height]="(contentSize$ | async)?.height + 'px'">
+<div class="container"
+     *ngIf="settings$ | async as settings">
   <div class="header" *transloco="let t; scope: 'instruments/select'">
     <div (mousedown)='$event.stopPropagation()' class="search-field">
       <input #inputEl

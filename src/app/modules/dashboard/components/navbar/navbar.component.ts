@@ -5,21 +5,18 @@ import {
 } from '@angular/core';
 import {
   Observable,
+  shareReplay,
   Subject,
   take
 } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
-import { DashboardService } from 'src/app/shared/services/dashboard.service';
+import { ManageDashboardsService } from 'src/app/shared/services/manage-dashboards.service';
 import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
-import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from '@ngrx/store';
-import { selectNewPortfolio } from '../../../../store/portfolios/portfolios.actions';
 import { PortfolioExtended } from 'src/app/shared/models/user/portfolio-extended.model';
-import { getSelectedInstrumentByBadge } from "../../../../store/instruments/instruments.selectors";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeColors } from '../../../../shared/models/settings/theme-settings.model';
 import {
@@ -27,13 +24,20 @@ import {
   map
 } from 'rxjs/operators';
 import {
-  getSelectedPortfolio,
   selectPortfoliosState
 } from '../../../../store/portfolios/portfolios.selectors';
 import { EntityStatus } from '../../../../shared/models/enums/entity-status';
 import { FormControl } from "@angular/forms";
-import { DashboardHelper } from '../../../../shared/utils/dashboard-helper';
 import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios';
+import {
+  Dashboard,
+  DefaultDashboardName
+} from '../../../../shared/models/dashboard/dashboard.model';
+import { TranslatorService } from '../../../../shared/services/translator.service';
+import { mapWith } from '../../../../shared/utils/observable-helper';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { defaultBadgeColor } from '../../../../shared/utils/instruments';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
 @Component({
   selector: 'ats-navbar',
@@ -43,32 +47,63 @@ import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios'
 export class NavbarComponent implements OnInit, OnDestroy {
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
+  selectedDashboard$!: Observable<Dashboard>;
+
   names = WidgetNames;
   themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  private activeInstrument$!: Observable<Instrument>;
+  private activeInstrument$!: Observable<InstrumentKey | null>;
 
   constructor(
-    private service: DashboardService,
-    private store: Store,
-    private auth: AuthService,
-    private modal: ModalService,
-    private themeService: ThemeService
+    private readonly manageDashboardsService: ManageDashboardsService,
+
+    private readonly dashboardContextService: DashboardContextService,
+    private readonly store: Store,
+    private readonly auth: AuthService,
+    private readonly modal: ModalService,
+    private readonly themeService: ThemeService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
   ngOnInit(): void {
+    this.selectedDashboard$ = this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
+      mapWith(() => this.dashboardContextService.selectedDashboard$, (t, d) => ({ t, d })),
+      map(({ t, d }) => ({
+        ...d,
+        title: d.title === DefaultDashboardName ? t(['defaultDashboardName']) : d.title
+      }))
+    );
+
     this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
       filter(p => p.status === EntityStatus.Success),
-      map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x)))
+      map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x))),
+      shareReplay(1)
     );
 
-    this.selectedPortfolio$ = this.store.select(getSelectedPortfolio).pipe(
-      map(p => p ?? null)
+    this.selectedPortfolio$ =
+      this.selectedDashboard$.pipe(
+      map(d => d.selectedPortfolio),
+      map(p => p ?? null),
+      mapWith(() => this.portfolios$, (selectedKey, all) => ({selectedKey, all})),
+        map(({selectedKey, all}) => {
+          if(!selectedKey) {
+            return null;
+          }
+
+          return [...all.values()]
+            .reduce((c,p) => [...p, ...c], [])
+            .find(p => p.portfolio === selectedKey.portfolio
+              && p.exchange === selectedKey.exchange
+              && p.marketType === selectedKey.marketType
+            ) ?? null;
+        })
     );
 
-    this.activeInstrument$ = this.store.select(getSelectedInstrumentByBadge(defaultBadgeColor));
+    this.activeInstrument$ = this.dashboardContextService.instrumentsSelection$.pipe(
+      map(selection => selection[defaultBadgeColor])
+    );
 
     this.themeColors$ = this.themeService.getThemeSettings().pipe(
       map(x => x.themeColors)
@@ -86,7 +121,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   resetDashboard() {
-    this.service.resetDashboard();
+    this.manageDashboardsService.resetCurrentDashboard();
   }
 
   logout() {
@@ -94,11 +129,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   changePortfolio(key: PortfolioExtended) {
-    this.store.dispatch(selectNewPortfolio({ portfolio: key }));
+    this.dashboardContextService.selectDashboardPortfolio({
+      portfolio: key.portfolio,
+      exchange: key.exchange,
+      marketType: key.marketType
+    });
   }
 
   addItem(type: string): void {
-    DashboardHelper.addWidget(this.service, type);
+    this.manageDashboardsService.addWidget(type);
   }
 
   newOrder() {

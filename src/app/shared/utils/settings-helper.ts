@@ -14,6 +14,11 @@ import { TechChartSettings } from "../models/settings/tech-chart-settings.model"
 import { AllInstrumentsSettings } from "../models/settings/all-instruments-settings.model";
 import { OrderSubmitSettings } from "../models/settings/order-submit-settings.model";
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
+import { WidgetSettingsService } from '../services/widget-settings.service';
+import { TerminalSettingsService } from '../../modules/terminal-settings/services/terminal-settings.service';
+import { Observable } from 'rxjs';
+import { mapWith } from './observable-helper';
+import { map } from 'rxjs/operators';
 
 /**
  * A type with describes settings with depends on an instrument
@@ -432,4 +437,17 @@ export function isInstrumentEqual(settings1?: InstrumentKey | null, settings2?: 
   return settings1?.symbol === settings2?.symbol
     && settings1?.instrumentGroup === settings2?.instrumentGroup
     && settings1?.exchange == settings2?.exchange;
+}
+
+
+/**
+ * Class with settings related functions
+ */
+export class SettingsHelper {
+  static showBadge(widgetGuid: string, widgetSettingsService: WidgetSettingsService, terminalSettingsService: TerminalSettingsService): Observable<boolean> {
+    return widgetSettingsService.getSettings(widgetGuid).pipe(
+      mapWith(() => terminalSettingsService.getSettings(), (ws, ts) => ({ws, ts})),
+      map(({ws, ts}) => ts.badgesBind === true && (ws.linkToActive ?? true) === true && !!ws.badgeColor)
+    );
+  }
 }

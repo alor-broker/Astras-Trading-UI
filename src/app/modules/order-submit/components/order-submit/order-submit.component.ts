@@ -38,10 +38,7 @@ import {
   map,
   startWith
 } from "rxjs/operators";
-import { Store } from "@ngrx/store";
 import { OrderService } from "../../../../shared/services/orders/order.service";
-import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { getSelectedPortfolioKey } from "../../../../store/portfolios/portfolios.selectors";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
@@ -54,6 +51,7 @@ import { SubscriptionsDataFeedService } from '../../../../shared/services/subscr
 import { OrderbookData } from '../../../orderbook/models/orderbook-data.model';
 import { OrderbookRequest } from '../../../orderbook/models/orderbook-request.model';
 import { OrderBookDataFeedHelper } from '../../../orderbook/utils/order-book-data-feed.helper';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 
 @Component({
   selector: 'ats-order-submit[guid]',
@@ -93,7 +91,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     private readonly instrumentService: InstrumentsService,
     private readonly quotesService: QuotesService,
     private readonly orderService: OrderService,
-    private readonly store: Store,
+    private readonly currentDashboardService: DashboardContextService,
     private readonly widgetsDataProvider: WidgetsDataProviderService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
@@ -111,8 +109,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       shareReplay(1)
     );
 
-    const currentPortfolio$ = this.store.select(getSelectedPortfolioKey).pipe(
-      filter((p): p is PortfolioKey => !!p),
+    const currentPortfolio$ = this.currentDashboardService.selectedPortfolio$.pipe(
       map(p => p.portfolio),
     );
 

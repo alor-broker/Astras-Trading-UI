@@ -1,11 +1,15 @@
-<ats-infinite-scroll-table
-  [tableContainerHeight]="contentSize?.height || 0"
-  [tableContainerWidth]="contentSize?.width || 0"
-  [data]="(instrumentsDisplay$ | async) ?? []"
-  [isLoading]="(isLoading$ | async) ?? false"
-  [columns]="(displayedColumns$ | async)!"
-  [contextMenu]="contextMenu"
-  (scrolled)="scrolled()"
-  (filterApplied)="applyFilter($event)"
-  (rowClick)="selectInstrument($event)"
-></ats-infinite-scroll-table>
+<div class="container"
+  (nzResizeObserve)="containerSizeChanged($event)"
+     nzResizeObserver>
+  <ats-infinite-scroll-table
+    (filterApplied)="applyFilter($event)"
+    (rowClick)="selectInstrument($event)"
+    (scrolled)="scrolled()"
+    [columns]="(displayedColumns$ | async)!"
+    [contextMenu]="contextMenu"
+    [data]="(instrumentsDisplay$ | async) ?? []"
+    [isLoading]="(isLoading$ | async) ?? false"
+    [tableContainerHeight]="(contentSize$ | async)?.height || 0"
+    [tableContainerWidth]="(contentSize$ | async)?.width || 0"
+  ></ats-infinite-scroll-table>
+</div>

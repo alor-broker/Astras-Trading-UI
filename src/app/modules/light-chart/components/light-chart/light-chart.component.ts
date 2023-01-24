@@ -4,14 +4,11 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
-import { DashboardItemContentSize } from 'src/app/shared/models/dashboard-item.model';
 import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, Subject, takeUntil } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
@@ -27,26 +24,23 @@ import { LightChartWrapper } from '../../utils/light-chart-wrapper';
 import { LightChartDatafeedFactoryService } from '../../services/light-chart-datafeed-factory.service';
 import { TimeframeValue } from '../../models/light-chart.models';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
 @Component({
-  selector: 'ats-light-chart[contentSize][guid]',
+  selector: 'ats-light-chart[guid]',
   templateUrl: './light-chart.component.html',
   styleUrls: ['./light-chart.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
+export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly availableTimeFrames = TimeframesHelper.timeFrames;
   timeFrameDisplayModes = TimeFrameDisplayMode;
 
   @Input()
-  shouldShowSettings!: boolean;
-  @Input()
   guid!: string;
-  @Input()
-  contentSize!: DashboardItemContentSize | null;
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
@@ -100,16 +94,18 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, On
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.contentSize && !!this.chart) {
-      this.chartResize();
-    }
-  }
-
   getTimeFrameLabel(value: string): string | undefined {
     return this.availableTimeFrames.find(x => x.value === value)?.label;
   }
 
+  containerSizeChanged(entries: ResizeObserverEntry[]) {
+    entries.forEach(x => {
+      this.chartResize({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
+  }
   private initChart() {
     combineLatest([
         this.settings$,
@@ -159,7 +155,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, On
     setTimeout(() => this.activeTimeFrame$.next(timeFrame));
   }
 
-  private chartResize() {
-    this.chart!.resize(Math.floor(this.contentSize?.width ?? 0), Math.floor(this.contentSize?.height ?? 0));
+  private chartResize(contentSize: ContentSize) {
+    this.chart!.resize(Math.floor(contentSize.width ?? 0), Math.floor(contentSize.height ?? 0));
   }
 }

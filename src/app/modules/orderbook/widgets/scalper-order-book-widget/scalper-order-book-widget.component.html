@@ -1,12 +1,37 @@
-<ats-scalper-order-book *ngIf="!shouldShowSettings"
-                        [contentSize]="contentSize$ | async"
-                        [guid]="guid"
-                        [shouldShowSettings]="shouldShowSettings"
-                        [isActive]="isActive"
->
+<ng-container *transloco="let t;">
+  <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
+    [content]="contentRef"
+    [header]="headerRef"
+    [settings]="settingsRef"
+    [isBlockWidget]="isBlockWidget"
+    [showSettings]="shouldShowSettings"
+    [showContentScroll]="false"
+  >
 
-</ats-scalper-order-book>
-<ats-scalper-order-book-settings (settingsChange)="onSettingsChange()" *ngIf="shouldShowSettings"
-                                 [guid]="guid">
+    <ng-template #headerRef>
+      <ats-widget-header
+        (switchSettings)="onSettingsChange()"
+        [guid]="guid"
+        [hasHelp]="true"
+        [hasSettings]="true"
+        [linkToActive]="settings.linkToActive"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [titleIconTooltip]="t('widgetHeaders.ScalperOrderBookSettings')"
+        [titleText]="title$ | async"
+        helpRef="scalper-order-book"
+        titleIcon="ordered-list"
+      ></ats-widget-header>
+    </ng-template>
 
-</ats-scalper-order-book-settings>
+    <ng-template #contentRef>
+      <ats-scalper-order-book [guid]="guid" [isActive]="isActive"></ats-scalper-order-book>
+    </ng-template>
+    <ng-template #settingsRef>
+      <ats-scalper-order-book-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-scalper-order-book-settings>
+    </ng-template>
+  </ats-widget-skeleton>
+
+</ng-container>
+

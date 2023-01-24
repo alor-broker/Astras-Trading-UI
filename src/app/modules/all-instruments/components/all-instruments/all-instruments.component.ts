@@ -1,5 +1,4 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { DashboardItemContentSize } from "../../../../shared/models/dashboard-item.model";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import {
@@ -17,18 +16,17 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { AllInstrumentsSettings } from "../../../../shared/models/settings/all-instruments-settings.model";
 import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
-import { Store } from "@ngrx/store";
-import { selectNewInstrumentByBadge } from "../../../../store/instruments/instruments.actions";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { filter, map } from 'rxjs/operators';
-import { InstrumentBadges } from '../../../../shared/models/instruments/instrument.model';
 import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
+import { defaultBadgeColor } from '../../../../shared/utils/instruments';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 
 @Component({
   selector: 'ats-all-instruments',
@@ -37,7 +35,7 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 })
 export class AllInstrumentsComponent implements OnInit, OnDestroy {
   @Input() guid!: string;
-  @Input() contentSize!: DashboardItemContentSize | null;
+  contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   public isLoading$ = new BehaviorSubject<boolean>(false);
   public allColumns: ColumnsSettings[] = [
     {
@@ -151,7 +149,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly service: AllInstrumentsService,
-    private readonly store: Store,
+    private readonly dashboardContextService: DashboardContextService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly translatorService: TranslatorService
@@ -164,7 +162,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
 
     this.instrumentsDisplay$ = this.instrumentsList$.pipe(
       mapWith(
-        () => this.store.select(getSelectedInstrumentsWithBadges),
+        () => this.dashboardContextService.instrumentsSelection$,
         (instruments, output) => ({ instruments, badges: output })
       ),
       mapWith(
@@ -253,7 +251,8 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       symbol: row.name,
       exchange: row.exchange,
     };
-    this.store.dispatch(selectNewInstrumentByBadge({ instrument, badgeColor: this.badgeColor }));
+
+    this.dashboardContextService.selectDashboardInstrument(instrument, this.badgeColor);
   }
 
   initContextMenu() {
@@ -294,6 +293,16 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
 
     this.destroy$.next(true);
     this.destroy$.complete();
+    this.contentSize$.complete();
+  }
+
+  containerSizeChanged(entries: ResizeObserverEntry[]) {
+    entries.forEach(x => {
+      this.contentSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
   }
 
   private updateFilters(update: (curr: AllInstrumentsFilters) => AllInstrumentsFilters) {
@@ -321,7 +330,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private mapInstrumentsToBadges(instruments: AllInstruments[], badges: InstrumentBadges, terminalSettings: TerminalSettings): AllInstruments[] {
+  private mapInstrumentsToBadges(instruments: AllInstruments[], badges: InstrumentGroups, terminalSettings: TerminalSettings): AllInstruments[] {
     return instruments.map(instr => ({
       ...instr,
       badges: Object.keys(terminalSettings.badgesBind ? badges : { [defaultBadgeColor]: badges[defaultBadgeColor] })

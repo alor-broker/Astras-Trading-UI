@@ -12,7 +12,7 @@ import { ScalperOrderBookComponent } from './components/scalper-order-book/scalp
 import { ScalperOrderBookSettingsComponent } from './components/scalper-order-book-settings/scalper-order-book-settings.component';
 import { NzInputModule } from "ng-zorro-antd/input";
 import { DragDropModule } from '@angular/cdk/drag-drop';
-
+import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 
 @NgModule({
   declarations: [
@@ -29,7 +29,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         OrderbookRoutingModule,
         SharedModule,
         NzInputModule,
-        DragDropModule
+        DragDropModule,
+        NzResizeObserverModule
     ],
   exports: [
     OrderbookWidgetComponent,

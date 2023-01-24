@@ -7,7 +7,6 @@ import { ForwardSummaryComponent } from './forward-summary.component';
 import { of } from "rxjs";
 import { BlotterService } from "../../services/blotter.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { EventEmitter } from "@angular/core";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { getTranslocoModule } from "../../../../shared/utils/testing";
 
@@ -54,7 +53,6 @@ describe('ForwardSummaryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ForwardSummaryComponent);
     component = fixture.componentInstance;
-    component.resize = new EventEmitter();
     fixture.detectChanges();
   });
 

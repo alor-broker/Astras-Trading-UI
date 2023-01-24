@@ -40,9 +40,6 @@ import {
   isEqualPortfolioDependedSettings
 } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
-import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
-import { Store } from "@ngrx/store";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
@@ -50,6 +47,8 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -265,7 +264,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     },
   ];
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
-  selectedInstruments$: Observable<InstrumentBadges> = of({});
+  selectedInstruments$: Observable<InstrumentGroups> = of({});
   settings$!: Observable<BlotterSettings>;
   scrollHeight$: Observable<number> = of(100);
 
@@ -282,7 +281,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly canceller: OrderCancellerService,
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly store: Store,
+    private readonly dashboardContextService: DashboardContextService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly translatorService: TranslatorService
   ) {
@@ -352,7 +351,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe();
 
     this.selectedInstruments$ = combineLatest([
-      this.store.select(getSelectedInstrumentsWithBadges),
+      this.dashboardContextService.instrumentsSelection$,
       this.terminalSettingsService.getSettings()
     ])
       .pipe(

@@ -5,7 +5,15 @@ import {
 import { InfoService } from '../../services/info.service';
 
 import { InfoWidgetComponent } from './info-widget.component';
-import { getTranslocoModule } from "../../../../shared/utils/testing";
+import {
+  getTranslocoModule,
+  widgetSkeletonMock
+} from "../../../../shared/utils/testing";
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { of } from 'rxjs';
+import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { InstrumentsService } from '../../../instruments/services/instruments.service';
 
 describe('InfoWidgetComponent', () => {
   let component: InfoWidgetComponent;
@@ -16,9 +24,40 @@ describe('InfoWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [InfoWidgetComponent],
+      declarations: [
+        InfoWidgetComponent,
+        widgetSkeletonMock
+      ],
       imports: [
         getTranslocoModule()
+      ],
+      providers: [
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettingsOrNull: jasmine.createSpy('getSettingsOrNull').and.returnValue(of(null)),
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+            addSettings: jasmine.createSpy('addSettings').and.callThrough()
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            terminalSettingsService: of({})
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            instrumentsSelection$: of({})
+          }
+        },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrument: of({})
+          }
+        },
       ]
     })
       .compileComponents();

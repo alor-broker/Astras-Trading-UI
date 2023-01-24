@@ -4,7 +4,6 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { ParentWidgetComponent } from './components/parent-widget/parent-widget.component';
-import { WidgetHeaderComponent } from './components/widget-header/widget-header.component';
 import { OrderbookModule } from '../orderbook/orderbook.module';
 import { DashboardWidgetComponent } from './widgets/dashboard-widget/dashboard-widget.component';
 import { LightChartModule } from '../light-chart/light-chart.module';
@@ -28,6 +27,7 @@ import { ApplicationMetaModule } from '../application-meta/application-meta.modu
 import { NzInputModule } from "ng-zorro-antd/input";
 import { ExternalLinkModule } from "../../shared/components/external-link/external-link.module";
 import { OrdersBasketModule } from '../orders-basket/orders-basket.module';
+import { SelectDashboardMenuComponent } from './components/select-dashboard-menu/select-dashboard-menu.component';
 
 @NgModule({
   declarations: [
@@ -35,34 +35,35 @@ import { OrdersBasketModule } from '../orders-basket/orders-basket.module';
     DashboardComponent,
     NavbarComponent,
     ParentWidgetComponent,
-    WidgetHeaderComponent
+    SelectDashboardMenuComponent
   ],
-    imports: [
-        DashboardRoutingModule,
-        SharedModule,
-        OrderbookModule,
-        LightChartModule,
-        InstrumentsModule,
-        BlotterModule,
-        CommandModule,
-        HelpModule,
-        InfoModule,
-        TerminalSettingsModule,
-        JoyrideModule.forRoot(),
-        AllTradesModule,
-        NewsModule,
-        ExchangeRateModule,
-        TechChartModule,
-        AllInstrumentsModule,
-        OrderSubmitModule,
-        NotificationsModule,
-        FeedbackModule,
-        ApplicationMetaModule,
-        NzInputModule,
-        ExternalLinkModule,
-        OrdersBasketModule
-        // components
-    ],
+  imports: [
+    DashboardRoutingModule,
+    SharedModule,
+    OrderbookModule,
+    LightChartModule,
+    InstrumentsModule,
+    BlotterModule,
+    CommandModule,
+    HelpModule,
+    InfoModule,
+    TerminalSettingsModule,
+    JoyrideModule.forRoot(),
+    AllTradesModule,
+    NewsModule,
+    ExchangeRateModule,
+    TechChartModule,
+    AllInstrumentsModule,
+    OrderSubmitModule,
+    NotificationsModule,
+    FeedbackModule,
+    ApplicationMetaModule,
+    NzInputModule,
+    ExternalLinkModule,
+    OrdersBasketModule
+    // components
+  ],
+    exports: [],
   providers: [
     OnboardingService
   ]

@@ -1,0 +1,55 @@
+<ng-container *transloco="let t; scope: 'dashboard/select-dashboard-menu'">
+  <ul *ngIf="(allDashboards$ | async) as allDashboards" class="dashboard-selection" nz-menu>
+    <li (click)="selectDashboard(dashboard.guid)" *ngFor="let dashboard of allDashboards" nz-menu-item>
+      <div class="dashboard-selection-row">
+        <div class="title">
+          <ats-editable-string
+            (contentChanged)="renameDashboard(dashboard.guid, $event)"
+            [content]="dashboard.title"
+            [lenghtRestrictions]="{
+            minLenght: validationOptions.title.minLength,
+            maxLength: validationOptions.title.maxLength
+            }"
+            inputClass="edit-title-input"
+          ></ats-editable-string>
+        </div>
+        <span class="actions">
+              <button (click)="removeDashboard(dashboard); $event.stopPropagation();" *ngIf="allDashboards.length > 1"
+                      nz-button
+                      nzSize='small'
+                      nzType="link">
+                <i nz-icon nzType="close"></i>
+              </button>
+        </span>
+      </div>
+    </li>
+    <li nz-menu-divider></li>
+    <li>
+      <div class="new-dashboard-menu-item">
+        <form [formGroup]="newDashboardForm" [nzLayout]="'inline'" nz-form>
+          <nz-form-item>
+            <nz-form-control [nzErrorTip]="titleError">
+              <input (keyup)="checkInputComplete($event)"
+                     [placeholder]="t('dashboardSelectDashboardMenu.newDashboardTitlePlaceholder')" class="title-input"
+                     formControlName="title"
+                     nz-input
+                     type="text"/>
+            </nz-form-control>
+            <ng-template #titleError>
+            <span>{{t(
+              'dashboardSelectDashboardMenu.stringLenghtError',
+              {
+                min: validationOptions.title.minLength,
+                max: validationOptions.title.maxLength
+              })}}</span>
+            </ng-template>
+          </nz-form-item>
+        </form>
+
+        <button (click)="addDashboard()" [disabled]="!newDashboardForm.valid" nz-button nzSize='small' nzType="link">
+          <span nz-icon nzType="plus"></span></button>
+      </div>
+    </li>
+  </ul>
+</ng-container>
+

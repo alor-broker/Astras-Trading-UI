@@ -1,11 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { NewsComponent } from './news.component';
 import { NewsService } from "../../services/news.service";
 import { of } from "rxjs";
 import { ModalService } from "../../../../shared/services/modal.service";
-import { EventEmitter } from "@angular/core";
-import { getTranslocoModule, mockComponent } from "../../../../shared/utils/testing";
+import {
+  getTranslocoModule,
+  mockComponent
+} from "../../../../shared/utils/testing";
 
 describe('NewsComponent', () => {
   const testNewsItem = {
@@ -51,7 +56,6 @@ describe('NewsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NewsComponent);
     component = fixture.componentInstance;
-    component.resize = new EventEmitter();
     fixture.detectChanges();
   });
 

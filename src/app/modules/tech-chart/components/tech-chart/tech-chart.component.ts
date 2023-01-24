@@ -38,7 +38,6 @@ import {
 } from '../../../../../assets/charting_library';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
-import { DashboardItemContentSize } from '../../../../shared/models/dashboard-item.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import {
   ThemeColors,
@@ -54,9 +53,7 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { MathHelper } from '../../../../shared/utils/math-helper';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
-import { Store } from '@ngrx/store';
 import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
-import { getSelectedPortfolioKey } from '../../../../store/portfolios/portfolios.selectors';
 import { Position } from '../../../../shared/models/positions/position.model';
 import {
   debounceTime,
@@ -70,6 +67,7 @@ import { Side } from '../../../../shared/models/enums/side.model';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
 import { TranslocoService } from "@ngneat/transloco";
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -129,19 +127,17 @@ interface ChartState {
 }
 
 @Component({
-  selector: 'ats-tech-chart[guid][shouldShowSettings][contentSize]',
+  selector: 'ats-tech-chart[guid]',
   templateUrl: './tech-chart.component.html',
   styleUrls: ['./tech-chart.component.less']
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
-  shouldShowSettings!: boolean;
-  @Input()
   guid!: string;
-  @Input()
-  contentSize!: DashboardItemContentSize | null;
+
   @ViewChild('chartContainer', { static: true })
   chartContainer?: ElementRef<HTMLElement>;
+
   private readonly selectedPriceProviderName = 'selectedPrice';
   private chartState?: ChartState;
   private settings$?: Observable<ExtendedSettings>;
@@ -158,7 +154,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly widgetsDataProvider: WidgetsDataProviderService,
     private readonly modalService: ModalService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly store: Store,
+
+    private readonly currentDashboardService: DashboardContextService,
     private readonly orderCancellerService: OrderCancellerService,
     private readonly translocoService: TranslocoService
   ) {
@@ -420,10 +417,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.store.select(getSelectedPortfolioKey)
-      .pipe(
-        filter((p): p is PortfolioKey => !!p)
-      );
+    return this.currentDashboardService.selectedPortfolio$;
   }
 
   private initPositionDisplay(instrument: InstrumentKey, themeColors: ThemeColors) {

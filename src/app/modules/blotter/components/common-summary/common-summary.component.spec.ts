@@ -54,7 +54,6 @@ describe('CommonSummaryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(CommonSummaryComponent);
     component = fixture.componentInstance;
-    component.resize = jasmine.createSpyObj('resize', ['subscribe']);
     fixture.detectChanges();
   });
 

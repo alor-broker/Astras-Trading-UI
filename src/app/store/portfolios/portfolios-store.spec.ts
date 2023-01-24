@@ -2,24 +2,18 @@ import { Store } from "@ngrx/store";
 import { MarketType } from "../../shared/models/portfolio-key.model";
 import { TestBed } from "@angular/core/testing";
 import { sharedModuleImportForTests } from "../../shared/utils/testing";
+import { getAllPortfolios } from "./portfolios.selectors";
 import {
-  getAllPortfolios,
-  getSelectedPortfolioKey
-} from "./portfolios.selectors";
-import {
-  BehaviorSubject, of,
+  BehaviorSubject,
+  of,
   take
 } from "rxjs";
-import {
-  initPortfolios,
-  selectNewPortfolio
-} from "./portfolios.actions";
 import { LocalStorageService } from '../../shared/services/local-storage.service';
 import { AccountService } from '../../shared/services/account.service';
 import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.model';
 import { ErrorHandlerService } from '../../shared/services/handle-error/error-handler.service';
-import { SavedPortfolioState } from './portfolios.effects';
 import { MarketService } from "../../shared/services/market.service";
+import { PortfoliosActions } from './portfolios.actions';
 
 describe('Portfolios Store', () => {
   let store: Store;
@@ -54,7 +48,6 @@ describe('Portfolios Store', () => {
     marketType: MarketType.Forward
   } as PortfolioExtended;
 
-  const portfolioStorageKey = 'portfolio';
   const expectedPortfolios = [
     spbxStockPortfolio,
     moexStockPortfolio,
@@ -85,7 +78,7 @@ describe('Portfolios Store', () => {
           provide: MarketService,
           useValue: {
             getExchangeSettings: jasmine.createSpy('getExchangeSettings')
-              .and.callFake(e => of(e === 'MOEX' ? {isDefault: true} : {}))
+              .and.callFake(e => of(e === 'MOEX' ? { isDefault: true } : {}))
           }
         }
       ]
@@ -97,7 +90,7 @@ describe('Portfolios Store', () => {
   it('should load portfolios on init', (done) => {
     loginPortfoliosMock.next(expectedPortfolios);
 
-    store.dispatch(initPortfolios());
+    store.dispatch(PortfoliosActions.initPortfolios());
 
     expect(accountServiceSpy.getLoginPortfolios).toHaveBeenCalled();
     store.select(getAllPortfolios).pipe(
@@ -106,74 +99,5 @@ describe('Portfolios Store', () => {
       done();
       expect(portfolios).toEqual(expectedPortfolios);
     });
-  });
-
-  it('default portfolio should be selected if no saved portfolio', (done) => {
-    loginPortfoliosMock.next(expectedPortfolios);
-    localStorageServiceSpy.getItem.and.returnValue(undefined);
-
-    store.dispatch(initPortfolios());
-
-    expect(localStorageServiceSpy.getItem).toHaveBeenCalledWith(portfolioStorageKey);
-
-    store.select(getSelectedPortfolioKey).pipe(
-      take(1)
-    ).subscribe(portfolio => {
-      done();
-      expect(portfolio).toEqual(moexStockPortfolio);
-    });
-  });
-
-  it('saved portfolio should be selected', (done) => {
-    loginPortfoliosMock.next(expectedPortfolios);
-    localStorageServiceSpy.getItem.and.returnValue({
-      lastActivePortfolio: moexForeignExchangePortfolio
-    } as SavedPortfolioState);
-
-    store.dispatch(initPortfolios());
-
-    expect(localStorageServiceSpy.getItem).toHaveBeenCalledWith(portfolioStorageKey);
-    store.select(getSelectedPortfolioKey).pipe(
-      take(1)
-    ).subscribe(portfolio => {
-      done();
-      expect(portfolio).toEqual(moexForeignExchangePortfolio);
-    });
-  });
-
-  it('correct portfolio should be returned after selection', (done) => {
-    loginPortfoliosMock.next(expectedPortfolios);
-    localStorageServiceSpy.getItem.and.returnValue({
-      lastActivePortfolio: moexForeignExchangePortfolio
-    } as SavedPortfolioState);
-
-    store.dispatch(initPortfolios());
-
-    store.dispatch(selectNewPortfolio({ portfolio: spbxStockPortfolio }));
-
-    store.select(getSelectedPortfolioKey).pipe(
-      take(1)
-    ).subscribe(portfolio => {
-      done();
-      expect(portfolio).toEqual(spbxStockPortfolio);
-    });
-  });
-
-  it('portfolio should be saved after selection', () => {
-    loginPortfoliosMock.next(expectedPortfolios);
-    localStorageServiceSpy.getItem.and.returnValue({
-      lastActivePortfolio: moexForeignExchangePortfolio
-    } as SavedPortfolioState);
-
-    store.dispatch(initPortfolios());
-
-    store.dispatch(selectNewPortfolio({ portfolio: spbxStockPortfolio }));
-
-    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(
-      portfolioStorageKey,
-      {
-        lastActivePortfolio: spbxStockPortfolio
-      } as SavedPortfolioState
-    );
   });
 });

@@ -1,6 +1,38 @@
-<ats-tech-chart *ngIf="!shouldShowSettings"
-                [guid]="guid"
-                [contentSize]="contentSize$ | async"
-                [shouldShowSettings]="shouldShowSettings"></ats-tech-chart>
-<ats-tech-chart-settings (settingsChange)="onSettingsChange()" *ngIf="shouldShowSettings"
-                         [guid]="guid"></ats-tech-chart-settings>
+<ng-container *transloco="let t;">
+  <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
+    [header]="headerRef"
+    [content]="contentRef"
+    [settings]="settingsRef"
+    [isBlockWidget]="isBlockWidget"
+    [showSettings]="shouldShowSettings"
+    [showContentScroll]="false"
+  >
+
+    <ng-template #headerRef>
+      <ats-widget-header
+        (switchSettings)="onSettingsChange()"
+        [guid]="guid"
+        [hasHelp]="true"
+        [hasSettings]="true"
+        [linkToActive]="settings.linkToActive"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [titleIconTooltip]="t('widgetHeaders.TechChartSettings')"
+        [titleText]="title$ | async"
+        helpRef="tech-chart"
+        titleIcon="fund"
+      ></ats-widget-header>
+    </ng-template>
+
+    <ng-template #contentRef>
+      <ats-tech-chart [guid]="guid" ></ats-tech-chart>
+    </ng-template>
+
+    <ng-template #settingsRef>
+      <ats-tech-chart-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-tech-chart-settings>
+    </ng-template>
+  </ats-widget-skeleton>
+
+</ng-container>
+

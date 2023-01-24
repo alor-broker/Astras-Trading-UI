@@ -1,5 +1,36 @@
-<ats-light-chart *ngIf="!shouldShowSettings"
-  [guid]="guid"
-  [contentSize]="contentSize$ | async"
-  [(shouldShowSettings)]="shouldShowSettings"></ats-light-chart>
-<ats-light-chart-settings *ngIf="shouldShowSettings" [guid]="guid" (settingsChange)="onSettingsChange()"></ats-light-chart-settings>
+<ng-container *transloco="let t;">
+  <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
+    [content]="contentRef"
+    [header]="headerRef"
+    [settings]="settingsRef"
+    [isBlockWidget]="isBlockWidget"
+    [showSettings]="shouldShowSettings"
+    [showContentScroll]="false"
+  >
+
+    <ng-template #headerRef>
+      <ats-widget-header
+        (switchSettings)="onSettingsChange()"
+        [guid]="guid"
+        [hasHelp]="true"
+        [hasSettings]="true"
+        [linkToActive]="settings.linkToActive"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [titleIconTooltip]="t('widgetHeaders.LightChartSettings')"
+        [titleText]="title$ | async"
+        helpRef="light-chart"
+        titleIcon="sliders"
+      ></ats-widget-header>
+    </ng-template>
+
+    <ng-template #contentRef>
+      <ats-light-chart [guid]="guid"></ats-light-chart>
+    </ng-template>
+
+    <ng-template #settingsRef>
+      <ats-light-chart-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-light-chart-settings>
+    </ng-template>
+  </ats-widget-skeleton>
+</ng-container>

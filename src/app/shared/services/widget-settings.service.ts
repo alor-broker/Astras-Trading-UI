@@ -11,12 +11,11 @@ import {
 } from "../../store/widget-settings/widget-settings.selectors";
 import {
   addWidgetSettings,
-  removeAllWidgetSettings,
-  removeWidgetSettings,
   updateWidgetSettings
 } from "../../store/widget-settings/widget-settings.actions";
 import { LoggerService } from "./logger.service";
 import { map } from 'rxjs/operators';
+import { WidgetSettings } from '../models/widget-settings.model';
 
 @Injectable({
   providedIn: 'root'
@@ -31,13 +30,19 @@ export class WidgetSettingsService {
     );
   }
 
+  getSettingsOrNull<T extends AnySettings>(guid: string): Observable<T | null> {
+    return this.store.select(getSettingsByGuid(guid)).pipe(
+      map(x => <T | null>x)
+    );
+  }
+
   getSettingsByColor(color: string): Observable<AnySettings[]> {
     return this.store.select(getAllSettings).pipe(
       map(s => s.filter(x => x.badgeColor === color))
     );
   }
 
-  addSettings(settings: AnySettings[]) {
+  addSettings(settings: WidgetSettings[]) {
     this.store.dispatch(addWidgetSettings({ settings }));
   }
 
@@ -57,13 +62,5 @@ export class WidgetSettingsService {
     }
 
     this.store.dispatch(updateWidgetSettings({ settingGuid: guid, changes: { linkToActive: isLinked } }));
-  }
-
-  removeSettings(guid: string) {
-    this.store.dispatch(removeWidgetSettings({ settingGuid: guid }));
-  }
-
-  removeAllSettings() {
-    this.store.dispatch(removeAllWidgetSettings());
   }
 }

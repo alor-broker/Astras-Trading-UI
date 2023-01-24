@@ -54,7 +54,10 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
 import { ResizeColumnDirective } from './directives/resize-column.directive';
 import { TranslocoModule } from "@ngneat/transloco";
 import { InstrumentBoardSelectComponent } from './components/instrument-board-select/instrument-board-select.component';
-
+import { EditableStringComponent } from './components/editable-string/editable-string.component';
+import { WidgetHeaderComponent } from './components/widget-header/widget-header.component';
+import { WidgetSkeletonComponent } from './components/widget-skeleton/widget-skeleton.component';
+import { JoyrideModule } from 'ngx-joyride';
 
 @NgModule({
   declarations: [
@@ -67,7 +70,10 @@ import { InstrumentBoardSelectComponent } from './components/instrument-board-se
     ShortNumberPipe,
     InstrumentSearchComponent,
     ResizeColumnDirective,
-    InstrumentBoardSelectComponent
+    InstrumentBoardSelectComponent,
+    EditableStringComponent,
+    WidgetHeaderComponent,
+    WidgetSkeletonComponent
   ],
   imports: [
     CommonModule,
@@ -112,6 +118,7 @@ import { InstrumentBoardSelectComponent } from './components/instrument-board-se
     NzInputModule,
     NzSpaceModule,
     NzDividerModule,
+    JoyrideModule,
   ],
     exports: [
         // Ng zorro
@@ -160,17 +167,20 @@ import { InstrumentBoardSelectComponent } from './components/instrument-board-se
         ColorPickerInputComponent,
         InstrumentSearchComponent,
         InstrumentBoardSelectComponent,
+        WidgetHeaderComponent,
+        WidgetSkeletonComponent,
         // directives
         NumericalDirective,
         ShortNumberPipe,
         ResizeColumnDirective,
+        EditableStringComponent,
     ],
   providers: [
     { provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true },
     { provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true },
     { provide: NOTIFICATIONS_PROVIDER, useClass: FeedbackNotificationsProvider, multi: true },
-    { provide: Window, useValue: window}
-  ],
+    { provide: Window, useValue: window},
+  ]
 })
 export class SharedModule {
 }

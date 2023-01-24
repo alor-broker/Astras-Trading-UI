@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
 import {
   combineLatest,
   Observable,
@@ -21,18 +20,19 @@ import { CommonSummaryView } from '../models/common-summary-view.model';
 import { CommonSummaryModel } from '../models/common-summary.model';
 import { ForwardRisks } from "../models/forward-risks.model";
 import { ForwardRisksView } from "../models/forward-risks-view.model";
-import { selectNewInstrumentByBadge } from "../../../store/instruments/instruments.actions";
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { TerminalSettingsService } from "../../terminal-settings/services/terminal-settings.service";
 import { MarketService } from "../../../shared/services/market.service";
 import { mapWith } from "../../../shared/utils/observable-helper";
+import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
 
 @Injectable()
 export class BlotterService {
 
   constructor(
     private readonly notification: OrdersNotificationsService,
-    private readonly store: Store,
+
+    private readonly dashboardContextService: DashboardContextService,
     private readonly quotes: QuotesService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly terminalSettingsService: TerminalSettingsService,
@@ -49,7 +49,7 @@ export class BlotterService {
       exchange = Exchanges.MOEX;
     }
     const instrument = { symbol, exchange, instrumentGroup: undefined };
-    this.store.dispatch(selectNewInstrumentByBadge({ instrument, badgeColor }));
+    this.dashboardContextService.selectDashboardInstrument(instrument, badgeColor);
   }
 
   getPositions(settings: BlotterSettings) {

@@ -1,7 +1,4 @@
-<div
-  *ngIf="!shouldShowSettings"
-  [style.height]="(contentSize$ | async)?.height + 'px'"
-  class="container"
+<div class="container"
   [class.active]="isActive"
 >
   <div class="header">

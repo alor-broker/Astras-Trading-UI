@@ -1,8 +1,35 @@
-<ats-instrument-select *ngIf="!shouldShowSettings"
-[guid]="guid"
-[(shouldShowSettings)]="shouldShowSettings"
-[contentSize]="contentSize$ | async"
->
+<ng-container *transloco="let t;">
+  <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
+    [content]="contentRef"
+    [header]="headerRef"
+    [isBlockWidget]="isBlockWidget"
+    [settings]="settingsRef"
+    [showSettings]="shouldShowSettings"
+  >
+    <ng-template #headerRef>
+      <ats-widget-header
+        (switchSettings)="onSettingsChange()"
+        [guid]="guid"
+        [hasHelp]="true"
+        [hasSettings]="true"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [titleIconTooltip]="t('widgetHeaders.InstrumentSelectSettings')"
+        [titleText]="t('widgetHeaders.InstrumentSelectSettings')"
+        badgeShape="square"
+        helpRef="instrument-select"
+        titleIcon="eye"
+      ></ats-widget-header>
+    </ng-template>
 
-</ats-instrument-select>
-<ats-instrument-select-settings *ngIf="shouldShowSettings" [guid]='guid' (settingsChange)="onSettingsChange()"></ats-instrument-select-settings>
+    <ng-template #contentRef>
+      <ats-instrument-select [guid]="guid"></ats-instrument-select>
+    </ng-template>
+    <ng-template #settingsRef>
+      <ats-instrument-select-settings (settingsChange)="onSettingsChange()" [guid]='guid'></ats-instrument-select-settings>
+    </ng-template>
+  </ats-widget-skeleton>
+
+</ng-container>
+

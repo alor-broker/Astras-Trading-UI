@@ -1,15 +1,12 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
   Inject,
   Input,
   OnDestroy,
   OnInit,
-  Output,
   ViewChild
 } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
 import {
   BehaviorSubject,
@@ -31,17 +28,16 @@ import {
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { SearchFilter } from '../../models/search-filter.model';
 import { InstrumentsService } from '../../services/instruments.service';
-import { selectNewInstrumentByBadge } from '../../../../store/instruments/instruments.actions';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentSelectSettings } from "../../../../shared/models/settings/instrument-select-settings.model";
 import { WatchlistCollection } from '../../models/watchlist.model';
 import { DOCUMENT } from '@angular/common';
-import { DashboardItemContentSize } from '../../../../shared/models/dashboard-item.model';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 
 @Component({
-  selector: 'ats-instrument-select[shouldShowSettings][guid]',
+  selector: 'ats-instrument-select[guid]',
   templateUrl: './instrument-select.component.html',
   styleUrls: ['./instrument-select.component.less']
 })
@@ -49,32 +45,20 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   @ViewChild('inputEl') inputEl!: ElementRef<HTMLInputElement>;
-  @Input()
-  shouldShowSettings!: boolean;
+
   @Input()
   guid!: string;
 
-  @Input()
-  set contentSize(value: DashboardItemContentSize | null) {
-    if (!!value) {
-      this.contentSize$.next(value);
-    }
-  }
-
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
   filteredInstruments$: Observable<Instrument[]> = of([]);
   inputValue?: string;
   collection$?: Observable<WatchlistCollection>;
   settings$!: Observable<InstrumentSelectSettings>;
 
-  readonly contentSize$ = new BehaviorSubject<DashboardItemContentSize>({ height: 100, width: 0 });
-
   private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
 
   constructor(
     private readonly service: InstrumentsService,
-    private readonly store: Store,
+    private readonly dashboardContextService: DashboardContextService,
     private readonly settingsService: WidgetSettingsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
     @Inject(DOCUMENT) private readonly document: Document) {
@@ -160,7 +144,7 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe(s => {
       this.watchlistCollectionService.addItemsToList(s.activeListId!, [instrument]);
-      this.store.dispatch(selectNewInstrumentByBadge({ badgeColor: s.badgeColor!, instrument }));
+      this.dashboardContextService.selectDashboardInstrument(instrument, s.badgeColor!);
     });
   }
 

@@ -10,6 +10,7 @@ import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { SharedModule } from '../../shared/shared.module';
+import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { SharedModule } from '../../shared/shared.module';
         NzButtonModule,
         NzInputModule,
         NzSelectModule,
-        SharedModule
+        SharedModule,
+        NzResizeObserverModule
     ],
   exports: [
     TechChartWidgetComponent

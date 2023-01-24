@@ -5,13 +5,10 @@ import {
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { initTerminalSettings } from './store/terminal-settings/terminal-settings.actions';
-import { initWidgetSettings } from "./store/widget-settings/widget-settings.actions";
 import { SessionTrackService } from "./shared/services/session/session-track.service";
-import { initInstrumentsWithBadges } from "./store/instruments/instruments.actions";
 import { ThemeService } from './shared/services/theme.service';
 import { TerminalSettingsService } from './modules/terminal-settings/services/terminal-settings.service';
 import { Subscription } from 'rxjs';
-import { initPortfolios } from './store/portfolios/portfolios.actions';
 import { map } from "rxjs/operators";
 import { rusLangLocales } from "./shared/utils/translation-helper";
 import { TranslocoService } from "@ngneat/transloco";
@@ -37,12 +34,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(initTerminalSettings());
-    this.store.dispatch(initWidgetSettings());
-    this.store.dispatch(initPortfolios());
-    this.store.dispatch(initInstrumentsWithBadges());
     this.sessionTrackService.startTracking();
 
+    this.store.dispatch(initTerminalSettings());
     this.themeChangeSubscription = this.themeService.subscribeToThemeChanges();
     this.langChangeSubscription = this.terminalSettings.getSettings()
       .pipe(

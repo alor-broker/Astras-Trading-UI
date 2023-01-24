@@ -9,6 +9,7 @@ import { WatchlistTableComponent } from './components/watchlist-table/watchlist-
 import { WatchlistCollectionEditComponent } from './components/watchlist-collection-edit/watchlist-collection-edit.component';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { NzInputModule } from 'ng-zorro-antd/input';
         SharedModule,
         InstrumentsRoutingModule,
         NzListModule,
-        NzInputModule
+        NzInputModule,
+        NzResizeObserverModule
     ],
   exports: [
     InstrumentSelectWidgetComponent

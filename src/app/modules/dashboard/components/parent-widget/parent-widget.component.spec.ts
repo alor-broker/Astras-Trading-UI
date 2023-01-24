@@ -6,7 +6,6 @@ import {
 import { ParentWidgetComponent } from './parent-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { EventEmitter } from "@angular/core";
 import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('ParentWidgetComponent', () => {
@@ -39,12 +38,10 @@ describe('ParentWidgetComponent', () => {
     fixture = TestBed.createComponent(ParentWidgetComponent);
     component = fixture.componentInstance;
     component.widget = {
-      hasSettings: false,
-      hasHelp: false,
       guid: '123',
-      gridItem: { x: 0, y: 0, rows: 1, cols: 1 },
+      position: { x: 0, y: 0, rows: 1, cols: 1 },
+      widgetType: 'test-widget'
     };
-    component.resize = new EventEmitter();
     fixture.detectChanges();
   });
 

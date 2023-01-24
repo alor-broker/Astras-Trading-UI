@@ -1,0 +1,68 @@
+li {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.title-input {
+  &.ant-input {
+    border: none;
+    outline: none;
+    box-shadow: none;
+    padding-left: 0;
+    background: transparent;
+
+    &.ant-input-status-error.ant-input:focus {
+      box-shadow: none;
+      background: transparent;
+    }
+  }
+}
+
+::ng-deep .ant-input-affix-wrapper {
+  border-radius: 0;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  outline: none !important;
+  box-shadow: none;
+  padding-left: 0;
+  background: transparent;
+
+  .edit-title-input {
+    &.ant-input {
+      background: transparent;
+      &.ant-input-status-error.ant-input:focus {
+        box-shadow: none;
+        background: transparent;
+      }
+    }
+  }
+}
+
+.new-dashboard-menu-item {
+  width: 100%;
+  display: flex;
+
+  .ant-form {
+    width: 100%;
+
+    .ant-form-item {
+      width: 100%;
+      margin-right: 0;
+    }
+  }
+
+  button {
+    margin-top: 4px;
+  }
+}
+
+.dashboard-selection-row {
+  width: 100%;
+  display: flex;
+
+  .title {
+    flex: 1;
+  }
+
+}

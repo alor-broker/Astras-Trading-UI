@@ -8,7 +8,6 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { Store } from '@ngrx/store';
 import {
   combineLatest,
   Observable,
@@ -19,7 +18,6 @@ import {
 } from 'rxjs';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
-import { selectNewInstrumentByBadge } from '../../../../store/instruments/instruments.actions';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
@@ -35,13 +33,15 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
 import { WidgetNames } from "../../../../shared/models/enums/widget-names";
-import { DashboardService } from "../../../../shared/services/dashboard.service";
-import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
-import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import {
+  defaultBadgeColor,
+  toInstrumentKey
+} from "../../../../shared/utils/instruments";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
-import { DashboardHelper } from '../../../../shared/utils/dashboard-helper';
 import { TableAutoHeightBehavior } from '../../../blotter/utils/table-auto-height.behavior';
+import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 
 @Component({
   selector: 'ats-watchlist-table[guid]',
@@ -56,7 +56,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
   watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
-  selectedInstruments$: Observable<InstrumentBadges> = of({});
+  selectedInstruments$: Observable<InstrumentGroups> = of({});
 
   scrollHeight$: Observable<number> = of(100);
   displayedColumns: ColumnIds[] = [];
@@ -87,12 +87,12 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
-    private readonly store: Store,
+    private readonly currentDashboardService: DashboardContextService,
     private readonly settingsService: WidgetSettingsService,
     private readonly watchInstrumentsService: WatchInstrumentsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly nzContextMenuService: NzContextMenuService,
-    private readonly dashBoardService: DashboardService,
+    private readonly dashboardService: ManageDashboardsService,
     private readonly terminalSettingsService: TerminalSettingsService
   ) {
   }
@@ -108,7 +108,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     );
 
     this.selectedInstruments$ = combineLatest([
-      this.store.select(getSelectedInstrumentsWithBadges),
+      this.currentDashboardService.instrumentsSelection$,
       this.terminalSettingsService.getSettings()
     ])
       .pipe(
@@ -117,7 +117,8 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
           if (settings.badgesBind) {
             return badges;
           }
-          return {[defaultBadgeColor]: badges[defaultBadgeColor]};
+
+          return { [defaultBadgeColor]: badges[defaultBadgeColor] };
         })
       );
   }
@@ -125,9 +126,10 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   ngAfterViewInit(): void {
     const initHeightWatching = (ref: ElementRef<HTMLElement>) => this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
 
-    if(this.tableContainer.length > 0) {
+    if (this.tableContainer.length > 0) {
       initHeightWatching(this.tableContainer!.first);
-    } else {
+    }
+    else {
       this.tableContainer?.changes.pipe(
         take(1)
       ).subscribe((x: QueryList<ElementRef<HTMLElement>>) => initHeightWatching(x.first));
@@ -141,8 +143,8 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     this.watchInstrumentsService.unsubscribe();
   }
 
-  makeActive(instrument: InstrumentKey) {
-    this.store.dispatch(selectNewInstrumentByBadge({ instrument, badgeColor: this.badgeColor }));
+  makeActive(instrumentKey: InstrumentKey) {
+    this.currentDashboardService.selectDashboardInstrument(instrumentKey, this.badgeColor);
   }
 
   remove(instr: InstrumentKey) {
@@ -169,13 +171,13 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   addWidget(type: WidgetNames): void {
-    DashboardHelper.addWidget(
-      this.dashBoardService,
-      type,
+    this.dashboardService.addWidget(
+      type.toString(),
       {
-      linkToActive: false,
-      ...this.selectedInstrument
-    });
+        linkToActive: false,
+        ...toInstrumentKey(this.selectedInstrument!)
+      }
+    );
   }
 
   private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {

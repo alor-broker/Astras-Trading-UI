@@ -29,7 +29,7 @@
   <div class="menu-item" *ngIf="portfolios$ | async as portfolios">
     <button
       *ngIf="selectedPortfolio$ | async as selectedPortfolio; else emptyPortfolio"
-      class="portfolio-btn"
+      class="dropdown-btn"
       nz-button
       nz-dropdown
       nzSize="small"
@@ -89,6 +89,30 @@
           </ng-container>
         </ng-container>
       </ul>
+    </nz-dropdown-menu>
+  </div>
+
+  <div class="menu-item" *ngIf="selectedDashboard$ | async as selectedDashboard">
+    <button
+      *ngIf="selectedDashboard$ | async as selectedDashboard;"
+      class="dropdown-btn"
+      nz-button
+      nz-dropdown
+      nzSize="small"
+      nzType="text"
+      [nzClickHide]="false"
+      [nzDropdownMenu]="dashboardsMenu"
+      nzVisible="true"
+      (nzVisibleChange)="dashboardsMenuContent.visibilityChange = $event"
+    >
+      <span>
+        {{selectedDashboard.title}}
+        <i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i>
+      </span>
+    </button>
+    <nz-dropdown-menu #dashboardsMenu="nzDropdownMenu">
+      <ats-select-dashboard-menu #dashboardsMenuContent
+      ></ats-select-dashboard-menu>
     </nz-dropdown-menu>
   </div>
 

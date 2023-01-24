@@ -12,10 +12,10 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://apidev.alor.ru',
-  wsUrl: 'wss://apidev.alor.ru/ws',
-  clientDataUrl: 'https://lk-api-dev.alorbroker.ru',
-  ssoUrl: 'https://login-dev.alor.ru',
+  apiUrl: 'https://api.alor.ru',
+  wsUrl: 'wss://api.alor.ru/ws',
+  clientDataUrl: 'https://lk-api.alor.ru',
+  ssoUrl: 'https://login.alor.ru',
   warpUrl: 'https://warp.alor.dev'
 };
 

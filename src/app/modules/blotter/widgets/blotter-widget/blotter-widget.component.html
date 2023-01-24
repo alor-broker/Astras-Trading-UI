@@ -1,57 +1,92 @@
-<div class="container" *ngIf="!shouldShowSettings" [style.height]="(contentSize$ | async)?.height + 'px'">
-  <nz-tabset
-    nzTabPosition="top"
-    nzSize="small"
-    *transloco="let t; scope: 'blotter'"
-    (mousedown)='$event.stopPropagation()' [nzSelectedIndex]="activeTabIndex$ | async"
-    (nzSelectChange)="onIndexChange($event)"
-    [nzAnimated]="false">
-    <nz-tab [nzTitle]="t('blotter.infoTab')">
-      <ng-template nz-tab>
-        <ng-container *ngIf="marketType$ | async as marketType">
-          <div class="w-100 show-scroll">
-            <ats-common-summary
-              *ngIf="!marketType || marketType !== marketTypes.Forward"
-              [guid]="guid"
-              [(shouldShowSettings)]="shouldShowSettings"
-              [resize]="resize"></ats-common-summary>
-            <ats-forward-summary
-              *ngIf="marketType === marketTypes.Forward"
-              [guid]="guid"
-              [resize]="resize"></ats-forward-summary>
-          </div>
-        </ng-container>
-      </ng-template>
-    </nz-tab>
-    <nz-tab [nzTitle]="t('blotter.ordersTab')">
-      <ng-template nz-tab>
-        <ats-orders
-          [guid]="guid"
-          [(shouldShowSettings)]="shouldShowSettings"></ats-orders>
-      </ng-template>
-    </nz-tab>
-    <nz-tab [nzTitle]="t('blotter.stopOrdersTab')" nzForceRender>
-      <ng-template nz-tab>
-        <ats-stop-orders
-          [guid]="guid"
-          [(shouldShowSettings)]="shouldShowSettings"></ats-stop-orders>
-      </ng-template>
-    </nz-tab>
-    <nz-tab [nzTitle]="t('blotter.positionsTab')" nzForceRender>
-      <ng-template nz-tab>
-        <ats-positions
-          [guid]="guid"
-          [(shouldShowSettings)]="shouldShowSettings"></ats-positions>
-      </ng-template>
-    </nz-tab>
-    <nz-tab [nzTitle]="t('blotter.tradesTab')">
-      <ng-template nz-tab>
-        <ats-trades
-          [guid]="guid"
-          [(shouldShowSettings)]="shouldShowSettings"></ats-trades>
-      </ng-template>
-    </nz-tab>
-  </nz-tabset>
-</div>
+<ng-container *transloco="let t;">
+  <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
+    [content]="contentRef"
+    [header]="headerRef"
+    [isBlockWidget]="isBlockWidget"
+    [settings]="settingsRef"
+    [showContentScroll]="false"
+    [showSettings]="shouldShowSettings"
+  >
 
-<ats-blotter-settings *ngIf="shouldShowSettings" [guid]='guid' (settingsChange)="onSettingsChange()"></ats-blotter-settings>
+    <ng-template #headerRef>
+      <ats-widget-header
+        (switchSettings)="onSettingsChange()"
+        [guid]="guid"
+        [hasHelp]="true"
+        [hasSettings]="true"
+        [linkToActive]="settings.linkToActive"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [titleIconTooltip]="t('widgetHeaders.BlotterSettings')"
+        [titleText]="title$ | async"
+        badgeShape="square"
+        helpRef="blotter"
+        titleIcon="table"
+      ></ats-widget-header>
+    </ng-template>
+  </ats-widget-skeleton>
+
+
+  <ng-template #contentRef>
+    <div (nzResizeObserve)="containerSizeChanged($event)" class="container"
+         nzResizeObserver>
+      <nz-tabset
+        (mousedown)='$event.stopPropagation()'
+        (nzSelectChange)="onIndexChange($event)"
+        *transloco="let t; scope: 'blotter'"
+        [nzAnimated]="false"
+        [nzSelectedIndex]="activeTabIndex$ | async" [style.height]="(contentSize$ | async)?.height + 'px'"
+        nzSize="small"
+        nzTabPosition="top">
+        <nz-tab [nzTitle]="t('blotter.infoTab')">
+          <ng-template nz-tab>
+            <ng-container *ngIf="marketType$ | async as marketType">
+              <div class="w-100 show-scroll">
+                <ats-common-summary
+                  *ngIf="!marketType || marketType !== marketTypes.Forward"
+                  [(shouldShowSettings)]="shouldShowSettings"
+                  [guid]="guid"></ats-common-summary>
+                <ats-forward-summary
+                  *ngIf="marketType === marketTypes.Forward"
+                  [guid]="guid"></ats-forward-summary>
+              </div>
+            </ng-container>
+          </ng-template>
+        </nz-tab>
+        <nz-tab [nzTitle]="t('blotter.ordersTab')">
+          <ng-template nz-tab>
+            <ats-orders
+              [(shouldShowSettings)]="shouldShowSettings"
+              [guid]="guid"></ats-orders>
+          </ng-template>
+        </nz-tab>
+        <nz-tab [nzTitle]="t('blotter.stopOrdersTab')" nzForceRender>
+          <ng-template nz-tab>
+            <ats-stop-orders
+              [(shouldShowSettings)]="shouldShowSettings"
+              [guid]="guid"></ats-stop-orders>
+          </ng-template>
+        </nz-tab>
+        <nz-tab [nzTitle]="t('blotter.positionsTab')" nzForceRender>
+          <ng-template nz-tab>
+            <ats-positions
+              [(shouldShowSettings)]="shouldShowSettings"
+              [guid]="guid"></ats-positions>
+          </ng-template>
+        </nz-tab>
+        <nz-tab [nzTitle]="t('blotter.tradesTab')">
+          <ng-template nz-tab>
+            <ats-trades
+              [(shouldShowSettings)]="shouldShowSettings"
+              [guid]="guid"></ats-trades>
+          </ng-template>
+        </nz-tab>
+      </nz-tabset>
+    </div>
+  </ng-template>
+</ng-container>
+
+<ng-template #settingsRef>
+  <ats-blotter-settings (settingsChange)="onSettingsChange()" [guid]='guid'></ats-blotter-settings>
+</ng-template>

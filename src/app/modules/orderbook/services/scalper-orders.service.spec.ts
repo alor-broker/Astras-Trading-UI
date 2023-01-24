@@ -20,9 +20,12 @@ import {
   ScalperOrderBookRow,
   ScalperOrderBookRowType
 } from "../models/scalper-order-book.model";
-import { of } from "rxjs";
+import {
+  BehaviorSubject,
+  of,
+  Subject
+} from "rxjs";
 import { Store } from "@ngrx/store";
-import { selectNewPortfolio } from "../../../store/portfolios/portfolios.actions";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Position } from "../../../shared/models/positions/position.model";
@@ -40,6 +43,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
 import { OrderbookDataRow } from '../models/orderbook-data-row.model';
 import { CancelCommand } from '../../../shared/models/commands/cancel-command.model';
+import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
 
 describe('ScalperOrdersService', () => {
   let service: ScalperOrdersService;
@@ -50,6 +54,7 @@ describe('ScalperOrdersService', () => {
   let orderServiceSpy: any;
   let notificationServiceSpy: any;
   let modalServiceSpy: any;
+  let dashboardContextServiceSpy: any;
 
   beforeEach(() => {
     orderCancellerServiceSpy = jasmine.createSpyObj('OrderCancellerService', ['cancelOrder']);
@@ -67,6 +72,8 @@ describe('ScalperOrdersService', () => {
 
     notificationServiceSpy = jasmine.createSpyObj('NzNotificationService', ['error', 'warning']);
     modalServiceSpy = jasmine.createSpyObj('ModalService', ['openCommandModal']);
+    dashboardContextServiceSpy = jasmine.createSpyObj('DashboardContextService', ['selectedPortfolio$']);
+    dashboardContextServiceSpy.selectedPortfolio$ = new Subject();
   });
 
   beforeEach(() => {
@@ -82,6 +89,7 @@ describe('ScalperOrdersService', () => {
         { provide: OrderService, useValue: orderServiceSpy },
         { provide: NzNotificationService, useValue: notificationServiceSpy },
         { provide: ModalService, useValue: modalServiceSpy },
+        { provide: DashboardContextService, useValue: dashboardContextServiceSpy },
       ]
     });
 
@@ -129,7 +137,8 @@ describe('ScalperOrdersService', () => {
         portfolio: generateRandomString(5),
       };
 
-      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject(portfolioKey);
+
       flushMicrotasks();
 
       const testInstrumentKey1: InstrumentKey = {
@@ -201,7 +210,7 @@ describe('ScalperOrdersService', () => {
         portfolio: generateRandomString(5),
       };
 
-      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject(portfolioKey);
       flushMicrotasks();
 
       const symbol = generateRandomString(4);
@@ -313,7 +322,7 @@ describe('ScalperOrdersService', () => {
         portfolio: generateRandomString(5),
       };
 
-      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject(portfolioKey);
       flushMicrotasks();
 
       const symbol = generateRandomString(4);
@@ -363,7 +372,7 @@ describe('ScalperOrdersService', () => {
         portfolio: generateRandomString(5),
       };
 
-      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject(portfolioKey);
       flushMicrotasks();
 
       const symbol = generateRandomString(4);
@@ -413,7 +422,7 @@ describe('ScalperOrdersService', () => {
         portfolio: generateRandomString(5),
       };
 
-      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject(portfolioKey);
       flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
@@ -471,7 +480,7 @@ describe('ScalperOrdersService', () => {
         portfolio: generateRandomString(5),
       };
 
-      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject(portfolioKey);
       flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
@@ -533,7 +542,7 @@ describe('ScalperOrdersService', () => {
         portfolio: generateRandomString(5),
       };
 
-      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject(portfolioKey);
       flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
@@ -595,7 +604,7 @@ describe('ScalperOrdersService', () => {
         portfolio: generateRandomString(5),
       };
 
-      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject(portfolioKey);
       flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
@@ -680,7 +689,7 @@ describe('ScalperOrdersService', () => {
         portfolio: generateRandomString(5),
       };
 
-      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject(portfolioKey);
       flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
@@ -714,7 +723,7 @@ describe('ScalperOrdersService', () => {
         portfolio: generateRandomString(5),
       };
 
-      store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+      dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject(portfolioKey);
       flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
@@ -770,7 +779,7 @@ describe('ScalperOrdersService', () => {
           portfolio: generateRandomString(5),
         };
 
-        store.dispatch(selectNewPortfolio({ portfolio: portfolioKey }));
+        dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject(portfolioKey);
         flushMicrotasks();
 
         const testInstrumentKey: InstrumentKey = {

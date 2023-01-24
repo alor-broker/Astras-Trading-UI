@@ -1,6 +1,38 @@
-<ats-all-trades
-  *ngIf="!shouldShowSettings"
-  [guid]="guid"
-  [contentSize]="contentSize$ | async"
-></ats-all-trades>
-<ats-all-trades-settings *ngIf="shouldShowSettings" [guid]='guid' (settingsChange)="onSettingsChange()"></ats-all-trades-settings>
+<ng-container *transloco="let t;">
+  <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
+    [content]="contentRef"
+    [header]="headerRef"
+    [settings]="settingsRef"
+    [showContentScroll]="false"
+    [showSettings]="shouldShowSettings"
+    [isBlockWidget]="isBlockWidget"
+  >
+
+    <ng-template #headerRef>
+      <ats-widget-header
+        (switchSettings)="onSettingsChange()"
+        [guid]="guid"
+        [hasHelp]="true"
+        [hasSettings]="true"
+        [linkToActive]="settings.linkToActive"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [titleIconTooltip]="t('widgetHeaders.AllTradesSettings')"
+        [titleText]="title$ | async"
+        helpRef="all-trades"
+        titleIcon="unordered-list"
+      ></ats-widget-header>
+    </ng-template>
+
+    <ng-template #contentRef>
+      <ats-all-trades [guid]="guid"></ats-all-trades>
+    </ng-template>
+
+    <ng-template #settingsRef>
+      <ats-all-trades-settings (settingsChange)="onSettingsChange()" [guid]='guid'></ats-all-trades-settings>
+    </ng-template>
+  </ats-widget-skeleton>
+</ng-container>
+
+

@@ -47,9 +47,6 @@ import {
   isEqualPortfolioDependedSettings
 } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
-import { Store } from "@ngrx/store";
-import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
@@ -58,6 +55,8 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -304,7 +303,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     },
   ];
   listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
-  selectedInstruments$: Observable<InstrumentBadges> = of({});
+  selectedInstruments$: Observable<InstrumentGroups> = of({});
   settings$!: Observable<BlotterSettings>;
   scrollHeight$: Observable<number> = of(100);
 
@@ -320,7 +319,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly canceller: OrderCancellerService,
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly store: Store,
+
+    private readonly dashboardContextService: DashboardContextService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly translatorService: TranslatorService
   ) {
@@ -402,7 +402,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe();
 
     this.selectedInstruments$ = combineLatest([
-      this.store.select(getSelectedInstrumentsWithBadges),
+      this.dashboardContextService.instrumentsSelection$,
       this.terminalSettingsService.getSettings()
     ])
       .pipe(

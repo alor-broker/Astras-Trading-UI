@@ -186,7 +186,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   onTouched: Function = () => {
   };
 
-  containerWidthChanged(entries: ResizeObserverEntry[]) {
+  containerSizeChanged(entries: ResizeObserverEntry[]) {
     entries.forEach(x => {
       this.containerWidth$.next(Math.floor(x.contentRect.width));
     });

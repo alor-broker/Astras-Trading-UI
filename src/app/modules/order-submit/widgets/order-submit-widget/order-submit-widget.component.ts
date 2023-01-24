@@ -2,26 +2,81 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnInit,
   Output
 } from '@angular/core';
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { OrderSubmitSettings } from '../../../../shared/models/settings/order-submit-settings.model';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import { SettingsHelper } from '../../../../shared/utils/settings-helper';
+import {
+  Observable,
+  switchMap
+} from 'rxjs';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import {
+  filter,
+  map
+} from 'rxjs/operators';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
+import { InstrumentsService } from '../../../instruments/services/instruments.service';
 
 @Component({
-  selector: 'ats-order-submit-widget[shouldShowSettings][guid]',
+  selector: 'ats-order-submit-widget[shouldShowSettings][guid][isBlockWidget]',
   templateUrl: './order-submit-widget.component.html',
   styleUrls: ['./order-submit-widget.component.less']
 })
-export class OrderSubmitWidgetComponent {
+export class OrderSubmitWidgetComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
   @Input()
   guid!: string;
+  @Input()
+  isBlockWidget!: boolean;
+  settings$!: Observable<OrderSubmitSettings>;
+  showBadge$!: Observable<boolean>;
+
+  title$!: Observable<string>;
+
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
-  constructor() {
+  constructor(
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly dashboardContextService: DashboardContextService,
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly instrumentService: InstrumentsService
+  ) {
   }
 
   onSettingsChange() {
     this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+  }
+
+  ngOnInit(): void {
+    WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<OrderSubmitSettings>(
+      this.guid,
+      'OrderSubmitSettings',
+      settings => ({
+        ...settings,
+        enableLimitOrdersFastEditing: false,
+        limitOrderPriceMoveSteps: [1, 2, 5, 10],
+        showVolumePanel: false,
+        workingVolumes: [1, 5, 10, 20, 30, 40, 50, 100, 200]
+      }),
+      this.dashboardContextService,
+      this.widgetSettingsService
+    );
+
+    this.settings$ = this.widgetSettingsService.getSettings<OrderSubmitSettings>(this.guid);
+    this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
+
+    this.title$ = this.settings$.pipe(
+      switchMap(s => this.instrumentService.getInstrument(s as InstrumentKey)),
+      filter((x): x is Instrument => !!x),
+      map(x => `${x.symbol} ${x.instrumentGroup ? '(' + x.instrumentGroup + ')' : ''} ${x.shortName}`)
+    );
   }
 }

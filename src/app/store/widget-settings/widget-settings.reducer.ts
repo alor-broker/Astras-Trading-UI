@@ -50,31 +50,20 @@ export const reducer = createReducer(
   }),
 
   on(
-    WidgetSettingsActions.updateWidgetSettingsInstrumentWithBadge,
-    (state, {
-      settingGuids,
-      badges
-    }) => {
-      const updates: Update<AnySettings>[] = [];
-      settingGuids.forEach(s => updates.push({
-        id: s,
-        changes: {
-          ...state.entities[s],
-          symbol: badges[state.entities[s]?.badgeColor!]?.symbol,
-          exchange: badges[state.entities[s]?.badgeColor!]?.exchange,
-          instrumentGroup: badges[state.entities[s]?.badgeColor!]?.instrumentGroup,
-          isin: badges[state.entities[s]?.badgeColor!]?.isin,
-        }
-      }));
-
-      if (updates.length > 0) {
-        return adapter.updateMany(
-          updates,
-          state
-        );
-      }
-
-      return state;
+    WidgetSettingsActions.updateWidgetSettingsInstrument,
+    (state, props) => {
+      return adapter.updateMany(
+        props.updates.map(u => ({
+          id: u.guid,
+          changes: {
+            symbol: u.instrumentKey.symbol,
+            exchange: u.instrumentKey.exchange,
+            instrumentGroup: u.instrumentKey.instrumentGroup,
+            isin: u.instrumentKey.isin
+          }
+        })),
+        state
+      );
     }
   ),
 
@@ -87,7 +76,6 @@ export const reducer = createReducer(
       settingGuids.forEach(s => updates.push({
         id: s,
         changes: {
-          ...state.entities[s],
           badgeColor: defaultBadgeColor
         }
       }));
@@ -113,7 +101,6 @@ export const reducer = createReducer(
       settingGuids.forEach(s => updates.push({
         id: s,
         changes: {
-          ...state.entities[s],
           portfolio: newPortfolioKey.portfolio,
           exchange: newPortfolioKey.exchange,
           marketType: newPortfolioKey.marketType
@@ -139,8 +126,8 @@ export const reducer = createReducer(
     }
   ),
 
-  on(WidgetSettingsActions.removeWidgetSettings, (state, { settingGuid }) => {
-    return adapter.removeOne(settingGuid, state);
+  on(WidgetSettingsActions.removeWidgetSettings, (state, { settingGuids }) => {
+    return adapter.removeMany(settingGuids, state);
   }),
 
   on(WidgetSettingsActions.removeAllWidgetSettings, state => {
