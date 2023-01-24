@@ -1,12 +1,10 @@
 import {
   Component,
-  ElementRef,
   EventEmitter,
   Input,
   OnDestroy,
   OnInit,
   Output,
-  ViewChild
 } from '@angular/core';
 import { SearchFilter } from '../../../modules/instruments/models/search-filter.model';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
@@ -46,8 +44,6 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
 
   @Input()
   exchange?: string;
-
-  @ViewChild('searchInput') searchInput?: ElementRef;
   filteredInstruments$: Observable<Instrument[]> = of([]);
   currentValue?: InstrumentKey | null;
   selectedValue?: InstrumentKey | null;
@@ -63,7 +59,6 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     private readonly instrumentsService: InstrumentsService
   ) {
   }
-
   ngOnInit(): void {
     this.filteredInstruments$ = this.filter$.pipe(
       filter((f): f is SearchFilter => !!f),
@@ -79,7 +74,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
       limit: 20
     } as SearchFilter;
 
-    filter.exchange = this.exchange;
+    filter.exchange = this.exchange ?? '';
 
     if (value.includes(':')) {
       const parts = value.split(':');
