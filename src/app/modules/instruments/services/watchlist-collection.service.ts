@@ -152,7 +152,7 @@ export class WatchlistCollectionService {
       collection: [
         {
           id: GuidGenerator.newGuid(),
-          title: this.translocoService.getActiveLang() === 'ru' ? 'Список по-умолчанию' : 'Default list',
+          title: this.translocoService.getActiveLang() === 'ru' ? 'Список по умолчанию' : 'Default list',
           isDefault: true,
           items: oldWatchlist
         } as Watchlist
