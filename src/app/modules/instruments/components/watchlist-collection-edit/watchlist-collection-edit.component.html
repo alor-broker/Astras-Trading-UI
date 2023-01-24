@@ -53,7 +53,7 @@
     <nz-list-item *ngFor="let list of collection">
       <span
         (nzContentChange)="changeListTitle($event, list)"
-        [nzContent]="list.title"
+        [nzContent]="list.isDefault ? t('instrumentsSettings.defaultWatchlist') : list.title"
         nz-typography
         nzEditable
         [nzEditTooltip]="t('instrumentsSettings.editWatchlistTooltip')"

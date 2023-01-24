@@ -43,7 +43,7 @@
       "tooltip": "Profit to Loss ratio for today"
     }
   },
-  "emptyPositions": "There's no positions",
+  "emptyPositions": "There are no positions",
   "emptyPositionsWithFilters": "Nothing found with these filters",
   "exportToFile": "Export to file"
 }

@@ -27,6 +27,7 @@ import { LightChartWrapper } from '../../utils/light-chart-wrapper';
 import { LightChartDatafeedFactoryService } from '../../services/light-chart-datafeed-factory.service';
 import { TimeframeValue } from '../../models/light-chart.models';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { TranslocoService } from "@ngneat/transloco";
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
@@ -61,7 +62,9 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, On
     private readonly instrumentsService: InstrumentsService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly themeService: ThemeService,
-    private readonly lightChartDatafeedFactoryService: LightChartDatafeedFactoryService) {
+    private readonly lightChartDatafeedFactoryService: LightChartDatafeedFactoryService,
+    private readonly translocoService: TranslocoService
+  ) {
   }
 
   ngOnInit(): void {
@@ -112,27 +115,30 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, On
 
   private initChart() {
     combineLatest([
-        this.settings$,
-        this.timezoneConverterService.getConverter(),
-        this.themeService.getThemeSettings()
-      ]
-    ).pipe(
-      map(([ws, c, t]) => ({
-        widgetSettings: ws,
-        converter: c,
-        theme: t
-      })),
-      filter(x => !!x.converter && !!x.widgetSettings),
-      distinctUntilChanged((previous, current) =>
-          !previous
-          || (
-            isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
-            && previous.converter === current.converter
-            && previous.theme?.theme === current.theme?.theme
-          )
-      ),
-      takeUntil(this.destroy$)
-    ).subscribe(options => {
+      this.settings$,
+      this.timezoneConverterService.getConverter(),
+      this.themeService.getThemeSettings(),
+      this.translocoService.langChanges$
+    ])
+      .pipe(
+        map(([ws, c, t, l]) => ({
+          widgetSettings: ws,
+          converter: c,
+          theme: t,
+          locale: l
+        })),
+        filter(x => !!x.converter && !!x.widgetSettings),
+        distinctUntilChanged((previous, current) =>
+            !previous
+            || (
+              isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
+              && previous.converter === current.converter
+              && previous.theme?.theme === current.theme?.theme
+              && previous.locale === current.locale
+            )
+        ),
+        takeUntil(this.destroy$)
+      ).subscribe(options => {
       this.chart?.clear();
       const timeFrame = options.widgetSettings.timeFrame as TimeframeValue;
 
@@ -149,7 +155,8 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, On
         themeColors: options.theme.themeColors,
         timeConvertor: {
           toDisplayTime: time => options.converter.toTerminalUtcDate(time).getTime() / 1000
-        }
+        },
+        locale: options.locale
       });
     });
   }

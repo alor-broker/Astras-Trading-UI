@@ -31,7 +31,7 @@
       <nz-dropdown-menu #menu="nzDropdownMenu">
         <ul nz-menu nzSelectable>
           <li (click)="selectCollection(list.id)" *ngFor="let list of collection" nz-menu-item [nzSelected]="settings.activeListId === list.id">
-            <span>{{list.title}}</span>
+            <span *transloco="let tSettings; scope: 'instruments/settings'">{{ list.isDefault ? tSettings('instrumentsSettings.defaultWatchlist') : list.title}}</span>
           </li>
         </ul>
       </nz-dropdown-menu>

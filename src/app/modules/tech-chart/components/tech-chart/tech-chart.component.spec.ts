@@ -26,6 +26,8 @@ import { WidgetsDataProviderService } from '../../../../shared/services/widgets-
 import { ModalService } from '../../../../shared/services/modal.service';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
+import { TranslocoService } from "@ngneat/transloco";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -118,6 +120,18 @@ describe('TechChartComponent', () => {
             cancelOrder: jasmine.createSpy('cancelOrder').and.returnValue(new Subject())
           }
         },
+        {
+          provide: TranslocoService,
+          useValue: {
+            getActiveLang: jasmine.createSpy('getActiveLang').and.returnValue('ru')
+          }
+        },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+          }
+        }
       ]
     })
       .compileComponents();

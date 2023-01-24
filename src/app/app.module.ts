@@ -5,7 +5,7 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NZ_I18N, ru_RU } from 'ng-zorro-antd/i18n';
+import { NZ_I18N, ru_RU, en_US } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import ru from '@angular/common/locales/ru';
 import { FormsModule } from '@angular/forms';
@@ -49,7 +49,19 @@ registerLocaleData(ru);
   ],
   bootstrap: [AppComponent],
   providers: [
-    { provide: NZ_I18N, useValue: ru_RU },
+    {
+      provide: NZ_I18N,
+      useFactory: (localId: string) => {
+        switch (localId) {
+          case 'en':
+            return en_US;
+          case 'ru':
+            return ru_RU;
+          default:
+            return ru_RU;
+        }
+      }
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

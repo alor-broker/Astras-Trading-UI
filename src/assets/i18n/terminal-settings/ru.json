@@ -45,5 +45,6 @@
   "buyBestOrder": "Выставить лучшую заявку на покупку",
   "sellBestBid": "Продать по лучшей цене из BID",
   "buyBestAsk": "Купить по лучшей цене из ASK",
+  "workingVolumesHeader": "Рабочие объёмы",
   "selectWorkingVolumeLabel": "Выбрать рабочий объём"
 }

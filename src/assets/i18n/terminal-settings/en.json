@@ -45,5 +45,6 @@
   "buyBestOrder": "Submit the best order for buy",
   "sellBestBid": "Sell best BID",
   "buyBestAsk": "Buy best ASK",
+  "workingVolumesHeader": "Working volumes",
   "selectWorkingVolumeLabel": "Select working volume"
 }

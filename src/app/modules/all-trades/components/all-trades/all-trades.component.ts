@@ -123,9 +123,19 @@ export class AllTradesComponent implements OnInit, OnDestroy {
           .map(col => ({
               ...col,
               displayName: translate(
-                ['columns', col.name],
-                { fallback: col.displayName }
-              )
+                ['columns', col.name, 'displayName'],
+                {fallback: col.displayName}
+              ),
+              filterData: col.filterData && {
+                ...col.filterData,
+                filters: col.filterData?.filters?.map(f => ({
+                  text: translate(
+                    ['columns', col.name, 'filters', f.value],
+                    { fallback: f.text }
+                  ),
+                  value: f.value
+                }))
+              }
             })
           );
 
