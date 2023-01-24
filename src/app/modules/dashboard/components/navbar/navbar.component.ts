@@ -10,7 +10,6 @@ import {
   take
 } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
-import { ManageDashboardsService } from 'src/app/shared/services/manage-dashboards.service';
 import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
@@ -29,13 +28,15 @@ import {
 import { EntityStatus } from '../../../../shared/models/enums/entity-status';
 import { FormControl } from "@angular/forms";
 import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios';
+import { DeviceService } from "../../../../shared/services/device.service";
+import { ManageDashboardsService } from '../../../../shared/services/manage-dashboards.service';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { TranslatorService } from '../../../../shared/services/translator.service';
 import {
   Dashboard,
   DefaultDashboardName
 } from '../../../../shared/models/dashboard/dashboard.model';
-import { TranslatorService } from '../../../../shared/services/translator.service';
 import { mapWith } from '../../../../shared/utils/observable-helper';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 
@@ -45,10 +46,12 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
   styleUrls: ['./navbar.component.less'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  deviceInfo$!: Observable<{ isMobile: boolean }>;
+  isSideMenuVisible = false;
+
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
   selectedDashboard$!: Observable<Dashboard>;
-
   names = WidgetNames;
   themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
@@ -57,17 +60,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly manageDashboardsService: ManageDashboardsService,
-
     private readonly dashboardContextService: DashboardContextService,
     private readonly store: Store,
     private readonly auth: AuthService,
     private readonly modal: ModalService,
     private readonly themeService: ThemeService,
+    private readonly deviceService: DeviceService,
     private readonly translatorService: TranslatorService
   ) {
   }
 
   ngOnInit(): void {
+    this.deviceInfo$ = this.deviceService.deviceInfo$;
+
     this.selectedDashboard$ = this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
       mapWith(() => this.dashboardContextService.selectedDashboard$, (t, d) => ({ t, d })),
       map(({ t, d }) => ({
@@ -82,24 +87,30 @@ export class NavbarComponent implements OnInit, OnDestroy {
       shareReplay(1)
     );
 
+    this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
+      filter(p => p.status === EntityStatus.Success),
+      map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x))),
+      shareReplay(1)
+    );
+
     this.selectedPortfolio$ =
       this.selectedDashboard$.pipe(
-      map(d => d.selectedPortfolio),
-      map(p => p ?? null),
-      mapWith(() => this.portfolios$, (selectedKey, all) => ({selectedKey, all})),
-        map(({selectedKey, all}) => {
-          if(!selectedKey) {
+        map(d => d.selectedPortfolio),
+        map(p => p ?? null),
+        mapWith(() => this.portfolios$, (selectedKey, all) => ({ selectedKey, all })),
+        map(({ selectedKey, all }) => {
+          if (!selectedKey) {
             return null;
           }
 
           return [...all.values()]
-            .reduce((c,p) => [...p, ...c], [])
+            .reduce((c, p) => [...p, ...c], [])
             .find(p => p.portfolio === selectedKey.portfolio
               && p.exchange === selectedKey.exchange
               && p.marketType === selectedKey.marketType
             ) ?? null;
         })
-    );
+      );
 
     this.activeInstrument$ = this.dashboardContextService.instrumentsSelection$.pipe(
       map(selection => selection[defaultBadgeColor])
@@ -122,6 +133,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   resetDashboard() {
     this.manageDashboardsService.resetCurrentDashboard();
+    this.closeSideMenu();
   }
 
   logout() {
@@ -138,6 +150,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   addItem(type: string): void {
     this.manageDashboardsService.addWidget(type);
+    this.closeSideMenu();
   }
 
   newOrder() {
@@ -160,17 +173,26 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   openTerminalSettings() {
     this.modal.openTerminalSettingsModal();
+    this.closeSideMenu();
   }
 
   openThirdPartyLink(link: string) {
     window.open(link, "_blank", 'noopener,noreferrer');
   }
 
-  portfolioGroupsTrackByFn(index: number, item: {key: string, value: PortfolioExtended[]}): string {
+  portfolioGroupsTrackByFn(index: number, item: { key: string, value: PortfolioExtended[] }): string {
     return item.key;
   }
 
   portfoliosTrackByFn(index: number, item: PortfolioExtended) {
     return item.market + item.portfolio;
+  }
+
+  openSideMenu(): void {
+    this.isSideMenuVisible = true;
+  }
+
+  closeSideMenu(): void {
+    this.isSideMenuVisible = false;
   }
 }

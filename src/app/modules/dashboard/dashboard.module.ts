@@ -28,6 +28,7 @@ import { NzInputModule } from "ng-zorro-antd/input";
 import { ExternalLinkModule } from "../../shared/components/external-link/external-link.module";
 import { OrdersBasketModule } from '../orders-basket/orders-basket.module';
 import { SelectDashboardMenuComponent } from './components/select-dashboard-menu/select-dashboard-menu.component';
+import { NzDrawerModule } from "ng-zorro-antd/drawer";
 
 @NgModule({
   declarations: [
@@ -37,33 +38,33 @@ import { SelectDashboardMenuComponent } from './components/select-dashboard-menu
     ParentWidgetComponent,
     SelectDashboardMenuComponent
   ],
-  imports: [
-    DashboardRoutingModule,
-    SharedModule,
-    OrderbookModule,
-    LightChartModule,
-    InstrumentsModule,
-    BlotterModule,
-    CommandModule,
-    HelpModule,
-    InfoModule,
-    TerminalSettingsModule,
-    JoyrideModule.forRoot(),
-    AllTradesModule,
-    NewsModule,
-    ExchangeRateModule,
-    TechChartModule,
-    AllInstrumentsModule,
-    OrderSubmitModule,
-    NotificationsModule,
-    FeedbackModule,
-    ApplicationMetaModule,
-    NzInputModule,
-    ExternalLinkModule,
-    OrdersBasketModule
-    // components
-  ],
-    exports: [],
+    imports: [
+        DashboardRoutingModule,
+        SharedModule,
+        OrderbookModule,
+        LightChartModule,
+        InstrumentsModule,
+        BlotterModule,
+        CommandModule,
+        HelpModule,
+        InfoModule,
+        TerminalSettingsModule,
+        JoyrideModule.forRoot(),
+        AllTradesModule,
+        NewsModule,
+        ExchangeRateModule,
+        TechChartModule,
+        AllInstrumentsModule,
+        OrderSubmitModule,
+        NotificationsModule,
+        FeedbackModule,
+        ApplicationMetaModule,
+        NzInputModule,
+        ExternalLinkModule,
+        OrdersBasketModule,
+        NzDrawerModule,
+        // components
+    ],
   providers: [
     OnboardingService
   ]

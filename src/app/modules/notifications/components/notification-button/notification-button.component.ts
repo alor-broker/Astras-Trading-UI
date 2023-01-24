@@ -3,12 +3,9 @@ import {
   OnInit
 } from '@angular/core';
 import { NotificationsService } from '../../services/notifications.service';
-import {
-  Observable,
-  shareReplay
-} from 'rxjs';
-import { NotificationMeta } from '../../models/notification.model';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
   selector: 'ats-notification-button',
@@ -17,36 +14,21 @@ import { map } from 'rxjs/operators';
 })
 export class NotificationButtonComponent implements OnInit {
   isTableVisible = false;
-  private notifications$!: Observable<NotificationMeta[]>;
+  notReadNotificationsCount$!: Observable<number>;
+  deviceInfo$!: Observable<{isMobile: boolean}>;
 
-  constructor(private readonly notificationsService: NotificationsService) {
-  }
-
-  get notReadNotificationsCount$(): Observable<number> {
-    return this.notifications$.pipe(
-      map(n => n.filter(x => !x.isRead).length),
-    );
-  }
-
-  get sortedNotifications$(): Observable<NotificationMeta[]> {
-    return this.notifications$.pipe(
-      map(n => [...n]),
-      map(n => n.sort((a, b) => b.date.getTime() - a.date.getTime()))
-    );
+  constructor(
+    private readonly notificationsService: NotificationsService,
+    private readonly deviceService: DeviceService
+  ) {
   }
 
   ngOnInit(): void {
-    this.notifications$ = this.notificationsService.getNotifications().pipe(
-      shareReplay(1)
-    );
-  }
+    this.deviceInfo$ = this.deviceService.deviceInfo$;
 
-  markAsRead(notification: NotificationMeta) {
-    notification.markAsRead?.();
-  }
-
-  clickNotification(notification: NotificationMeta) {
-    notification.markAsRead?.();
-    notification.open?.();
+    this.notReadNotificationsCount$ = this.notificationsService.getNotifications()
+      .pipe(
+        map(n => n.filter(x => !x.isRead).length),
+      );
   }
 }

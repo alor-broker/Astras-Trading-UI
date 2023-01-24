@@ -22,6 +22,7 @@ import {
   Widget
 } from '../../../../shared/models/dashboard/widget.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { mobileBreakpoint } from '../../../../shared/utils/device-helper';
 
 interface Safe extends GridsterConfig {
   draggable: Draggable;
@@ -58,7 +59,7 @@ export class DashboardComponent implements OnInit {
       outerMarginBottom: null,
       outerMarginLeft: null,
       useTransformPositioning: true,
-      mobileBreakpoint: 640,
+      mobileBreakpoint,
       minCols: 50,
       maxCols: 100,
       minRows: 30,
