@@ -17,6 +17,9 @@ import {
   takeUntil
 } from 'rxjs';
 import { ThemeSettings } from '../../../../../shared/models/settings/theme-settings.model';
+import { mapWith } from "../../../../../shared/utils/observable-helper";
+import { TranslatorService } from "../../../../../shared/services/translator.service";
+import { HashMap } from "@ngneat/transloco/lib/types";
 
 @Component({
   selector: 'ats-finance-bar-chart[finance]',
@@ -90,7 +93,8 @@ export class FinanceBarChartComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
-    private readonly themeService: ThemeService
+    private readonly themeService: ThemeService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -101,14 +105,18 @@ export class FinanceBarChartComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.themeService.getThemeSettings().pipe(
+      mapWith(
+        () => this.translatorService.getTranslator('info/finance'),
+        (theme, translate) => ({ theme, translate })
+      ),
       takeUntil(this.destroy$)
-    ).subscribe(theme => {
-      this.yearChartData = this.getPlotData(this.finance, 'year', theme);
-      this.quorterChartData = this.getPlotData(this.finance, 'quorter', theme);
+    ).subscribe(({ theme, translate }) => {
+      this.yearChartData = this.getPlotData(this.finance, 'year', theme, translate);
+      this.quorterChartData = this.getPlotData(this.finance, 'quorter', theme, translate);
     });
   }
 
-  private getPlotData(finance: Finance, period: 'year' | 'quorter', theme: ThemeSettings) {
+  private getPlotData(finance: Finance, period: 'year' | 'quorter', theme: ThemeSettings, t: (key: string[], params?: HashMap) => string) {
     let labels: string[] = [];
     if (finance.sales) {
       labels = period == 'quorter' ?
@@ -116,10 +124,10 @@ export class FinanceBarChartComponent implements OnInit, OnDestroy {
         finance.sales[period].map(y => y.year.toString());
     }
     const datasets = [
-      { data: finance?.sales?.[period].map(y => y.value), label: 'Выручка', ...this.getSalesColors(theme) ?? [] },
+      { data: finance?.sales?.[period].map(y => y.value), label: t(['salesLabel']), ...this.getSalesColors(theme) ?? [] },
       {
         data: finance?.netIncome?.[period].map(y => y.value),
-        label: 'Чистая прибыль', ...this.getIncomeColors(theme) ?? []
+        label: t(['incomeLabel']), ...this.getIncomeColors(theme) ?? []
       }
     ];
     const chartData = {

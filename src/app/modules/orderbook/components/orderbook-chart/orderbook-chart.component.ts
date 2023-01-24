@@ -26,6 +26,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
 import { ThemeService } from '../../../../shared/services/theme.service';
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 @Component({
   selector: 'ats-orderbook-chart[guid][chartData]',
@@ -112,7 +113,9 @@ export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private readonly widgetSettings: WidgetSettingsService,
-    private readonly themeService: ThemeService) {
+    private readonly themeService: ThemeService,
+    private readonly translatorService: TranslatorService
+    ) {
   }
 
   ngOnDestroy(): void {
@@ -141,6 +144,16 @@ export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
       this.chartOptions.scales!.x!.ticks!.color = theme.themeColors.chartLabelsColor;
       this.chartOptions.scales!.y!.ticks!.color = theme.themeColors.chartLabelsColor;
     });
+
+    this.translatorService.getTranslator('orderbook/orderbook')
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe(t => {
+        this.chartOptions.plugins!.tooltip!.callbacks!.label = (context) => {
+          return `${t(['volume'])}: ${context.formattedValue}; ${t(['price'])}: ${context.label}`;
+        };
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {

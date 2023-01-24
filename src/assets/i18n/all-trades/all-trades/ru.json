@@ -1,10 +1,26 @@
 {
   "columns": {
-    "qty":  "Кол-во",
-    "price": "Цена",
-    "timestamp": "Время",
-    "side": "Сторона",
-    "oi":  "Откр. интерес",
-    "existing": "Новое событие"
+    "qty": {
+      "displayName": "Кол-во"
+    },
+    "price": {
+      "displayName": "Цена"
+    },
+    "timestamp": {
+      "displayName": "Время"
+    },
+    "side": {
+      "displayName": "Сторона",
+      "filters": {
+        "sell": "Продажа",
+        "buy": "Покупка"
+      }
+    },
+    "oi": {
+      "displayName": "Откр. интерес"
+    },
+    "existing": {
+      "displayName": "Новое событие"
+    }
   }
 }

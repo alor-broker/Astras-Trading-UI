@@ -241,6 +241,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
             name: t(['columns', column.column.id, 'name'], { fallback: column.column.name }),
             tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
             searchDescription: t(['columns', column.column.id, 'searchDescription'], { fallback: column.column.searchDescription }),
+            listOfFilter: column.column.listOfFilter.map(f => ({ value: f.value, text: t(['columns', column.column.id, 'listOfFilter', f.value], { fallback: f.text }) })),
             width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
             order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
           }))

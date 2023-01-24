@@ -1,7 +1,7 @@
 {
   "searchPlaceholder": "Search...",
   "helpParagraph1": "Input the instrument's short name, Seccode or ISIN. Next, a drop-down list will appear with the tools that satisfy your request.",
-  "helpParagraph2": "You can also search for an instrument on a specific exchange and with a specific trading mode. The format is::",
+  "helpParagraph2": "You can also search for an instrument on a specific exchange and with a specific trading mode. The format is:",
   "helpParagraph3": "or if the board is by default, then",
   "forExample": "For example"
 }

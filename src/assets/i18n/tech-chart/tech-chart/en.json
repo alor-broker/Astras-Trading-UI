@@ -1,0 +1,50 @@
+{
+  "buy": "Buy",
+  "sell": "Sell",
+  "stopLimit": "Stoplimit",
+  "stopMarket": "Stopmarket",
+  "limit": "Limit",
+  "market": "market",
+  "more": "more",
+  "less": "less",
+  "position": "Pos.",
+  "MOEX": "Moscow Exchange",
+  "timeframes": {
+    "all": {
+      "desc": "All",
+      "title": "All"
+    },
+    "3y": {
+      "desc": "3 years",
+      "title": "3y"
+    },
+    "1y": {
+      "desc": "1 year",
+      "title": "1y"
+    },
+    "6m": {
+      "desc": "6 months",
+      "title": "6M"
+    },
+    "3m": {
+      "desc": "3 months",
+      "title": "3M"
+    },
+    "1m": {
+      "desc": "1 month",
+      "title": "1M"
+    },
+    "2w": {
+      "desc": "2 weeks",
+      "title": "2W"
+    },
+    "1w": {
+      "desc": "1 week",
+      "title": "1W"
+    },
+    "1d": {
+      "desc": "1 day",
+      "title": "1d"
+    }
+  }
+}

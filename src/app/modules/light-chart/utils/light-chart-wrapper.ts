@@ -68,6 +68,9 @@ export class LightChartWrapper {
 
   private getChartOptions(): DeepPartial<ChartOptions> {
     return {
+      localization: {
+        locale: this.config.locale
+      },
       timeScale: {
         timeVisible: true,
         borderColor: this.config.themeColors.chartGridColor,

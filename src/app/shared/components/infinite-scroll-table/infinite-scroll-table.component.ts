@@ -70,29 +70,33 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   ngOnInit() {
-    this.columns
-      .filter(col => !!col.filterData)
-      .map(col => col.filterData!)
-      .forEach(filter => {
-        if (!filter.isInterval) {
-          this.filtersForm.addControl(filter.filterName, new UntypedFormControl(''));
-        } else {
-          this.filtersForm.addControl(filter.intervalStartName!, new UntypedFormControl(''));
-          this.filtersForm.addControl(filter.intervalEndName!, new UntypedFormControl(''));
-        }
-      });
-
     this.filtersForm.valueChanges
       .pipe(
         debounceTime(300),
         takeUntil(this.destroy$)
       )
-      .subscribe(val => this.filterApplied.emit(val));
+      .subscribe(val => {
+        this.filterApplied.emit(val);
+      });
   }
 
   public ngOnChanges(changes: SimpleChanges) {
     if (changes.tableContainerHeight || changes.tableContainerWidth) {
       this.calculateScrollHeight();
+    }
+
+    if (changes.columns?.currentValue) {
+      this.columns
+        .filter(col => !!col.filterData)
+        .map(col => col.filterData!)
+        .forEach(filter => {
+          if (!filter.isInterval) {
+            this.filtersForm.addControl(filter.filterName, new UntypedFormControl(''));
+          } else {
+            this.filtersForm.addControl(filter.intervalStartName!, new UntypedFormControl(''));
+            this.filtersForm.addControl(filter.intervalEndName!, new UntypedFormControl(''));
+          }
+        });
     }
   }
 

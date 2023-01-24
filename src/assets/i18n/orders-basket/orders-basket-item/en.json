@@ -2,7 +2,7 @@
   "tickerLabel": "Ticker",
   "tickerError": "Select ticker",
   "quotaLabel": "Percent",
-  "quotaPlaceholder": "Enter persent",
+  "quotaPlaceholder": "Enter percent",
   "intervalError": "Value should be from {{min}} to {{max}}",
   "priceLabel": "Price",
   "pricePlaceholder": "Enter price",
