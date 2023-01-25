@@ -9,6 +9,6 @@
   "stopOrdersColumnsLabel": "Stop-orders columns",
   "tradesColumnsLabel": "Trades columns",
   "positionsColumnsLabel": "Positions columns",
-  "hideSoldLabel": "Hide sold",
-  "cancelWithoutConfirmLabel": "Cancel orders without confirm"
+  "hideSoldLabel": "Hide sold positions",
+  "cancelWithoutConfirmLabel": "Cancel orders without confirmation"
 }

@@ -25,7 +25,7 @@ import {
   InitialSettingsMap,
   IOrderLineAdapter,
   IPositionLineAdapter,
-  ISettingsAdapter,
+  ISettingsAdapter, LanguageCode,
   PlusClickParams,
   ResolutionString,
   SubscribeEventsMap,
@@ -61,9 +61,10 @@ import { StopOrder } from '../../../../shared/models/orders/stop-order.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
-import { TranslocoService } from "@ngneat/transloco";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
+import { TranslatorService } from "../../../../shared/services/translator.service";
+import { HashMap } from "@ngneat/transloco/lib/types";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -141,6 +142,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
   private lastTheme?: ThemeSettings;
+  private lastLang?: string;
+  private translateFn!: (key: string[], params?: HashMap) => string;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -153,7 +156,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private readonly currentDashboardService: DashboardContextService,
     private readonly orderCancellerService: OrderCancellerService,
-    private readonly translocoService: TranslocoService
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -191,17 +194,19 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     combineLatest([
       chartSettings$,
       this.themeService.getThemeSettings(),
-      this.translocoService.langChanges$
+      this.translatorService.getTranslator('tech-chart/tech-chart')
     ]).pipe(
       takeUntil(this.destroy$),
-    ).subscribe(([settings, theme, lang]) => {
+    ).subscribe(([settings, theme, t]) => {
+      this.translateFn = t;
       this.createChart(
         settings.widgetSettings,
         theme,
-        this.lastTheme && this.lastTheme.theme !== theme.theme,
-        lang as 'ru' | 'en');
+        this.lastTheme && this.lastTheme.theme !== theme.theme || this.lastLang !== this.translatorService.getActiveLang()
+      );
 
       this.lastTheme = theme;
+      this.lastLang = this.translatorService.getActiveLang();
     });
   }
 
@@ -289,7 +294,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 
-  private createChart(settings: TechChartSettings, theme: ThemeSettings, forceRecreate: boolean = false, lang: 'ru' | 'en' = 'ru') {
+  private createChart(settings: TechChartSettings, theme: ThemeSettings, forceRecreate: boolean = false) {
     if (this.chartState) {
       if (forceRecreate) {
         this.chartState.widget?.remove();
@@ -318,7 +323,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       container: this.chartContainer.nativeElement,
       symbol: `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
       interval: (settings.chartSettings?.['chart.lastUsedTimeBasedResolution'] ?? '1D') as ResolutionString,
-      locale: lang,
+      locale: this.translatorService.getActiveLang() as LanguageCode,
       library_path: '/assets/charting_library/',
       custom_css_url: '../tv-custom-styles.css',
       datafeed: this.techChartDatafeedService,
@@ -329,15 +334,15 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       timezone: 'exchange',
       theme: theme.theme === ThemeType.default ? 'Light' : 'Dark',
       time_frames: [
-        { text: '1000y', resolution: '1M' as ResolutionString, description: 'Все', title: 'Все' },
-        { text: '3y', resolution: '1M' as ResolutionString, description: '3 года', title: '3г' },
-        { text: '1y', resolution: '1D' as ResolutionString, description: '1 год', title: '1г' },
-        { text: '6m', resolution: '1D' as ResolutionString, description: '6 месяцев', title: '6М' },
-        { text: '3m', resolution: '4H' as ResolutionString, description: '3 месяца', title: '3М' },
-        { text: '1m', resolution: '1H' as ResolutionString, description: '1 месяц', title: '1М' },
-        { text: '14d', resolution: '1H' as ResolutionString, description: '2 недели', title: '2Н' },
-        { text: '7d', resolution: '15' as ResolutionString, description: '1 неделя', title: '1Н' },
-        { text: '1d', resolution: '5' as ResolutionString as ResolutionString, description: '1 день', title: '1д' },
+        { text: '1000y', resolution: '1M' as ResolutionString, description: this.translateFn(['timeframes', 'all', 'desc']), title: this.translateFn(['timeframes', 'all', 'title']) },
+        { text: '3y', resolution: '1M' as ResolutionString, description: this.translateFn(['timeframes', '3y', 'desc']), title: this.translateFn(['timeframes', '3y', 'title']) },
+        { text: '1y', resolution: '1D' as ResolutionString, description: this.translateFn(['timeframes', '1y', 'desc']), title: this.translateFn(['timeframes', '1y', 'title']) },
+        { text: '6m', resolution: '1D' as ResolutionString, description: this.translateFn(['timeframes', '6m', 'desc']), title: this.translateFn(['timeframes', '6m', 'title']) },
+        { text: '3m', resolution: '4H' as ResolutionString, description: this.translateFn(['timeframes', '3m', 'desc']), title: this.translateFn(['timeframes', '3m', 'title']) },
+        { text: '1m', resolution: '1H' as ResolutionString, description: this.translateFn(['timeframes', '1m', 'desc']), title: this.translateFn(['timeframes', '1m', 'title']) },
+        { text: '14d', resolution: '1H' as ResolutionString, description: this.translateFn(['timeframes', '2w', 'desc']), title: this.translateFn(['timeframes', '2w', 'title']) },
+        { text: '7d', resolution: '15' as ResolutionString, description: this.translateFn(['timeframes', '1w', 'desc']), title: this.translateFn(['timeframes', '1w', 'title']) },
+        { text: '1d', resolution: '5' as ResolutionString as ResolutionString, description: this.translateFn(['timeframes', '1d', 'desc']), title: this.translateFn(['timeframes', '1d', 'title']) },
       ],
       symbol_search_request_delay: 2000,
       //features
@@ -453,7 +458,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         try {
           positionState.positionLine = this.chartState!.widget.activeChart()
             .createPositionLine()
-            .setText('Поз.');
+            .setText(this.translateFn(['position']));
         } catch {
           return;
         }
@@ -603,7 +608,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     orderLineAdapter.setText('L')
-      .setTooltip(`${order.side === Side.Buy ? 'Покупка' : 'Продажа'} Лимит`)
+      .setTooltip(`${this.translateFn([order.side === Side.Buy ? 'buy' : 'sell'])} ${this.translateFn(['limit'])}`)
       .setPrice(order.price)
       .onCancel(() => this.orderCancellerService.cancelOrder({
           orderid: order.id,
@@ -627,11 +632,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       + ' '
       + (order.conditionType === 'more' ? '(>)' : '(<)');
 
-    const orderTooltip = (order.side === Side.Buy ? 'Покупка' : 'Продажа')
-      + ' Стоп'
-      + (order.type === 'stoplimit' ? 'лимит' : 'рынок')
+    const orderTooltip = this.translateFn([order.side === Side.Buy ? 'buy' : 'sell'])
       + ' '
-      + (order.conditionType === 'more' ? '(больше)' : '(меньше)');
+      + this.translateFn([order.type === 'stoplimit' ? 'stopLimit' : 'stopMarket'])
+      + ' ('
+      + this.translateFn([order.conditionType === 'more' ? 'more' : 'less'])
+      + ')';
 
     const getEditCommand = () => ({
       type: order.type,

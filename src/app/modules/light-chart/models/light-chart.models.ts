@@ -42,4 +42,5 @@ export interface LightChartConfig {
   dataFeed: LightChartDatafeed;
   themeColors: ThemeColors;
   timeConvertor?: LightChartTimeConvertor;
+  locale: string;
 }

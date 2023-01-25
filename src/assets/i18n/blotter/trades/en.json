@@ -17,7 +17,11 @@
     },
     "side": {
       "name": "Side",
-      "tooltip": "Trade side (buy/sell)"
+      "tooltip": "Trade side (buy/sell)",
+      "listOfFilter": {
+        "buy": "Buy",
+        "sell": "Sell"
+      }
     },
     "qty": {
       "name": "Quantity",
@@ -36,7 +40,7 @@
       "tooltip": "Trade value"
     }
   },
-  "emptyTrades": "There's no trades today",
+  "emptyTrades": "There are no trades today",
   "emptyTradesWithFilters": "Nothing found with these filters",
   "exportToFile": "Export to file"
 }

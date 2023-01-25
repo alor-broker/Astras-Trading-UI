@@ -156,7 +156,8 @@ export class DashboardsEffects {
             groupKey: badge,
             instrumentKey: {
               symbol: 'SBER',
-              exchange: 'MOEX'
+              exchange: 'MOEX',
+              instrumentGroup: 'TQBR'
             }
           }))
         })

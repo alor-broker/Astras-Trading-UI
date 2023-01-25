@@ -24,6 +24,7 @@ import {
   LightChartSettings,
   TimeFrameDisplayMode
 } from '../../models/light-chart-settings.model';
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
@@ -54,7 +55,9 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly instrumentsService: InstrumentsService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly themeService: ThemeService,
-    private readonly lightChartDatafeedFactoryService: LightChartDatafeedFactoryService) {
+    private readonly lightChartDatafeedFactoryService: LightChartDatafeedFactoryService,
+    private readonly translatorService: TranslatorService
+  ) {
   }
 
   ngOnInit(): void {
@@ -109,13 +112,15 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     combineLatest([
         this.settings$,
         this.timezoneConverterService.getConverter(),
-        this.themeService.getThemeSettings()
+        this.themeService.getThemeSettings(),
+        this.translatorService.getLangChanges()
       ]
     ).pipe(
-      map(([ws, c, t]) => ({
+      map(([ws, c, t, l]) => ({
         widgetSettings: ws,
         converter: c,
-        theme: t
+          theme: t,
+          locale: l
       })),
       filter(x => !!x.converter && !!x.widgetSettings),
       distinctUntilChanged((previous, current) =>
@@ -124,6 +129,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
             this.isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
             && previous.converter === current.converter
             && previous.theme?.theme === current.theme?.theme
+            && previous.locale === current.locale
           )
       ),
       takeUntil(this.destroy$)
@@ -144,7 +150,8 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
         themeColors: options.theme.themeColors,
         timeConvertor: {
           toDisplayTime: time => options.converter.toTerminalUtcDate(time).getTime() / 1000
-        }
+        },
+        locale: options.locale
       });
     });
   }
@@ -175,6 +182,6 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private chartResize(contentSize: ContentSize) {
-    this.chart!.resize(Math.floor(contentSize.width ?? 0), Math.floor(contentSize.height ?? 0));
+    this.chart?.resize(Math.floor(contentSize.width ?? 0), Math.floor(contentSize.height ?? 0));
   }
 }

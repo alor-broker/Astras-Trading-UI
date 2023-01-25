@@ -27,6 +27,7 @@ import {
 import { HistoryResponse } from "../../../shared/models/history/history-response.model";
 import { Candle } from "../../../shared/models/history/candle.model";
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
+import { TranslatorService } from "../../../shared/services/translator.service";
 
 describe('TechChartDatafeedService', () => {
   let service: TechChartDatafeedService;
@@ -51,7 +52,13 @@ describe('TechChartDatafeedService', () => {
         TechChartDatafeedService,
         { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
-        { provide: HistoryService, useValue: historyServiceSpy }
+        { provide: HistoryService, useValue: historyServiceSpy },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => 'Московская Биржа'))
+          }
+        }
       ]
     });
 
@@ -283,7 +290,7 @@ describe('TechChartDatafeedService', () => {
   });
 
   it('#subscribeBars should pass value to onTick callback', (done) => {
-    const symbolInfo = { ticker: 'MOEX:SBER' } as LibrarySymbolInfo;
+    const symbolInfo = { ticker: 'MOEX:SBER:TQBR' } as LibrarySymbolInfo;
     const resolution = '1' as ResolutionString;
     const historyResponse: HistoryResponse = {
       history: [
@@ -325,7 +332,7 @@ describe('TechChartDatafeedService', () => {
     subscriptionsDataFeedServiceSpy.subscribe.and.returnValue(messages$);
 
     service.subscribeBars(
-      { ticker: 'MOEX:SBER' } as LibrarySymbolInfo,
+      { ticker: 'MOEX:SBER:TQBR' } as LibrarySymbolInfo,
       '1' as ResolutionString,
       bar => {
         done();
@@ -334,7 +341,7 @@ describe('TechChartDatafeedService', () => {
             opcode: 'BarsGetAndSubscribe',
             code: 'SBER',
             exchange: 'MOEX',
-            instrumentGroup: undefined,
+            instrumentGroup: 'TQBR',
             format: 'simple',
             tf: '60',
           }),

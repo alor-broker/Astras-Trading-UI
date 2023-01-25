@@ -1,10 +1,26 @@
 {
   "columns": {
-    "qty":  "Quantity",
-    "price": "Price",
-    "timestamp": "Time",
-    "side": "Side",
-    "oi":  "Opened interest",
-    "existing": "New event"
+    "qty": {
+      "displayName": "Quantity"
+    },
+    "price": {
+      "displayName": "Price"
+    },
+    "timestamp": {
+      "displayName": "Time"
+    },
+    "side": {
+      "displayName": "Side",
+      "filters": {
+        "sell": "Sell",
+        "buy": "Buy"
+      }
+    },
+    "oi": {
+      "displayName": "Opened interest"
+    },
+    "existing": {
+      "displayName": "New event"
+    }
   }
 }

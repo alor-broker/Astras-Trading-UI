@@ -12,6 +12,7 @@ import {
   ThemeType
 } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 describe('OrderbookChartComponent', () => {
   let component: OrderbookChartComponent;
@@ -47,7 +48,13 @@ describe('OrderbookChartComponent', () => {
           provide: WidgetSettingsService,
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
         },
-        { provide: ThemeService, useValue: themeServiceSpy }
+        { provide: ThemeService, useValue: themeServiceSpy },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+          }
+        }
       ]
     }).compileComponents();
   }));

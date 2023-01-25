@@ -28,6 +28,7 @@ import { MathHelper } from "../../../shared/utils/math-helper";
 import { SearchFilter } from "../../instruments/models/search-filter.model";
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 import { ChartSubscriptionIdHelper } from '../../../shared/utils/subscription-id-helper';
+import { TranslatorService } from "../../../shared/services/translator.service";
 
 @Injectable()
 export class TechChartDatafeedService implements IBasicDataFeed {
@@ -39,29 +40,33 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     private readonly instrumentService: InstrumentsService,
     private readonly historyService: HistoryService,
     private readonly http: HttpClient,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
   onReady(callback: OnReadyCallback): void {
 
-    const config: DatafeedConfiguration = {
-      supports_time: true,
-      supported_resolutions: this.getSupportedResolutions(),
-      exchanges: [
-        {
-          value: 'MOEX',
-          name: 'Московская Биржа',
-          desc: 'Московская Биржа'
-        },
-        {
-          value: 'SPBX',
-          name: 'SPBX',
-          desc: 'SPBX'
-        }
-      ]
-    };
+    this.translatorService.getTranslator('tech-chart/tech-chart')
+      .subscribe(t => {
+        const config: DatafeedConfiguration = {
+          supports_time: true,
+          supported_resolutions: this.getSupportedResolutions(),
+          exchanges: [
+            {
+              value: 'MOEX',
+              name: t(['MOEX']),
+              desc: t(['MOEX'])
+            },
+            {
+              value: 'SPBX',
+              name: 'SPBX',
+              desc: 'SPBX'
+            }
+          ]
+        };
 
-    setTimeout(() => callback(config), 0);
+        setTimeout(() => callback(config), 0);
+      });
   }
 
   searchSymbols(userInput: string, exchange: string, symbolType: string, onResult: SearchSymbolsCallback): void {
@@ -181,7 +186,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
       opcode: 'BarsGetAndSubscribe',
       code: instrumentKey.symbol,
       exchange: instrumentKey.exchange,
-      instrumentGroup: instrumentKey.instrumentGroup,
+      instrumentGroup: instrumentKey.instrumentGroup ?? null,
       format: 'simple',
       tf: this.parseTimeframe(resolution),
       from: this.lastBarPoint.get(this.getLastBarPointKey(instrumentKey, resolution)) ?? this.getDefaultLastHistoryPoint()
