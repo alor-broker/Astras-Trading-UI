@@ -1,7 +1,9 @@
 import {
   Component,
+  EventEmitter,
   Input,
-  OnInit
+  OnInit,
+  Output
 } from '@angular/core';
 import {
   Observable,
@@ -40,6 +42,9 @@ export class SelectDashboardMenuComponent implements OnInit {
 
   allDashboards$!: Observable<Dashboard[]>;
 
+  @Output()
+  hideMenu = new EventEmitter();
+
   constructor(
     private dashboardService: ManageDashboardsService,
     private modal: NzModalService,
@@ -75,12 +80,14 @@ export class SelectDashboardMenuComponent implements OnInit {
   addDashboard() {
     if (this.newDashboardForm.valid) {
       this.dashboardService.addDashboard(this.newDashboardForm.value.title);
+      this.hideMenu.emit();
       this.newDashboardForm.reset();
     }
   }
 
   selectDashboard(guid: string) {
     this.dashboardService.selectDashboard(guid);
+    this.hideMenu.emit();
   }
 
   removeDashboard(dashboard: Dashboard) {

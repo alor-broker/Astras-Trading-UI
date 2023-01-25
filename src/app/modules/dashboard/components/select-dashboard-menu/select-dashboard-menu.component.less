@@ -26,16 +26,22 @@ li {
   outline: none !important;
   box-shadow: none;
   padding-left: 0;
-  background: transparent;
+  background: transparent !important;
 
   .edit-title-input {
     &.ant-input {
       background: transparent;
-      &.ant-input-status-error.ant-input:focus {
+      &.ant-input-status-error.ant-input:focus,
+      &.ant-input-status-error.ant-input{
         box-shadow: none;
         background: transparent;
       }
     }
+  }
+
+  &.ant-input-affix-wrapper-focused {
+    background: transparent;
+    box-shadow: none !important;
   }
 }
 

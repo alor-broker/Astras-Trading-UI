@@ -4,6 +4,7 @@ import {
   OnInit
 } from '@angular/core';
 import {
+  BehaviorSubject,
   Observable,
   shareReplay,
   Subject,
@@ -55,6 +56,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   names = WidgetNames;
   themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
+
+  isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private activeInstrument$!: Observable<InstrumentKey | null>;
 
@@ -119,6 +122,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.themeColors$ = this.themeService.getThemeSettings().pipe(
       map(x => x.themeColors)
     );
+  }
+
+  changeDashboardSelectionMenuVisibility(value: boolean) {
+    setTimeout(() => this.isDashboardSelectionMenuVisible$.next(value));
   }
 
   ngOnDestroy(): void {

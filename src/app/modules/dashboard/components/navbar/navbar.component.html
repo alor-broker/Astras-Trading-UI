@@ -93,28 +93,30 @@
       </nz-dropdown-menu>
     </div>
 
-    <div class="menu-item" *ngIf="selectedDashboard$ | async as selectedDashboard">
+    <div class="menu-item" *ngIf="!deviceInfo.isMobile">
       <button
         *ngIf="selectedDashboard$ | async as selectedDashboard;"
         class="dropdown-btn"
+        id="dashboard-select-btn"
         nz-button
         nz-dropdown
         nzSize="small"
         nzType="text"
         [nzClickHide]="false"
         [nzDropdownMenu]="dashboardsMenu"
-        nzVisible="true"
-        (nzVisibleChange)="dashboardsMenuContent.visibilityChange = $event"
+        (nzVisibleChange)="changeDashboardSelectionMenuVisibility($event)"
+        [nzVisible]="(isDashboardSelectionMenuVisible$ | async) ?? false"
       >
-      <span>
-        {{selectedDashboard.title}}
-        <i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i>
-      </span>
+        <span nz-typography nzEllipsis>{{selectedDashboard.title}}&nbsp;</span>
+        <span><i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i></span>
+
+        <nz-dropdown-menu #dashboardsMenu="nzDropdownMenu">
+          <ats-select-dashboard-menu
+            (hideMenu)="changeDashboardSelectionMenuVisibility(false)"
+            [visibilityChange]="(isDashboardSelectionMenuVisible$ | async) ?? false"
+          ></ats-select-dashboard-menu>
+        </nz-dropdown-menu>
       </button>
-      <nz-dropdown-menu #dashboardsMenu="nzDropdownMenu">
-        <ats-select-dashboard-menu #dashboardsMenuContent
-        ></ats-select-dashboard-menu>
-      </nz-dropdown-menu>
     </div>
 
     <div class="right contrast-icon">
