@@ -86,6 +86,9 @@ export class ManageDashboardsService {
     this.localStorage.removeItem('portfolio');
     this.localStorage.removeItem('profile');
     this.localStorage.removeItem('feedback');
+    this.localStorage.removeItem('dashboards-collection');
+
+    // obsolete keys. Used only for backward compatibility
     this.localStorage.removeItem('instruments');
     this.localStorage.removeItem('dashboards');
     this.store.dispatch(ManageDashboardsActions.removeAllDashboards());

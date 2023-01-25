@@ -164,7 +164,7 @@ export class DashboardsEffects {
       ));
   });
 
-  private readonly dashboardsStorageKey = 'dashboard-collection';
+  private readonly dashboardsStorageKey = 'dashboards-collection';
   private readonly dashboardsObsoleteStorageKey = 'dashboards';
   private readonly instrumentsObsoleteStorageKey = 'instruments';
   convertOrCreateDefault$ = createEffect(() => {
