@@ -12,13 +12,11 @@ import { ExchangeRateSettings } from '../../models/exchange-rate-settings.model'
 
 
 @Component({
-  selector: 'ats-exchange-rate-widget[guid][shouldShowSettings][isBlockWidget]',
+  selector: 'ats-exchange-rate-widget[guid][isBlockWidget]',
   templateUrl: './exchange-rate-widget.component.html',
   styleUrls: ['./exchange-rate-widget.component.less']
 })
 export class ExchangeRateWidgetComponent implements OnInit {
-
-  @Input() public shouldShowSettings!: boolean;
   @Input() public guid!: string;
   @Input()
   isBlockWidget!: boolean;

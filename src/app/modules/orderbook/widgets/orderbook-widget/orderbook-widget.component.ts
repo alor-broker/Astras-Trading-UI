@@ -1,9 +1,7 @@
 import {
   Component,
-  EventEmitter,
   Input,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import { OrderbookService } from '../../services/orderbook.service';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
@@ -25,22 +23,18 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { OrderbookSettings } from '../../models/orderbook-settings.model';
 
 @Component({
-  selector: 'ats-orderbook-widget[shouldShowSettings][guid][isBlockWidget]',
+  selector: 'ats-orderbook-widget[guid][isBlockWidget]',
   templateUrl: './orderbook-widget.component.html',
   styleUrls: ['./orderbook-widget.component.less'],
   providers: [OrderbookService]
 })
 export class OrderbookWidgetComponent implements OnInit {
-  @Input()
-  shouldShowSettings!: boolean;
+  shouldShowSettings: boolean = false;
   @Input()
   guid!: string;
 
   @Input()
   isBlockWidget!: boolean;
-
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<OrderbookSettings>;
   showBadge$!: Observable<boolean>;
   title$!: Observable<string>;
@@ -54,7 +48,7 @@ export class OrderbookWidgetComponent implements OnInit {
   }
 
   onSettingsChange() {
-    this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+    this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {

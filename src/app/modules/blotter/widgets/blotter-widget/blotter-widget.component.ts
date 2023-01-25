@@ -1,10 +1,8 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import { NzTabChangeEvent } from 'ng-zorro-antd/tabs';
 import {
@@ -34,7 +32,7 @@ import {
 } from '../../models/blotter-settings.model';
 
 @Component({
-  selector: 'ats-blotter-widget[shouldShowSettings][guid][isBlockWidget]',
+  selector: 'ats-blotter-widget[guid][isBlockWidget]',
   templateUrl: './blotter-widget.component.html',
   styleUrls: ['./blotter-widget.component.less'],
   providers: [
@@ -43,15 +41,11 @@ import {
 })
 export class BlotterWidgetComponent implements OnInit, OnDestroy {
   readonly marketTypes = MarketType;
-  @Input()
-  shouldShowSettings!: boolean;
+  shouldShowSettings: boolean = false;
   @Input()
   guid!: string;
   @Input()
   isBlockWidget!: boolean;
-
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
   activeTabIndex$ = of(0);
   marketType$?: Observable<MarketType | undefined>;
   showBadge$!: Observable<boolean>;
@@ -107,7 +101,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   }
 
   onSettingsChange() {
-    this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+    this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   onIndexChange(event: NzTabChangeEvent) {

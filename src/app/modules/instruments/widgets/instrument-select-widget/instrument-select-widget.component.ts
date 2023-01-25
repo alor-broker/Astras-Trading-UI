@@ -1,9 +1,7 @@
 import {
   Component,
-  EventEmitter,
   Input,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
@@ -24,15 +22,11 @@ import {
   providers: [WatchInstrumentsService]
 })
 export class InstrumentSelectWidgetComponent implements OnInit {
-  @Input()
-  shouldShowSettings!: boolean;
+  shouldShowSettings: boolean = false;
   @Input()
   guid!: string;
   @Input()
   isBlockWidget!: boolean;
-
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<InstrumentSelectSettings>;
   showBadge$!: Observable<boolean>;
 
@@ -43,7 +37,7 @@ export class InstrumentSelectWidgetComponent implements OnInit {
   }
 
   onSettingsChange() {
-    this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+    this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {

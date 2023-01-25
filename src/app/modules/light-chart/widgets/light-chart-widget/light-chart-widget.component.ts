@@ -1,9 +1,7 @@
 import {
   Component,
-  EventEmitter,
   Input,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
@@ -29,13 +27,12 @@ import {
 } from '../../models/light-chart-settings.model';
 
 @Component({
-  selector: 'ats-light-chart-widget[shouldShowSettings][guid][isBlockWidget]',
+  selector: 'ats-light-chart-widget[guid][isBlockWidget]',
   templateUrl: './light-chart-widget.component.html',
   styleUrls: ['./light-chart-widget.component.less']
 })
 export class LightChartWidgetComponent implements OnInit {
-  @Input()
-  shouldShowSettings!: boolean;
+  shouldShowSettings: boolean = false;
 
 
   @Input()
@@ -48,9 +45,6 @@ export class LightChartWidgetComponent implements OnInit {
   showBadge$!: Observable<boolean>;
   title$!: Observable<string>;
 
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
-
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
@@ -60,7 +54,7 @@ export class LightChartWidgetComponent implements OnInit {
   }
 
   onSettingsChange() {
-    this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+    this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {

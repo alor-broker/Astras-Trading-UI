@@ -1,9 +1,7 @@
 import {
   Component,
-  EventEmitter,
   Input,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
@@ -17,16 +15,15 @@ import {
 } from '../../model/all-instruments-settings.model';
 
 @Component({
-  selector: 'ats-all-instruments-widget[shouldShowSettings][guid][isBlockWidget]',
+  selector: 'ats-all-instruments-widget[guid][isBlockWidget]',
   templateUrl: './all-instruments-widget.component.html',
   styleUrls: ['./all-instruments-widget.component.less']
 })
 export class AllInstrumentsWidgetComponent implements OnInit {
-  @Input() public shouldShowSettings!: boolean;
+  shouldShowSettings: boolean = false;
   @Input() public guid!: string;
   @Input()
   isBlockWidget!: boolean;
-  @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
 
   settings$!: Observable<AllInstrumentsSettings>;
   showBadge$!: Observable<boolean>;
@@ -38,7 +35,7 @@ export class AllInstrumentsWidgetComponent implements OnInit {
   }
 
   onSettingsChange() {
-    this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+    this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {

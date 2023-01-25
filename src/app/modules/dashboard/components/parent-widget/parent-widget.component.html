@@ -6,60 +6,48 @@
 >
   <ng-container [ngSwitch]="widget.widgetType">
     <ats-orderbook-widget *ngSwitchCase="'order-book'"
-                          [(shouldShowSettings)]="shouldShowSettings"
                           [guid]="getGuid()"
                           [isBlockWidget]="isBlockWidget"
     ></ats-orderbook-widget>
     <ats-scalper-order-book-widget *ngSwitchCase="'scalper-order-book'"
-                                   [(shouldShowSettings)]="shouldShowSettings"
                                    [guid]="getGuid()"
                                    [isActive]="(isWidgetActivated$ | async) ?? false"
                                    [isBlockWidget]="isBlockWidget"
     ></ats-scalper-order-book-widget>
     <ats-light-chart-widget *ngSwitchCase="'light-chart'"
-                            [(shouldShowSettings)]="shouldShowSettings"
                             [guid]="getGuid()"
                             [isBlockWidget]="isBlockWidget"
     ></ats-light-chart-widget>
     <ats-instrument-select-widget *ngSwitchCase="'instrument-select'"
-                                  [(shouldShowSettings)]="shouldShowSettings"
                                   [guid]="getGuid()"
                                   [isBlockWidget]="isBlockWidget"></ats-instrument-select-widget>
     <ats-blotter-widget *ngSwitchCase="'blotter'"
-                        [(shouldShowSettings)]="shouldShowSettings"
                         [guid]="getGuid()"
                         [isBlockWidget]="isBlockWidget"></ats-blotter-widget>
     <ats-info-widget *ngSwitchCase="'instrument-info'"
-                     [(shouldShowSettings)]="shouldShowSettings"
                      [guid]="getGuid()"
                      [isBlockWidget]="isBlockWidget"></ats-info-widget>
     <ats-all-trades-widget *ngSwitchCase="'all-trades'"
-                           [(shouldShowSettings)]="shouldShowSettings"
                            [guid]="getGuid()"
                            [isBlockWidget]="isBlockWidget"
     ></ats-all-trades-widget>
     <ats-news-widget *ngSwitchCase="'news'"
-                     [(shouldShowSettings)]="shouldShowSettings"
                      [guid]="getGuid()"
                      [isBlockWidget]="isBlockWidget"
     ></ats-news-widget>
     <ats-exchange-rate-widget *ngSwitchCase="'exchange-rate'"
-                              [(shouldShowSettings)]="shouldShowSettings"
                               [guid]="getGuid()"
                               [isBlockWidget]="isBlockWidget"
     ></ats-exchange-rate-widget>
     <ats-tech-chart-widget *ngSwitchCase="'tech-chart'"
-                           [(shouldShowSettings)]="shouldShowSettings"
                            [guid]="getGuid()"
                            [isBlockWidget]="isBlockWidget"
     ></ats-tech-chart-widget>
     <ats-all-instruments-widget *ngSwitchCase="'all-instruments'"
-                                [(shouldShowSettings)]="shouldShowSettings"
                                 [guid]="getGuid()"
                                 [isBlockWidget]="isBlockWidget"
     ></ats-all-instruments-widget>
     <ats-order-submit-widget *ngSwitchCase="'order-submit'"
-                             [(shouldShowSettings)]="shouldShowSettings"
                              [guid]="getGuid()"
                              [isBlockWidget]="isBlockWidget"
     ></ats-order-submit-widget>

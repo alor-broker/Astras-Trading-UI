@@ -1,9 +1,7 @@
 import {
   Component,
-  EventEmitter,
   Input,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
@@ -24,13 +22,12 @@ import { InstrumentsService } from '../../../instruments/services/instruments.se
 import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
 
 @Component({
-  selector: 'ats-order-submit-widget[shouldShowSettings][guid][isBlockWidget]',
+  selector: 'ats-order-submit-widget[guid][isBlockWidget]',
   templateUrl: './order-submit-widget.component.html',
   styleUrls: ['./order-submit-widget.component.less']
 })
 export class OrderSubmitWidgetComponent implements OnInit {
-  @Input()
-  shouldShowSettings!: boolean;
+  shouldShowSettings: boolean = false;
   @Input()
   guid!: string;
   @Input()
@@ -39,9 +36,6 @@ export class OrderSubmitWidgetComponent implements OnInit {
   showBadge$!: Observable<boolean>;
 
   title$!: Observable<string>;
-
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -52,7 +46,7 @@ export class OrderSubmitWidgetComponent implements OnInit {
   }
 
   onSettingsChange() {
-    this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+    this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {

@@ -1,9 +1,7 @@
 import {
   Component,
-  EventEmitter,
   Input,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import { ScalperOrderBookService } from "../../services/scalper-order-book.service";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
@@ -28,21 +26,18 @@ import {
 } from '../../models/scalper-order-book-settings.model';
 
 @Component({
-  selector: 'ats-scalper-order-book-widget[shouldShowSettings][guid][isBlockWidget]',
+  selector: 'ats-scalper-order-book-widget[guid][isBlockWidget]',
   templateUrl: './scalper-order-book-widget.component.html',
   styleUrls: ['./scalper-order-book-widget.component.less'],
   providers: [ScalperOrderBookService]
 })
 export class ScalperOrderBookWidgetComponent implements OnInit {
-  @Input()
-  shouldShowSettings!: boolean;
+  shouldShowSettings: boolean = false;
 
   @Input()
   isBlockWidget!: boolean;
   @Input()
   guid!: string;
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
 
   @Input()
   isActive: boolean = false;
@@ -60,7 +55,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
   }
 
   onSettingsChange() {
-    this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+    this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {

@@ -1,9 +1,7 @@
 import {
   Component,
-  EventEmitter,
   Input,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import { TechChartDatafeedService } from "../../services/tech-chart-datafeed.service";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
@@ -25,20 +23,17 @@ import { InstrumentsService } from '../../../instruments/services/instruments.se
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 
 @Component({
-  selector: 'ats-tech-chart-widget[shouldShowSettings][guid][isBlockWidget]',
+  selector: 'ats-tech-chart-widget[guid][isBlockWidget]',
   templateUrl: './tech-chart-widget.component.html',
   styleUrls: ['./tech-chart-widget.component.less'],
   providers: [TechChartDatafeedService]
 })
 export class TechChartWidgetComponent implements OnInit {
-  @Input()
-  shouldShowSettings!: boolean;
+  shouldShowSettings: boolean = false;
   @Input()
   guid!: string;
   @Input()
   isBlockWidget!: boolean;
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<TechChartSettings>;
   showBadge$!: Observable<boolean>;
   title$!: Observable<string>;
@@ -52,7 +47,7 @@ export class TechChartWidgetComponent implements OnInit {
   }
 
   onSettingsChange() {
-    this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+    this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {

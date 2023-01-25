@@ -1,9 +1,7 @@
 import {
   Component,
-  EventEmitter,
   Input,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import {
   Observable,
@@ -33,15 +31,11 @@ import { InfoSettings } from '../../models/info-settings.model';
 })
 export class InfoWidgetComponent implements OnInit {
   @Input()
-  shouldShowSettings!: boolean;
-  @Input()
   guid!: string;
 
   @Input()
   isBlockWidget!: boolean;
 
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<InfoSettings>;
   showBadge$!: Observable<boolean>;
   title$!: Observable<string>;
