@@ -14,8 +14,8 @@ import { Subscription } from 'rxjs';
 import { initPortfolios } from './store/portfolios/portfolios.actions';
 import { map } from "rxjs/operators";
 import { rusLangLocales } from "./shared/utils/translation-helper";
-import { TranslocoService } from "@ngneat/transloco";
 import { en_US, NzI18nService, ru_RU } from "ng-zorro-antd/i18n";
+import { TranslatorService } from "./shared/services/translator.service";
 
 @Component({
   selector: 'ats-app-root',
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly sessionTrackService: SessionTrackService,
     private readonly terminalSettings: TerminalSettingsService,
     private readonly themeService: ThemeService,
-    private readonly translocoService: TranslocoService,
+    private readonly translatorService: TranslatorService,
     private readonly nzI18nService: NzI18nService
   ) {
   }
@@ -59,7 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(lang => {
-        this.translocoService.setActiveLang(lang);
+        this.translatorService.setActiveLang(lang);
         this.nzI18nService.setLocale(lang === 'en' ? en_US : ru_RU);
       });
   }

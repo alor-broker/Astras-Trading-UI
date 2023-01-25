@@ -69,7 +69,6 @@ import { StopOrder } from '../../../../shared/models/orders/stop-order.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
-import { TranslocoService } from "@ngneat/transloco";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { HashMap } from "@ngneat/transloco/lib/types";
 
@@ -164,7 +163,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly store: Store,
     private readonly orderCancellerService: OrderCancellerService,
-    private readonly translocoService: TranslocoService,
     private readonly translatorService: TranslatorService
   ) {
   }
@@ -211,11 +209,11 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.createChart(
         settings.widgetSettings,
         theme,
-        this.lastTheme && this.lastTheme.theme !== theme.theme || this.lastLang !== this.translocoService.getActiveLang()
+        this.lastTheme && this.lastTheme.theme !== theme.theme || this.lastLang !== this.translatorService.getActiveLang()
       );
 
       this.lastTheme = theme;
-      this.lastLang = this.translocoService.getActiveLang();
+      this.lastLang = this.translatorService.getActiveLang();
     });
   }
 
@@ -316,7 +314,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       container: this.chartContainer.nativeElement,
       symbol: `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
       interval: (settings.chartSettings?.['chart.lastUsedTimeBasedResolution'] ?? '1D') as ResolutionString,
-      locale: this.translocoService.getActiveLang() as LanguageCode,
+      locale: this.translatorService.getActiveLang() as LanguageCode,
       library_path: '/assets/charting_library/',
       custom_css_url: '../tv-custom-styles.css',
       datafeed: this.techChartDatafeedService,

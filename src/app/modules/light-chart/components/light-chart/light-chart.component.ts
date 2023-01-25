@@ -27,7 +27,7 @@ import { LightChartWrapper } from '../../utils/light-chart-wrapper';
 import { LightChartDatafeedFactoryService } from '../../services/light-chart-datafeed-factory.service';
 import { TimeframeValue } from '../../models/light-chart.models';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
@@ -63,7 +63,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, On
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly themeService: ThemeService,
     private readonly lightChartDatafeedFactoryService: LightChartDatafeedFactoryService,
-    private readonly translocoService: TranslocoService
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -118,7 +118,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, On
       this.settings$,
       this.timezoneConverterService.getConverter(),
       this.themeService.getThemeSettings(),
-      this.translocoService.langChanges$
+      this.translatorService.getLangChanges()
     ])
       .pipe(
         map(([ws, c, t, l]) => ({

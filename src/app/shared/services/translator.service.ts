@@ -16,6 +16,18 @@ export class TranslatorService {
     private readonly translocoService: TranslocoService
   ) {}
 
+  getActiveLang(): string {
+    return this.translocoService.getActiveLang();
+  }
+
+  setActiveLang(lang: string) {
+    this.translocoService.setActiveLang(lang);
+  }
+
+  getLangChanges() {
+    return this.translocoService.langChanges$;
+  }
+
   getTranslator(scope: string): Observable<TranslatorFn> {
     const scopePath = scope.length ? scope + '/' : '';
     return this.translocoService.selectTranslate('', {}, { scope }).pipe(

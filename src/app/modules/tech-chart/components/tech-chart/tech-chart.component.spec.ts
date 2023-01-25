@@ -26,7 +26,6 @@ import { WidgetsDataProviderService } from '../../../../shared/services/widgets-
 import { ModalService } from '../../../../shared/services/modal.service';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
-import { TranslocoService } from "@ngneat/transloco";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 
 describe('TechChartComponent', () => {
@@ -121,15 +120,10 @@ describe('TechChartComponent', () => {
           }
         },
         {
-          provide: TranslocoService,
-          useValue: {
-            getActiveLang: jasmine.createSpy('getActiveLang').and.returnValue('ru')
-          }
-        },
-        {
           provide: TranslatorService,
           useValue: {
-            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => '')),
+            getActiveLang: jasmine.createSpy('getActiveLang').and.returnValue('ru')
           }
         }
       ]
