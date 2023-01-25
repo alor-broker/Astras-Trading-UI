@@ -169,11 +169,12 @@ import { JoyrideModule } from 'ngx-joyride';
         InstrumentBoardSelectComponent,
         WidgetHeaderComponent,
         WidgetSkeletonComponent,
+        EditableStringComponent,
         // directives
         NumericalDirective,
         ShortNumberPipe,
         ResizeColumnDirective,
-        EditableStringComponent,
+
     ],
   providers: [
     { provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true },
