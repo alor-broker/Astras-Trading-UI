@@ -281,7 +281,7 @@
             </nz-form-control>
           </nz-form-item>
 
-          <h3>Рабочие объёмы</h3>
+          <h3>{{t('terminalSettings.workingVolumesHeader')}}</h3>
 
           <ng-container *ngIf="hotKeysForm.value.workingVolumes">
             <div class="working-volume" *ngFor="let ctrl of workingVolumes.controls; let i = index">

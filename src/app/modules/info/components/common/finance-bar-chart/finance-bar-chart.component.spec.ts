@@ -11,6 +11,7 @@ import {
   ThemeType
 } from '../../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../../shared/services/theme.service';
+import { TranslatorService } from "../../../../../shared/services/translator.service";
 
 describe('FinanceBarChartComponent', () => {
   let component: FinanceBarChartComponent;
@@ -74,6 +75,12 @@ describe('FinanceBarChartComponent', () => {
       declarations: [FinanceBarChartComponent],
       providers: [
         { provide: ThemeService, useValue: themeServiceSpy },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+          }
+        }
       ]
     })
       .compileComponents();

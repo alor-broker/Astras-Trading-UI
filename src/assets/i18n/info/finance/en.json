@@ -25,5 +25,8 @@
   "minFor52Weeks": "Min 52 weeks",
 
   "averageTurnoverPerDay": "Turnover per day",
-  "averageTurnoverPerMonth": "Turnover per month"
+  "averageTurnoverPerMonth": "Turnover per month",
+
+  "salesLabel": "Sales",
+  "incomeLabel": "Income"
 }

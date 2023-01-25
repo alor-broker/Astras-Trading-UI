@@ -25,5 +25,8 @@
   "minFor52Weeks": "Мин. 52 недели",
 
   "averageTurnoverPerDay": "Оборот за день",
-  "averageTurnoverPerMonth": "Оборот за месяц"
+  "averageTurnoverPerMonth": "Оборот за месяц",
+
+  "salesLabel": "Выручка",
+  "incomeLabel": "Чистая прибыль"
 }

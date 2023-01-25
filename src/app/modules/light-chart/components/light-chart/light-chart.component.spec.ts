@@ -10,6 +10,7 @@ import { ThemeService } from '../../../../shared/services/theme.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { LightChartDatafeedFactoryService } from '../../services/light-chart-datafeed-factory.service';
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
@@ -65,6 +66,12 @@ describe('LightChartComponent', () => {
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
         { provide: ThemeService, useValue: themeServiceSpy },
         { provide: LightChartDatafeedFactoryService, useValue: lightChartDatafeedFactoryService },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getLangChanges: jasmine.createSpy('getLangChanges').and.returnValue(of('ru'))
+          }
+        }
       ]
     }).compileComponents();
   });

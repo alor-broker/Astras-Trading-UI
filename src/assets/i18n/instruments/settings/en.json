@@ -8,5 +8,6 @@
   "addWatchlistBtnTooltip": "Add new list",
   "standardListPlaceholder": "Select standard list",
   "removeConfirmText": "Are you sure?",
-  "editWatchlistTooltip": "Edit"
+  "editWatchlistTooltip": "Edit",
+  "defaultWatchlist": "Default list"
 }

@@ -27,6 +27,7 @@ import {
 import { HistoryResponse } from "../../../shared/models/history/history-response.model";
 import { Candle } from "../../../shared/models/history/candle.model";
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
+import { TranslatorService } from "../../../shared/services/translator.service";
 
 describe('TechChartDatafeedService', () => {
   let service: TechChartDatafeedService;
@@ -51,7 +52,13 @@ describe('TechChartDatafeedService', () => {
         TechChartDatafeedService,
         { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
-        { provide: HistoryService, useValue: historyServiceSpy }
+        { provide: HistoryService, useValue: historyServiceSpy },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => 'Московская Биржа'))
+          }
+        }
       ]
     });
 

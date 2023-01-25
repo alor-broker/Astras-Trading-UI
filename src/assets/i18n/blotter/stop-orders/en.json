@@ -12,7 +12,11 @@
     },
     "side": {
       "name": "Side",
-      "tooltip": "Order side (buy/sell)"
+      "tooltip": "Order side (buy/sell)",
+      "listOfFilter": {
+        "buy": "Buy",
+        "sell": "Sell"
+      }
     },
     "residue": {
       "name": "Residue",
@@ -36,7 +40,12 @@
     },
     "status": {
       "name": "Status",
-      "tooltip": "Order status"
+      "tooltip": "Order status",
+      "listOfFilter": {
+        "filled": "Filled",
+        "working": "Active",
+        "canceled": "Canceled"
+      }
     },
     "conditionType": {
       "name": "Condition",
@@ -48,11 +57,19 @@
     },
     "exchange": {
       "name": "Exchange",
-      "tooltip": "Exchange name"
+      "tooltip": "Exchange name",
+      "listOfFilter": {
+        "MOEX": "MOEX",
+        "SPBX": "SPBX"
+      }
     },
     "type": {
       "name": "Type",
-      "tooltip": "Order type (limit/market)"
+      "tooltip": "Order type (limit/market)",
+      "listOfFilter": {
+        "limit": "Limit",
+        "market": "Market"
+      }
     },
     "endTime": {
       "name": "End time",
@@ -64,7 +81,7 @@
     "canceled": "Canceled",
     "working":  "Active"
   },
-  "emptyOrders": "There's no orders today",
+  "emptyOrders": "There are no orders today",
   "emptyOrdersWithFilters": "Nothing found with these filters",
   "cancelConfirm": "Are you sure?",
   "cancelAll": "Cancel all",
