@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import { OrderbookService } from '../../services/orderbook.service';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { OrderbookSettings } from '../../../../shared/models/settings/orderbook-settings.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import {
@@ -23,6 +22,7 @@ import {
   map
 } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { OrderbookSettings } from '../../models/orderbook-settings.model';
 
 @Component({
   selector: 'ats-orderbook-widget[shouldShowSettings][guid][isBlockWidget]',

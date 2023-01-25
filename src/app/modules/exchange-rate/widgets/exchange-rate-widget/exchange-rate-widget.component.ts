@@ -6,9 +6,9 @@ import {
   Output
 } from '@angular/core';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { ExchangeRateSettings } from '../../../../shared/models/settings/exchange-rate-settings.model';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { Observable } from 'rxjs';
+import { ExchangeRateSettings } from '../../models/exchange-rate-settings.model';
 
 
 @Component({

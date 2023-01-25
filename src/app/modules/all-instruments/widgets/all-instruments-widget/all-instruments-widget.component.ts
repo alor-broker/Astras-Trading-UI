@@ -6,15 +6,15 @@ import {
   Output
 } from '@angular/core';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import {
-  allInstrumentsColumns,
-  AllInstrumentsSettings
-} from '../../../../shared/models/settings/all-instruments-settings.model';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { Observable } from 'rxjs';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
+import {
+  allInstrumentsColumns,
+  AllInstrumentsSettings
+} from '../../model/all-instruments-settings.model';
 
 @Component({
   selector: 'ats-all-instruments-widget[shouldShowSettings][guid][isBlockWidget]',

@@ -8,7 +8,6 @@ import { AllTradesService } from "../../services/all-trades.service";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { DatePipe } from "@angular/common";
 import { startOfDay, toUnixTimestampSeconds } from "../../../../shared/utils/datetime";
-import { AllTradesSettings } from "../../../../shared/models/settings/all-trades-settings.model";
 import { filter, map, tap } from "rxjs/operators";
 import {
   BehaviorSubject,
@@ -23,6 +22,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
+import { AllTradesSettings } from '../../models/all-trades-settings.model';
 
 @Component({
   selector: 'ats-all-trades[guid]',

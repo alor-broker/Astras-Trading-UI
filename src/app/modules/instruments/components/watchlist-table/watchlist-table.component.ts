@@ -25,11 +25,6 @@ import {
   map
 } from 'rxjs/operators';
 import { getPropertyFromPath } from "../../../../shared/utils/object-helper";
-import {
-  allInstrumentsColumns,
-  ColumnIds,
-  InstrumentSelectSettings
-} from "../../../../shared/models/settings/instrument-select-settings.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
 import { WidgetNames } from "../../../../shared/models/enums/widget-names";
@@ -42,6 +37,11 @@ import { TerminalSettingsService } from "../../../terminal-settings/services/ter
 import { TableAutoHeightBehavior } from '../../../blotter/utils/table-auto-height.behavior';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import {
+  allInstrumentsColumns,
+  ColumnIds,
+  InstrumentSelectSettings
+} from '../../models/instrument-select-settings.model';
 
 @Component({
   selector: 'ats-watchlist-table[guid]',

@@ -24,10 +24,10 @@ import {
   takeUntil
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { OrderSubmitSettings } from "../../../../shared/models/settings/order-submit-settings.model";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { inputNumberValidation } from '../../../../shared/utils/validation-options';
+import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
 
 @Component({
   selector: 'ats-order-submit-settings[settingsChange][guid]',

@@ -1,6 +1,6 @@
-import { WidgetSettings } from "../widget-settings.model";
-import { TableDisplaySettings } from './table-display-settings.model';
-import { MarketType } from "../portfolio-key.model";
+import { WidgetSettings } from '../../../shared/models/widget-settings.model';
+import { MarketType } from '../../../shared/models/portfolio-key.model';
+import { TableDisplaySettings } from '../../../shared/models/settings/table-display-settings.model';
 
 export interface BlotterSettings extends WidgetSettings {
   activeTabIndex: number,

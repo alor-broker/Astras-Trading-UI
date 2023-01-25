@@ -12,7 +12,6 @@ import {
   CurrencyInstrument
 } from 'src/app/shared/models/enums/currencies.model';
 import { Exchanges } from 'src/app/shared/models/enums/exchanges';
-import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 import { OrdersNotificationsService } from 'src/app/shared/services/orders-notifications.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { formatCurrency } from 'src/app/shared/utils/formatters';
@@ -25,6 +24,7 @@ import { TerminalSettingsService } from "../../terminal-settings/services/termin
 import { MarketService } from "../../../shared/services/market.service";
 import { mapWith } from "../../../shared/utils/observable-helper";
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
+import { BlotterSettings } from '../models/blotter-settings.model';
 
 @Injectable()
 export class BlotterService {

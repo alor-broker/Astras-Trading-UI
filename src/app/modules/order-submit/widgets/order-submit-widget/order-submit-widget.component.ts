@@ -6,7 +6,6 @@ import {
   Output
 } from '@angular/core';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { OrderSubmitSettings } from '../../../../shared/models/settings/order-submit-settings.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
@@ -22,6 +21,7 @@ import {
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
 
 @Component({
   selector: 'ats-order-submit-widget[shouldShowSettings][guid][isBlockWidget]',

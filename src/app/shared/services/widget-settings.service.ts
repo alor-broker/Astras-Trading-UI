@@ -3,7 +3,6 @@ import {
   filter,
   Observable
 } from 'rxjs';
-import { AnySettings } from '../models/settings/any-settings.model';
 import { Store } from "@ngrx/store";
 import {
   getAllSettings,
@@ -24,19 +23,19 @@ export class WidgetSettingsService {
   constructor(private readonly store: Store, private readonly logger: LoggerService) {
   }
 
-  getSettings<T extends AnySettings>(guid: string): Observable<T> {
+  getSettings<T extends WidgetSettings>(guid: string): Observable<T> {
     return this.store.select(getSettingsByGuid(guid)).pipe(
       filter((s): s is T => !!s)
     );
   }
 
-  getSettingsOrNull<T extends AnySettings>(guid: string): Observable<T | null> {
+  getSettingsOrNull<T extends WidgetSettings>(guid: string): Observable<T | null> {
     return this.store.select(getSettingsByGuid(guid)).pipe(
       map(x => <T | null>x)
     );
   }
 
-  getSettingsByColor(color: string): Observable<AnySettings[]> {
+  getSettingsByColor(color: string): Observable<WidgetSettings[]> {
     return this.store.select(getAllSettings).pipe(
       map(s => s.filter(x => x.badgeColor === color))
     );
@@ -46,7 +45,7 @@ export class WidgetSettingsService {
     this.store.dispatch(addWidgetSettings({ settings }));
   }
 
-  updateSettings<T extends AnySettings>(guid: string, changes: Partial<T>) {
+  updateSettings<T extends WidgetSettings>(guid: string, changes: Partial<T>) {
     if (!guid) {
       this.logger.warn('WidgetSettingsService', 'updateSettings', 'GUID is empty');
       return;

@@ -11,9 +11,9 @@ import {
   Subject
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { AnySettings } from "../../../../shared/models/settings/any-settings.model";
 import { map } from "rxjs/operators";
 import { Widget } from '../../../../shared/models/dashboard/widget.model';
+import { WidgetSettings } from '../../../../shared/models/widget-settings.model';
 
 @Component({
   selector: 'ats-parent-widget[widget]',
@@ -38,7 +38,7 @@ export class ParentWidgetComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.isLinked$ = this.settingsService.getSettings<AnySettings>(this.getGuid()).pipe(
+    this.isLinked$ = this.settingsService.getSettings<WidgetSettings>(this.getGuid()).pipe(
       map(s => s.linkToActive ?? false)
     );
   }

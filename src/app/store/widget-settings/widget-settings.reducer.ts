@@ -7,19 +7,19 @@ import {
   EntityAdapter,
   EntityState
 } from "@ngrx/entity";
-import { AnySettings } from "../../shared/models/settings/any-settings.model";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
 import * as WidgetSettingsActions from "./widget-settings.actions";
 import { Update } from "@ngrx/entity/src/models";
 import { defaultBadgeColor } from "../../shared/utils/instruments";
+import { WidgetSettings } from '../../shared/models/widget-settings.model';
 
 export const widgetSettingsFeatureKey = 'widgetSettings';
 
-export interface State extends EntityState<AnySettings> {
+export interface State extends EntityState<WidgetSettings> {
   status: EntityStatus
 }
 
-export const adapter: EntityAdapter<AnySettings> = createEntityAdapter<AnySettings>({
+export const adapter: EntityAdapter<WidgetSettings> = createEntityAdapter<WidgetSettings>({
   selectId: model => model.guid
 });
 
@@ -72,7 +72,7 @@ export const reducer = createReducer(
     (state, {
       settingGuids
     }) => {
-      const updates: Update<AnySettings>[] = [];
+      const updates: Update<WidgetSettings>[] = [];
       settingGuids.forEach(s => updates.push({
         id: s,
         changes: {
@@ -97,7 +97,7 @@ export const reducer = createReducer(
       settingGuids,
       newPortfolioKey
     }) => {
-      const updates: Update<AnySettings>[] = [];
+      const updates: Update<WidgetSettings>[] = [];
       settingGuids.forEach(s => updates.push({
         id: s,
         changes: {

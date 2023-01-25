@@ -4,13 +4,13 @@ import {
   OnInit
 } from '@angular/core';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { OrdersBasketSettings } from '../../../../shared/models/settings/orders-basket-settings.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
+import { OrdersBasketSettings } from '../../models/orders-basket-settings.model';
 
 @Component({
   selector: 'ats-orders-basket-widget[guid][isBlockWidget]',

@@ -17,13 +17,6 @@ import {
 import { map } from 'rxjs/operators';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  allOrdersColumns,
-  allPositionsColumns,
-  allStopOrdersColumns,
-  allTradesColumns,
-  BlotterSettings
-} from "../../../../shared/models/settings/blotter-settings.model";
 import { MarketType } from "../../../../shared/models/portfolio-key.model";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
@@ -32,6 +25,13 @@ import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
+import {
+  allOrdersColumns,
+  allPositionsColumns,
+  allStopOrdersColumns,
+  allTradesColumns,
+  BlotterSettings
+} from '../../models/blotter-settings.model';
 
 @Component({
   selector: 'ats-blotter-widget[shouldShowSettings][guid][isBlockWidget]',

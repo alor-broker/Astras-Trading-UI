@@ -33,7 +33,6 @@ import { BlotterService } from '../../services/blotter.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { ExportHelper } from "../../utils/export-helper";
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import {
@@ -49,6 +48,7 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
+import { BlotterSettings } from '../../models/blotter-settings.model';
 
 interface DisplayOrder extends Order {
   residue: string,

@@ -31,10 +31,10 @@ import { InstrumentsService } from '../../services/instruments.service';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { InstrumentSelectSettings } from "../../../../shared/models/settings/instrument-select-settings.model";
 import { WatchlistCollection } from '../../models/watchlist.model';
 import { DOCUMENT } from '@angular/common';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 
 @Component({
   selector: 'ats-instrument-select[guid]',

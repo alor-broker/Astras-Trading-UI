@@ -1,6 +1,5 @@
-import { WidgetSettings } from "../widget-settings.model";
-import { InstrumentKey } from "../instruments/instrument-key.model";
-
+import { WidgetSettings } from '../../../shared/models/widget-settings.model';
+import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 export enum VolumeHighlightMode {
   Off = 'off',
   BiggestVolume = 'biggestVolume',

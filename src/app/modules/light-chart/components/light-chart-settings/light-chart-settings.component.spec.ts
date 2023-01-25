@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LightChartSettingsComponent } from './light-chart-settings.component';
 import { of } from 'rxjs';
-import { LightChartSettings } from 'src/app/shared/models/settings/light-chart-settings.model';
 import { AppModule } from 'src/app/app.module';
 import {
   getTranslocoModule,
@@ -10,6 +9,7 @@ import {
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { LightChartSettings } from '../../models/light-chart-settings.model';
 
 describe('LightChartSettingsComponent', () => {
   let component: LightChartSettingsComponent;

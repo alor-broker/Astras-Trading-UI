@@ -11,8 +11,8 @@ import {
 import { BlotterService } from "../../services/blotter.service";
 import { ForwardRisksView } from "../../models/forward-risks-view.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
+import { BlotterSettings } from '../../models/blotter-settings.model';
 
 @Component({
   selector: 'ats-forward-summary[guid]',

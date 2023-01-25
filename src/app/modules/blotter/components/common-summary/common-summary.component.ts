@@ -14,8 +14,8 @@ import {
 import { CommonSummaryView } from '../../models/common-summary-view.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
+import { BlotterSettings } from '../../models/blotter-settings.model';
 
 @Component({
   selector: 'ats-common-summary[guid]',

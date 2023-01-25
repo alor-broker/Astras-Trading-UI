@@ -10,9 +10,9 @@ import { WatchInstrumentsService } from '../../services/watch-instruments.servic
 import { WatchlistTableComponent } from './watchlist-table.component';
 import { getTranslocoModule, sharedModuleImportForTests } from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
-import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
+import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;

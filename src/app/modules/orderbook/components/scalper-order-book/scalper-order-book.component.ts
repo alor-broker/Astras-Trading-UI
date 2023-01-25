@@ -32,11 +32,6 @@ import {
   ScalperOrderBookRowType
 } from "../../models/scalper-order-book.model";
 import {
-  ScalperOrderBookSettings,
-  VolumeHighlightMode,
-  VolumeHighlightOption
-} from "../../../../shared/models/settings/scalper-order-book-settings.model";
-import {
   finalize,
   map,
   startWith,
@@ -48,7 +43,6 @@ import { Instrument } from "../../../../shared/models/instruments/instrument.mod
 import { HotKeyCommandService } from "../../../../shared/services/hot-key-command.service";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
-import { isEqualScalperOrderBookSettings } from "../../../../shared/utils/settings-helper";
 import { ScalperOrdersService } from "../../services/scalper-orders.service";
 import { ScalperOrderBookCommands } from "../../models/scalper-order-book-commands";
 import { TerminalCommand } from "../../../../shared/models/terminal-command";
@@ -64,6 +58,12 @@ import { Position } from '../../../../shared/models/positions/position.model';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { MathHelper } from "../../../../shared/utils/math-helper";
+import { isArrayEqual } from '../../../../shared/utils/collections';
+import {
+  ScalperOrderBookSettings,
+  VolumeHighlightMode,
+  VolumeHighlightOption
+} from '../../models/scalper-order-book-settings.model';
 
 type ExtendedSettings = { widgetSettings: ScalperOrderBookSettings, instrument: Instrument };
 
@@ -437,7 +437,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     );
 
     return this.settingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualScalperOrderBookSettings(previous, current)),
+      distinctUntilChanged((previous, current) => this.isEqualScalperOrderBookSettings(previous, current)),
       mapWith(
         settings => getInstrumentInfo(settings),
         (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedSettings)
@@ -453,6 +453,39 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       map(orders => orders.map(o => OrderBookDataFeedHelper.orderToCurrentOrder(o))),
       shareReplay({ bufferSize: 1, refCount: true })
     );
+  }
+
+  private isEqualScalperOrderBookSettings(
+    settings1: ScalperOrderBookSettings,
+    settings2: ScalperOrderBookSettings
+  ) : boolean {
+    if (settings1 && settings2) {
+      return (
+        settings1.badgeColor == settings2.badgeColor &&
+        settings1.guid == settings2.guid &&
+        settings1.symbol == settings2.symbol &&
+        settings1.instrumentGroup == settings2.instrumentGroup &&
+        settings1.linkToActive == settings2.linkToActive &&
+        settings1.exchange == settings2.exchange &&
+        settings1.depth == settings2.depth &&
+        settings1.showZeroVolumeItems == settings2.showZeroVolumeItems &&
+        settings1.showSpreadItems == settings2.showSpreadItems &&
+        settings1.volumeHighlightMode == settings2.volumeHighlightMode &&
+        isArrayEqual(
+          settings1.volumeHighlightOptions,
+          settings2.volumeHighlightOptions,
+          (a, b) => a.boundary === b.boundary && a.color === b.color
+        ) &&
+        isArrayEqual(
+          settings1.workingVolumes,
+          settings2.workingVolumes,
+          (a, b) => a === b
+        ) &&
+        settings1.disableHotkeys == settings2.disableHotkeys &&
+        settings1.enableMouseClickSilentOrders == settings2.enableMouseClickSilentOrders &&
+        settings1.autoAlignIntervalSec == settings2.autoAlignIntervalSec
+      );
+    } else return false;
   }
 
   private getOrderBookDataStream(settings$: Observable<ExtendedSettings>): Observable<OrderbookData> {

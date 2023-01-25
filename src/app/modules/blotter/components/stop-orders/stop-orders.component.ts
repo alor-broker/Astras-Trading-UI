@@ -40,7 +40,6 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { StopOrder } from 'src/app/shared/models/orders/stop-order.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
 import {
@@ -57,6 +56,7 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
+import { BlotterSettings } from '../../models/blotter-settings.model';
 
 interface DisplayOrder extends StopOrder {
   residue: string,

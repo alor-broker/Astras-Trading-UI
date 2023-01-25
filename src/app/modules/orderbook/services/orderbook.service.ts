@@ -9,7 +9,6 @@ import {
   switchMap,
 } from 'rxjs/operators';
 import { OrderbookData } from '../models/orderbook-data.model';
-import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import {
   ChartData,
@@ -27,6 +26,7 @@ import { OrderbookRequest } from '../models/orderbook-request.model';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { CurrentOrder } from '../models/scalper-order-book.model';
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
+import { OrderbookSettings } from '../models/orderbook-settings.model';
 
 @Injectable()
 export class OrderbookService {

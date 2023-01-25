@@ -20,7 +20,7 @@ import {
   allInstrumentsColumns,
   AllInstrumentsSettings,
   ColumnIds
-} from "../../../../shared/models/settings/all-instruments-settings.model";
+} from '../../model/all-instruments-settings.model';
 
 @Component({
   selector: 'ats-all-instruments-settings',

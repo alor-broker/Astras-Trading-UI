@@ -11,20 +11,19 @@ import {
 } from '@angular/core';
 import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, Subject, takeUntil } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
-import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
 import { TimeframesHelper } from '../../utils/timeframes-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ThemeService } from '../../../../shared/services/theme.service';
-import {
-  LightChartSettings,
-  TimeFrameDisplayMode
-} from '../../../../shared/models/settings/light-chart-settings.model';
 import { LightChartWrapper } from '../../utils/light-chart-wrapper';
 import { LightChartDatafeedFactoryService } from '../../services/light-chart-datafeed-factory.service';
 import { TimeframeValue } from '../../models/light-chart.models';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
+import {
+  LightChartSettings,
+  TimeFrameDisplayMode
+} from '../../models/light-chart-settings.model';
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
@@ -122,7 +121,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
       distinctUntilChanged((previous, current) =>
           !previous
           || (
-            isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
+            this.isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
             && previous.converter === current.converter
             && previous.theme?.theme === current.theme?.theme
           )
@@ -148,6 +147,26 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     });
+  }
+
+  private isEqualLightChartSettings(
+    settings1?: LightChartSettings,
+    settings2?: LightChartSettings
+  ) {
+    if (settings1 && settings2) {
+      return (
+        settings1.symbol == settings2.symbol &&
+        settings1.instrumentGroup == settings2.instrumentGroup &&
+        settings1.linkToActive == settings2.linkToActive &&
+        settings1.exchange == settings2.exchange &&
+        settings1.timeFrame == settings2.timeFrame &&
+        settings1.guid == settings2.guid &&
+        settings1.width == settings2.width &&
+        settings1.height == settings2.height &&
+        settings1.badgeColor == settings2.badgeColor &&
+        settings1.timeFrameDisplayMode == settings2.timeFrameDisplayMode
+      );
+    } else return false;
   }
 
   private setActiveTimeFrame(timeFrame: string) {

@@ -10,7 +10,6 @@ import {
   of,
   Subject
 } from "rxjs";
-import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
 import {
   ThemeColors,
   ThemeSettings,
@@ -26,6 +25,7 @@ import { WidgetsDataProviderService } from '../../../../shared/services/widgets-
 import { ModalService } from '../../../../shared/services/modal.service';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
+import { TechChartSettings } from '../../models/tech-chart-settings.model';
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;

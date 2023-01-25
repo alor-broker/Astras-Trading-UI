@@ -6,10 +6,6 @@ import {
   Output
 } from '@angular/core';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import {
-  AllTradesSettings,
-  allTradesWidgetColumns
-} from '../../../../shared/models/settings/all-trades-settings.model';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import {
@@ -25,6 +21,10 @@ import {
   map
 } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import {
+  AllTradesSettings,
+  allTradesWidgetColumns
+} from '../../models/all-trades-settings.model';
 
 @Component({
   selector: 'ats-all-trades-widget[guid][shouldShowSettings][isBlockWidget]',

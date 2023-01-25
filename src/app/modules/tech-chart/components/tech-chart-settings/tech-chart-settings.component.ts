@@ -19,9 +19,9 @@ import {
   takeUntil
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { TechChartSettings } from '../../models/tech-chart-settings.model';
 
 @Component({
   selector: 'ats-tech-chart-settings[settingsChange][guid]',

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from "rxjs";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import { ScalperOrderBookSettings } from "../../../shared/models/settings/scalper-order-book-settings.model";
 import {
   map,
   startWith,
@@ -21,6 +20,7 @@ import { SubscriptionsDataFeedService } from '../../../shared/services/subscript
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { OrderbookRequest } from '../models/orderbook-request.model';
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
+import { ScalperOrderBookSettings } from '../models/scalper-order-book-settings.model';
 
 @Injectable()
 export class ScalperOrderBookService {

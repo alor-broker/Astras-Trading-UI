@@ -54,7 +54,7 @@ describe('NavbarComponent', () => {
         ...ngZorroMockComponents,
         mockComponent({ selector: 'ats-widget-menu', inputs: ['showResetItem'] }),
         mockComponent({ selector: 'ats-notification-button' }),
-        mockComponent({ selector: 'ats-select-dashboard-menu' }),
+        mockComponent({ selector: 'ats-select-dashboard-menu', inputs: ['visibilityChange']}),
       ],
       providers: [
         { provide: ManageDashboardsService, useValue: spyDashboard },

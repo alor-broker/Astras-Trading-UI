@@ -12,7 +12,6 @@ import {
 import { ExchangeInfo } from '../../models/exchange-info.model';
 import { InfoService } from '../../services/info.service';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { InfoSettings } from '../../../../shared/models/settings/info-settings.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
@@ -24,6 +23,7 @@ import {
   map
 } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { InfoSettings } from '../../models/info-settings.model';
 
 @Component({
   selector: 'ats-info-widget[guid][isBlockWidget]',

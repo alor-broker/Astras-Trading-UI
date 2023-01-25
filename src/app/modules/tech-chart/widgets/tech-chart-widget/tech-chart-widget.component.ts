@@ -9,7 +9,6 @@ import { TechChartDatafeedService } from "../../services/tech-chart-datafeed.ser
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { TechChartSettings } from '../../../../shared/models/settings/tech-chart-settings.model';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import {
   Observable,
@@ -23,6 +22,7 @@ import {
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { TechChartSettings } from '../../models/tech-chart-settings.model';
 
 @Component({
   selector: 'ats-tech-chart-widget[shouldShowSettings][guid][isBlockWidget]',

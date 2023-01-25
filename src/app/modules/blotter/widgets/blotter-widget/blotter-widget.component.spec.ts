@@ -2,7 +2,6 @@ import {
   ComponentFixture,
   TestBed
 } from '@angular/core/testing';
-import { BlotterSettings } from 'src/app/shared/models/settings/blotter-settings.model';
 
 import { BlotterWidgetComponent } from './blotter-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -16,6 +15,7 @@ import {
 import { Store } from "@ngrx/store";
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { BlotterSettings } from '../../models/blotter-settings.model';
 
 describe('BlotterWidgetComponent', () => {
   let component: BlotterWidgetComponent;

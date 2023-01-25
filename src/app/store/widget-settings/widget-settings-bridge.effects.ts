@@ -37,37 +37,7 @@ import { InstrumentEqualityComparer } from '../../shared/utils/instruments';
 import { InstrumentKey } from '../../shared/models/instruments/instrument-key.model';
 
 @Injectable()
-export class WidgetSettingsBridgeEffects {/*
-  newInstrumentKeyByBadgeSelected$ = createEffect(() => {
-    const newInstrumentsWithBadges$ = this.store.select(getSelectedInstrumentsWithBadges).pipe(
-      filter(x => !!x),
-      map(x => x as { [badgeColor: string]: InstrumentKey }),
-      distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
-    );
-
-    const linkedWidgetSettings$ = this.store.select(getInstrumentLinkedSettings);
-
-    return this.store.select(selectWidgetSettingsState).pipe(
-      filter(x => x.status === EntityStatus.Success),
-      take(1),
-      switchMap(() => combineLatest([newInstrumentsWithBadges$, linkedWidgetSettings$])),
-      map(([badges, settings]) => {
-        const settingsToUpdate = settings.filter(s =>
-          !InstrumentEqualityComparer.equals(badges[s.badgeColor!] as InstrumentKey, s as InstrumentKey));
-        return {
-          settingsToUpdate,
-          badges
-        };
-      }),
-      filter(changes => changes.settingsToUpdate.length > 0),
-      map(changes => updateWidgetSettingsInstrumentWithBadge({
-          settingGuids: changes.settingsToUpdate.map(s => s.guid),
-          badges: changes.badges
-        })
-      )
-    );
-  });*/
-
+export class WidgetSettingsBridgeEffects {
   newInstrumentSelected$ = createEffect(() => {
     const dashboardSettingsUpdate$ = DashboardsStreams.getSelectedDashboard(this.store).pipe(
       filter(d => !!d.instrumentsSelection),
@@ -77,7 +47,7 @@ export class WidgetSettingsBridgeEffects {/*
         const dashboardWidgetGuids = d.items.map(x => x.guid);
         const settingsToUpdate = settings
           .filter(s => dashboardWidgetGuids.includes(s.guid))
-          .map(s => ({ guid: s.guid, groupKey: s.badgeColor!, instrumentKey: s as InstrumentKey }))
+          .map(s => ({ guid: s.guid, groupKey: s.badgeColor!, instrumentKey: (<any>s) as InstrumentKey }))
           .filter(s => !InstrumentEqualityComparer.equals(d.instrumentsSelection![s.groupKey], s.instrumentKey));
 
         return {
@@ -110,7 +80,7 @@ export class WidgetSettingsBridgeEffects {/*
         const dashboardWidgetGuids = d.items.map(x => x.guid);
         const settingsToUpdate = settings
           .filter(s => dashboardWidgetGuids.includes(s.guid))
-          .filter(s => !PortfolioKeyEqualityComparer.equals(d.selectedPortfolio, s as PortfolioKey));
+          .filter(s => !PortfolioKeyEqualityComparer.equals(d.selectedPortfolio, (<any>s) as PortfolioKey));
 
         return {
           settingsToUpdate,

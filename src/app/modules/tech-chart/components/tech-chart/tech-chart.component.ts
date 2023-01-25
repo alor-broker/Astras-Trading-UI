@@ -19,11 +19,6 @@ import {
   take,
   takeUntil
 } from 'rxjs';
-import { TechChartSettings } from '../../../../shared/models/settings/tech-chart-settings.model';
-import {
-  isEqualTechChartSettings,
-  isOrderSubmitSettings
-} from '../../../../shared/utils/settings-helper';
 import {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
@@ -68,6 +63,7 @@ import { OrderCancellerService } from '../../../../shared/services/order-cancell
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
 import { TranslocoService } from "@ngneat/transloco";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { TechChartSettings } from '../../models/tech-chart-settings.model';
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -215,13 +211,29 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualTechChartSettings(previous, current)),
+      distinctUntilChanged((previous, current) => this.isEqualTechChartSettings(previous, current)),
       mapWith(
         settings => getInstrumentInfo(settings),
         (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedSettings)
       ),
       shareReplay(1)
     );
+  }
+
+  private isEqualTechChartSettings(
+    settings1?: TechChartSettings,
+    settings2?: TechChartSettings
+  ) {
+    if (settings1 && settings2) {
+      return (
+        settings1.linkToActive == settings2.linkToActive &&
+        settings1.guid == settings2.guid &&
+        settings1.symbol == settings2.symbol &&
+        settings1.exchange == settings2.exchange &&
+        settings1.chartSettings == settings2.chartSettings &&
+        settings1.badgeColor == settings2.badgeColor
+      );
+    } else return false;
   }
 
   private initPositionStream() {
@@ -396,7 +408,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         (widgetSettings, relatedSettings) => ({ widgetSettings, relatedSettings })),
       take(1)
     ).subscribe(({ widgetSettings, relatedSettings }) => {
-      const submitOrderWidgetSettings = relatedSettings.filter(x => isOrderSubmitSettings(x));
+      const submitOrderWidgetSettings = relatedSettings.filter(x => x.settingsType === 'OrderSubmitSettings');
       const roundedPrice = MathHelper.round(price, MathHelper.getPrecision(widgetSettings.instrument.minstep));
 
       if (submitOrderWidgetSettings.length === 0 || !widgetSettings.widgetSettings.badgeColor) {

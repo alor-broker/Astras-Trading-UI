@@ -5,6 +5,6 @@ export interface WidgetSettings {
   settingsType?: string;
   badgeColor?: string;
   titleIcon?: string;
-}
 
-export type SettingsDraft<T extends WidgetSettings> = Omit<T, 'guid'>;
+  [key:string]:any;
+}

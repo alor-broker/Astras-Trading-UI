@@ -13,7 +13,7 @@ import {
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { OrderSubmitSettings } from '../../../../shared/models/settings/order-submit-settings.model';
+import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
 
 describe('OrderSubmitSettingsComponent', () => {
   let component: OrderSubmitSettingsComponent;

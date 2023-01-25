@@ -19,9 +19,9 @@ import {
 } from 'src/app/shared/utils/price';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from './watchlist-collection.service';
-import { InstrumentSelectSettings } from '../../../shared/models/settings/instrument-select-settings.model';
 import { InstrumentsService } from './instruments.service';
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
+import { InstrumentSelectSettings } from '../models/instrument-select-settings.model';
 
 @Injectable()
 export class WatchInstrumentsService {

@@ -6,16 +6,16 @@ import {
   Output
 } from '@angular/core';
 import { Observable } from 'rxjs';
-import {
-  allInstrumentsColumns,
-  InstrumentSelectSettings
-} from 'src/app/shared/models/settings/instrument-select-settings.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
+import {
+  allInstrumentsColumns,
+  InstrumentSelectSettings
+} from '../../models/instrument-select-settings.model';
 
 @Component({
   selector: 'ats-instrument-select-widget[guid][isBlockWidget]',

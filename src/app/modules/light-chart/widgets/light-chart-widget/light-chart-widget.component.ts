@@ -11,10 +11,6 @@ import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-se
 import { TimeframesHelper } from '../../utils/timeframes-helper';
 import { TimeframeValue } from '../../models/light-chart.models';
 import {
-  LightChartSettings,
-  TimeFrameDisplayMode
-} from '../../../../shared/models/settings/light-chart-settings.model';
-import {
   Observable,
   switchMap
 } from 'rxjs';
@@ -27,6 +23,10 @@ import {
   map
 } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import {
+  LightChartSettings,
+  TimeFrameDisplayMode
+} from '../../models/light-chart-settings.model';
 
 @Component({
   selector: 'ats-light-chart-widget[shouldShowSettings][guid][isBlockWidget]',

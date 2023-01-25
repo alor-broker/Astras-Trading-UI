@@ -14,7 +14,6 @@ import {
   withLatestFrom
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { AllInstrumentsSettings } from "../../../../shared/models/settings/all-instruments-settings.model";
 import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
@@ -27,6 +26,7 @@ import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
+import { AllInstrumentsSettings } from '../../model/all-instruments-settings.model';
 
 @Component({
   selector: 'ats-all-instruments',

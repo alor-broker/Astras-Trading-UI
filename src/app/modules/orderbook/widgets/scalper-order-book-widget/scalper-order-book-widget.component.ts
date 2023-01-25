@@ -7,10 +7,6 @@ import {
 } from '@angular/core';
 import { ScalperOrderBookService } from "../../services/scalper-order-book.service";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import {
-  ScalperOrderBookSettings,
-  VolumeHighlightMode
-} from '../../../../shared/models/settings/scalper-order-book-settings.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
@@ -26,6 +22,10 @@ import {
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import {
+  ScalperOrderBookSettings,
+  VolumeHighlightMode
+} from '../../models/scalper-order-book-settings.model';
 
 @Component({
   selector: 'ats-scalper-order-book-widget[shouldShowSettings][guid][isBlockWidget]',

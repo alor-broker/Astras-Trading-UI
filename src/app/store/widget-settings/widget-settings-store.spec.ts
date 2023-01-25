@@ -9,7 +9,6 @@ import { take } from "rxjs";
 import { LocalStorageService } from "../../shared/services/local-storage.service";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
 import { selectWidgetSettingsState } from "./widget-settings.selectors";
-import { AnySettings } from "../../shared/models/settings/any-settings.model";
 import { GuidGenerator } from "../../shared/utils/guid";
 import {
   addWidgetSettings,
@@ -19,6 +18,7 @@ import {
   updateWidgetSettings
 } from "./widget-settings.actions";
 import { InstrumentsService } from "../../modules/instruments/services/instruments.service";
+import { WidgetSettings } from '../../shared/models/widget-settings.model';
 
 describe('Widget Settings Store', () => {
   let store: Store;
@@ -28,7 +28,7 @@ describe('Widget Settings Store', () => {
   const settingsStorageKey = 'settings';
 
   const getTestSettings = (length: number) => {
-    const settings: AnySettings[] = [];
+    const settings: WidgetSettings[] = [];
 
     for (let i = 0; i < length; i++) {
       settings.push({
@@ -42,7 +42,7 @@ describe('Widget Settings Store', () => {
     return settings;
   };
 
-  const initSettings = (settings: AnySettings[]) => {
+  const initSettings = (settings: WidgetSettings[]) => {
     localStorageServiceSpy.getItem.and.callFake(() => {
       return settings.map(x => [x.guid, x]);
     });
@@ -105,7 +105,7 @@ describe('Widget Settings Store', () => {
         newSettings
       ];
 
-      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, AnySettings][]) => {
+      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, WidgetSettings][]) => {
         expect(key).toEqual(settingsStorageKey);
         expect(settings.map(x => x[1])).toEqual(expectedState);
       });
@@ -126,13 +126,13 @@ describe('Widget Settings Store', () => {
       initSettings(expectedSettings);
       tick();
 
-      const updatedSettings: AnySettings = {
+      const updatedSettings: WidgetSettings = {
         ...expectedSettings[0],
         width: Math.random() * 100,
         height: Math.random() * 100
       };
 
-      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, AnySettings][]) => {
+      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, WidgetSettings][]) => {
         expect(key).toEqual(settingsStorageKey);
         expect(settings.find(x => x[0] === updatedSettings.guid)![1]).toEqual(updatedSettings);
       });
@@ -160,7 +160,7 @@ describe('Widget Settings Store', () => {
 
       const settingsToRemove = expectedSettings[0];
 
-      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, AnySettings][]) => {
+      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, WidgetSettings][]) => {
         expect(key).toEqual(settingsStorageKey);
         expect(settings.find(x => x[0] === settingsToRemove.guid)).toBeUndefined();
       });
@@ -190,7 +190,7 @@ describe('Widget Settings Store', () => {
 
       tick();
 
-      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, AnySettings][]) => {
+      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, WidgetSettings][]) => {
         expect(key).toEqual(settingsStorageKey);
         expect(settings.length).toBe(0);
       });

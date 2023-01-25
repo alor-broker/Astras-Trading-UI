@@ -5,9 +5,9 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import { NewsSettings } from '../../../../shared/models/settings/news-settings.model';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import { NewsSettings } from '../../models/news-settings.model';
 
 @Component({
   selector: 'ats-news-widget[guid][shouldShowSettings][isBlockWidget]',

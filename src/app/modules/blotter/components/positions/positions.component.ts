@@ -34,7 +34,6 @@ import { Column } from '../../models/column.model';
 import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
@@ -48,6 +47,7 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
+import { BlotterSettings } from '../../models/blotter-settings.model';
 
 interface PositionDisplay extends Position {
   volume: number
