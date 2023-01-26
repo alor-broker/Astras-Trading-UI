@@ -14,7 +14,7 @@ export interface PortfolioKey {
 }
 
 export class PortfolioKeyEqualityComparer {
-  public static equals(a: PortfolioKey, b: PortfolioKey) {
+  public static equals(a?: PortfolioKey | null, b?: PortfolioKey | null) {
     return a?.portfolio === b?.portfolio && a?.exchange === b?.exchange;
   }
 }

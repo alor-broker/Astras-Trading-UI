@@ -7,11 +7,6 @@ import {
   Output
 } from '@angular/core';
 import {
-  allInstrumentsColumns,
-  ColumnIds,
-  InstrumentSelectSettings
-} from 'src/app/shared/models/settings/instrument-select-settings.model';
-import {
   UntypedFormControl,
   UntypedFormGroup
 } from '@angular/forms';
@@ -20,6 +15,11 @@ import {
   takeUntil
 } from 'rxjs';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import {
+  allInstrumentsColumns,
+  ColumnIds,
+  InstrumentSelectSettings
+} from '../../models/instrument-select-settings.model';
 
 @Component({
   selector: 'ats-instrument-select-settings[guid]',

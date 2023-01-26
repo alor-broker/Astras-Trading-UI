@@ -1,8 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { InstrumentSelectWidgetComponent } from './instrument-select-widget.component';
 import { mockComponent } from "../../../../shared/utils/testing";
-import { EventEmitter } from '@angular/core';
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { of } from 'rxjs';
+import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 
 describe('InstrumentSelectWidgetComponent', () => {
   let component: InstrumentSelectWidgetComponent;
@@ -15,8 +20,28 @@ describe('InstrumentSelectWidgetComponent', () => {
         InstrumentSelectWidgetComponent,
         mockComponent({
           selector: 'ats-instrument-select',
-          inputs: ['guid', 'shouldShowSettings', 'contentSize']
+          inputs: ['guid']
+        }),
+        mockComponent({
+          selector: 'ats-instrument-select-settings',
+          inputs: ['guid',]
         })
+      ],
+      providers: [
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettingsOrNull: jasmine.createSpy('getSettingsOrNull').and.returnValue(of(null)),
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+            addSettings: jasmine.createSpy('addSettings').and.callThrough()
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            terminalSettingsService: of({})
+          }
+        },
       ]
     }).compileComponents();
   });
@@ -24,7 +49,6 @@ describe('InstrumentSelectWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(InstrumentSelectWidgetComponent);
     component = fixture.componentInstance;
-    component.resize = new EventEmitter();
     fixture.detectChanges();
   });
 

@@ -186,7 +186,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
       opcode: 'BarsGetAndSubscribe',
       code: instrumentKey.symbol,
       exchange: instrumentKey.exchange,
-      instrumentGroup: instrumentKey.instrumentGroup,
+      instrumentGroup: instrumentKey.instrumentGroup ?? null,
       format: 'simple',
       tf: this.parseTimeframe(resolution),
       from: this.lastBarPoint.get(this.getLastBarPointKey(instrumentKey, resolution)) ?? this.getDefaultLastHistoryPoint()

@@ -1,4 +1,7 @@
-import { MarketType } from "../models/portfolio-key.model";
+import {
+  MarketType,
+  PortfolioKey
+} from "../models/portfolio-key.model";
 import { PortfolioExtended } from '../models/user/portfolio-extended.model';
 
 export function getMarketTypeByPortfolio(portfolio: string): MarketType | undefined {
@@ -47,4 +50,29 @@ export function groupPortfoliosByAgreement(portfolios: PortfolioExtended[]): Map
     });
 
   return sortedPortfolios;
+}
+
+export function isPortfoliosEqual(portfolio1: PortfolioKey | null, portfolio2?: PortfolioKey | null) {
+  return portfolio1?.portfolio === portfolio2?.portfolio
+    && portfolio1?.exchange == portfolio2?.exchange
+    && portfolio1?.marketType == portfolio2?.marketType;
+}
+
+export function getDefaultPortfolio(allPortfolios: PortfolioKey[], defaultExchange: string | null): PortfolioKey | null {
+  let suitablePortfolios = allPortfolios;
+  if (defaultExchange) {
+    let exchangeFilteredPortfolios = suitablePortfolios.filter(x => x.exchange === defaultExchange);
+    if (exchangeFilteredPortfolios.length > 0) {
+      suitablePortfolios = exchangeFilteredPortfolios;
+    }
+  }
+
+  const typeFilteredPortfolios = suitablePortfolios.filter(x => x.marketType === MarketType.Stock);
+  if (typeFilteredPortfolios.length > 0) {
+    suitablePortfolios = typeFilteredPortfolios;
+  }
+
+  return suitablePortfolios.length > 0
+    ? suitablePortfolios[0]
+    : null;
 }

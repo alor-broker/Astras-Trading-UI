@@ -23,10 +23,6 @@ import {
   getRandomInt,
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
-import {
-  ScalperOrderBookSettings,
-  VolumeHighlightMode
-} from "../../../../shared/models/settings/scalper-order-book-settings.model";
 import { ScalperOrderBookService } from "../../services/scalper-order-book.service";
 import { TerminalSettings } from "../../../../shared/models/terminal-settings/terminal-settings.model";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
@@ -47,6 +43,10 @@ import {
 } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { TranslocoTestingModule } from "@ngneat/transloco";
+import {
+  ScalperOrderBookSettings,
+  VolumeHighlightMode
+} from '../../models/scalper-order-book-settings.model';
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;

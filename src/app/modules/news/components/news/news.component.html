@@ -1,9 +1,14 @@
-<ats-infinite-scroll-table
-  [tableContainerHeight]="tableContainerHeight"
-  [tableContainerWidth]="tableContainerWidth"
-  [data]="newsList"
-  [isLoading]="isLoading"
-  [columns]="(columns$ | async) || []"
-  (scrolled)="scrolled()"
-  (rowClick)="openNewsModal($event)"
-></ats-infinite-scroll-table>
+<div class="container"
+  nzResizeObserver
+  (nzResizeObserve)="containerSizeChanged($event)">
+  <ats-infinite-scroll-table
+    [tableContainerHeight]="tableContainerHeight"
+    [tableContainerWidth]="tableContainerWidth"
+    [data]="newsList"
+    [isLoading]="isLoading"
+    [columns]="(columns$ | async) || []"
+    (scrolled)="scrolled()"
+    (rowClick)="openNewsModal($event)"
+  ></ats-infinite-scroll-table>
+</div>
+

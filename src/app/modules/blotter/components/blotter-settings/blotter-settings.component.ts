@@ -11,14 +11,6 @@ import {
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import {
-  allOrdersColumns,
-  allPositionsColumns,
-  allStopOrdersColumns,
-  allTradesColumns,
-  BlotterSettings,
-  ColumnIds
-} from 'src/app/shared/models/settings/blotter-settings.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   Observable,
@@ -39,6 +31,14 @@ import {
 } from 'rxjs/operators';
 import { EntityStatus } from '../../../../shared/models/enums/entity-status';
 import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios';
+import {
+  allOrdersColumns,
+  allPositionsColumns,
+  allStopOrdersColumns,
+  allTradesColumns,
+  BlotterSettings,
+  ColumnIds
+} from '../../models/blotter-settings.model';
 
 @Component({
   selector: 'ats-blotter-settings[guid]',

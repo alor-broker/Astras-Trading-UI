@@ -1,12 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Store } from "@ngrx/store";
-import {
-  filter,
-  Observable
-} from "rxjs";
+import { Observable } from "rxjs";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import { getSelectedPortfolioKey } from "../../../store/portfolios/portfolios.selectors";
-import { ScalperOrderBookSettings } from "../../../shared/models/settings/scalper-order-book-settings.model";
 import {
   map,
   startWith,
@@ -25,13 +19,15 @@ import { Position } from '../../../shared/models/positions/position.model';
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { OrderbookRequest } from '../models/orderbook-request.model';
+import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
+import { ScalperOrderBookSettings } from '../models/scalper-order-book-settings.model';
 
 @Injectable()
 export class ScalperOrderBookService {
   constructor(
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly store: Store,
+    private readonly currentDashboardService: DashboardContextService,
     private readonly httpClient: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService
   ) {
@@ -79,9 +75,6 @@ export class ScalperOrderBookService {
   }
 
   private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.store.select(getSelectedPortfolioKey)
-      .pipe(
-        filter((p): p is PortfolioKey => !!p)
-      );
+    return this.currentDashboardService.selectedPortfolio$;
   }
 }

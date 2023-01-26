@@ -21,14 +21,14 @@ import {
   UntypedFormGroup,
   Validators
 } from "@angular/forms";
+import { exchangesList } from "../../../../shared/models/enums/exchanges";
+import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import {
   ScalperOrderBookSettings,
   VolumeHighlightMode,
   VolumeHighlightOption
-} from "../../../../shared/models/settings/scalper-order-book-settings.model";
-import { exchangesList } from "../../../../shared/models/enums/exchanges";
-import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+} from '../../models/scalper-order-book-settings.model';
 
 @Component({
   selector: 'ats-scalper-order-book-settings[settingsChange][guid]',

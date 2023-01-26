@@ -150,7 +150,7 @@ export const ngZorroMockComponents = [
   mockDirective({selector: '[nzPopoverTitle]', inputs: ['nzPopoverTitle']}),
   mockDirective({
     selector: '[nz-button]',
-    inputs: ['nzDropdownMenu', 'title', 'text', 'nzLoading', 'nzType']
+    inputs: ['nzDropdownMenu', 'title', 'text', 'nzLoading', 'nzType', 'nzClickHide', 'nzVisible']
   }),
   mockDirective({
     selector: '[nz-icon]',
@@ -161,6 +161,15 @@ export const ngZorroMockComponents = [
     inputs: ['nzTooltipTitle', 'nzTooltipTrigger', 'nzTooltipPlacement', 'nzTooltipMouseEnterDelay']
   })
 ];
+
+
+/**
+ *  ats-widget-skeleton mock
+ */
+export const widgetSkeletonMock = mockComponent({
+  selector: 'ats-widget-skeleton',
+  inputs: ['content', 'header', 'settings', 'showContentScroll', 'showSettings', 'isBlockWidget']
+});
 
 /**
  *  SharedModule requires store module registered for root

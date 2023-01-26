@@ -1,26 +1,21 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnInit
 } from '@angular/core';
-import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import {
   distinctUntilChanged,
   Observable,
-  Subscription,
   switchMap
 } from "rxjs";
 import { BlotterService } from "../../services/blotter.service";
 import { ForwardRisksView } from "../../models/forward-risks-view.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
-import {
-  isEqualPortfolioDependedSettings
-} from "../../../../shared/utils/settings-helper";
+import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
+import { BlotterSettings } from '../../models/blotter-settings.model';
 
 @Component({
-  selector: 'ats-forward-summary[guid][resize]',
+  selector: 'ats-forward-summary[guid]',
   templateUrl: './forward-summary.component.html',
   styleUrls: ['./forward-summary.component.less']
 })
@@ -29,14 +24,8 @@ export class ForwardSummaryComponent implements OnInit {
   shouldShowSettings!: boolean;
   @Input()
   guid!: string;
-  @Input()
-  resize!: EventEmitter<DashboardItem>;
-
   summary$!: Observable<ForwardRisksView>;
-
   columns: number = 1;
-
-  private resizeSub?: Subscription;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -49,19 +38,24 @@ export class ForwardSummaryComponent implements OnInit {
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getForwardRisks(settings))
     );
+  }
 
-    this.resizeSub = this.resize.subscribe(i => {
-      if (i.width) {
-        if (i.width <= 600) {
-          this.columns = 1;
-        } else if (i.width < 900) {
-          this.columns = 2;
-        } else if (i.width < 1500) {
-          this.columns = 3;
-        } else {
-          this.columns = 4;
-        }
+  containerSizeChanged(entries: ResizeObserverEntry[]) {
+    entries.forEach(x => {
+      const width = Math.floor(x.contentRect.width);
+      if (width <= 600) {
+        this.columns = 1;
       }
+      else if (width < 900) {
+        this.columns = 2;
+      }
+      else if (width < 1500) {
+        this.columns = 3;
+      }
+      else {
+        this.columns = 4;
+      }
+
     });
   }
 }

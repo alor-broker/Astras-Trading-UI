@@ -21,8 +21,6 @@ import {
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { OrderSubmitSettings } from "../../../../shared/models/settings/order-submit-settings.model";
-import { isEqualOrderSubmitSettings } from "../../../../shared/utils/settings-helper";
 import {
   OrderFormUpdate,
   OrderType
@@ -38,10 +36,7 @@ import {
   map,
   startWith
 } from "rxjs/operators";
-import { Store } from "@ngrx/store";
 import { OrderService } from "../../../../shared/services/orders/order.service";
-import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { getSelectedPortfolioKey } from "../../../../store/portfolios/portfolios.selectors";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
@@ -54,6 +49,9 @@ import { SubscriptionsDataFeedService } from '../../../../shared/services/subscr
 import { OrderbookData } from '../../../orderbook/models/orderbook-data.model';
 import { OrderbookRequest } from '../../../orderbook/models/orderbook-request.model';
 import { OrderBookDataFeedHelper } from '../../../orderbook/utils/order-book-data-feed.helper';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { isArrayEqual } from '../../../../shared/utils/collections';
+import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
 
 @Component({
   selector: 'ats-order-submit[guid]',
@@ -93,7 +91,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     private readonly instrumentService: InstrumentsService,
     private readonly quotesService: QuotesService,
     private readonly orderService: OrderService,
-    private readonly store: Store,
+    private readonly currentDashboardService: DashboardContextService,
     private readonly widgetsDataProvider: WidgetsDataProviderService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
@@ -107,12 +105,11 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<OrderSubmitSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualOrderSubmitSettings(previous, current)),
+      distinctUntilChanged((previous, current) => this.isEqualOrderSubmitSettings(previous, current)),
       shareReplay(1)
     );
 
-    const currentPortfolio$ = this.store.select(getSelectedPortfolioKey).pipe(
-      filter((p): p is PortfolioKey => !!p),
+    const currentPortfolio$ = this.currentDashboardService.selectedPortfolio$.pipe(
       map(p => p.portfolio),
     );
 
@@ -180,6 +177,24 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     );
 
     this.initCurrentAskBid();
+  }
+
+  private isEqualOrderSubmitSettings(
+    settings1?: OrderSubmitSettings,
+    settings2?: OrderSubmitSettings
+  ) {
+    if (settings1 && settings2) {
+      return (
+        settings1.linkToActive == settings2.linkToActive &&
+        settings1.guid == settings2.guid &&
+        settings1.symbol == settings2.symbol &&
+        settings1.exchange == settings2.exchange &&
+        settings1.enableLimitOrdersFastEditing == settings2.enableLimitOrdersFastEditing &&
+        isArrayEqual(settings1.limitOrderPriceMoveSteps, settings2.limitOrderPriceMoveSteps, (a, b) => a === b) &&
+        settings1.showVolumePanel == settings2.showVolumePanel &&
+        isArrayEqual(settings1.workingVolumes, settings2.workingVolumes, (a, b) => a === b)
+      );
+    } else return false;
   }
 
   setLimitOrderValue(value: LimitOrderFormValue | null) {

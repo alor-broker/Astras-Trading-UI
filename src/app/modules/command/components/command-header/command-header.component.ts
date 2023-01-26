@@ -1,4 +1,9 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -11,17 +16,18 @@ import {
 } from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import { getDayChange, getDayChangePerPrice } from 'src/app/shared/utils/price';
+import {
+  getDayChange,
+  getDayChangePerPrice
+} from 'src/app/shared/utils/price';
 import { PriceData } from '../../models/price-data.model';
 import { PositionsService } from 'src/app/shared/services/positions.service';
-import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
-import { Store } from '@ngrx/store';
-import { getSelectedPortfolioKey } from '../../../../store/portfolios/portfolios.selectors';
 import { Position } from '../../../../shared/models/positions/position.model';
 import { startWith } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { CommandsService } from "../../services/commands.service";
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 
 @Component({
   selector: 'ats-command-header[instrument]',
@@ -37,7 +43,7 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
     private readonly commandsService: CommandsService,
     private readonly history: HistoryService,
     private readonly positionService: PositionsService,
-    private readonly store: Store) {
+    private readonly currentDashboardService: DashboardContextService) {
   }
 
   @Input()
@@ -56,9 +62,7 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
         shareReplay()
       );
 
-    const portfolio$ = this.store.select(getSelectedPortfolioKey).pipe(
-      filter((p): p is PortfolioKey => !!p)
-    );
+    const portfolio$ = this.currentDashboardService.selectedPortfolio$;
 
     const position$ = combineLatest([instrument$, portfolio$]).pipe(
       switchMap(([instrument, portfolio]) => this.positionService.getByPortfolio(portfolio.portfolio, portfolio.exchange, instrument.symbol)),

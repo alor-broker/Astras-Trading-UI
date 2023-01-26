@@ -34,14 +34,10 @@ import { Column } from '../../models/column.model';
 import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { InstrumentBadges } from "../../../../shared/models/instruments/instrument.model";
-import { Store } from "@ngrx/store";
-import { getSelectedInstrumentsWithBadges } from "../../../../store/instruments/instruments.selectors";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
@@ -49,6 +45,9 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
+import { BlotterSettings } from '../../models/blotter-settings.model';
 
 interface PositionDisplay extends Position {
   volume: number
@@ -72,7 +71,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayPositions$: Observable<PositionDisplay[]> = of([]);
   searchFilter = new BehaviorSubject<PositionFilter>({});
-  selectedInstruments$: Observable<InstrumentBadges> = of({});
+  selectedInstruments$: Observable<InstrumentGroups> = of({});
   scrollHeight$: Observable<number> = of(100);
   tableInnerWidth: number = 1000;
   allColumns: Column<PositionDisplay, PositionFilter>[] = [
@@ -228,7 +227,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private readonly service: BlotterService,
     private readonly settingsService: WidgetSettingsService,
-    private readonly store: Store,
+    private readonly dashboardContextService: DashboardContextService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly translatorService: TranslatorService
   ) {
@@ -300,7 +299,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     this.selectedInstruments$ = combineLatest([
-      this.store.select(getSelectedInstrumentsWithBadges),
+      this.dashboardContextService.instrumentsSelection$,
       this.terminalSettingsService.getSettings()
     ])
       .pipe(

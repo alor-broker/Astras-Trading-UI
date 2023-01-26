@@ -14,9 +14,9 @@ import {
   BehaviorSubject,
   of
 } from 'rxjs';
-import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { WatchlistCollection } from '../../models/watchlist.model';
+import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 
 describe('InstrumentSelectComponent', () => {
   let component: InstrumentSelectComponent;

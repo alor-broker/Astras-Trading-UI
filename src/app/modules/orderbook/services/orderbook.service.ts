@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
   combineLatest,
-  filter,
   Observable
 } from 'rxjs';
 import {
@@ -10,7 +9,6 @@ import {
   switchMap,
 } from 'rxjs/operators';
 import { OrderbookData } from '../models/orderbook-data.model';
-import { OrderbookSettings } from '../../../shared/models/settings/orderbook-settings.model';
 import { OrderBookViewRow } from '../models/orderbook-view-row.model';
 import {
   ChartData,
@@ -19,8 +17,6 @@ import {
 } from '../models/orderbook.model';
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
-import { Store } from '@ngrx/store';
-import { getSelectedPortfolioKey } from '../../../store/portfolios/portfolios.selectors';
 import { Side } from "../../../shared/models/enums/side.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
@@ -29,6 +25,8 @@ import { SubscriptionsDataFeedService } from '../../../shared/services/subscript
 import { OrderbookRequest } from '../models/orderbook-request.model';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { CurrentOrder } from '../models/scalper-order-book.model';
+import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
+import { OrderbookSettings } from '../models/orderbook-settings.model';
 
 @Injectable()
 export class OrderbookService {
@@ -36,7 +34,7 @@ export class OrderbookService {
   constructor(
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly store: Store,
+    private readonly currentDashboardService: DashboardContextService,
     private readonly canceller: OrderCancellerService
   ) {
   }
@@ -95,14 +93,14 @@ export class OrderbookService {
   }
 
   private toOrderBookRows(orderBookData: OrderbookData): OrderBookViewRow[] {
-    const rows:  OrderBookViewRow[] = [];
+    const rows: OrderBookViewRow[] = [];
 
-    if(orderBookData.a.length === 0 && orderBookData.b.length === 0) {
+    if (orderBookData.a.length === 0 && orderBookData.b.length === 0) {
       return [];
     }
 
     for (let i = 0; i < Math.max(orderBookData.a.length, orderBookData.b.length); i++) {
-      const row : OrderBookViewRow = {
+      const row: OrderBookViewRow = {
         ask: orderBookData.a[i]?.p ?? 0,
         askVolume: orderBookData.a[i]?.v ?? 0,
         yieldAsk: orderBookData.a[i]?.y ?? 0,
@@ -172,9 +170,6 @@ export class OrderbookService {
   }
 
   private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.store.select(getSelectedPortfolioKey)
-      .pipe(
-        filter((p): p is PortfolioKey => !!p)
-      );
+    return this.currentDashboardService.selectedPortfolio$;
   }
 }

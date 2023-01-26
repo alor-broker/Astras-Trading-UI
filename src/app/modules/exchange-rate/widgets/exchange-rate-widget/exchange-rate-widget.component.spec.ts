@@ -1,7 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { ExchangeRateWidgetComponent } from './exchange-rate-widget.component';
-import { mockComponent } from "../../../../shared/utils/testing";
+import {
+  mockComponent,
+  widgetSkeletonMock
+} from "../../../../shared/utils/testing";
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { of } from 'rxjs';
 
 describe('ExchangeRateWidgetComponent', () => {
   let component: ExchangeRateWidgetComponent;
@@ -13,11 +21,22 @@ describe('ExchangeRateWidgetComponent', () => {
         ExchangeRateWidgetComponent,
         mockComponent({
           selector: 'ats-exchange-rate',
-          inputs: ['guid', 'shouldShowSettings', 'resize']
-        })
+          inputs: ['guid']
+        }),
+        widgetSkeletonMock
+      ],
+      providers: [
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettingsOrNull: jasmine.createSpy('getSettingsOrNull').and.returnValue(of(null)),
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+            addSettings: jasmine.createSpy('addSettings').and.callThrough()
+          }
+        }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

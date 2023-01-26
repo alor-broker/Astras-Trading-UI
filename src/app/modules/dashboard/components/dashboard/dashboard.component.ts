@@ -1,24 +1,36 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
 import {
   CompactType,
   DisplayGrid,
   Draggable,
   GridsterConfig,
+  GridsterItem,
   GridType,
   PushDirections,
   Resizable,
 } from 'angular-gridster2';
-import { map, Observable } from 'rxjs';
-import { Widget } from 'src/app/shared/models/widget.model';
-import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
-import { DashboardService } from 'src/app/shared/services/dashboard.service';
-import { mobileBreakpoint } from "../../../../shared/utils/device-helper";
+import {
+  map,
+  Observable
+} from 'rxjs';
+import { ManageDashboardsService } from 'src/app/shared/services/manage-dashboards.service';
+import {
+  DashboardItemPosition,
+  Widget
+} from '../../../../shared/models/dashboard/widget.model';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { mobileBreakpoint } from '../../../../shared/utils/device-helper';
 
 interface Safe extends GridsterConfig {
   draggable: Draggable;
   resizable: Resizable;
   pushDirections: PushDirections;
 }
+
+type WidgetItem = { widget: Widget, gridsterItem: GridsterItem };
 
 @Component({
   selector: 'ats-dashboard',
@@ -27,12 +39,13 @@ interface Safe extends GridsterConfig {
 })
 export class DashboardComponent implements OnInit {
   options!: Safe;
-  dashboard$?: Observable<Widget[]>;
-
-  resize: EventEmitter<DashboardItem> = new EventEmitter<DashboardItem>();
+  items$?: Observable<WidgetItem[]>;
   isBlockWidget = false;
 
-  constructor(private service: DashboardService) {
+  constructor(
+    private readonly manageDashboardsService: ManageDashboardsService,
+    private readonly dashboardContextService: DashboardContextService
+  ) {
   }
 
   ngOnInit(): void {
@@ -107,21 +120,35 @@ export class DashboardComponent implements OnInit {
       disableWindowResize: false,
       disableWarnings: true,
       scrollToNewItems: false,
-      itemResizeCallback: (item, e) => {
-        if (e.resize.resizeEnabled) {
-          this.resize.emit({...item, height: e.height, width: e.width });
-        }
-        else {
-          this.resize.emit({...item, height: e.el.clientHeight, width: e.el.clientWidth });
-        }
-      },
-      itemChangeCallback: () => {
-        this.service.saveDashboard('default');
+      itemChangeCallback: gridItem => {
+        this.updateWidgetPosition(
+          gridItem.guid,
+          {
+            x: gridItem.x,
+            y: gridItem.y,
+            cols: gridItem.cols,
+            rows: gridItem.rows
+          }
+        );
       }
     };
 
-    this.dashboard$ = this.service.dashboard$.pipe(
-      map(map => Array.from(map.values()))
+    this.items$ = this.dashboardContextService.selectedDashboard$.pipe(
+      map(d => d.items.map(i => ({
+        widget: i,
+        gridsterItem: {
+          ...i.position,
+          guid: i.guid
+        }
+      })))
     );
+  }
+
+  updateWidgetPosition(widgetGuid: string, position: DashboardItemPosition) {
+    this.manageDashboardsService.updateWidgetPosition(widgetGuid, position);
+  }
+
+  getItemTrackKey(index: number, item: WidgetItem): string {
+    return item.widget.guid;
   }
 }

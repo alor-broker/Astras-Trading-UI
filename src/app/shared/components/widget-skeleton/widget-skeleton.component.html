@@ -1,0 +1,11 @@
+<div class="widget-header">
+  <ng-container *ngTemplateOutlet="header"></ng-container>
+</div>
+<div *ngIf="isBlockWidget" class="blocked-widget-overlay"></div>
+<div (mousedown)="$event.stopPropagation()" *ngIf="!showSettings" [ngClass]="{'show-scroll': showContentScroll, 'hide-scroll': !showContentScroll}"
+     class="widget-content">
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</div>
+<div (mousedown)="$event.stopPropagation()" *ngIf="!!settings && showSettings" class="widget-content show-scroll">
+  <ng-container *ngTemplateOutlet="settings"></ng-container>
+</div>

@@ -3,7 +3,6 @@ import {
   filter,
   Observable
 } from 'rxjs';
-import { AnySettings } from '../models/settings/any-settings.model';
 import { Store } from "@ngrx/store";
 import {
   getAllSettings,
@@ -11,12 +10,11 @@ import {
 } from "../../store/widget-settings/widget-settings.selectors";
 import {
   addWidgetSettings,
-  removeAllWidgetSettings,
-  removeWidgetSettings,
   updateWidgetSettings
 } from "../../store/widget-settings/widget-settings.actions";
 import { LoggerService } from "./logger.service";
 import { map } from 'rxjs/operators';
+import { WidgetSettings } from '../models/widget-settings.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,23 +23,29 @@ export class WidgetSettingsService {
   constructor(private readonly store: Store, private readonly logger: LoggerService) {
   }
 
-  getSettings<T extends AnySettings>(guid: string): Observable<T> {
+  getSettings<T extends WidgetSettings>(guid: string): Observable<T> {
     return this.store.select(getSettingsByGuid(guid)).pipe(
       filter((s): s is T => !!s)
     );
   }
 
-  getSettingsByColor(color: string): Observable<AnySettings[]> {
+  getSettingsOrNull<T extends WidgetSettings>(guid: string): Observable<T | null> {
+    return this.store.select(getSettingsByGuid(guid)).pipe(
+      map(x => <T | null>x)
+    );
+  }
+
+  getSettingsByColor(color: string): Observable<WidgetSettings[]> {
     return this.store.select(getAllSettings).pipe(
       map(s => s.filter(x => x.badgeColor === color))
     );
   }
 
-  addSettings(settings: AnySettings[]) {
+  addSettings(settings: WidgetSettings[]) {
     this.store.dispatch(addWidgetSettings({ settings }));
   }
 
-  updateSettings<T extends AnySettings>(guid: string, changes: Partial<T>) {
+  updateSettings<T extends WidgetSettings>(guid: string, changes: Partial<T>) {
     if (!guid) {
       this.logger.warn('WidgetSettingsService', 'updateSettings', 'GUID is empty');
       return;
@@ -57,13 +61,5 @@ export class WidgetSettingsService {
     }
 
     this.store.dispatch(updateWidgetSettings({ settingGuid: guid, changes: { linkToActive: isLinked } }));
-  }
-
-  removeSettings(guid: string) {
-    this.store.dispatch(removeWidgetSettings({ settingGuid: guid }));
-  }
-
-  removeAllSettings() {
-    this.store.dispatch(removeAllWidgetSettings());
   }
 }

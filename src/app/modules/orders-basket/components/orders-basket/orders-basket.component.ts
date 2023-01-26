@@ -15,7 +15,6 @@ import {
   Validators
 } from '@angular/forms';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { OrdersBasketSettings } from '../../../../shared/models/settings/orders-basket-settings.model';
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -49,6 +48,7 @@ import { MathHelper } from '../../../../shared/utils/math-helper';
 import { EvaluationService } from '../../../../shared/services/evaluation.service';
 import { GuidGenerator } from '../../../../shared/utils/guid';
 import { mapWith } from '../../../../shared/utils/observable-helper';
+import { OrdersBasketSettings } from '../../models/orders-basket-settings.model';
 
 @Component({
   selector: 'ats-orders-basket[guid]',

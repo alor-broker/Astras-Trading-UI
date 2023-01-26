@@ -1,9 +1,9 @@
 <div class='inner-content'>
-  <gridster [options]="options" *ngIf="dashboard$ | async as dashboard">
+  <gridster [options]="options" *ngIf="items$ | async as items">
     <div>
-      <gridster-item [item]="widget.gridItem" *ngFor="let widget of dashboard">
+      <gridster-item [item]="item.gridsterItem" *ngFor="let item of items; trackBy: getItemTrackKey">
         <div class="widget-container">
-          <ats-parent-widget [widget]="widget" [resize]="resize" [isBlockWidget]="isBlockWidget"></ats-parent-widget>
+          <ats-parent-widget [widget]="item.widget" [isBlockWidget]="isBlockWidget"></ats-parent-widget>
         </div>
       </gridster-item>
     </div>

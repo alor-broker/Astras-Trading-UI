@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { BehaviorSubject } from 'rxjs';
 import { CommandParams } from '../models/commands/command-params.model';
 import { EditParams } from '../models/commands/edit-params.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
-import { getSelectedPortfolioKey } from '../../store/portfolios/portfolios.selectors';
 import { NewsListItem } from "../../modules/news/models/news.model";
 import { WidgetNames } from "../models/enums/widget-names";
 import { NewFeedback } from '../../modules/feedback/models/feedback.model';
 import { ReleaseMeta } from '../../modules/application-meta/models/application-release.model';
 import { NzModalService } from "ng-zorro-antd/modal";
 import { ModalOptions } from "ng-zorro-antd/modal/modal-types";
+import { DashboardContextService } from './dashboard-context.service';
 
 @Injectable({
   providedIn: 'root'
@@ -60,10 +59,10 @@ export class ModalService {
   shouldShowApplicationUpdatedModal$  = this.shouldShowApplicationUpdatedModal.asObservable();
 
   constructor(
-    private store: Store,
-    private nzModalService: NzModalService
+    private readonly nzModalService: NzModalService,
+    private readonly currentDashboardService: DashboardContextService
   ) {
-    this.store.select(getSelectedPortfolioKey).subscribe(p => {
+    this.currentDashboardService.selectedPortfolio$.subscribe(p => {
       if (p) {
         this.selectedPortfolio = p;
       }

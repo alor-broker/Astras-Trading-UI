@@ -1,5 +1,28 @@
-<ats-news
-  *ngIf="!shouldShowSettings"
-  [resize]="resize"
->
-</ats-news>
+<ng-container *transloco="let t;">
+  <ats-widget-skeleton
+    [content]="contentRef"
+    [header]="headerRef"
+    [isBlockWidget]="isBlockWidget"
+    [showContentScroll]="false"
+  >
+
+    <ng-template #headerRef>
+      <ats-widget-header
+        [guid]="guid"
+        [hasHelp]="true"
+        [hasSettings]="false"
+        [showBadgesMenu]="false"
+        [titleIconTooltip]="t('widgetHeaders.NewsSettings')"
+        [titleText]="t('widgetHeaders.NewsSettings')"
+        helpRef="news"
+        titleIcon="read"
+      ></ats-widget-header>
+    </ng-template>
+
+    <ng-template #contentRef>
+      <ats-news></ats-news>
+    </ng-template>
+  </ats-widget-skeleton>
+
+</ng-container>
+

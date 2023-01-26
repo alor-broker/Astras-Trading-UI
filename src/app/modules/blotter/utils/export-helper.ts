@@ -1,5 +1,4 @@
 import { Column } from "../models/column.model";
-import { BlotterSettings } from "../../../shared/models/settings/blotter-settings.model";
 import {
   CsvFormatter,
   csvFormatterConfigDefaults,
@@ -9,6 +8,7 @@ import {
   FileSaver,
   FileType
 } from "../../../shared/utils/file-export/file-saver";
+import { BlotterSettings } from '../models/blotter-settings.model';
 
 export class ExportHelper {
   public static exportToCsv<T, F>(

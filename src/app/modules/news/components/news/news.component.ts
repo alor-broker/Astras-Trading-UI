@@ -1,12 +1,24 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import { NewsService } from "../../services/news.service";
-import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { NewsListItem } from "../../models/news.model";
-import { map, Observable, of, Subject, takeUntil } from "rxjs";
+import {
+  BehaviorSubject,
+  map,
+  Observable,
+  of,
+  Subject,
+  takeUntil
+} from "rxjs";
 import { DatePipe } from "@angular/common";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 
 @Component({
   selector: 'ats-news',
@@ -14,38 +26,35 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
   styleUrls: ['./news.component.less']
 })
 export class NewsComponent implements OnInit, OnDestroy {
-
-  @Input() public resize!: EventEmitter<DashboardItem>;
-
+  readonly contentSize$ = new BehaviorSubject<ContentSize>({ height: 0, width: 0 });
+  public tableContainerHeight: number = 0;
+  public tableContainerWidth: number = 0;
+  public newsList: Array<NewsListItem> = [];
+  public isLoading = false;
+  public columns$: Observable<ColumnsSettings[]> = of([]);
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private datePipe = new DatePipe('ru-RU');
   private limit = 50;
   private isEndOfList = false;
   private pageNumber = 1;
 
-  public tableContainerHeight: number = 0;
-  public tableContainerWidth: number = 0;
-  public newsList: Array<NewsListItem> = [];
-  public isLoading = false;
-
-  public columns$: Observable<ColumnsSettings[]> = of([]);
-
   constructor(
     private newsService: NewsService,
     private modalService: ModalService,
     private readonly translatorService: TranslatorService,
     private readonly cdr: ChangeDetectorRef
-  ) {}
+  ) {
+  }
 
   public ngOnInit(): void {
     this.loadNews();
-    this.resize
+    this.contentSize$
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
-      this.tableContainerHeight = data.height ?? 0;
-      this.tableContainerWidth = data.width ?? 0;
-      this.cdr.markForCheck();
-    });
+        this.tableContainerHeight = data.height ?? 0;
+        this.tableContainerWidth = data.width ?? 0;
+        this.cdr.markForCheck();
+      });
 
     this.columns$ = this.translatorService.getTranslator('news').pipe(
       map((translate) => ([
@@ -85,6 +94,16 @@ export class NewsComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+    this.contentSize$.complete();
+  }
+
+  containerSizeChanged(entries: ResizeObserverEntry[]) {
+    entries.forEach(x => {
+      this.contentSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
   }
 
   private loadNews(): void {
@@ -100,7 +119,8 @@ export class NewsComponent implements OnInit, OnDestroy {
       .subscribe(res => {
         if (res.length) {
           this.newsList = this.newsList.concat(res);
-        } else {
+        }
+        else {
           this.isEndOfList = true;
         }
         this.isLoading = false;

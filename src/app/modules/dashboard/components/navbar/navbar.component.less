@@ -7,6 +7,10 @@
         .ant-btn {
           color: @layout-header-color;
 
+          .ant-typography {
+            color: @layout-header-color;
+          }
+
           &.empty-portfolio {
             color: @error-color;
           }
@@ -81,7 +85,7 @@ nz-header {
     }
   }
 
-  .portfolio-btn {
+  .dropdown-btn {
     .arrow-icon {
       font-size: 10px;
     }
@@ -104,6 +108,10 @@ nz-header {
     outline: none;
     box-shadow: none;
   }
+}
+
+#dashboard-select-btn {
+  max-width: 200px;
 }
 
 ::ng-deep .side-menu {

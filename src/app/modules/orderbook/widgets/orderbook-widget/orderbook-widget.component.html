@@ -1,6 +1,37 @@
+<ng-container *transloco="let t;">
+  <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
+    [content]="contentRef"
+    [header]="headerRef"
+    [settings]="settingsRef"
+    [isBlockWidget]="isBlockWidget"
+    [showSettings]="shouldShowSettings"
+    [showContentScroll]="true"
+  >
 
-<ats-order-book *ngIf="!shouldShowSettings"
-  [guid]="guid"
-  [resize]="resize"
-  [(shouldShowSettings)]="shouldShowSettings"></ats-order-book>
-<ats-orderbook-settings *ngIf="shouldShowSettings" [guid]="guid" (settingsChange)="onSettingsChange()"></ats-orderbook-settings>
+    <ng-template #headerRef>
+      <ats-widget-header
+        (switchSettings)="onSettingsChange()"
+        [guid]="guid"
+        [hasHelp]="true"
+        [hasSettings]="true"
+        [linkToActive]="settings.linkToActive"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [titleText]="title$ | async"
+        [titleIconTooltip]="t('widgetHeaders.OrderbookSettings')"
+        helpRef="order-book"
+        titleIcon="ordered-list"
+      ></ats-widget-header>
+    </ng-template>
+
+    <ng-template #contentRef>
+      <ats-order-book [guid]="guid"></ats-order-book>
+    </ng-template>
+    <ng-template #settingsRef>
+      <ats-orderbook-settings [guid]="guid" (settingsChange)="onSettingsChange()"></ats-orderbook-settings>
+    </ng-template>
+  </ats-widget-skeleton>
+
+</ng-container>
+

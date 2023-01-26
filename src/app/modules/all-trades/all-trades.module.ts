@@ -4,6 +4,7 @@ import { AllTradesWidgetComponent } from './widgets/all-trades-widget/all-trades
 import { AllTradesComponent } from './components/all-trades/all-trades.component';
 import { SharedModule } from "../../shared/shared.module";
 import { AllTradesSettingsComponent } from './components/all-trades-settings/all-trades-settings.component';
+import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 
 
 
@@ -18,7 +19,8 @@ import { AllTradesSettingsComponent } from './components/all-trades-settings/all
     ],
     imports: [
         CommonModule,
-        SharedModule
+        SharedModule,
+        NzResizeObserverModule
     ]
 })
 export class AllTradesModule { }
