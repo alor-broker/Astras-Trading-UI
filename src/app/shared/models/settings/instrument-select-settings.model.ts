@@ -9,12 +9,13 @@ export interface ColumnIds  {
   columnId: string,
   name: string,
   isDefault: boolean,
-  tooltip: string
+  tooltip: string,
+  minWidth?: number | null
 }
 
 export const allInstrumentsColumns: ColumnIds[] = [
-  { columnId: 'symbol', name: "Тикер", tooltip: 'Биржевой идентификатор ценной бумаги', isDefault: true },
-  { columnId: 'shortName', name: "Назв.", tooltip: 'Название тикера', isDefault: true },
+  { columnId: 'symbol', name: "Тикер", tooltip: 'Биржевой идентификатор ценной бумаги', isDefault: true, minWidth: 55 },
+  { columnId: 'shortName', name: "Назв.", tooltip: 'Название тикера', isDefault: true, minWidth: 60 },
   { columnId: 'price', name: "Цена", tooltip: 'Цена последней сделки', isDefault: true },
   { columnId: 'dayChange', name: "Д.изм.", tooltip: 'Изменение за день', isDefault: true },
   { columnId: 'dayChangePerPrice', name: "Д.изм.,%", tooltip: 'Изменение за день в %', isDefault: true },
