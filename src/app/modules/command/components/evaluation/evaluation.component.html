@@ -1,12 +1,34 @@
 <ng-container *ngIf="evaluation$ | async as evaluation">
   <ng-container *transloco="let t; scope: 'command'">
       <nz-descriptions nzSize="small" nzBordered *ngIf="!!evaluation">
-        <nz-descriptions-item [nzSpan]="2"
-                              [nzTitle]="t('command.evaluationCost')">{{evaluation.orderEvaluation  | currency: evaluation.currency:'symbol-narrow'}}</nz-descriptions-item>
-        <nz-descriptions-item [nzSpan]="2"
-                              [nzTitle]="t('command.evaluationCommission')">{{evaluation.commission | currency: evaluation.currency:'symbol-narrow'}}</nz-descriptions-item>
-        <nz-descriptions-item [nzSpan]="2" [nzTitle]="t('command.quantityToBuy')">{{evaluation.quantityToBuy}}</nz-descriptions-item>
-        <nz-descriptions-item [nzSpan]="2" [nzTitle]="t('command.quantityToSell')">{{evaluation.quantityToSell}}</nz-descriptions-item>
+        <nz-descriptions-item
+          [nzSpan]="2"
+          [nzTitle]="t('command.evaluationCost')"
+        >
+          {{evaluation.orderEvaluation  | currency: evaluation.currency:'symbol-narrow'}}
+        </nz-descriptions-item>
+        <nz-descriptions-item
+          [nzSpan]="2"
+          [nzTitle]="t('command.evaluationCommission')"
+        >
+          {{evaluation.commission | currency: evaluation.currency:'symbol-narrow'}}
+        </nz-descriptions-item>
+        <nz-descriptions-item
+          [nzSpan]="2"
+          [nzTitle]="t('command.quantityToBuy')"
+        >
+          <span (click)="quantitySelect.emit(evaluation.quantityToBuy)">
+            {{evaluation.quantityToBuy}}
+          </span>
+        </nz-descriptions-item>
+        <nz-descriptions-item
+          [nzSpan]="2"
+          [nzTitle]="t('command.quantityToSell')"
+        >
+          <span (click)="quantitySelect.emit(evaluation.quantityToSell)">
+            {{evaluation.quantityToSell}}
+          </span>
+        </nz-descriptions-item>
       </nz-descriptions>
   </ng-container>
 </ng-container>

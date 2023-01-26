@@ -32,7 +32,11 @@
   </nz-collapse>
 </form>
 <ng-container *ngIf="form.valid">
-  <ats-evaluation *ngIf="evaluation$ | async as evaluation" [evaluationProperties]="evaluation"></ats-evaluation>
+  <ats-evaluation
+    *ngIf="evaluation$ | async as evaluation"
+    [evaluationProperties]="evaluation"
+    (quantitySelect)="quantitySelect($event)"
+  ></ats-evaluation>
 </ng-container>
 </div>
 
