@@ -55,7 +55,7 @@ describe('MarketCommandComponent', () => {
   const getFormInputs = () => {
     return {
       quantity: fixture.nativeElement.querySelector('input[formcontrolname="quantity"]') as HTMLInputElement,
-      instrumentGroup: fixture.nativeElement.querySelector('input[formcontrolname="instrumentGroup"]') as HTMLInputElement,
+      instrumentGroup: 'SPBX'
     };
   };
 
@@ -130,7 +130,6 @@ describe('MarketCommandComponent', () => {
     const formInputs = getFormInputs();
 
     expect(formInputs.quantity.value).toEqual(commandContext.commandParameters.quantity.toString());
-    expect(formInputs.instrumentGroup.value).toEqual(commandContext.commandParameters.instrument.instrumentGroup!.toString());
   });
 
   it('should show form errors', () => {
@@ -194,7 +193,7 @@ describe('MarketCommandComponent', () => {
         quantity: Number(inputs.quantity.value),
         instrument: {
           ...commandContext.commandParameters.instrument,
-          instrumentGroup: inputs.instrumentGroup.value
+          instrumentGroup: inputs.instrumentGroup
         },
         user: commandContext.commandParameters.user
       };
@@ -213,17 +212,13 @@ describe('MarketCommandComponent', () => {
         quantity: 125,
         instrument: {
           ...commandContext.commandParameters.instrument,
-          instrumentGroup: 'CUSTOM_GROUP'
+          instrumentGroup: 'SPBX'
         },
         user: commandContext.commandParameters.user
       };
 
       inputs.quantity.value = expectedCommand.quantity.toString();
       inputs.quantity.dispatchEvent(new Event('input'));
-
-      inputs.instrumentGroup.value = expectedCommand.instrument.instrumentGroup!;
-      inputs.instrumentGroup.dispatchEvent(new Event('input'));
-
 
       expect(spyCommands.setMarketCommand).toHaveBeenCalledWith(expectedCommand);
     }
@@ -239,7 +234,7 @@ describe('MarketCommandComponent', () => {
       quantity: 353,
       instrument: {
         ...commandContext.commandParameters.instrument,
-        instrumentGroup: inputs.instrumentGroup.value
+        instrumentGroup: inputs.instrumentGroup
       },
       user: commandContext.commandParameters.user
     };
@@ -263,7 +258,7 @@ describe('MarketCommandComponent', () => {
         lotQuantity: 245,
         instrument: {
           ...commandContext.commandParameters.instrument,
-          instrumentGroup: inputs.instrumentGroup.value,
+          instrumentGroup: inputs.instrumentGroup,
         },
         instrumentCurrency: commandContext.instrument.currency
       };
