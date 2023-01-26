@@ -68,7 +68,6 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   enableDelete: boolean = true;
   @Output()
   delete = new EventEmitter();
-
   readonly validationOptions = {
     quota: {
       min: 0.1,
@@ -84,7 +83,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     }
   };
   form!: UntypedFormGroup;
-  containerWidth$ = new BehaviorSubject<number>(0);
+  itemsContainerWidth$ = new BehaviorSubject<number | null>(null);
   instrument$!: Observable<Instrument | null>;
   displayMode$?: Observable<'table-item' | 'compact' | 'ultra-compact'>;
   showLabels$?: Observable<boolean>;
@@ -97,6 +96,11 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     private readonly instrumentsService: InstrumentsService,
     private readonly quotesService: QuotesService
   ) {
+  }
+
+  @Input()
+  set width(value: number | null) {
+    this.itemsContainerWidth$.next(value);
   }
 
   @Input()
@@ -152,7 +156,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
       sub.unsubscribe();
     }
 
-    this.containerWidth$.complete();
+    this.itemsContainerWidth$.complete();
     this.itemIndex$.complete();
     this.totalBudget$.complete();
   }
@@ -186,20 +190,15 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   onTouched: Function = () => {
   };
 
-  containerWidthChanged(entries: ResizeObserverEntry[]) {
-    entries.forEach(x => {
-      this.containerWidth$.next(Math.floor(x.contentRect.width));
-    });
-  }
-
   private initSizeDependedState() {
-    this.displayMode$ = this.containerWidth$.pipe(
+    this.displayMode$ = this.itemsContainerWidth$.pipe(
+      filter(w => !!w),
       map(w => {
-        if (w < 250) {
+        if (w! < 250) {
           return 'ultra-compact';
         }
 
-        if (w < 450) {
+        if (w! < 450) {
           return 'compact';
         }
 

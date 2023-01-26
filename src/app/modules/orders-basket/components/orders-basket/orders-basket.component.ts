@@ -18,9 +18,10 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { OrdersBasketSettings } from '../../../../shared/models/settings/orders-basket-settings.model';
 import {
   BehaviorSubject,
+  distinctUntilChanged,
   forkJoin,
+  NEVER,
   Observable,
-  of,
   shareReplay,
   Subject,
   Subscription,
@@ -65,6 +66,8 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
 
   submitResult$ = new BehaviorSubject<'success' | 'failed' | null>(null);
 
+  itemsContainerWidth$ = new Subject<number>();
+
   private readonly savedBaskets = new Map<string, OrdersBasket>();
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -87,6 +90,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.settings$ = this.widgetSettingsService.getSettings<OrdersBasketSettings>(this.guid).pipe(
+      distinctUntilChanged((previous, current) => this.isEqualSettings(previous, current)),
       shareReplay(1)
     );
 
@@ -95,6 +99,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     ).subscribe(settings => {
       this.initForm(settings);
       this.restoreFormValue(settings!);
+      this.submitResult$.next(null);
     });
   }
 
@@ -129,17 +134,35 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
           });
         });
 
-        return forkJoin([
-            of(null),
-            ...orders.map(o => this.orderService.submitLimitOrder(o, settings.portfolio).pipe(take(1)))
-          ]
-        );
+        if(orders.length > 0) {
+          return forkJoin([
+              ...orders.map(o => this.orderService.submitLimitOrder(o, settings.portfolio).pipe(take(1)))
+            ]
+          );
+        }
+
+        return NEVER;
       }),
       finalize(() => this.processing$.next(false)),
       take(1)
     ).subscribe(results => {
       this.submitResult$.next(results.every(x => !!x && x.isSuccess) ? 'success' : 'failed');
     });
+  }
+
+  itemsContainerWidthChanged(entries: ResizeObserverEntry[]) {
+    entries.forEach(x => {
+      this.itemsContainerWidth$.next(Math.floor(x.contentRect.width));
+    });
+  }
+
+  private isEqualSettings(settings1?: OrdersBasketSettings, settings2?: OrdersBasketSettings): boolean {
+    if (!settings1 || !settings2) {
+      return false;
+    }
+
+    return settings1.portfolio === settings2.portfolio
+      && settings1.exchange === settings2.exchange;
   }
 
   private saveBasket(settings: OrdersBasketSettings | null) {
@@ -209,7 +232,10 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       });
     });
 
-    const saveSub = this.form.valueChanges.subscribe(() => this.saveBasket(settings));
+    const saveSub = this.form.valueChanges.subscribe(() => {
+      this.saveBasket(settings);
+      this.submitResult$.next(null);
+    });
 
     this.formSubscriptions.add(saveSub);
     this.formSubscriptions.add(this.initQuantityCalculation(settings));
