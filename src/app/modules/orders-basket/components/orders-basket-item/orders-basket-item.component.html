@@ -1,4 +1,4 @@
-<div [ngClass]="displayMode$ | async" class="container" nzResizeObserver (nzResizeObserve)="containerSizeChanged($event)">
+<div [ngClass]="displayMode$ | async" class="container">
   <ng-container *ngIf="form">
     <ng-container *transloco="let t; scope: 'orders-basket/orders-basket-item'">
       <form [formGroup]="form" nz-form nzLayout="vertical">
@@ -8,7 +8,7 @@
             <ats-instrument-search
               (instrumentSelected)="onTouched()"
               [exchange]="exchange"
-              [optionsBoxWidth]="(containerWidth$ | async) ?? 100"
+              [optionsBoxWidth]="(itemsContainerWidth$ | async) ?? 100"
               formControlName="instrumentKey"
             ></ats-instrument-search>
           </nz-form-control>
@@ -55,10 +55,9 @@
                 min: validationOptions.price.min,
                 max: validationOptions.price.max
               })}}</span>
-              <span
-                *ngIf="form.get('price')?.errors?.priceStepMultiplicity">{{t('ordersBasketOrdersBasketItem.priceStepMultiplicityError')}}
-                ({{form.get('price')!.errors!.priceStepMultiplicity!.step}}
-                )</span>
+              <span *ngIf="form.get('price')?.errors?.priceStepMultiplicity">
+                {{t('ordersBasketOrdersBasketItem.priceStepMultiplicityError')}} ({{form.get('price')!.errors!.priceStepMultiplicity!.step}})
+              </span>
             </ng-template>
           </nz-form-control>
         </nz-form-item>

@@ -2,7 +2,7 @@
   <ng-container *ngIf="form">
     <ng-container *transloco="let t; scope: 'orders-basket/orders-basket'">
       <form [formGroup]="form" nz-form nzLayout="vertical">
-        <div class="basket-items-container">
+        <div class="basket-items-container" nzResizeObserver (nzResizeObserve)="itemsContainerWidthChanged($event)">
           <div *ngFor="let itemControl of asFormArray(form.controls.items).controls; index as i" class="basket-item">
             <div class="item-control">
               <ats-orders-basket-item
@@ -11,6 +11,7 @@
                 [exchange]="settings.exchange"
                 [formControl]="asFormControl(itemControl)"
                 [itemIndex]="i"
+                [width]="itemsContainerWidth$ | async"
               ></ats-orders-basket-item>
             </div>
           </div>

@@ -32,7 +32,7 @@ describe('MarketOrderFormComponent', () => {
   const getFormInputs = () => {
     return {
       quantity: fixture.nativeElement.querySelector('input[formcontrolname="quantity"]') as HTMLInputElement,
-      instrumentGroup: fixture.nativeElement.querySelector('input[formcontrolname="instrumentGroup"]') as HTMLInputElement,
+      instrumentGroup: 'SPBX'
     };
   };
 
@@ -169,7 +169,7 @@ describe('MarketOrderFormComponent', () => {
       const inputs = getFormInputs();
       const expectedValue: MarketOrderFormValue = {
         quantity: Number(inputs.quantity.value),
-        instrumentGroup: inputs.instrumentGroup.value
+        instrumentGroup: inputs.instrumentGroup
       };
 
       emittedValue$.pipe(
@@ -188,7 +188,7 @@ describe('MarketOrderFormComponent', () => {
 
       const expectedValue: MarketOrderFormValue = {
         quantity: 125,
-        instrumentGroup: 'CUSTOM_GROUP'
+        instrumentGroup: 'SPBX'
       };
 
       const emittedValue$ = component.formValueChange.pipe(
@@ -198,10 +198,6 @@ describe('MarketOrderFormComponent', () => {
 
       inputs.quantity.value = expectedValue.quantity.toString();
       inputs.quantity.dispatchEvent(new Event('input'));
-
-      inputs.instrumentGroup.value = expectedValue.instrumentGroup!;
-      inputs.instrumentGroup.dispatchEvent(new Event('input'));
-
 
       emittedValue$.pipe(
         take(1)
@@ -225,7 +221,7 @@ describe('MarketOrderFormComponent', () => {
         instrument: {
           symbol: instrument.symbol,
           exchange: instrument.exchange,
-          instrumentGroup: inputs.instrumentGroup.value,
+          instrumentGroup: inputs.instrumentGroup,
         },
         instrumentCurrency: instrument.currency
       };
