@@ -24,8 +24,8 @@ import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { ChartData } from '../../models/orderbook.model';
 import { BaseChartDirective } from 'ng2-charts';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
 import { ThemeService } from '../../../../shared/services/theme.service';
+import { OrderbookSettings } from '../../models/orderbook-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 
 @Component({

@@ -12,10 +12,6 @@ import {
   Validators
 } from '@angular/forms';
 import {
-  LightChartSettings,
-  TimeFrameDisplayMode
-} from 'src/app/shared/models/settings/light-chart-settings.model';
-import {
   Timeframe,
   TimeframesHelper
 } from '../../utils/timeframes-helper';
@@ -29,6 +25,10 @@ import {
 } from "rxjs";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import {
+  LightChartSettings,
+  TimeFrameDisplayMode
+} from '../../models/light-chart-settings.model';
 
 @Component({
   selector: 'ats-light-chart-settings[guid]',

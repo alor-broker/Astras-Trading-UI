@@ -11,8 +11,6 @@ import {
   take
 } from "rxjs";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
-import { Store } from '@ngrx/store';
-import { getSelectedPortfolioKey } from "../../../store/portfolios/portfolios.selectors";
 import {
   filter,
   map
@@ -35,6 +33,7 @@ import {
 import { CommandType } from "../../../shared/models/enums/command-type.model";
 import { OrderbookData } from '../models/orderbook-data.model';
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
+import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
 
 @Injectable({
   providedIn: 'root'
@@ -47,7 +46,7 @@ export class ScalperOrdersService {
     private readonly orderService: OrderService,
     private readonly notification: NzNotificationService,
     private readonly modal: ModalService,
-    private readonly store: Store
+    private readonly currentDashboardService: DashboardContextService
   ) {
   }
 
@@ -289,11 +288,7 @@ export class ScalperOrdersService {
   }
 
   private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.store.select(getSelectedPortfolioKey)
-      .pipe(
-        take(1),
-        filter((p): p is PortfolioKey => !!p)
-      );
+    return this.currentDashboardService.selectedPortfolio$;
   }
 
   private getCurrentPositions(instrumentKey: InstrumentKey, portfolio: PortfolioKey): Observable<Position | null> {

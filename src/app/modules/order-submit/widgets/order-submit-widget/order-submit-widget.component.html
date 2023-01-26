@@ -1,2 +1,38 @@
-<ats-order-submit *ngIf="!shouldShowSettings" [guid]="guid"></ats-order-submit>
-<ats-order-submit-settings (settingsChange)="onSettingsChange()" *ngIf="shouldShowSettings" [guid]="guid"></ats-order-submit-settings>
+<ng-container *transloco="let t;">
+  <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
+    [content]="contentRef"
+    [header]="headerRef"
+    [settings]="settingsRef"
+    [showSettings]="shouldShowSettings"
+    [showContentScroll]="true"
+    [isBlockWidget]="isBlockWidget"
+  >
+
+    <ng-template #headerRef>
+      <ats-widget-header
+        (switchSettings)="onSettingsChange()"
+        [guid]="guid"
+        [hasHelp]="true"
+        [hasSettings]="true"
+        [linkToActive]="settings.linkToActive"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [titleText]="title$ | async"
+        [titleIconTooltip]="t('widgetHeaders.OrderSubmitSettings')"
+        helpRef="order-submit"
+        titleIcon="send"
+      ></ats-widget-header>
+    </ng-template>
+
+    <ng-template #contentRef>
+      <ats-order-submit [guid]="guid"></ats-order-submit>
+    </ng-template>
+
+    <ng-template #settingsRef>
+      <ats-order-submit-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-order-submit-settings>
+    </ng-template>
+  </ats-widget-skeleton>
+
+</ng-container>
+

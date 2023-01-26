@@ -4,9 +4,15 @@ import {
 } from '@angular/core/testing';
 
 import { TechChartWidgetComponent } from './tech-chart-widget.component';
-import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
-import { EventEmitter } from "@angular/core";
-import { mockComponent } from "../../../../shared/utils/testing";
+import {
+  mockComponent,
+  widgetSkeletonMock
+} from "../../../../shared/utils/testing";
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { of } from 'rxjs';
+import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { InstrumentsService } from '../../../instruments/services/instruments.service';
 
 describe('TechChartWidgetComponent', () => {
   let component: TechChartWidgetComponent;
@@ -18,18 +24,49 @@ describe('TechChartWidgetComponent', () => {
         TechChartWidgetComponent,
         mockComponent({
           selector: 'ats-tech-chart',
-          inputs: ['guid', 'contentSize', 'shouldShowSettings']
-        })
+          inputs: ['guid']
+        }),
+        mockComponent({
+          selector: 'ats-tech-chart-settings',
+          inputs: ['guid']
+        }),
+        widgetSkeletonMock
+      ],
+      providers: [
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettingsOrNull: jasmine.createSpy('getSettingsOrNull').and.returnValue(of(null)),
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+            addSettings: jasmine.createSpy('addSettings').and.callThrough()
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            terminalSettingsService: of({})
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            instrumentsSelection$: of({})
+          }
+        },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrument: of({})
+          }
+        },
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TechChartWidgetComponent);
     component = fixture.componentInstance;
-
-    component.resize = new EventEmitter<DashboardItem>();
 
     fixture.detectChanges();
   });

@@ -2,9 +2,9 @@ import {
   createAction,
   props
 } from '@ngrx/store';
-import { AnySettings } from "../../shared/models/settings/any-settings.model";
 import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
 import { PortfolioKey } from "../../shared/models/portfolio-key.model";
+import { WidgetSettings } from '../../shared/models/widget-settings.model';
 
 export const initWidgetSettings = createAction(
   '[WidgetSettings] Init Settings'
@@ -12,17 +12,17 @@ export const initWidgetSettings = createAction(
 
 export const initWidgetSettingsSuccess = createAction(
   '[WidgetSettings] Init Settings (SUCCESS)',
-  props<{ settings: AnySettings[] }>()
+  props<{ settings: WidgetSettings[] }>()
 );
 
 export const addWidgetSettings = createAction(
   '[WidgetSettings] Add Widget Settings',
-  props<{ settings: AnySettings[] }>()
+  props<{ settings: WidgetSettings[] }>()
 );
 
-export const updateWidgetSettingsInstrumentWithBadge = createAction(
-  '[WidgetSettings] Update Widget Settings Instrument With Badge',
-  props<{ settingGuids: string[], badges: { [badgeColor: string]: InstrumentKey } }>()
+export const updateWidgetSettingsInstrument = createAction(
+  '[WidgetSettings] Update Widget Settings Instrument',
+  props<{ updates: { guid: string, instrumentKey: InstrumentKey }[] }>()
 );
 
 export const setDefaultBadges = createAction(
@@ -37,12 +37,12 @@ export const updateWidgetSettingsPortfolio = createAction(
 
 export const updateWidgetSettings = createAction(
   '[WidgetSettings] Update Widget Settings',
-  props<{ settingGuid: string, changes: Partial<AnySettings> }>()
+  props<{ settingGuid: string, changes: Partial<WidgetSettings> }>()
 );
 
 export const removeWidgetSettings = createAction(
   '[WidgetSettings] Remove Widget Settings',
-  props<{ settingGuid: string }>()
+  props<{ settingGuids: string[] }>()
 );
 
 export const removeAllWidgetSettings = createAction(

@@ -4,7 +4,7 @@ import {
 } from '@angular/core/testing';
 
 import { NavbarComponent } from './navbar.component';
-import { DashboardService } from 'src/app/shared/services/dashboard.service';
+import { ManageDashboardsService } from 'src/app/shared/services/manage-dashboards.service';
 import { of } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -54,9 +54,10 @@ describe('NavbarComponent', () => {
         ...ngZorroMockComponents,
         mockComponent({ selector: 'ats-widget-menu', inputs: ['showResetItem'] }),
         mockComponent({ selector: 'ats-notification-button' }),
+        mockComponent({ selector: 'ats-select-dashboard-menu', inputs: ['visibilityChange']}),
       ],
       providers: [
-        { provide: DashboardService, useValue: spyDashboard },
+        { provide: ManageDashboardsService, useValue: spyDashboard },
         { provide: AuthService, useValue: spyAuth },
         { provide: ModalService, useValue: spyModal },
         {

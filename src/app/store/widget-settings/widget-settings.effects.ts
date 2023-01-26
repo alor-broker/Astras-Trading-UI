@@ -9,11 +9,11 @@ import {
   tap
 } from "rxjs/operators";
 import * as WidgetSettingsActions from './widget-settings.actions';
-import { AnySettings } from "../../shared/models/settings/any-settings.model";
 import { LocalStorageService } from "../../shared/services/local-storage.service";
 import { withLatestFrom } from "rxjs";
 import { Store } from "@ngrx/store";
 import { getAllSettings } from "./widget-settings.selectors";
+import { WidgetSettings } from '../../shared/models/widget-settings.model';
 
 @Injectable()
 export class WidgetSettingsEffects {
@@ -36,7 +36,7 @@ export class WidgetSettingsEffects {
       ofType(
         WidgetSettingsActions.addWidgetSettings,
         WidgetSettingsActions.updateWidgetSettings,
-        WidgetSettingsActions.updateWidgetSettingsInstrumentWithBadge,
+        WidgetSettingsActions.updateWidgetSettingsInstrument,
         WidgetSettingsActions.updateWidgetSettingsPortfolio,
         WidgetSettingsActions.removeWidgetSettings,
         WidgetSettingsActions.removeAllWidgetSettings
@@ -64,8 +64,8 @@ export class WidgetSettingsEffects {
     private readonly store: Store) {
   }
 
-  private readSettingsFromLocalStorage(): AnySettings[] | undefined {
-    const settingItems = this.localStorage.getItem<[string, AnySettings][]>(this.settingsStorageKey);
+  private readSettingsFromLocalStorage(): WidgetSettings[] | undefined {
+    const settingItems = this.localStorage.getItem<[string, WidgetSettings][]>(this.settingsStorageKey);
     if (!settingItems) {
       return undefined;
     }
@@ -73,7 +73,7 @@ export class WidgetSettingsEffects {
     return settingItems.map(x => x[1]);
   }
 
-  private saveSettingsToLocalStorage(settings: AnySettings[]) {
+  private saveSettingsToLocalStorage(settings: WidgetSettings[]) {
     this.localStorage.setItem(this.settingsStorageKey, settings.map(s => [s.guid, s]));
   }
 

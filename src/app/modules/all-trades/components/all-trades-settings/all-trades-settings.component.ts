@@ -6,7 +6,7 @@ import {
   AllTradesSettings,
   allTradesWidgetColumns,
   ColumnIds
-} from "../../../../shared/models/settings/all-trades-settings.model";
+} from '../../models/all-trades-settings.model';
 
 @Component({
   selector: 'ats-all-trades-settings',

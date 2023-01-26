@@ -1,0 +1,9 @@
+{
+  "defaultDashboardName": "Default Dashboard",
+  "newDashboardTitlePlaceholder": "New Dashboard Name",
+  "stringLenghtError": "Enter from {{min}} to {{max}} characters",
+  "removeConfirmationTitle": "Confirm action",
+  "removeConfirmationMessage": "Are you sure you want to remove the dashboard '{{title}}'?",
+  "confirmButtonText": "Yes",
+  "cancelButtonText": "No"
+}

@@ -19,11 +19,6 @@ import {
   take,
   takeUntil
 } from 'rxjs';
-import { TechChartSettings } from '../../../../shared/models/settings/tech-chart-settings.model';
-import {
-  isEqualTechChartSettings,
-  isOrderSubmitSettings
-} from '../../../../shared/utils/settings-helper';
 import {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
@@ -38,7 +33,6 @@ import {
 } from '../../../../../assets/charting_library';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
-import { DashboardItemContentSize } from '../../../../shared/models/dashboard-item.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import {
   ThemeColors,
@@ -54,9 +48,7 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { MathHelper } from '../../../../shared/utils/math-helper';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
-import { Store } from '@ngrx/store';
 import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
-import { getSelectedPortfolioKey } from '../../../../store/portfolios/portfolios.selectors';
 import { Position } from '../../../../shared/models/positions/position.model';
 import {
   debounceTime,
@@ -69,6 +61,8 @@ import { StopOrder } from '../../../../shared/models/orders/stop-order.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { HashMap } from "@ngneat/transloco/lib/types";
 
@@ -130,19 +124,17 @@ interface ChartState {
 }
 
 @Component({
-  selector: 'ats-tech-chart[guid][shouldShowSettings][contentSize]',
+  selector: 'ats-tech-chart[guid]',
   templateUrl: './tech-chart.component.html',
   styleUrls: ['./tech-chart.component.less']
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
-  shouldShowSettings!: boolean;
-  @Input()
   guid!: string;
-  @Input()
-  contentSize!: DashboardItemContentSize | null;
+
   @ViewChild('chartContainer', { static: true })
   chartContainer?: ElementRef<HTMLElement>;
+
   private readonly selectedPriceProviderName = 'selectedPrice';
   private chartState?: ChartState;
   private settings$?: Observable<ExtendedSettings>;
@@ -161,7 +153,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly widgetsDataProvider: WidgetsDataProviderService,
     private readonly modalService: ModalService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly store: Store,
+
+    private readonly currentDashboardService: DashboardContextService,
     private readonly orderCancellerService: OrderCancellerService,
     private readonly translatorService: TranslatorService
   ) {
@@ -223,13 +216,29 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid).pipe(
-      distinctUntilChanged((previous, current) => isEqualTechChartSettings(previous, current)),
+      distinctUntilChanged((previous, current) => this.isEqualTechChartSettings(previous, current)),
       mapWith(
         settings => getInstrumentInfo(settings),
         (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedSettings)
       ),
       shareReplay(1)
     );
+  }
+
+  private isEqualTechChartSettings(
+    settings1?: TechChartSettings,
+    settings2?: TechChartSettings
+  ) {
+    if (settings1 && settings2) {
+      return (
+        settings1.linkToActive == settings2.linkToActive &&
+        settings1.guid == settings2.guid &&
+        settings1.symbol == settings2.symbol &&
+        settings1.exchange == settings2.exchange &&
+        settings1.chartSettings == settings2.chartSettings &&
+        settings1.badgeColor == settings2.badgeColor
+      );
+    } else return false;
   }
 
   private initPositionStream() {
@@ -404,7 +413,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         (widgetSettings, relatedSettings) => ({ widgetSettings, relatedSettings })),
       take(1)
     ).subscribe(({ widgetSettings, relatedSettings }) => {
-      const submitOrderWidgetSettings = relatedSettings.filter(x => isOrderSubmitSettings(x));
+      const submitOrderWidgetSettings = relatedSettings.filter(x => x.settingsType === 'OrderSubmitSettings');
       const roundedPrice = MathHelper.round(price, MathHelper.getPrecision(widgetSettings.instrument.minstep));
 
       if (submitOrderWidgetSettings.length === 0 || !widgetSettings.widgetSettings.badgeColor) {
@@ -425,10 +434,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.store.select(getSelectedPortfolioKey)
-      .pipe(
-        filter((p): p is PortfolioKey => !!p)
-      );
+    return this.currentDashboardService.selectedPortfolio$;
   }
 
   private initPositionDisplay(instrument: InstrumentKey, themeColors: ThemeColors) {

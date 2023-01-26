@@ -290,7 +290,7 @@ describe('TechChartDatafeedService', () => {
   });
 
   it('#subscribeBars should pass value to onTick callback', (done) => {
-    const symbolInfo = { ticker: 'MOEX:SBER' } as LibrarySymbolInfo;
+    const symbolInfo = { ticker: 'MOEX:SBER:TQBR' } as LibrarySymbolInfo;
     const resolution = '1' as ResolutionString;
     const historyResponse: HistoryResponse = {
       history: [
@@ -332,7 +332,7 @@ describe('TechChartDatafeedService', () => {
     subscriptionsDataFeedServiceSpy.subscribe.and.returnValue(messages$);
 
     service.subscribeBars(
-      { ticker: 'MOEX:SBER' } as LibrarySymbolInfo,
+      { ticker: 'MOEX:SBER:TQBR' } as LibrarySymbolInfo,
       '1' as ResolutionString,
       bar => {
         done();
@@ -341,7 +341,7 @@ describe('TechChartDatafeedService', () => {
             opcode: 'BarsGetAndSubscribe',
             code: 'SBER',
             exchange: 'MOEX',
-            instrumentGroup: undefined,
+            instrumentGroup: 'TQBR',
             format: 'simple',
             tf: '60',
           }),

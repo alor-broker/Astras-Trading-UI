@@ -7,10 +7,10 @@ import {
   AllTradesSubRequest
 } from "../models/all-trades.model";
 import { Observable } from "rxjs";
-import { AllTradesSettings } from "../../../shared/models/settings/all-trades-settings.model";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
+import { AllTradesSettings } from '../models/all-trades-settings.model';
 
 @Injectable({
   providedIn: 'root'

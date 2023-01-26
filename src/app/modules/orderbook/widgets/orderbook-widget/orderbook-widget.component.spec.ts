@@ -4,7 +4,15 @@ import {
 } from '@angular/core/testing';
 
 import { OrderbookWidgetComponent } from './orderbook-widget.component';
-import { mockComponent } from "../../../../shared/utils/testing";
+import {
+  mockComponent,
+  widgetSkeletonMock
+} from "../../../../shared/utils/testing";
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { of } from 'rxjs';
+import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { InstrumentsService } from '../../../instruments/services/instruments.service';
 
 const settings = {
   symbol: 'SBER',
@@ -22,9 +30,42 @@ describe('OrderbookWidgetComponent', () => {
         OrderbookWidgetComponent,
         mockComponent({
           selector: 'ats-order-book',
-          inputs: ['guid', 'resize', 'shouldShowSettings']
-        })
+          inputs: ['guid']
+        }),
+        mockComponent({
+          selector: 'ats-orderbook-settings',
+          inputs: ['guid']
+        }),
+        widgetSkeletonMock
       ],
+      providers: [
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettingsOrNull: jasmine.createSpy('getSettingsOrNull').and.returnValue(of(null)),
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+            addSettings: jasmine.createSpy('addSettings').and.callThrough()
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            terminalSettingsService: of({})
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            instrumentsSelection$: of({})
+          }
+        },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrument: of({})
+          }
+        },
+      ]
     }).compileComponents();
 
     TestBed.overrideComponent(OrderbookWidgetComponent, {

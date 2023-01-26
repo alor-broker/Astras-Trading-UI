@@ -6,7 +6,6 @@ import {
 import { TechChartSettingsComponent } from './tech-chart-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { TechChartSettings } from "../../../../shared/models/settings/tech-chart-settings.model";
 import { TechChartModule } from "../../tech-chart.module";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import {
@@ -14,6 +13,7 @@ import {
   mockComponent,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
+import { TechChartSettings } from '../../models/tech-chart-settings.model';
 
 describe('TechChartSettingsComponent', () => {
   let component: TechChartSettingsComponent;

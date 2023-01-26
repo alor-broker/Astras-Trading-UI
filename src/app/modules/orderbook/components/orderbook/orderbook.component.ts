@@ -18,7 +18,6 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import { DashboardItem } from '../../../../shared/models/dashboard-item.model';
 import { OrderbookService } from '../../services/orderbook.service';
 import {
   ChartData,
@@ -35,7 +34,6 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { getTypeByCfi } from 'src/app/shared/utils/instruments';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
@@ -43,6 +41,7 @@ import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { CurrentOrder } from '../../models/scalper-order-book.model';
+import { OrderbookSettings } from '../../models/orderbook-settings.model';
 
 interface Size {
   width: string;
@@ -56,7 +55,7 @@ interface SpreadDiffData {
 }
 
 @Component({
-  selector: 'ats-order-book[guid][resize][shouldShowSettings]',
+  selector: 'ats-order-book[guid]',
   templateUrl: './orderbook.component.html',
   styleUrls: ['./orderbook.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,11 +63,8 @@ interface SpreadDiffData {
 })
 export class OrderBookComponent implements OnInit, OnDestroy {
   @Input()
-  shouldShowSettings!: boolean;
-  @Input()
   guid!: string;
-  @Input()
-  resize!: EventEmitter<DashboardItem>;
+
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 

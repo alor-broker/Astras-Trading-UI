@@ -6,6 +6,7 @@ import { LightChartWidgetComponent } from './widgets/light-chart-widget/light-ch
 import { LightChartSettingsComponent } from './components/light-chart-settings/light-chart-settings.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { NzInputModule } from 'ng-zorro-antd/input';
     imports: [
         SharedModule,
         LightChartRoutingModule,
-        NzInputModule
+        NzInputModule,
+        NzResizeObserverModule
     ],
   exports: [
     LightChartWidgetComponent

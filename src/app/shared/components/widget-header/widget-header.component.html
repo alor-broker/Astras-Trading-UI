@@ -1,0 +1,92 @@
+<div class='panel'>
+  <div class="buttons-group title-wrapper">
+    <nz-badge
+      *ngIf="showBadgesMenu"
+      nz-dropdown
+      [nzDropdownMenu]="badgesMenu"
+      [nzColor]="selectedBadgeColor!"
+      [class.square-badge]="badgeShape === 'square'"
+      nzSize="small"
+    ></nz-badge>
+
+    <nz-dropdown-menu #badgesMenu="nzDropdownMenu">
+      <ul nz-menu class="badge-menu">
+        <li nz-menu-item *ngFor="let badge of badges" (click)="switchBadgeColor(badge)">
+          <nz-badge
+            [nzColor]="badge"
+            [class.square-badge]="badgeShape === 'square'"
+          ></nz-badge>
+        </li>
+      </ul>
+    </nz-dropdown-menu>
+
+    <div class="title" *ngIf="titleIcon || titleText">
+      <ng-container *ngIf="titleIcon; else simpleTitle">
+        <div class="title-with-icon">
+          <i nz-icon
+             class="title-icon"
+             [nzType]="titleIcon"
+             nzTheme="outline"
+             nz-popover
+             nzPopoverPlacement="bottom"
+             [nzPopoverContent]="titleIconTooltip!"
+          ></i>
+          <ng-container *ngTemplateOutlet="simpleTitle"></ng-container>
+        </div>
+      </ng-container>
+      <ng-template #simpleTitle>
+        <label
+          class="title-text"
+          nz-popover
+          nzPopoverPlacement="bottom"
+          [nzPopoverContent]="titleText!">
+          {{titleText}}
+        </label>
+      </ng-template>
+    </div>
+  </div>
+
+  <div class="buttons-group" *transloco="let t">
+    <button *ngIf='linkToActive !== undefined' nz-button nzSize="small"
+            (mousedown)="changeLinkToActive($event, !linkToActive)"
+            (touchstart)="changeLinkToActive($event, !linkToActive)"
+            class="link-to-active-btn">
+      <i nz-icon
+         [nzType]="'link'"
+         [nzTheme]="'outline'"
+         joyrideStep="step6"
+         [title]="t('joyride.step6.title')"
+         [text]="t('joyride.step6.text')"
+         [class.active]="linkToActive"></i>
+    </button>
+    <button *ngIf="hasSettings" nz-button nzSize="small"
+            (mousedown)="onSwitchSettings($event)"
+            (touchstart)="onSwitchSettings($event)"
+    >
+      <i nz-icon
+         nzType="setting"
+         [nzTheme]="'outline'"
+         joyrideStep="step7"
+         [title]="t('joyride.step7.title')"
+         [text]="t('joyride.step7.text')"></i>
+    </button>
+    <button *ngIf="hasHelp" nz-button nzSize="small"
+            (mousedown)="onOpenHelp($event)"
+            (touchstart)="onOpenHelp($event)"
+    >
+      <i nz-icon nzType="question-circle" [nzTheme]="'outline'"
+         joyrideStep="step5"
+         [title]="t('joyride.step5.title')"
+         [text]="t('joyride.step5.text')"></i>
+    </button>
+    <button nz-button
+            nzSize="small"
+            (mousedown)="removeItem($event)"
+            (touchstart)="removeItem($event)"
+            joyrideStep="step4"
+            [title]="t('joyride.step4.title')"
+            [text]="t('joyride.step4.text')">
+      <i nz-icon nzType="close-circle" [nzTheme]="'outline'"></i>
+    </button>
+  </div>
+</div>

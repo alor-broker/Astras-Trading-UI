@@ -2,8 +2,6 @@ import {
   createReducer,
   on
 } from '@ngrx/store';
-import * as PortfoliosActions from './portfolios.actions';
-import { PortfolioKey } from '../../shared/models/portfolio-key.model';
 import {
   createEntityAdapter,
   EntityAdapter,
@@ -11,12 +9,15 @@ import {
 } from '@ngrx/entity';
 import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.model';
 import { EntityStatus } from '../../shared/models/enums/entity-status';
+import {
+  InternalPortfoliosActions,
+  PortfoliosActions
+} from './portfolios.actions';
 
 export const portfoliosFeatureKey = 'portfolios';
 
 export interface PortfoliosState extends EntityState<PortfolioExtended> {
   status: EntityStatus
-  selectedPortfolio: PortfolioKey | null
 }
 
 export const adapter: EntityAdapter<PortfolioExtended> = createEntityAdapter<PortfolioExtended>({
@@ -24,25 +25,18 @@ export const adapter: EntityAdapter<PortfolioExtended> = createEntityAdapter<Por
 });
 
 export const initialState: PortfoliosState = adapter.getInitialState({
-  status: EntityStatus.Initial,
-  selectedPortfolio: null
+  status: EntityStatus.Initial
 });
 
 export const reducer = createReducer(
   initialState,
-
-  on(PortfoliosActions.selectNewPortfolio, (state, { portfolio }) => ({
-      ...state,
-      selectedPortfolio: portfolio
-    })
-  ),
 
   on(PortfoliosActions.initPortfolios, (state) => ({
     ...state,
     status: EntityStatus.Loading
   })),
 
-  on(PortfoliosActions.initPortfoliosSuccess, (state, { portfolios }) => {
+  on(InternalPortfoliosActions.initPortfoliosSuccess, (state, { portfolios }) => {
       return adapter.addMany(
         portfolios,
         {

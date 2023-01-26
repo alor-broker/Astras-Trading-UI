@@ -13,7 +13,6 @@ import {
   Validators
 } from '@angular/forms';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { OrderbookSettings } from "../../../../shared/models/settings/orderbook-settings.model";
 import {
   Observable,
   shareReplay,
@@ -24,6 +23,7 @@ import {
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { OrderbookSettings } from '../../models/orderbook-settings.model';
 
 @Component({
   selector: 'ats-orderbook-settings[settingsChange][guid]',

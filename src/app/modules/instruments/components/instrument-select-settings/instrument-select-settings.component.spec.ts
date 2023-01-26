@@ -5,7 +5,6 @@ import {
 
 import { InstrumentSelectSettingsComponent } from './instrument-select-settings.component';
 import { BehaviorSubject } from 'rxjs';
-import { InstrumentSelectSettings } from '../../../../shared/models/settings/instrument-select-settings.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   getTranslocoModule,
@@ -15,6 +14,7 @@ import {
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { ReactiveFormsModule } from "@angular/forms";
+import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 
 describe('InstrumentSelectSettingsComponent', () => {
   let component: InstrumentSelectSettingsComponent;

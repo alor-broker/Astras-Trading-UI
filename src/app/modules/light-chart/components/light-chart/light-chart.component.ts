@@ -4,50 +4,43 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
-import { DashboardItemContentSize } from 'src/app/shared/models/dashboard-item.model';
 import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, Subject, takeUntil } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
-import { isEqualLightChartSettings } from 'src/app/shared/utils/settings-helper';
 import { TimeframesHelper } from '../../utils/timeframes-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ThemeService } from '../../../../shared/services/theme.service';
-import {
-  LightChartSettings,
-  TimeFrameDisplayMode
-} from '../../../../shared/models/settings/light-chart-settings.model';
 import { LightChartWrapper } from '../../utils/light-chart-wrapper';
 import { LightChartDatafeedFactoryService } from '../../services/light-chart-datafeed-factory.service';
 import { TimeframeValue } from '../../models/light-chart.models';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
+import {
+  LightChartSettings,
+  TimeFrameDisplayMode
+} from '../../models/light-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
 @Component({
-  selector: 'ats-light-chart[contentSize][guid]',
+  selector: 'ats-light-chart[guid]',
   templateUrl: './light-chart.component.html',
   styleUrls: ['./light-chart.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
+export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly availableTimeFrames = TimeframesHelper.timeFrames;
   timeFrameDisplayModes = TimeFrameDisplayMode;
 
   @Input()
-  shouldShowSettings!: boolean;
-  @Input()
   guid!: string;
-  @Input()
-  contentSize!: DashboardItemContentSize | null;
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
@@ -103,42 +96,44 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, On
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.contentSize && !!this.chart) {
-      this.chartResize();
-    }
-  }
-
   getTimeFrameLabel(value: string): string | undefined {
     return this.availableTimeFrames.find(x => x.value === value)?.label;
   }
 
+  containerSizeChanged(entries: ResizeObserverEntry[]) {
+    entries.forEach(x => {
+      this.chartResize({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
+  }
   private initChart() {
     combineLatest([
-      this.settings$,
-      this.timezoneConverterService.getConverter(),
-      this.themeService.getThemeSettings(),
-      this.translatorService.getLangChanges()
-    ])
-      .pipe(
-        map(([ws, c, t, l]) => ({
-          widgetSettings: ws,
-          converter: c,
+        this.settings$,
+        this.timezoneConverterService.getConverter(),
+        this.themeService.getThemeSettings(),
+        this.translatorService.getLangChanges()
+      ]
+    ).pipe(
+      map(([ws, c, t, l]) => ({
+        widgetSettings: ws,
+        converter: c,
           theme: t,
           locale: l
-        })),
-        filter(x => !!x.converter && !!x.widgetSettings),
-        distinctUntilChanged((previous, current) =>
-            !previous
-            || (
-              isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
-              && previous.converter === current.converter
-              && previous.theme?.theme === current.theme?.theme
-              && previous.locale === current.locale
-            )
-        ),
-        takeUntil(this.destroy$)
-      ).subscribe(options => {
+      })),
+      filter(x => !!x.converter && !!x.widgetSettings),
+      distinctUntilChanged((previous, current) =>
+          !previous
+          || (
+            this.isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
+            && previous.converter === current.converter
+            && previous.theme?.theme === current.theme?.theme
+            && previous.locale === current.locale
+          )
+      ),
+      takeUntil(this.destroy$)
+    ).subscribe(options => {
       this.chart?.clear();
       const timeFrame = options.widgetSettings.timeFrame as TimeframeValue;
 
@@ -161,12 +156,32 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit, On
     });
   }
 
+  private isEqualLightChartSettings(
+    settings1?: LightChartSettings,
+    settings2?: LightChartSettings
+  ) {
+    if (settings1 && settings2) {
+      return (
+        settings1.symbol == settings2.symbol &&
+        settings1.instrumentGroup == settings2.instrumentGroup &&
+        settings1.linkToActive == settings2.linkToActive &&
+        settings1.exchange == settings2.exchange &&
+        settings1.timeFrame == settings2.timeFrame &&
+        settings1.guid == settings2.guid &&
+        settings1.width == settings2.width &&
+        settings1.height == settings2.height &&
+        settings1.badgeColor == settings2.badgeColor &&
+        settings1.timeFrameDisplayMode == settings2.timeFrameDisplayMode
+      );
+    } else return false;
+  }
+
   private setActiveTimeFrame(timeFrame: string) {
     // for some reason template is not updated without using setTimeout
     setTimeout(() => this.activeTimeFrame$.next(timeFrame));
   }
 
-  private chartResize() {
-    this.chart!.resize(Math.floor(this.contentSize?.width ?? 0), Math.floor(this.contentSize?.height ?? 0));
+  private chartResize(contentSize: ContentSize) {
+    this.chart?.resize(Math.floor(contentSize.width ?? 0), Math.floor(contentSize.height ?? 0));
   }
 }

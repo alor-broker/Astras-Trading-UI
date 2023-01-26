@@ -9,7 +9,6 @@ import {
 } from 'rxjs';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
-import { InfoSettings } from 'src/app/shared/models/settings/info-settings.model';
 import { environment } from 'src/environments/environment';
 import { Calendar } from '../models/calendar.model';
 import { Description } from '../models/description.model';
@@ -23,6 +22,7 @@ import { ErrorHandlerService } from '../../../shared/services/handle-error/error
 import { getTypeByCfi } from 'src/app/shared/utils/instruments';
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { MarketService } from "../../../shared/services/market.service";
+import { InfoSettings } from '../models/info-settings.model';
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,

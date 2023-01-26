@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
 import {
   filter,
   Observable,
@@ -17,8 +16,8 @@ import {
 import { EvaluationRequest } from '../models/evaluation-request.model';
 import { Evaluation } from '../models/evaluation.model';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
-import { getSelectedPortfolioKey } from '../../store/portfolios/portfolios.selectors';
 import { catchHttpError } from '../utils/observable-helper';
+import { DashboardContextService } from './dashboard-context.service';
 
 @Injectable({
   providedIn: 'root'
@@ -28,13 +27,13 @@ export class EvaluationService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly store: Store,
+    private readonly currentDashboardService: DashboardContextService,
     private readonly errorHandlerService: ErrorHandlerService
   ) {
   }
 
   evaluateOrder(baseRequest: EvaluationBaseProperties): Observable<Evaluation | null> {
-    return this.store.select(getSelectedPortfolioKey).pipe(
+    return this.currentDashboardService.selectedPortfolio$.pipe(
       filter((pk): pk is PortfolioKey => !!pk),
       switchMap(portfolio => {
         return this.http.post<Evaluation>(this.url, {

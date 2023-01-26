@@ -5,7 +5,6 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
 import { ExchangeRateService } from "../../../../shared/services/exchange-rate.service";
 import {
   combineLatest,
@@ -26,7 +25,6 @@ export class ExchangeRateComponent implements OnInit {
 
   @Input() public shouldShowSettings!: boolean;
   @Input() public guid!: string;
-  @Input() public resize!: EventEmitter<DashboardItem>;
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
 
   public exchangeRateData$!: Observable<{ currencies: string[], data: { [key: string]: number } }>;

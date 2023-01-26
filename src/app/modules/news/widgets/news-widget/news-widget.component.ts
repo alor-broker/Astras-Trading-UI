@@ -1,18 +1,35 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DashboardItem } from "../../../../shared/models/dashboard-item.model";
+import {
+  Component,
+  Input,
+  OnInit
+} from '@angular/core';
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import { NewsSettings } from '../../models/news-settings.model';
 
 @Component({
-  selector: 'ats-news-widget',
+  selector: 'ats-news-widget[guid][isBlockWidget]',
   templateUrl: './news-widget.component.html',
   styleUrls: ['./news-widget.component.less']
 })
-export class NewsWidgetComponent {
-
-  @Input() public shouldShowSettings!: boolean;
+export class NewsWidgetComponent implements OnInit {
   @Input() public guid!: string;
-  @Input() public resize!: EventEmitter<DashboardItem>;
-  @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
+  @Input()
+  isBlockWidget!: boolean;
 
-  constructor() { }
+  constructor(
+    private readonly widgetSettingsService: WidgetSettingsService
+  ) {
+  }
 
+  ngOnInit(): void {
+    WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<NewsSettings>(
+      this.guid,
+      'NewsSettings',
+      settings => ({
+        ...settings
+      }),
+      this.widgetSettingsService
+    );
+  }
 }

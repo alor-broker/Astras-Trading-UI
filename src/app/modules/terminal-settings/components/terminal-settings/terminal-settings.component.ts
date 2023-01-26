@@ -30,7 +30,7 @@ import {
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { ThemeType } from 'src/app/shared/models/settings/theme-settings.model';
 import { TabNames } from "../../models/terminal-settings.model";
-import { DashboardService } from "../../../../shared/services/dashboard.service";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { CurrencyInstrument } from "../../../../shared/models/enums/currencies.model";
@@ -92,7 +92,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly service: TerminalSettingsService,
-    private readonly dashboardService: DashboardService,
+    private readonly dashboardService: ManageDashboardsService,
     private readonly store: Store,
     private readonly exchangeRateService: ExchangeRateService,
     private modal: ModalService,
@@ -156,7 +156,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
           nzOkText: t(['yesBtnText']),
           nzOkType: 'primary',
           nzOkDanger: true,
-          nzOnOk: () => this.dashboardService.clearDashboard(),
+          nzOnOk: () => this.dashboardService.resetAll(),
           nzCancelText: t(['noBtnText']),
           nzOnCancel: () => {
           }

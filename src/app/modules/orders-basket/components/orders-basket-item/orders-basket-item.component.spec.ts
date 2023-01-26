@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OrdersBasketItemComponent } from './orders-basket-item.component';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import {
-  BehaviorSubject,
   Subject
 } from 'rxjs';
 import { QuotesService } from '../../../../shared/services/quotes.service';
@@ -13,7 +12,6 @@ import {
   ngZorroMockComponents,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
-import { FormsModule } from '@angular/forms';
 import { OrdersBasketModule } from '../../orders-basket.module';
 
 describe('OrdersBasketItemComponent', () => {
@@ -51,7 +49,6 @@ describe('OrdersBasketItemComponent', () => {
 
     fixture = TestBed.createComponent(OrdersBasketItemComponent);
     component = fixture.componentInstance;
-    component.containerWidth$ = new BehaviorSubject(100);
     fixture.detectChanges();
   });
 

@@ -1,32 +1,38 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import { NzTabChangeEvent } from 'ng-zorro-antd/tabs';
 import {
+  BehaviorSubject,
   Observable,
   of,
-  shareReplay,
   Subject,
-  take,
-  takeUntil
+  take
 } from 'rxjs';
 import { map } from 'rxjs/operators';
-import {
-  DashboardItem,
-  DashboardItemContentSize
-} from 'src/app/shared/models/dashboard-item.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterSettings } from "../../../../shared/models/settings/blotter-settings.model";
 import { MarketType } from "../../../../shared/models/portfolio-key.model";
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
+import { defaultBadgeColor } from '../../../../shared/utils/instruments';
+import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
+import { SettingsHelper } from '../../../../shared/utils/settings-helper';
+import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
+import {
+  allOrdersColumns,
+  allPositionsColumns,
+  allStopOrdersColumns,
+  allTradesColumns,
+  BlotterSettings
+} from '../../models/blotter-settings.model';
 
 @Component({
-  selector: 'ats-blotter-widget[shouldShowSettings][guid][resize]',
+  selector: 'ats-blotter-widget[guid][isBlockWidget]',
   templateUrl: './blotter-widget.component.html',
   styleUrls: ['./blotter-widget.component.less'],
   providers: [
@@ -35,31 +41,53 @@ import { MarketType } from "../../../../shared/models/portfolio-key.model";
 })
 export class BlotterWidgetComponent implements OnInit, OnDestroy {
   readonly marketTypes = MarketType;
-  private settings$!: Observable<BlotterSettings>;
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
-
-  @Input()
-  shouldShowSettings!: boolean;
+  shouldShowSettings: boolean = false;
   @Input()
   guid!: string;
   @Input()
-  resize!: EventEmitter<DashboardItem>;
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  isBlockWidget!: boolean;
   activeTabIndex$ = of(0);
-
   marketType$?: Observable<MarketType | undefined>;
+  showBadge$!: Observable<boolean>;
+  settings$!: Observable<BlotterSettings>;
+  contentSize$ = new BehaviorSubject<ContentSize | null>(null);
+  title$!: Observable<string>;
 
-  contentSize$!: Observable<DashboardItemContentSize>;
+  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly settingsService: WidgetSettingsService) {
+  constructor(
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly dashboardContextService: DashboardContextService,
+    private readonly terminalSettingsService: TerminalSettingsService
+  ) {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid)
-      .pipe(
-        takeUntil(this.destroy$)
-      );
+    WidgetSettingsCreationHelper.createPortfolioLinkedWidgetSettingsIfMissing<BlotterSettings>(
+      this.guid,
+      'BlotterSettings',
+      settings => ({
+        ...settings,
+        activeTabIndex: 0,
+        tradesTable: TableSettingHelper.toTableDisplaySettings(allTradesColumns.filter(c => c.isDefault).map(c => c.columnId)),
+        positionsTable: TableSettingHelper.toTableDisplaySettings(allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId)),
+        ordersTable: TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId)),
+        stopOrdersTable: TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId)),
+        badgeColor: defaultBadgeColor,
+        isSoldPositionsHidden: true,
+        cancelOrdersWithoutConfirmation: false
+      }),
+      this.dashboardContextService,
+      this.widgetSettingsService
+    );
+
+    this.settings$ = this.widgetSettingsService.getSettings<BlotterSettings>(this.guid);
+
+    this.title$ = this.settings$.pipe(
+      map(s => `${s.portfolio} (${s.exchange})`)
+    );
+
+    this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
 
     this.activeTabIndex$ = this.settings$.pipe(
       map(s => s.activeTabIndex),
@@ -70,26 +98,28 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
       .pipe(
         map(s => s.marketType)
       );
-
-    this.contentSize$ = this.resize.pipe(
-      map(x => ({
-        height: x.height,
-        width: x.width
-      } as DashboardItemContentSize)),
-      shareReplay(1)
-    );
   }
 
   onSettingsChange() {
-    this.shouldShowSettingsChange.emit(!this.shouldShowSettings);
+    this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   onIndexChange(event: NzTabChangeEvent) {
-    this.settingsService.updateSettings(this.guid, { activeTabIndex: event.index ?? 0 });
+    this.widgetSettingsService.updateSettings(this.guid, { activeTabIndex: event.index ?? 0 });
   }
 
   ngOnDestroy() {
     this.destroy$.next(true);
     this.destroy$.complete();
+    this.contentSize$.complete();
+  }
+
+  containerSizeChanged(entries: ResizeObserverEntry[]) {
+    entries.forEach(x => {
+      this.contentSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
   }
 }

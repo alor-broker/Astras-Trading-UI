@@ -2,10 +2,7 @@ import {
   ComponentFixture,
   TestBed
 } from '@angular/core/testing';
-import {
-  of,
-  Subject
-} from 'rxjs';
+import { of } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { mockComponent, sharedModuleImportForTests } from 'src/app/shared/utils/testing';
 import { OrderBook } from '../../models/orderbook.model';
@@ -24,7 +21,7 @@ import { ThemeService } from '../../../../shared/services/theme.service';
 describe('OrderBookComponent', () => {
   let component: OrderBookComponent;
   let fixture: ComponentFixture<OrderBookComponent>;
-  const spyOb = jasmine.createSpyObj('OrderbookService', [, 'getHorizontalOrderBook', 'unsubscribe']);
+  const spyOb = jasmine.createSpyObj('OrderbookService', ['getHorizontalOrderBook', 'unsubscribe']);
   const ob: OrderBook = {
     rows: [],
     maxVolume: 10,
@@ -93,9 +90,6 @@ describe('OrderBookComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderBookComponent);
     component = fixture.componentInstance;
-    const spy = jasmine.createSpyObj('resize', ['pipe']);
-    spy.pipe.and.returnValue(new Subject());
-    component.resize = spy;
     fixture.detectChanges();
   });
   afterEach(() => fixture?.destroy());

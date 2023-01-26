@@ -15,10 +15,10 @@ import {
   TestData
 } from '../../../../shared/utils/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { selectNewPortfolio } from '../../../../store/portfolios/portfolios.actions';
 import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import {
+  BehaviorSubject,
   of,
   Subject,
   take
@@ -40,6 +40,7 @@ import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-co
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
 import ruOrderSubmit from "../../../../../assets/i18n/order-submit/order-submit/ru.json";
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 
 describe('OrderSubmitComponent', () => {
   let component: OrderSubmitComponent;
@@ -47,6 +48,7 @@ describe('OrderSubmitComponent', () => {
 
   let store: any;
   let orderServiceSpy: any;
+  let dashboardContextServiceSpy: any;
 
   const defaultPortfolio = 'D1234';
   const defaultInstrument = TestData.instruments[0];
@@ -61,6 +63,9 @@ describe('OrderSubmitComponent', () => {
         'submitStopLimitOrder'
       ]
     );
+
+    dashboardContextServiceSpy = jasmine.createSpyObj('DashboardContextService', ['selectedPortfolio$']);
+    dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject({ portfolio: defaultPortfolio } as PortfolioKey);
   });
 
   beforeEach(async () => {
@@ -124,15 +129,15 @@ describe('OrderSubmitComponent', () => {
           useValue: {
             getAllPositionsSubscription: jasmine.createSpy('subscribe').and.returnValue(new Subject())
           }
-        }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: dashboardContextServiceSpy
+        },
       ]
     }).compileComponents();
 
     store = TestBed.inject(Store);
-  });
-
-  beforeEach(() => {
-    store.dispatch(selectNewPortfolio({ portfolio: { portfolio: defaultPortfolio } as PortfolioKey }));
   });
 
   beforeEach(() => {

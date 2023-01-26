@@ -6,32 +6,24 @@ import {
 } from '@ngrx/effects';
 import {
   filter,
-  map,
-  tap
+  map
 } from 'rxjs/operators';
 import { ErrorHandlerService } from '../../shared/services/handle-error/error-handler.service';
 import { LocalStorageService } from '../../shared/services/local-storage.service';
 import { Store } from '@ngrx/store';
 import { AccountService } from '../../shared/services/account.service';
 import {
-  initPortfolios,
-  initPortfoliosSuccess,
-  selectNewPortfolio
-} from './portfolios.actions';
-import {
-  forkJoin,
   switchMap,
-  take,
-  withLatestFrom
+  take
 } from 'rxjs';
 import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.model';
 import { catchHttpError } from '../../shared/utils/observable-helper';
-import {
-  getAllPortfolios,
-  getSelectedPortfolioKey
-} from './portfolios.selectors';
 import { PortfolioKey } from '../../shared/models/portfolio-key.model';
 import { MarketService } from "../../shared/services/market.service";
+import {
+  InternalPortfoliosActions,
+  PortfoliosActions
+} from './portfolios.actions';
 
 export interface SavedPortfolioState {
   lastActivePortfolio: PortfolioKey;
@@ -41,82 +33,14 @@ export interface SavedPortfolioState {
 export class PortfoliosEffects {
   initPortfolios$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(initPortfolios),
+      ofType(PortfoliosActions.initPortfolios),
       switchMap(() => this.accountService.getLoginPortfolios()),
       take(1),
       catchHttpError<PortfolioExtended[] | null>(null, this.errorHandlerService),
       filter(x => !!x),
-      map(portfolios => initPortfoliosSuccess({ portfolios: portfolios ?? [] }))
+      map(portfolios => InternalPortfoliosActions.initPortfoliosSuccess({ portfolios: portfolios ?? [] }))
     )
   );
-
-  selectDefaultPortfolio$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(initPortfoliosSuccess),
-      withLatestFrom(this.store.select(getAllPortfolios)),
-      switchMap(([, portfolios]) => forkJoin(
-        portfolios.map(portfolio =>
-          this.marketService.getExchangeSettings(portfolio.exchange)
-            .pipe(
-              map(p => ({...portfolio, isDefault: p.isDefault}))
-            )
-        )
-      )),
-      map((portfolios) => {
-        const lastActivePortfolio = this.getSavedPortfolioState()?.lastActivePortfolio;
-        if (lastActivePortfolio) {
-          const matchedPortfolio = portfolios.find(p =>
-            p.portfolio === lastActivePortfolio.portfolio
-            && p.exchange === lastActivePortfolio.exchange
-            && p.marketType === lastActivePortfolio.marketType);
-
-          if (matchedPortfolio) {
-            return selectNewPortfolio({
-              portfolio: {
-                portfolio: matchedPortfolio.portfolio,
-                exchange: matchedPortfolio.exchange,
-                marketType: matchedPortfolio.marketType
-              } as PortfolioKey
-            });
-          }
-        }
-
-        const defaultPortfolio = portfolios.find(p => p.isDefault && p.portfolio.startsWith('D'))
-          ?? (portfolios.length > 0 ? portfolios[0] : null);
-        return selectNewPortfolio({
-          portfolio: !!defaultPortfolio
-            ? {
-              portfolio: defaultPortfolio.portfolio,
-              exchange: defaultPortfolio.exchange,
-              marketType: defaultPortfolio.marketType
-            } as PortfolioKey
-            : null
-        });
-      })
-    )
-  );
-
-  saveLastActivePortfolio$ = createEffect(() =>
-      this.actions$.pipe(
-        ofType(selectNewPortfolio),
-        withLatestFrom(this.store.select(getSelectedPortfolioKey)),
-        tap(([, portfolioKey]) => {
-          this.setLastActivePortfolio(
-            !!portfolioKey
-              ? {
-                portfolio: portfolioKey.portfolio,
-                exchange: portfolioKey.exchange,
-                marketType: portfolioKey.marketType
-              } as PortfolioKey
-              : null);
-        })
-      ),
-    {
-      dispatch: false
-    }
-  );
-
-  private readonly portfolioStorageKey = 'portfolio';
 
   constructor(
     private readonly actions$: Actions,
@@ -126,19 +50,5 @@ export class PortfoliosEffects {
     private readonly store: Store,
     private readonly marketService: MarketService
   ) {
-  }
-
-  private getSavedPortfolioState(): SavedPortfolioState | null {
-    return this.localStorage.getItem<SavedPortfolioState>(this.portfolioStorageKey) ?? null;
-  }
-
-  private setLastActivePortfolio(portfolioKey: PortfolioKey | null) {
-    this.localStorage.setItem(
-      this.portfolioStorageKey,
-      {
-        ...this.getSavedPortfolioState(),
-        lastActivePortfolio: portfolioKey
-      } as SavedPortfolioState
-    );
   }
 }

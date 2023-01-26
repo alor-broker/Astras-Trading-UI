@@ -1,8 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { AllInstrumentsWidgetComponent } from './all-instruments-widget.component';
-import { mockComponent } from "../../../../shared/utils/testing";
-import { EventEmitter } from "@angular/core";
+import {
+  mockComponent,
+  widgetSkeletonMock
+} from "../../../../shared/utils/testing";
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { of } from 'rxjs';
+import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 
 describe('AllInstrumentsWidgetComponent', () => {
   let component: AllInstrumentsWidgetComponent;
@@ -14,17 +22,37 @@ describe('AllInstrumentsWidgetComponent', () => {
         AllInstrumentsWidgetComponent,
         mockComponent({
           selector: 'ats-all-instruments',
-          inputs: ['guid', 'contentSize']
-        })
+          inputs: ['guid']
+        }),
+        mockComponent({
+          selector: 'ats-all-instruments-settings',
+          inputs: ['guid']
+        }),
+        widgetSkeletonMock
+      ],
+      providers: [
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettingsOrNull: jasmine.createSpy('getSettingsOrNull').and.returnValue(of(null)),
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+            addSettings: jasmine.createSpy('addSettings').and.callThrough()
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            terminalSettingsService: of({})
+          }
+        },
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AllInstrumentsWidgetComponent);
     component = fixture.componentInstance;
-    component.resize = new EventEmitter();
     fixture.detectChanges();
   });
 

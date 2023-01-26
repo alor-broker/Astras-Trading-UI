@@ -7,7 +7,7 @@ import { OnboardingService } from '../../services/onboarding.service';
 import { DashboardWidgetComponent } from './dashboard-widget.component';
 import {
   mockComponent,
-  ngZorroMockComponents
+  sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 
 describe('DashboardWidgetComponent', () => {
@@ -18,9 +18,9 @@ describe('DashboardWidgetComponent', () => {
   beforeEach(async () => {
     const spyOnboarding = jasmine.createSpyObj('OnboardingService', ['start']);
     await TestBed.configureTestingModule({
+      imports: [...sharedModuleImportForTests],
       declarations: [
         DashboardWidgetComponent,
-        ...ngZorroMockComponents,
         mockComponent({ selector: 'ats-dashboard' }),
         mockComponent({ selector: 'ats-navbar' }),
         mockComponent({ selector: 'ats-command-widget' }),

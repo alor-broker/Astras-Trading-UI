@@ -48,6 +48,16 @@ interface SubscriptionState {
   subscription: Subscription
 }
 
+interface SocketState {
+  readonly socketId: string;
+  readonly subscriptionsMap: Map<string, SubscriptionState>;
+  webSocketSubject: WebSocketSubject<WsResponseMessage> | null;
+  isClosing: boolean;
+  reconnectSub: Subscription | null;
+
+  offlineSub: Subscription | null
+}
+
 export const RXJS_WEBSOCKET_CTOR = new InjectionToken<typeof webSocket>(
   'rxjs/webSocket',
   {
@@ -60,18 +70,12 @@ export const RXJS_WEBSOCKET_CTOR = new InjectionToken<typeof webSocket>(
   providedIn: 'root'
 })
 export class SubscriptionsDataFeedService {
-  private webSocketSubject?: WebSocketSubject<WsResponseMessage> | null;
-
-  private readonly subscriptionsMap = new Map<string, SubscriptionState>();
+  private socketState: SocketState | null = null;
 
   private readonly options = {
     reconnectTimeout: 2000,
     reconnectAttempts: 5
   };
-
-  private reconnection$: Observable<number> | null = null;
-  private reconnectSub: Subscription | null = null;
-  private offlineSub: Subscription | null = null;
 
   constructor(
     private accountService: AuthService,
@@ -81,9 +85,10 @@ export class SubscriptionsDataFeedService {
   }
 
   public subscribe<T extends SubscriptionRequest, R>(request: T, getSubscriptionId: (request: T) => string): Observable<R> {
+    const socketState = this.getSocket();
     const subscriptionId = getSubscriptionId(request);
 
-    const existingSubscription = this.subscriptionsMap.get(subscriptionId);
+    const existingSubscription = socketState.subscriptionsMap.get(subscriptionId);
     if (!!existingSubscription) {
       return existingSubscription.sharedStream$;
     }
@@ -94,14 +99,14 @@ export class SubscriptionsDataFeedService {
     };
 
     const subject = new Subject<any>();
-    const messageSubscription = this.subscribeToMessages(this.createSubscription(requestMessage), subject, subscriptionId);
+    const messageSubscription = this.subscribeToMessages(this.createSubscription(requestMessage, socketState), subject, subscriptionId);
 
     const subscriptionState: SubscriptionState = {
       request: requestMessage,
       messageSource: subject,
       sharedStream$: subject.pipe(
         finalize(() => {
-          this.dropSubscription(subscriptionId);
+          this.dropSubscription(socketState, subscriptionId);
         }),
         map(x => x.data as R),
         shareReplay({ bufferSize: 1, refCount: true })
@@ -109,7 +114,7 @@ export class SubscriptionsDataFeedService {
       subscription: messageSubscription
     };
 
-    this.subscriptionsMap.set(subscriptionId, subscriptionState);
+    socketState.subscriptionsMap.set(subscriptionId, subscriptionState);
 
     return subscriptionState.sharedStream$;
   }
@@ -122,22 +127,24 @@ export class SubscriptionsDataFeedService {
     });
   }
 
-  private dropSubscription(subscriptionId: string) {
-    const state = this.subscriptionsMap.get(subscriptionId);
+  private dropSubscription(socketState: SocketState, subscriptionId: string) {
+    const state = socketState.subscriptionsMap.get(subscriptionId);
 
     if (state) {
-      this.subscriptionsMap.delete(subscriptionId);
+      socketState.subscriptionsMap.delete(subscriptionId);
       state.subscription.unsubscribe();
+
+      if (socketState.subscriptionsMap.size === 0) {
+        socketState.isClosing = true;
+      }
     }
   }
 
-  private createSubscription(request: WsRequestMessage): Observable<WsResponseMessage> {
-    this.initWebSocket();
-
+  private createSubscription(request: WsRequestMessage, state: SocketState): Observable<WsResponseMessage> {
     return this.getCurrentAccessToken().pipe(
       take(1),
       switchMap(token => {
-        return this.webSocketSubject!.multiplex(
+        return state.webSocketSubject!.multiplex(
           () => ({
             ...request,
             token
@@ -153,61 +160,81 @@ export class SubscriptionsDataFeedService {
     );
   }
 
-  private initWebSocket() {
-    if (!!this.webSocketSubject && !this.webSocketSubject.closed) {
-      return;
+  private getSocket(): SocketState {
+    if (!!this.socketState && this.isStateValid(this.socketState)) {
+      return this.socketState;
     }
 
-    this.webSocketSubject = this.webSocketFactory<WsResponseMessage>({
+    const socketState: SocketState = {
+      socketId: GuidGenerator.newGuid(),
+      isClosing: false,
+      subscriptionsMap: new Map<string, SubscriptionState>(),
+      webSocketSubject: null,
+      reconnectSub: null,
+      offlineSub: null
+    };
+
+    socketState.webSocketSubject = this.createWebSocketSubject(socketState);
+
+    this.initReconnectOnDisconnection(socketState);
+
+    this.socketState = socketState;
+
+    return socketState;
+  }
+
+  private createWebSocketSubject(socketState: SocketState): WebSocketSubject<WsResponseMessage> {
+    return this.webSocketFactory<WsResponseMessage>({
       url: environment.wsUrl,
       openObserver: {
         next: () => {
           this.logger.trace(this.toLoggerMessage('Connection open'));
-          this.reconnectSub?.unsubscribe();
-          this.reconnection$ = null;
         }
       },
       closeObserver: {
         next: (event) => {
-          this.webSocketSubject = null;
-
-          if (this.subscriptionsMap.size > 0) {
+          if (socketState.subscriptionsMap.size > 0) {
             this.logger.warn(
               this.toLoggerMessage('Connection closed with active subscriptions'),
               JSON.stringify(event)
             );
 
-            this.reconnect();
+            socketState.webSocketSubject?.complete();
+            socketState.webSocketSubject = null;
+
+            this.reconnect(socketState);
 
             return;
           }
 
           this.logger.info(this.toLoggerMessage('Connection closed'));
-          this.clean();
+          this.clean(socketState);
         }
       }
     });
-
-    this.initReconnectOnDisconnection();
   }
 
-  private initReconnectOnDisconnection() {
-    if (!!this.offlineSub) {
+  private isStateValid(state: SocketState): boolean {
+    return !!state.webSocketSubject && !state.webSocketSubject.closed && !state.isClosing;
+  }
+
+  private initReconnectOnDisconnection(state: SocketState) {
+    if (!!state.offlineSub) {
       return;
     }
 
-    this.offlineSub =
+    state.offlineSub =
       isOnline$().pipe(
-        filter(() => !this.webSocketSubject || this.webSocketSubject.closed),
+        filter(() => !this.isStateValid(state)),
         filter(isOnline => isOnline),
       ).subscribe(() => {
-        this.reconnect();
+        this.reconnect(state);
       });
   }
 
-  private clean() {
-    this.offlineSub?.unsubscribe();
-    this.offlineSub = null;
+  private clean(state: SocketState) {
+    state.reconnectSub?.unsubscribe();
+    state.offlineSub?.unsubscribe();
   }
 
   private getCurrentAccessToken(): Observable<string> {
@@ -217,27 +244,26 @@ export class SubscriptionsDataFeedService {
       );
   }
 
-  private reconnect() {
-    if (this.reconnection$) {
+  private reconnect(socketState: SocketState) {
+    if (socketState.reconnectSub) {
       return;
     }
 
-    this.webSocketSubject?.complete();
-    this.webSocketSubject = null;
-
-    this.reconnectSub?.unsubscribe();
-
-    this.reconnection$ = interval(this.options.reconnectTimeout)
+    const reconnection$ = interval(this.options.reconnectTimeout)
       .pipe(
-        takeWhile((v, index) => index < this.options.reconnectAttempts && !this.webSocketSubject),
-        finalize(() => this.reconnection$ = null),
+        takeWhile((v, index) => index < this.options.reconnectAttempts && !this.isStateValid(socketState)),
+        finalize(() => {
+          socketState.reconnectSub?.unsubscribe();
+          socketState.reconnectSub = null;
+        }),
         tap(attempt => this.logger.warn(this.toLoggerMessage('Reconnection attempt #' + (attempt + 1))))
       );
 
-    this.reconnectSub = this.reconnection$.subscribe(() => {
-      this.subscriptionsMap.forEach((state, subscriptionId) => {
+    socketState.reconnectSub = reconnection$.subscribe(() => {
+      socketState.webSocketSubject = this.createWebSocketSubject(socketState);
+      socketState.subscriptionsMap.forEach((state, subscriptionId) => {
         this.logger.trace(this.toLoggerMessage(`Reconnect to ${subscriptionId}`));
-        state.subscription = this.subscribeToMessages(this.createSubscription(state.request), state.messageSource, subscriptionId);
+        state.subscription = this.subscribeToMessages(this.createSubscription(state.request, socketState), state.messageSource, subscriptionId);
       });
     });
   }
