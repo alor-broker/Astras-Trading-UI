@@ -50,7 +50,7 @@ describe('LimitCommandComponent', () => {
     return {
       quantity: fixture.nativeElement.querySelector('input[formcontrolname="quantity"]') as HTMLInputElement,
       price: fixture.nativeElement.querySelector('input[formcontrolname="price"]') as HTMLInputElement,
-      instrumentGroup: fixture.nativeElement.querySelector('input[formcontrolname="instrumentGroup"]') as HTMLInputElement,
+      instrumentGroup: 'SPBX'
     };
   };
 
@@ -120,7 +120,6 @@ describe('LimitCommandComponent', () => {
 
     expect(formInputs.quantity.value).toEqual(commandContext.commandParameters.quantity.toString());
     expect(formInputs.price.value).toEqual(commandContext.commandParameters.price!.toString());
-    expect(formInputs.instrumentGroup.value).toEqual(commandContext.commandParameters.instrument.instrumentGroup!.toString());
   });
 
   it('should show form errors', () => {
@@ -200,7 +199,7 @@ describe('LimitCommandComponent', () => {
         quantity: Number(inputs.quantity.value),
         instrument: {
           ...commandContext.commandParameters.instrument,
-          instrumentGroup: inputs.instrumentGroup.value
+          instrumentGroup: inputs.instrumentGroup
         },
         user: commandContext.commandParameters.user
       };
@@ -220,7 +219,7 @@ describe('LimitCommandComponent', () => {
         quantity: 125,
         instrument: {
           ...commandContext.commandParameters.instrument,
-          instrumentGroup: 'CUSTOM_GROUP'
+          instrumentGroup: 'SPBX'
         },
         user: commandContext.commandParameters.user
       };
@@ -230,10 +229,6 @@ describe('LimitCommandComponent', () => {
 
       inputs.quantity.value = expectedCommand.quantity.toString();
       inputs.quantity.dispatchEvent(new Event('input'));
-
-      inputs.instrumentGroup.value = expectedCommand.instrument.instrumentGroup!;
-      inputs.instrumentGroup.dispatchEvent(new Event('input'));
-
 
       expect(spyCommands.setLimitCommand).toHaveBeenCalledWith(expectedCommand);
     }
@@ -250,7 +245,7 @@ describe('LimitCommandComponent', () => {
         quantity: Number(inputs.quantity.value),
         instrument: {
           ...commandContext.commandParameters.instrument,
-          instrumentGroup: inputs.instrumentGroup.value
+          instrumentGroup: inputs.instrumentGroup
         },
         user: commandContext.commandParameters.user
       };
@@ -274,7 +269,7 @@ describe('LimitCommandComponent', () => {
       quantity: 432,
       instrument: {
         ...commandContext.commandParameters.instrument,
-        instrumentGroup: inputs.instrumentGroup.value
+        instrumentGroup: inputs.instrumentGroup
       },
       user: commandContext.commandParameters.user
     };
@@ -297,7 +292,7 @@ describe('LimitCommandComponent', () => {
         lotQuantity: Number(inputs.quantity.value),
         instrument: {
           ...commandContext.commandParameters.instrument,
-          instrumentGroup: inputs.instrumentGroup.value,
+          instrumentGroup: inputs.instrumentGroup,
         },
         instrumentCurrency: commandContext.instrument.currency
       };

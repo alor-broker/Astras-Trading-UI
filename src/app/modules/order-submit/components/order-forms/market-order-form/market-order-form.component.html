@@ -17,7 +17,11 @@
         <nz-collapse-panel [nzHeader]="t('command.advanced')">
           <nz-form-label nzFor="instrumentGroup">{{t('command.instrumentGroupLabel')}}</nz-form-label>
           <nz-form-control [nzErrorTip]="t('command.instrumentGroupError')">
-            <input (mousedown)="$event.stopPropagation()" formControlName="instrumentGroup" nz-input [placeholder]="t('command.instrumentGroupPlaceholder')"/>
+            <ats-instrument-board-select
+              [symbol]="instrument.symbol"
+              [placeholder]="t('command.instrumentGroupPlaceholder')"
+              formControlName="instrumentGroup">
+            </ats-instrument-board-select>
           </nz-form-control>
         </nz-collapse-panel>
       </nz-collapse>

@@ -31,7 +31,7 @@ describe('LimitOrderFormComponent', () => {
     return {
       quantity: fixture.nativeElement.querySelector('input[formcontrolname="quantity"]') as HTMLInputElement,
       price: fixture.nativeElement.querySelector('input[formcontrolname="price"]') as HTMLInputElement,
-      instrumentGroup: fixture.nativeElement.querySelector('input[formcontrolname="instrumentGroup"]') as HTMLInputElement,
+      instrumentGroup: 'SPBX'
     };
   };
 
@@ -172,7 +172,7 @@ describe('LimitOrderFormComponent', () => {
       const expectedValue: LimitOrderFormValue = {
         price: Number(inputs.price.value),
         quantity: Number(inputs.quantity.value),
-        instrumentGroup: inputs.instrumentGroup.value,
+        instrumentGroup: inputs.instrumentGroup,
       };
 
       emittedValue$.pipe(
@@ -192,7 +192,7 @@ describe('LimitOrderFormComponent', () => {
       const expectedValue: LimitOrderFormValue = {
         price: 999,
         quantity: 125,
-        instrumentGroup: 'CUSTOM_GROUP'
+        instrumentGroup: 'SPBX'
       };
 
       const emittedValue$ = component.formValueChange.pipe(
@@ -205,9 +205,6 @@ describe('LimitOrderFormComponent', () => {
 
       inputs.quantity.value = expectedValue.quantity.toString();
       inputs.quantity.dispatchEvent(new Event('input'));
-
-      inputs.instrumentGroup.value = expectedValue.instrumentGroup!;
-      inputs.instrumentGroup.dispatchEvent(new Event('input'));
 
       emittedValue$.pipe(
         take(1)
@@ -231,7 +228,7 @@ describe('LimitOrderFormComponent', () => {
       const expectedValue: LimitOrderFormValue = {
         price: 478,
         quantity: Number(inputs.quantity.value),
-        instrumentGroup: inputs.instrumentGroup.value
+        instrumentGroup: inputs.instrumentGroup
       };
 
       component.initialValues = { price: expectedValue.price };
@@ -258,7 +255,7 @@ describe('LimitOrderFormComponent', () => {
         instrument: {
           symbol: instrument.symbol,
           exchange: instrument.exchange,
-          instrumentGroup: inputs.instrumentGroup.value,
+          instrumentGroup: inputs.instrumentGroup,
         },
         instrumentCurrency: instrument.currency
       };
