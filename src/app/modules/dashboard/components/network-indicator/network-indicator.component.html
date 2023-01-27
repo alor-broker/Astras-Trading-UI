@@ -1,0 +1,21 @@
+<ng-container *transloco="let t; scope: 'dashboard/network-indicator'">
+  <ng-container *ngIf="(networkStatus$ | async) as status">
+  <span
+    [ngClass]="{
+    'online': status === statuses.Online,
+    'offline': status === statuses.Offline
+    }"
+    [nzTooltipTitle]="tooltip"
+    class="icon-wrapper"
+    nz-tooltip
+  >
+  <i nz-icon nzTheme="outline" nzType="api"></i>
+    <ng-template #tooltip>
+      <span *ngIf="status === statuses.Online">{{t('dashboardNetworkIndicator.onlineDescription')}}</span>
+      <span *ngIf="status === statuses.Offline">{{t('dashboardNetworkIndicator.offlineDescription')}}</span>
+    </ng-template>
+</span>
+  </ng-container>
+</ng-container>
+
+

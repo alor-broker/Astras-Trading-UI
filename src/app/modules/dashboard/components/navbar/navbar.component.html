@@ -120,9 +120,12 @@
     </div>
 
     <div class="right contrast-icon">
-        <div class="notifications" *ngIf="!deviceInfo.isMobile">
-          <ats-notification-button></ats-notification-button>
-        </div>
+      <div>
+        <ats-network-indicator></ats-network-indicator>
+      </div>
+      <div class="notifications" *ngIf="!deviceInfo.isMobile">
+        <ats-notification-button></ats-notification-button>
+      </div>
       <div *ngIf="!deviceInfo.isMobile">
         <button nz-button nz-dropdown [nzDropdownMenu]="rightMenu" nzPlacement="bottomRight" [nzType]="'text'">
           <i nz-icon nzType="ats-user"></i>
