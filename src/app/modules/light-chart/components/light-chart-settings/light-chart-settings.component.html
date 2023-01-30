@@ -37,7 +37,7 @@
           <nz-form-control [nzErrorTip]="t('lightChartSettings.instrumentGroupError')">
             <nz-form-label nzFor="instrumentGroup">{{t('lightChartSettings.instrumentGroupLabel')}}</nz-form-label>
             <ats-instrument-board-select
-              [symbol]="form.value?.instrument?.symbol ?? null"
+              [instrument]="form.value?.instrument ?? null"
               [placeholder]="t('lightChartSettings.instrumentGroupLabel')"
               formControlName="instrumentGroup">
             </ats-instrument-board-select>
