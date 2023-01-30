@@ -19,7 +19,7 @@
           <nz-form-control [nzErrorTip]="t('techChartSettings.instrumentGroupError')">
             <nz-form-label nzFor="instrumentGroup" nzRequired>{{t('techChartSettings.instrumentGroupLabel')}}</nz-form-label>
             <ats-instrument-board-select
-              [symbol]="form.value?.instrument?.symbol ?? null"
+              [instrument]="form.value?.instrument ?? null"
               [placeholder]="t('techChartSettings.instrumentGroupLabel')"
               formControlName="instrumentGroup">
             </ats-instrument-board-select>

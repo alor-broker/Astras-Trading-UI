@@ -161,7 +161,7 @@
               <nz-form-label nzFor="instrumentGroup">{{t('orderbookSettings.instrumentGroupLabel')}}</nz-form-label>
               <nz-form-control [nzErrorTip]="t('orderbookSettings.instrumentGroupError')">
                 <ats-instrument-board-select
-                  [symbol]="form.value?.instrument?.symbol ?? null"
+                  [instrument]="form.value?.instrument ?? null"
                   [placeholder]="t('orderbookSettings.instrumentGroupLabel')"
                   formControlName="instrumentGroup">
                 </ats-instrument-board-select>
