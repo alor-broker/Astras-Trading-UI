@@ -1,35 +1,48 @@
 <ng-container *ngIf="evaluation$ | async as evaluation">
   <ng-container *transloco="let t; scope: 'command'">
-      <nz-descriptions nzSize="small" nzBordered *ngIf="!!evaluation">
-        <nz-descriptions-item
-          [nzSpan]="2"
-          [nzTitle]="t('command.evaluationCost')"
-        >
-          {{evaluation.orderEvaluation  | currency: evaluation.currency:'symbol-narrow'}}
-        </nz-descriptions-item>
-        <nz-descriptions-item
-          [nzSpan]="2"
-          [nzTitle]="t('command.evaluationCommission')"
-        >
-          {{evaluation.commission | currency: evaluation.currency:'symbol-narrow'}}
-        </nz-descriptions-item>
-        <nz-descriptions-item
-          [nzSpan]="2"
-          [nzTitle]="t('command.quantityToBuy')"
-        >
-          <span (click)="quantitySelect.emit(evaluation.quantityToBuy)">
-            {{evaluation.quantityToBuy}}
-          </span>
-        </nz-descriptions-item>
-        <nz-descriptions-item
-          [nzSpan]="2"
-          [nzTitle]="t('command.quantityToSell')"
-        >
-          <span (click)="quantitySelect.emit(evaluation.quantityToSell)">
-            {{evaluation.quantityToSell}}
-          </span>
-        </nz-descriptions-item>
-      </nz-descriptions>
+    <nz-descriptions nzSize="small" nzBordered *ngIf="!!evaluation">
+      <nz-descriptions-item
+        [nzSpan]="2"
+        [nzTitle]="t('command.evaluationCost')"
+      >
+        {{evaluation.orderEvaluation  | currency: evaluation.currency:'symbol-narrow'}}
+      </nz-descriptions-item>
+      <nz-descriptions-item
+        [nzSpan]="2"
+        [nzTitle]="t('command.evaluationCommission')"
+      >
+        {{evaluation.commission | currency: evaluation.currency:'symbol-narrow'}}
+      </nz-descriptions-item>
+      <nz-descriptions-item
+        [nzSpan]="2"
+        [nzTitle]="quantityToBuyTitle"
+      >
+        <div class="clickable" (click)="quantitySelect.emit(evaluation.quantityToBuy)">
+          {{evaluation.quantityToBuy}}
+        </div>
+      </nz-descriptions-item>
+      <nz-descriptions-item
+        [nzSpan]="2"
+        [nzTitle]="quantityToSellTitle"
+      >
+        <div class="clickable" (click)="quantitySelect.emit(evaluation.quantityToSell)">
+          {{evaluation.quantityToSell}}
+        </div>
+      </nz-descriptions-item>
+    </nz-descriptions>
+
+    <ng-template #quantityToBuyTitle>
+      <div class="clickable" (click)="quantitySelect.emit(evaluation.quantityToBuy)">
+        {{t('command.quantityToBuy')}}
+      </div>
+    </ng-template>
+
+    <ng-template #quantityToSellTitle>
+      <div class="clickable" (click)="quantitySelect.emit(evaluation.quantityToSell)">
+        {{t('command.quantityToSell')}}
+      </div>
+    </ng-template>
+
   </ng-container>
 </ng-container>
 
