@@ -16,8 +16,9 @@ import {
   switchMap
 } from 'rxjs';
 
+
 @Component({
-  selector: 'ats-instrument-board-select[symbol]',
+  selector: 'ats-instrument-board-select[instrument]',
   templateUrl: './instrument-board-select.component.html',
   styleUrls: ['./instrument-board-select.component.less'],
   providers: [
@@ -31,30 +32,30 @@ import {
 export class InstrumentBoardSelectComponent implements OnInit, OnDestroy, ControlValueAccessor {
   currentValue: string | null = null;
   availableBoards$!: Observable<string[]>;
-  private symbol$ = new BehaviorSubject<string | null>(null);
+  @Input()
+  placeholder?: string;
+  private instrument$ = new BehaviorSubject<{ symbol: string, exchange: string } | null>(null);
 
   constructor(private readonly instrumentsService: InstrumentsService) {
   }
 
   @Input()
-  set symbol(value: string | null) {
-    this.symbol$.next(value);
+  set instrument(value: { symbol: string, exchange: string } | null) {
+    this.instrument$.next(value);
   }
 
-  @Input()
-  placeholder?: string;
   ngOnDestroy(): void {
-    this.symbol$.complete();
+    this.instrument$.complete();
   }
 
   ngOnInit(): void {
-    this.availableBoards$ = this.symbol$.pipe(
-      switchMap(symbol => {
-        if (!symbol) {
+    this.availableBoards$ = this.instrument$.pipe(
+      switchMap(instrument => {
+        if (!instrument) {
           return of([]);
         }
 
-        return this.instrumentsService.getInstrumentBoards(symbol);
+        return this.instrumentsService.getInstrumentBoards(instrument);
       })
     );
   }

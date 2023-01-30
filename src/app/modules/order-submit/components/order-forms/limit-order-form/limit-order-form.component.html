@@ -39,7 +39,7 @@
             <nz-form-label nzFor="instrumentGroup">{{t('command.instrumentGroupLabel')}}</nz-form-label>
             <nz-form-control [nzErrorTip]="t('command.instrumentGroupError')">
               <ats-instrument-board-select
-                [symbol]="instrument.symbol"
+                [instrument]="instrument"
                 [placeholder]="t('command.instrumentGroupPlaceholder')"
                 formControlName="instrumentGroup">
               </ats-instrument-board-select>
