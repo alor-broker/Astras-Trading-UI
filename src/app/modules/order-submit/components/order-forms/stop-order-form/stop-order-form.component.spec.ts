@@ -180,7 +180,7 @@ describe('StopOrderFormComponent', () => {
     });
   });
 
-  it('should emit null value when form invalid', (done) => {
+  it('should emit not valid value when form invalid', (done) => {
       component.instrument = getDefaultInstrument();
       fixture.detectChanges();
 
@@ -188,7 +188,7 @@ describe('StopOrderFormComponent', () => {
         take(1)
       ).subscribe(value => {
         done();
-        expect(value).toBeNull();
+        expect(value.isValid).toBeFalse();
       });
 
       component.form!.controls.quantity.setValue(null);
@@ -238,7 +238,7 @@ describe('StopOrderFormComponent', () => {
         take(1)
       ).subscribe(value => {
         done();
-        expect(value).toEqual(expectedValue);
+        expect(value).toEqual({ value: expectedValue, isValid: true });
       });
     }
   );

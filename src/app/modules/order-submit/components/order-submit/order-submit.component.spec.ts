@@ -155,9 +155,9 @@ describe('OrderSubmitComponent', () => {
       component.setSelectedCommandType(OrderType.LimitOrder);
     });
 
-    it('should disable buttons on empty value', fakeAsync(() => {
-      component.setLimitOrderValue({} as LimitOrderFormValue);
-      component.setLimitOrderValue(null);
+    it('should disable buttons on invalid form', fakeAsync(() => {
+      component.setLimitOrderValue({ value: {} as LimitOrderFormValue, isValid: false });
+
       fixture.detectChanges();
 
       tick();
@@ -168,9 +168,8 @@ describe('OrderSubmitComponent', () => {
       });
     }));
 
-    it('should enable buttons on NON empty value', fakeAsync(() => {
-      component.setLimitOrderValue(null);
-      component.setLimitOrderValue({} as LimitOrderFormValue);
+    it('should enable buttons on valid form', fakeAsync(() => {
+      component.setLimitOrderValue({ value: {} as LimitOrderFormValue, isValid: true });
       fixture.detectChanges();
 
       tick();
@@ -190,9 +189,12 @@ describe('OrderSubmitComponent', () => {
         };
 
         component.setLimitOrderValue({
-          price: expectedOrder.price,
-          quantity: expectedOrder.quantity,
-          instrumentGroup: expectedOrder.instrument.instrumentGroup!
+          value: {
+            price: expectedOrder.price,
+            quantity: expectedOrder.quantity,
+            instrumentGroup: expectedOrder.instrument.instrumentGroup!
+          },
+          isValid: true
         });
 
         fixture.detectChanges();
@@ -215,9 +217,8 @@ describe('OrderSubmitComponent', () => {
       component.setSelectedCommandType(OrderType.MarketOrder);
     });
 
-    it('should disable buttons on empty value', fakeAsync(() => {
-      component.setMarketOrderValue({} as MarketOrderFormValue);
-      component.setMarketOrderValue(null);
+    it('should disable buttons on invalid form', fakeAsync(() => {
+      component.setMarketOrderValue({ value: {} as MarketOrderFormValue, isValid: false });
       fixture.detectChanges();
 
       tick();
@@ -228,9 +229,8 @@ describe('OrderSubmitComponent', () => {
       });
     }));
 
-    it('should enable buttons on NON empty value', fakeAsync(() => {
-      component.setMarketOrderValue(null);
-      component.setMarketOrderValue({} as MarketOrderFormValue);
+    it('should enable buttons on valid form', fakeAsync(() => {
+      component.setMarketOrderValue({ value: {} as MarketOrderFormValue, isValid: true });
       fixture.detectChanges();
 
       tick();
@@ -249,8 +249,11 @@ describe('OrderSubmitComponent', () => {
         };
 
         component.setMarketOrderValue({
-          quantity: expectedOrder.quantity,
-          instrumentGroup: expectedOrder.instrument.instrumentGroup!
+          value: {
+            quantity: expectedOrder.quantity,
+            instrumentGroup: expectedOrder.instrument.instrumentGroup!
+          },
+          isValid: true
         });
 
         fixture.detectChanges();
@@ -273,9 +276,8 @@ describe('OrderSubmitComponent', () => {
       component.setSelectedCommandType(OrderType.StopOrder);
     });
 
-    it('should disable buttons on empty value', fakeAsync(() => {
-      component.setStopOrderValue({} as StopOrderFormValue);
-      component.setStopOrderValue(null);
+    it('should disable buttons on invalid form', fakeAsync(() => {
+      component.setStopOrderValue({ value: {} as StopOrderFormValue, isValid: false });
       fixture.detectChanges();
 
       tick();
@@ -286,9 +288,8 @@ describe('OrderSubmitComponent', () => {
       });
     }));
 
-    it('should enable buttons on NON empty value', fakeAsync(() => {
-      component.setStopOrderValue(null);
-      component.setStopOrderValue({} as StopOrderFormValue);
+    it('should enable buttons on valid form', fakeAsync(() => {
+      component.setStopOrderValue({ value: {} as StopOrderFormValue, isValid: true });
       fixture.detectChanges();
 
       tick();
@@ -309,14 +310,17 @@ describe('OrderSubmitComponent', () => {
           stopEndUnixTime: new Date()
         };
 
-        component.setStopOrderValue({
+      component.setStopOrderValue({
+        value: {
           quantity: expectedOrder.quantity,
           triggerPrice: expectedOrder.triggerPrice,
           condition: expectedOrder.condition,
           stopEndUnixTime: expectedOrder.stopEndUnixTime,
           withLimit: false,
           price: 0
-        });
+        },
+        isValid: true
+      });
 
         fixture.detectChanges();
 
@@ -343,14 +347,17 @@ describe('OrderSubmitComponent', () => {
           stopEndUnixTime: new Date(),
         };
 
-        component.setStopOrderValue({
+      component.setStopOrderValue({
+        value: {
           quantity: expectedOrder.quantity,
           triggerPrice: expectedOrder.triggerPrice,
           condition: expectedOrder.condition,
           stopEndUnixTime: expectedOrder.stopEndUnixTime,
           withLimit: true,
           price: expectedOrder.price
-        });
+        },
+        isValid: true
+      });
 
         fixture.detectChanges();
 

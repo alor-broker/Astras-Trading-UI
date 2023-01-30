@@ -2,7 +2,6 @@
   <ng-container *ngIf="settings$ | async as settings">
     <div *ngIf="currentInstrumentWithPortfolio$ | async as currentInstrumentWithPortfolio">
       <!--use ngFor to completely rerender component when instrument changed-->
-      <ng-container *ngFor="let currentInstrumentWithPortfolio of [currentInstrumentWithPortfolio]">
         <div class="header">
           <div nz-row class="instrument-info">
             <div nz-col>
@@ -71,7 +70,6 @@
               </nz-tab>
             </nz-tabset>
         </div>
-      </ng-container>
       <div class="footer">
         <button
           (click)="submitOrder(orderSides.Buy)"

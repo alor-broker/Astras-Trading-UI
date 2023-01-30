@@ -22,6 +22,7 @@ import { Instrument } from "../../../../shared/models/instruments/instrument.mod
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import {
+  OrderFormData,
   OrderFormUpdate,
   OrderType
 } from '../../models/order-form.model';
@@ -197,18 +198,21 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     } else return false;
   }
 
-  setLimitOrderValue(value: LimitOrderFormValue | null) {
-    this.limitOrderFormValue = value;
+  setLimitOrderValue(formData: OrderFormData<LimitOrderFormValue>) {
+    this.setInitialValues(formData.value?.price, formData.value?.quantity);
+    this.limitOrderFormValue = formData.isValid ? formData.value : null;
     this.updateCanSubmitOrder();
   }
 
-  setMarketOrderValue(value: MarketOrderFormValue | null) {
-    this.marketOrderFormValue = value;
+  setMarketOrderValue(formData: OrderFormData<MarketOrderFormValue>) {
+    this.setInitialValues(this.stopOrderFormValue?.price || this.limitOrderFormValue?.price, formData.value?.quantity);
+    this.marketOrderFormValue = formData.isValid ? formData.value : null;
     this.updateCanSubmitOrder();
   }
 
-  setStopOrderValue(value: StopOrderFormValue | null) {
-    this.stopOrderFormValue = value;
+  setStopOrderValue(formData: OrderFormData<StopOrderFormValue>) {
+    this.setInitialValues(formData.value?.price, formData.value?.quantity);
+    this.stopOrderFormValue = formData.isValid ? formData.value : null;
     this.updateCanSubmitOrder();
   }
 

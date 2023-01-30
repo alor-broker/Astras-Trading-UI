@@ -18,7 +18,7 @@ import {
   toUnixTime
 } from "../../../../../shared/utils/datetime";
 import { StopOrderCondition } from "../../../../../shared/models/enums/stoporder-conditions";
-import { Observable } from "rxjs";
+import { Observable, switchMap, take, takeUntil } from "rxjs";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { map } from "rxjs/operators";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
@@ -28,6 +28,8 @@ import {
   OrderFormUpdate,
   OrderType
 } from '../../../models/order-form.model';
+import { QuotesService } from "../../../../../shared/services/quotes.service";
+import { mapWith } from "../../../../../shared/utils/observable-helper";
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'>
@@ -41,10 +43,12 @@ export type StopOrderFormValue =
 })
 export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderFormValue, { timezoneConverter: TimezoneConverter }> {
   public canSelectNow = true;
+  public conditionType = StopOrderCondition;
   private timezoneConverter!: TimezoneConverter;
 
   constructor(
     private readonly timezoneConverterService: TimezoneConverterService,
+    private readonly quotesService: QuotesService
   ) {
     super();
   }
@@ -70,6 +74,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
 
   protected onFormCreated() {
     this.checkPriceAvailability();
+    this.initFormSubscriptions();
   }
 
   protected buildForm(instrument: Instrument, additions: { timezoneConverter: TimezoneConverter } | null): FormGroup<ControlsOf<StopOrderFormValue>> {
@@ -104,7 +109,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
         ]
       ),
       stopEndUnixTime: new FormControl(additions!.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
-      condition: new FormControl(StopOrderCondition.More),
+      condition: new FormControl(this.conditionType.More),
       withLimit: new FormControl(false)
     });
   }
@@ -137,7 +142,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
       return;
     }
 
-    if (!!values?.price && this.form?.get('withLimit')?.value) {
+    if (!!values?.price) {
       this.form!.get('price')?.setValue(values.price);
     }
     if (!!values?.quantity) {
@@ -155,5 +160,35 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     const now = new Date();
     const convertedNow = this.timezoneConverter.toTerminalDate(now);
     this.canSelectNow = convertedNow.toUTCString() === now.toUTCString();
+  }
+
+  private initFormSubscriptions() {
+    this.form!.get('triggerPrice')!.valueChanges
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe(val => {
+        this.form!.get('price')!.setValue(val);
+      });
+
+    this.form!.get('price')!.valueChanges
+      .pipe(
+        takeUntil(this.destroy$),
+        mapWith(
+          () => this.getCurrentPrice(),
+          (value, lastPrice) => ({ value, lastPrice })
+        )
+      )
+      .subscribe(({ value, lastPrice }) => {
+        this.form!.get('condition')!.setValue( ((lastPrice ?? 0) < +(value ?? 0)) ? this.conditionType.More : this.conditionType.Less);
+      });
+  }
+
+  private getCurrentPrice() {
+    return this.instrument$
+      .pipe(
+        take(1),
+        switchMap(i => this.quotesService.getLastPrice(i!))
+      );
   }
 }

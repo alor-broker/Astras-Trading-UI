@@ -149,7 +149,7 @@ describe('MarketOrderFormComponent', () => {
         take(1)
       ).subscribe(value => {
         done();
-        expect(value).toBeNull();
+        expect(value.isValid).toBeFalse();
       });
 
       component.form!.controls.quantity.setValue(null);
@@ -176,7 +176,7 @@ describe('MarketOrderFormComponent', () => {
         take(1)
       ).subscribe(value => {
         done();
-        expect(value).toEqual(expectedValue);
+        expect(value).toEqual({ value: expectedValue, isValid: true });
       });
     }
   );
@@ -203,7 +203,7 @@ describe('MarketOrderFormComponent', () => {
         take(1)
       ).subscribe(value => {
         done();
-        expect(value).toEqual(expectedValue);
+        expect(value).toEqual({ value: expectedValue, isValid: true });
       });
     }
   );
