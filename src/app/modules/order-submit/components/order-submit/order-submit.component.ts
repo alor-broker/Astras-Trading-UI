@@ -1,9 +1,4 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -21,22 +16,14 @@ import {
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import {
-  OrderFormData,
-  OrderFormUpdate,
-  OrderType
-} from '../../models/order-form.model';
+import { OrderFormValue, OrderFormUpdate, OrderType } from '../../models/order-form.model';
 import { LimitOrderFormValue } from "../order-forms/limit-order-form/limit-order-form.component";
 import { MarketOrderFormValue } from "../order-forms/market-order-form/market-order-form.component";
 import { StopOrderFormValue } from "../order-forms/stop-order-form/stop-order-form.component";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { SubmitOrderResult } from "../../../command/models/order.model";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import {
-  finalize,
-  map,
-  startWith
-} from "rxjs/operators";
+import { finalize, map, startWith } from "rxjs/operators";
 import { OrderService } from "../../../../shared/services/orders/order.service";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
@@ -69,7 +56,9 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly canSubmitOrder$ = new BehaviorSubject(false);
   readonly buyButtonLoading$ = new BehaviorSubject(false);
   readonly sellButtonLoading$ = new BehaviorSubject(false);
-  readonly initialValues$ = new Subject<OrderFormUpdate<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue>>();
+  private initialValuesSubject$ = new BehaviorSubject<OrderFormUpdate<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue>>({});
+
+  initialValues$!: Observable<any>;
   selectedTabIndex$!: Observable<number>;
   positionInfo$!: Observable<{ abs: number, quantity: number }>;
   activeLimitOrders$!: Observable<Order[]>;
@@ -105,6 +94,11 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.initialValues$ = this.initialValuesSubject$
+      .pipe(
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
+      );
+
     this.settings$ = this.settingsService.getSettings<OrderSubmitSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => this.isEqualOrderSubmitSettings(previous, current)),
       shareReplay(1)
@@ -198,20 +192,20 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     } else return false;
   }
 
-  setLimitOrderValue(formData: OrderFormData<LimitOrderFormValue>) {
+  setLimitOrderValue(formData: OrderFormValue<LimitOrderFormValue>) {
     this.setInitialValues(formData.value?.price, formData.value?.quantity);
     this.limitOrderFormValue = formData.isValid ? formData.value : null;
     this.updateCanSubmitOrder();
   }
 
-  setMarketOrderValue(formData: OrderFormData<MarketOrderFormValue>) {
+  setMarketOrderValue(formData: OrderFormValue<MarketOrderFormValue>) {
     this.setInitialValues(this.stopOrderFormValue?.price || this.limitOrderFormValue?.price, formData.value?.quantity);
     this.marketOrderFormValue = formData.isValid ? formData.value : null;
     this.updateCanSubmitOrder();
   }
 
-  setStopOrderValue(formData: OrderFormData<StopOrderFormValue>) {
-    this.setInitialValues(formData.value?.price, formData.value?.quantity);
+  setStopOrderValue(formData: OrderFormValue<StopOrderFormValue>) {
+    this.setInitialValues(formData.value?.price, formData.value?.quantity, undefined, formData.value.withLimit);
     this.stopOrderFormValue = formData.isValid ? formData.value : null;
     this.updateCanSubmitOrder();
   }
@@ -256,12 +250,17 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     });
   }
 
-  setInitialValues(price?: number, quantity?: number, target?: OrderType) {
-    this.initialValues$.next({
-      price,
-      quantity,
-      target
-    });
+  setInitialValues(price?: number, quantity?: number, target?: OrderType, withLimit?: boolean) {
+    this.initialValuesSubject$.next(
+      Object.assign(
+        JSON.parse(JSON.stringify(this.initialValuesSubject$.getValue() || {})),
+        JSON.parse(JSON.stringify({
+          price,
+          quantity,
+          target,
+          withLimit
+        }))
+      ));
   }
 
   ngOnDestroy(): void {

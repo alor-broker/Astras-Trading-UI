@@ -6,7 +6,7 @@ export enum OrderType {
 
 export type OrderFormUpdate<T> = Partial<T> & { target?: OrderType } | null;
 
-export interface OrderFormData<T> {
+export interface OrderFormValue<T> {
   value: T;
   isValid: boolean;
 }

@@ -148,6 +148,9 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     if (!!values?.quantity) {
       this.form?.controls.quantity.setValue(values.quantity);
     }
+    if (!!values?.withLimit || values?.withLimit === false) {
+      this.form!.get('withLimit')?.setValue(values.withLimit);
+    }
   }
 
   private checkNowTimeSelection() {

@@ -20,7 +20,7 @@ import { Instrument } from "../../../../shared/models/instruments/instrument.mod
 import { FormGroup } from "@angular/forms";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { ControlsOf } from '../../../../shared/models/form.model';
-import { OrderFormData, OrderFormUpdate } from '../../models/order-form.model';
+import { OrderFormValue, OrderFormUpdate } from '../../models/order-form.model';
 
 @Component({
   template: ''
@@ -28,7 +28,7 @@ import { OrderFormData, OrderFormUpdate } from '../../models/order-form.model';
 export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements OnInit, OnDestroy {
   form?: FormGroup<ControlsOf<T>>;
   @Output()
-  formValueChange = new EventEmitter<OrderFormData<T>>();
+  formValueChange = new EventEmitter<OrderFormValue<T>>();
   public readonly isActivated$ = new BehaviorSubject<boolean>(false);
   public readonly instrument$ = new BehaviorSubject<Instrument | null>(null);
   protected destroy$: Subject<boolean> = new Subject<boolean>();
