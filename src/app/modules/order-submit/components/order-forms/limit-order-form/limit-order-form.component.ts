@@ -40,6 +40,10 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
     this.evaluation$.complete();
   }
 
+  quantitySelect(qty: number) {
+    this.form?.get('quantity')?.setValue(qty);
+  }
+
   protected buildForm(instrument: Instrument): FormGroup<ControlsOf<LimitOrderFormValue>> {
     return new FormGroup<ControlsOf<LimitOrderFormValue>>({
       quantity: new FormControl(

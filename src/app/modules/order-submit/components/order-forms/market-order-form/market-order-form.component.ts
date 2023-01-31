@@ -61,6 +61,10 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
     this.lastFormValue$.complete();
   }
 
+  quantitySelect(qty: number) {
+    this.form?.get('quantity')?.setValue(qty);
+  }
+
   protected buildForm(instrument: Instrument): FormGroup<ControlsOf<MarketOrderFormValue>> {
     return new FormGroup<ControlsOf<MarketOrderFormValue>>({
       quantity: new FormControl(

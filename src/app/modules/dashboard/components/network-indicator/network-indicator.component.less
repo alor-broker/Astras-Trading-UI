@@ -1,0 +1,38 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .icon-wrapper {
+      &.online {
+        color: lime;
+      }
+
+      &.offline {
+        color: @layout-header-color;
+
+        i {
+          border-radius: 15px;
+          animation: pulse 2s infinite;
+        }
+      }
+
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 fade(@error-color, 70%);
+        color: @error-color;
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px fade(@error-color, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 fade(@error-color, 0);
+      }
+    }
+  }
+
+});
+

@@ -10,6 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import { LoggerService } from './logger.service';
 import {
+  BehaviorSubject,
   filter,
   interval,
   Observable,
@@ -72,6 +73,8 @@ export const RXJS_WEBSOCKET_CTOR = new InjectionToken<typeof webSocket>(
 export class SubscriptionsDataFeedService {
   private socketState: SocketState | null = null;
 
+  private isConnected$ = new BehaviorSubject<boolean>(false);
+
   private readonly options = {
     reconnectTimeout: 2000,
     reconnectAttempts: 5
@@ -82,6 +85,18 @@ export class SubscriptionsDataFeedService {
     private logger: LoggerService,
     @Inject(RXJS_WEBSOCKET_CTOR) private webSocketFactory: typeof webSocket
   ) {
+  }
+
+  public getConnectionStatus(): Observable<boolean> {
+    return this.isConnected$.pipe(
+      map(x => {
+        if(!this.socketState) {
+          return true;
+        }
+
+        return x;
+      })
+    );
   }
 
   public subscribe<T extends SubscriptionRequest, R>(request: T, getSubscriptionId: (request: T) => string): Observable<R> {
@@ -189,6 +204,7 @@ export class SubscriptionsDataFeedService {
       openObserver: {
         next: () => {
           this.logger.trace(this.toLoggerMessage('Connection open'));
+          this.isConnected$.next(true);
         }
       },
       closeObserver: {
@@ -203,6 +219,7 @@ export class SubscriptionsDataFeedService {
             socketState.webSocketSubject = null;
 
             this.reconnect(socketState);
+            this.isConnected$.next(false);
 
             return;
           }

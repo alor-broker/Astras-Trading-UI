@@ -71,9 +71,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
 
     this.service.quantitySelected$.pipe(
       takeUntil(this.destroy$)
-    ).subscribe(qty => {
-      this.form.get('quantity')?.setValue(qty);
-    });
+    ).subscribe(qty => this.quantitySelect(qty));
   }
 
   ngOnDestroy(): void {
@@ -83,6 +81,10 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     this.lastCommand$.complete();
     this.commandContext$.complete();
     this.isActivated$.complete();
+  }
+
+  quantitySelect(qty: number) {
+    this.form.get('quantity')?.setValue(qty);
   }
 
   private setMarketCommand(initialParameters: CommandParams): void {
