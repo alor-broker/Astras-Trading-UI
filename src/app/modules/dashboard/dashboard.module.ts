@@ -29,6 +29,7 @@ import { ExternalLinkModule } from "../../shared/components/external-link/extern
 import { OrdersBasketModule } from '../orders-basket/orders-basket.module';
 import { SelectDashboardMenuComponent } from './components/select-dashboard-menu/select-dashboard-menu.component';
 import { NzDrawerModule } from "ng-zorro-antd/drawer";
+import { NetworkIndicatorComponent } from './components/network-indicator/network-indicator.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { NzDrawerModule } from "ng-zorro-antd/drawer";
     DashboardComponent,
     NavbarComponent,
     ParentWidgetComponent,
-    SelectDashboardMenuComponent
+    SelectDashboardMenuComponent,
+    NetworkIndicatorComponent
   ],
     imports: [
         DashboardRoutingModule,

@@ -90,12 +90,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       shareReplay(1)
     );
 
-    this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
-      filter(p => p.status === EntityStatus.Success),
-      map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x))),
-      shareReplay(1)
-    );
-
     this.selectedPortfolio$ =
       this.selectedDashboard$.pipe(
         map(d => d.selectedPortfolio),
