@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, filter, Observable, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
@@ -25,6 +25,8 @@ export class EvaluationComponent implements OnInit {
   set evaluationProperties(evaluationProperties: EvaluationBaseProperties) {
     this.evaluationRequest$.next(evaluationProperties);
   }
+
+  @Output() quantitySelect = new EventEmitter<number>();
 
   ngOnInit(): void {
     const getEvaluationDisplay = (request: EvaluationBaseProperties) => this.service.evaluateOrder(request).pipe(

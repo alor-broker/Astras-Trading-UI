@@ -28,7 +28,10 @@
     </form>
   </ng-container>
   <ng-container *ngIf="evaluation$ | async as evaluation">
-    <ats-evaluation [evaluationProperties]="evaluation"></ats-evaluation>
+    <ats-evaluation
+      [evaluationProperties]="evaluation"
+      (quantitySelect)="quantitySelect($event)"
+    ></ats-evaluation>
   </ng-container>
 </div>
 
