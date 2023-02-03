@@ -13,6 +13,7 @@ import {
   combineLatest,
   distinctUntilChanged,
   filter,
+  iif,
   interval,
   NEVER,
   Observable,
@@ -64,6 +65,7 @@ import {
   VolumeHighlightMode,
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
+import { ModifierKeys } from "../../../../shared/models/modifier-keys.model";
 
 type ExtendedSettings = { widgetSettings: ScalperOrderBookSettings, instrument: Instrument };
 
@@ -97,6 +99,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   isAutoAlignAvailable$!: Observable<boolean>;
   readonly enableAutoAlign$ = new BehaviorSubject(true);
   orderBookPosition$!: Observable<ScalperOrderBookPositionState | null>;
+  modifierKeyPressed$!: Observable<ModifierKeys>;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -121,6 +124,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnInit(): void {
+    this.modifierKeyPressed$ = this.hotkeysService.getModifierKeysStream();
     this.initOrderBookContext();
     this.orderBookTableData$ = this.getOrderBookTableData().pipe(
       shareReplay({ bufferSize: 1, refCount: true })
@@ -637,10 +641,28 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   private callWithWorkingVolume(action: (workingVolume: number) => void) {
-    this.activeWorkingVolume$.pipe(
+    this.modifierKeyPressed$
+      .pipe(
+        switchMap(
+          modifiers => iif(
+            () => modifiers.altKey,
+            this.getPositionsCount(),
+            this.activeWorkingVolume$
+          )
+        ),
+        take(1),
+        filter(workingVolume => !!workingVolume)
+      )
+      .subscribe(workingVolume => action(workingVolume!));
+  }
+
+  private getPositionsCount(): Observable<number | undefined> {
+    return this.orderBookContext!.extendedSettings$.pipe(
+      switchMap(s => this.scalperOrdersService.getCurrentPositions(s.instrument)
+      ),
+      map(position => position?.qtyTFutureBatch),
       take(1),
-      filter(workingVolume => !!workingVolume)
-    ).subscribe(workingVolume => action(workingVolume!));
+    );
   }
 
   private callWithCurrentOrderBook(action: (orderBook: OrderbookData) => void) {

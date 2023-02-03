@@ -15,6 +15,12 @@
             background-color: @background-color-active;
           }
         }
+
+        .counter-bid-indicator {
+          color: @primary-color;
+          border-radius: 50%;
+          box-shadow: 0 0 8px @primary-color
+        }
       }
     }
 
@@ -103,9 +109,19 @@
     justify-content: space-between;
 
     .working-volumes {
+      display: flex;
 
       .working-volume-item {
         cursor: pointer;
+      }
+
+      .modifier-btn-indicators {
+        display: flex;
+        align-items: center;
+
+        .counter-bid-indicator {
+          font-size: 18px;
+        }
       }
     }
 

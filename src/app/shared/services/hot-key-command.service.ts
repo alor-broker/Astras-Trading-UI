@@ -9,15 +9,20 @@ import {
   Observable,
   share,
   switchMap,
+  merge,
+  distinctUntilChanged,
+  BehaviorSubject
 } from "rxjs";
 import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
 import { filter } from "rxjs/operators";
 import { HotKeysSettings } from "../models/terminal-settings/terminal-settings.model";
 import { TerminalCommand } from "../models/terminal-command";
+import { ModifierKeys } from "../models/modifier-keys.model";
 
 @Injectable({ providedIn: 'root' })
 export class HotKeyCommandService {
   private readonly inputs = ['INPUT', 'TEXTAREA'];
+  private modifierKeysPress$!: BehaviorSubject<ModifierKeys>;
 
   public readonly commands$: Observable<TerminalCommand>;
 
@@ -60,6 +65,31 @@ export class HotKeyCommandService {
       map(commandType => ({ type: commandType } as TerminalCommand)),
       share()
     );
+  }
+
+  getModifierKeysStream() {
+    if (this.modifierKeysPress$) {
+      return this.modifierKeysPress$;
+    }
+
+    this.modifierKeysPress$ = new BehaviorSubject<ModifierKeys>({ shiftKey: false, ctrlKey: false, altKey: false });
+
+    merge(
+      fromEvent<KeyboardEvent>(this.document.body, 'keydown'),
+      fromEvent<KeyboardEvent>(this.document.body, 'keyup')
+    )
+      .pipe(
+        map((e: KeyboardEvent) => ({
+          shiftKey: e.shiftKey,
+          ctrlKey: e.ctrlKey || e.metaKey,
+          altKey: e.altKey,
+        })),
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+        share()
+      )
+      .subscribe(modifiers => this.modifierKeysPress$.next(modifiers));
+
+    return this.modifierKeysPress$.asObservable();
   }
 
   private static mapToCommandType(settingCode: string): string {

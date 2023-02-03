@@ -11,6 +11,18 @@
       >
         {{vol}}
       </nz-tag>
+      <div
+        *ngIf="modifierKeyPressed$ | async as modifierKeyPressed"
+        class="modifier-btn-indicators"
+      >
+        <span
+          *ngIf="modifierKeyPressed.altKey"
+          class="counter-bid-indicator"
+          nz-icon
+          nzType="exclamation-circle"
+          nzTheme="outline"
+        ></span>
+      </div>
     </div>
     <div class="auto-align-button" *ngIf="(isAutoAlignAvailable$ | async) === true">
       <nz-tag

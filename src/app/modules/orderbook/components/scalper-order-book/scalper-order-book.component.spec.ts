@@ -47,6 +47,7 @@ import {
   ScalperOrderBookSettings,
   VolumeHighlightMode
 } from '../../models/scalper-order-book-settings.model';
+import { ModifierKeys } from "../../../../shared/models/modifier-keys.model";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -75,6 +76,12 @@ describe('ScalperOrderBookComponent', () => {
     minstep: 0.01
   };
 
+  const defaultModifiers: ModifierKeys = {
+    shiftKey: false,
+    altKey: false,
+    ctrlKey: false
+  };
+
   const defaultLastPrice = 101.24;
   const settingsMock = new BehaviorSubject<ScalperOrderBookSettings>(orderBookDefaultSettings);
   const orderBookDataMock = new Subject<OrderbookData>();
@@ -84,6 +91,7 @@ describe('ScalperOrderBookComponent', () => {
   const terminalSettingsMock = new Subject<TerminalSettings>();
   const instrumentMock = new BehaviorSubject<Instrument>(defaultInstrumentInfo);
   const hotKeyCommandMock = new Subject<TerminalCommand>();
+  const modifiersStream = new BehaviorSubject<ModifierKeys>(defaultModifiers);
 
   let widgetSettingsServiceSpy: any;
   let scalperOrderBookServiceSpy: any;
@@ -137,12 +145,14 @@ describe('ScalperOrderBookComponent', () => {
         'setStopLimitForRow',
         'setStopLoss',
         'sellBestBid',
-        'buyBestAsk'
+        'buyBestAsk',
+        'getCurrentPositions'
       ]
     );
 
-    hotKeyCommandServiceSpy = jasmine.createSpyObj('HotKeyCommandService', ['commands$']);
+    hotKeyCommandServiceSpy = jasmine.createSpyObj('HotKeyCommandService', ['commands$', 'getModifierKeysStream']);
     hotKeyCommandServiceSpy.commands$ = hotKeyCommandMock;
+    hotKeyCommandServiceSpy.getModifierKeysStream.and.returnValue(modifiersStream);
 
     themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
     themeServiceSpy.getThemeSettings.and.returnValue(of({
@@ -569,5 +579,40 @@ describe('ScalperOrderBookComponent', () => {
         component.onRowRightClick(event, testRow);
       })
     );
+
+    it('should call commands with position qty instead working volume when alt pressed', done => {
+      const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
+
+      const currentSettings = {
+        ...orderBookDefaultSettings,
+        enableMouseClickSilentOrders: true
+      };
+
+      settingsMock.next(currentSettings);
+      fixture.detectChanges();
+
+      modifiersStream.next({ shiftKey: false, ctrlKey: false, altKey: true });
+      fixture.detectChanges();
+
+      const testRow = {
+        rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
+      } as ScalperOrderBookRow;
+
+      const positionQty = Math.round(Math.random() * 1000);
+
+      scalperOrdersServiceSpy.getCurrentPositions.and.returnValue(of({ qtyTFutureBatch: positionQty }));
+
+      scalperOrdersServiceSpy.placeLimitOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
+        done();
+        expect(instrumentKey).toEqual(orderBookDefaultSettings);
+        expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell);
+        expect(quantity).toEqual(positionQty);
+        expect(price).toEqual(testRow.price);
+        expect(silent).toEqual(currentSettings.enableMouseClickSilentOrders);
+      });
+
+      fixture.detectChanges();
+      component.onRowClick(event, testRow);
+    });
   });
 });
