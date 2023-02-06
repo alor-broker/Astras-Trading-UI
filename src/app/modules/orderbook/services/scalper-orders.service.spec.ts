@@ -8,6 +8,7 @@ import {
 import { ScalperOrdersService } from './scalper-orders.service';
 import {
   generateRandomString,
+  getRandomInt,
   sharedModuleImportForTests
 } from "../../../shared/utils/testing";
 import { OrderCancellerService } from "../../../shared/services/order-canceller.service";
@@ -154,23 +155,23 @@ describe('ScalperOrdersService', () => {
       const currentPortfolioPositions: Position[] = [
         {
           symbol: generateRandomString(4),
-          qtyTFuture: Math.round(Math.random() * 100),
-          qtyTFutureBatch: Math.round(Math.random() * 10)
+          qtyTFuture: getRandomInt(1, 100),
+          qtyTFutureBatch: getRandomInt(1, 10)
         } as Position,
         {
           symbol: generateRandomString(4),
-          qtyTFuture: Math.round(Math.random() * 100),
-          qtyTFutureBatch: Math.round(Math.random() * 10)
+          qtyTFuture: getRandomInt(1, 100),
+          qtyTFutureBatch: getRandomInt(1, 10)
         } as Position,
         {
           symbol: testInstrumentKey1.symbol,
-          qtyTFuture: Math.round(Math.random() * 100),
-          qtyTFutureBatch: Math.round(Math.random() * 10)
+          qtyTFuture: getRandomInt(1, 100),
+          qtyTFutureBatch: getRandomInt(1, 10)
         } as Position,
         {
           symbol: testInstrumentKey2.symbol,
-          qtyTFuture: Math.round(Math.random() * 100) * -1,
-          qtyTFutureBatch: Math.round(Math.random() * 10) * -1
+          qtyTFuture: getRandomInt(1, 100) * -1,
+          qtyTFutureBatch: getRandomInt(1, 10) * -1
         } as Position,
       ];
 
@@ -224,7 +225,7 @@ describe('ScalperOrdersService', () => {
       };
 
       orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
-      const quantity = Math.round(Math.random() * 100);
+      const quantity = getRandomInt(1, 100);
 
       let testAsks: OrderbookDataRow[] = [
         { p: 6, v: 1, y: 0 },
@@ -336,7 +337,7 @@ describe('ScalperOrdersService', () => {
       };
 
       orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
-      const quantity = Math.round(Math.random() * 100);
+      const quantity = getRandomInt(1, 100);
 
       let testAsks: OrderbookDataRow[] = [
         { p: 6, v: 1, y: 0 },
@@ -386,7 +387,7 @@ describe('ScalperOrdersService', () => {
       };
 
       orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
-      const quantity = Math.round(Math.random() * 100);
+      const quantity = getRandomInt(1, 100);
 
       let testAsks: OrderbookDataRow[] = [
         { p: 6, v: 1, y: 0 },
@@ -431,7 +432,7 @@ describe('ScalperOrdersService', () => {
       };
 
       orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
-      const quantity = Math.round(Math.random() * 100);
+      const quantity = getRandomInt(1, 100);
 
       service.placeMarketOrder(
         testInstrumentKey,
@@ -489,8 +490,8 @@ describe('ScalperOrdersService', () => {
       };
 
       orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
-      const quantity = Math.round(Math.random() * 100);
-      const price = Math.round(Math.random() * 1000);
+      const quantity = getRandomInt(1, 100);
+      const price = getRandomInt(1, 1000);
 
       service.placeLimitOrder(
         testInstrumentKey,
@@ -553,13 +554,13 @@ describe('ScalperOrdersService', () => {
       const currentPortfolioPositions: Position[] = [
         {
           symbol: generateRandomString(4),
-          qtyTFuture: Math.round(Math.random() * 100),
-          qtyTFutureBatch: Math.round(Math.random() * 10)
+          qtyTFuture: getRandomInt(1, 100),
+          qtyTFutureBatch: getRandomInt(1, 10)
         } as Position,
         {
           symbol: testInstrumentKey.symbol,
-          qtyTFuture: Math.round(Math.random() * 100),
-          qtyTFutureBatch: Math.round(Math.random() * 10)
+          qtyTFuture: getRandomInt(1, 100),
+          qtyTFutureBatch: getRandomInt(1, 10)
         } as Position,
       ];
 
@@ -613,8 +614,8 @@ describe('ScalperOrdersService', () => {
       };
 
       orderServiceSpy.submitStopLimitOrder.and.returnValue(of({}));
-      const quantity = Math.round(Math.random() * 100);
-      const price = Math.round(Math.random() * 1000);
+      const quantity = getRandomInt(1, 100);
+      const price = getRandomInt(1, 1000);
 
       service.setStopLimitForRow(
         testInstrumentKey,
@@ -707,7 +708,7 @@ describe('ScalperOrdersService', () => {
       positionsServiceSpy.getAllByPortfolio.and.returnValue(of(currentPortfolioPositions));
       service.setStopLoss(
         testInstrumentKey,
-        Math.round(Math.random() * 1000),
+        getRandomInt(1, 1000),
         Math.random() < 0.5
       );
 

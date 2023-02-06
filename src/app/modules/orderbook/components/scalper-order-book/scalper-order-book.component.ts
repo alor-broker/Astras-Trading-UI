@@ -65,7 +65,6 @@ import {
   VolumeHighlightMode,
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
-import { ModifierKeys } from "../../../../shared/models/modifier-keys.model";
 
 type ExtendedSettings = { widgetSettings: ScalperOrderBookSettings, instrument: Instrument };
 
@@ -99,7 +98,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   isAutoAlignAvailable$!: Observable<boolean>;
   readonly enableAutoAlign$ = new BehaviorSubject(true);
   orderBookPosition$!: Observable<ScalperOrderBookPositionState | null>;
-  modifierKeyPressed$!: Observable<ModifierKeys>;
+  positionState$!: Observable<ScalperOrderBookPositionState | null>;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -124,7 +123,6 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnInit(): void {
-    this.modifierKeyPressed$ = this.hotkeysService.getModifierKeysStream();
     this.initOrderBookContext();
     this.orderBookTableData$ = this.getOrderBookTableData().pipe(
       shareReplay({ bufferSize: 1, refCount: true })
@@ -222,7 +220,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
     if (e.ctrlKey) {
       this.callWithSettings(settings => {
-        this.callWithWorkingVolume(workingVolume => {
+        this.callWithSelectedVolume(workingVolume => {
           this.scalperOrdersService.setStopLimitForRow(settings.widgetSettings, row, workingVolume, settings.widgetSettings.enableMouseClickSilentOrders);
         });
       });
@@ -237,7 +235,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
     if (!e.shiftKey && !e.ctrlKey) {
       this.callWithSettings(settings => {
-        this.callWithWorkingVolume(workingVolume => {
+        this.callWithSelectedVolume(workingVolume => {
           this.scalperOrdersService.placeLimitOrder(
             settings.widgetSettings,
             row.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell,
@@ -260,7 +258,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     }
 
     this.callWithSettings(settings => {
-      this.callWithWorkingVolume(workingVolume => {
+      this.callWithSelectedVolume(workingVolume => {
         this.scalperOrdersService.placeMarketOrder(
           settings.widgetSettings,
           row.rowType === ScalperOrderBookRowType.Bid ? Side.Sell : Side.Buy,
@@ -640,13 +638,14 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     ).subscribe(s => action(s));
   }
 
-  private callWithWorkingVolume(action: (workingVolume: number) => void) {
-    this.modifierKeyPressed$
+  private callWithSelectedVolume(action: (workingVolume: number) => void) {
+    this.hotkeysService.modifiers$
       .pipe(
         switchMap(
           modifiers => iif(
             () => modifiers.altKey,
-            this.getPositionsCount(),
+            this.getPositionStateStream()
+              .pipe(map(p => p?.qty)),
             this.activeWorkingVolume$
           )
         ),
@@ -654,15 +653,6 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
         filter(workingVolume => !!workingVolume)
       )
       .subscribe(workingVolume => action(workingVolume!));
-  }
-
-  private getPositionsCount(): Observable<number | undefined> {
-    return this.orderBookContext!.extendedSettings$.pipe(
-      switchMap(s => this.scalperOrdersService.getCurrentPositions(s.instrument)
-      ),
-      map(position => position?.qtyTFutureBatch),
-      take(1),
-    );
   }
 
   private callWithCurrentOrderBook(action: (orderBook: OrderbookData) => void) {
@@ -753,7 +743,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     if (command.type === ScalperOrderBookCommands.sellBestBid) {
       this.callWithSettings(settings => {
         this.callWithCurrentOrderBook(orderBook => {
-          this.callWithWorkingVolume(workingVolume => {
+          this.callWithSelectedVolume(workingVolume => {
             this.scalperOrdersService.sellBestBid(settings.instrument, workingVolume!, orderBook);
           });
         });
@@ -765,7 +755,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
     if (command.type === ScalperOrderBookCommands.buyBestAsk) {
       this.callWithSettings(settings => {
         this.callWithCurrentOrderBook(orderBook => {
-          this.callWithWorkingVolume(workingVolume => {
+          this.callWithSelectedVolume(workingVolume => {
             this.scalperOrdersService.buyBestAsk(settings.instrument, workingVolume!, orderBook);
           });
         });
@@ -799,7 +789,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
 
   private placeMarketOrderSilent(side: Side) {
     this.callWithSettings(settings => {
-      this.callWithWorkingVolume(workingVolume => {
+      this.callWithSelectedVolume(workingVolume => {
         this.scalperOrdersService.placeMarketOrder(settings.widgetSettings, side, workingVolume, true);
       });
     });
@@ -836,7 +826,7 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   private placeBestOrder(side: Side) {
     this.callWithSettings(settings => {
       this.callWithCurrentOrderBook(orderBook => {
-        this.callWithWorkingVolume(workingVolume => {
+        this.callWithSelectedVolume(workingVolume => {
           this.scalperOrdersService.placeBestOrder(settings.instrument, side, workingVolume!, orderBook);
         });
       });
@@ -873,31 +863,37 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   private getPositionStateStream(): Observable<ScalperOrderBookPositionState | null> {
-    return combineLatest([
-      this.orderBookContext!.extendedSettings$,
-      this.orderBookContext!.orderBookData$,
-      this.orderBookContext!.orderBookPosition$
-    ]).pipe(
-      map(([settings, orderBook, position]) => {
-        if (!position || position.qtyTFuture === 0 || orderBook.a.length === 0 || orderBook.b.length === 0) {
-          return null;
-        }
+    if (!this.positionState$) {
+      this.positionState$ = combineLatest([
+        this.orderBookContext!.extendedSettings$,
+        this.orderBookContext!.orderBookData$,
+        this.orderBookContext!.orderBookPosition$
+      ]).pipe(
+        takeUntil(this.destroy$),
+        map(([settings, orderBook, position]) => {
+          if (!position || position.qtyTFuture === 0 || orderBook.a.length === 0 || orderBook.b.length === 0) {
+            return null;
+          }
 
-        const sign = position!.qtyTFuture > 0 ? 1 : -1;
-        const bestPrice = sign > 0
-          ? orderBook.b[0].p
-          : orderBook.a[0].p;
+          const sign = position!.qtyTFuture > 0 ? 1 : -1;
+          const bestPrice = sign > 0
+            ? orderBook.b[0].p
+            : orderBook.a[0].p;
 
-        const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
+          const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
 
-        const minStepDigitsAfterPoint = MathHelper.getPrecision(settings.instrument.minstep);
+          const minStepDigitsAfterPoint = MathHelper.getPrecision(settings.instrument.minstep);
 
-        return {
-          qty: position!.qtyTFutureBatch,
-          price: MathHelper.round(position!.avgPrice, minStepDigitsAfterPoint),
-          lossOrProfit: rowsDifference
-        };
-      })
-    );
+          return {
+            qty: position!.qtyTFutureBatch,
+            price: MathHelper.round(position!.avgPrice, minStepDigitsAfterPoint),
+            lossOrProfit: rowsDifference
+          };
+        }),
+        shareReplay({bufferSize: 1, refCount: true})
+      );
+    }
+
+    return this.positionState$;
   }
 }

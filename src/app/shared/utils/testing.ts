@@ -158,7 +158,7 @@ export const ngZorroMockComponents = [
   }),
   mockDirective({
     selector: '[nz-tooltip]',
-    inputs: ['nzTooltipTitle', 'nzTooltipTrigger', 'nzTooltipPlacement', 'nzTooltipMouseEnterDelay']
+    inputs: ['nz-tooltip', 'nzTooltipTitle', 'nzTooltipTrigger', 'nzTooltipPlacement', 'nzTooltipMouseEnterDelay']
   })
 ];
 

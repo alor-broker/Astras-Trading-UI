@@ -287,21 +287,11 @@ export class ScalperOrdersService {
       });
   }
 
-  getCurrentPositions(instrumentKey: InstrumentKey): Observable<Position | null> {
-    return this.getCurrentPositionsWithPortfolio(instrumentKey)
-      .pipe(
-        map(({ position }) => position)
-      );
-  }
-
   private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.currentDashboardService.selectedPortfolio$
-      .pipe(
-        take(1)
-      );
+    return this.currentDashboardService.selectedPortfolio$;
   }
 
-  private getPositionsByPortfolio(instrumentKey: InstrumentKey, portfolio: PortfolioKey): Observable<Position | null> {
+  private getCurrentPositions(instrumentKey: InstrumentKey, portfolio: PortfolioKey): Observable<Position | null> {
     return this.positionsService.getAllByPortfolio(portfolio.portfolio, portfolio.exchange).pipe(
       filter((positions): positions is Position[] => !!positions),
       map(positions => positions.find(pos => pos.symbol === instrumentKey.symbol) ?? null),
@@ -312,7 +302,7 @@ export class ScalperOrdersService {
   private getCurrentPositionsWithPortfolio(instrumentKey: InstrumentKey): Observable<{ portfolio: PortfolioKey, position: Position | null }> {
     return this.getCurrentPortfolio().pipe(
       mapWith(
-        portfolio => this.getPositionsByPortfolio(instrumentKey, portfolio),
+        portfolio => this.getCurrentPositions(instrumentKey, portfolio),
         (portfolio, position) => ({ portfolio, position })
       ),
       take(1)

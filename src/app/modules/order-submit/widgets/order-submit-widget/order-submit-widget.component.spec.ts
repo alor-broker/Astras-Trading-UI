@@ -5,6 +5,7 @@ import {
 
 import { OrderSubmitWidgetComponent } from './order-submit-widget.component';
 import {
+  getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
   widgetSkeletonMock
@@ -28,6 +29,7 @@ describe('OrderSubmitWidgetComponent', () => {
       imports: [
         OrderSubmitModule,
         ...sharedModuleImportForTests,
+        getTranslocoModule()
       ],
       declarations: [
         mockComponent({
