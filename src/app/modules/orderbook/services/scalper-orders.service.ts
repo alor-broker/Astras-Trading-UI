@@ -288,7 +288,10 @@ export class ScalperOrdersService {
   }
 
   private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.currentDashboardService.selectedPortfolio$;
+    return this.currentDashboardService.selectedPortfolio$
+      .pipe(
+        take(1)
+      );
   }
 
   private getCurrentPositions(instrumentKey: InstrumentKey, portfolio: PortfolioKey): Observable<Position | null> {
