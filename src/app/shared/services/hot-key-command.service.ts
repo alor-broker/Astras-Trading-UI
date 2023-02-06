@@ -14,7 +14,7 @@ import {
   shareReplay
 } from "rxjs";
 import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
-import { filter, tap } from "rxjs/operators";
+import { filter, startWith, tap } from "rxjs/operators";
 import { HotKeysSettings } from "../models/terminal-settings/terminal-settings.model";
 import { TerminalCommand } from "../models/terminal-command";
 import { ModifierKeys } from "../models/modifier-keys.model";
@@ -90,6 +90,7 @@ export class HotKeyCommandService {
           altKey: e.altKey,
         })),
         distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+        startWith({ shiftKey: false, ctrlKey: false, altKey: false }),
         shareReplay(1)
       );
   }
