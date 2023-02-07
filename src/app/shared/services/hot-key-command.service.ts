@@ -78,7 +78,7 @@ export class HotKeyCommandService {
       fromEvent<KeyboardEvent>(this.document.body, 'keyup')
     )
       .pipe(
-        filter(() => !this.document.querySelector('input:focus')),
+        filter(() => !this.document.querySelector('input:focus, textarea:focus, select:focus')),
         filter((e: KeyboardEvent) => e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Meta'),
         tap((e: KeyboardEvent) => {
           e.preventDefault();

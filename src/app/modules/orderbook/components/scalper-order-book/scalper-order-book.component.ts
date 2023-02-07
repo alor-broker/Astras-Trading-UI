@@ -98,7 +98,6 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   isAutoAlignAvailable$!: Observable<boolean>;
   readonly enableAutoAlign$ = new BehaviorSubject(true);
   orderBookPosition$!: Observable<ScalperOrderBookPositionState | null>;
-  positionState$!: Observable<ScalperOrderBookPositionState | null>;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -428,7 +427,10 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
       extendedSettings$: settings$,
       currentOrders$: this.getCurrentOrdersStream(settings$),
       orderBookData$: this.getOrderBookDataStream(settings$),
-      orderBookPosition$: this.getOrderBookPositionStream(settings$),
+      orderBookPosition$: this.getOrderBookPositionStream(settings$)
+        .pipe(
+          shareReplay({bufferSize: 1, refCount: true})
+        ),
       themeSettings$: this.themeService.getThemeSettings()
     };
   }
@@ -644,8 +646,8 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
         switchMap(
           modifiers => iif(
             () => modifiers.altKey,
-            this.getPositionStateStream()
-              .pipe(map(p => p?.qty)),
+            this.orderBookContext!.orderBookPosition$
+              .pipe(map(p => p?.qtyTFutureBatch)),
             this.activeWorkingVolume$
           )
         ),
@@ -863,37 +865,33 @@ export class ScalperOrderBookComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   private getPositionStateStream(): Observable<ScalperOrderBookPositionState | null> {
-    if (!this.positionState$) {
-      this.positionState$ = combineLatest([
-        this.orderBookContext!.extendedSettings$,
-        this.orderBookContext!.orderBookData$,
-        this.orderBookContext!.orderBookPosition$
-      ]).pipe(
-        takeUntil(this.destroy$),
-        map(([settings, orderBook, position]) => {
-          if (!position || position.qtyTFuture === 0 || orderBook.a.length === 0 || orderBook.b.length === 0) {
-            return null;
-          }
+    return combineLatest([
+      this.orderBookContext!.extendedSettings$,
+      this.orderBookContext!.orderBookData$,
+      this.orderBookContext!.orderBookPosition$
+    ]).pipe(
+      takeUntil(this.destroy$),
+      map(([settings, orderBook, position]) => {
+        if (!position || position.qtyTFuture === 0 || orderBook.a.length === 0 || orderBook.b.length === 0) {
+          return null;
+        }
 
-          const sign = position!.qtyTFuture > 0 ? 1 : -1;
-          const bestPrice = sign > 0
-            ? orderBook.b[0].p
-            : orderBook.a[0].p;
+        const sign = position!.qtyTFuture > 0 ? 1 : -1;
+        const bestPrice = sign > 0
+          ? orderBook.b[0].p
+          : orderBook.a[0].p;
 
-          const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
+        const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
 
-          const minStepDigitsAfterPoint = MathHelper.getPrecision(settings.instrument.minstep);
+        const minStepDigitsAfterPoint = MathHelper.getPrecision(settings.instrument.minstep);
 
-          return {
-            qty: position!.qtyTFutureBatch,
-            price: MathHelper.round(position!.avgPrice, minStepDigitsAfterPoint),
-            lossOrProfit: rowsDifference
-          };
-        }),
-        shareReplay({bufferSize: 1, refCount: true})
-      );
-    }
-
-    return this.positionState$;
+        return {
+          qty: position!.qtyTFutureBatch,
+          price: MathHelper.round(position!.avgPrice, minStepDigitsAfterPoint),
+          lossOrProfit: rowsDifference
+        };
+      }),
+      shareReplay({bufferSize: 1, refCount: true})
+    );
   }
 }

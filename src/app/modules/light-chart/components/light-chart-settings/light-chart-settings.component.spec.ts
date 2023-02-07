@@ -5,11 +5,67 @@ import { of } from 'rxjs';
 import { AppModule } from 'src/app/app.module';
 import {
   getTranslocoModule,
-  mockComponent,
-  sharedModuleImportForTests
+  mockComponent
 } from '../../../../shared/utils/testing';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { LightChartSettings } from '../../models/light-chart-settings.model';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from "@angular/forms";
+import { NzSelectModule } from "ng-zorro-antd/select";
+import { NzCollapseModule } from "ng-zorro-antd/collapse";
+import { Component, forwardRef, Input } from "@angular/core";
+import { NzFormModule } from "ng-zorro-antd/form";
+
+@Component({
+  selector: 'ats-instrument-board-select',
+  template: '',
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => InstrumentBoardMockComponent),
+    multi: true
+  }]
+})
+class InstrumentBoardMockComponent implements ControlValueAccessor {
+  @Input() instrument: any;
+  @Input() placeholder: any;
+
+  registerOnChange(fn: any): void {
+  }
+
+  registerOnTouched(fn: any): void {
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+  }
+
+  writeValue(obj: any): void {
+  }
+}
+
+@Component({
+  selector: 'ats-instrument-search',
+  template: '',
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => InstrumentSearchMockComponent),
+    multi: true
+  }]
+})
+class InstrumentSearchMockComponent implements ControlValueAccessor {
+  @Input() instrument: any;
+  @Input() placeholder: any;
+
+  registerOnChange(fn: any): void {
+  }
+
+  registerOnTouched(fn: any): void {
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+  }
+
+  writeValue(obj: any): void {
+  }
+}
 
 describe('LightChartSettingsComponent', () => {
   let component: LightChartSettingsComponent;
@@ -31,12 +87,16 @@ describe('LightChartSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         LightChartSettingsComponent,
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['symbol', 'placeholder'] })
+        InstrumentBoardMockComponent,
+        InstrumentSearchMockComponent
       ],
       imports: [
-        ...sharedModuleImportForTests,
         AppModule,
-        getTranslocoModule()
+        getTranslocoModule(),
+        ReactiveFormsModule,
+        NzSelectModule,
+        NzCollapseModule,
+        NzFormModule
       ],
       providers: [
         {
