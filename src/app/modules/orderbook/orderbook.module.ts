@@ -13,6 +13,7 @@ import { ScalperOrderBookSettingsComponent } from './components/scalper-order-bo
 import { NzInputModule } from "ng-zorro-antd/input";
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
+import { ModifiersIndicatorComponent } from './components/modifiers-indicator/modifiers-indicator.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
     ScalperOrderBookWidgetComponent,
     ScalperOrderBookComponent,
     ScalperOrderBookSettingsComponent,
+    ModifiersIndicatorComponent,
   ],
     imports: [
         CommonModule,

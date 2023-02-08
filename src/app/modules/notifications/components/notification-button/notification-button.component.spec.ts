@@ -25,7 +25,7 @@ describe('NotificationButtonComponent', () => {
         {
           provide: NotificationsService,
           useValue: {
-            getNotifications: jasmine.createSpy('getNotifications').and.returnValue(of({}))
+            getNotifications: jasmine.createSpy('getNotifications').and.returnValue(of([]))
           }
         }
       ]

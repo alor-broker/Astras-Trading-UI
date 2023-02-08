@@ -21,6 +21,7 @@ import { TerminalSettingsService } from "../../../terminal-settings/services/ter
 import {
   generateRandomString,
   getRandomInt,
+  getTranslocoModule, mockComponent,
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
 import { ScalperOrderBookService } from "../../services/scalper-order-book.service";
@@ -42,11 +43,12 @@ import {
   ThemeType
 } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
-import { TranslocoTestingModule } from "@ngneat/transloco";
 import {
   ScalperOrderBookSettings,
   VolumeHighlightMode
 } from '../../models/scalper-order-book-settings.model';
+import { ModifierKeys } from "../../../../shared/models/modifier-keys.model";
+import ruScalperOrderbook from "../../../../../assets/i18n/orderbook/scalper-orderbook/ru.json";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -75,6 +77,12 @@ describe('ScalperOrderBookComponent', () => {
     minstep: 0.01
   };
 
+  const defaultModifiers: ModifierKeys = {
+    shiftKey: false,
+    altKey: false,
+    ctrlKey: false
+  };
+
   const defaultLastPrice = 101.24;
   const settingsMock = new BehaviorSubject<ScalperOrderBookSettings>(orderBookDefaultSettings);
   const orderBookDataMock = new Subject<OrderbookData>();
@@ -84,6 +92,7 @@ describe('ScalperOrderBookComponent', () => {
   const terminalSettingsMock = new Subject<TerminalSettings>();
   const instrumentMock = new BehaviorSubject<Instrument>(defaultInstrumentInfo);
   const hotKeyCommandMock = new Subject<TerminalCommand>();
+  const modifiersStream = new BehaviorSubject<ModifierKeys>(defaultModifiers);
 
   let widgetSettingsServiceSpy: any;
   let scalperOrderBookServiceSpy: any;
@@ -137,12 +146,14 @@ describe('ScalperOrderBookComponent', () => {
         'setStopLimitForRow',
         'setStopLoss',
         'sellBestBid',
-        'buyBestAsk'
+        'buyBestAsk',
+        'getCurrentPositions'
       ]
     );
 
-    hotKeyCommandServiceSpy = jasmine.createSpyObj('HotKeyCommandService', ['commands$']);
+    hotKeyCommandServiceSpy = jasmine.createSpyObj('HotKeyCommandService', ['commands$', 'modifiers$']);
     hotKeyCommandServiceSpy.commands$ = hotKeyCommandMock;
+    hotKeyCommandServiceSpy.modifiers$ = modifiersStream;
 
     themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
     themeServiceSpy.getThemeSettings.and.returnValue(of({
@@ -164,9 +175,16 @@ describe('ScalperOrderBookComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         ScalperOrderBookComponent,
-        ...ngZorroMockComponents
+        ...ngZorroMockComponents,
+        mockComponent({ selector: 'ats-modifiers-indicator' })
       ],
-      imports: [TranslocoTestingModule],
+      imports: [
+        getTranslocoModule({
+          langs: {
+            'command/ru': ruScalperOrderbook,
+          }
+        }),
+      ],
       providers: [
         { provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy },
         { provide: TerminalSettingsService, useValue: terminalSettingsServiceSpy },
@@ -259,12 +277,12 @@ describe('ScalperOrderBookComponent', () => {
     );
 
     it('should process sellBestOrder command', ((done) => {
-        const workingVolume = Math.round(Math.random() * 100);
+        const workingVolume = getRandomInt(1, 100);
 
         orderBookDataMock.next({
           a: [{
-            p: Math.round(Math.random() * 1000),
-            v: Math.round(Math.random() * 100),
+            p: getRandomInt(1, 1000),
+            v: getRandomInt(1, 100),
             y: 0
           }],
           b: [],
@@ -287,12 +305,12 @@ describe('ScalperOrderBookComponent', () => {
     );
 
     it('should process buyBestOrder command', ((done) => {
-        const workingVolume = Math.round(Math.random() * 100);
+        const workingVolume = getRandomInt(1, 100);
 
         orderBookDataMock.next({
           a: [{
-            p: Math.round(Math.random() * 1000),
-            v: Math.round(Math.random() * 100),
+            p: getRandomInt(1, 1000),
+            v: getRandomInt(1, 100),
             y: 0
           }],
           b: [],
@@ -315,17 +333,17 @@ describe('ScalperOrderBookComponent', () => {
     );
 
     it('should process sellBestBid command', ((done) => {
-        const workingVolume = Math.round(Math.random() * 100);
+        const workingVolume = getRandomInt(1, 100);
 
         orderBookDataMock.next({
           a: [{
-            p: Math.round(Math.random() * 1000),
-            v: Math.round(Math.random() * 100),
+            p: getRandomInt(1, 1000),
+            v: getRandomInt(1, 100),
             y: 0
           }],
           b: [{
-            p: Math.round(Math.random() * 1000),
-            v: Math.round(Math.random() * 100),
+            p: getRandomInt(1, 1000),
+            v: getRandomInt(1, 100),
             y: 0
           }],
         });
@@ -346,12 +364,12 @@ describe('ScalperOrderBookComponent', () => {
     );
 
     it('should process buyBestAsk command', ((done) => {
-        const workingVolume = Math.round(Math.random() * 100);
+        const workingVolume = getRandomInt(1, 100);
 
         orderBookDataMock.next({
           a: [{
-            p: Math.round(Math.random() * 1000),
-            v: Math.round(Math.random() * 100),
+            p: getRandomInt(1, 1000),
+            v: getRandomInt(1, 100),
             y: 0
           }],
           b: [],
@@ -373,7 +391,7 @@ describe('ScalperOrderBookComponent', () => {
     );
 
     it('should process sellMarket command', ((done) => {
-        const workingVolume = Math.round(Math.random() * 100);
+        const workingVolume = getRandomInt(1, 100);
 
         component.isActive = true;
         component.activeWorkingVolume$.next(workingVolume);
@@ -392,7 +410,7 @@ describe('ScalperOrderBookComponent', () => {
     );
 
     it('should process buyMarket command', ((done) => {
-        const workingVolume = Math.round(Math.random() * 100);
+        const workingVolume = getRandomInt(1, 100);
 
         component.isActive = true;
         component.activeWorkingVolume$.next(workingVolume);
@@ -452,12 +470,12 @@ describe('ScalperOrderBookComponent', () => {
         settingsMock.next(currentSettings);
         fixture.detectChanges();
 
-        const workingVolume = Math.round(Math.random() * 100);
+        const workingVolume = getRandomInt(1, 100);
         component.activeWorkingVolume$.next(workingVolume);
         fixture.detectChanges();
 
         const testRow = {
-          price: Math.round(Math.random() * 1000),
+          price: getRandomInt(1, 1000),
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as ScalperOrderBookRow;
 
@@ -487,7 +505,7 @@ describe('ScalperOrderBookComponent', () => {
         fixture.detectChanges();
 
         const testRow = {
-          price: Math.round(Math.random() * 1000),
+          price: getRandomInt(1, 1000),
           rowType: ScalperOrderBookRowType.Ask
         } as ScalperOrderBookRow;
 
@@ -514,12 +532,12 @@ describe('ScalperOrderBookComponent', () => {
         settingsMock.next(currentSettings);
         fixture.detectChanges();
 
-        const workingVolume = Math.round(Math.random() * 100);
+        const workingVolume = getRandomInt(1, 100);
         component.activeWorkingVolume$.next(workingVolume);
         fixture.detectChanges();
 
         const testRow = {
-          price: Math.round(Math.random() * 1000),
+          price: getRandomInt(1, 1000),
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as ScalperOrderBookRow;
 
@@ -548,12 +566,12 @@ describe('ScalperOrderBookComponent', () => {
         settingsMock.next(currentSettings);
         fixture.detectChanges();
 
-        const workingVolume = Math.round(Math.random() * 100);
+        const workingVolume = getRandomInt(1, 100);
         component.activeWorkingVolume$.next(workingVolume);
         fixture.detectChanges();
 
         const testRow = {
-          price: Math.round(Math.random() * 1000),
+          price: getRandomInt(1, 1000),
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as ScalperOrderBookRow;
 
@@ -569,5 +587,52 @@ describe('ScalperOrderBookComponent', () => {
         component.onRowRightClick(event, testRow);
       })
     );
+
+    it('should call commands with position qty instead working volume when alt pressed', done => {
+      const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
+
+      const currentSettings = {
+        ...orderBookDefaultSettings,
+        enableMouseClickSilentOrders: true
+      };
+
+      orderBookDataMock.next({
+        a: [{
+          p: getRandomInt(1, 1000),
+          v: getRandomInt(1, 100),
+          y: 0
+        }],
+        b: [{
+          p: getRandomInt(1, 1000),
+          v: getRandomInt(1, 100),
+          y: 0
+        }],
+      });
+
+      settingsMock.next(currentSettings);
+      fixture.detectChanges();
+
+      modifiersStream.next({ shiftKey: false, ctrlKey: false, altKey: true });
+      fixture.detectChanges();
+
+      const positionQty = Math.round( 1000);
+      positionMock.next({ qtyTFutureBatch: positionQty } as Position);
+
+      const testRow = {
+        rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
+      } as ScalperOrderBookRow;
+
+      scalperOrdersServiceSpy.placeLimitOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
+        done();
+        expect(instrumentKey).toEqual(orderBookDefaultSettings);
+        expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell);
+        expect(quantity).toEqual(positionQty);
+        expect(price).toEqual(testRow.price);
+        expect(silent).toEqual(currentSettings.enableMouseClickSilentOrders);
+      });
+
+      fixture.detectChanges();
+      component.onRowClick(event, testRow);
+    });
   });
 });

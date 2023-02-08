@@ -3,12 +3,14 @@ import { InfoService } from '../../../services/info.service';
 
 import { AboutIssueComponent } from './about-issue.component';
 import { mockComponent } from "../../../../../shared/utils/testing";
+import { of } from "rxjs";
 
 describe('AboutIssueComponent', () => {
   let component: AboutIssueComponent;
   let fixture: ComponentFixture<AboutIssueComponent>;
   const infoSpy = jasmine.createSpyObj('InfoService', ['getIssue', 'getExchangeInfo']);
   infoSpy.getIssue.and.returnValue(null);
+  infoSpy.getExchangeInfo.and.returnValue(of({}));
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {

@@ -9,23 +9,33 @@ import {
   Observable,
   share,
   switchMap,
+  merge,
+  distinctUntilChanged,
+  shareReplay
 } from "rxjs";
 import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
-import { filter } from "rxjs/operators";
+import { filter, startWith, tap } from "rxjs/operators";
 import { HotKeysSettings } from "../models/terminal-settings/terminal-settings.model";
 import { TerminalCommand } from "../models/terminal-command";
+import { ModifierKeys } from "../models/modifier-keys.model";
 
 @Injectable({ providedIn: 'root' })
 export class HotKeyCommandService {
   private readonly inputs = ['INPUT', 'TEXTAREA'];
 
   public readonly commands$: Observable<TerminalCommand>;
+  public readonly modifiers$: Observable<ModifierKeys>;
 
   constructor(
     @Inject(DOCUMENT) private readonly document: Document,
     private readonly terminalSettingsService: TerminalSettingsService,
   ) {
-    this.commands$ = terminalSettingsService.getSettings().pipe(
+    this.commands$ = this.getCommandsStream();
+    this.modifiers$ = this.getModifierKeysStream();
+  }
+
+  private getCommandsStream() {
+    return this.terminalSettingsService.getSettings().pipe(
       map(x => x.hotKeysSettings),
       filter((x): x is HotKeysSettings => !!x),
       switchMap((hotKeysSettings: { [key: string]: any | undefined | null }) => {
@@ -60,6 +70,29 @@ export class HotKeyCommandService {
       map(commandType => ({ type: commandType } as TerminalCommand)),
       share()
     );
+  }
+
+  private getModifierKeysStream() {
+    return merge(
+      fromEvent<KeyboardEvent>(this.document.body, 'keydown'),
+      fromEvent<KeyboardEvent>(this.document.body, 'keyup')
+    )
+      .pipe(
+        filter(() => !this.document.querySelector('input:focus, textarea:focus, select:focus')),
+        filter((e: KeyboardEvent) => e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Meta'),
+        tap((e: KeyboardEvent) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }),
+        map((e: KeyboardEvent) => ({
+          shiftKey: e.shiftKey,
+          ctrlKey: e.ctrlKey || e.metaKey,
+          altKey: e.altKey,
+        })),
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+        startWith({ shiftKey: false, ctrlKey: false, altKey: false }),
+        shareReplay(1)
+      );
   }
 
   private static mapToCommandType(settingCode: string): string {

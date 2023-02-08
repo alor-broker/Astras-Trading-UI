@@ -121,7 +121,7 @@ describe('OrderSubmitComponent', () => {
         {
           provide: PortfolioSubscriptionsService,
           useValue: {
-            getAllPositionsSubscription: jasmine.createSpy('getAllPositionsSubscription').and.returnValue(of(null))
+            getAllPositionsSubscription: jasmine.createSpy('getAllPositionsSubscription').and.returnValue(of([]))
           }
         },
         {

@@ -58,7 +58,9 @@ describe('SessionTrackService', () => {
   });
 
   beforeEach(() => {
-    jasmine.clock().install();
+    try {
+      jasmine.clock().install();
+    } catch {}
     jasmine.clock().mockDate(new Date(nowDateMock));
   });
 

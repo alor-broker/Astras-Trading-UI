@@ -1,0 +1,20 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .counter-bid-indicator {
+      color: @primary-color;
+      border-radius: 50%;
+      box-shadow: 0 0 8px @primary-color
+    }
+  }
+});
+
+.modifier-btn-indicators {
+  display: flex;
+  align-items: center;
+
+  .counter-bid-indicator {
+    font-size: 18px;
+  }
+}
