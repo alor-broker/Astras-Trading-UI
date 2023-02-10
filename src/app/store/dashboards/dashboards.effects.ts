@@ -36,7 +36,7 @@ import {
 } from './dashboards.selectors';
 import { mapWith } from '../../shared/utils/observable-helper';
 import { MarketService } from '../../shared/services/market.service';
-import { getDefaultPortfolio } from '../../shared/utils/portfolios';
+import { getDefaultPortfolio, isPortfoliosEqual } from '../../shared/utils/portfolios';
 import { PortfoliosStreams } from '../portfolios/portfolios.streams';
 import {
   CurrentDashboardActions,
@@ -129,10 +129,13 @@ export class DashboardsEffects {
     return this.store.select(selectedDashboard).pipe(
       filter(d => !!d),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),
-      filter(d => !d.selectedPortfolio),
       mapWith(
         () => PortfoliosStreams.getAllPortfolios(this.store),
         (dashboard, allPortfolios) => ({ dashboard, allPortfolios })
+      ),
+      filter(({ dashboard, allPortfolios }) =>
+        !dashboard.selectedPortfolio ||
+        !allPortfolios.find(p => isPortfoliosEqual(p, dashboard.selectedPortfolio))
       ),
       mapWith(
         () => this.marketService.getDefaultExchange(),
