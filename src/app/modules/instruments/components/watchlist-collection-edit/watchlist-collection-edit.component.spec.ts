@@ -22,6 +22,7 @@ describe('WatchlistCollectionEditComponent', () => {
   const collectionChangedMock = new Subject();
   watchlistCollectionServiceSpy.collectionChanged$ = collectionChangedMock.asObservable();
   watchlistCollectionServiceSpy.getPresetCollection.and.returnValue(of(null));
+  watchlistCollectionServiceSpy.getWatchlistCollection.and.returnValue(of({}));
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

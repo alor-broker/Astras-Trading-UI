@@ -129,7 +129,9 @@ describe('StopCommandComponent', () => {
   });
 
   it('should initialize input values from context', () => {
-    jasmine.clock().install();
+    try {
+      jasmine.clock().install();
+    } catch {}
     const nowDateMock = Date.now();
     jasmine.clock().mockDate(new Date(nowDateMock));
 

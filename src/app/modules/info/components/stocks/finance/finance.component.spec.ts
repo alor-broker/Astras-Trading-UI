@@ -11,6 +11,7 @@ describe('FinanceComponent', () => {
 
   const infoSpy = jasmine.createSpyObj('InfoService', ['getFinance', 'getExchangeInfo']);
   infoSpy.getFinance.and.returnValue(of(null));
+  infoSpy.getExchangeInfo.and.returnValue(of({}));
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {

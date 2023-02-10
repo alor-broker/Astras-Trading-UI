@@ -11,6 +11,7 @@ describe('DividendsComponent', () => {
 
   const infoSpy = jasmine.createSpyObj('InfoService', ['getDividends', 'getExchangeInfo']);
   infoSpy.getDividends.and.returnValue(of([]));
+  infoSpy.getExchangeInfo.and.returnValue(of({}));
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
