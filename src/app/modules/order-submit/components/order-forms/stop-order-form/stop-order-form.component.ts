@@ -91,7 +91,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
         ]
       ),
       price: new FormControl(
-        null,
+        1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
@@ -100,7 +100,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
         ]
       ),
       triggerPrice: new FormControl(
-        null,
+        1,
         [
           Validators.required,
           Validators.min(inputNumberValidation.min),
@@ -148,7 +148,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     if (!!values?.quantity) {
       this.form?.controls.quantity.setValue(values.quantity);
     }
-    if (!!values?.withLimit || values?.withLimit === false) {
+    if (values?.withLimit) {
       this.form!.get('withLimit')?.setValue(values.withLimit);
     }
   }

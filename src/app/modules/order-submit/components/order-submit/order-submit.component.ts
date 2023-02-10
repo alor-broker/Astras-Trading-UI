@@ -16,7 +16,7 @@ import {
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { OrderFormValue, OrderFormUpdate, OrderType } from '../../models/order-form.model';
+import { OrderFormUpdate, OrderFormValue, OrderType } from '../../models/order-form.model';
 import { LimitOrderFormValue } from "../order-forms/limit-order-form/limit-order-form.component";
 import { MarketOrderFormValue } from "../order-forms/market-order-form/market-order-form.component";
 import { StopOrderFormValue } from "../order-forms/stop-order-form/stop-order-form.component";
@@ -56,9 +56,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly canSubmitOrder$ = new BehaviorSubject(false);
   readonly buyButtonLoading$ = new BehaviorSubject(false);
   readonly sellButtonLoading$ = new BehaviorSubject(false);
-  private initialValuesSubject$ = new BehaviorSubject<OrderFormUpdate<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue>>({});
+  readonly initialValues$ = new BehaviorSubject<OrderFormUpdate<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue>>(null);
 
-  initialValues$!: Observable<any>;
   selectedTabIndex$!: Observable<number>;
   positionInfo$!: Observable<{ abs: number, quantity: number }>;
   activeLimitOrders$!: Observable<Order[]>;
@@ -94,11 +93,6 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.initialValues$ = this.initialValuesSubject$
-      .pipe(
-        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
-      );
-
     this.settings$ = this.settingsService.getSettings<OrderSubmitSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => this.isEqualOrderSubmitSettings(previous, current)),
       shareReplay(1)
@@ -115,6 +109,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
 
     this.currentInstrumentWithPortfolio$ = combineLatest([currentPortfolio$, currentInstrument]).pipe(
       tap(() => {
+        this.setInitialValues(1, 1, undefined, this.stopOrderFormValue?.withLimit);
         this.limitOrderFormValue = null;
         this.marketOrderFormValue = null;
         this.stopOrderFormValue = null;
@@ -199,13 +194,13 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   }
 
   setMarketOrderValue(formData: OrderFormValue<MarketOrderFormValue>) {
-    this.setInitialValues(this.stopOrderFormValue?.price || this.limitOrderFormValue?.price, formData.value?.quantity);
+    this.setInitialValues(undefined, formData.value?.quantity);
     this.marketOrderFormValue = formData.isValid ? formData.value : null;
     this.updateCanSubmitOrder();
   }
 
   setStopOrderValue(formData: OrderFormValue<StopOrderFormValue>) {
-    this.setInitialValues(formData.value?.price, formData.value?.quantity, undefined, formData.value.withLimit);
+    this.setInitialValues(formData.value?.price, formData.value?.quantity);
     this.stopOrderFormValue = formData.isValid ? formData.value : null;
     this.updateCanSubmitOrder();
   }
@@ -251,9 +246,9 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   }
 
   setInitialValues(price?: number, quantity?: number, target?: OrderType, withLimit?: boolean) {
-    this.initialValuesSubject$.next(
+    this.initialValues$.next(
       Object.assign(
-        JSON.parse(JSON.stringify(this.initialValuesSubject$.getValue() || {})),
+        JSON.parse(JSON.stringify(this.initialValues$.getValue() || {})),
         JSON.parse(JSON.stringify({
           price,
           quantity,
@@ -270,6 +265,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     this.canSubmitOrder$.complete();
     this.buyButtonLoading$.complete();
     this.sellButtonLoading$.complete();
+    this.initialValues$.complete();
   }
 
   hasOrdersWithSide(orders: Order[], side: Side): boolean {
