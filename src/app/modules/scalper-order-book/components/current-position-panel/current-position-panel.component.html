@@ -1,0 +1,30 @@
+<ng-container *transloco="let t; scope: 'scalper-order-book/current-position-state'">
+  <div *ngIf="orderBookPosition$ | async as position" class="container">
+    <div
+      [nz-tooltip]="t('scalperOrderBookCurrentPositionState.avgPositionPriceTooltip')"
+      [nzTooltipMouseEnterDelay]="1"
+    >
+      {{position.price}}
+    </div>
+    <div [ngClass]="{
+        'qty': true,
+        'positive': position.qty >= 0,
+        'negative': position.qty < 0
+        }"
+         [nz-tooltip]="t('scalperOrderBookCurrentPositionState.lotsQtyTooltip')"
+         [nzTooltipMouseEnterDelay]="1">
+      {{position.qty}}{{t('scalperOrderBookCurrentPositionState.lots')}}.
+    </div>
+    <div [ngClass]="{
+        'loss-or-profit': true,
+        'positive': position.lossOrProfit > 0,
+        'negative': position.lossOrProfit < 0
+        }"
+         [nz-tooltip]="t('scalperOrderBookCurrentPositionState.lossOrProfitTooltip')"
+         [nzTooltipMouseEnterDelay]="1"
+    >
+      {{position.lossOrProfit}}{{t('scalperOrderBookCurrentPositionState.positions')}}.
+    </div>
+  </div>
+</ng-container>
+

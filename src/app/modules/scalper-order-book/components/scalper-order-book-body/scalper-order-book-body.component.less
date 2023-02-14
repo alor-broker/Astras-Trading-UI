@@ -1,0 +1,32 @@
+.ant-spin-nested-loading {
+  height: 100%;
+
+  ::ng-deep .ant-spin-container {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.container {
+  height: 100%;
+  width: 100%;
+
+  overflow-x: hidden;
+
+  ::ng-deep {
+    .cdk-virtual-scroll-content-wrapper {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      #trades {
+        flex: 1;
+        overflow-x: hidden;
+      }
+
+      #table {
+        flex: 2;
+      }
+    }
+  }
+}

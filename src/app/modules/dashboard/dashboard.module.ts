@@ -30,6 +30,7 @@ import { OrdersBasketModule } from '../orders-basket/orders-basket.module';
 import { SelectDashboardMenuComponent } from './components/select-dashboard-menu/select-dashboard-menu.component';
 import { NzDrawerModule } from "ng-zorro-antd/drawer";
 import { NetworkIndicatorComponent } from './components/network-indicator/network-indicator.component';
+import { ScalperOrderBookModule } from '../scalper-order-book/scalper-order-book.module';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { NetworkIndicatorComponent } from './components/network-indicator/networ
         NzInputModule,
         ExternalLinkModule,
         OrdersBasketModule,
+        ScalperOrderBookModule,
         NzDrawerModule,
         // components
     ],

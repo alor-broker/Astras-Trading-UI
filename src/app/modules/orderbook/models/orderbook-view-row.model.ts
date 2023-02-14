@@ -1,4 +1,15 @@
-import { CurrentOrder } from './scalper-order-book.model';
+import { Side } from '../../../shared/models/enums/side.model';
+
+export interface CurrentOrder {
+  orderId: string;
+  exchange: string;
+  portfolio: string;
+  volume: number;
+  price: number;
+  type: string;
+  side: Side;
+  symbol: string;
+}
 
 export interface OrderBookViewRow {
   bidVolume?: number,

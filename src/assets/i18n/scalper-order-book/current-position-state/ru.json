@@ -1,0 +1,7 @@
+{
+  "avgPositionPriceTooltip": "Средняя цена позиции",
+  "lotsQtyTooltip": "Кол-во лотов",
+  "lots": "л",
+  "lossOrProfitTooltip": "Прибыль/Убыток",
+  "positions": "п"
+}

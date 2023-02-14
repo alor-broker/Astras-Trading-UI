@@ -1,0 +1,68 @@
+<ng-container *transloco="let t; scope: 'scalper-order-book/scalper-order-book-table'">
+  <div *ngIf="displayItems$ | async as displayItems" id="table-body-container">
+    <div class="table-col" id="volume-panel">
+      <div (click)="leftMouseClick($event, row)"
+           (contextmenu)="rightMouseClick($event, row)"
+           *ngFor="let row of displayItems; trackBy: getTrackKey"
+           [style.height]="rowHeight + 'px'"
+           [style.line-height]="rowHeight + 'px'"
+           class="table-row"
+      >
+        <div [ngClass]="getVolumeCellClasses(row)"
+             [ngStyle]="row.getVolumeStyle()"
+             class="table-cell"
+        >{{row.volume}}</div>
+      </div>
+    </div>
+    <div class="table-col" id="price-panel">
+      <div (click)="leftMouseClick($event, row)"
+           (contextmenu)="rightMouseClick($event, row)"
+           (dblclick)="$event.stopPropagation()"
+           *ngFor="let row of displayItems; trackBy: getTrackKey"
+           [style.height]="rowHeight + 'px'"
+           [style.line-height]="rowHeight + 'px'"
+           class="table-row"
+      >
+        <div
+          [ngClass]="getPriceCellClasses(row)"
+          class="table-cell">{{row.price}}</div>
+      </div>
+    </div>
+    <div class="table-col" id="orders-panel">
+      <div (click)="leftMouseClick($event, row)"
+           (contextmenu)="rightMouseClick($event, row)"
+           (dblclick)="$event.stopPropagation()"
+           *ngFor="let row of displayItems; trackBy: getTrackKey"
+           [style.height]="rowHeight + 'px'"
+           [style.line-height]="rowHeight + 'px'"
+           class="table-row"
+      >
+        <div [ngClass]="getOrdersCellClasses(row)" class="table-cell">
+          <ng-container
+            *ngTemplateOutlet="ordersDisplay; context: {orders:  getFilteredOrders(row.currentOrders, 'limit'), orderSymbol: 'L', tooltipKey: 'limitOrderTooltip'}">
+          </ng-container>
+          <ng-container
+            *ngTemplateOutlet="ordersDisplay; context: {orders:  getFilteredOrders(row.currentOrders, 'stoplimit'), orderSymbol: 'SL', tooltipKey: 'stopLimitOrderTooltip'}">
+          </ng-container>
+          <ng-container
+            *ngTemplateOutlet="ordersDisplay; context: {orders:  getFilteredOrders(row.currentOrders, 'stop'), orderSymbol: 'SM', tooltipKey: 'stopMarketOrderTooltip'}">
+          </ng-container>
+
+          <ng-template #ordersDisplay let-orderSymbol="orderSymbol" let-orders="orders" let-tooltipKey="tooltipKey">
+            <ng-container *ngIf="orders.volume > 0">
+              <span (click)="cancelOrders($event, orders.orders)"
+                    [ngClass]="{
+                    'orders-indicator': true,
+                    'bid': orders.orders.length === 1 && orders.orders[0].side ===ordersSides.Buy,
+                    'ask': orders.orders.length === 1 && orders.orders[0].side ===ordersSides.Sell
+                    }"
+                    [nz-tooltip]="t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
+              >{{orderSymbol}}({{orders.volume}})</span>
+            </ng-container>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
