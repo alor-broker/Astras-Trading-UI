@@ -25,8 +25,8 @@
             <nz-form-label nzFor="condition" nzRequired>{{t('command.conditionLabel')}}</nz-form-label>
             <nz-form-control [nzErrorTip]="t('command.conditionError')">
               <nz-select formControlName="condition">
-                <nz-option [nzValue]="'More'" [nzLabel]="t('command.more')"></nz-option>
-                <nz-option [nzValue]="'Less'" [nzLabel]="t('command.less')"></nz-option>
+                <nz-option [nzValue]="conditionType.More" [nzLabel]="t('command.more')"></nz-option>
+                <nz-option [nzValue]="conditionType.Less" [nzLabel]="t('command.less')"></nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -92,9 +92,6 @@
           </nz-form-item>
         </div>
       </div>
-      <span nz-typography nzType="warning">
-              {{t('command.stopOrderWarning')}}
-      </span>
     </form>
   </ng-container>
 </div>

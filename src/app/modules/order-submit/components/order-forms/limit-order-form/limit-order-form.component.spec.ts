@@ -143,7 +143,7 @@ describe('LimitOrderFormComponent', () => {
     });
   });
 
-  it('should emit null value when form invalid', (done) => {
+  it('should emit not valid value when form invalid', (done) => {
       component.instrument = getDefaultInstrument();
       fixture.detectChanges();
 
@@ -151,7 +151,7 @@ describe('LimitOrderFormComponent', () => {
         take(1)
       ).subscribe(value => {
         done();
-        expect(value).toBeNull();
+        expect(value.isValid).toBeFalse();
       });
 
       component.form!.controls.price.setValue(null);
@@ -179,7 +179,7 @@ describe('LimitOrderFormComponent', () => {
         take(1)
       ).subscribe(value => {
         done();
-        expect(value).toEqual(expectedValue);
+        expect(value).toEqual({ value: expectedValue, isValid: true });
       });
     }
   );
@@ -210,7 +210,7 @@ describe('LimitOrderFormComponent', () => {
         take(1)
       ).subscribe(value => {
         done();
-        expect(value).toEqual(expectedValue);
+        expect(value).toEqual({ value: expectedValue, isValid: true });
       });
     }
   );
@@ -238,7 +238,7 @@ describe('LimitOrderFormComponent', () => {
         take(1)
       ).subscribe(value => {
         done();
-        expect(value).toEqual(expectedValue);
+        expect(value).toEqual({ value: expectedValue, isValid: true });
       });
     }
   );

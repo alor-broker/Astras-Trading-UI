@@ -1,9 +1,4 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -21,21 +16,14 @@ import {
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import {
-  OrderFormUpdate,
-  OrderType
-} from '../../models/order-form.model';
+import { OrderFormUpdate, OrderFormValue, OrderType } from '../../models/order-form.model';
 import { LimitOrderFormValue } from "../order-forms/limit-order-form/limit-order-form.component";
 import { MarketOrderFormValue } from "../order-forms/market-order-form/market-order-form.component";
 import { StopOrderFormValue } from "../order-forms/stop-order-form/stop-order-form.component";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { SubmitOrderResult } from "../../../command/models/order.model";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import {
-  finalize,
-  map,
-  startWith
-} from "rxjs/operators";
+import { finalize, map, startWith } from "rxjs/operators";
 import { OrderService } from "../../../../shared/services/orders/order.service";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
@@ -68,7 +56,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly canSubmitOrder$ = new BehaviorSubject(false);
   readonly buyButtonLoading$ = new BehaviorSubject(false);
   readonly sellButtonLoading$ = new BehaviorSubject(false);
-  readonly initialValues$ = new Subject<OrderFormUpdate<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue>>();
+  readonly initialValues$ = new BehaviorSubject<OrderFormUpdate<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue>>(null);
+
   selectedTabIndex$!: Observable<number>;
   positionInfo$!: Observable<{ abs: number, quantity: number }>;
   activeLimitOrders$!: Observable<Order[]>;
@@ -120,6 +109,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
 
     this.currentInstrumentWithPortfolio$ = combineLatest([currentPortfolio$, currentInstrument]).pipe(
       tap(() => {
+        this.setInitialValues(1, 1, undefined, this.stopOrderFormValue?.withLimit);
         this.limitOrderFormValue = null;
         this.marketOrderFormValue = null;
         this.stopOrderFormValue = null;
@@ -197,18 +187,21 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     } else return false;
   }
 
-  setLimitOrderValue(value: LimitOrderFormValue | null) {
-    this.limitOrderFormValue = value;
+  setLimitOrderValue(formData: OrderFormValue<LimitOrderFormValue>) {
+    this.setInitialValues(formData.value?.price, formData.value?.quantity);
+    this.limitOrderFormValue = formData.isValid ? formData.value : null;
     this.updateCanSubmitOrder();
   }
 
-  setMarketOrderValue(value: MarketOrderFormValue | null) {
-    this.marketOrderFormValue = value;
+  setMarketOrderValue(formData: OrderFormValue<MarketOrderFormValue>) {
+    this.setInitialValues(undefined, formData.value?.quantity);
+    this.marketOrderFormValue = formData.isValid ? formData.value : null;
     this.updateCanSubmitOrder();
   }
 
-  setStopOrderValue(value: StopOrderFormValue | null) {
-    this.stopOrderFormValue = value;
+  setStopOrderValue(formData: OrderFormValue<StopOrderFormValue>) {
+    this.setInitialValues(formData.value?.price, formData.value?.quantity);
+    this.stopOrderFormValue = formData.isValid ? formData.value : null;
     this.updateCanSubmitOrder();
   }
 
@@ -252,12 +245,17 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     });
   }
 
-  setInitialValues(price?: number, quantity?: number, target?: OrderType) {
-    this.initialValues$.next({
-      price,
-      quantity,
-      target
-    });
+  setInitialValues(price?: number, quantity?: number, target?: OrderType, withLimit?: boolean) {
+    this.initialValues$.next(
+      Object.assign(
+        JSON.parse(JSON.stringify(this.initialValues$.getValue() || {})),
+        JSON.parse(JSON.stringify({
+          price,
+          quantity,
+          target,
+          withLimit
+        }))
+      ));
   }
 
   ngOnDestroy(): void {
@@ -267,6 +265,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     this.canSubmitOrder$.complete();
     this.buyButtonLoading$.complete();
     this.sellButtonLoading$.complete();
+    this.initialValues$.complete();
   }
 
   hasOrdersWithSide(orders: Order[], side: Side): boolean {
