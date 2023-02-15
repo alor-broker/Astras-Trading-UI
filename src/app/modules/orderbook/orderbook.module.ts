@@ -7,36 +7,29 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { OrderbookSettingsComponent } from './components/orderbook-settings/orderbook-settings.component';
 import { OrderbookWidgetComponent } from './widgets/orderbook-widget/orderbook-widget.component';
 import { OrderbookChartComponent } from './components/orderbook-chart/orderbook-chart.component';
-import { ScalperOrderBookWidgetComponent } from './widgets/scalper-order-book-widget/scalper-order-book-widget.component';
-import { ScalperOrderBookComponent } from './components/scalper-order-book/scalper-order-book.component';
-import { ScalperOrderBookSettingsComponent } from './components/scalper-order-book-settings/scalper-order-book-settings.component';
 import { NzInputModule } from "ng-zorro-antd/input";
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
-import { ModifiersIndicatorComponent } from './components/modifiers-indicator/modifiers-indicator.component';
+import { ScalperOrderBookModule } from '../scalper-order-book/scalper-order-book.module';
 
 @NgModule({
   declarations: [
     OrderBookComponent,
     OrderbookSettingsComponent,
     OrderbookWidgetComponent,
-    OrderbookChartComponent,
-    ScalperOrderBookWidgetComponent,
-    ScalperOrderBookComponent,
-    ScalperOrderBookSettingsComponent,
-    ModifiersIndicatorComponent,
+    OrderbookChartComponent
   ],
-    imports: [
-        CommonModule,
-        OrderbookRoutingModule,
-        SharedModule,
-        NzInputModule,
-        DragDropModule,
-        NzResizeObserverModule
-    ],
+  imports: [
+    CommonModule,
+    OrderbookRoutingModule,
+    SharedModule,
+    NzInputModule,
+    DragDropModule,
+    NzResizeObserverModule,
+    ScalperOrderBookModule
+  ],
   exports: [
-    OrderbookWidgetComponent,
-    ScalperOrderBookWidgetComponent
+    OrderbookWidgetComponent
   ]
 })
 export class OrderbookModule {

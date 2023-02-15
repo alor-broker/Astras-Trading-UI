@@ -40,8 +40,8 @@ import { SelectedPriceData } from "../../../../shared/models/orders/selected-ord
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { MathHelper } from "../../../../shared/utils/math-helper";
-import { CurrentOrder } from '../../models/scalper-order-book.model';
 import { OrderbookSettings } from '../../models/orderbook-settings.model';
+import { CurrentOrder } from '../../models/orderbook-view-row.model';
 
 interface Size {
   width: string;

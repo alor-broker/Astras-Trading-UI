@@ -1,0 +1,5 @@
+{
+  "limitOrderTooltip": "Limit order. Click to cancel",
+  "stopLimitOrderTooltip": "Conditional order (Limit). Click to cancel",
+  "stopMarketOrderTooltip": "Conditional order (Market). Click to cancel"
+}

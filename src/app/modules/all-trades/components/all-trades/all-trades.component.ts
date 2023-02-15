@@ -4,7 +4,6 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { AllTradesService } from "../../services/all-trades.service";
 import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { DatePipe } from "@angular/common";
 import { startOfDay, toUnixTimestampSeconds } from "../../../../shared/utils/datetime";
@@ -17,12 +16,16 @@ import {
   takeUntil,
   withLatestFrom
 } from "rxjs";
-import { AllTradesFilters, AllTradesItem } from "../../models/all-trades.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { AllTradesSettings } from '../../models/all-trades-settings.model';
+import {
+  AllTradesFilters,
+  AllTradesItem
+} from '../../../../shared/models/all-trades.model';
+import { AllTradesService } from '../../../../shared/services/all-trades.service';
 
 @Component({
   selector: 'ats-all-trades[guid]',

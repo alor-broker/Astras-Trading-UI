@@ -1,0 +1,9 @@
+<ng-container *ngIf="selectedVolume$ | async as selectedVolume">
+  <div  *ngIf="workingVolumes$ | async as workingVolumes" class="container">
+    <div (click)="selectVolume(vol)"
+            *ngFor="let vol of workingVolumes"
+            [class.active]="selectedVolume === vol"
+            class="working-volume-item"
+    >{{vol}}</div>
+  </div>
+</ng-container>

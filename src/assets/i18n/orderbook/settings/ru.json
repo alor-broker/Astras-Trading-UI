@@ -13,31 +13,6 @@
   "displayVolumeLabel": "Показывать совокупный объём",
   "displayYieldForBondsLabel": "Показывать дох. облигаций",
 
-  "showZeroVolumeItemsLabel": "Показывать цены заявок с нулевым объемом",
-  "showSpreadItemsLabel": "Показывать цены между лучшими ценами покупки/продажи",
-  "disableHotkeysLabel": "Выключить горячие клавиши",
-  "enableMouseClickSilentOrdersLabel": "Покупать по кликам без уведомлений",
-  "highlightHighVolumeLabel": "Выделение цветом объема",
-  "highlightHighVolumeOptions": {
-    "off": "Отключено",
-    "biggestVolume": "Относительно наибольшего объема",
-    "volumeBoundsWithFixedValue":  "По границам (более объема)"
-  },
-  "biggestVolumeHint": "Ячейка объема будет выделена стандартными цветами покупки/продажи. Процент заполнения ячейки цветом определяется отношением объема ячейки к максимальному объему в стакане.",
-  "VolumeBoundsWithFixedValueHint": "Цвет ячейки определяется настройками ниже. Для выделения будет выбрана опция с наибольшим объемом, для которой выполняется условие: объем ячейки >= объема опции. Процент заполнения ячейки цветом определяется отношением объема ячейки к значению настройки \"Заполненность полосы объема\".",
-  "volumeHighlightSettingsLabel": "Настройки выделения объемов",
-  "volumeHighlightFullness": "Заполненность полосы объема",
-  "volumeLabel": "Объём",
-  "colorError": "Выберите цвет",
-  "colorLabel": "Цвет выделения",
-  "workingVolumesHeader": "Рабочие объёмы",
-  "workingVolumesHint": "Используются для быстрого выставления заявок с нужным объёмом",
-  "workingVolumeLabel": "Рабочий объём",
-  "workingVolumeRequiredError": "Введите значение",
-  "workingVolumeMinError": "Значение должно быть больше нуля",
-  "autoAlignIntervalLabel": "Интервал автоматического выравнивания стакана, сек.",
-  "autoAlignIntervalHint": "Введите '0' или оставьте поле пустым, чтобы отключить авто-выравнивание",
-
   "advanced": "Продвинутые",
   "instrumentGroupLabel": "Режим торгов",
   "instrumentGroupError": "Выберите режим торгов"

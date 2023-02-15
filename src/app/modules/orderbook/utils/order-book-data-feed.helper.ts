@@ -1,7 +1,7 @@
-import { OrderbookRequest } from "../models/orderbook-request.model";
 import { Order } from "../../../shared/models/orders/order.model";
 import { Side } from "../../../shared/models/enums/side.model";
-import { CurrentOrder } from "../models/scalper-order-book.model";
+import { OrderbookRequest } from '../models/orderbook-data.model';
+import { CurrentOrder } from '../models/orderbook-view-row.model';
 
 export class OrderBookDataFeedHelper {
   public static getRealtimeDateRequest(symbol: string,

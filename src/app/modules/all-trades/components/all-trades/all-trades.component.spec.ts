@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AllTradesComponent } from './all-trades.component';
-import { AllTradesService } from "../../services/all-trades.service";
 import { of } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { getTranslocoModule, mockComponent } from "../../../../shared/utils/testing";
+import { AllTradesService } from '../../../../shared/services/all-trades.service';
 
 describe('AllTradesComponent', () => {
   let component: AllTradesComponent;
@@ -35,7 +35,7 @@ describe('AllTradesComponent', () => {
           provide: AllTradesService,
           useValue: {
             getTradesList: jasmine.createSpy('getTradesList').and.returnValue(of([])),
-            getAllTradesSub: jasmine.createSpy('getAllTradesSub').and.returnValue(of({})),
+            getNewTradesSubscription: jasmine.createSpy('getNewTradesSubscription').and.returnValue(of({})),
           }
         }
       ]

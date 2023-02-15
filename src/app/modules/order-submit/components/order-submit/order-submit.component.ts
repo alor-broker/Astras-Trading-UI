@@ -34,8 +34,10 @@ import { Order } from '../../../../shared/models/orders/order.model';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { MathHelper } from '../../../../shared/utils/math-helper';
 import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
-import { OrderbookData } from '../../../orderbook/models/orderbook-data.model';
-import { OrderbookRequest } from '../../../orderbook/models/orderbook-request.model';
+import {
+  OrderbookData,
+  OrderbookRequest
+} from '../../../orderbook/models/orderbook-data.model';
 import { OrderBookDataFeedHelper } from '../../../orderbook/utils/order-book-data-feed.helper';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { isArrayEqual } from '../../../../shared/utils/collections';

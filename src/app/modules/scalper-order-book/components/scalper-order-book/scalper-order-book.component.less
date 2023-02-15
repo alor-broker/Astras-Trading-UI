@@ -1,0 +1,60 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .header {
+      #auto-align-button {
+        border: @border-color-base solid 1px;
+        border-radius: @border-radius-base;
+        text-align: center;
+        min-width: 20px;
+
+        &.active {
+          color: @primary-color;
+          border-color: @border-color-active;
+          background-color: @background-color-active;
+        }
+      }
+    }
+  }
+});
+
+.container {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 10px;
+  }
+
+  .order-book-body {
+    flex: 1;
+    border: 1px dotted transparent;
+    border-left: none;
+    border-right: none;
+    overflow: hidden;
+  }
+
+  .footer {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  &.active {
+    .order-book-body {
+      border: 1px dotted rgba(0, 187, 255, 0.5);
+      border-left: none;
+      border-right: none;
+    }
+  }
+}

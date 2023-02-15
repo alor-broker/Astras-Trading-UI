@@ -1,0 +1,9 @@
+<div class="modifier-btn-indicators">
+    <span
+      [style.visibility]="(modifierKeyPressed$ | async)?.altKey ? 'visible' : 'hidden'"
+      class="counter-bid-indicator"
+      nz-icon
+      nzTheme="outline"
+      nzType="exclamation-circle"
+    ></span>
+</div>

@@ -1,0 +1,35 @@
+<nz-spin [nzSpinning]="isLoading$ | async">
+  <cdk-virtual-scroll-viewport
+    (nzResizeObserve)="updateContentSize($event)"
+    [itemSize]="rowHeight"
+    [orientation]="'vertical'"
+    cdk-scrollable
+    class="container show-scroll"
+    nzResizeObserver>
+    <ng-container *ngIf="dataContext">
+      <ng-container *ngIf="dataContext.orderBookBody$ | async as orderBookBody">
+        <div id="spacer">
+          <div *cdkVirtualFor="let row of orderBookBody.bodyRows"
+               [style.height]="rowHeight + 'px'"
+               [style.line-height]="rowHeight + 'px'"
+          ></div>
+        </div>
+        <div id="trades" *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesPanel">
+          <ats-trades-panel
+            [dataContext]="dataContext"
+            [xAxisStep]="rowHeight"
+          >
+          </ats-trades-panel>
+        </div>
+        <div id="table">
+          <ats-scalper-order-book-table [dataContext]="dataContext"
+                                        [isActive]="isActive"
+                                        [rowHeight]="rowHeight"
+          >
+          </ats-scalper-order-book-table>
+        </div>
+      </ng-container>
+    </ng-container>
+  </cdk-virtual-scroll-viewport>
+</nz-spin>
+

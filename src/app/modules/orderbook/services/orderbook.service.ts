@@ -8,8 +8,14 @@ import {
   startWith,
   switchMap,
 } from 'rxjs/operators';
-import { OrderbookData } from '../models/orderbook-data.model';
-import { OrderBookViewRow } from '../models/orderbook-view-row.model';
+import {
+  OrderbookData,
+  OrderbookRequest
+} from '../models/orderbook-data.model';
+import {
+  CurrentOrder,
+  OrderBookViewRow
+} from '../models/orderbook-view-row.model';
 import {
   ChartData,
   ChartPoint,
@@ -22,9 +28,7 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { OrderBookDataFeedHelper } from "../utils/order-book-data-feed.helper";
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
-import { OrderbookRequest } from '../models/orderbook-request.model';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
-import { CurrentOrder } from '../models/scalper-order-book.model';
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
 import { OrderbookSettings } from '../models/orderbook-settings.model';
 
