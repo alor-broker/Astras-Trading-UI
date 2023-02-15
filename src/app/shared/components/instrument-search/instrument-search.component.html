@@ -42,11 +42,17 @@
       <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} SBER:SMAL</span>
     </ng-container>
   </ng-template>
-  <nz-autocomplete #auto [nzWidth]="optionsBoxWidth">
+  <nz-autocomplete
+    #auto
+    [nzWidth]="optionsBoxWidth"
+    [nzOverlayClassName]="(isMobile$ | async) ? 'autocomplete-overlay' : ''"
+  >
     <nz-auto-option
-      (selectionChange)='onSelect($event, option)' *ngFor="let option of filteredInstruments$ | async"
+      *ngFor="let option of filteredInstruments$ | async"
       [nzLabel]="option.symbol"
-      [nzValue]="option.symbol">
+      [nzValue]="option.symbol"
+      (selectionChange)="onSelect($event, option)"
+    >
       <span class='search-row'>
         <nz-tag>{{ option.symbol }}</nz-tag>
         <span class='row-center'>{{ option.shortName }}</span>

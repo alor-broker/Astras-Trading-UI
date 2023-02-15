@@ -17,6 +17,7 @@ import {
 import {
   debounceTime,
   filter,
+  map,
   switchMap
 } from 'rxjs/operators';
 import {
@@ -25,6 +26,7 @@ import {
 } from '@angular/forms';
 import { InstrumentKey } from '../../models/instruments/instrument-key.model';
 import { Instrument } from '../../models/instruments/instrument.model';
+import { DeviceService } from "../../services/device.service";
 
 @Component({
   selector: 'ats-instrument-search',
@@ -49,6 +51,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   selectedValue?: InstrumentKey | null;
   @Output()
   instrumentSelected = new EventEmitter<InstrumentKey | null>();
+  isMobile$!: Observable<boolean>;
 
   @Output()
 
@@ -56,10 +59,17 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   private touched = false;
 
   constructor(
-    private readonly instrumentsService: InstrumentsService
+    private readonly instrumentsService: InstrumentsService,
+    private readonly deviceService: DeviceService
   ) {
   }
+
   ngOnInit(): void {
+    this.isMobile$ = this.deviceService.deviceInfo$
+      .pipe(
+        map(d => d.isMobile)
+      );
+
     this.filteredInstruments$ = this.filter$.pipe(
       filter((f): f is SearchFilter => !!f),
       debounceTime(200),
