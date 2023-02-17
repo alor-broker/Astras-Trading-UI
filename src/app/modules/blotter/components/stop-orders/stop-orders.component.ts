@@ -571,6 +571,10 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  trackBy(index: number, order: DisplayOrder): string {
+    return order.id;
+  }
+
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {
     let isFiltered = true;
     for (const key of Object.keys(filter)) {

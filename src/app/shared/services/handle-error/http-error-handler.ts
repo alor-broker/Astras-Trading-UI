@@ -31,9 +31,9 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
       else {
         // Backend error goes here
         errorMessage = `${
-          error.error.message
+          error.error?.message
           ?? error.message
-          ?? Object.values(error.error.errors) // Asp.net validation errors have wierd structure
+          ?? Object.values(error.error?.errors) // Asp.net validation errors have wierd structure
             .flatMap(v => v)
             .reduce((k, j) => `${k}\n${j}`)
         }`;

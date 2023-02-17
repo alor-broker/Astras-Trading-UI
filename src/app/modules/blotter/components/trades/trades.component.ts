@@ -367,6 +367,10 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  trackBy(index: number, trade: DisplayTrade): string {
+    return trade.id;
+  }
+
   private justifyFilter(trade: DisplayTrade, filter: TradeFilter): boolean {
     let isFiltered = true;
     for (const key of Object.keys(filter)) {
