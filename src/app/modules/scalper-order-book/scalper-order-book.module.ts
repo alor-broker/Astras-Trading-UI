@@ -13,6 +13,7 @@ import { ScalperOrderBookSettingsComponent } from './components/scalper-order-bo
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { ScalperOrderBookWidgetComponent } from './widgets/scalper-order-book-widget/scalper-order-book-widget.component';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { OrdersIndicatorComponent } from './components/orders-indicator/orders-indicator.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     CurrentPositionPanelComponent,
     WorkingVolumesPanelComponent,
     ModifiersIndicatorComponent,
-    ScalperOrderBookSettingsComponent
+    ScalperOrderBookSettingsComponent,
+    OrdersIndicatorComponent
   ],
   imports: [
     CommonModule,
