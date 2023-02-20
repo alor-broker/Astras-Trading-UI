@@ -17,6 +17,9 @@
       [nzShowPagination]="false"
       [nzScroll]="{ x: tableInnerWidth + 'px', y: scrollHeight - 5 + 'px' }"
       [nzVirtualItemSize]="20"
+      [nzVirtualMaxBufferPx]="scrollHeight * 2"
+      [nzVirtualMinBufferPx]="scrollHeight"
+      [nzVirtualForTrackBy]="trackBy"
       [nzFooter]="footer">
     <thead>
       <tr cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="changeColumnOrder($event)">
@@ -48,18 +51,20 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let ord of nzTable.data">
+    <ng-template let-trd nz-virtual-scroll>
+      <tr>
         <ng-container *ngFor='let column of listOfColumns'>
-          <td *ngIf='column.id === "id"'>{{ ord.id }}</td>
-          <td *ngIf='column.id === "orderno"'>{{ ord.orderno }}</td>
-          <td *ngIf='column.id === "symbol"' class='bold'>{{ ord.symbol }}</td>
-          <td *ngIf='column.id === "side"' [class]='ord.side.toString() === "sell" ? "sell" : "buy"'>{{ ord.side }}</td>
-          <td *ngIf='column.id === "qty"'>{{ ord.qty | number }}</td>
-          <td *ngIf='column.id === "price"'>{{ ord.price | number : '0.0-10' }}</td>
-          <td *ngIf='column.id === "date"'>{{ formatDate(ord.date) }}</td>
-          <td *ngIf='column.id === "volume"'>{{ ord.volume | number }}</td>
+          <td *ngIf='column.id === "id"'>{{ trd.id }}</td>
+          <td *ngIf='column.id === "orderno"'>{{ trd.orderno }}</td>
+          <td *ngIf='column.id === "symbol"' class='bold'>{{ trd.symbol }}</td>
+          <td *ngIf='column.id === "side"' [class]='trd.side.toString() === "sell" ? "sell" : "buy"'>{{ trd.side }}</td>
+          <td *ngIf='column.id === "qty"'>{{ trd.qty | number }}</td>
+          <td *ngIf='column.id === "price"'>{{ trd.price | number : '0.0-10' }}</td>
+          <td *ngIf='column.id === "date"'>{{ formatDate(trd.date) }}</td>
+          <td *ngIf='column.id === "volume"'>{{ trd.volume | number }}</td>
         </ng-container>
       </tr>
+    </ng-template>
     </tbody>
   </nz-table>
     </ng-container>

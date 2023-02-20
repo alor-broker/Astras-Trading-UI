@@ -39,10 +39,10 @@
         [nzSelectedIndex]="activeTabIndex$ | async" [style.height]="(contentSize$ | async)?.height + 'px'"
         nzSize="small"
         nzTabPosition="top">
-        <nz-tab [nzTitle]="t('blotter.infoTab')">
+        <nz-tab [nzTitle]="t('blotter.infoTab')" nzForceRender>
           <ng-template nz-tab>
             <ng-container *ngIf="marketType$ | async as marketType">
-              <div class="w-100 show-scroll">
+              <div class="h-100 show-scroll">
                 <ats-common-summary
                   *ngIf="!marketType || marketType !== marketTypes.Forward"
                   [(shouldShowSettings)]="shouldShowSettings"
@@ -54,7 +54,7 @@
             </ng-container>
           </ng-template>
         </nz-tab>
-        <nz-tab [nzTitle]="t('blotter.ordersTab')">
+        <nz-tab [nzTitle]="t('blotter.ordersTab')" nzForceRender>
           <ng-template nz-tab>
             <ats-orders
               [(shouldShowSettings)]="shouldShowSettings"
@@ -75,7 +75,7 @@
               [guid]="guid"></ats-positions>
           </ng-template>
         </nz-tab>
-        <nz-tab [nzTitle]="t('blotter.tradesTab')">
+        <nz-tab [nzTitle]="t('blotter.tradesTab')" nzForceRender>
           <ng-template nz-tab>
             <ats-trades
               [(shouldShowSettings)]="shouldShowSettings"

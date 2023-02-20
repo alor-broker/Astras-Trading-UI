@@ -396,6 +396,10 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  trackBy(index: number, position: PositionDisplay): string {
+    return `${position.symbol}_${position.exchange}`;
+  }
+
   private justifyFilter(position: PositionDisplay, filter: PositionFilter): boolean {
     let isFiltered = true;
     for (const key of Object.keys(filter)) {
