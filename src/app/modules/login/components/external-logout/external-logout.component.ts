@@ -23,10 +23,6 @@ export class ExternalLogoutComponent implements OnInit {
   ngOnInit() {
     const eventListener = (e: any) => {
       try {
-        this.logger.info(`[ExternalLogoutComponent]: Message received.`);
-        this.logger.info(`Data: ${JSON.stringify(e.data)}`);
-        this.logger.info(`Origin: ${JSON.stringify(e.origin)}`);
-
         const json = JSON.parse(e.data);
         const origins = [
           'localhost:8001',
@@ -38,8 +34,6 @@ export class ExternalLogoutComponent implements OnInit {
         const currentOrigin = new URL(e.origin);
         if (origins.includes(currentOrigin.host) && json?.source === 'sso') {
           this.broadcastService.publish({ messageType: ForceLogoutMessageType });
-          this.logger.info('Logout');
-
           window.removeEventListener('message', eventListener);
         }
       } catch (ex) {
