@@ -26,6 +26,9 @@ import {
   mapWith
 } from '../utils/observable-helper';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
+import { BroadcastService } from './broadcast.service';
+
+export const ForceLogoutMessageType = 'forceLogout';
 
 interface UserState {
   user: User | null;
@@ -81,12 +84,23 @@ export class AuthService {
     private readonly http: HttpClient,
     private readonly localStorage: LocalStorageService,
     private readonly window: Window,
-    private readonly errorHandlerService: ErrorHandlerService
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly broadcastService: BroadcastService
   ) {
+
     const user = localStorage.getItem<User>(this.userStorage);
     this.setCurrentUser({
       user: user ?? null,
       isExited: false
+    });
+
+    broadcastService.subscribe(ForceLogoutMessageType).subscribe(() => {
+      this.setCurrentUser({
+        user: null,
+        isExited: false
+      });
+
+      this.localStorage.removeItem(this.userStorage);
     });
   }
 
