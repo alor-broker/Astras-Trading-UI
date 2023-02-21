@@ -28,6 +28,7 @@ describe('ScalperOrderBookBodyComponent', () => {
         ScalperOrderBookBodyComponent,
         mockComponent({ selector: 'ats-trades-panel' }),
         mockComponent({ selector: 'ats-scalper-order-book-table' }),
+        mockComponent({ selector: 'ats-orders-indicator', inputs: ['visible']}),
         ...ngZorroMockComponents
       ],
       providers: [
