@@ -108,10 +108,10 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
       return;
     }
 
-    if (!!values?.price) {
+    if (!!values?.price && values.price !== Number(this.form?.get('price')?.value ?? 0)) {
       this.form?.controls.price.setValue(values.price);
     }
-    if (!!values?.quantity) {
+    if (!!values?.quantity && values.quantity !== Number(this.form?.get('quantity')?.value ?? 0)) {
       this.form?.controls.quantity.setValue(values.quantity);
     }
   }

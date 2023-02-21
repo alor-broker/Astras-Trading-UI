@@ -154,7 +154,7 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
       return;
     }
 
-    if (!!values?.quantity) {
+    if (!!values?.quantity && values.quantity !== Number(this.form?.get('quantity')?.value ?? 0)) {
       this.form?.controls.quantity.setValue(values.quantity);
     }
   }
