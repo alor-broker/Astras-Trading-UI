@@ -1,6 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { ExternalLogoutComponent } from './external-logout.component';
+import { BroadcastService } from '../../../../shared/services/broadcast.service';
 
 describe('ExternalLogoutComponent', () => {
   let component: ExternalLogoutComponent;
@@ -8,9 +12,17 @@ describe('ExternalLogoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ExternalLogoutComponent ]
+      declarations: [ExternalLogoutComponent],
+      providers: [
+        {
+          provide: BroadcastService,
+          useValue: {
+            publish: jasmine.createSpy('publish').and.callThrough()
+          }
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ExternalLogoutComponent);
     component = fixture.componentInstance;
