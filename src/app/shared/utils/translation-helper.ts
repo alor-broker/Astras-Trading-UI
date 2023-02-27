@@ -1,4 +1,5 @@
 export const rusLangLocales = [
+  'ru',
   'ru-ru',
   'ru-by',
   'hy_am',

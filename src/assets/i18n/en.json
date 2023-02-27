@@ -35,13 +35,13 @@
       "title": "Portfolio select",
       "text": "The portfolio you have selected is displayed here. Orders will be made on behalf of the portfolio"
     },
-    "step3": {
-      "title": "New order",
-      "text": "Create a new order. You can also create an order by clicking on the line in the orderbook"
-    },
     "step2": {
       "title": "Add widget",
       "text": "Here you can add a new widget"
+    },
+    "step3": {
+      "title": "New order",
+      "text": "Create a new order. You can also create an order by clicking on the line in the orderbook"
     },
     "step4": {
       "title": "Remove",
