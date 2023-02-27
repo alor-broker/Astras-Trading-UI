@@ -1,0 +1,10 @@
+{
+  "orderCreatedLabel": "Order created",
+  "orderSubmitFailedLabel": "Order submit failed",
+  "orderFilledLabel": "Order filled",
+  "orderPartiallyFilledLabel": "Order partially filled",
+  "orderCancelledLabel": "Order cancelled",
+  "orderUpdatedLabel": "Order updated",
+  "orderUpdateFailedLabel": "Order update failed",
+  "orderStatusChangedLabel": "Order status changed"
+}

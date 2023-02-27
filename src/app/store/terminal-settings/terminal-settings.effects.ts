@@ -10,6 +10,7 @@ import * as TerminalSettingsActions from './terminal-settings.actions';
 import { initTerminalSettingsSuccess } from './terminal-settings.actions';
 import {
   HotKeysSettings,
+  InstantNotificationsSettings,
   TerminalSettings
 } from '../../shared/models/terminal-settings/terminal-settings.model';
 import { TimezoneDisplayOption } from '../../shared/models/enums/timezone-display-option';
@@ -79,7 +80,8 @@ export class TerminalSettingsEffects {
       hotKeysSettings: this.getDefaultHotkeys(),
       designSettings: {
         theme: ThemeType.dark
-      }
+      },
+      instantNotificationsSettings: this.getDefaultInstantNotificationsSettings()
     } as TerminalSettings;
   }
 
@@ -98,6 +100,12 @@ export class TerminalSettingsEffects {
       buyBestOrder: 'Q',
       sellBestBid: 'Z',
       buyBestAsk: 'X'
+    };
+  }
+
+  private getDefaultInstantNotificationsSettings(): InstantNotificationsSettings {
+    return {
+      hiddenNotifications: []
     };
   }
 }

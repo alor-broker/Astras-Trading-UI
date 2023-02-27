@@ -311,6 +311,10 @@
           </button>
         </div>
       </nz-tab>
+
+      <nz-tab [nzTitle]="t('terminalSettings.notificationsTab')" (nzSelect)="tabChange.emit(tabNames.notifications)">
+        <ats-instant-notifications-form [formControl]="notificationsControl"></ats-instant-notifications-form>
+      </nz-tab>
     </nz-tabset>
   </ng-container>
 </div>

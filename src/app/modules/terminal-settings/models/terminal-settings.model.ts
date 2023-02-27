@@ -1,5 +1,7 @@
 export enum TabNames {
   usefulLinks,
   main,
-  hotKeys
+  hotKeys,
+
+  notifications
 }
