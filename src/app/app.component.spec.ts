@@ -1,38 +1,23 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AppComponent } from './app.component';
-import { sharedModuleImportForTests } from './shared/utils/testing';
-import { SessionTrackService } from "./shared/services/session/session-track.service";
-import { ThemeService } from './shared/services/theme.service';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {RouterTestingModule} from '@angular/router/testing';
+import {AppComponent} from './app.component';
+import {APP_HOOK} from "./shared/services/app-hook/app-hook-token";
 
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  let sessionTrackServiceSpy: any;
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    sessionTrackServiceSpy = jasmine.createSpyObj('SessionTrackService', ['startTracking', 'stopTracking']);
-
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule,
-        ...sharedModuleImportForTests
+        RouterTestingModule
       ],
       declarations: [
         AppComponent
       ],
       providers: [
-        { provide: SessionTrackService, useValue: sessionTrackServiceSpy },
-        {
-          provide: ThemeService,
-          useValue: {
-            subscribeToThemeChanges: jasmine.createSpy('subscribeToThemeChanges').and.returnValue(null)
-          }
-        }
+        {provide: APP_HOOK, useValue: []},
       ]
     }).compileComponents();
   });
