@@ -42,6 +42,7 @@ import { OrderBookDataFeedHelper } from '../../../orderbook/utils/order-book-dat
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { isArrayEqual } from '../../../../shared/utils/collections';
 import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
+import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
 
 @Component({
   selector: 'ats-order-submit[guid]',
@@ -101,6 +102,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     );
 
     const currentPortfolio$ = this.currentDashboardService.selectedPortfolio$.pipe(
+      distinctUntilChanged((previous, current) => isPortfoliosEqual(previous,current)),
       map(p => p.portfolio),
     );
 
