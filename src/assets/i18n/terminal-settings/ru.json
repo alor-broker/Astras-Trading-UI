@@ -29,6 +29,7 @@
   "hardRebootWarningDesc": "При полном сбросе удалятся все Ваши настройки, списки наблюдения, виджеты и так далее.",
   "yesBtnText": "Да",
   "noBtnText": "Нет",
+  "notificationsTab": "Уведомления",
 
   "hotkeysTab": "Горячие клавиши",
   "allOrderbooksHeader": "Общие для всех открытых стаканов",

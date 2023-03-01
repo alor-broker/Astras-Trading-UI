@@ -6,18 +6,22 @@ import { TerminalSettingsComponent } from './components/terminal-settings/termin
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ExternalLinkModule } from '../../shared/components/external-link/external-link.module';
 import { NzInputModule } from "ng-zorro-antd/input";
+import { InstantNotificationsFormComponent } from './components/instant-notifications-form/instant-notifications-form.component';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 
 
 @NgModule({
   declarations: [
     TerminalSettingsWidgetComponent,
-    TerminalSettingsComponent
+    TerminalSettingsComponent,
+    InstantNotificationsFormComponent
   ],
     imports: [
         SharedModule,
         TerminalSettingsRoutingModule,
         ExternalLinkModule,
-        NzInputModule
+        NzInputModule,
+        NzDividerModule
     ],
   exports: [
     TerminalSettingsWidgetComponent

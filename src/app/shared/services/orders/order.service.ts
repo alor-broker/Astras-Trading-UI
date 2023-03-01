@@ -3,7 +3,6 @@ import {
   HttpClient,
   HttpErrorResponse
 } from "@angular/common/http";
-import { NzNotificationService } from "ng-zorro-antd/notification";
 import {
   Observable,
   of,
@@ -20,14 +19,18 @@ import {
   LimitOrder,
   LimitOrderEdit,
   MarketOrder,
-  StopLimitOrder, StopLimitOrderEdit,
-  StopMarketOrder, StopMarketOrderEdit,
+  StopLimitOrder,
+  StopLimitOrderEdit,
+  StopMarketOrder,
+  StopMarketOrderEdit,
   SubmitOrderResponse,
   SubmitOrderResult
 } from "../../../modules/command/models/order.model";
 import { toUnixTimestampSeconds } from "../../utils/datetime";
 import { GuidGenerator } from "../../utils/guid";
 import { httpLinkRegexp } from "../../utils/regexps";
+import { InstantNotificationsService } from '../instant-notifications.service';
+import { OrdersInstantNotificationType } from '../../models/terminal-settings/terminal-settings.model';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +39,7 @@ export class OrderService {
   private readonly baseApiUrl = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
 
   constructor(private readonly httpService: HttpClient,
-              private readonly notificationService: NzNotificationService,
+              private readonly instantNotificationsService: InstantNotificationsService,
               private readonly errorHandlerService: ErrorHandlerService
   ) {
   }
@@ -150,13 +153,15 @@ export class OrderService {
         if (!(error instanceof HttpErrorResponse)) {
           this.errorHandlerService.handleError(error);
         } else {
-          this.handleCommandError(error, 'Заявка не выставлена');
+          this.handleCommandError(OrdersInstantNotificationType.OrderSubmitFailed, error, 'Заявка не выставлена');
         }
       }
     ).pipe(
       tap(result => {
         if (result.isSuccess) {
-          this.notificationService.success(
+          this.instantNotificationsService.showNotification(
+            OrdersInstantNotificationType.OrderCreated,
+            'success',
             `Заявка выставлена`,
             `Заявка успешно выставлена, её номер на бирже: \n ${result.orderNumber}`
           );
@@ -174,13 +179,15 @@ export class OrderService {
         if (!(error instanceof HttpErrorResponse)) {
           this.errorHandlerService.handleError(error);
         } else {
-          this.handleCommandError(error, 'Заявка не изменена');
+          this.handleCommandError(OrdersInstantNotificationType.OrderUpdateFailed, error, 'Заявка не изменена');
         }
       }
     ).pipe(
       tap(result => {
         if (result.isSuccess) {
-          this.notificationService.success(
+          this.instantNotificationsService.showNotification(
+            OrdersInstantNotificationType.OrderUpdated,
+            'success',
             `Заявка изменена`,
             `Заявка успешно изменена, её номер на бирже: \n ${result.orderNumber}`
           );
@@ -226,11 +233,17 @@ export class OrderService {
     );
   }
 
-  private handleCommandError(error: HttpErrorResponse, errorTitle: string) {
+  private handleCommandError(notificationType: OrdersInstantNotificationType, error: HttpErrorResponse, errorTitle: string) {
     const errorMessage = !!error.error.code && !!error.error.message
       ? `Ошибка ${error.error.code} <br/> ${error.error.message}`
       : error.message;
-    this.notificationService.error(errorTitle, this.prepareErrorMessage(errorMessage));
+
+    this.instantNotificationsService.showNotification(
+      notificationType,
+      'error',
+      errorTitle,
+      this.prepareErrorMessage(errorMessage)
+    );
   }
 
   private prepareErrorMessage(message: string): string {
