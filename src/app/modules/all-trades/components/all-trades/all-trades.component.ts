@@ -54,7 +54,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     descending: true
   });
 
-  public allColumns: ColumnsSettings[] = [
+  private readonly allColumns: ColumnsSettings[] = [
     {
       name: 'qty',
       displayName: 'Кол-во',
@@ -96,6 +96,16 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     {name: 'oi', displayName: 'Откр. интерес'},
     {name: 'existing', displayName: 'Новое событие', transformFn: (data: AllTradesItem) => data.existing ? 'Да' : 'Нет'},
   ];
+  private readonly fixedColumns: ColumnsSettings[] = [
+    {
+      name: 'side_indicator',
+      displayName: '',
+      width: '5px',
+      classFn: data => `side-indicator bg-${data.side} ${data.side}`,
+      transformFn: () => '.'
+    }
+  ];
+
   public displayedColumns: ColumnsSettings[] = [];
 
   constructor(
@@ -121,26 +131,29 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         ),
       )
       .subscribe(({ settings, translate }) => {
-        this.displayedColumns = this.allColumns
-          .filter(col => settings.allTradesColumns.includes(col.name))
-          .map(col => ({
-              ...col,
-              displayName: translate(
-                ['columns', col.name, 'displayName'],
-                {fallback: col.displayName}
-              ),
-              filterData: col.filterData && {
-                ...col.filterData,
-                filters: col.filterData?.filters?.map(f => ({
-                  text: translate(
-                    ['columns', col.name, 'filters', f.value],
-                    { fallback: f.text }
-                  ),
-                  value: f.value
-                }))
-              }
-            })
-          );
+        this.displayedColumns = [
+          ...this.fixedColumns,
+          ...this.allColumns
+            .filter(col => settings.allTradesColumns.includes(col.name))
+            .map(col => ({
+                ...col,
+                displayName: translate(
+                  ['columns', col.name, 'displayName'],
+                  {fallback: col.displayName}
+                ),
+                filterData: col.filterData && {
+                  ...col.filterData,
+                  filters: col.filterData?.filters?.map(f => ({
+                    text: translate(
+                      ['columns', col.name, 'filters', f.value],
+                      { fallback: f.text }
+                    ),
+                    value: f.value
+                  }))
+                }
+              })
+            )
+        ];
 
         this.applyFilter({
         exchange: settings.exchange,

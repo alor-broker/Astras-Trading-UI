@@ -2,13 +2,33 @@
 
 .themeMixin({
   :host ::ng-deep {
-
     .buy {
       color: @buy-color;
     }
 
+    .bg-buy {
+      span {
+        background-color: @buy-color;
+      }
+    }
+
     .sell {
       color: @sell-color;
+    }
+
+    .bg-sell {
+      span {
+        background-color: @sell-color;
+      }
+    }
+
+    .side-indicator {
+      padding-right: 0 !important;
+      padding-left: 0 !important;
+      span {
+        display: inline-block;
+        min-width: 3px;
+      }
     }
   }
 });
@@ -17,3 +37,6 @@
   width: 100%;
   height: 100%;
 }
+
+
+

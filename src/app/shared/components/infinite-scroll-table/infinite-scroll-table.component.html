@@ -52,8 +52,8 @@
       (click)="rowClick.emit(data)"
       (contextmenu)="openContextMenu($event, menu, data)"
     >
-      <td *ngFor="let column of columns" [class]="column.classFn && column.classFn(data)" class="table-cell">
-        {{column.transformFn && column.transformFn(data) || data[column.name]}}
+      <td *ngFor="let column of columns" class="table-cell" [class]="column.classFn && column.classFn(data)">
+        <span>{{column.transformFn && column.transformFn(data) || data[column.name]}}</span>
         <ng-container *ngIf="data['badges']?.length && column.showBadges">
           <ng-container *ngFor="let item of data['badges']">
             <nz-badge [nzColor]="item"></nz-badge>
