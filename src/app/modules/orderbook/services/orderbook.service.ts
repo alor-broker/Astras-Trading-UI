@@ -155,8 +155,8 @@ export class OrderbookService {
         };
       }
     }
-    const minPrice = Math.min(...bids.map(b => b.x));
-    const maxPrice = Math.max(...asks.map(a => a.x));
+    const minPrice = Math.min(...bids.map(b => b.x).filter(x => x > 0));
+    const maxPrice = Math.max(...asks.map(a => a.x).filter(x => x > 0));
     return {
       asks: asks.filter(x => x.x > 0),
       bids: bids.filter(x => x.x > 0),
