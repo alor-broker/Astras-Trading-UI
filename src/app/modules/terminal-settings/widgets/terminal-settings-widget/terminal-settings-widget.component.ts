@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { ModalService } from 'src/app/shared/services/modal.service';
-import { TerminalSettings } from "../../../../shared/models/terminal-settings/terminal-settings.model";
-import { Store } from "@ngrx/store";
-import { updateTerminalSettings } from "../../../../store/terminal-settings/terminal-settings.actions";
-import { TabNames } from "../../models/terminal-settings.model";
+import {Component, OnInit} from '@angular/core';
+import {Observable, of} from 'rxjs';
+import {ModalService} from 'src/app/shared/services/modal.service';
+import {TerminalSettings} from "../../../../shared/models/terminal-settings/terminal-settings.model";
+import {TabNames} from "../../models/terminal-settings.model";
+import {TerminalSettingsService} from "../../services/terminal-settings.service";
 
 @Component({
   selector: 'ats-terminal-settings-widget',
@@ -13,23 +12,22 @@ import { TabNames } from "../../models/terminal-settings.model";
 })
 export class TerminalSettingsWidgetComponent implements OnInit {
 
-  private initialSettingsFormValue!: TerminalSettings;
   settingsFormValue: TerminalSettings | null = null;
-
   isVisible$: Observable<boolean> = of(false);
-
   tabNames = TabNames;
   selectedTab = TabNames.usefulLinks;
+  private initialSettingsFormValue!: TerminalSettings;
+
+  constructor(
+    private modal: ModalService,
+    private readonly terminalSettingsService: TerminalSettingsService
+  ) {
+  }
 
   get isSaveDisabled(): boolean {
     return !this.settingsFormValue ||
       (JSON.stringify(this.getTerminalSettingsUpdates(this.settingsFormValue)) === JSON.stringify(this.getTerminalSettingsUpdates(this.initialSettingsFormValue)));
   }
-
-  constructor(
-    private modal: ModalService,
-    private readonly store: Store
-  ) { }
 
   ngOnInit(): void {
     this.isVisible$ = this.modal.shouldShowTerminalSettingsModal$;
@@ -48,9 +46,7 @@ export class TerminalSettingsWidgetComponent implements OnInit {
 
   saveSettingsChanges() {
     if (this.settingsFormValue) {
-      this.store.dispatch(updateTerminalSettings({
-        updates: this.getTerminalSettingsUpdates(this.settingsFormValue)
-      }));
+      this.terminalSettingsService.updateSettings(this.getTerminalSettingsUpdates(this.settingsFormValue));
     }
 
     this.handleClose();
