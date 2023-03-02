@@ -2,9 +2,9 @@ import {
   Component,
   OnInit
 } from '@angular/core';
-import { NetworkStatusService } from '../../../../shared/services/network-status.service';
+import { NetworkStatusService } from '../../services/network-status.service';
 import { Observable } from 'rxjs';
-import { NetworkStatus } from '../../../../shared/models/enums/network-status.model';
+import { NetworkStatus } from '../../models/enums/network-status.model';
 
 @Component({
   selector: 'ats-network-indicator',

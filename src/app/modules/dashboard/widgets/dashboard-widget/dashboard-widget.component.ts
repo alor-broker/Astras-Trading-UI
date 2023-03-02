@@ -9,6 +9,8 @@ import { initWidgetSettings } from '../../../../store/widget-settings/widget-set
 import { ManageDashboardsActions } from '../../../../store/dashboards/dashboards-actions';
 import { PortfoliosActions } from '../../../../store/portfolios/portfolios.actions';
 import { Store } from '@ngrx/store';
+import { DeviceService } from "../../../../shared/services/device.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'ats-dashboard-widget',
@@ -20,7 +22,9 @@ export class DashboardWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly onboarding: OnboardingService,
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly deviceService: DeviceService,
+    private readonly router: Router
   ) {
   }
 
@@ -30,6 +34,13 @@ export class DashboardWidgetComponent implements OnInit, OnDestroy {
     this.store.dispatch(initWidgetSettings());
     this.store.dispatch(PortfoliosActions.initPortfolios());
     this.store.dispatch(ManageDashboardsActions.initDashboards());
+
+    this.deviceService.deviceInfo$
+      .subscribe(info => {
+        if (info.isMobile) {
+          this.router.navigate(['mobile']);
+        }
+      });
   }
 
   ngOnDestroy(): void {

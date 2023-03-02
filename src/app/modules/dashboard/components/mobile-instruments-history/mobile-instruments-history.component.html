@@ -1,0 +1,18 @@
+<div class="d-flex p-10 history-wrapper" *ngIf="selectedInstrument$ | async as selectedInstrument">
+  <ng-container *ngIf="instruments$ | async as instruments">
+    <ng-container *ngIf="instruments.length; else emptyHistory">
+      <nz-tag
+        *ngFor="let instrument of instruments"
+        nzMode="checkable"
+        [nzChecked]="isInstrumentEqual(selectedInstrument, instrument)"
+        (click)="selectInstrument(instrument)"
+      >
+        {{instrument.symbol}} ({{instrument.instrumentGroup}})
+      </nz-tag>
+    </ng-container>
+
+    <ng-template #emptyHistory>
+      <span *transloco="let t; scope: 'dashboard/navbar'">{{t('dashboardNavbar.emptyHistoryLabel')}}</span>
+    </ng-template>
+  </ng-container>
+</div>

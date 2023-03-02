@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   filter,
-  Observable,
+  Observable, switchMap,
   take
 } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -14,12 +14,18 @@ import { PortfolioKey } from '../models/portfolio-key.model';
 import { map } from 'rxjs/operators';
 import { CurrentDashboardActions } from '../../store/dashboards/dashboards-actions';
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
+import { DeviceService } from "./device.service";
+import { mobileDashboard } from "../../store/mobile-dashboard/dashboards.selectors";
+import { MobileDashboardActions } from "../../store/mobile-dashboard/dashboards-actions";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardContextService {
-  constructor(private readonly store: Store) {
+  constructor(
+    private readonly store: Store,
+    private readonly deviceService: DeviceService,
+  ) {
   }
 
   get selectedPortfolio$(): Observable<PortfolioKey> {
@@ -55,7 +61,25 @@ export class DashboardContextService {
     });
   }
 
-  get  selectedDashboard$(): Observable<Dashboard> {
-    return DashboardsStreams.getSelectedDashboard(this.store);
+  selectMobileDashboardPortfolio(portfolioKey: PortfolioKey) {
+    this.store.dispatch(MobileDashboardActions.selectPortfolio({ portfolioKey }));
+  }
+
+  selectMobileDashboardInstrument(instrumentKey: InstrumentKey, groupKey: string) {
+    this.store.dispatch(MobileDashboardActions.selectInstruments({
+      selection: [{ groupKey, instrumentKey }]
+    }));
+  }
+
+  get selectedDashboard$(): Observable<Dashboard> {
+    return this.deviceService.deviceInfo$
+      .pipe(
+        switchMap(({ isMobile }) => isMobile
+          ? this.store.select(mobileDashboard)
+            .pipe(
+              filter(d => !!d)
+            )
+          : DashboardsStreams.getSelectedDashboard(this.store))
+      );
   }
 }

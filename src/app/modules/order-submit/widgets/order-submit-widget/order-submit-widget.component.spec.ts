@@ -65,7 +65,8 @@ describe('OrderSubmitWidgetComponent', () => {
           provide: DashboardContextService,
           useValue: {
             instrumentsSelection$: new Subject(),
-            selectedPortfolio$: new Subject()
+            selectedPortfolio$: new Subject(),
+            selectedDashboard$: new Subject()
           }
         },
         {

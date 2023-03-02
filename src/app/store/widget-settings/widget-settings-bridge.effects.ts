@@ -30,16 +30,15 @@ import {
 } from "../../shared/models/portfolio-key.model";
 import { selectTerminalSettingsState } from "../terminal-settings/terminal-settings.selectors";
 import { State } from "../terminal-settings/terminal-settings.reducer";
-
-import { DashboardsStreams } from '../dashboards/dashboards.streams';
 import { mapWith } from '../../shared/utils/observable-helper';
 import { InstrumentEqualityComparer } from '../../shared/utils/instruments';
 import { InstrumentKey } from '../../shared/models/instruments/instrument-key.model';
+import { DashboardContextService } from "../../shared/services/dashboard-context.service";
 
 @Injectable()
 export class WidgetSettingsBridgeEffects {
   newInstrumentSelected$ = createEffect(() => {
-    const dashboardSettingsUpdate$ = DashboardsStreams.getSelectedDashboard(this.store).pipe(
+    const dashboardSettingsUpdate$ = this.dashboardContextService.selectedDashboard$.pipe(
       filter(d => !!d.instrumentsSelection),
       distinctUntilChanged((previous, current) => JSON.stringify(previous?.instrumentsSelection) === JSON.stringify(current.instrumentsSelection)),
       mapWith(() => this.store.select(getInstrumentLinkedSettings), (d, settings) => ({ d, settings })),
@@ -72,7 +71,7 @@ export class WidgetSettingsBridgeEffects {
   });
 
   newPortfolioSelected$ = createEffect(() => {
-    const dashboardSettingsUpdate$ = DashboardsStreams.getSelectedDashboard(this.store).pipe(
+    const dashboardSettingsUpdate$ = this.dashboardContextService.selectedDashboard$.pipe(
       filter(d => !!d.selectedPortfolio),
       distinctUntilChanged((previous, current) => PortfolioKeyEqualityComparer.equals(previous?.selectedPortfolio, current?.selectedPortfolio)),
       mapWith(() => this.store.select(getPortfolioLinkedSettings), (d, settings) => ({ d, settings })),
@@ -118,6 +117,10 @@ export class WidgetSettingsBridgeEffects {
       );
   });
 
-  constructor(private readonly actions$: Actions, private readonly store: Store) {
+  constructor(
+    private readonly actions$: Actions,
+    private readonly store: Store,
+    private readonly dashboardContextService: DashboardContextService
+  ) {
   }
 }

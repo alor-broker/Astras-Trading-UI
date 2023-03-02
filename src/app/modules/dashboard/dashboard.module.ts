@@ -29,8 +29,13 @@ import { ExternalLinkModule } from "../../shared/components/external-link/extern
 import { OrdersBasketModule } from '../orders-basket/orders-basket.module';
 import { SelectDashboardMenuComponent } from './components/select-dashboard-menu/select-dashboard-menu.component';
 import { NzDrawerModule } from "ng-zorro-antd/drawer";
-import { NetworkIndicatorComponent } from './components/network-indicator/network-indicator.component';
 import { ScalperOrderBookModule } from '../scalper-order-book/scalper-order-book.module';
+import { MobileDashboardWidgetComponent } from './widgets/mobile-dashboard-widget/mobile-dashboard-widget.component';
+import { MobileNavbarComponent } from "./components/mobile-navbar/mobile-navbar.component";
+import {
+  MobileInstrumentsHistoryComponent
+} from './components/mobile-instruments-history/mobile-instruments-history.component';
+import { MobileDashboardComponent } from "./components/mobile-dashboard/mobile-dashboard.component";
 
 @NgModule({
   declarations: [
@@ -39,38 +44,42 @@ import { ScalperOrderBookModule } from '../scalper-order-book/scalper-order-book
     NavbarComponent,
     ParentWidgetComponent,
     SelectDashboardMenuComponent,
-    NetworkIndicatorComponent
+    MobileDashboardWidgetComponent,
+    MobileNavbarComponent,
+    MobileDashboardComponent,
+    MobileInstrumentsHistoryComponent,
   ],
-    imports: [
-        DashboardRoutingModule,
-        SharedModule,
-        OrderbookModule,
-        LightChartModule,
-        InstrumentsModule,
-        BlotterModule,
-        CommandModule,
-        HelpModule,
-        InfoModule,
-        TerminalSettingsModule,
-        JoyrideModule.forRoot(),
-        AllTradesModule,
-        NewsModule,
-        ExchangeRateModule,
-        TechChartModule,
-        AllInstrumentsModule,
-        OrderSubmitModule,
-        NotificationsModule,
-        FeedbackModule,
-        ApplicationMetaModule,
-        NzInputModule,
-        ExternalLinkModule,
-        OrdersBasketModule,
-        ScalperOrderBookModule,
-        NzDrawerModule,
-        // components
-    ],
+  imports: [
+    DashboardRoutingModule,
+    SharedModule,
+    OrderbookModule,
+    LightChartModule,
+    InstrumentsModule,
+    BlotterModule,
+    CommandModule,
+    HelpModule,
+    InfoModule,
+    TerminalSettingsModule,
+    JoyrideModule.forRoot(),
+    AllTradesModule,
+    NewsModule,
+    ExchangeRateModule,
+    TechChartModule,
+    AllInstrumentsModule,
+    OrderSubmitModule,
+    NotificationsModule,
+    FeedbackModule,
+    ApplicationMetaModule,
+    NzInputModule,
+    ExternalLinkModule,
+    OrdersBasketModule,
+    ScalperOrderBookModule,
+    NzDrawerModule,
+    // components
+  ],
   providers: [
     OnboardingService
   ]
 })
-export class DashboardModule { }
+export class DashboardModule {
+}

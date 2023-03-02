@@ -155,6 +155,71 @@ export class ManageDashboardsService {
     ];
   }
 
+  getMobileDashboardWidgets(): Widget[] {
+    return [
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.orderSubmit,
+        position: { x: 0, y: 0, cols: 1, rows: 1 },
+        icon: 'plus-circle',
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.blotter,
+        position: { x: 0, y: 0, cols: 1, rows: 1 },
+        icon: 'table',
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.orderBook,
+        position: { x: 0, y: 0, cols: 1, rows: 1 },
+        icon: 'ordered-list'
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.lightChart,
+        position: { x: 0, y: 0, cols: 1, rows: 1 },
+        icon: 'sliders'
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.allInstruments,
+        position: { x: 0, y: 0, cols: 1, rows: 1 },
+        icon: 'profile'
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.allTrades,
+        position: { x: 0, y: 0, cols: 1, rows: 1 },
+        icon: 'unordered-list'
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.ordersBasket,
+        position: { x: 0, y: 0, cols: 1, rows: 1 },
+        icon: 'calculator'
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.instrumentInfo,
+        position: { x: 0, y: 0, cols: 1, rows: 1 },
+        icon: 'info'
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.exchangeRate,
+        position: { x: 0, y: 0, cols: 1, rows: 1 },
+        icon: 'line-chart'
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.news,
+        position: { x: 0, y: 0, cols: 1, rows: 1 },
+        icon: 'read'
+      }
+    ];
+  }
+
   private reloadPage() {
     window.location.reload();
   }
