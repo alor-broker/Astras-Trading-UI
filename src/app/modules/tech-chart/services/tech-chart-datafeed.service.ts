@@ -285,10 +285,14 @@ export class TechChartDatafeedService implements IBasicDataFeed {
       '1' as ResolutionString,
       '5' as ResolutionString,
       '15' as ResolutionString,
+      '30' as ResolutionString,
       '1H' as ResolutionString,
       '4h' as ResolutionString,
       '1D' as ResolutionString,
-      '1M' as ResolutionString
+      '1W' as ResolutionString,
+      '2W' as ResolutionString,
+      '1M' as ResolutionString,
+      '3M' as ResolutionString
     ];
   }
 }

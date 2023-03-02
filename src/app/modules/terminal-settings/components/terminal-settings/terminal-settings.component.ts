@@ -90,6 +90,10 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     return this.settingsForm.get('portfoliosCurrency') as UntypedFormArray;
   }
 
+  get notificationsControl(): UntypedFormControl {
+    return this.settingsForm.get('instantNotificationsSettings') as UntypedFormControl;
+  }
+
   constructor(
     private readonly service: TerminalSettingsService,
     private readonly dashboardService: ManageDashboardsService,
@@ -241,7 +245,8 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
         buyBestOrder: new UntypedFormControl(currentSettings.hotKeysSettings?.buyBestOrder),
         buyBestAsk: new UntypedFormControl(currentSettings.hotKeysSettings?.buyBestAsk),
         sellBestBid: new UntypedFormControl(currentSettings.hotKeysSettings?.sellBestBid),
-      })
+      }),
+      instantNotificationsSettings: new UntypedFormControl(currentSettings.instantNotificationsSettings)
       } as TerminalSettingsFormControls
     ) as TerminalSettingsFormGroup;
   }

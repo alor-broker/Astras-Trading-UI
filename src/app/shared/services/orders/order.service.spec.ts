@@ -20,6 +20,7 @@ import { Side } from "../../models/enums/side.model";
 import { StopOrderCondition } from "../../models/enums/stoporder-conditions";
 import { toUnixTimestampSeconds } from "../../utils/datetime";
 import { instrumentsBadges } from "../../utils/instruments";
+import { InstantNotificationsService } from '../instant-notifications.service';
 
 
 describe('OrderService', () => {
@@ -40,7 +41,7 @@ describe('OrderService', () => {
   };
 
   beforeEach(() => {
-    notificationServiceSpy = jasmine.createSpyObj('NzNotificationService', ['success', 'error']);
+    notificationServiceSpy = jasmine.createSpyObj('InstantNotificationsService', ['showNotification']);
     errorHandlerServiceSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
     httpSpy = jasmine.createSpyObj<HttpClient>('HttpClient', ['post', 'put']);
 
@@ -52,7 +53,7 @@ describe('OrderService', () => {
           useValue: httpSpy
         },
         {
-          provide: NzNotificationService,
+          provide: InstantNotificationsService,
           useValue: notificationServiceSpy
         },
         {
@@ -144,7 +145,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.success).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should notify about http error', (done) => {
@@ -167,7 +168,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.error).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should handle common error', (done) => {
@@ -260,7 +261,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.success).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should notify about http error', (done) => {
@@ -283,7 +284,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.error).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should handle common error', (done) => {
@@ -380,7 +381,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.success).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should notify about http error', (done) => {
@@ -403,7 +404,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.error).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should handle common error', (done) => {
@@ -502,7 +503,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.success).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should notify about http error', (done) => {
@@ -526,7 +527,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.error).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should handle common error', (done) => {
@@ -627,7 +628,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.success).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should notify about http error', (done) => {
@@ -650,7 +651,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.error).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should handle common error', (done) => {
@@ -756,7 +757,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.success).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should notify about http error', (done) => {
@@ -779,7 +780,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.error).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should handle common error', (done) => {
@@ -887,7 +888,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.success).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should notify about http error', (done) => {
@@ -910,7 +911,7 @@ describe('OrderService', () => {
         }
       );
 
-      expect(notificationServiceSpy.error).toHaveBeenCalled();
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalled();
     });
 
     it('should handle common error', (done) => {
