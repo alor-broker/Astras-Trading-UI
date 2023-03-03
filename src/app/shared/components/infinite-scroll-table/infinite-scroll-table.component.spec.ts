@@ -8,6 +8,7 @@ import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { ColumnsSettings } from "../../models/columns-settings.model";
 import { UntypedFormControl } from "@angular/forms";
+import { TableConfig } from '../../models/table-config.model';
 
 @Component({
   template: `
@@ -16,7 +17,7 @@ import { UntypedFormControl } from "@angular/forms";
       [tableContainerWidth]="tableContainerWidth"
       [data]="testData"
       [isLoading]="isLoading"
-      [columns]="testColumns"
+      [tableConfig]="tableConfig"
       [trackByFn]="trackByFn"
       (scrolled)="scrolled()"
       (filterApplied)="applyFilter($event)"
@@ -31,10 +32,14 @@ class TestWrapperComponent implements OnInit {
   tableContainerHeight = 50;
   tableContainerWidth = 50;
   isLoading = true;
-  testColumns: ColumnsSettings[] = [
-    { displayName: 'name1', name: 'name1', filterData: { filterName: 'name1' }, width: '50px' },
-    { displayName: 'name2', name: 'name2' },
-  ];
+
+  tableConfig: TableConfig<any> = {
+    columns: [
+      { displayName: 'name1', name: 'name1', filterData: { filterName: 'name1' }, width: '50px' },
+      { displayName: 'name2', name: 'name2' },
+    ]
+  };
+
   testData: any[] = [
     {name1: 'testName1', name2: 'testName2', id: 1},
     {name1: 'testName1', name2: 'testName2', id: 2},
@@ -94,7 +99,7 @@ describe('InfiniteScrollTableComponent', () => {
     expect(component.tableContainerWidth).toBe(wrapperComp.tableContainerWidth);
     expect(component.data).toBe(wrapperComp.testData);
     expect(component.isLoading).toBe(wrapperComp.isLoading);
-    expect(component.columns).toBe(wrapperComp.testColumns);
+    expect(component.tableConfig).toEqual(wrapperComp.tableConfig);
   });
 
   it('should call functions when outputs emitted', () => {
@@ -113,7 +118,7 @@ describe('InfiniteScrollTableComponent', () => {
   });
 
   it('should return columns widhts', () => {
-    expect(component.getWidthArr()).toEqual(wrapperComp.testColumns.map((col: ColumnsSettings) => col.width || 'auto'));
+    expect(component.getWidthArr()).toEqual(wrapperComp.tableConfig.columns.map((col: ColumnsSettings) => col.width || 'auto'));
   });
 
   it('should return filter control', () => {

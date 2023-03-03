@@ -57,7 +57,8 @@ export class AllTradesWidgetComponent implements OnInit {
       'AllTradesSettings',
       settings => ({
         ...settings,
-        allTradesColumns: allTradesWidgetColumns.filter(c => c.isDefault).map(col => col.columnId)
+        allTradesColumns: allTradesWidgetColumns.filter(c => c.isDefault).map(col => col.columnId),
+        highlightRowsBySide: false
       }),
       this.dashboardContextService,
       this.widgetSettingsService

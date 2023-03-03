@@ -70,9 +70,7 @@
               <td>
                     <span
                       [class.cancelled-status]="ord.status.toString() === 'canceled'"
-                      [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'
-                    >&nbsp;
-                    </span>
+                      [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'>&nbsp;</span>
               </td>
               <td>
                 <a (click)="editOrder(ord)" *ngIf='ord.status.toString() === "working" && ord.type === "limit"'>

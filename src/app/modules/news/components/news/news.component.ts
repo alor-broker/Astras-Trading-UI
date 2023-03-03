@@ -11,14 +11,13 @@ import {
   BehaviorSubject,
   map,
   Observable,
-  of,
   Subject,
   takeUntil
 } from "rxjs";
 import { DatePipe } from "@angular/common";
-import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
+import { TableConfig } from '../../../../shared/models/table-config.model';
 
 @Component({
   selector: 'ats-news',
@@ -31,7 +30,7 @@ export class NewsComponent implements OnInit, OnDestroy {
   public tableContainerWidth: number = 0;
   public newsList: Array<NewsListItem> = [];
   public isLoading = false;
-  public columns$: Observable<ColumnsSettings[]> = of([]);
+  public tableConfig$?: Observable<TableConfig<NewsListItem>>;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private datePipe = new DatePipe('ru-RU');
   private limit = 50;
@@ -56,14 +55,16 @@ export class NewsComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       });
 
-    this.columns$ = this.translatorService.getTranslator('news').pipe(
-      map((translate) => ([
-          {
-            name: 'header',
-            displayName: translate(['newsColumn']),
-            transformFn: (data: NewsListItem) => `${this.datePipe.transform(data.publishDate, '[HH:mm]')} ${data.header}`
-          }
-        ])
+    this.tableConfig$ = this.translatorService.getTranslator('news').pipe(
+      map((translate) => ({
+          columns: [
+            {
+              name: 'header',
+              displayName: translate(['newsColumn']),
+              transformFn: (data: NewsListItem) => `${this.datePipe.transform(data.publishDate, '[HH:mm]')} ${data.header}`
+            }
+          ]
+        })
       )
     );
 

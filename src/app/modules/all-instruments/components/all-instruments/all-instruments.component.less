@@ -2,12 +2,14 @@
 
 .themeMixin({
   :host {
-    .buy {
-      color: @buy-color;
-    }
+    ::ng-deep {
+      .buy {
+        color: @buy-color;
+      }
 
-    .sell {
-      color: @sell-color;
+      .sell {
+        color: @sell-color;
+      }
     }
   }
 });
