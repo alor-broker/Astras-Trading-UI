@@ -1,36 +1,47 @@
 <ng-container *transloco="let t">
-  <p>{{t('settingsHeader')}}</p>
-  <div>
-    <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
-      <nz-form-item class="compact" *transloco="let tSettings; scope: 'all-trades/all-trades-settings'">
-        <nz-form-control [nzErrorTip]="tSettings('allTradesAllTradesSettings.selectColumnsError')">
-          <nz-form-label nzRequired nzFor="allTradesColumns">{{tSettings('allTradesAllTradesSettings.selectColumnLabel')}}</nz-form-label>
-          <nz-select
-            [nzMaxTagCount]="10"
-            [nzMaxTagPlaceholder]="tagPlaceHolder"
-            nzMode="multiple"
-            [nzPlaceHolder]="tSettings('allTradesAllTradesSettings.selectColumnPlaceholder')"
-            formControlName="allTradesColumns"
-          >
-            <ng-container *transloco="let tTrades; scope: 'all-trades/all-trades'">
-              <nz-option
-                *ngFor="let item of allTradesColumns"
-                [nzLabel]="tTrades('allTradesAllTrades.columns.' + item.columnId + '.displayName')"
-                [nzValue]="item.columnId"
-              >
-              </nz-option>
-            </ng-container>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
+  <ng-container *transloco="let tSettings; scope: 'all-trades/all-trades-settings'">
+    <p>{{t('settingsHeader')}}</p>
+    <div >
+      <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="submitForm()">
+        <nz-form-item class="compact">
+          <nz-form-control [nzErrorTip]="tSettings('allTradesAllTradesSettings.selectColumnsError')">
+            <nz-form-label nzRequired nzFor="allTradesColumns">{{tSettings('allTradesAllTradesSettings.selectColumnLabel')}}</nz-form-label>
+            <nz-select
+              [nzMaxTagCount]="10"
+              [nzMaxTagPlaceholder]="tagPlaceHolder"
+              nzMode="multiple"
+              [nzPlaceHolder]="tSettings('allTradesAllTradesSettings.selectColumnPlaceholder')"
+              formControlName="allTradesColumns"
+            >
+              <ng-container *transloco="let tTrades; scope: 'all-trades/all-trades'">
+                <nz-option
+                  *ngFor="let item of allTradesColumns"
+                  [nzLabel]="tTrades('allTradesAllTrades.columns.' + item.columnId + '.displayName')"
+                  [nzValue]="item.columnId"
+                >
+                </nz-option>
+              </ng-container>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
 
-      <nz-form-item class="compact">
-        <nz-form-control>
-          <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">{{t('saveBtnText')}}</button>
-        </nz-form-control>
-      </nz-form-item>
-    </form>
-  </div>
+        <nz-form-item class="one-row">
+          <nz-form-label nzFor="highlightRowsBySide">
+            {{t('allTradesAllTradesSettings.highlightRowsBySide')}}
+          </nz-form-label>
+          <nz-form-control>
+            <nz-switch formControlName='highlightRowsBySide'></nz-switch>
+          </nz-form-control>
+        </nz-form-item>
 
-  <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
+        <nz-form-item class="compact">
+          <nz-form-control>
+            <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">{{t('saveBtnText')}}</button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+
+    <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
+  </ng-container>
 </ng-container>

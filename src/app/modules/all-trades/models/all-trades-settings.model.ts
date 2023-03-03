@@ -9,6 +9,7 @@ export interface ColumnIds {
 
 export interface AllTradesSettings extends WidgetSettings, InstrumentKey {
   allTradesColumns: string[];
+  highlightRowsBySide?: boolean;
 }
 
 export const allTradesWidgetColumns: ColumnIds[] = [

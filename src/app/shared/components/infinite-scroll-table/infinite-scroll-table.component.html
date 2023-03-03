@@ -1,132 +1,136 @@
-<nz-table
-  #dataTable
-  nzSize="small"
-  nzTableLayout="fixed"
-  [nzVirtualItemSize]="itemHeight"
-  [nzVirtualForTrackBy]="trackByFn"
-  [nzVirtualMinBufferPx]="scrollHeight"
-  [nzVirtualMaxBufferPx]="scrollHeight"
-  [nzData]="data"
-  [nzShowPagination]="false"
-  [nzFrontPagination]="false"
-  [nzScroll]="{y: scrollHeight + 'px'}"
-  [nzWidthConfig]="getWidthArr()"
-  [nzLoading]="isLoading"
->
-  <thead>
-  <tr #tableRow>
-    <th
-      *ngFor="let column of columns"
-      [nzWidth]="column.width ?? null"
-      [nzShowSort]="!!column.sortFn"
-      [nzSortOrder]="sortedColumnName === column.name ? sortedColumnOrder : null"
-      (nzSortOrderChange)="sortChange($event, column)"
-      [nzFilters]="column.filterData?.filters || []"
-      [nzFilterMultiple]="column.filterData?.isMultipleFilter!"
-      (nzFilterChange)="defaultFilterChange(column.filterData!.filterName!, $event)"
-      [nzCustomFilter]="!column.filterData?.isDefaultFilter"
-      class="table-cell"
-    >
-      {{column.displayName}}
-      <nz-filter-trigger
-        *ngIf="!!column.filterData"
-        (nzVisibleChange)="openedFilterChange(column.filterData.filterName, $event)"
-        [nzDropdownMenu]="searchMenu"
+<ng-container *ngIf="tableConfig">
+  <nz-table
+    #dataTable
+    nzSize="small"
+    nzTableLayout="fixed"
+    [nzVirtualItemSize]="itemHeight"
+    [nzVirtualForTrackBy]="trackByFn"
+    [nzVirtualMinBufferPx]="scrollHeight"
+    [nzVirtualMaxBufferPx]="scrollHeight"
+    [nzData]="data"
+    [nzShowPagination]="false"
+    [nzFrontPagination]="false"
+    [nzScroll]="{y: scrollHeight + 'px'}"
+    [nzWidthConfig]="getWidthArr()"
+    [nzLoading]="isLoading"
+  >
+    <thead>
+    <tr #tableRow>
+      <th
+        *ngFor="let column of tableConfig.columns"
+        [nzWidth]="column.width ?? null"
+        [nzShowSort]="!!column.sortFn"
+        [nzSortOrder]="sortedColumnName === column.name ? sortedColumnOrder : null"
+        (nzSortOrderChange)="sortChange($event, column)"
+        [nzFilters]="column.filterData?.filters || []"
+        [nzFilterMultiple]="column.filterData?.isMultipleFilter!"
+        (nzFilterChange)="defaultFilterChange(column.filterData!.filterName!, $event)"
+        [nzCustomFilter]="!column.filterData?.isDefaultFilter"
+        class="table-cell"
       >
-        <i
-          nz-icon
-          nzType="search"
-          [class.active-filter]="!!getFilterControl(column.filterData.filterName)?.value
+        {{column.displayName}}
+        <nz-filter-trigger
+          *ngIf="!!column.filterData"
+          (nzVisibleChange)="openedFilterChange(column.filterData.filterName, $event)"
+          [nzDropdownMenu]="searchMenu"
+        >
+          <i
+            nz-icon
+            nzType="search"
+            [class.active-filter]="!!getFilterControl(column.filterData.filterName)?.value
             || !!getFilterControl(column.filterData.intervalStartName!)?.value
             || !!getFilterControl(column.filterData.intervalEndName!)?.value"
-        >
-        </i>
-      </nz-filter-trigger>
-    </th>
-  </tr>
-  </thead>
-
-  <tbody>
-  <ng-template nz-virtual-scroll let-data>
-    <tr
-      (click)="rowClick.emit(data)"
-      (contextmenu)="openContextMenu($event, menu, data)"
-    >
-      <td *ngFor="let column of columns" class="table-cell" [class]="column.classFn && column.classFn(data)">
-        <span>{{column.transformFn && column.transformFn(data) || data[column.name]}}</span>
-        <ng-container *ngIf="data['badges']?.length && column.showBadges">
-          <ng-container *ngFor="let item of data['badges']">
-            <nz-badge [nzColor]="item"></nz-badge>
-          </ng-container>
-        </ng-container>
-      </td>
+          >
+          </i>
+        </nz-filter-trigger>
+      </th>
     </tr>
-  </ng-template>
-  </tbody>
-</nz-table>
+    </thead>
 
-<nz-dropdown-menu #searchMenu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown custom-filter" *transloco="let t">
-    <div *ngFor='let column of columns'>
-      <div *ngIf='!!column.filterData && activeFilterName === column.filterData.filterName'>
-        <input
-          *ngIf="!column.filterData.isInterval; else intervalFilter"
-          nz-input
-          class="filter-input"
-          type="text"
-          [placeholder]="column.displayName"
-          [formControl]="getFilterControl(column.filterData.filterName)!"
-        />
-        <ng-template #intervalFilter>
+    <tbody>
+    <ng-template nz-virtual-scroll let-data>
+      <tr
+        (click)="rowClick.emit(data)"
+        (contextmenu)="openContextMenu($event, menu, data)"
+        [class]="tableConfig.rowConfig?.rowClass && tableConfig.rowConfig?.rowClass(data)"
+      >
+        <td *ngFor="let column of tableConfig.columns" class="table-cell" [class]="column.classFn && column.classFn(data)">
+          <span>{{column.transformFn && column.transformFn(data) || data[column.name]}}</span>
+          <ng-container *ngIf="data['badges']?.length && column.showBadges">
+            <ng-container *ngFor="let item of data['badges']">
+              <nz-badge [nzColor]="item"></nz-badge>
+            </ng-container>
+          </ng-container>
+        </td>
+      </tr>
+    </ng-template>
+    </tbody>
+  </nz-table>
+
+  <nz-dropdown-menu #searchMenu="nzDropdownMenu">
+    <div class="ant-table-filter-dropdown custom-filter" *transloco="let t">
+      <div *ngFor='let column of tableConfig.columns'>
+        <div *ngIf='!!column.filterData && activeFilterName === column.filterData.filterName'>
           <input
+            *ngIf="!column.filterData.isInterval; else intervalFilter"
             nz-input
             class="filter-input"
             type="text"
-            [placeholder]="column.displayName + ', ' + t('from')"
-            [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
+            [placeholder]="column.displayName"
+            [formControl]="getFilterControl(column.filterData.filterName)!"
           />
-          <input
-            nz-input
-            class="filter-input"
-            type="text"
-            [placeholder]="column.displayName + ', ' + t('to')"
-            [formControl]="getFilterControl(column.filterData.intervalEndName!)!"
-          />
-        </ng-template>
-        <button nz-button nzType="text" nzSize="small" (click)="resetFilter(column.filterData)">{{t('resetBtnText')}}</button>
+          <ng-template #intervalFilter>
+            <input
+              nz-input
+              class="filter-input"
+              type="text"
+              [placeholder]="column.displayName + ', ' + t('from')"
+              [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
+            />
+            <input
+              nz-input
+              class="filter-input"
+              type="text"
+              [placeholder]="column.displayName + ', ' + t('to')"
+              [formControl]="getFilterControl(column.filterData.intervalEndName!)!"
+            />
+          </ng-template>
+          <button nz-button nzType="text" nzSize="small" (click)="resetFilter(column.filterData)">{{t('resetBtnText')}}</button>
+        </div>
       </div>
     </div>
-  </div>
-</nz-dropdown-menu>
+  </nz-dropdown-menu>
 
-<nz-dropdown-menu #menu="nzDropdownMenu">
-  <ul nz-menu>
-    <ng-container *ngFor="let m of contextMenu">
-      <li
-        *ngIf="!m.subMenu?.length; else subMenu"
-        nz-menu-item
-        (click)="m.clickFn(selectedRow)"
-      >
-          {{m.title}}
-      </li>
-
-      <ng-template #subMenu>
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <ul nz-menu>
+      <ng-container *ngFor="let m of contextMenu">
         <li
-          nz-submenu
-          [nzTitle]="m.title"
+          *ngIf="!m.subMenu?.length; else subMenu"
+          nz-menu-item
           (click)="m.clickFn(selectedRow)"
         >
-          <ul>
-            <li
-              nz-menu-item
-              *ngFor="let subM of m.subMenu"
-              (click)="subM.clickFn(selectedRow)"
-            >
-              {{subM.title}}
-            </li>
-          </ul>
+          {{m.title}}
         </li>
-      </ng-template>
-    </ng-container>
-  </ul>
-</nz-dropdown-menu>
+
+        <ng-template #subMenu>
+          <li
+            nz-submenu
+            [nzTitle]="m.title"
+            (click)="m.clickFn(selectedRow)"
+          >
+            <ul>
+              <li
+                nz-menu-item
+                *ngFor="let subM of m.subMenu"
+                (click)="subM.clickFn(selectedRow)"
+              >
+                {{subM.title}}
+              </li>
+            </ul>
+          </li>
+        </ng-template>
+      </ng-container>
+    </ul>
+  </nz-dropdown-menu>
+</ng-container>
+
