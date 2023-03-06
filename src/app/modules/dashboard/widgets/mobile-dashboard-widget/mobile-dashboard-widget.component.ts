@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { OnboardingService } from "../../services/onboarding.service";
 import { Store } from "@ngrx/store";
 import { initWidgetSettings } from "../../../../store/widget-settings/widget-settings.actions";
 import { PortfoliosActions } from "../../../../store/portfolios/portfolios.actions";
 import { MobileDashboardActions } from "../../../../store/mobile-dashboard/mobile-dashboard-actions";
+import { MobileDashboardService } from "../../services/mobile-dashboard.service";
 
 @Component({
   selector: 'ats-mobile-dashboard-widget',
@@ -14,9 +15,12 @@ import { MobileDashboardActions } from "../../../../store/mobile-dashboard/mobil
 export class MobileDashboardWidgetComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
+  screenHeight!: Observable<number>;
+
   constructor(
     private readonly onboarding: OnboardingService,
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly mobileDashboardService: MobileDashboardService
   ) {
   }
 
@@ -25,6 +29,7 @@ export class MobileDashboardWidgetComponent implements OnInit, OnDestroy {
     this.store.dispatch(initWidgetSettings());
     this.store.dispatch(PortfoliosActions.initPortfolios());
     this.store.dispatch(MobileDashboardActions.initMobileDashboard());
+    this.screenHeight = this.mobileDashboardService.getScreenHeight();
   }
 
   ngOnDestroy(): void {

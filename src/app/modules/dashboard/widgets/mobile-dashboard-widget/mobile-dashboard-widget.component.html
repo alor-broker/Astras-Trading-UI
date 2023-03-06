@@ -1,10 +1,10 @@
-<nz-layout>
+<nz-layout *ngIf="screenHeight | async as height" [style]="{height: height}">
   <div class="d-flex flex-direction-column content-wrapper">
     <div class="fixed-height">
       <ats-mobile-navbar></ats-mobile-navbar>
     </div>
 
-    <div class="instruments-history">
+    <div class="instruments-history fixed-height">
       <ats-mobile-instruments-history></ats-mobile-instruments-history>
     </div>
 
