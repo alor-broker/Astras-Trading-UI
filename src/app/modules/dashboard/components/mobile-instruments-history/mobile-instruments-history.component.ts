@@ -12,7 +12,7 @@ import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
   styleUrls: ['./mobile-instruments-history.component.less']
 })
 export class MobileInstrumentsHistoryComponent implements OnInit {
-  instruments$!: Observable<InstrumentKey[]>;
+  instruments$!: Observable<InstrumentKey[] | undefined>;
   selectedInstrument$!: Observable<InstrumentKey | null | undefined>;
 
   constructor(
@@ -22,7 +22,7 @@ export class MobileInstrumentsHistoryComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.instruments$ = this.mobileDashboardService.instruments$;
+    this.instruments$ = this.mobileDashboardService.getInstrumentsHistory();
     this.selectedInstrument$ = this.dashboardContextService.instrumentsSelection$
       .pipe(
         map(d => d.yellow)
@@ -30,7 +30,7 @@ export class MobileInstrumentsHistoryComponent implements OnInit {
   }
 
   selectInstrument(instrument: InstrumentKey) {
-    this.dashboardContextService.selectMobileDashboardInstrument(instrument, 'yellow');
+    this.dashboardContextService.selectDashboardInstrument(instrument, 'yellow');
   }
 
   isInstrumentEqual(i1: InstrumentKey, i2: InstrumentKey) {

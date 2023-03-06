@@ -16,13 +16,13 @@ import {
   Dashboard,
 } from '../../shared/models/dashboard/dashboard.model';
 import { ManageDashboardsService } from '../../shared/services/manage-dashboards.service';
-import { mobileDashboard } from './dashboards.selectors';
-import { MobileDashboardActions } from './dashboards-actions';
+import { instrumentsHistory, mobileDashboard } from './mobile-dashboard.selectors';
+import { MobileDashboardActions } from './mobile-dashboard-actions';
 import { mapWith } from "../../shared/utils/observable-helper";
 import { PortfoliosStreams } from "../portfolios/portfolios.streams";
 import { getDefaultPortfolio, isPortfoliosEqual } from "../../shared/utils/portfolios";
 import { MarketService } from "../../shared/services/market.service";
-import { instrumentsBadges } from "../../shared/utils/instruments";
+import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
 
 @Injectable()
 export class MobileDashboardEffects {
@@ -31,9 +31,11 @@ export class MobileDashboardEffects {
       ofType(MobileDashboardActions.initMobileDashboard),
       map(() => {
         const dashboard = this.readMobileDashboardFromLocalStorage();
+        const instrumentsHistory = this.readInstrumentsHistoryFromLocalStorage();
 
         return MobileDashboardActions.initMobileDashboardSuccess({
-            mobileDashboard: dashboard
+            mobileDashboard: dashboard,
+            instrumentsHistory
           }
         );
       })
@@ -44,7 +46,8 @@ export class MobileDashboardEffects {
     return this.actions$.pipe(
       ofType(
         MobileDashboardActions.addMobileDashboard,
-        MobileDashboardActions.selectPortfolio
+        MobileDashboardActions.selectPortfolio,
+        MobileDashboardActions.selectInstrument
       ),
       map(() => MobileDashboardActions.saveMobileDashboard())
     );
@@ -55,11 +58,34 @@ export class MobileDashboardEffects {
         ofType(MobileDashboardActions.saveMobileDashboard),
         withLatestFrom(this.store.select(mobileDashboard)),
         tap(([, dashboard]) => {
-          this.saveMobileDashboardToLocalStorage(dashboard);
+          if (dashboard) {
+            this.saveMobileDashboardToLocalStorage(dashboard);
+          }
         })
       );
     },
-    {dispatch: false}
+    { dispatch: false }
+  );
+
+  createSaveInstrumentsHistoryAction = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(
+        MobileDashboardActions.selectInstrument
+      ),
+      map(() => MobileDashboardActions.saveInstrumentsHistory())
+    );
+  });
+
+  saveInstrumentsHistory$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(MobileDashboardActions.saveInstrumentsHistory),
+      withLatestFrom(this.store.select(instrumentsHistory)),
+      tap(([, instruments]) => {
+        this.saveInstrumentsHistoryToLocalStorage(instruments ?? []);
+      })
+    );
+  },
+    { dispatch: false }
   );
 
   setDefaultPortfolioForMobileDashboard$ = createEffect(() => {
@@ -70,8 +96,8 @@ export class MobileDashboardEffects {
         (dashboard, allPortfolios) => ({ dashboard, allPortfolios })
       ),
       filter(({ dashboard, allPortfolios }) =>
-        !dashboard.selectedPortfolio ||
-        !allPortfolios.find(p => isPortfoliosEqual(p, dashboard.selectedPortfolio))
+        !dashboard!.selectedPortfolio ||
+        !allPortfolios.find(p => isPortfoliosEqual(p, dashboard!.selectedPortfolio))
       ),
       mapWith(
         () => this.marketService.getDefaultExchange(),
@@ -86,22 +112,23 @@ export class MobileDashboardEffects {
   setDefaultInstrumentsSelectionForMobileDashboard$ = createEffect(() => {
     return this.store.select(mobileDashboard).pipe(
       filter(d => !!d),
-      distinctUntilChanged((previous, current) => previous.guid === current.guid),
-      filter(d => !d.instrumentsSelection),
-      map(() => MobileDashboardActions.selectInstruments({
-          selection: instrumentsBadges.map(badge => ({
-            groupKey: badge,
+      distinctUntilChanged((previous, current) => previous?.guid === current!.guid),
+      filter(d => !d!.instrumentsSelection),
+      map(() => MobileDashboardActions.selectInstrument({
+          selection: {
+            groupKey: 'yellow',
             instrumentKey: {
               symbol: 'SBER',
               exchange: 'MOEX',
               instrumentGroup: 'TQBR'
             }
-          }))
+          }
         })
       ));
   });
 
   private readonly mobileDashboardStorageKey = 'mobile-dashboard';
+  private readonly instrumentsHistoryStorageKey = 'instruments-history';
 
   createDefaultMobileDashboard$ = createEffect(() =>
     this.actions$.pipe(
@@ -132,5 +159,13 @@ export class MobileDashboardEffects {
 
   private saveMobileDashboardToLocalStorage(dashboard: Dashboard) {
     this.localStorage.setItem(this.mobileDashboardStorageKey, dashboard);
+  }
+
+  private readInstrumentsHistoryFromLocalStorage(): InstrumentKey[] {
+    return this.localStorage.getItem(this.instrumentsHistoryStorageKey) ?? [];
+  }
+
+  private saveInstrumentsHistoryToLocalStorage(instruments: InstrumentKey[]) {
+    this.localStorage.setItem(this.instrumentsHistoryStorageKey, instruments);
   }
 }

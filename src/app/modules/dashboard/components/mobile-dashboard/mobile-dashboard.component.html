@@ -1,9 +1,9 @@
-<div class="d-flex footer" *transloco="let t; scope: 'shared/widget-menu'">
+<div class="d-flex mobile-dashboard" *transloco="let t; scope: 'shared/widget-menu'">
   <nz-tabset
     *ngIf="widgets$ | async as widgets"
     nzTabPosition="bottom"
     nzSize="large"
-    class="footer-menu"
+    class="mobile-dashboard-menu"
     [nzAnimated]="false"
   >
     <nz-tab *ngFor="let widget of widgets" [nzTitle]="titleTemplate" (nzClick)="tabChange(widget.widgetType)">
@@ -25,18 +25,4 @@
       <ats-parent-widget [widget]="widget"></ats-parent-widget>
     </nz-tab>
   </nz-tabset>
-
-  <!--  <div class="d-flex flex-direction-column new-order">-->
-  <!--    <i nz-icon nzType="plus-circle" nzTheme="outline"></i>-->
-  <!--    <span>Заявка</span>-->
-  <!--  </div>-->
-
-  <!--  <div class="d-flex flex-gap-10 widgets-wrapper" *ngIf="widgets$ | async as widgets">-->
-  <!--    <div class="d-flex flex-direction-column" *ngFor="let widget of widgets">-->
-  <!--      <i nz-icon [nzType]="widget.icon" nzTheme="outline"></i>-->
-  <!--      <div class="widget-label">-->
-  <!--        <span>{{t('sharedWidgetMenu.' + widget.widgetType)}}</span>-->
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
 </div>

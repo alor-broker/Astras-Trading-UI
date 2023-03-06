@@ -99,7 +99,7 @@ export class MobileNavbarComponent implements OnInit, OnDestroy {
   }
 
   changePortfolio(key: PortfolioExtended) {
-    this.dashboardContextService.selectMobileDashboardPortfolio({
+    this.dashboardContextService.selectDashboardPortfolio({
       portfolio: key.portfolio,
       exchange: key.exchange,
       marketType: key.marketType
@@ -108,8 +108,7 @@ export class MobileNavbarComponent implements OnInit, OnDestroy {
 
   changeInstrument(instrument: InstrumentKey | null) {
     if (instrument) {
-      this.dashboardContextService.selectMobileDashboardInstrument(instrument, 'yellow');
-      this.mobileDashboardService.addToHistory(instrument);
+      this.dashboardContextService.selectDashboardInstrument(instrument, 'yellow');
       this.instrumentControl.setValue(null);
     }
   }

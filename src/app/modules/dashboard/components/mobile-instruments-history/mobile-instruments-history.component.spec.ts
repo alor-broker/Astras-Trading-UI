@@ -23,7 +23,7 @@ describe('MobileInstrumentsHistoryComponent', () => {
         {
           provide: MobileDashboardService,
           useValue: {
-            instruments$: of([])
+            getInstrumentsHistory: jasmine.createSpy('getInstrumentsHistory').and.returnValue(of([]))
           }
         }
       ]

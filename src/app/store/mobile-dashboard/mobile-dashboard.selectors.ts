@@ -2,7 +2,7 @@ import {
   createFeatureSelector,
   createSelector
 } from '@ngrx/store';
-import * as fromDashboards from './dashboards.reducer';
+import * as fromDashboards from './mobile-dashboard.reducer';
 
 export const selectDashboardsState = createFeatureSelector<fromDashboards.State>(
   fromDashboards.mobileDashboardFeatureKey
@@ -17,5 +17,10 @@ export const mobileDashboard = createSelector(
 
 export const getDashboardItems = createSelector(
   selectDashboardsState,
-  state => state.dashboard.items
+  state => state.dashboard?.items
+);
+
+export const instrumentsHistory = createSelector(
+  selectDashboardsState,
+  state => state.instrumentsHistory
 );

@@ -4,7 +4,7 @@ import { OnboardingService } from "../../services/onboarding.service";
 import { Store } from "@ngrx/store";
 import { initWidgetSettings } from "../../../../store/widget-settings/widget-settings.actions";
 import { PortfoliosActions } from "../../../../store/portfolios/portfolios.actions";
-import { MobileDashboardActions } from "../../../../store/mobile-dashboard/dashboards-actions";
+import { MobileDashboardActions } from "../../../../store/mobile-dashboard/mobile-dashboard-actions";
 
 @Component({
   selector: 'ats-mobile-dashboard-widget',

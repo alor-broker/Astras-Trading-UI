@@ -17,7 +17,10 @@ export class MobileDashboardActions {
 
   static initMobileDashboardSuccess = createAction(
     '[Mobile Dashboard] Init Mobile Dashboard (SUCCESS)',
-    props<{ mobileDashboard?: Dashboard }>()
+    props<{
+      mobileDashboard?: Dashboard,
+      instrumentsHistory: InstrumentKey[]
+    }>()
   );
 
   static addMobileDashboard = createAction(
@@ -37,14 +40,15 @@ export class MobileDashboardActions {
     }>()
   );
 
-  static selectInstruments = createAction(
+  static selectInstrument = createAction(
     '[Mobile Dashboard] Select Instrument',
     props<{
-      selection: { groupKey: string, instrumentKey: InstrumentKey }[]
+      selection: { groupKey: string, instrumentKey: InstrumentKey }
     }>()
   );
 
   static saveMobileDashboard = createAction('[Mobile Dashboard] Save Mobile Dashboard');
 
+  static saveInstrumentsHistory = createAction('[Mobile Dashboard] Save Instruments History');
 }
 

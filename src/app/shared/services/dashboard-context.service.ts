@@ -15,8 +15,9 @@ import { map } from 'rxjs/operators';
 import { CurrentDashboardActions } from '../../store/dashboards/dashboards-actions';
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { DeviceService } from "./device.service";
-import { mobileDashboard } from "../../store/mobile-dashboard/dashboards.selectors";
-import { MobileDashboardActions } from "../../store/mobile-dashboard/dashboards-actions";
+import { MobileDashboardActions } from "../../store/mobile-dashboard/mobile-dashboard-actions";
+import { MobileDashboardStreams } from "../../store/mobile-dashboard/mobile-dashboard.streams";
+import { mapWith } from "../utils/observable-helper";
 
 @Injectable({
   providedIn: 'root'
@@ -44,41 +45,46 @@ export class DashboardContextService {
 
   selectDashboardPortfolio(portfolioKey: PortfolioKey) {
     this.selectedDashboard$.pipe(
+      mapWith(
+        () => this.deviceService.deviceInfo$,
+        (dashboard, deviceInfo) => ({ dashboard, isMobile: deviceInfo.isMobile })
+      ),
       take(1)
-    ).subscribe(dashboard => {
-      this.store.dispatch(CurrentDashboardActions.selectPortfolio({ dashboardGuid: dashboard.guid, portfolioKey }));
+    ).subscribe(({ dashboard, isMobile }) => {
+      if (isMobile) {
+        this.store.dispatch(MobileDashboardActions.selectPortfolio({ portfolioKey }));
+      } else {
+        this.store.dispatch(CurrentDashboardActions.selectPortfolio({ dashboardGuid: dashboard.guid, portfolioKey }));
+      }
     });
   }
 
   selectDashboardInstrument(instrumentKey: InstrumentKey, groupKey: string) {
     this.selectedDashboard$.pipe(
+      mapWith(
+        () => this.deviceService.deviceInfo$,
+        (dashboard, deviceInfo) => ({ dashboard, isMobile: deviceInfo.isMobile })
+      ),
       take(1)
-    ).subscribe(dashboard => {
-      this.store.dispatch(CurrentDashboardActions.selectInstruments({
-        dashboardGuid: dashboard.guid,
-        selection: [{ groupKey, instrumentKey }]
-      }));
+    ).subscribe(({ dashboard, isMobile }) => {
+      if (isMobile) {
+        this.store.dispatch(MobileDashboardActions.selectInstrument({
+          selection: { groupKey, instrumentKey }
+        }));
+      } else {
+        this.store.dispatch(CurrentDashboardActions.selectInstruments({
+          dashboardGuid: dashboard.guid,
+          selection: [{ groupKey, instrumentKey }]
+        }));
+      }
     });
-  }
-
-  selectMobileDashboardPortfolio(portfolioKey: PortfolioKey) {
-    this.store.dispatch(MobileDashboardActions.selectPortfolio({ portfolioKey }));
-  }
-
-  selectMobileDashboardInstrument(instrumentKey: InstrumentKey, groupKey: string) {
-    this.store.dispatch(MobileDashboardActions.selectInstruments({
-      selection: [{ groupKey, instrumentKey }]
-    }));
   }
 
   get selectedDashboard$(): Observable<Dashboard> {
     return this.deviceService.deviceInfo$
       .pipe(
         switchMap(({ isMobile }) => isMobile
-          ? this.store.select(mobileDashboard)
-            .pipe(
-              filter(d => !!d)
-            )
+          ? MobileDashboardStreams.getMobileDashboard(this.store)
           : DashboardsStreams.getSelectedDashboard(this.store))
       );
   }

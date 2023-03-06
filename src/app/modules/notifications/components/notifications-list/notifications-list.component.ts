@@ -3,7 +3,6 @@ import { NotificationsService } from "../../services/notifications.service";
 import { Observable } from "rxjs";
 import { NotificationMeta } from "../../models/notification.model";
 import { map } from "rxjs/operators";
-import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
   selector: 'ats-notifications-list',
@@ -12,13 +11,11 @@ import { DeviceService } from "../../../../shared/services/device.service";
 })
 export class NotificationsListComponent implements OnInit {
   sortedNotifications$!: Observable<NotificationMeta[]>;
-  isMobile$!: Observable<boolean>;
 
   @Output() notificationClicked = new EventEmitter();
 
   constructor(
     private readonly notificationsService: NotificationsService,
-    private readonly deviceService: DeviceService
   ) {
   }
 
@@ -27,11 +24,6 @@ export class NotificationsListComponent implements OnInit {
       .pipe(
         map(n => [...n]),
         map(n => n.sort((a, b) => b.date.getTime() - a.date.getTime()))
-      );
-
-    this.isMobile$ = this.deviceService.deviceInfo$
-      .pipe(
-        map(info => info.isMobile)
       );
   }
 
