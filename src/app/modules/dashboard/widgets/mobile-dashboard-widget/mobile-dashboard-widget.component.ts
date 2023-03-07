@@ -25,7 +25,6 @@ export class MobileDashboardWidgetComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.onboarding.start();
     this.store.dispatch(initWidgetSettings());
     this.store.dispatch(PortfoliosActions.initPortfolios());
     this.store.dispatch(MobileDashboardActions.initMobileDashboard());

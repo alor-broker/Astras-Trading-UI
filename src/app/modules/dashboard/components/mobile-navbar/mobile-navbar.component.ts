@@ -3,7 +3,7 @@ import { Observable, shareReplay, Subject } from "rxjs";
 import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
 import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
 import { ThemeColors } from "../../../../shared/models/settings/theme-settings.model";
-import { FormControl } from "@angular/forms";
+import { FormControl, UntypedFormControl } from "@angular/forms";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { Store } from "@ngrx/store";
@@ -32,7 +32,7 @@ export class MobileNavbarComponent implements OnInit, OnDestroy {
   themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
 
-  instrumentControl = new FormControl('');
+  instrumentControl = new UntypedFormControl('');
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private activeInstrument$!: Observable<InstrumentKey | null>;
