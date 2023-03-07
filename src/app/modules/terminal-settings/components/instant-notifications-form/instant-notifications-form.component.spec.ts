@@ -1,7 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { InstantNotificationsFormComponent } from './instant-notifications-form.component';
-import { getTranslocoModule } from '../../../../shared/utils/testing';
+import {
+  getTranslocoModule,
+  ngZorroMockComponents
+} from '../../../../shared/utils/testing';
 
 describe('InstantNotificationsFormComponent', () => {
   let component: InstantNotificationsFormComponent;
@@ -10,7 +13,10 @@ describe('InstantNotificationsFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [getTranslocoModule()],
-      declarations: [ InstantNotificationsFormComponent ]
+      declarations: [
+        InstantNotificationsFormComponent,
+        ...ngZorroMockComponents
+      ]
     })
     .compileComponents();
 

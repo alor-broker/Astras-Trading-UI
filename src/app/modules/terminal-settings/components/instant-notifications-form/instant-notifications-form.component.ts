@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import {
-  ControlValueAccessor,
-  NG_VALUE_ACCESSOR
-} from '@angular/forms';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
   InstantNotificationsSettings,
   OrdersInstantNotificationType
 } from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
 
 @Component({
   selector: 'ats-instant-notifications-form',
@@ -20,18 +18,13 @@ import {
     }
   ]
 })
-export class InstantNotificationsFormComponent implements ControlValueAccessor {
+export class InstantNotificationsFormComponent extends ControlValueAccessorBaseComponent<InstantNotificationsSettings> {
   editableNotificationTypes: { value: OrdersInstantNotificationType, enabled: boolean }[] = [];
   currentValue: InstantNotificationsSettings | null = null;
-
   private isTouched = false;
 
-  registerOnChange(fn: (value: InstantNotificationsSettings) => void): void {
-    this.onValueChanged = fn;
-  }
-
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
+  constructor() {
+    super();
   }
 
   writeValue(value: InstantNotificationsSettings): void {
@@ -50,27 +43,21 @@ export class InstantNotificationsFormComponent implements ControlValueAccessor {
       notification.enabled = !notification.enabled;
     }
 
-    this.markTouched();
-    this.emitValue();
+    this.checkIfTouched();
+    this.emitValue(
+      {
+        ...this.currentValue,
+        hiddenNotifications: this.editableNotificationTypes.filter(x => !x.enabled).map(x => x.value)
+      }
+    );
   }
 
-  private onTouched = () => {
-  };
-
-  private markTouched() {
+  protected needMarkTouched(): boolean {
     if (!this.isTouched) {
       this.isTouched = true;
-      this.onTouched();
+      return true;
     }
-  }
 
-  private emitValue() {
-    this.onValueChanged({
-      ...this.currentValue,
-      hiddenNotifications: this.editableNotificationTypes.filter(x => !x.enabled).map(x => x.value)
-    });
+    return false;
   }
-
-  private onValueChanged: (value: InstantNotificationsSettings) => void = () => {
-  };
 }

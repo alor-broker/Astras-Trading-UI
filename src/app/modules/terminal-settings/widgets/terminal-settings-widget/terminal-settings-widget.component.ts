@@ -1,9 +1,15 @@
-import {Component, OnInit} from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {ModalService} from 'src/app/shared/services/modal.service';
-import {TerminalSettings} from "../../../../shared/models/terminal-settings/terminal-settings.model";
-import {TabNames} from "../../models/terminal-settings.model";
-import {TerminalSettingsService} from "../../services/terminal-settings.service";
+import {
+  Component,
+  OnInit
+} from '@angular/core';
+import {
+  Observable,
+  of
+} from 'rxjs';
+import { ModalService } from 'src/app/shared/services/modal.service';
+import { TerminalSettings } from "../../../../shared/models/terminal-settings/terminal-settings.model";
+import { TabNames } from "../../models/terminal-settings.model";
+import { TerminalSettingsService } from "../../services/terminal-settings.service";
 
 @Component({
   selector: 'ats-terminal-settings-widget',
@@ -37,9 +43,9 @@ export class TerminalSettingsWidgetComponent implements OnInit {
     this.modal.closeTerminalSettingsModal();
   }
 
-  formChange(event: { value: TerminalSettings, isInitial: boolean }) {
+  formChange(event: { value: TerminalSettings | null, isInitial: boolean }) {
     this.settingsFormValue = event.value;
-    if (event.isInitial) {
+    if (event.isInitial && !!event.value) {
       this.initialSettingsFormValue = event.value;
     }
   }

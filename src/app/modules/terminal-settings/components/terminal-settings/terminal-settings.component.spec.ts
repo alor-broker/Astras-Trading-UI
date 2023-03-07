@@ -2,7 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TerminalSettingsService } from '../../services/terminal-settings.service';
 
 import { TerminalSettingsComponent } from './terminal-settings.component';
-import { sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import {
+  mockComponent,
+  sharedModuleImportForTests
+} from '../../../../shared/utils/testing';
 import { of } from 'rxjs';
 import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
@@ -18,7 +21,14 @@ describe('TerminalSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [...sharedModuleImportForTests],
-      declarations: [TerminalSettingsComponent],
+      declarations: [
+        TerminalSettingsComponent,
+        mockComponent({selector: 'ats-useful-links'}),
+        mockComponent({selector: 'ats-general-settings-form'}),
+        mockComponent({selector: 'ats-portfolios-currency-form'}),
+        mockComponent({selector: 'ats-hot-key-settings-form'}),
+        mockComponent({selector: 'ats-instant-notifications-form'}),
+      ],
       providers: [
         { provide: TerminalSettingsService, useValue: tsSpy }
       ]

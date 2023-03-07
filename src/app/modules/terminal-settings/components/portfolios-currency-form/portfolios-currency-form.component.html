@@ -1,0 +1,28 @@
+<ng-container *transloco="let t; scope: 'terminal-settings'">
+  <ng-container *ngIf="currencies$ | async as currencies">
+    <div *ngIf="form && form.length ===0">
+      <span nz-typography nzType="danger">{{t('terminalSettings.noActivePortfolios')}}</span>
+    </div>
+
+    <ng-container *ngIf="form && form.length > 0">
+      <form nz-form [nzLayout]="'vertical'">
+        <ng-container *ngFor="let ctrl of form.controls; let i = index">
+          <nz-form-item>
+            <nz-form-label nzRequired>
+              {{ctrl.value.portfolio?.exchange}} {{ctrl.value.portfolio?.portfolio}}
+            </nz-form-label>
+            <nz-form-control>
+              <nz-select [formControl]="asControl(asFormGroup(ctrl).controls.currency)">
+                <nz-option
+                  *ngFor="let cur of currencies"
+                  [nzLabel]="cur.firstCode"
+                  [nzValue]="cur.symbolTom"
+                ></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </ng-container>
+      </form>
+    </ng-container>
+  </ng-container>
+</ng-container>

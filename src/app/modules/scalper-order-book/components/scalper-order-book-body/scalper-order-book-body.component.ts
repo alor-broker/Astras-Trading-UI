@@ -165,7 +165,6 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
           down: !!downPrice && !!currentOrders.find(o => o.linkedPrice < downPrice),
         };
       }),
-      tap(x => console.log(x)),
       shareReplay({ bufferSize: 1, refCount: true }),
     );
   }
