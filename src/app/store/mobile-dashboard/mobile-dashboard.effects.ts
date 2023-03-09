@@ -11,7 +11,7 @@ import {
   map,
 } from 'rxjs/operators';
 import { GuidGenerator } from '../../shared/utils/guid';
-import { distinctUntilChanged, tap, withLatestFrom } from 'rxjs';
+import { distinctUntilChanged, take, tap, withLatestFrom } from 'rxjs';
 import {
   Dashboard,
 } from '../../shared/models/dashboard/dashboard.model';
@@ -23,6 +23,9 @@ import { PortfoliosStreams } from "../portfolios/portfolios.streams";
 import { getDefaultPortfolio, isPortfoliosEqual } from "../../shared/utils/portfolios";
 import { MarketService } from "../../shared/services/market.service";
 import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
+import { WidgetSettingsService } from "../../shared/services/widget-settings.service";
+import { WidgetNames } from "../../shared/models/enums/widget-names";
+import { Widget } from "../../shared/models/dashboard/widget.model";
 
 @Injectable()
 export class MobileDashboardEffects {
@@ -144,12 +147,23 @@ export class MobileDashboardEffects {
     )
   );
 
+  excludeSettingsFromWidgets$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(MobileDashboardActions.addMobileDashboard),
+      tap(d => {
+        d.items.forEach(widget => this.excludeWidgetSettings(widget));
+      })
+    ),
+    { dispatch: false }
+  );
+
   constructor(
     private readonly actions$: Actions,
     private readonly localStorage: LocalStorageService,
     private readonly store: Store,
     private readonly dashboardService: ManageDashboardsService,
-    private readonly marketService: MarketService
+    private readonly marketService: MarketService,
+    private readonly widgetSettingsService: WidgetSettingsService
   ) {
   }
 
@@ -167,5 +181,28 @@ export class MobileDashboardEffects {
 
   private saveInstrumentsHistoryToLocalStorage(instruments: InstrumentKey[]) {
     this.localStorage.setItem(this.instrumentsHistoryStorageKey, instruments);
+  }
+
+  private excludeWidgetSettings(widget: Widget) {
+    const settingsToUpdate: any = {};
+    switch (widget.widgetType) {
+      case WidgetNames.orderBook:
+        settingsToUpdate.excludedFields = ['instrument', 'exchange', 'useOrderWidget'];
+        settingsToUpdate.useOrderWidget = true;
+        break;
+      case WidgetNames.blotter:
+        settingsToUpdate.excludedFields = ['portfolio', 'exchange'];
+        break;
+      case WidgetNames.lightChart:
+      case WidgetNames.orderSubmit:
+        settingsToUpdate.excludedFields = ['instrument', 'exchange'];
+        break;
+    }
+
+    this.widgetSettingsService.getSettings(widget.guid)
+      .pipe(
+        take(1),
+      )
+      .subscribe(() => this.widgetSettingsService.updateSettings(widget.guid, settingsToUpdate));
   }
 }

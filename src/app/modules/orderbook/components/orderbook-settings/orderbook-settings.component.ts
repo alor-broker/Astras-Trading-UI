@@ -44,6 +44,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
   exchanges: string[] = exchangesList;
+  excludedFields: string[] = [];
   private settings$!: Observable<OrderbookSettings>;
 
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
@@ -59,6 +60,8 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
+      this.excludedFields = settings.excludedFields ?? [];
+
       this.form = new UntypedFormGroup({
         instrument: new UntypedFormControl({
           symbol: settings.symbol,
@@ -67,7 +70,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
         } as InstrumentKey, Validators.required),
         exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
         depth: new FormControl(
-          settings.depth ?? 10,
+          settings.depth ?? 17,
           [
             Validators.required,
             Validators.min(this.validationOptions.depth.min),
@@ -87,7 +90,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
-      const formValue = this.form.value;
+      const formValue = this.form.getRawValue();
 
       const newSettings = {
         ...formValue,

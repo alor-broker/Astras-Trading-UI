@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NetworkIndicatorComponent } from './network-indicator.component';
-import { NetworkStatusService } from '../../services/network-status.service';
+import { NetworkStatusService } from '../../../../shared/services/network-status.service';
 import { BehaviorSubject } from 'rxjs';
-import { NetworkStatus } from '../../models/enums/network-status.model';
+import { NetworkStatus } from '../../../../shared/models/enums/network-status.model';
 import {
   getTranslocoModule,
   ngZorroMockComponents
-} from '../../utils/testing';
+} from '../../../../shared/utils/testing';
 
 describe('NetworkIndicatorComponent', () => {
   let component: NetworkIndicatorComponent;

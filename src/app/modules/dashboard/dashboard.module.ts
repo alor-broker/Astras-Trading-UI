@@ -36,6 +36,7 @@ import {
   MobileInstrumentsHistoryComponent
 } from './components/mobile-instruments-history/mobile-instruments-history.component';
 import { MobileDashboardComponent } from "./components/mobile-dashboard/mobile-dashboard.component";
+import { NetworkIndicatorComponent } from "./components/network-indicator/network-indicator.component";
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { MobileDashboardComponent } from "./components/mobile-dashboard/mobile-d
     MobileNavbarComponent,
     MobileDashboardComponent,
     MobileInstrumentsHistoryComponent,
+    NetworkIndicatorComponent
   ],
   imports: [
     DashboardRoutingModule,

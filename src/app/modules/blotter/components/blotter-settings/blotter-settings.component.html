@@ -2,7 +2,7 @@
   <p>{{t('settingsHeader')}}</p>
   <div>
     <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
-      <nz-form-item>
+      <nz-form-item *ngIf="!excludedFields.includes('portfolio')">
         <nz-form-control [nzErrorTip]="t('blotterSettings.portfolioError')">
           <nz-form-label nzRequired nzFor="portfolio">{{t('blotterSettings.portfolioLabel')}}</nz-form-label>
           <nz-select
@@ -24,7 +24,7 @@
           </nz-select>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="!excludedFields.includes('exchange')">
         <nz-form-control [nzErrorTip]="t('blotterSettings.exchangeError')">
           <nz-form-label nzRequired nzFor="exchange">{{t('blotterSettings.exchangeLabel')}}</nz-form-label>
           <nz-form-control>

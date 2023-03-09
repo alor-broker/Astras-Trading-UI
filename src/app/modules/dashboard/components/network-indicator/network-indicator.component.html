@@ -9,7 +9,7 @@
     class="icon-wrapper"
     nz-tooltip
   >
-  <i nz-icon nzTheme="outline" nzType="api"></i>
+  <i nz-icon nzTheme="outline" nzType="wifi"></i>
     <ng-template #tooltip>
       <span *ngIf="status === statuses.Online">{{t('dashboardNetworkIndicator.onlineDescription')}}</span>
       <span *ngIf="status === statuses.Offline">{{t('dashboardNetworkIndicator.offlineDescription')}}</span>
@@ -17,5 +17,3 @@
 </span>
   </ng-container>
 </ng-container>
-
-

@@ -43,6 +43,7 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   form!: UntypedFormGroup;
   timeFrames: Timeframe[];
   timeFrameDisplayModes = TimeFrameDisplayMode;
+  excludedFields: string[] = [];
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<LightChartSettings>;
 
@@ -58,6 +59,8 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
+      this.excludedFields = settings.excludedFields ?? [];
+
       this.form = new UntypedFormGroup({
         instrument: new UntypedFormControl({
           symbol: settings.symbol,

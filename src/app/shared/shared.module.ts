@@ -58,7 +58,6 @@ import { EditableStringComponent } from './components/editable-string/editable-s
 import { WidgetHeaderComponent } from './components/widget-header/widget-header.component';
 import { WidgetSkeletonComponent } from './components/widget-skeleton/widget-skeleton.component';
 import { JoyrideModule } from 'ngx-joyride';
-import { NetworkIndicatorComponent } from "./components/network-indicator/network-indicator.component";
 
 @NgModule({
   declarations: [
@@ -75,7 +74,6 @@ import { NetworkIndicatorComponent } from "./components/network-indicator/networ
     EditableStringComponent,
     WidgetHeaderComponent,
     WidgetSkeletonComponent,
-    NetworkIndicatorComponent
   ],
   imports: [
     CommonModule,
@@ -172,7 +170,6 @@ import { NetworkIndicatorComponent } from "./components/network-indicator/networ
     WidgetHeaderComponent,
     WidgetSkeletonComponent,
     EditableStringComponent,
-    NetworkIndicatorComponent,
     // directives
     NumericalDirective,
     ShortNumberPipe,

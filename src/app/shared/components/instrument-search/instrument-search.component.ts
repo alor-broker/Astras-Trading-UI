@@ -22,6 +22,7 @@ import {
 } from 'rxjs/operators';
 import {
   ControlValueAccessor,
+  FormControl,
   NG_VALUE_ACCESSOR
 } from '@angular/forms';
 import { InstrumentKey } from '../../models/instruments/instrument-key.model';
@@ -52,6 +53,8 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   @Output()
   instrumentSelected = new EventEmitter<InstrumentKey | null>();
   isMobile$!: Observable<boolean>;
+
+  searchControl = new FormControl();
 
   @Output()
 
@@ -127,6 +130,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   writeValue(value: InstrumentKey): void {
     this.currentValue = value;
     this.selectedValue = this.currentValue;
+    this.searchControl.setValue(value?.symbol);
   }
 
   checkInstrumentSelection() {

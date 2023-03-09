@@ -1,3 +1,14 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .content ::ng-deep {
+      background-color: @component-background;
+      color: @text-color;
+    }
+  }
+});
+
 nz-layout {
   height: 100%;
 }
@@ -24,7 +35,6 @@ nz-layout {
 
     .content {
       flex: 1;
-      background-color: #141922;
       overflow: hidden;
 
       ats-mobile-footer {

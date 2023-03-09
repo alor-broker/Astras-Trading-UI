@@ -12,7 +12,7 @@ export class OrderBookDataFeedHelper {
       opcode: 'OrderBookGetAndSubscribe',
       code: symbol,
       exchange: exchange,
-      depth: depth ?? 10,
+      depth: depth ?? 17,
       format: 'slim',
       instrumentGroup: instrumentGroup,
     };
