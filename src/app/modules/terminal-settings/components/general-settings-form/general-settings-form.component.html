@@ -1,0 +1,79 @@
+<ng-container *transloco="let t; scope: 'terminal-settings'">
+  <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+    <nz-form-item>
+      <nz-form-label nzFor="language" nzRequired>{{t('terminalSettings.langLabel')}}</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName='language'>
+          <nz-option [nzLabel]="t('terminalSettings.notSelectedOption')" [nzValue]="''" nzDisabled nzHide></nz-option>
+          <nz-option [nzValue]="'en'" nzLabel="English"></nz-option>
+          <nz-option [nzValue]="'ru'" nzLabel="Русский"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <ng-container [formGroup]="asFormGroup(form.controls.designSettings)">
+      <nz-form-item>
+        <nz-form-label nzFor="theme" nzRequired>{{t('terminalSettings.themeLabel')}}</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName='theme'>
+            <nz-option [nzLabel]="t('terminalSettings.darkThemeOption')" [nzValue]="themeTypes.dark"></nz-option>
+            <nz-option [nzLabel]="t('terminalSettings.lightThemeOption')" [nzValue]="themeTypes.default"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </ng-container>
+    <nz-form-item>
+      <nz-form-label nzFor="timezoneDisplayOption" nzRequired>{{t('terminalSettings.timezoneLabel')}}</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName='timezoneDisplayOption'>
+          <nz-option [nzLabel]="t('terminalSettings.mskTimezoneOption')"
+                     [nzValue]="timezoneDisplayOption.MskTime"></nz-option>
+          <nz-option [nzLabel]="t('terminalSettings.localTimezoneOption')"
+                     [nzValue]="timezoneDisplayOption.LocalTime"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzFor="userIdleDurationMin"
+                     nzRequired>{{t('terminalSettings.userIdleDurationLabel')}}</nz-form-label>
+      <nz-form-control
+        [nzErrorTip]="t(
+                'terminalSettings.intervalError',
+                 {
+                  min: validationSettings.userIdleDurationMin.min,
+                  max: validationSettings.userIdleDurationMin.max
+                 })"
+      >
+        <input (mousedown)="$event.stopPropagation()" atsNumerical formControlName="userIdleDurationMin" nz-input/>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <label
+        formControlName="badgesBind"
+        nz-checkbox
+      >
+        {{t('terminalSettings.badgesBindLabel')}}
+        <span
+          [nzPopoverTitle]="badgeBindHint"
+          nz-icon
+          nz-popover
+          nzTheme="outline"
+          nzType="info-circle">
+              </span>
+      </label>
+
+      <ng-template #badgeBindHint>
+        <p> {{t('terminalSettings.badgesBindHint1')}} </p>
+        <p>
+          <nz-badge class="square-badge" nzColor="yellow"></nz-badge>
+          - {{t('terminalSettings.badgesBindHint2')}}
+        </p>
+        <p>
+          <nz-badge nzColor="yellow"></nz-badge>
+          - {{t('terminalSettings.badgesBindHint3')}}
+        </p>
+      </ng-template>
+    </nz-form-item>
+
+  </form>
+</ng-container>

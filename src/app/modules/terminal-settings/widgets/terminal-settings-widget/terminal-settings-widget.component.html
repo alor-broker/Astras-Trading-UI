@@ -3,7 +3,6 @@
     [nzTitle]="t('terminalSettings.profileHeader')"
     [nzVisible]='isVisible$ | async'
     (nzOnCancel)="handleClose()">
-    <!-- [nzBodyStyle]="{overflowY: 'auto', height: '300px' }"  -->
     <ng-container *nzModalContent>
       <ats-terminal-settings (formChange)="formChange($event)" (tabChange)="selectedTab = $event"></ats-terminal-settings>
     </ng-container>

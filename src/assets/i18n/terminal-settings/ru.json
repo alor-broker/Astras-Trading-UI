@@ -47,5 +47,7 @@
   "sellBestBid": "Продать по лучшей цене из BID",
   "buyBestAsk": "Купить по лучшей цене из ASK",
   "workingVolumesHeader": "Рабочие объёмы",
-  "selectWorkingVolumeLabel": "Выбрать рабочий объём"
+  "selectWorkingVolumeLabel": "Выбрать рабочий объём",
+
+  "noActivePortfolios": "Нет активных портфелей"
 }
