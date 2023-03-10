@@ -4,7 +4,10 @@ import {
   TestBed,
   tick
 } from "@angular/core/testing";
-import { sharedModuleImportForTests } from "../../shared/utils/testing";
+import {
+  commonTestProviders,
+  sharedModuleImportForTests
+} from "../../shared/utils/testing";
 import { take } from "rxjs";
 import { LocalStorageService } from "../../shared/services/local-storage.service";
 import { selectTerminalSettingsState } from "./terminal-settings.selectors";
@@ -32,7 +35,8 @@ describe('Terminal Settings Store', () => {
         ...sharedModuleImportForTests
       ],
       providers: [
-        { provide: LocalStorageService, useValue: localStorageServiceSpy }
+        { provide: LocalStorageService, useValue: localStorageServiceSpy },
+        ...commonTestProviders
       ]
     });
 

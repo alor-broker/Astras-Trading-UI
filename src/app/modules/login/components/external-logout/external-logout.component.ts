@@ -3,7 +3,6 @@ import {
   OnInit
 } from '@angular/core';
 import { LocalStorageService } from '../../../../shared/services/local-storage.service';
-import { LoggerService } from '../../../../shared/services/logger.service';
 import { BroadcastService } from '../../../../shared/services/broadcast.service';
 import { ForceLogoutMessageType } from '../../../../shared/services/auth.service';
 
@@ -15,8 +14,7 @@ import { ForceLogoutMessageType } from '../../../../shared/services/auth.service
 export class ExternalLogoutComponent implements OnInit {
   constructor(
     private readonly localStorageService: LocalStorageService,
-    private readonly broadcastService: BroadcastService,
-    private readonly logger: LoggerService
+    private readonly broadcastService: BroadcastService
   ) {
   }
 

@@ -5,6 +5,7 @@ import {
 import { InstrumentsService } from '../../services/instruments.service';
 import { InstrumentSelectComponent } from './instrument-select.component';
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
@@ -52,6 +53,7 @@ describe('InstrumentSelectComponent', () => {
         },
         { provide: InstrumentsService, useValue: spyInstrs },
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
+        ...commonTestProviders
       ]
     }).compileComponents();
 

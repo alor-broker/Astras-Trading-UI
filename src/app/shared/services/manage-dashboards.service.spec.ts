@@ -4,7 +4,10 @@ import { ManageDashboardsService } from './manage-dashboards.service';
 import { LocalStorageService } from "./local-storage.service";
 import { Subject } from "rxjs";
 import { DashboardContextService } from './dashboard-context.service';
-import { sharedModuleImportForTests } from '../utils/testing';
+import {
+  commonTestProviders,
+  sharedModuleImportForTests
+} from '../utils/testing';
 
 describe('ManageDashboardsService', () => {
   let service: ManageDashboardsService;
@@ -27,6 +30,7 @@ describe('ManageDashboardsService', () => {
               selectedDashboard$: new Subject()
             }
           },
+          ...commonTestProviders
         ]
     });
 

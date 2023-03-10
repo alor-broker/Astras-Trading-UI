@@ -7,6 +7,7 @@ import { OrderbookSettingsComponent } from './orderbook-settings.component';
 import { of } from 'rxjs';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
@@ -39,7 +40,8 @@ describe('OrderbookSettingsComponent', () => {
             })),
             updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
           }
-        }
+        },
+        ...commonTestProviders
       ]
     }).compileComponents();
   }));

@@ -18,6 +18,7 @@ import {
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import {
+  commonTestProviders,
   sharedModuleImportForTests,
   TestData
 } from '../../../../shared/utils/testing';
@@ -125,7 +126,8 @@ describe('TechChartComponent', () => {
             getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => '')),
             getActiveLang: jasmine.createSpy('getActiveLang').and.returnValue('ru')
           }
-        }
+        },
+        ...commonTestProviders
       ]
     })
       .compileComponents();

@@ -13,6 +13,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { HttpClientModule } from '@angular/common/http';
 import { TranslocoTestingModule, TranslocoTestingOptions } from "@ngneat/transloco";
 import ru from '../../../assets/i18n/ru.json';
+import { ErrorHandlerService } from '../services/handle-error/error-handler.service';
 
 /**
  * Create async observable that emits-once and completes  after a JS engine turn
@@ -179,6 +180,18 @@ export const sharedModuleImportForTests: Array<Type<any> | ModuleWithProviders<{
   EffectsModule.forRoot(),
   SharedModule,
   HttpClientModule
+];
+
+/**
+ *  Providers for tests
+ */
+export const commonTestProviders: any[] = [
+  {
+    provide: ErrorHandlerService,
+    useValue: {
+      handleError: jasmine.createSpy('handleError').and.callThrough()
+    }
+  }
 ];
 
 /**

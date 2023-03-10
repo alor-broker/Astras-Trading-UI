@@ -2,7 +2,10 @@ import { TestBed } from '@angular/core/testing';
 import { BlotterService } from './blotter.service';
 import { OrdersNotificationsService } from 'src/app/shared/services/orders-notifications.service';
 import { QuotesService } from '../../../shared/services/quotes.service';
-import { sharedModuleImportForTests } from '../../../shared/utils/testing';
+import {
+  commonTestProviders,
+  sharedModuleImportForTests
+} from '../../../shared/utils/testing';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { Subject } from 'rxjs';
 
@@ -37,7 +40,8 @@ describe('BlotterService', () => {
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
         { provide: OrdersNotificationsService, useValue: notificationSpy },
         { provide: QuotesService, useValue: quotesSpy },
-        BlotterService
+        BlotterService,
+        ...commonTestProviders
       ]
     });
 

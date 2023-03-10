@@ -2,14 +2,20 @@ import { TestBed } from '@angular/core/testing';
 
 import { NewsService } from './news.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { sharedModuleImportForTests } from "../../../shared/utils/testing";
+import {
+  commonTestProviders,
+  sharedModuleImportForTests
+} from "../../../shared/utils/testing";
 
 describe('NewsService', () => {
   let service: NewsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ...sharedModuleImportForTests]
+      imports: [HttpClientTestingModule, ...sharedModuleImportForTests],
+      providers: [
+        ...commonTestProviders
+      ]
     });
     service = TestBed.inject(NewsService);
   });
