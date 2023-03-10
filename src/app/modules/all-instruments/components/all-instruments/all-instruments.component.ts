@@ -5,6 +5,7 @@ import {
   BehaviorSubject,
   interval,
   Observable,
+  shareReplay,
   Subject,
   Subscription,
   switchMap,
@@ -27,6 +28,7 @@ import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { AllInstrumentsSettings } from '../../model/all-instruments-settings.model';
+import { TableConfig } from '../../../../shared/models/table-config.model';
 
 @Component({
   selector: 'ats-all-instruments',
@@ -136,7 +138,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     { name: 'priceScale', displayName: 'Шаг цены', width: '90px', sortFn: this.getSortFn('priceScale') },
     { name: 'yield', displayName: 'Доходность', width: '100px', sortFn: this.getSortFn('yield') },
   ];
-  public displayedColumns$: BehaviorSubject<ColumnsSettings[]> = new BehaviorSubject<ColumnsSettings[]>([]);
+  public tableConfig$!: Observable<TableConfig<AllInstruments>>;
   public contextMenu: ContextMenu[] = [];
   public instrumentsDisplay$!: Observable<AllInstruments[]>;
   private instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
@@ -144,7 +146,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private updatesSub?: Subscription;
   private filters$ = new BehaviorSubject<AllInstrumentsFilters>({ limit: this.loadingChunkSize, offset: 0 });
-  private badgeColor = defaultBadgeColor;
+  private settings$!: Observable<AllInstrumentsSettings>;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -172,27 +174,31 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       map(s => this.mapInstrumentsToBadges(s.instruments, s.badges, s.terminalSettings))
     );
 
-    this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
-      .pipe(
-        mapWith(
-          () => this.translatorService.getTranslator('all-instruments/all-instruments'),
-          (settings, translate) => ({ settings, translate })
-        ),
-        takeUntil(this.destroy$),
-      )
-      .subscribe(({ settings, translate }) => {
-        this.displayedColumns$.next(this.allColumns
-          .filter(col => settings.allInstrumentsColumns.includes(col.name))
-          .map(col => ({
-              ...col,
-              displayName: translate(
-                ['columns', col.name],
-                { fallback: col.displayName }
-              )
-            })
-          ));
-        this.badgeColor = settings.badgeColor!;
-      });
+    this.settings$ = this.settingsService.getSettings<AllInstrumentsSettings>(this.guid).pipe(
+      shareReplay(1)
+    );
+
+
+    this.tableConfig$ = this.settings$.pipe(
+      mapWith(
+        () => this.translatorService.getTranslator('all-instruments/all-instruments'),
+        (settings, translate) => ({ settings, translate })
+      ),
+      map(({ settings, translate }) => {
+        return {
+          columns: this.allColumns
+            .filter(col => settings.allInstrumentsColumns.includes(col.name))
+            .map(col => ({
+                ...col,
+                displayName: translate(
+                  ['columns', col.name],
+                  { fallback: col.displayName }
+                )
+              })
+            )
+        };
+      })
+    );
 
     this.watchlistCollectionService.collectionChanged$
       .pipe(takeUntil(this.destroy$))
@@ -252,7 +258,11 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       exchange: row.exchange,
     };
 
-    this.dashboardContextService.selectDashboardInstrument(instrument, this.badgeColor);
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.dashboardContextService.selectDashboardInstrument(instrument, s.badgeColor ?? defaultBadgeColor);
+    });
   }
 
   initContextMenu() {

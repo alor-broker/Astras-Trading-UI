@@ -1,5 +1,4 @@
 import { Order } from "../../../shared/models/orders/order.model";
-import { Side } from "../../../shared/models/enums/side.model";
 import { OrderbookRequest } from '../models/orderbook-data.model';
 import { CurrentOrder } from '../models/orderbook-view-row.model';
 
@@ -18,10 +17,9 @@ export class OrderBookDataFeedHelper {
     };
   }
 
-  public static getCurrentOrdersForItem(itemPrice: number, side: Side, orders: Order[]): CurrentOrder[] {
+  public static getCurrentOrdersForItem(itemPrice: number, orders: Order[]): CurrentOrder[] {
     const currentOrders = orders.filter(
-      (o) => o.side === side
-        && o.price === itemPrice
+      (o) => o.price === itemPrice
         && o.status === 'working'
     );
 

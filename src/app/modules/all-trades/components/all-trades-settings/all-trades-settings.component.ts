@@ -31,6 +31,7 @@ export class AllTradesSettingsComponent implements OnInit, OnDestroy {
       if (settings) {
         this.form = new UntypedFormGroup({
           allTradesColumns: new UntypedFormControl(settings.allTradesColumns, Validators.required),
+          highlightRowsBySide: new UntypedFormControl(settings.highlightRowsBySide ?? false, Validators.required)
         });
       }
     });

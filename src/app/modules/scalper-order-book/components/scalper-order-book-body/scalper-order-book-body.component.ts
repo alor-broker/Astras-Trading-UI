@@ -10,9 +10,12 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Destroyable } from '../../../../shared/utils/destroyable';
 import {
   BehaviorSubject,
+  combineLatest,
   filter,
   interval,
   NEVER,
+  Observable,
+  shareReplay,
   take,
   takeUntil,
   tap,
@@ -56,6 +59,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   isActive: boolean = false;
   readonly isLoading$ = new BehaviorSubject(false);
   dataContext!: ScalperOrderBookDataContext;
+  hiddenOrdersIndicators$!: Observable<{ up: boolean, down: boolean }>;
   private readonly renderItemsRange$ = new BehaviorSubject<ListRange | null>(null);
   private readonly destroyable = new Destroyable();
   private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
@@ -86,6 +90,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.initContext();
     this.initAutoAlign();
     this.subscribeToHotkeys();
+    this.initHiddenOrdersIndicators();
   }
 
   ngAfterViewInit(): void {
@@ -135,6 +140,35 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     });
   }
 
+  private initHiddenOrdersIndicators() {
+    this.hiddenOrdersIndicators$ = combineLatest([
+      this.dataContext.orderBookBody$,
+      this.dataContext.currentOrders$,
+      this.dataContext.displayRange$
+    ]).pipe(
+      map(([orderBookBody, currentOrders,]) => {
+        const topOffset = this.scrollContainer.measureScrollOffset('top');
+        const bottomOffset = topOffset + this.scrollContainer.getViewportSize();
+
+        const topVisibleIndex = Math.ceil(topOffset / this.rowHeight);
+        const bottomVisibleIndex = Math.round(bottomOffset / this.rowHeight) - 1;
+
+        const upPrice = topVisibleIndex < orderBookBody.bodyRows.length
+          ? orderBookBody.bodyRows[topVisibleIndex]?.price
+          : null;
+        const downPrice = bottomVisibleIndex >= 0 && bottomVisibleIndex < orderBookBody.bodyRows.length
+          ? orderBookBody.bodyRows[bottomVisibleIndex]?.price
+          : null;
+
+        return {
+          up: !!upPrice && !!currentOrders.find(o => o.linkedPrice > upPrice),
+          down: !!downPrice && !!currentOrders.find(o => o.linkedPrice < downPrice),
+        };
+      }),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+  }
+
   private initContext() {
     const context = this.scalperOrderBookDataContextService.createContext(
       this.guid,
@@ -161,12 +195,12 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.dataContext?.extendedSettings$.pipe(
       tap(() => this.isLoading$.next(true)),
       mapWith(
-        () => this.contentSize$,
-        (settings,) => settings
-      ),
-      mapWith(
         settings => getLastPrice(settings.widgetSettings),
         (settings, lastPrice) => ({ settings, lastPrice })
+      ),
+      mapWith(
+        () => this.contentSize$,
+        (source,) => source
       ),
       takeUntil(this.destroyable.destroyed$)
     ).subscribe(x => {

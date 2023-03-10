@@ -1,0 +1,16 @@
+<div class="useful-links" *transloco="let t; scope: 'terminal-settings'">
+  <div nz-row [nzGutter]="[16, 24]">
+    <div nz-col nzMd="12"  nzXs="24" class="group">
+      <div><h3>{{t('terminalSettings.generalHeader')}}</h3></div>
+      <ats-external-link class="group-item" href="https://www.alorbroker.ru">{{t('terminalSettings.officialSiteLink')}}</ats-external-link>
+      <ats-external-link class="group-item" href="https://www.alorbroker.ru/trading/leverage">{{t('terminalSettings.riskRatesLink')}}</ats-external-link>
+    </div>
+
+    <div nz-col nzMd="12" nzXs="24" class="group">
+      <div><h3>{{t('terminalSettings.personalAccountOperationsHeader')}}</h3></div>
+      <ats-external-link class="group-item" href="https://lk.alor.ru/main">{{t('terminalSettings.personalAccountLink')}}</ats-external-link>
+      <ats-external-link class="group-item" href="https://lk.alor.ru/operations/money">{{t('terminalSettings.bankrollLink')}}</ats-external-link>
+      <ats-external-link class="group-item" href="https://lk.alor.ru/products/services">{{t('terminalSettings.servicesLink')}}</ats-external-link>
+    </div>
+  </div>
+</div>

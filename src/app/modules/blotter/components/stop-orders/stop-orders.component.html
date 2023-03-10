@@ -1,119 +1,131 @@
 <ng-container *transloco="let t; scope: 'blotter/stop-orders'">
-  <div class="container" *ngIf="settings$ | async as settings">
+  <div *ngIf="settings$ | async as settings" class="container">
 
     <ng-template #empty>
       <nz-empty
+        [nzNotFoundContent]="isFilterDisabled() ? t('blotterStopOrders.emptyOrders') : t('blotterStopOrders.emptyOrdersWithFilters')"
         class="ant-list-empty-text"
-        nzNotFoundImage="simple"
-        [nzNotFoundContent]="isFilterDisabled() ? t('blotterStopOrders.emptyOrders') : t('blotterStopOrders.emptyOrdersWithFilters')">
+        nzNotFoundImage="simple">
       </nz-empty>
     </ng-template>
 
-    <div class="table-container" #tableContainer *ngIf="selectedInstruments$ | async as selectedInstruments">
+    <div #tableContainer *ngIf="selectedInstruments$ | async as selectedInstruments" class="table-container">
       <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
-      <nz-table *ngIf="displayOrders$ | async as orders" #nzTable [nzData]="orders"
-          [nzNoResult]="empty"
-          nzTableLayout="fixed"
-          nzSize="small"
-          [nzFrontPagination]="false"
-          [nzShowPagination]="false"
-          [nzScroll]="{ x: tableInnerWidth+ 'px', y: scrollHeight - 5 + 'px' }"
-          [nzVirtualItemSize]="20"
-          [nzFooter]="footer">
-        <thead>
-          <tr cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="changeColumnOrder($event)">
+        <nz-table #nzTable *ngIf="displayOrders$ | async as orders" [nzData]="orders"
+                  [nzFooter]="footer"
+                  [nzFrontPagination]="false"
+                  [nzNoResult]="empty"
+                  [nzScroll]="{ x: tableInnerWidth+ 'px', y: scrollHeight - 5 + 'px' }"
+                  [nzShowPagination]="false"
+                  [nzVirtualItemSize]="20"
+                  [nzVirtualMaxBufferPx]="scrollHeight * 2"
+                  [nzVirtualMinBufferPx]="scrollHeight"
+                  [nzVirtualForTrackBy]="trackBy"
+                  nzSize="small"
+                  nzTableLayout="fixed">
+          <thead>
+          <tr (cdkDropListDropped)="changeColumnOrder($event)" cdkDropList cdkDropListOrientation="horizontal">
             <th nzWidth="5px"></th>
             <th nzWidth="65px">
               <span>
-                <a nz-popconfirm
-                   [nzPopconfirmTitle]="t('blotterStopOrders.cancelConfirm')"
-                   [nzOkText]="t('yes')"
+                <a (nzOnConfirm)="cancelAllOrders()"
                    [nzCancelText]="t('no')"
                    [nzCondition]="settings.cancelOrdersWithoutConfirmation ?? false"
-                   (nzOnConfirm)="cancelAllOrders()">{{t('blotterStopOrders.cancelAll')}}</a>
+                   [nzOkText]="t('yes')"
+                   [nzPopconfirmTitle]="t('blotterStopOrders.cancelConfirm')"
+                   nz-popconfirm>{{t('blotterStopOrders.cancelAll')}}</a>
               </span>
             </th>
-            <th *ngFor='let column of listOfColumns'
-                [nzCustomFilter]='column.hasSearch'
-                [nzSortFn]='column.sortFn'
-                [nzFilters]="column.listOfFilter"
-                [nzShowFilter]="column.hasFilter"
-                [nzWidth]="column.width ? column.width + 'px': null"(nzFilterChange)="defaultFilterChange(column.id, $event)"
+            <th (atsWidthChanged)="saveColumnWidth(column.id, $event)"
+                (atsWidthChanging)="recalculateTableWidth($event)"
+                (nzFilterChange)="defaultFilterChange(column.id, $event)"
+                *ngFor='let column of listOfColumns'
                 [atsResizeColumn]
                 [minWidth]="column.minWidth ?? 50"
-                (atsWidthChanged)="saveColumnWidth(column.id, $event)"
-                (atsWidthChanging)="recalculateTableWidth($event)"
+                [nzCustomFilter]='column.hasSearch'
+                [nzFilters]="column.listOfFilter"
+                [nzShowFilter]="column.hasFilter"
+                [nzSortFn]='column.sortFn'
+                [nzWidth]="column.width ? column.width + 'px': null"
                 cdkDrag
                 cdkDragLockAxis="x"
             >
               <span
-                nz-tooltip
-                [nzTooltipTitle]="column.tooltip"
                 [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+                [nzTooltipTitle]="column.tooltip"
+                nz-tooltip
               >
                 {{column.name}}
               </span>
-              <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!filter" [nzDropdownMenu]="searchMenu">
-                <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
+              <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!filter"
+                                 [nzDropdownMenu]="searchMenu">
+                <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon
+                   nzType="search"></i>
               </nz-filter-trigger>
             </th>
           </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let ord of nzTable.data" (click)="selectInstrument(ord.symbol, ord.exchange)">
-            <td >
-              <span
-                [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'
-                [class.cancelled-status]="ord.status.toString() === 'canceled'"
-              >&nbsp;</span>
-            </td>
-            <td>
-              <a *ngIf='ord.status.toString() === "working"' (click)="editOrder(ord)">
-                <i nz-icon nzType="edit" nzTheme="outline"></i>
-              </a>
-              &nbsp;
-              <a *ngIf='ord.status.toString() === "working"' nz-popconfirm
-                 [nzPopconfirmTitle]="t('blotterStopOrders.cancelConfirm')"
-                 [nzOkText]="t('yes')"
-                 [nzCancelText]="t('no')"
-                 [nzCondition]="settings.cancelOrdersWithoutConfirmation ?? false"
-                 (nzOnConfirm)="cancelOrder(ord.id)">
-                <i nz-icon nzType="close-circle" nzTheme="outline"></i>
-              </a>
-            </td><ng-container *ngFor='let column of listOfColumns'>
-            <td *ngIf='column.id === "id"'>{{ ord.id }}</td>
-            <td class='bold' *ngIf='column.id === "symbol"'>
-              <span class="symbol-name">{{ ord.symbol }}</span>
-              <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
-                <nz-badge [nzColor]="item.key" *ngIf="item.value.symbol === ord.symbol && item.value.exchange === ord.exchange"></nz-badge>
+          </thead>
+          <tbody>
+          <ng-template let-ord nz-virtual-scroll>
+            <tr (click)="selectInstrument(ord.symbol, ord.exchange)">
+              <td>
+                <span
+                  [class.cancelled-status]="ord.status.toString() === 'canceled'"
+                  [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'>&nbsp;</span>
+              </td>
+              <td>
+                <a (click)="editOrder(ord)" *ngIf='ord.status.toString() === "working"'>
+                  <i nz-icon nzTheme="outline" nzType="edit"></i>
+                </a>
+                &nbsp;
+                <a (nzOnConfirm)="cancelOrder(ord.id)" *ngIf='ord.status.toString() === "working"'
+                   [nzCancelText]="t('no')"
+                   [nzCondition]="settings.cancelOrdersWithoutConfirmation ?? false"
+                   [nzOkText]="t('yes')"
+                   [nzPopconfirmTitle]="t('blotterStopOrders.cancelConfirm')"
+                   nz-popconfirm>
+                  <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+                </a>
+              </td>
+              <ng-container *ngFor='let column of listOfColumns'>
+                <td *ngIf='column.id === "id"'>{{ ord.id }}</td>
+                <td *ngIf='column.id === "symbol"' class='bold'>
+                  <span class="symbol-name">{{ ord.symbol }}</span>
+                  <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
+                    <nz-badge *ngIf="item.value.symbol === ord.symbol && item.value.exchange === ord.exchange"
+                              [nzColor]="item.key"></nz-badge>
+                  </ng-container>
+                </td>
+                <td *ngIf='column.id === "side"'
+                    [class]='ord.side.toString() === "sell" ? "sell" : "buy"'>{{ ord.side }}</td>
+                <td *ngIf='column.id === "residue"'>{{ ord.residue }}</td>
+                <td
+                  *ngIf='column.id === "volume"'>{{ ord.type === 'stoplimit' ? (ord.volume | number) : '≈' + ord.triggerPrice * ord.qtyUnits }}</td>
+                <td *ngIf='column.id === "qty"'>{{ ord.qty | number }}</td>
+                <td
+                  *ngIf='column.id === "price"'>{{ ord.type === 'stoplimit' ? (ord.price | number : '0.0-10') : '' }}</td>
+                <td *ngIf='column.id === "triggerPrice"'>{{ ord.triggerPrice | number }}</td>
+                <td *ngIf='column.id === "status"' [class]='ord.status.toString() === "filled"
+                ? (ord.status.toString() === "sell" ? "sell" : "buy") :
+                (ord.status.toString() === "canceled" ? "cancelled" : "bold" )'>
+                  {{ t('blotterStopOrders.orderStatus.' + ord.status, {fallback: ord.status}) }}
+                </td>
+                <td *ngIf='column.id === "conditionType"'>{{ ord.conditionType }}</td>
+                <td *ngIf='column.id === "transTime"'>{{ formatDate(ord.transTime) }}</td>
+                <td *ngIf='column.id === "exchange"'>{{ ord.exchange }}</td>
+                <td *ngIf='column.id === "type"'>{{ ord.type }}</td>
+                <td *ngIf='column.id === "endTime"'>{{ formatDate(ord.endTime) }}</td>
               </ng-container>
-            </td>
-            <td [class]='ord.side.toString() === "sell" ? "sell" : "buy"' *ngIf='column.id === "side"'>{{ ord.side }}</td>
-            <td *ngIf='column.id === "residue"'>{{ ord.residue }}</td>
-            <td *ngIf='column.id === "volume"'>{{ ord.type === 'stoplimit' ? (ord.volume | number) : '≈' + ord.triggerPrice * ord.qtyUnits }}</td>
-            <td *ngIf='column.id === "qty"'>{{ ord.qty | number }}</td>
-            <td *ngIf='column.id === "price"'>{{ ord.type === 'stoplimit' ? (ord.price | number : '0.0-10') : '' }}</td>
-            <td *ngIf='column.id === "triggerPrice"'>{{ ord.triggerPrice | number }}</td>
-            <td *ngIf='column.id === "status"'[class]='ord.status.toString() === "filled"
-              ? (ord.status.toString() === "sell" ? "sell" : "buy") :
-              (ord.status.toString() === "canceled" ? "cancelled" : "bold" )' >
-              {{ t('blotterStopOrders.orderStatus.' + ord.status, { fallback: ord.status }) }}
-            </td>
-            <td *ngIf='column.id === "conditionType"'>{{ ord.conditionType }}</td>
-            <td *ngIf='column.id === "transTime"'>{{ formatDate(ord.transTime) }}</td>
-            <td *ngIf='column.id === "exchange"'>{{ ord.exchange }}</td>
-            <td *ngIf='column.id === "type"'>{{ ord.type }}</td>
-            <td *ngIf='column.id === "endTime"'>{{ formatDate(ord.endTime) }}</td>
-          </ng-container>
-          </tr>
-        </tbody>
-      </nz-table>
-    </ng-container>
+            </tr>
+          </ng-template>
+          </tbody>
+        </nz-table>
+      </ng-container>
     </div>
 
     <ng-template #footer>
       <div class="export-button-container">
-        <button nz-button nzType="link" *ngIf="canExport" (click)="exportToFile()">
+        <button (click)="exportToFile()" *ngIf="canExport" nz-button nzType="link">
           <i nz-icon nzType="download"></i>
           {{t('blotterStopOrders.exportToFile')}}
         </button>
@@ -121,7 +133,7 @@
     </ng-template>
 
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-table-filter [columns]="listOfColumns" (filterChange)="filterChange($event)"></ats-table-filter>
+      <ats-table-filter (filterChange)="filterChange($event)" [columns]="listOfColumns"></ats-table-filter>
     </nz-dropdown-menu>
 
   </div>

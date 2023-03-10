@@ -1,0 +1,16 @@
+<ng-container *transloco="let t; scope: 'terminal-settings/instant-notifications-form'">
+  <div>
+    <ng-container *ngFor="let notificationType of editableNotificationTypes">
+      <div class="d-flex flex-row flex-gap-2">
+        <div class="flex-1 label">
+          {{t('terminalSettingsInstantNotificationsForm.' + notificationType.value + 'Label')}}
+        </div>
+        <div>
+          <nz-switch (click)="toggleNotificationType(notificationType.value)" [ngModel]="notificationType.enabled"
+                     [nzControl]="true"></nz-switch>
+        </div>
+      </div>
+      <nz-divider class="compact"></nz-divider>
+    </ng-container>
+  </div>
+</ng-container>

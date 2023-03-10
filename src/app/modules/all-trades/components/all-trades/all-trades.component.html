@@ -4,7 +4,7 @@
   <ats-infinite-scroll-table
     (filterApplied)="applyFilter($event)"
     (scrolled)="scrolled()"
-    [columns]="displayedColumns"
+    [tableConfig]="tableConfig$ | async"
     [data]="(tradesList$ | async) ?? []"
     [isLoading]="(isLoading$ | async) ?? true"
     [tableContainerHeight]="(contentSize$ | async)?.height || 0"

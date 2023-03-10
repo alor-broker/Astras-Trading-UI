@@ -76,7 +76,7 @@ export const allTradesColumns: ColumnIds[] = [
   { columnId: 'id', name: "Номер", isDefault: false },
   { columnId: 'orderno', name: "Заявка", isDefault: false },
   { columnId: 'symbol', name: "Тикер", isDefault: true },
-  { columnId: 'side', name: "Сторона", isDefault: true },
+  { columnId: 'side', name: "Сторона", isDefault: false },
   { columnId: 'price', name: "Цена", isDefault: true },
   { columnId: 'qty', name: "Кол-во", isDefault: true },
   { columnId: 'date', name: 'Время', isDefault: false },

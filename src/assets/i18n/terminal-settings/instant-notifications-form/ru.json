@@ -1,0 +1,10 @@
+{
+  "orderCreatedLabel": "Заявка выставлена",
+  "orderSubmitFailedLabel": "Ошибка выставления заявки",
+  "orderFilledLabel": "Заявка исполнилась",
+  "orderPartiallyFilledLabel": "Заявка частично исполнилась",
+  "orderCancelledLabel": "Заявка отменена",
+  "orderUpdatedLabel": "Заявка изменена",
+  "orderUpdateFailedLabel": "Ошибка изменения заявки",
+  "orderStatusChangedLabel": "Изменение статуса заявки"
+}

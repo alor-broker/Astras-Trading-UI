@@ -11,6 +11,7 @@ import { filter, map, tap } from "rxjs/operators";
 import {
   BehaviorSubject,
   Observable,
+  shareReplay,
   Subject,
   take,
   takeUntil,
@@ -26,6 +27,7 @@ import {
   AllTradesItem
 } from '../../../../shared/models/all-trades.model';
 import { AllTradesService } from '../../../../shared/services/all-trades.service';
+import { TableConfig } from '../../../../shared/models/table-config.model';
 
 @Component({
   selector: 'ats-all-trades[guid]',
@@ -54,7 +56,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     descending: true
   });
 
-  public allColumns: ColumnsSettings[] = [
+  private readonly allColumns: ColumnsSettings[] = [
     {
       name: 'qty',
       displayName: 'Кол-во',
@@ -96,7 +98,17 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     {name: 'oi', displayName: 'Откр. интерес'},
     {name: 'existing', displayName: 'Новое событие', transformFn: (data: AllTradesItem) => data.existing ? 'Да' : 'Нет'},
   ];
-  public displayedColumns: ColumnsSettings[] = [];
+  private readonly fixedColumns: ColumnsSettings[] = [
+    {
+      name: 'side_indicator',
+      displayName: '',
+      width: '5px',
+      classFn: data => `side-indicator bg-${data.side} ${data.side}`,
+      transformFn: () => '.'
+    }
+  ];
+
+  tableConfig$!: Observable<TableConfig<AllTradesItem>>;
 
   constructor(
     private readonly allTradesService: AllTradesService,
@@ -108,41 +120,16 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<AllTradesSettings>(this.guid)
       .pipe(
-        takeUntil(this.destroy$)
+        shareReplay(1)
       );
 
     this.initTrades();
+    this.initTableConfig();
 
-    this.settings$
-      .pipe(
-        mapWith(
-          () => this.translatorService.getTranslator('all-trades/all-trades'),
-          (settings, translate) => ({ settings, translate })
-        ),
-      )
-      .subscribe(({ settings, translate }) => {
-        this.displayedColumns = this.allColumns
-          .filter(col => settings.allTradesColumns.includes(col.name))
-          .map(col => ({
-              ...col,
-              displayName: translate(
-                ['columns', col.name, 'displayName'],
-                {fallback: col.displayName}
-              ),
-              filterData: col.filterData && {
-                ...col.filterData,
-                filters: col.filterData?.filters?.map(f => ({
-                  text: translate(
-                    ['columns', col.name, 'filters', f.value],
-                    { fallback: f.text }
-                  ),
-                  value: f.value
-                }))
-              }
-            })
-          );
-
-        this.applyFilter({
+    this.settings$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(settings => {
+      this.applyFilter({
         exchange: settings.exchange,
         symbol: settings.symbol,
         from: toUnixTimestampSeconds(startOfDay(new Date())),
@@ -215,6 +202,59 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         height: Math.floor(x.contentRect.height)
       });
     });
+  }
+
+  private initTableConfig() {
+    this.tableConfig$ = this.settings$.pipe(
+      mapWith(
+        () => this.translatorService.getTranslator('all-trades/all-trades'),
+        (settings, translate) => ({ settings, translate })
+      ),
+      map(({ settings, translate }) => {
+          const highlightRows = settings.highlightRowsBySide ?? false;
+
+          return {
+            columns: [
+              ...this.fixedColumns,
+              ...this.allColumns
+                .filter(col => settings.allTradesColumns.includes(col.name))
+                .map(col => ({
+                    ...col,
+                    displayName: translate(
+                      ['columns', col.name, 'displayName'],
+                      { fallback: col.displayName }
+                    ),
+                    filterData: col.filterData && {
+                      ...col.filterData,
+                      filters: col.filterData?.filters?.map(f => ({
+                        text: translate(
+                          ['columns', col.name, 'filters', f.value],
+                          { fallback: f.text }
+                        ),
+                        value: f.value
+                      }))
+                    }
+                  })
+                )
+            ],
+            rowConfig: {
+              rowClass: data => {
+                if (!highlightRows) {
+                  return null;
+                }
+
+                if (data.side === 'buy') {
+                  return 'buy-row';
+                }
+
+                return 'sell-row';
+              }
+            }
+          };
+
+        }
+      )
+    );
   }
 
   private updateFilters(update: (curr: AllTradesFilters) => AllTradesFilters) {

@@ -142,10 +142,10 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
       return;
     }
 
-    if (!!values?.price) {
+    if (!!values?.price && values.price !== Number(this.form?.get('price')?.value ?? 0)) {
       this.form!.get('price')?.setValue(values.price);
     }
-    if (!!values?.quantity) {
+    if (!!values?.quantity && values.quantity !== Number(this.form?.get('quantity')?.value ?? 0)) {
       this.form?.controls.quantity.setValue(values.quantity);
     }
     if (values?.withLimit) {

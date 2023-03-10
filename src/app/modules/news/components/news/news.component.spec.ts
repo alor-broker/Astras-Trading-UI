@@ -28,7 +28,7 @@ describe('NewsComponent', () => {
         NewsComponent,
         mockComponent({
           selector: 'ats-infinite-scroll-table',
-          inputs: ['data', 'isLoading', 'columns', 'tableContainerHeight', 'tableContainerWidth']
+          inputs: ['data', 'isLoading', 'tableConfig', 'tableContainerHeight', 'tableContainerWidth']
         })
       ],
       imports: [

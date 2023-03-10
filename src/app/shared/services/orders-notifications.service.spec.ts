@@ -1,17 +1,17 @@
 import { TestBed } from '@angular/core/testing';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { OrdersNotificationsService } from './orders-notifications.service';
+import { InstantNotificationsService } from './instant-notifications.service';
 
 describe('OrdersNotificationsService', () => {
   let service: OrdersNotificationsService;
-  const spy = jasmine.createSpyObj('NzNotificationService', ['info']);
+  const spy = jasmine.createSpyObj('InstantNotificationsService', ['showNotification']);
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         OrdersNotificationsService,
-        { provide: NzNotificationService, useValue: spy }
+        { provide: InstantNotificationsService, useValue: spy }
       ]
     });
 

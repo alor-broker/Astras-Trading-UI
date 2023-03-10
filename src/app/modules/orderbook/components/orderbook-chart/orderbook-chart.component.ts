@@ -50,7 +50,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
       tooltip: {
         callbacks: {
           label: (context) => {
-            return `Объем: ${context.formattedValue}; Цена: ${context.label}`;
+            return `Объем: ${context.parsed.y}; Цена: ${context.parsed.x}`;
           }
         }
       }
@@ -151,7 +151,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
       )
       .subscribe(t => {
         this.chartOptions.plugins!.tooltip!.callbacks!.label = (context) => {
-          return `${t(['volume'])}: ${context.formattedValue}; ${t(['price'])}: ${context.label}`;
+          return `${t(['volume'])}: ${context.parsed.y}; ${t(['price'])}: ${context.parsed.x}`;
         };
       });
   }

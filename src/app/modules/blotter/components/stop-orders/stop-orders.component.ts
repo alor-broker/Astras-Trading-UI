@@ -384,7 +384,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       this.filter,
       this.timezoneConverterService.getConverter()
     ]).pipe(
-      map(([orders, f, converter]) => orders.slice(0, 10)
+      map(([orders, f, converter]) => orders
         .map(o => ({
           ...o,
           residue: `0/${o.qty}`,
@@ -569,6 +569,10 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       );
     });
+  }
+
+  trackBy(index: number, order: DisplayOrder): string {
+    return order.id;
   }
 
   private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {

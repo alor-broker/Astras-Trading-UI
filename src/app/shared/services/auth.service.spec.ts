@@ -14,8 +14,12 @@ import { AuthService } from './auth.service';
 import { LocalStorageService } from "./local-storage.service";
 import { environment } from "../../../environments/environment";
 import { User } from "../models/user/user.model";
-import { take } from "rxjs";
+import {
+  Subject,
+  take
+} from "rxjs";
 import { ErrorHandlerService } from './handle-error/error-handler.service';
+import { BroadcastService } from './broadcast.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -72,6 +76,12 @@ describe('AuthService', () => {
           provide: ErrorHandlerService,
           useValue: {
             handleError: jasmine.createSpy('handleError').and.callThrough()
+          }
+        },
+        {
+          provide: BroadcastService,
+          useValue: {
+            subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
           }
         }
       ]

@@ -21,7 +21,7 @@ describe('AllTradesComponent', () => {
         AllTradesComponent,
         mockComponent({
           selector: 'ats-infinite-scroll-table',
-          inputs: ['tableContainerHeight', 'tableContainerWidth', 'data', 'isLoading', 'columns']
+          inputs: ['tableContainerHeight', 'tableContainerWidth', 'data', 'isLoading', 'tableConfig']
         })
       ],
       providers: [

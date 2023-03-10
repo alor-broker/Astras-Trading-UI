@@ -29,6 +29,7 @@
   "hardRebootWarningDesc": "A hard reset will delete all your settings, watchlists, widgets, and so on.",
   "yesBtnText": "Yes",
   "noBtnText": "No",
+  "notificationsTab": "Notifications",
 
   "hotkeysTab": "Hotkeys",
   "allOrderbooksHeader": "Common for all open orderbooks",
@@ -46,5 +47,7 @@
   "sellBestBid": "Sell best BID",
   "buyBestAsk": "Buy best ASK",
   "workingVolumesHeader": "Working volumes",
-  "selectWorkingVolumeLabel": "Select working volume"
+  "selectWorkingVolumeLabel": "Select working volume",
+
+  "noActivePortfolios": "No active portfolios"
 }

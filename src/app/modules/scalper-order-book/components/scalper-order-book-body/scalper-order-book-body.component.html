@@ -2,6 +2,8 @@
   <cdk-virtual-scroll-viewport
     (nzResizeObserve)="updateContentSize($event)"
     [itemSize]="rowHeight"
+    [minBufferPx]="rowHeight * 10"
+    [maxBufferPx]="rowHeight * 10"
     [orientation]="'vertical'"
     cdk-scrollable
     class="container show-scroll"
@@ -9,7 +11,7 @@
     <ng-container *ngIf="dataContext">
       <ng-container *ngIf="dataContext.orderBookBody$ | async as orderBookBody">
         <div id="spacer">
-          <div *cdkVirtualFor="let row of orderBookBody.bodyRows"
+          <div *cdkVirtualFor="let row of orderBookBody.bodyRows; templateCacheSize: 0"
                [style.height]="rowHeight + 'px'"
                [style.line-height]="rowHeight + 'px'"
           ></div>
@@ -31,5 +33,11 @@
       </ng-container>
     </ng-container>
   </cdk-virtual-scroll-viewport>
+    <div class="position-absolute top-0 end-0">
+      <ats-orders-indicator direction="up" [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"></ats-orders-indicator>
+    </div>
+    <div class="position-absolute bottom-0 end-0">
+      <ats-orders-indicator direction="down" [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"></ats-orders-indicator>
+    </div>
 </nz-spin>
 

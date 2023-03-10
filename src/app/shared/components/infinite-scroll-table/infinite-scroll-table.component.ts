@@ -19,20 +19,21 @@ import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
 import { debounceTime } from "rxjs/operators";
 import { ContextMenu } from "../../models/infinite-scroll-table.model";
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
+import { TableConfig } from '../../models/table-config.model';
 
 @Component({
-  selector: 'ats-infinite-scroll-table',
+  selector: 'ats-infinite-scroll-table[tableConfig]',
   templateUrl: './infinite-scroll-table.component.html',
   styleUrls: ['./infinite-scroll-table.component.less']
 })
 export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, OnDestroy, OnInit {
   private tableData: Array<any> = [];
 
-  @Input() public trackByFn = (data: any) => data.id;
-  @Input() public tableContainerHeight = 100;
-  @Input() public tableContainerWidth = 100;
-  @Input() public isLoading = false;
-  @Input() public columns: Array<ColumnsSettings> = [];
+  @Input() trackByFn = (data: any) => data.id;
+  @Input() tableContainerHeight = 100;
+  @Input() tableContainerWidth = 100;
+  @Input() isLoading = false;
+  @Input() tableConfig: TableConfig<any> | null = null;
   @Input() public contextMenu: Array<ContextMenu> = [];
 
   @Input() public set data(value: Array<any> ){
@@ -85,8 +86,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
       this.calculateScrollHeight();
     }
 
-    if (changes.columns?.currentValue) {
-      this.columns
+    if (changes.tableConfig?.currentValue) {
+      (this.tableConfig?.columns ?? [])
         .filter(col => !!col.filterData)
         .map(col => col.filterData!)
         .forEach(filter => {
@@ -112,7 +113,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   public getWidthArr() {
-    return this.columns.map(col => col.width || 'auto');
+    return (this.tableConfig?.columns ?? []).map(col => col.width || 'auto');
   }
 
   public getFilterControl(filterName: string): UntypedFormControl | null {

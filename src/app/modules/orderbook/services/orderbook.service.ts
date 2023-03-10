@@ -23,7 +23,6 @@ import {
 } from '../models/orderbook.model';
 import { Order } from 'src/app/shared/models/orders/order.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
-import { Side } from "../../../shared/models/enums/side.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { OrderBookDataFeedHelper } from "../utils/order-book-data-feed.helper";
@@ -61,7 +60,7 @@ export class OrderbookService {
       map(([ob, orders]) => {
         const withOrdersRows = ob.rows.map((row) => {
           const askOrders = !!row.ask
-            ? OrderBookDataFeedHelper.getCurrentOrdersForItem(row.ask, Side.Sell, orders)
+            ? OrderBookDataFeedHelper.getCurrentOrdersForItem(row.ask, orders)
             : [];
 
           const sumAsk = askOrders
@@ -69,7 +68,7 @@ export class OrderbookService {
             .reduce((prev, curr) => prev + curr, 0);
 
           const bidOrders = !!row.bid
-            ? OrderBookDataFeedHelper.getCurrentOrdersForItem(row.bid, Side.Buy, orders)
+            ? OrderBookDataFeedHelper.getCurrentOrdersForItem(row.bid, orders)
             : [];
 
           const sumBid = bidOrders
@@ -155,8 +154,8 @@ export class OrderbookService {
         };
       }
     }
-    const minPrice = Math.min(...bids.map(b => b.x));
-    const maxPrice = Math.max(...asks.map(a => a.x));
+    const minPrice = Math.min(...bids.map(b => b.x).filter(x => x > 0));
+    const maxPrice = Math.max(...asks.map(a => a.x).filter(x => x > 0));
     return {
       asks: asks.filter(x => x.x > 0),
       bids: bids.filter(x => x.x > 0),
