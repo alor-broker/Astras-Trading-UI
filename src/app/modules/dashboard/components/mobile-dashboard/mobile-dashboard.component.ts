@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { MobileDashboardService } from "../../services/mobile-dashboard.service";
+import { Widget } from "../../../../shared/models/dashboard/widget.model";
+import { WidgetsHelper } from "../../../../shared/utils/widgets";
 
 @Component({
   selector: 'ats-mobile-dashboard',
@@ -11,11 +12,11 @@ import { MobileDashboardService } from "../../services/mobile-dashboard.service"
 })
 export class MobileDashboardComponent implements OnInit {
 
-  widgets$!: Observable<Array<any>>;
+  widgets$!: Observable<Widget[]>;
+  widgetsHelper = new WidgetsHelper();
 
   constructor(
     private readonly dashboardContextService: DashboardContextService,
-    private readonly mobileDashboardService: MobileDashboardService
   ) {
   }
 
@@ -24,9 +25,5 @@ export class MobileDashboardComponent implements OnInit {
       .pipe(
         map(d => d.items)
       );
-  }
-
-  tabChange(tab: string) {
-    this.mobileDashboardService.changeDashboardTab(tab);
   }
 }

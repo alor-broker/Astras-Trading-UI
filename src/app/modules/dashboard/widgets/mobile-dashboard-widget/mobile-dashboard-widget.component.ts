@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subject } from "rxjs";
-import { OnboardingService } from "../../services/onboarding.service";
+import { fromEvent, Observable, Subject } from "rxjs";
 import { Store } from "@ngrx/store";
 import { initWidgetSettings } from "../../../../store/widget-settings/widget-settings.actions";
 import { PortfoliosActions } from "../../../../store/portfolios/portfolios.actions";
 import { MobileDashboardActions } from "../../../../store/mobile-dashboard/mobile-dashboard-actions";
-import { MobileDashboardService } from "../../services/mobile-dashboard.service";
+import { map, startWith } from "rxjs/operators";
 
 @Component({
   selector: 'ats-mobile-dashboard-widget',
@@ -18,9 +17,7 @@ export class MobileDashboardWidgetComponent implements OnInit, OnDestroy {
   screenHeight!: Observable<number>;
 
   constructor(
-    private readonly onboarding: OnboardingService,
-    private readonly store: Store,
-    private readonly mobileDashboardService: MobileDashboardService
+    private readonly store: Store
   ) {
   }
 
@@ -28,7 +25,11 @@ export class MobileDashboardWidgetComponent implements OnInit, OnDestroy {
     this.store.dispatch(initWidgetSettings());
     this.store.dispatch(PortfoliosActions.initPortfolios());
     this.store.dispatch(MobileDashboardActions.initMobileDashboard());
-    this.screenHeight = this.mobileDashboardService.getScreenHeight();
+    this.screenHeight = fromEvent(window, 'resize')
+      .pipe(
+        map(() => (window.screen.height / window.devicePixelRatio)),
+        startWith(window.screen.height / window.devicePixelRatio)
+      );
   }
 
   ngOnDestroy(): void {

@@ -21,6 +21,8 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
+import { WidgetsHelper } from "../../../../shared/utils/widgets";
+import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-tech-chart-widget[guid][isBlockWidget]',
@@ -56,7 +58,8 @@ export class TechChartWidgetComponent implements OnInit {
       'TechChartSettings',
       settings => ({
         ...settings,
-        chartSettings: {}
+        chartSettings: {},
+        titleIcon: new WidgetsHelper().getIconName(WidgetNames.techChart)
       }),
       this.dashboardContextService,
       this.widgetSettingsService

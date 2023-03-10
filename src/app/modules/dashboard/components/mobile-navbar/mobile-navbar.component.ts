@@ -2,21 +2,18 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable, shareReplay, Subject } from "rxjs";
 import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
 import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
-import { ThemeColors } from "../../../../shared/models/settings/theme-settings.model";
 import { FormControl, UntypedFormControl } from "@angular/forms";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { Store } from "@ngrx/store";
 import { AuthService } from "../../../../shared/services/auth.service";
 import { ModalService } from "../../../../shared/services/modal.service";
-import { ThemeService } from "../../../../shared/services/theme.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { filter, map } from "rxjs/operators";
 import { selectPortfoliosState } from "../../../../store/portfolios/portfolios.selectors";
 import { EntityStatus } from "../../../../shared/models/enums/entity-status";
 import { groupPortfoliosByAgreement } from "../../../../shared/utils/portfolios";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { MobileDashboardService } from "../../services/mobile-dashboard.service";
 
 @Component({
   selector: 'ats-mobile-navbar',
@@ -29,7 +26,6 @@ export class MobileNavbarComponent implements OnInit, OnDestroy {
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
   selectedDashboard$!: Observable<Dashboard>;
-  themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
 
   instrumentControl = new UntypedFormControl('');
@@ -41,9 +37,7 @@ export class MobileNavbarComponent implements OnInit, OnDestroy {
     private readonly dashboardContextService: DashboardContextService,
     private readonly store: Store,
     private readonly auth: AuthService,
-    private readonly modal: ModalService,
-    private readonly themeService: ThemeService,
-    private readonly mobileDashboardService: MobileDashboardService
+    private readonly modal: ModalService
   ) {
   }
 
@@ -78,10 +72,6 @@ export class MobileNavbarComponent implements OnInit, OnDestroy {
     this.activeInstrument$ = this.dashboardContextService.instrumentsSelection$.pipe(
       map(selection => selection[defaultBadgeColor])
     );
-
-    this.themeColors$ = this.themeService.getThemeSettings().pipe(
-      map(x => x.themeColors)
-    );
   }
 
   ngOnDestroy(): void {
@@ -108,7 +98,7 @@ export class MobileNavbarComponent implements OnInit, OnDestroy {
 
   changeInstrument(instrument: InstrumentKey | null) {
     if (instrument) {
-      this.dashboardContextService.selectDashboardInstrument(instrument, 'yellow');
+      this.dashboardContextService.selectDashboardInstrument(instrument, defaultBadgeColor);
       this.instrumentControl.setValue(null);
     }
   }

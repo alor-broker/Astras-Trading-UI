@@ -17,7 +17,7 @@ describe('MobileInstrumentsHistoryComponent', () => {
           provide: DashboardContextService,
           useValue: {
             instrumentsSelection$: of({}),
-            selectMobileDashboardInstrument: jasmine.createSpy('selectMobileDashboardInstrument').and.callThrough()
+            selectDashboardInstrument: jasmine.createSpy('selectDashboardInstrument').and.callThrough()
           }
         },
         {

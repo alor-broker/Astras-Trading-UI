@@ -3,7 +3,7 @@ import {
   OnDestroy,
   OnInit
 } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, take } from 'rxjs';
 import { OnboardingService } from '../../services/onboarding.service';
 import { initWidgetSettings } from '../../../../store/widget-settings/widget-settings.actions';
 import { ManageDashboardsActions } from '../../../../store/dashboards/dashboards-actions';
@@ -36,6 +36,7 @@ export class DashboardWidgetComponent implements OnInit, OnDestroy {
     this.store.dispatch(ManageDashboardsActions.initDashboards());
 
     this.deviceService.deviceInfo$
+      .pipe(take(1))
       .subscribe(info => {
         if (info.isMobile) {
           this.router.navigate(['mobile']);

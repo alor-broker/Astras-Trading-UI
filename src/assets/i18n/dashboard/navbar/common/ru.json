@@ -1,12 +1,9 @@
 {
-  "widgetsLabel": "Виджеты",
-  "orderLabel": "Заявка",
   "emptyPortfolioBtn": "Нет портфелей",
   "emptyPortfolioPopover": "Портфели с позициями отсутствуют.",
   "emptyPortfolioPopoverHint": "Вы можете перевести деньги или бумаги",
   "emptyPortfolioPopoverLink": "здесь",
   "searchPortfolioPlaceholder": "Поиск по портфелям",
-  "emptyHistoryLabel": "История поиска пуста",
   "profile": "Профиль",
   "reports": "Отчёты",
   "releases": "Релизы",

@@ -1,12 +1,9 @@
 {
-  "widgetsLabel": "Widgets",
-  "orderLabel": "Order",
   "emptyPortfolioBtn": "Portfolios are missing",
   "emptyPortfolioPopover": "There's no portfolios with active positions.",
   "emptyPortfolioPopoverHint": "You can transfer money or papers",
   "emptyPortfolioPopoverLink": "here",
   "searchPortfolioPlaceholder": "Search by portfolio",
-  "emptyHistoryLabel": "Search history is empty",
   "profile": "Profile",
   "reports": "Reports",
   "releases": "Releases",

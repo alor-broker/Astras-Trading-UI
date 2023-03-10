@@ -23,6 +23,8 @@ import {
   AllTradesSettings,
   allTradesWidgetColumns
 } from '../../models/all-trades-settings.model';
+import { WidgetsHelper } from "../../../../shared/utils/widgets";
+import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-all-trades-widget[guid][isBlockWidget]',
@@ -58,7 +60,8 @@ export class AllTradesWidgetComponent implements OnInit {
       settings => ({
         ...settings,
         allTradesColumns: allTradesWidgetColumns.filter(c => c.isDefault).map(col => col.columnId),
-        highlightRowsBySide: false
+        highlightRowsBySide: false,
+        titleIcon: new WidgetsHelper().getIconName(WidgetNames.allTrades)
       }),
       this.dashboardContextService,
       this.widgetSettingsService

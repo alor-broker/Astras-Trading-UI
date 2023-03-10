@@ -5,6 +5,7 @@ import { MobileDashboardService } from "../../services/mobile-dashboard.service"
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { map } from "rxjs/operators";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-mobile-instruments-history',
@@ -25,12 +26,12 @@ export class MobileInstrumentsHistoryComponent implements OnInit {
     this.instruments$ = this.mobileDashboardService.getInstrumentsHistory();
     this.selectedInstrument$ = this.dashboardContextService.instrumentsSelection$
       .pipe(
-        map(d => d.yellow)
+        map(d => d[defaultBadgeColor])
       );
   }
 
   selectInstrument(instrument: InstrumentKey) {
-    this.dashboardContextService.selectDashboardInstrument(instrument, 'yellow');
+    this.dashboardContextService.selectDashboardInstrument(instrument, defaultBadgeColor);
   }
 
   isInstrumentEqual(i1: InstrumentKey, i2: InstrumentKey) {

@@ -13,6 +13,8 @@ import {
   allInstrumentsColumns,
   AllInstrumentsSettings
 } from '../../model/all-instruments-settings.model';
+import { WidgetsHelper } from "../../../../shared/utils/widgets";
+import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-all-instruments-widget[guid][isBlockWidget]',
@@ -45,7 +47,8 @@ export class AllInstrumentsWidgetComponent implements OnInit {
       settings => ({
         ...settings,
         badgeColor: defaultBadgeColor,
-        allInstrumentsColumns: allInstrumentsColumns.filter(c => c.isDefault).map(col => col.columnId)
+        allInstrumentsColumns: allInstrumentsColumns.filter(c => c.isDefault).map(col => col.columnId),
+        titleIcon: new WidgetsHelper().getIconName(WidgetNames.allInstruments)
       }),
       this.widgetSettingsService
     );

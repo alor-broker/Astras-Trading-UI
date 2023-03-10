@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MobileDashboardComponent } from './mobile-dashboard.component';
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { of } from "rxjs";
-import { MobileDashboardService } from "../../services/mobile-dashboard.service";
 import { getTranslocoModule } from "../../../../shared/utils/testing";
 
 describe('MobileDashboardComponent', () => {
@@ -19,12 +18,6 @@ describe('MobileDashboardComponent', () => {
           provide: DashboardContextService,
           useValue: {
             selectedDashboard$: of({})
-          }
-        },
-        {
-          provide: MobileDashboardService,
-          useValue: {
-            changeDashboardTab: jasmine.createSpy('changeDashboardTab').and.callThrough()
           }
         }
       ]

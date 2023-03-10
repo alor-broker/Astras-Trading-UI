@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { distinctUntilChanged, from, shareReplay } from "rxjs";
+import { from, shareReplay } from "rxjs";
 import { NgxDeviceInfoService } from "ngx-device-info";
 
 @Injectable({
@@ -12,7 +12,6 @@ export class DeviceService {
 
   deviceInfo$ = from(this.deviceInfoService.getDeviceInfo())
     .pipe(
-      distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
       shareReplay(1)
     );
 }

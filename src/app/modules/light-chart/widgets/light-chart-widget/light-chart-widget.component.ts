@@ -25,6 +25,8 @@ import {
   LightChartSettings,
   TimeFrameDisplayMode
 } from '../../models/light-chart-settings.model';
+import { WidgetsHelper } from "../../../../shared/utils/widgets";
+import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-light-chart-widget[guid][isBlockWidget]',
@@ -66,7 +68,8 @@ export class LightChartWidgetComponent implements OnInit {
         timeFrame: TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value,
         timeFrameDisplayMode: TimeFrameDisplayMode.Buttons,
         width: 300,
-        height: 300
+        height: 300,
+        titleIcon: new WidgetsHelper().getIconName(WidgetNames.lightChart)
       }),
       this.dashboardContextService,
       this.widgetSettingsService

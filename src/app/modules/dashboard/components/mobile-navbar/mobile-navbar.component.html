@@ -1,4 +1,4 @@
-<nz-header *transloco="let t; scope: 'dashboard/navbar'" class="d-flex flex-direction-column">
+<nz-header *transloco="let t; scope: 'dashboard/navbar/common'" class="d-flex flex-direction-column">
   <div class="header-row d-flex align-items-center">
     <div class="logo">
       <a [routerLink]="['/']"></a>
@@ -34,14 +34,14 @@
           nzPopoverPlacement="bottom"
           [nzPopoverContent]="emptyPortfolioPopover"
         >
-          {{t('dashboardNavbar.emptyPortfolioBtn')}}
+          {{t('dashboardNavbarCommon.emptyPortfolioBtn')}}
         </button>
 
         <ng-template #emptyPortfolioPopover>
-          <p>{{t('dashboardNavbar.emptyPortfolioPopover')}}</p>
-          <p>{{t('dashboardNavbar.emptyPortfolioPopoverHint')}}
+          <p>{{t('dashboardNavbarCommon.emptyPortfolioPopover')}}</p>
+          <p>{{t('dashboardNavbarCommon.emptyPortfolioPopoverHint')}}
             <ats-external-link
-              href="https://lk.alor.ru/main">{{t('dashboardNavbar.emptyPortfolioPopoverLink')}}</ats-external-link>
+              href="https://lk.alor.ru/main">{{t('dashboardNavbarCommon.emptyPortfolioPopoverLink')}}</ats-external-link>
           </p>
         </ng-template>
       </ng-template>
@@ -53,7 +53,7 @@
               type="text"
               nz-input
               class="portfolio-search"
-              [placeholder]="t('dashboardNavbar.searchPortfolioPlaceholder')"
+              [placeholder]="t('dashboardNavbarCommon.searchPortfolioPlaceholder')"
               [formControl]="searchControl"
             />
           </li>
@@ -104,7 +104,7 @@
         <div class="menu-content">
           <ul nz-menu [nzMode]="'inline'" [nzInlineIndent]="0" class="actions-menu">
             <li nz-menu-item (click)="openTerminalSettings()" class='menu-item'>
-              <span><i nz-icon nzType="user" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbar.profile')}}</span></span>
+              <span><i nz-icon nzType="user" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbarCommon.profile')}}</span></span>
             </li>
             <li nz-menu-divider></li>
             <li nz-menu-item class='menu-item external-link'
@@ -112,7 +112,7 @@
               <span>
                 <i nz-icon nzType="audit" nzTheme="outline"></i>
                 <ng-container [ngTemplateOutlet]="externalLink"
-                              [ngTemplateOutletContext]="{name: t('dashboardNavbar.reports')}"></ng-container>
+                              [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.reports')}"></ng-container>
               </span>
             </li>
             <li nz-menu-divider></li>
@@ -121,7 +121,7 @@
               <span>
                 <i nz-icon nzType="history" nzTheme="outline"></i>
                 <ng-container [ngTemplateOutlet]="externalLink"
-                              [ngTemplateOutletContext]="{name: t('dashboardNavbar.releases')}"></ng-container>
+                              [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.releases')}"></ng-container>
               </span>
             </li>
             <li nz-menu-divider></li>
@@ -129,12 +129,12 @@
               <span>
                 <i nz-icon nzType="customer-service" nzTheme="outline"></i>
                 <ng-container [ngTemplateOutlet]="externalLink"
-                              [ngTemplateOutletContext]="{name: t('dashboardNavbar.support')}"></ng-container>
+                              [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.support')}"></ng-container>
               </span>
             </li>
             <li nz-menu-divider></li>
             <li nz-menu-item (click)="logout()" class='menu-item'>
-              <span><i nz-icon nzType="logout" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbar.exit')}}</span></span>
+              <span><i nz-icon nzType="logout" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbarCommon.exit')}}</span></span>
             </li>
           </ul>
 

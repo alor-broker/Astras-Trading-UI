@@ -25,7 +25,6 @@ import {
   TimeFrameDisplayMode
 } from '../../models/light-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { MobileDashboardService } from "../../../dashboard/services/mobile-dashboard.service";
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
@@ -57,8 +56,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly themeService: ThemeService,
     private readonly lightChartDatafeedFactoryService: LightChartDatafeedFactoryService,
-    private readonly translatorService: TranslatorService,
-    private readonly mobileDashboardService: MobileDashboardService
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -117,15 +115,13 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.timezoneConverterService.getConverter(),
       this.themeService.getThemeSettings(),
       this.translatorService.getLangChanges(),
-      this.mobileDashboardService.dashboardTab$
     ])
       .pipe(
-        map(([ws, c, t, l, mt]) => ({
+        map(([ws, c, t, l]) => ({
           widgetSettings: ws,
           converter: c,
           theme: t,
-          locale: l,
-          mobileDashboardTab: mt
+          locale: l
         })),
         filter(x => !!x.converter && !!x.widgetSettings),
         distinctUntilChanged((previous, current) =>
@@ -135,7 +131,6 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
               && previous.converter === current.converter
               && previous.theme?.theme === current.theme?.theme
               && previous.locale === current.locale
-              && previous.mobileDashboardTab === current.mobileDashboardTab
             )
         ),
         takeUntil(this.destroy$)
@@ -146,24 +141,20 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.setActiveTimeFrame(timeFrame);
 
-        setTimeout(() => {
-          try {
-            this.chart = LightChartWrapper.create({
-              containerId: this.guid,
-              instrumentKey: options.widgetSettings,
-              timeFrame: timeFrame,
-              instrumentDetails: {
-                priceMinStep: options.widgetSettings.minstep ?? 0.01
-              },
-              dataFeed: this.lightChartDatafeedFactoryService.getDatafeed(options.widgetSettings, timeFrame),
-              themeColors: options.theme.themeColors,
-              timeConvertor: {
-                toDisplayTime: time => options.converter.toTerminalUtcDate(time).getTime() / 1000
-              },
-              locale: options.locale
-            });
-          } catch (e) {}
-        }, 0);
+        this.chart = LightChartWrapper.create({
+          containerId: this.guid,
+          instrumentKey: options.widgetSettings,
+          timeFrame: timeFrame,
+          instrumentDetails: {
+            priceMinStep: options.widgetSettings.minstep ?? 0.01
+          },
+          dataFeed: this.lightChartDatafeedFactoryService.getDatafeed(options.widgetSettings, timeFrame),
+          themeColors: options.theme.themeColors,
+          timeConvertor: {
+            toDisplayTime: time => options.converter.toTerminalUtcDate(time).getTime() / 1000
+          },
+          locale: options.locale
+        });
       });
   }
 

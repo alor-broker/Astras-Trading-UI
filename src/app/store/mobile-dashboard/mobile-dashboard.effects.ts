@@ -26,6 +26,8 @@ import { InstrumentKey } from "../../shared/models/instruments/instrument-key.mo
 import { WidgetSettingsService } from "../../shared/services/widget-settings.service";
 import { WidgetNames } from "../../shared/models/enums/widget-names";
 import { Widget } from "../../shared/models/dashboard/widget.model";
+import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
+import { defaultBadgeColor } from "../../shared/utils/instruments";
 
 @Injectable()
 export class MobileDashboardEffects {
@@ -35,6 +37,7 @@ export class MobileDashboardEffects {
       map(() => {
         const dashboard = this.readMobileDashboardFromLocalStorage();
         const instrumentsHistory = this.readInstrumentsHistoryFromLocalStorage();
+        this.excludeTerminalSettings();
 
         return MobileDashboardActions.initMobileDashboardSuccess({
             mobileDashboard: dashboard,
@@ -119,7 +122,7 @@ export class MobileDashboardEffects {
       filter(d => !d!.instrumentsSelection),
       map(() => MobileDashboardActions.selectInstrument({
           selection: {
-            groupKey: 'yellow',
+            groupKey: defaultBadgeColor,
             instrumentKey: {
               symbol: 'SBER',
               exchange: 'MOEX',
@@ -163,7 +166,8 @@ export class MobileDashboardEffects {
     private readonly store: Store,
     private readonly dashboardService: ManageDashboardsService,
     private readonly marketService: MarketService,
-    private readonly widgetSettingsService: WidgetSettingsService
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly terminalSettingsService: TerminalSettingsService
   ) {
   }
 
@@ -204,5 +208,17 @@ export class MobileDashboardEffects {
         take(1),
       )
       .subscribe(() => this.widgetSettingsService.updateSettings(widget.guid, settingsToUpdate));
+  }
+
+  private excludeTerminalSettings() {
+    this.terminalSettingsService.getSettings()
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => {
+        if (!s.excludedSettings?.length) {
+          this.terminalSettingsService.updateSettings({ excludedSettings: ['hotKeysSettings'] });
+        }
+      });
   }
 }

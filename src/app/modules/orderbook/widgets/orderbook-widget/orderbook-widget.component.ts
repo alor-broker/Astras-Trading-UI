@@ -21,6 +21,8 @@ import {
 } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { OrderbookSettings } from '../../models/orderbook-settings.model';
+import { WidgetsHelper } from "../../../../shared/utils/widgets";
+import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-orderbook-widget[guid][isBlockWidget]',
@@ -62,7 +64,8 @@ export class OrderbookWidgetComponent implements OnInit {
         showTable: true,
         showYieldForBonds: false,
         useOrderWidget: false,
-        showVolume: false
+        showVolume: false,
+        titleIcon: new WidgetsHelper().getIconName(WidgetNames.orderBook)
       }),
       this.dashboardContextService,
       this.widgetSettingsService

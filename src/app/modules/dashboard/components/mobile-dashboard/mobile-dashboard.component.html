@@ -6,14 +6,22 @@
     class="mobile-dashboard-menu"
     [nzAnimated]="false"
   >
-    <nz-tab *ngFor="let widget of widgets" [nzTitle]="titleTemplate" (nzClick)="tabChange(widget.widgetType)">
+    <nz-tab
+      *ngFor="let widget of widgets"
+      nzForceRender
+      [nzTitle]="titleTemplate"
+    >
       <ng-template #titleTemplate>
         <div class="d-flex flex-direction-column" [class.new-order]="widget.widgetType === 'order-submit'">
-          <i nz-icon [nzType]="widget.icon" class="widget-icon" nzTheme="outline"></i>
+          <i nz-icon nzType="plus-circle" class="widget-icon" nzTheme="outline" *ngIf="widget.widgetType === 'order-submit'; else widgetIcon"></i>
+          <ng-template #widgetIcon>
+            <i nz-icon [nzType]="widgetsHelper.getIconName(widget.widgetType)" class="widget-icon" nzTheme="outline"></i>
+          </ng-template>
+
           <div class="widget-label">
             <ng-container *ngIf="widget.widgetType === 'order-submit'; else widgetLabel">
-              <span *transloco="let tDashboard; scope: 'dashboard/navbar'">
-                {{tDashboard('dashboardNavbar.orderLabel')}}
+              <span *transloco="let tDashboard; scope: 'dashboard/mobile-dashboard'">
+                {{tDashboard('dashboardMobileDashboard.orderLabel')}}
               </span>
             </ng-container>
             <ng-template #widgetLabel>

@@ -87,6 +87,8 @@ export class ManageDashboardsService {
     this.localStorage.removeItem('profile');
     this.localStorage.removeItem('feedback');
     this.localStorage.removeItem('dashboards-collection');
+    this.localStorage.removeItem('mobile-dashboard');
+    this.localStorage.removeItem('instruments-history');
 
     // obsolete keys. Used only for backward compatibility
     this.localStorage.removeItem('instruments');
@@ -160,62 +162,52 @@ export class ManageDashboardsService {
       {
         guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.orderSubmit,
-        position: { x: 0, y: 0, cols: 1, rows: 1 },
-        icon: 'plus-circle',
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
       {
         guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.blotter,
-        position: { x: 0, y: 0, cols: 1, rows: 1 },
-        icon: 'table',
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
       {
         guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.orderBook,
-        position: { x: 0, y: 0, cols: 1, rows: 1 },
-        icon: 'ordered-list'
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
       {
         guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.lightChart,
-        position: { x: 0, y: 0, cols: 1, rows: 1 },
-        icon: 'sliders'
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
       {
         guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.allInstruments,
-        position: { x: 0, y: 0, cols: 1, rows: 1 },
-        icon: 'profile'
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
       {
         guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.allTrades,
-        position: { x: 0, y: 0, cols: 1, rows: 1 },
-        icon: 'unordered-list'
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
       {
         guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.ordersBasket,
-        position: { x: 0, y: 0, cols: 1, rows: 1 },
-        icon: 'calculator'
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
       {
         guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.instrumentInfo,
-        position: { x: 0, y: 0, cols: 1, rows: 1 },
-        icon: 'info'
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
       {
         guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.exchangeRate,
-        position: { x: 0, y: 0, cols: 1, rows: 1 },
-        icon: 'line-chart'
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
       {
         guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.news,
-        position: { x: 0, y: 0, cols: 1, rows: 1 },
-        icon: 'read'
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       }
     ];
   }

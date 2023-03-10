@@ -11,5 +11,4 @@ export interface Widget {
   position: DashboardItemPosition;
 
   initialSettings?: any;
-  icon?: string;
 }

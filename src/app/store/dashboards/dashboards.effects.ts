@@ -45,6 +45,7 @@ import {
 } from './dashboards-actions';
 import { InstrumentKey } from '../../shared/models/instruments/instrument-key.model';
 import { instrumentsBadges } from '../../shared/utils/instruments';
+import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
 
 type ObsoleteItemFormat = {
   guid: string,
@@ -58,6 +59,7 @@ export class DashboardsEffects {
       ofType(ManageDashboardsActions.initDashboards),
       map(() => {
         const dashboards = this.readDashboardsFromLocalStorage();
+        this.includeTerminalSettings();
 
         return ManageDashboardsActions.initDashboardsSuccess({
             dashboards: dashboards ?? []
@@ -212,7 +214,9 @@ export class DashboardsEffects {
     private readonly localStorage: LocalStorageService,
     private readonly store: Store,
     private readonly dashboardService: ManageDashboardsService,
-    private readonly marketService: MarketService) {
+    private readonly marketService: MarketService,
+    private readonly terminalSettingsService: TerminalSettingsService
+  ) {
   }
 
   private readDashboardsFromLocalStorage(): Dashboard[] | undefined {
@@ -267,5 +271,17 @@ export class DashboardsEffects {
       },
       {} as InstrumentGroups
     );
+  }
+
+  private includeTerminalSettings() {
+    this.terminalSettingsService.getSettings()
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => {
+        if (s.excludedSettings?.length) {
+          this.terminalSettingsService.updateSettings({ excludedSettings: [] });
+        }
+      });
   }
 }

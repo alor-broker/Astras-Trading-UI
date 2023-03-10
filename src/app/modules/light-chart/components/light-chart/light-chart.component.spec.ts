@@ -11,7 +11,6 @@ import { InstrumentsService } from '../../../instruments/services/instruments.se
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { LightChartDatafeedFactoryService } from '../../services/light-chart-datafeed-factory.service';
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { MobileDashboardService } from "../../../dashboard/services/mobile-dashboard.service";
 
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
@@ -72,8 +71,7 @@ describe('LightChartComponent', () => {
           useValue: {
             getLangChanges: jasmine.createSpy('getLangChanges').and.returnValue(of('ru'))
           }
-        },
-        { provide: MobileDashboardService, useValue: { dashboardTab$: of('') } }
+        }
       ]
     }).compileComponents();
   });

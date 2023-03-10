@@ -11,6 +11,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { OrdersBasketSettings } from '../../models/orders-basket-settings.model';
+import { WidgetsHelper } from "../../../../shared/utils/widgets";
+import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-orders-basket-widget[guid][isBlockWidget]',
@@ -38,7 +40,8 @@ export class OrdersBasketWidgetComponent implements OnInit {
       this.guid,
       'OrdersBasketSettings',
       settings => ({
-        ...settings
+        ...settings,
+        titleIcon: new WidgetsHelper().getIconName(WidgetNames.ordersBasket)
       }),
       this.dashboardContextService,
       this.widgetSettingsService

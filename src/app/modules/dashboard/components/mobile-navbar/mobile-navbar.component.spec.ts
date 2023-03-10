@@ -23,8 +23,8 @@ describe('MobileNavbarComponent', () => {
           useValue: {
             selectedDashboard$: of({}),
             instrumentsSelection$: of({}),
-            selectMobileDashboardPortfolio: jasmine.createSpy('selectMobileDashboardPortfolio').and.callThrough(),
-            selectMobileDashboardInstrument: jasmine.createSpy('selectMobileDashboardInstrument').and.callThrough()
+            selectDashboardPortfolio: jasmine.createSpy('selectDashboardPortfolio').and.callThrough(),
+            selectDashboardInstrument: jasmine.createSpy('selectDashboardInstrument').and.callThrough()
           }
         },
         {
