@@ -1,7 +1,7 @@
 import { WidgetNames } from "../models/enums/widget-names";
 
 export class WidgetsHelper {
-  getIconName(widgetName: WidgetNames): string {
+  static getIconName(widgetName: WidgetNames): string {
     switch (widgetName) {
       case WidgetNames.instrumentSelect:
         return 'eye';

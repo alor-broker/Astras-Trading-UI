@@ -18,7 +18,7 @@ export class WidgetMenuComponent implements OnInit {
   @Output() public resetDashboard = new EventEmitter<void>();
 
   public widgetNames = WidgetNames;
-  public widgetsHelper = new WidgetsHelper();
+  public widgetsHelper = WidgetsHelper;
   public isMobile$!: Observable<boolean>;
 
   constructor(

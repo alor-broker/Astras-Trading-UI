@@ -20,8 +20,6 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
-import { WidgetsHelper } from "../../../../shared/utils/widgets";
-import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-order-submit-widget[guid][isBlockWidget]',
@@ -60,8 +58,7 @@ export class OrderSubmitWidgetComponent implements OnInit {
         enableLimitOrdersFastEditing: false,
         limitOrderPriceMoveSteps: [1, 2, 5, 10],
         showVolumePanel: false,
-        workingVolumes: [1, 5, 10, 20, 30, 40, 50, 100, 200],
-        titleIcon: new WidgetsHelper().getIconName(WidgetNames.orderSubmit)
+        workingVolumes: [1, 5, 10, 20, 30, 40, 50, 100, 200]
       }),
       this.dashboardContextService,
       this.widgetSettingsService

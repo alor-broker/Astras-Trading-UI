@@ -30,8 +30,6 @@ import {
   allTradesColumns,
   BlotterSettings
 } from '../../models/blotter-settings.model';
-import { WidgetsHelper } from "../../../../shared/utils/widgets";
-import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-blotter-widget[guid][isBlockWidget]',
@@ -77,8 +75,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
         stopOrdersTable: TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId)),
         badgeColor: defaultBadgeColor,
         isSoldPositionsHidden: true,
-        cancelOrdersWithoutConfirmation: false,
-        titleIcon: new WidgetsHelper().getIconName(WidgetNames.blotter)
+        cancelOrdersWithoutConfirmation: false
       }),
       this.dashboardContextService,
       this.widgetSettingsService

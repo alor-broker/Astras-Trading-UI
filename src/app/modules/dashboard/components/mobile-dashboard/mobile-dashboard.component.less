@@ -1,3 +1,13 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .new-order {
+      border-right: 1px solid @border-color-base;
+    }
+  }
+});
+
 :host ::ng-deep {
   .mobile-dashboard-menu .ant-tabs-nav-operations, .ant-tabs-ink-bar {
     display: none !important;
@@ -14,7 +24,6 @@
 
   .new-order {
     padding: 0 10px;
-    border-right: #272E3B solid 1px;
   }
 
   .widget-label {

@@ -22,8 +22,6 @@ import {
 } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InfoSettings } from '../../models/info-settings.model';
-import { WidgetsHelper } from "../../../../shared/utils/widgets";
-import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-info-widget[guid][isBlockWidget]',
@@ -58,7 +56,6 @@ export class InfoWidgetComponent implements OnInit {
       'InfoSettings',
       settings => ({
         ...settings,
-        titleIcon: new WidgetsHelper().getIconName(WidgetNames.instrumentInfo)
       }),
       this.dashboardContextService,
       this.widgetSettingsService

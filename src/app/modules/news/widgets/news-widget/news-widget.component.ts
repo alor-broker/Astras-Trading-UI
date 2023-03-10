@@ -6,8 +6,6 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { NewsSettings } from '../../models/news-settings.model';
-import { WidgetsHelper } from "../../../../shared/utils/widgets";
-import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-news-widget[guid][isBlockWidget]',
@@ -29,8 +27,7 @@ export class NewsWidgetComponent implements OnInit {
       this.guid,
       'NewsSettings',
       settings => ({
-        ...settings,
-        titleIcon: new WidgetsHelper().getIconName(WidgetNames.news)
+        ...settings
       }),
       this.widgetSettingsService
     );

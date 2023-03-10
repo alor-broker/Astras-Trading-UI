@@ -13,7 +13,7 @@ import { WidgetsHelper } from "../../../../shared/utils/widgets";
 export class MobileDashboardComponent implements OnInit {
 
   widgets$!: Observable<Widget[]>;
-  widgetsHelper = new WidgetsHelper();
+  widgetsHelper = WidgetsHelper;
 
   constructor(
     private readonly dashboardContextService: DashboardContextService,

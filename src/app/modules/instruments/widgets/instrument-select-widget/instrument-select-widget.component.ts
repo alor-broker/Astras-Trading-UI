@@ -14,8 +14,6 @@ import {
   allInstrumentsColumns,
   InstrumentSelectSettings
 } from '../../models/instrument-select-settings.model';
-import { WidgetsHelper } from "../../../../shared/utils/widgets";
-import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-instrument-select-widget[guid][isBlockWidget]',
@@ -49,7 +47,7 @@ export class InstrumentSelectWidgetComponent implements OnInit {
       settings => ({
         ...settings,
         title: `Выбор инструмента`,
-        titleIcon: new WidgetsHelper().getIconName(WidgetNames.instrumentSelect),
+        titleIcon: 'eye',
         instrumentColumns: allInstrumentsColumns.filter(c => c.isDefault).map(c => c.columnId),
         badgeColor: defaultBadgeColor
       }),

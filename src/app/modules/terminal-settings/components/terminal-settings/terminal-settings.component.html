@@ -12,7 +12,7 @@
       <nz-tab (nzSelect)="tabChange.emit(tabNames.main)" *ngIf="settingsForm"
               [nzTitle]="t('terminalSettings.generalHeader')">
         <ng-container *ngIf="getFormControl('generalSettings') as generalSettings">
-          <ats-general-settings-form [formControl]="generalSettings"></ats-general-settings-form>
+          <ats-general-settings-form [excludedSettings]="excludedSettings" [formControl]="generalSettings"></ats-general-settings-form>
         </ng-container>
         <ng-container *ngIf="getFormControl('portfoliosCurrency') as portfoliosCurrency">
           <h3>{{t('terminalSettings.defaultCurrencyHeader')}}</h3>

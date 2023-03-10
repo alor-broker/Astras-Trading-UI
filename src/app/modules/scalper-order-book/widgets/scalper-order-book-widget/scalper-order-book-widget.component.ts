@@ -23,8 +23,6 @@ import {
   ScalperOrderBookSettings,
   VolumeHighlightMode
 } from '../../models/scalper-order-book-settings.model';
-import { WidgetsHelper } from "../../../../shared/utils/widgets";
-import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 @Component({
   selector: 'ats-scalper-order-book-widget[guid][isBlockWidget]',
@@ -65,7 +63,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
       settings => ({
         ...settings,
         title: `Скальперский стакан`,
-        titleIcon: new WidgetsHelper().getIconName(WidgetNames.scalperOrderBook),
+        titleIcon: 'ordered-list',
         depth: 10,
         showZeroVolumeItems: true,
         showSpreadItems: true,

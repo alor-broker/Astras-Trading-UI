@@ -9,8 +9,6 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { Observable } from 'rxjs';
 import { ExchangeRateSettings } from '../../models/exchange-rate-settings.model';
-import { WidgetsHelper } from "../../../../shared/utils/widgets";
-import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 
 
 @Component({
@@ -36,7 +34,6 @@ export class ExchangeRateWidgetComponent implements OnInit {
       'ExchangeRateSettings',
       settings => ({
         ...settings,
-        titleIcon: new WidgetsHelper().getIconName(WidgetNames.exchangeRate)
       }),
       this.widgetSettingsService
     );

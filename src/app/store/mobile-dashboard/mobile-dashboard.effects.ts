@@ -217,7 +217,7 @@ export class MobileDashboardEffects {
       )
       .subscribe(s => {
         if (!s.excludedSettings?.length) {
-          this.terminalSettingsService.updateSettings({ excludedSettings: ['hotKeysSettings'] });
+          this.terminalSettingsService.updateSettings({ excludedSettings: ['hotKeysSettings', 'badgesBind'] });
         }
       });
   }
