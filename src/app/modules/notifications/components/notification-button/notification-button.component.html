@@ -1,31 +1,17 @@
-<ng-container *ngIf="deviceInfo$ | async as deviceInfo">
-  <nz-badge
-    *ngIf="!deviceInfo.isMobile"
-    [(nzPopoverVisible)]="isTableVisible"
-    [nzCount]="(notReadNotificationsCount$ | async) || 0"
-    [nzOffset]="[-2, 10]"
-    [nzPopoverContent]="contentTemplate"
-    [nzPopoverTitle]="titleTemplate"
-    nz-popover
-    nzPopoverPlacement="bottomRight"
-    nzPopoverTrigger="click"
-  >
-    <button nz-button [nzType]="'text'">
-      <i nz-icon nzType="ats-bell"></i>
-    </button>
-  </nz-badge>
-
-  <nz-badge
-    *ngIf="deviceInfo.isMobile"
-    [nzCount]="(notReadNotificationsCount$ | async) || 0"
-    [nzOffset]="[-10, 5]"
-    nzSize="small"
-  >
-    <button nz-button [nzType]="'text'" class="mobile-notifications-btn">
-      <i nz-icon nzType="ats-bell"></i>
-    </button>
-  </nz-badge>
-</ng-container>
+<nz-badge
+  [(nzPopoverVisible)]="isTableVisible"
+  [nzCount]="(notReadNotificationsCount$ | async) || 0"
+  [nzOffset]="[-2, 10]"
+  [nzPopoverContent]="contentTemplate"
+  [nzPopoverTitle]="titleTemplate"
+  nz-popover
+  nzPopoverPlacement="bottomRight"
+  nzPopoverTrigger="click"
+>
+  <button nz-button [nzType]="'text'">
+    <i nz-icon nzType="ats-bell"></i>
+  </button>
+</nz-badge>
 
 <ng-template #titleTemplate>
   <div class="dialog-title" *transloco="let t; scope: 'notifications'">

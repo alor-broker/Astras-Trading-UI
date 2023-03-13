@@ -28,6 +28,7 @@ import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { inputNumberValidation } from '../../../../shared/utils/validation-options';
 import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
+import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
   selector: 'ats-order-submit-settings[settingsChange][guid]',
@@ -41,6 +42,7 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
   exchanges: string[] = exchangesList;
+  deviceInfo$!: Observable<any>;
 
   readonly validationOptions = {
     limitOrderPriceMoveStep: {
@@ -56,10 +58,18 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<OrderSubmitSettings>;
 
-  constructor(private readonly settingsService: WidgetSettingsService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly deviceService: DeviceService
+  ) {
   }
 
   ngOnInit() {
+    this.deviceInfo$ = this.deviceService.deviceInfo$
+      .pipe(
+        take(1)
+      );
+
     this.settings$ = this.settingsService.getSettings<OrderSubmitSettings>(this.guid).pipe(
       shareReplay(1)
     );

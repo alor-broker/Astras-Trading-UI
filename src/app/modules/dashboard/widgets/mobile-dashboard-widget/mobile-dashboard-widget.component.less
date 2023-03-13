@@ -1,0 +1,48 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .content ::ng-deep {
+      background-color: @component-background;
+      color: @text-color;
+    }
+  }
+});
+
+nz-layout {
+  height: 100%;
+}
+
+:host ::ng-deep {
+  .title-icon, .close-btn, .link-to-active-btn {
+    display: none;
+  }
+
+  .title-text {
+    font-size: 15px;
+  }
+
+  .content-wrapper {
+    height: 100%;
+
+    .fixed-height {
+      flex: 0;
+    }
+
+    .instruments-history {
+      width: 100%;
+    }
+
+    .content {
+      flex: 1;
+      overflow: hidden;
+
+      ats-mobile-footer {
+        height: 100%;
+        display: block;
+      }
+    }
+  }
+}
+
+

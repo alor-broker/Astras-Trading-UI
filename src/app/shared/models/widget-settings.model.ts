@@ -5,6 +5,7 @@ export interface WidgetSettings {
   settingsType?: string;
   badgeColor?: string;
   titleIcon?: string;
+  excludedFields?: string[]
 
   [key:string]:any;
 }

@@ -29,7 +29,6 @@ import {
 import { EntityStatus } from '../../../../shared/models/enums/entity-status';
 import { FormControl } from "@angular/forms";
 import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios';
-import { DeviceService } from "../../../../shared/services/device.service";
 import { ManageDashboardsService } from '../../../../shared/services/manage-dashboards.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { TranslatorService } from '../../../../shared/services/translator.service';
@@ -47,7 +46,6 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
   styleUrls: ['./navbar.component.less'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  deviceInfo$!: Observable<{ isMobile: boolean }>;
   isSideMenuVisible = false;
 
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
@@ -68,14 +66,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private readonly auth: AuthService,
     private readonly modal: ModalService,
     private readonly themeService: ThemeService,
-    private readonly deviceService: DeviceService,
     private readonly translatorService: TranslatorService
   ) {
   }
 
   ngOnInit(): void {
-    this.deviceInfo$ = this.deviceService.deviceInfo$;
-
     this.selectedDashboard$ = this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
       mapWith(() => this.dashboardContextService.selectedDashboard$, (t, d) => ({ t, d })),
       map(({ t, d }) => ({
