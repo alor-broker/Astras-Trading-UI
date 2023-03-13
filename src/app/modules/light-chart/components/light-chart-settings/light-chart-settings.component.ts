@@ -29,6 +29,7 @@ import {
   LightChartSettings,
   TimeFrameDisplayMode
 } from '../../models/light-chart-settings.model';
+import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
   selector: 'ats-light-chart-settings[guid]',
@@ -43,15 +44,23 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   form!: UntypedFormGroup;
   timeFrames: Timeframe[];
   timeFrameDisplayModes = TimeFrameDisplayMode;
-  excludedFields: string[] = [];
+  deviceInfo$!: Observable<any>;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<LightChartSettings>;
 
-  constructor(private readonly settingsService: WidgetSettingsService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly deviceService: DeviceService
+  ) {
     this.timeFrames = TimeframesHelper.timeFrames;
   }
 
   ngOnInit() {
+    this.deviceInfo$ = this.deviceService.deviceInfo$
+      .pipe(
+        take(1)
+      );
+
     this.settings$ = this.settingsService.getSettings<LightChartSettings>(this.guid).pipe(
       shareReplay(1)
     );
@@ -59,8 +68,6 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
-      this.excludedFields = settings.excludedFields ?? [];
-
       this.form = new UntypedFormGroup({
         instrument: new UntypedFormControl({
           symbol: settings.symbol,

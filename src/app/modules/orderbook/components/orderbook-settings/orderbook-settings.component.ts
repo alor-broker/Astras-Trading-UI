@@ -24,6 +24,7 @@ import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { OrderbookSettings } from '../../models/orderbook-settings.model';
+import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
   selector: 'ats-orderbook-settings[settingsChange][guid]',
@@ -44,15 +45,24 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
   exchanges: string[] = exchangesList;
-  excludedFields: string[] = [];
+  deviceInfo$!: Observable<any>;
+
   private settings$!: Observable<OrderbookSettings>;
 
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly settingsService: WidgetSettingsService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly deviceService: DeviceService
+  ) {
   }
 
   ngOnInit() {
+    this.deviceInfo$ = this.deviceService.deviceInfo$
+      .pipe(
+        take(1)
+      );
+
     this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
       shareReplay(1)
     );
@@ -60,8 +70,6 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(settings => {
-      this.excludedFields = settings.excludedFields ?? [];
-
       this.form = new UntypedFormGroup({
         instrument: new UntypedFormControl({
           symbol: settings.symbol,

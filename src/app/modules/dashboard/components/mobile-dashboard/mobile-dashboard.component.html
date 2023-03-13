@@ -5,6 +5,7 @@
     nzSize="large"
     class="mobile-dashboard-menu"
     [nzAnimated]="false"
+    [(nzSelectedIndex)]="selectedTabIndex"
   >
     <nz-tab
       *ngFor="let widget of widgets"

@@ -1,13 +1,13 @@
 <ng-container *transloco="let t; scope: 'light-chart/settings'">
   <p>{{t('settingsHeader')}}</p>
-  <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
-    <nz-form-item *ngIf="!excludedFields.includes('instrument')">
+  <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()" *ngIf="deviceInfo$ | async as deviceInfo">
+    <nz-form-item *ngIf="!deviceInfo.isMobile">
       <nz-form-control [nzErrorTip]="t('lightChartSettings.tickerError')">
         <nz-form-label nzRequired nzFor="instrument">{{t('lightChartSettings.tickerLabel')}}</nz-form-label>
         <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item *ngIf="!excludedFields.includes('exchange')">
+    <nz-form-item *ngIf="!deviceInfo.isMobile">
       <nz-form-control>
         <nz-form-label nzRequired nzFor="exchange">{{t('lightChartSettings.exchangeLabel')}}</nz-form-label>
         <input formControlName='exchange' nz-input>

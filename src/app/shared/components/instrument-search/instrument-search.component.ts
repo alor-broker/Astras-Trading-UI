@@ -48,13 +48,12 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   @Input()
   exchange?: string;
   filteredInstruments$: Observable<Instrument[]> = of([]);
-  currentValue?: InstrumentKey | null;
   selectedValue?: InstrumentKey | null;
   @Output()
   instrumentSelected = new EventEmitter<InstrumentKey | null>();
   isMobile$!: Observable<boolean>;
 
-  searchControl = new FormControl();
+  searchControl = new FormControl<string | null>(null);
 
   @Output()
 
@@ -128,9 +127,8 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   }
 
   writeValue(value: InstrumentKey): void {
-    this.currentValue = value;
-    this.selectedValue = this.currentValue;
     this.searchControl.setValue(value?.symbol);
+    this.selectedValue = value;
   }
 
   checkInstrumentSelection() {

@@ -39,6 +39,7 @@ import {
   BlotterSettings,
   ColumnIds
 } from '../../models/blotter-settings.model';
+import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
   selector: 'ats-blotter-settings[guid]',
@@ -57,20 +58,26 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   allPositionsColumns: ColumnIds[] = allPositionsColumns;
   prevSettings?: BlotterSettings;
   exchanges: string[] = exchangesList;
-  excludedFields: string[] = [];
 
   availablePortfolios$!: Observable<Map<string, PortfolioExtended[]>>;
+  deviceInfo$!: Observable<any>;
 
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<BlotterSettings>;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly deviceService: DeviceService
   ) {
   }
 
   ngOnInit() {
+    this.deviceInfo$ = this.deviceService.deviceInfo$
+      .pipe(
+        take(1)
+      );
+
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       shareReplay(1)
     );
@@ -80,7 +87,6 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
     ).subscribe(settings => {
       if (settings) {
         this.prevSettings = settings;
-        this.excludedFields = settings.excludedFields ?? [];
 
         this.form = new UntypedFormGroup({
           portfolio: new UntypedFormControl(this.toPortfolioKey(settings), Validators.required),

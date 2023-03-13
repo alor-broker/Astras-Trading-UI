@@ -15,6 +15,11 @@ export class MobileDashboardComponent implements OnInit {
   widgets$!: Observable<Widget[]>;
   widgetsHelper = WidgetsHelper;
 
+  selectedTabIndex = 1;
+  selectedTabIndexChange(index: number) {
+    this.selectedTabIndex = index;
+  }
+
   constructor(
     private readonly dashboardContextService: DashboardContextService,
   ) {

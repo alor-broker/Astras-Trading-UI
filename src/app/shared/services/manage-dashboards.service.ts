@@ -166,6 +166,11 @@ export class ManageDashboardsService {
       },
       {
         guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.instrumentInfo,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.blotter,
         position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
@@ -181,6 +186,11 @@ export class ManageDashboardsService {
       },
       {
         guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.news,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.allInstruments,
         position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
@@ -191,22 +201,12 @@ export class ManageDashboardsService {
       },
       {
         guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.ordersBasket,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.instrumentInfo,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.exchangeRate,
         position: { x: 0, y: 0, cols: 1, rows: 1 }
       },
       {
         guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.news,
+        widgetType: WidgetNames.ordersBasket,
         position: { x: 0, y: 0, cols: 1, rows: 1 }
       }
     ];
