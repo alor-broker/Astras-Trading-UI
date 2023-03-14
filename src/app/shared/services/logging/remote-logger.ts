@@ -106,35 +106,37 @@ export class RemoteLogger extends LoggerBase {
     try {
       const config = this.getConfig()!;
 
-      const data = this.buffer.splice(0);
+      do {
+        const data = this.buffer.splice(0, 5);
 
-      if (data.length === 0) {
-        return;
-      }
-
-      const indexName = 'astras';
-
-      const bulkData = data.reduce((previousValue, currentValue) => {
-          return [
-            ...previousValue,
-            { index: { _index: indexName } },
-            currentValue
-          ];
-        },
-        [] as any[]
-      );
-
-
-      this.httpClient.post(
-        `${config.loggingServerUrl}/_bulk`,
-        bulkData.map(x => JSON.stringify(x)).join('\n') + '\n',
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Basic ${btoa(`${config.authorization.name}:${config.authorization.password}`)}`
-          }
+        if (data.length === 0) {
+          return;
         }
-      ).subscribe();
+
+        const indexName = 'astras';
+
+        const bulkData = data.reduce((previousValue, currentValue) => {
+            return [
+              ...previousValue,
+              { index: { _index: indexName } },
+              currentValue
+            ];
+          },
+          [] as any[]
+        );
+
+
+        this.httpClient.post(
+          `${config.loggingServerUrl}/_bulk`,
+          bulkData.map(x => JSON.stringify(x)).join('\n') + '\n',
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Basic ${btoa(`${config.authorization.name}:${config.authorization.password}`)}`
+            }
+          }
+        ).subscribe();
+      } while (true);
     } catch (e) {
       console.error(e);
     }
