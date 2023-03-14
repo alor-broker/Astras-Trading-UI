@@ -69,7 +69,7 @@ export class RemoteLogger extends LoggerBase {
   logMessage(logLevel: LogLevel, message: string, stack?: string): void {
     try {
       const config = this.getConfig();
-      if (!config) {
+      if (!config || !this.isLoggerEnabled(config)) {
         return;
       }
 
@@ -141,12 +141,24 @@ export class RemoteLogger extends LoggerBase {
       console.error(e);
     }
   }
-
   private getConfig(): RemoteLoggerConfig | null {
     if (this.config === undefined) {
       this.config = (environment.logging as any)?.remote as RemoteLoggerConfig ?? null;
     }
 
     return this.config;
+  }
+
+  private isLoggerEnabled(config: RemoteLoggerConfig | null): boolean {
+    if(!config) {
+      return false;
+    }
+
+    if(!config.authorization.name || !config.authorization.password) {
+      console.warn('Remote logger is enabled but credentials are not configured');
+      return false;
+    }
+
+    return true;
   }
 }
