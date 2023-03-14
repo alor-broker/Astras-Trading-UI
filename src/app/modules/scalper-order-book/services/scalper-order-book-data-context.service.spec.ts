@@ -8,6 +8,7 @@ import { DashboardContextService } from '../../../shared/services/dashboard-cont
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 import { AllTradesService } from '../../../shared/services/all-trades.service';
+import { QuotesService } from '../../../shared/services/quotes.service';
 
 describe('ScalperOrderBookDataContextService', () => {
   let service: ScalperOrderBookDataContextService;
@@ -53,7 +54,13 @@ describe('ScalperOrderBookDataContextService', () => {
           useValue: {
             getNewTradesSubscription: jasmine.createSpy('getNewTradesSubscription').and.returnValue(new Subject())
           }
-        }
+        },
+        {
+          provide: QuotesService,
+          useValue: {
+            getLastPrice: jasmine.createSpy('getLastPrice').and.returnValue(new Subject())
+          }
+        },
       ]
     });
     service = TestBed.inject(ScalperOrderBookDataContextService);

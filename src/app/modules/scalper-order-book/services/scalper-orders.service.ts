@@ -24,6 +24,7 @@ import {
   ScalperOrderBookRowType
 } from '../models/scalper-order-book.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
+import { MathHelper } from '../../../shared/utils/math-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,6 @@ export class ScalperOrdersService {
     private readonly modal: ModalService
   ) {
   }
-
   cancelOrders(currentOrders: CurrentOrderDisplay[]): void {
     for (const order of currentOrders) {
       const command: CancelCommand = {
@@ -81,7 +81,9 @@ export class ScalperOrdersService {
     const bestAsk = orderBook.a[0].p;
     const bestBid = orderBook.b[0].p;
 
-    if ((bestAsk - bestBid) > instrument.minstep) {
+    const diff = MathHelper.round(bestAsk - bestBid, MathHelper.getPrecision(instrument.minstep));
+
+    if (diff > instrument.minstep) {
       price = side === Side.Sell
         ? bestAsk - instrument.minstep
         : bestBid + instrument.minstep;

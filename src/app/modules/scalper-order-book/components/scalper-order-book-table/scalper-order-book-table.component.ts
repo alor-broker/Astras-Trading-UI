@@ -154,7 +154,7 @@ export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
     ]).pipe(
       filter(([, , displayRange, , ,]) => !!displayRange),
       map(([settings, body, orderBookData, displayRange, currentOrders, themeSettings]) => {
-        const displayRows = body.bodyRows.slice(displayRange!.start, Math.min(displayRange!.end + 1, body.bodyRows.length));
+        const displayRows = body.slice(displayRange!.start, Math.min(displayRange!.end + 1, body.length));
         const minOrderPrice = Math.min(...currentOrders.map(x => x.linkedPrice));
         const maxOrderPrice = Math.max(...currentOrders.map(x => x.linkedPrice));
         const volumeHighlightStrategy = this.getVolumeHighlightStrategy(settings.widgetSettings, themeSettings);
