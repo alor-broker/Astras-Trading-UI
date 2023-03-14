@@ -56,7 +56,8 @@ export interface TerminalSettings {
   badgesBind?: boolean;
   hotKeysSettings?: HotKeysSettings;
   designSettings?: DesignSettings;
-  portfoliosCurrency?: PortfolioCurrency[],
-  instantNotificationsSettings?: InstantNotificationsSettings
+  portfoliosCurrency?: PortfolioCurrency[];
+  instantNotificationsSettings?: InstantNotificationsSettings;
+  excludedSettings?: string[];
 }
 

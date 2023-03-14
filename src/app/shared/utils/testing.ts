@@ -14,6 +14,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TranslocoTestingModule, TranslocoTestingOptions } from "@ngneat/transloco";
 import ru from '../../../assets/i18n/ru.json';
 import { ErrorHandlerService } from '../services/handle-error/error-handler.service';
+import { LOGGER } from '../services/logging/logger-base';
 
 /**
  * Create async observable that emits-once and completes  after a JS engine turn
@@ -145,6 +146,9 @@ export const ngZorroMockComponents = [
     inputs: ['nzColor', 'nzText', 'nzDropdownMenu', 'nzPopoverTitle', 'nzOffset', 'nzCount', 'nzPopoverVisible']
   }),
   mockComponent({ selector: 'nz-tag', inputs: ['nzColor', 'nz-tooltip', 'nzTooltipMouseEnterDelay']}),
+  mockComponent({ selector: 'nz-select'}),
+  mockComponent({ selector: 'nz-option'}),
+  mockDirective({ selector: '[nzGutter]', inputs: ['nzGutter']}),
   mockDirective({selector: '[text]', inputs: ['text']}),
   mockDirective({selector: '[nzLayout]', inputs: ['nzLayout']}),
   mockDirective({selector: '[nzPopoverContent]', inputs: ['nzPopoverContent']}),
@@ -191,6 +195,10 @@ export const commonTestProviders: any[] = [
     useValue: {
       handleError: jasmine.createSpy('handleError').and.callThrough()
     }
+  },
+  {
+    provide: LOGGER,
+    useValue: []
   }
 ];
 

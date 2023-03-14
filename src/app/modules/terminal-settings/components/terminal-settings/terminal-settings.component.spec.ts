@@ -3,6 +3,7 @@ import { TerminalSettingsService } from '../../services/terminal-settings.servic
 
 import { TerminalSettingsComponent } from './terminal-settings.component';
 import {
+  mockComponent,
   commonTestProviders,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
@@ -21,7 +22,14 @@ describe('TerminalSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [...sharedModuleImportForTests],
-      declarations: [TerminalSettingsComponent],
+      declarations: [
+        TerminalSettingsComponent,
+        mockComponent({selector: 'ats-useful-links'}),
+        mockComponent({selector: 'ats-general-settings-form'}),
+        mockComponent({selector: 'ats-portfolios-currency-form'}),
+        mockComponent({selector: 'ats-hot-key-settings-form'}),
+        mockComponent({selector: 'ats-instant-notifications-form'}),
+      ],
       providers: [
         { provide: TerminalSettingsService, useValue: tsSpy },
         ...commonTestProviders

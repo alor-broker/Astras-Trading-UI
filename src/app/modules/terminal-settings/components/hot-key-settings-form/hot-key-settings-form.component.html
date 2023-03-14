@@ -1,0 +1,192 @@
+<ng-container *transloco="let t; scope: 'terminal-settings'">
+  <form *ngIf="form" [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
+    <ng-container>
+      <h3>{{t('terminalSettings.allOrderbooksHeader')}}</h3>
+
+      <nz-form-item>
+        <nz-form-label nzFor="cancelOrdersKey">{{t('terminalSettings.removeLimitOrdersLabel')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('cancelOrdersKey'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="cancelOrdersKey"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="closePositionsKey">{{t('terminalSettings.closeAllPositions')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('closePositionsKey'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="closePositionsKey"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="centerOrderbookKey">{{t('terminalSettings.centerAllOrderbooks')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('centerOrderbookKey'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="centerOrderbookKey"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-divider></nz-divider>
+    </ng-container>
+
+    <ng-container>
+      <h3>{{t('terminalSettings.mouseHoverOrderbookHeader')}}</h3>
+
+      <nz-form-item>
+        <nz-form-label nzFor="cancelOrderbookOrders">{{t('terminalSettings.removeLimitOrdersLabel')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('cancelOrderbookOrders'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="cancelOrderbookOrders"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="closeOrderbookPositions">{{t('terminalSettings.closePosition')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('closeOrderbookPositions'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="closeOrderbookPositions"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="reverseOrderbookPositions">{{t('terminalSettings.reverseMarketPosition')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('reverseOrderbookPositions'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="reverseOrderbookPositions"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="buyMarket">{{t('terminalSettings.buyByMarket')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('buyMarket'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="buyMarket"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="sellMarket">{{t('terminalSettings.sellByMarket')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('sellMarket'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="sellMarket"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="sellBestOrder">{{t('terminalSettings.sellBestOrder')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('sellBestOrder'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="sellBestOrder"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="buyBestOrder">{{t('terminalSettings.buyBestOrder')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('buyBestOrder'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="buyBestOrder"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="sellBestBid">{{t('terminalSettings.sellBestBid')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('sellBestBid'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="sellBestBid"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="buyBestAsk">{{t('terminalSettings.buyBestAsk')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+          <input
+            (keydown)="hotkeyChange($event, form.get('buyBestAsk'))"
+            (mousedown)="$event.stopPropagation()"
+            formControlName="buyBestAsk"
+            nz-input
+            readonly
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-divider></nz-divider>
+    </ng-container>
+
+    <ng-container *ngIf="workingVolumes">
+      <h3>{{t('terminalSettings.workingVolumesHeader')}}</h3>
+
+      <div *ngFor="let ctrl of workingVolumes.controls; let i = index" class="working-volume">
+        <nz-form-item class="form-item">
+          <nz-form-label nzFor="selectWorkingVolume1"
+                         nzRequired>{{t('terminalSettings.selectWorkingVolumeLabel')}} {{i + 1}}</nz-form-label>
+          <nz-form-control [nzErrorTip]="t('terminalSettings.emptyFieldError')">
+            <input
+              (keydown)="hotkeyChange($event, ctrl)"
+              (mousedown)="$event.stopPropagation()"
+              [value]="workingVolumes.at(i).value"
+              nz-input
+              readonly
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <button (click)="removeWorkingVolume($event, i)"
+                [disabled]="!canRemoveWorkingVolume()"
+                class="working-volume-remove-btn"
+                nz-button
+                nzType="dashed">
+          <i nz-icon nzType="minus"></i>
+        </button>
+      </div>
+
+      <button (click)="addWorkingVolume($event)" [disabled]="!workingVolumes.valid"
+              class="add-working-volume-btn" nz-button
+              nzType="dashed">
+        <i nz-icon nzType="plus"></i>
+      </button>
+    </ng-container>
+  </form>
+</ng-container>

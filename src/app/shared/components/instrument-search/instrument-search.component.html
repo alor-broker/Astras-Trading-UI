@@ -8,15 +8,15 @@
            (blur)="checkInstrumentSelection()"
            (mousedown)="$event.stopPropagation()"
            (input)="filterChanged(searchInput.value)"
-           [ngModel]="currentValue?.symbol"
            [nzAutocomplete]="auto"
            class='whole ant-input'
            nz-input
+           [formControl]="searchControl"
            [placeholder]="t('sharedInstrumentSearch.searchPlaceholder')"
     />
   </nz-input-group>
   <ng-template #suffixIcon>
-    <span [nzTooltipTitle]="searchHelp" nz-icon nz-tooltip nzType="question-circle"></span>
+    <span [nzTooltipTitle]="searchHelp" nz-icon nz-tooltip nzType="question-circle" class="search-tooltip-icon"></span>
   </ng-template>
   <ng-template #searchHelp>
     <span>{{t('sharedInstrumentSearch.helpParagraph1')}}</span>
@@ -55,7 +55,7 @@
     >
       <span class='search-row'>
         <nz-tag>{{ option.symbol }}</nz-tag>
-        <span class='row-center'>{{ option.shortName }}</span>
+        <span class='row-center'>{{ option.shortName }}&nbsp;</span>
         <nz-tag *ngIf='option.instrumentGroup'>{{ option.instrumentGroup }}</nz-tag>
         <nz-tag>{{ option.exchange }}</nz-tag>
       </span>

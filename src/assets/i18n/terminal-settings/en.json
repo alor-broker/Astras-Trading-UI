@@ -47,5 +47,7 @@
   "sellBestBid": "Sell best BID",
   "buyBestAsk": "Buy best ASK",
   "workingVolumesHeader": "Working volumes",
-  "selectWorkingVolumeLabel": "Select working volume"
+  "selectWorkingVolumeLabel": "Select working volume",
+
+  "noActivePortfolios": "No active portfolios"
 }

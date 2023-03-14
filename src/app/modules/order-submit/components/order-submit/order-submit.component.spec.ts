@@ -42,6 +42,7 @@ import { PortfolioSubscriptionsService } from "../../../../shared/services/portf
 import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
 import ruOrderSubmit from "../../../../../assets/i18n/order-submit/order-submit/ru.json";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
 
 describe('OrderSubmitComponent', () => {
   let component: OrderSubmitComponent;
@@ -65,8 +66,9 @@ describe('OrderSubmitComponent', () => {
       ]
     );
 
-    dashboardContextServiceSpy = jasmine.createSpyObj('DashboardContextService', ['selectedPortfolio$']);
+    dashboardContextServiceSpy = jasmine.createSpyObj('DashboardContextService', ['selectedPortfolio$, selectedDashboard$']);
     dashboardContextServiceSpy.selectedPortfolio$ = new BehaviorSubject({ portfolio: defaultPortfolio } as PortfolioKey);
+    dashboardContextServiceSpy.selectedDashboard$ = new BehaviorSubject({} as Dashboard);
   });
 
   beforeEach(async () => {

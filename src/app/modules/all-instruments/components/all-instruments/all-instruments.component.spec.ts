@@ -6,6 +6,7 @@ import { of, Subject } from "rxjs";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import {
   commonTestProviders,
+  mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
@@ -21,9 +22,17 @@ describe('AllInstrumentsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         AllInstrumentsComponent,
-      ],
-      imports: [
-        ...sharedModuleImportForTests
+        mockComponent({
+          selector: 'ats-infinite-scroll-table',
+          inputs: [
+            'contextMenu',
+            'tableConfig',
+            'tableContainerWidth',
+            'tableContainerHeight',
+            'data',
+            'isLoading'
+          ]
+        })
       ],
       providers: [
         {

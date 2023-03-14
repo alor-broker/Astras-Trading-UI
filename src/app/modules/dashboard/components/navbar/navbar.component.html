@@ -1,9 +1,9 @@
-<ng-container *ngIf="deviceInfo$ | async as deviceInfo">
-  <nz-header *transloco="let t; scope: 'dashboard/navbar'">
+<ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
+  <nz-header *transloco="let tDesktop; scope: 'dashboard/navbar/desktop'">
     <div class="logo">
       <a [routerLink]="['/']"></a>
     </div>
-    <div class="menu-item" *ngIf="!deviceInfo.isMobile">
+    <div class="menu-item">
       <button nz-button nz-dropdown
               [nzDropdownMenu]="widgetsMenu"
               nzSize='small'
@@ -12,18 +12,18 @@
               [title]="t('joyride.step2.title')"
               [text]="t('joyride.step2.text')">
         <i nz-icon nzType="appstore-add" nzTheme="outline" [nzRotate]="-90" class="left-side-icon"></i>
-        {{t('dashboardNavbar.widgetsLabel')}}
+        {{tDesktop('dashboardNavbarDesktop.widgetsLabel')}}
       </button>
     </div>
 
-    <div class="menu-item" *ngIf="!deviceInfo.isMobile">
+    <div class="menu-item">
       <button nz-button [nzType]="'text'"
               (click)="newOrder()"
               joyrideStep="step3"
               [title]="t('joyride.step3.title')"
               [text]="t('joyride.step3.text')">
         <i nz-icon nzType="plus-circle" nzTheme="outline" class="left-side-icon"></i>
-          {{t('dashboardNavbar.orderLabel')}}
+          {{tDesktop('dashboardNavbarDesktop.orderLabel')}}
       </button>
     </div>
 
@@ -57,12 +57,12 @@
           nzPopoverPlacement="bottom"
           [nzPopoverContent]="emptyPortfolioPopover"
         >
-          {{t('dashboardNavbar.emptyPortfolioBtn')}}
+          {{t('dashboardNavbarCommon.emptyPortfolioBtn')}}
         </button>
 
         <ng-template #emptyPortfolioPopover>
-          <p>{{t('dashboardNavbar.emptyPortfolioPopover')}}</p>
-          <p>{{t('dashboardNavbar.emptyPortfolioPopoverHint')}} <ats-external-link href="https://lk.alor.ru/main">{{t('dashboardNavbar.emptyPortfolioPopoverLink')}}</ats-external-link></p>
+          <p>{{t('dashboardNavbarCommon.emptyPortfolioPopover')}}</p>
+          <p>{{t('dashboardNavbarCommon.emptyPortfolioPopoverHint')}} <ats-external-link href="https://lk.alor.ru/main">{{t('dashboardNavbarCommon.emptyPortfolioPopoverLink')}}</ats-external-link></p>
         </ng-template>
       </ng-template>
 
@@ -73,7 +73,7 @@
               type="text"
               nz-input
               class="portfolio-search"
-              [placeholder]="t('dashboardNavbar.searchPortfolioPlaceholder')"
+              [placeholder]="t('dashboardNavbarCommon.searchPortfolioPlaceholder')"
               [formControl]="searchControl"
             />
           </li>
@@ -93,7 +93,7 @@
       </nz-dropdown-menu>
     </div>
 
-    <div class="menu-item" *ngIf="!deviceInfo.isMobile">
+    <div class="menu-item">
       <button
         *ngIf="selectedDashboard$ | async as selectedDashboard;"
         class="dropdown-btn"
@@ -123,77 +123,15 @@
       <div>
         <ats-network-indicator></ats-network-indicator>
       </div>
-      <div class="notifications" *ngIf="!deviceInfo.isMobile">
+      <div class="notifications">
         <ats-notification-button></ats-notification-button>
       </div>
-      <div *ngIf="!deviceInfo.isMobile">
+      <div>
         <button nz-button nz-dropdown [nzDropdownMenu]="rightMenu" nzPlacement="bottomRight" [nzType]="'text'">
           <i nz-icon nzType="ats-user"></i>
         </button>
       </div>
-      <div *ngIf="deviceInfo.isMobile">
-        <button nz-button [nzType]="'text'"
-                (click)="newOrder()"
-                joyrideStep="step3"
-                [title]="t('joyride.step3.title')"
-                [text]="t('joyride.step3.text')">
-          <i nz-icon nzType="plus-circle" nzTheme="outline" class="left-side-icon"></i>
-        </button>
-      </div>
-      <div *ngIf="deviceInfo.isMobile">
-        <button nz-button (click)="openSideMenu()" nzType="text">
-          <i nz-icon nzType="menu" nzTheme="outline"></i>
-        </button>
-      </div>
     </div>
-
-    <nz-drawer
-      [nzClosable]="false"
-      [nzVisible]="isSideMenuVisible"
-      nzPlacement="right"
-      nzWrapClassName="side-menu"
-      nzWidth="330px"
-      (nzOnClose)="closeSideMenu()"
-    >
-      <ng-container *nzDrawerContent>
-        <div class="menu-header">
-          <button nz-button (click)="closeSideMenu()" nzType="text" class="close-btn">
-            <i nz-icon nzType="close" nzTheme="outline"></i>
-          </button>
-        </div>
-        <div class="menu-content">
-          <ul nz-menu [nzMode]="'inline'" [nzInlineIndent]="0" class="actions-menu">
-            <li nz-submenu [nzTitle]="notificationsMenuItem" class="side-menu-item">
-              <ats-notifications-list (notificationClicked)="closeSideMenu()"></ats-notifications-list>
-            </li>
-            <li nz-menu-divider></li>
-            <li nz-submenu [nzTitle]="t('dashboardNavbar.profile')" nzIcon="ats-user" class="side-menu-item">
-              <ng-container *ngTemplateOutlet="userMenu"></ng-container>
-            </li>
-            <li nz-menu-divider></li>
-            <li nz-submenu [nzTitle]="widgetsMenuItem" class="side-menu-item">
-              <ats-widget-menu
-                [showResetItem]="true"
-                (selected)="addItem($event)"
-                (resetDashboard)="resetDashboard()"
-              ></ats-widget-menu>
-            </li>
-          </ul>
-
-          <ng-template #notificationsMenuItem>
-            <ng-container *transloco="let tNotifications; scope: 'notifications'">
-              <ats-notification-button></ats-notification-button> {{tNotifications('notifications.header')}}
-            </ng-container>
-          </ng-template>
-
-          <ng-template #widgetsMenuItem>
-            <span><i nz-icon nzType="appstore-add" nzTheme="outline" [nzRotate]="-90"></i> <span>{{t('dashboardNavbar.widgetsLabel')}}</span></span>
-          </ng-template>
-
-        </div>
-      </ng-container>
-    </nz-drawer>
-
 
     <nz-dropdown-menu #widgetsMenu="nzDropdownMenu">
       <ats-widget-menu
@@ -209,30 +147,29 @@
 
     <ng-template #userMenu>
       <ul nz-menu>
-        <li *ngIf="deviceInfo.isMobile" nz-menu-divider></li>
         <li nz-menu-item (click)="openTerminalSettings()" class='menu-item'>
-          <span><i nz-icon nzType="user" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbar.profile')}}</span></span>
+          <span><i nz-icon nzType="user" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbarCommon.profile')}}</span></span>
         </li>
         <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://lk.alor.ru/reports/broker')">
           <span>
             <i nz-icon nzType="audit" nzTheme="outline"></i>
-            <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbar.reports')}"></ng-container>
+            <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.reports')}"></ng-container>
           </span>
         </li>
         <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://warp.alor.dev/ru/releases/astras')">
           <span>
             <i nz-icon nzType="history" nzTheme="outline"></i>
-            <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbar.releases')}"></ng-container>
+            <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.releases')}"></ng-container>
           </span>
         </li>
         <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://t.me/+oM0i9QbtD4cwMzNi')">
           <span>
             <i nz-icon nzType="customer-service" nzTheme="outline"></i>
-            <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbar.support')}"></ng-container>
+            <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.support')}"></ng-container>
           </span>
         </li>
         <li nz-menu-item (click)="logout()" class='menu-item' >
-          <span><i nz-icon nzType="logout" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbar.exit')}}</span></span>
+          <span><i nz-icon nzType="logout" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbarCommon.exit')}}</span></span>
         </li>
       </ul>
 

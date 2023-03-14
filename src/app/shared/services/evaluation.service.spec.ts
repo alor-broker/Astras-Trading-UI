@@ -1,8 +1,13 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { EvaluationService } from './evaluation.service';
-import { sharedModuleImportForTests } from '../utils/testing';
+import {
+  commonTestProviders,
+  sharedModuleImportForTests
+} from '../utils/testing';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
+import { DashboardContextService } from './dashboard-context.service';
+import { Subject } from 'rxjs';
 
 describe('EvaluationService', () => {
   let service: EvaluationService;
@@ -12,12 +17,17 @@ describe('EvaluationService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
-        ...sharedModuleImportForTests
+        HttpClientTestingModule
       ],
       providers: [
-        { provide: ErrorHandlerService, useValue: errorHandlerSpy },
-        EvaluationService
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectedPortfolio$: new Subject()
+          }
+        },
+        EvaluationService,
+        ...commonTestProviders
       ]
     });
 

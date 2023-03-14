@@ -1,8 +1,10 @@
 import { OrderService } from "./order.service";
 import { environment } from "../../../../environments/environment";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { fakeAsync, TestBed, tick } from "@angular/core/testing";
-import { NzNotificationService } from "ng-zorro-antd/notification";
+import {
+  HttpClient,
+  HttpErrorResponse
+} from "@angular/common/http";
+import { TestBed } from "@angular/core/testing";
 import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import {
   LimitOrder,
@@ -15,11 +17,13 @@ import {
   SubmitOrderResponse,
   SubmitOrderResult
 } from "../../../modules/command/models/order.model";
-import { of, throwError } from "rxjs";
+import {
+  of,
+  throwError
+} from "rxjs";
 import { Side } from "../../models/enums/side.model";
 import { StopOrderCondition } from "../../models/enums/stoporder-conditions";
 import { toUnixTimestampSeconds } from "../../utils/datetime";
-import { instrumentsBadges } from "../../utils/instruments";
 import { InstantNotificationsService } from '../instant-notifications.service';
 
 

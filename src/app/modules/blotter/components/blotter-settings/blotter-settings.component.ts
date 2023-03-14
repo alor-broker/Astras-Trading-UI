@@ -39,6 +39,7 @@ import {
   BlotterSettings,
   ColumnIds
 } from '../../models/blotter-settings.model';
+import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
   selector: 'ats-blotter-settings[guid]',
@@ -59,17 +60,24 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   exchanges: string[] = exchangesList;
 
   availablePortfolios$!: Observable<Map<string, PortfolioExtended[]>>;
+  deviceInfo$!: Observable<any>;
 
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<BlotterSettings>;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly deviceService: DeviceService
   ) {
   }
 
   ngOnInit() {
+    this.deviceInfo$ = this.deviceService.deviceInfo$
+      .pipe(
+        take(1)
+      );
+
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
       shareReplay(1)
     );

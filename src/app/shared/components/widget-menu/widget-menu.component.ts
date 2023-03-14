@@ -3,6 +3,7 @@ import { WidgetNames } from "../../models/enums/widget-names";
 import { Observable } from "rxjs";
 import { DeviceService } from "../../services/device.service";
 import { map } from "rxjs/operators";
+import { WidgetsHelper } from "../../utils/widgets";
 
 @Component({
   selector: 'ats-widget-menu',
@@ -17,6 +18,7 @@ export class WidgetMenuComponent implements OnInit {
   @Output() public resetDashboard = new EventEmitter<void>();
 
   public widgetNames = WidgetNames;
+  public widgetsHelper = WidgetsHelper;
   public isMobile$!: Observable<boolean>;
 
   constructor(

@@ -5,7 +5,6 @@ import {
 import { NotificationsService } from '../../services/notifications.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
   selector: 'ats-notification-button',
@@ -18,14 +17,11 @@ export class NotificationButtonComponent implements OnInit {
   deviceInfo$!: Observable<{isMobile: boolean}>;
 
   constructor(
-    private readonly notificationsService: NotificationsService,
-    private readonly deviceService: DeviceService
+    private readonly notificationsService: NotificationsService
   ) {
   }
 
   ngOnInit(): void {
-    this.deviceInfo$ = this.deviceService.deviceInfo$;
-
     this.notReadNotificationsCount$ = this.notificationsService.getNotifications()
       .pipe(
         map(n => n.filter(x => !x.isRead).length),
