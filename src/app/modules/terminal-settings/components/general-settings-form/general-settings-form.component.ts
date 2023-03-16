@@ -1,5 +1,6 @@
 import {
   Component,
+  Input,
   OnDestroy,
   OnInit
 } from '@angular/core';
@@ -32,6 +33,8 @@ import { ThemeType } from '../../../../shared/models/settings/theme-settings.mod
   ]
 })
 export class GeneralSettingsFormComponent extends ControlValueAccessorBaseComponent<GeneralSettings> implements OnInit, OnDestroy {
+  @Input() excludedSettings: string[] = [];
+
   readonly validationSettings = validationSettings;
 
   timezoneDisplayOption = TimezoneDisplayOption;

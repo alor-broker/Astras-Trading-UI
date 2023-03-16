@@ -57,7 +57,7 @@ export class OrderbookWidgetComponent implements OnInit {
       'OrderbookSettings',
       settings => ({
         ...settings,
-        depth: 10,
+        depth: 17,
         showChart: true,
         showTable: true,
         showYieldForBonds: false,

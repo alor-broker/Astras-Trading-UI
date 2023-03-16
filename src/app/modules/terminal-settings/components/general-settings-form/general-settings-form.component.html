@@ -47,7 +47,7 @@
       </nz-form-control>
     </nz-form-item>
 
-    <nz-form-item>
+    <nz-form-item *ngIf="!excludedSettings.includes('badgesBind')">
       <label
         formControlName="badgesBind"
         nz-checkbox

@@ -87,6 +87,8 @@ export class ManageDashboardsService {
     this.localStorage.removeItem('profile');
     this.localStorage.removeItem('feedback');
     this.localStorage.removeItem('dashboards-collection');
+    this.localStorage.removeItem('mobile-dashboard');
+    this.localStorage.removeItem('instruments-history');
 
     // obsolete keys. Used only for backward compatibility
     this.localStorage.removeItem('instruments');
@@ -151,6 +153,61 @@ export class ManageDashboardsService {
       {
         widgetType: WidgetNames.instrumentSelect,
         position: { x: 40, y: 18, cols: 10, rows: 12 }
+      }
+    ];
+  }
+
+  getMobileDashboardWidgets(): Widget[] {
+    return [
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.orderSubmit,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.instrumentInfo,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.blotter,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.orderBook,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.lightChart,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.news,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.allInstruments,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.allTrades,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.exchangeRate,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.ordersBasket,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       }
     ];
   }

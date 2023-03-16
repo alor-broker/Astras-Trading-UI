@@ -1,14 +1,14 @@
 <ng-container *transloco="let t; scope: 'orderbook/settings'">
   <p>{{t('settingsHeader')}}</p>
-  <div>
+  <div *ngIf="deviceInfo$ | async as deviceInfo">
     <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
-      <nz-form-item>
+      <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-form-control [nzErrorTip]="t('orderbookSettings.tickerError')">
           <nz-form-label nzRequired nzFor="instrument">{{t('orderbookSettings.tickerLabel')}}</nz-form-label>
           <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-form-control>
           <nz-form-label nzRequired nzFor="exchange">{{t('orderbookSettings.exchangeLabel')}}</nz-form-label>
           <input formControlName='exchange' nz-input>
@@ -28,7 +28,7 @@
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-form-label nzFor="useOrderWidget">
           {{t('orderbookSettings.useOrderWidgetLabel')}}
           <span

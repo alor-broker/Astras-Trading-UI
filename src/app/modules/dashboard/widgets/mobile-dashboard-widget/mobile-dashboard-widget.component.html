@@ -1,0 +1,21 @@
+<nz-layout *ngIf="screenHeight | async as height" [style]="{height: height}">
+  <div class="d-flex flex-direction-column content-wrapper">
+    <div class="fixed-height">
+      <ats-mobile-navbar></ats-mobile-navbar>
+    </div>
+
+    <div class="instruments-history fixed-height">
+      <ats-mobile-instruments-history></ats-mobile-instruments-history>
+    </div>
+
+    <div class="content">
+      <ats-mobile-dashboard></ats-mobile-dashboard>
+    </div>
+  </div>
+  <ats-help-widget></ats-help-widget>
+  <ats-terminal-settings-widget></ats-terminal-settings-widget>
+  <ats-news-modal-widget></ats-news-modal-widget>
+  <ats-feedback-widget></ats-feedback-widget>
+  <ats-application-updated-widget></ats-application-updated-widget>
+  <ats-edit-widget></ats-edit-widget>
+</nz-layout>

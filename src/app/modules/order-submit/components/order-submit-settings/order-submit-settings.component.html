@@ -1,15 +1,15 @@
 <ng-container *transloco="let t; scope: 'order-submit/order-submit-settings'">
   <p>{{t('settingsHeader')}}</p>
   <div *ngIf="form">
-    <form (ngSubmit)="submitForm()" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
-      <nz-form-item>
+    <form (ngSubmit)="submitForm()" [formGroup]="form" [nzLayout]="'vertical'" nz-form *ngIf="deviceInfo$ | async as deviceInfo">
+      <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-form-label nzFor="instrument" nzRequired>{{t('orderSubmitOrderSubmitSettings.tickerLabel')}}</nz-form-label>
         <nz-form-control [nzErrorTip]="t('orderSubmitOrderSubmitSettings.tickerError')">
           <ats-instrument-search (instrumentSelected)="instrumentSelected($event)"
                                  formControlName="instrument"></ats-instrument-search>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-form-label nzFor="exchange" nzRequired>{{t('orderSubmitOrderSubmitSettings.exchangeLabel')}}</nz-form-label>
         <nz-form-control>
           <input class='ant-input' formControlName='exchange'>

@@ -1,6 +1,4 @@
 {
-  "widgetsLabel": "Widgets",
-  "orderLabel": "Order",
   "emptyPortfolioBtn": "Portfolios are missing",
   "emptyPortfolioPopover": "There's no portfolios with active positions.",
   "emptyPortfolioPopoverHint": "You can transfer money or papers",

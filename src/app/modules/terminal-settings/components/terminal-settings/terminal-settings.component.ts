@@ -44,6 +44,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     lastName: '',
     secondName: ''
   });
+  excludedSettings: string[] = [];
   private readonly destroyable = new Destroyable();
 
   constructor(
@@ -93,6 +94,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
         take(1)
       ).subscribe(settings => {
       this.settingsForm = this.buildForm(settings);
+      this.excludedSettings = settings.excludedSettings ?? [];
 
       this.formChange.emit({ value: this.formToModel(), isInitial: true });
 
