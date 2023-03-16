@@ -156,6 +156,19 @@ export class ScalperCommandProcessorService {
     this.handleCurrentOrderBookCommands(command, dataContext);
   }
 
+  updateOrdersPrice(orders: CurrentOrderDisplay[], row: BodyRow, dataContext: ScalperOrderBookDataContext): void {
+    this.callWithSettings(
+      dataContext,
+      settings => {
+        this.scalperOrdersService.updateOrders(
+          orders,
+          { price: row.price },
+          settings.widgetSettings.enableMouseClickSilentOrders
+        );
+      }
+    );
+  }
+
   private handleAllCommands(command: TerminalCommand, dataContext: ScalperOrderBookDataContext): boolean {
     if (command.type === ScalperOrderBookCommands.cancelLimitOrdersAll) {
       this.cancelLimitOrders(dataContext);

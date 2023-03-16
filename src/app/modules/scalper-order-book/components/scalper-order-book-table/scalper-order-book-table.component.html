@@ -25,10 +25,12 @@
       >
         <div
           [ngClass]="getPriceCellClasses(row)"
-          class="table-cell">{{row.price}}</div>
+          class="table-cell">
+          {{row.price}}
+        </div>
       </div>
     </div>
-    <div class="table-col" id="orders-panel">
+    <div class="table-col orders-drag-boundary" id="orders-panel" cdkDropListGroup>
       <div (click)="leftMouseClick($event, row)"
            (contextmenu)="rightMouseClick($event, row)"
            (dblclick)="$event.stopPropagation()"
@@ -37,18 +39,40 @@
            [style.line-height]="rowHeight + 'px'"
            class="table-row"
       >
-        <div [ngClass]="getOrdersCellClasses(row)" class="table-cell">
+        <div
+          [ngClass]="getOrdersCellClasses(row)"
+          class="table-cell"
+          cdkDropList
+          [cdkDropListAutoScrollDisabled]="true"
+          (cdkDropListDropped)="updateOrderPrice($event.item.data, row)"
+        >
           <ng-container
-            *ngTemplateOutlet="ordersDisplay; context: {orders:  getFilteredOrders(row.currentOrders, 'limit'), orderSymbol: 'L', tooltipKey: 'limitOrderTooltip'}">
+            *ngTemplateOutlet="ordersDisplay; context: {
+            orders:  getFilteredOrders(row.currentOrders, 'limit'),
+            orderSymbol: 'L',
+            tooltipKey: 'limitOrderTooltip',
+            enableDrag: true
+            }"
+          >
           </ng-container>
           <ng-container
-            *ngTemplateOutlet="ordersDisplay; context: {orders:  getFilteredOrders(row.currentOrders, 'stoplimit'), orderSymbol: 'SL', tooltipKey: 'stopLimitOrderTooltip'}">
+            *ngTemplateOutlet="ordersDisplay; context: {
+            orders:  getFilteredOrders(row.currentOrders, 'stoplimit'),
+            orderSymbol: 'SL',
+            tooltipKey: 'stopLimitOrderTooltip',
+            enableDrag: false
+            }">
           </ng-container>
           <ng-container
-            *ngTemplateOutlet="ordersDisplay; context: {orders:  getFilteredOrders(row.currentOrders, 'stop'), orderSymbol: 'SM', tooltipKey: 'stopMarketOrderTooltip'}">
+            *ngTemplateOutlet="ordersDisplay; context: {
+            orders:  getFilteredOrders(row.currentOrders, 'stop'),
+            orderSymbol: 'SM',
+            tooltipKey: 'stopMarketOrderTooltip',
+            enableDrag: false
+            }">
           </ng-container>
 
-          <ng-template #ordersDisplay let-orderSymbol="orderSymbol" let-orders="orders" let-tooltipKey="tooltipKey">
+          <ng-template #ordersDisplay let-orderSymbol="orderSymbol" let-orders="orders" let-tooltipKey="tooltipKey" let-enableDrag="enableDrag">
             <ng-container *ngIf="orders.volume > 0">
               <span (click)="cancelOrders($event, orders.orders)"
                     [ngClass]="{
@@ -57,6 +81,11 @@
                     'ask': orders.orders.length === 1 && orders.orders[0].side ===ordersSides.Sell
                     }"
                     [nz-tooltip]="t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
+                    [nzTooltipMouseEnterDelay]="1"
+                    cdkDrag
+                    [cdkDragDisabled]="!enableDrag"
+                    [cdkDragData]="orders.orders"
+                    cdkDragBoundary=".orders-drag-boundary"
               >{{orderSymbol}}({{orders.volume}})</span>
             </ng-container>
           </ng-template>

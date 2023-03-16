@@ -38,6 +38,7 @@ export class ScalperOrdersService {
     private readonly modal: ModalService
   ) {
   }
+
   cancelOrders(currentOrders: CurrentOrderDisplay[]): void {
     for (const order of currentOrders) {
       const command: CancelCommand = {
@@ -261,6 +262,48 @@ export class ScalperOrdersService {
         ...order,
         type: CommandType.Stop,
         stopEndUnixTime: undefined
+      });
+    }
+  }
+
+  updateOrders(currentOrders: CurrentOrderDisplay[], updates: { price: number }, silent: boolean): void {
+    if(currentOrders.length === 0) {
+      return;
+    }
+
+    if(silent) {
+      for (const order of currentOrders) {
+        if(order.type === 'limit') {
+          this.orderService.submitLimitOrderEdit({
+            id: order.orderId,
+            price: updates.price,
+            quantity: order.displayVolume,
+            instrument: {
+              symbol: order.symbol,
+              exchange: order.exchange
+            }
+          },
+            order.portfolio
+          ).subscribe();
+        }
+      }
+    } else {
+      const order = currentOrders[0];
+
+      this.modal.openEditModal({
+        type: order.type,
+        quantity: order.displayVolume,
+        orderId: order.orderId,
+        price: updates.price,
+        instrument: {
+          symbol: order.symbol,
+          exchange: order.exchange
+        },
+        user: {
+          portfolio: order.portfolio,
+          exchange: order.exchange
+        },
+        side: order.side
       });
     }
   }

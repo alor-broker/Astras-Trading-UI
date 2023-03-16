@@ -92,6 +92,7 @@ describe('ScalperOrdersService', () => {
   it('#cancelOrders should call service with appropriate data', (done => {
         const testOrder: CurrentOrderDisplay = {
           linkedPrice: 10,
+          symbol: 'TEST',
           orderId: generateRandomString(5),
           exchange: generateRandomString(4),
           portfolio: generateRandomString(5),

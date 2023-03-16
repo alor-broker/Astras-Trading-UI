@@ -126,6 +126,7 @@ describe('ScalperCommandProcessorService', () => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: generateRandomString(5),
           type: 'limit',
+          symbol: 'TEST',
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',
           linkedPrice: 100,
@@ -178,6 +179,7 @@ describe('ScalperCommandProcessorService', () => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: generateRandomString(5),
           type: 'limit',
+          symbol: 'TEST',
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',
           linkedPrice: 100,
