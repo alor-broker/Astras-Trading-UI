@@ -5,22 +5,29 @@ import { take } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { PriceRow } from '../models/scalper-order-book.model';
 import { Range } from '../../../shared/models/common.model';
+import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 
-interface PriceRowsState {
+export interface PriceRowsState {
+  instrumentKey: InstrumentKey | null;
   rowStep: number | null;
+
+  minPrice: number | null;
+
   directionRowsCount: number;
   rows: PriceRow[];
 }
 
 const initialState: PriceRowsState = {
+  instrumentKey: null,
   rowStep: null,
+  minPrice: null,
   directionRowsCount: 100,
   rows: []
 };
 
 @Injectable()
 export class PriceRowsStore extends ComponentStore<PriceRowsState> {
-  readonly rows$ = this.select(state => state.rows);
+  readonly state$ = this.select(state => state);
 
   constructor() {
     super(initialState);
@@ -36,7 +43,7 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
       filter(s => !!s.rowStep)
     ).subscribe(state => {
       const step = state.rowStep!;
-      const topRows = this.generatePriceSequence(state.rows[0].price + step, step, itemsToAdd)
+      const topRows = this.generatePriceSequence(state.rows[0].price + step, step, itemsToAdd, 0)
         .reverse()
         .map(price => ({ price: price } as PriceRow));
 
@@ -60,11 +67,14 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     ).subscribe(state => {
       const step = state.rowStep!;
       const lastElement = state.rows[state.rows.length - 1];
-      if (lastElement.price <= 0) {
+      const minPrice = state.minPrice ?? 0;
+      if (lastElement.price <= minPrice) {
+        callback?.(0);
         return;
       }
+
       const itemsToAdd = Math.max(state.directionRowsCount, minItemsToAdd);
-      const bottomRows = this.generatePriceSequence(lastElement.price - step, -step, itemsToAdd)
+      const bottomRows = this.generatePriceSequence(lastElement.price - step, -step, itemsToAdd, minPrice)
         .filter(price => price > 0)
         .map(price => ({ price: price } as PriceRow));
 
@@ -75,15 +85,11 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
         ]
       });
 
-      if (callback) {
-        callback(itemsToAdd);
-      }
+      callback?.(itemsToAdd);
     });
   }
 
-  public initWithPriceRange(priceRange: Range, step: number, renderRowsCount: number, complete?: () => void) {
-    this.resetState();
-
+  public initWithPriceRange(instrumentKey: InstrumentKey, priceRange: Range, step: number, renderRowsCount: number, complete?: () => void) {
     const priceRowsCount = Math.ceil((priceRange.max - priceRange.min) / step);
     const startPrice = MathHelper.round(
       priceRange.min + Math.ceil(priceRowsCount / 2) * step,
@@ -94,16 +100,20 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
 
     const rowsCount = Math.ceil(Math.max(priceRowsCount + 5, oneDirectionRowsCount));
 
+    const minPrice = Math.min(0, priceRange.min, step);
+
     const rows = [
-      ...this.generatePriceSequence(startPrice + step, step, rowsCount).reverse(),
+      ...this.generatePriceSequence(startPrice + step, step, rowsCount, 0).reverse(),
       startPrice,
-      ...this.generatePriceSequence(startPrice - step, -step, rowsCount)
+      ...this.generatePriceSequence(startPrice - step, -step, rowsCount, minPrice)
     ].map(price => ({ price: price } as PriceRow));
 
     rows[rowsCount].isStartRow = true;
 
     this.setState({
+      instrumentKey,
       rowStep: step,
+      minPrice,
       directionRowsCount: rowsCount,
       rows: rows
     });
@@ -113,11 +123,11 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     }
   }
 
-  private generatePriceSequence(start: number, step: number, count: number): number[] {
+  private generatePriceSequence(start: number, step: number, count: number, min: number): number[] {
     const pricePrecision = MathHelper.getPrecision(step);
     return [...Array(count).keys()]
       .map(i => start + (i * step))
       .map(x => MathHelper.round(x, pricePrecision))
-      .filter(x => x > 0);
+      .filter(x => x >= min);
   }
 }

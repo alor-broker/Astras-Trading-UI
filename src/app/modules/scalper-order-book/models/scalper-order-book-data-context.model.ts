@@ -4,8 +4,8 @@ import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { Position } from '../../../shared/models/positions/position.model';
 import { ListRange } from '@angular/cdk/collections';
 import {
-  CurrentOrderDisplay,
-  ScalperOrderBookBody
+  BodyRow,
+  CurrentOrderDisplay
 } from './scalper-order-book.model';
 import { ScalperOrderBookSettings } from './scalper-order-book-settings.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
@@ -21,7 +21,7 @@ export interface ScalperOrderBookDataContext {
   readonly currentPortfolio$: Observable<PortfolioKey>;
   readonly orderBookData$: Observable<OrderbookData>;
   readonly position$: Observable<Position | null>;
-  readonly orderBookBody$: Observable<ScalperOrderBookBody>;
+  readonly orderBookBody$: Observable<BodyRow[]>;
   readonly currentOrders$: Observable<CurrentOrderDisplay[]>;
   readonly trades$: Observable<AllTradesItem[]>;
   readonly workingVolume$: Observable<number>;

@@ -2,8 +2,8 @@
   <cdk-virtual-scroll-viewport
     (nzResizeObserve)="updateContentSize($event)"
     [itemSize]="rowHeight"
-    [minBufferPx]="rowHeight * 10"
     [maxBufferPx]="rowHeight * 10"
+    [minBufferPx]="rowHeight * 10"
     [orientation]="'vertical'"
     cdk-scrollable
     class="container show-scroll"
@@ -11,12 +11,12 @@
     <ng-container *ngIf="dataContext">
       <ng-container *ngIf="dataContext.orderBookBody$ | async as orderBookBody">
         <div id="spacer">
-          <div *cdkVirtualFor="let row of orderBookBody.bodyRows; templateCacheSize: 0"
+          <div *cdkVirtualFor="let row of orderBookBody; templateCacheSize: 0"
                [style.height]="rowHeight + 'px'"
                [style.line-height]="rowHeight + 'px'"
           ></div>
         </div>
-        <div id="trades" *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesPanel">
+        <div *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesPanel" id="trades">
           <ats-trades-panel
             [dataContext]="dataContext"
             [xAxisStep]="rowHeight"
@@ -33,11 +33,13 @@
       </ng-container>
     </ng-container>
   </cdk-virtual-scroll-viewport>
-    <div class="position-absolute top-0 end-0">
-      <ats-orders-indicator direction="up" [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"></ats-orders-indicator>
-    </div>
-    <div class="position-absolute bottom-0 end-0">
-      <ats-orders-indicator direction="down" [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"></ats-orders-indicator>
-    </div>
+  <div class="position-absolute top-0 end-0">
+    <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
+                          direction="up"></ats-orders-indicator>
+  </div>
+  <div class="position-absolute bottom-0 end-0">
+    <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
+                          direction="down"></ats-orders-indicator>
+  </div>
 </nz-spin>
 

@@ -135,8 +135,8 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       filter(([, displayRange]) => !!displayRange),
       map(([body, displayRange]) => {
-        return body.bodyRows
-          .slice(displayRange!.start, Math.min(displayRange!.end + 1, body.bodyRows.length))
+        return body
+          .slice(displayRange!.start, Math.min(displayRange!.end + 1, body.length))
           .map(x => x.price);
       })
     );

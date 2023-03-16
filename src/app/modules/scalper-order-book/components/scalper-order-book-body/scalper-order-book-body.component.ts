@@ -18,28 +18,23 @@ import {
   shareReplay,
   take,
   takeUntil,
-  tap,
   withLatestFrom,
 } from 'rxjs';
 import { PriceRowsStore } from '../../utils/price-rows-store';
-import { QuotesService } from '../../../../shared/services/quotes.service';
-import { mapWith } from '../../../../shared/utils/observable-helper';
-import { OrderbookData } from '../../../orderbook/models/orderbook-data.model';
 import {
   map,
   switchMap
 } from 'rxjs/operators';
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { ListRange } from '@angular/cdk/collections';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import {
-  ScalperOrderBookDataContext,
-  ScalperOrderBookExtendedSettings
-} from '../../models/scalper-order-book-data-context.model';
+import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { ScalperOrderBookDataContextService } from '../../services/scalper-order-book-data-context.service';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScalperOrderBookCommands } from '../../models/scalper-order-book-commands';
-import { ScalperOrderBookRowType } from '../../models/scalper-order-book.model';
+import {
+  PriceRow,
+  ScalperOrderBookRowType
+} from '../../models/scalper-order-book.model';
 import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-table.helper';
 
 @Component({
@@ -64,11 +59,11 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   private readonly destroyable = new Destroyable();
   private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   private readonly workingVolume$ = new BehaviorSubject<number | null>(null);
+  private lastContainerHeight = 0;
 
   constructor(
     private readonly scalperOrderBookDataContextService: ScalperOrderBookDataContextService,
     private readonly priceRowsStore: PriceRowsStore,
-    private readonly quotesService: QuotesService,
     private readonly hotkeysService: HotKeyCommandService) {
   }
 
@@ -102,7 +97,6 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       })
     );
 
-    this.initRowsFillingByHeight();
     this.initTableScrolling();
   }
 
@@ -153,11 +147,11 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         const topVisibleIndex = Math.ceil(topOffset / this.rowHeight);
         const bottomVisibleIndex = Math.round(bottomOffset / this.rowHeight) - 1;
 
-        const upPrice = topVisibleIndex < orderBookBody.bodyRows.length
-          ? orderBookBody.bodyRows[topVisibleIndex]?.price
+        const upPrice = topVisibleIndex < orderBookBody.length
+          ? orderBookBody[topVisibleIndex]?.price
           : null;
-        const downPrice = bottomVisibleIndex >= 0 && bottomVisibleIndex < orderBookBody.bodyRows.length
-          ? orderBookBody.bodyRows[bottomVisibleIndex]?.price
+        const downPrice = bottomVisibleIndex >= 0 && bottomVisibleIndex < orderBookBody.length
+          ? orderBookBody[bottomVisibleIndex]?.price
           : null;
 
         return {
@@ -172,8 +166,20 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   private initContext() {
     const context = this.scalperOrderBookDataContextService.createContext(
       this.guid,
-      this.priceRowsStore.rows$,
-      (orderBookData: OrderbookData, settings: ScalperOrderBookExtendedSettings) => this.regeneratePriceRows(orderBookData, settings)
+      this.priceRowsStore,
+      this.contentSize$,
+      {
+        getVisibleRowsCount: () => this.getDisplayRowsCount(),
+        isFillingByHeightNeeded: (currentRows: PriceRow[]) => this.isFillingByHeightNeeded(currentRows)
+      },
+      {
+        priceRowsRegenerationStarted: () => this.isLoading$.next(true),
+        priceRowsRegenerationCompleted: () => {
+          this.scrollContainer.checkViewportSize();
+          this.alignTable();
+          this.isLoading$.next(false);
+        }
+      }
     );
 
     this.dataContext = {
@@ -187,63 +193,16 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     };
   }
 
-  private initRowsFillingByHeight() {
-    const getLastPrice = (instrumentKey: InstrumentKey) => this.quotesService.getLastPrice(instrumentKey).pipe(
-      filter((lastPrice): lastPrice is number => !!lastPrice),
-    );
+  private isFillingByHeightNeeded(currentRows: PriceRow[]): boolean {
+    const displayRowsCount = this.getDisplayRowsCount();
+    const previousHeight = this.lastContainerHeight;
+    this.lastContainerHeight = this.getContainerHeight();
 
-    this.dataContext?.extendedSettings$.pipe(
-      tap(() => this.isLoading$.next(true)),
-      mapWith(
-        settings => getLastPrice(settings.widgetSettings),
-        (settings, lastPrice) => ({ settings, lastPrice })
-      ),
-      mapWith(
-        () => this.contentSize$,
-        (source,) => source
-      ),
-      takeUntil(this.destroyable.destroyed$)
-    ).subscribe(x => {
-      const displayRowsCount = Math.ceil((this.getContainerHeight() * 2 / this.rowHeight));
-
-      this.priceRowsStore.initWithPriceRange(
-        {
-          min: x.lastPrice,
-          max: x.lastPrice
-        },
-        x.settings.instrument.minstep,
-        displayRowsCount,
-        () => {
-          this.scrollContainer.checkViewportSize();
-          this.alignTable();
-          this.isLoading$.next(false);
-        }
-      );
-    });
+    return currentRows.length < displayRowsCount || previousHeight < this.lastContainerHeight;
   }
 
-  private regeneratePriceRows(orderBookData: OrderbookData, settings: ScalperOrderBookExtendedSettings) {
-    const bounds = this.scalperOrderBookDataContextService.getOrderBookBounds(orderBookData);
-    const expectedMaxPrice = bounds.asksRange?.max ?? bounds.bidsRange?.max;
-    const expectedMinPrice = bounds.bidsRange?.min ?? bounds.asksRange?.min;
-
-    if (!expectedMaxPrice || !expectedMinPrice) {
-      return;
-    }
-
-    const displayRowsCount = Math.ceil((this.getContainerHeight() * 2 / this.rowHeight));
-    this.priceRowsStore.initWithPriceRange(
-      {
-        min: expectedMinPrice,
-        max: expectedMaxPrice
-      },
-      settings.instrument.minstep,
-      displayRowsCount,
-      () => {
-        this.scrollContainer.checkViewportSize();
-        this.alignTable();
-      }
-    );
+  private getDisplayRowsCount(): number {
+    return Math.ceil((this.getContainerHeight() * 2 / this.rowHeight));
   }
 
   private getContainerHeight() {
@@ -257,17 +216,17 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       ).subscribe(orderBookBody => {
         let targetIndex: number | null = null;
 
-        const spreadRows = orderBookBody.bodyRows.filter(r => r.rowType === ScalperOrderBookRowType.Spread);
+        const spreadRows = orderBookBody.filter(r => r.rowType === ScalperOrderBookRowType.Spread);
         if (spreadRows.length > 0) {
-          targetIndex = orderBookBody.bodyRows.indexOf(spreadRows[0]) + Math.round(spreadRows.length / 2);
+          targetIndex = orderBookBody.indexOf(spreadRows[0]) + Math.round(spreadRows.length / 2);
         }
         else {
-          const bestSellRowIndex = orderBookBody.bodyRows.findIndex(r => r.rowType === ScalperOrderBookRowType.Ask && r.isBest);
+          const bestSellRowIndex = orderBookBody.findIndex(r => r.rowType === ScalperOrderBookRowType.Ask && r.isBest);
           if (bestSellRowIndex >= 0) {
             targetIndex = bestSellRowIndex;
           }
           else {
-            const startRowIndex = orderBookBody.bodyRows.findIndex(r => r.isStartRow);
+            const startRowIndex = orderBookBody.findIndex(r => r.isStartRow);
             if (startRowIndex >= 0) {
               targetIndex = startRowIndex;
             }
@@ -292,7 +251,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       withLatestFrom(this.isLoading$),
       filter(([, isLoading]) => !isLoading),
       map(([index,]) => index),
-      withLatestFrom(this.priceRowsStore.rows$),
+      withLatestFrom(this.priceRowsStore.state$.pipe(map(x => x.rows))),
       filter(([, priceRows]) => priceRows.length > 0),
       map(([index, priceRows]) => ({ index, priceRows })),
       takeUntil(this.destroyable.destroyed$)

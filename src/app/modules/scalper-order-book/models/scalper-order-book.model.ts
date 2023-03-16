@@ -1,5 +1,4 @@
 import { Side } from '../../../shared/models/enums/side.model';
-import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 
 export interface CurrentOrderDisplay {
   orderId: string;
@@ -32,11 +31,6 @@ export interface BodyRow extends PriceRow {
   isFiller: boolean;
 
   currentPositionRangeSign: number | null;
-}
-
-export interface ScalperOrderBookBody {
-  bodyRows: BodyRow[];
-  orderBookData: OrderbookData;
 }
 
 export interface ScalperOrderBookPositionState {

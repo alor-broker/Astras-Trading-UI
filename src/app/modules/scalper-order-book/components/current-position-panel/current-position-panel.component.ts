@@ -38,14 +38,14 @@ export class CurrentPositionPanelComponent implements OnInit {
       this.dataContextService.getOrderBookPositionStream(settings$, this.dataContextService.getOrderBookPortfolio())
     ]).pipe(
       map(([settings, orderBook, position]) => {
-        if (!position || position.qtyTFuture === 0 || orderBook.a.length === 0 || orderBook.b.length === 0) {
+        if (!position || position.qtyTFuture === 0 || orderBook.data.a.length === 0 || orderBook.data.b.length === 0) {
           return null;
         }
 
         const sign = position!.qtyTFuture > 0 ? 1 : -1;
         const bestPrice = sign > 0
-          ? orderBook.b[0].p
-          : orderBook.a[0].p;
+          ? orderBook.data.b[0].p
+          : orderBook.data.a[0].p;
 
         const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
 
