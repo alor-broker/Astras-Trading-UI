@@ -17,7 +17,8 @@ import {
   Subscription,
   switchMap,
   take,
-  takeUntil
+  takeUntil,
+  withLatestFrom
 } from 'rxjs';
 import {
   ChartingLibraryWidgetOptions,
@@ -182,6 +183,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    // chart should be redrawn only if instrument changed but not chart settings
     const chartSettings$ = this.settings$!.pipe(
       distinctUntilChanged((previous, current) => {
         return (
@@ -196,16 +198,26 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.themeService.getThemeSettings(),
       this.translatorService.getTranslator('tech-chart/tech-chart')
     ]).pipe(
-      takeUntil(this.destroy$),
-    ).subscribe(([settings, theme, t]) => {
-      this.translateFn = t;
-      this.createChart(
-        settings.widgetSettings,
+      map(([, theme, translator]) => ({
         theme,
-        this.lastTheme && this.lastTheme.theme !== theme.theme || this.lastLang !== this.translatorService.getActiveLang()
+        translator
+      })),
+      // read settings with recent changes
+      withLatestFrom(this.settings$!),
+      map(([source, settings]) => ({
+        ...source,
+        settings
+      })),
+      takeUntil(this.destroy$),
+    ).subscribe(x => {
+      this.translateFn = x.translator;
+      this.createChart(
+        x.settings.widgetSettings,
+        x.theme,
+        this.lastTheme && this.lastTheme.theme !== x.theme.theme || this.lastLang !== this.translatorService.getActiveLang()
       );
 
-      this.lastTheme = theme;
+      this.lastTheme = x.theme;
       this.lastLang = this.translatorService.getActiveLang();
     });
   }
