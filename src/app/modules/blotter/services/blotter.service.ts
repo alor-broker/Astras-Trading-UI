@@ -31,7 +31,6 @@ export class BlotterService {
 
   constructor(
     private readonly notification: OrdersNotificationsService,
-
     private readonly dashboardContextService: DashboardContextService,
     private readonly quotes: QuotesService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,

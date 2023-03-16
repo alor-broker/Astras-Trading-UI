@@ -10,7 +10,11 @@ import { of } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { mockComponent, sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import {
+  commonTestProviders,
+  mockComponent,
+  sharedModuleImportForTests
+} from "../../../../shared/utils/testing";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -45,6 +49,7 @@ describe('StopOrdersComponent', () => {
         { provide: ModalService, useValue: modalSpy },
         { provide: OrderCancellerService, useValue: cancelSpy },
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
+        ...commonTestProviders
       ],
       declarations: [
         StopOrdersComponent,

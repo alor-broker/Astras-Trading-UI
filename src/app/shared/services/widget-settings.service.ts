@@ -12,9 +12,9 @@ import {
   addWidgetSettings,
   updateWidgetSettings
 } from "../../store/widget-settings/widget-settings.actions";
-import { LoggerService } from "./logger.service";
 import { map } from 'rxjs/operators';
 import { WidgetSettings } from '../models/widget-settings.model';
+import { LoggerService } from './logging/logger.service';
 
 @Injectable({
   providedIn: 'root'

@@ -10,7 +10,6 @@ import {
   sharedModuleImportForTests,
   widgetSkeletonMock
 } from '../../../../shared/utils/testing';
-import { OrderSubmitModule } from '../../order-submit.module';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import {
   of,
@@ -19,6 +18,7 @@ import {
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { LOGGER } from '../../../../shared/services/logging/logger-base';
 
 describe('OrderSubmitWidgetComponent', () => {
   let component: OrderSubmitWidgetComponent;
@@ -27,7 +27,6 @@ describe('OrderSubmitWidgetComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        OrderSubmitModule,
         ...sharedModuleImportForTests,
         getTranslocoModule()
       ],
@@ -75,6 +74,10 @@ describe('OrderSubmitWidgetComponent', () => {
             getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({})),
           }
         },
+        {
+          provide: LOGGER,
+          useValue: []
+        }
       ]
     })
       .compileComponents();

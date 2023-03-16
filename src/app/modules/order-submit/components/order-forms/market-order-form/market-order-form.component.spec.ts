@@ -4,6 +4,7 @@ import { MarketOrderFormComponent, MarketOrderFormValue } from './market-order-f
 import { OrderSubmitModule } from '../../../order-submit.module';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
@@ -70,6 +71,9 @@ describe('MarketOrderFormComponent', () => {
           selector: 'ats-evaluation',
           inputs: ['evaluationProperties']
         })
+      ],
+      providers:[
+        ...commonTestProviders
       ]
     })
       .overrideComponent(

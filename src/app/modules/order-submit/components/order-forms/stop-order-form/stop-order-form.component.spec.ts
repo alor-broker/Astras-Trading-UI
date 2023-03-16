@@ -9,6 +9,7 @@ import {
 } from './stop-order-form.component';
 import { Instrument } from '../../../../../shared/models/instruments/instrument.model';
 import {
+  commonTestProviders,
   getTranslocoModule,
   sharedModuleImportForTests,
   TestData
@@ -16,6 +17,7 @@ import {
 import {
   of,
   shareReplay,
+  Subject,
   take
 } from 'rxjs';
 import { TimezoneConverter } from '../../../../../shared/utils/timezone-converter';
@@ -33,6 +35,7 @@ import {
 } from '../../../../../shared/utils/datetime';
 import { StopOrderCondition } from '../../../../../shared/models/enums/stoporder-conditions';
 import ruCommand from "../../../../../../assets/i18n/command/ru.json";
+import { QuotesService } from '../../../../../shared/services/quotes.service';
 
 describe('StopOrderFormComponent', () => {
   let component: StopOrderFormComponent;
@@ -96,6 +99,13 @@ describe('StopOrderFormComponent', () => {
       providers: [
         { provide: NZ_I18N, useValue: ru_RU },
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
+        {
+          provide: QuotesService,
+          useValue: {
+            getLastPrice: jasmine.createSpy('getLastPrice').and.returnValue(new Subject())
+          }
+        },
+        ...commonTestProviders
       ]
     }).compileComponents();
   });

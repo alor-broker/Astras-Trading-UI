@@ -7,6 +7,7 @@ import {
 } from 'rxjs';
 import { QuotesService } from '../../../../shared/services/quotes.service';
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   ngZorroMockComponents,
@@ -42,7 +43,8 @@ describe('OrdersBasketItemComponent', () => {
           useValue: {
             getInstrument: jasmine.createSpy('getLastPrice').and.returnValue(new Subject())
           }
-        }
+        },
+        ...commonTestProviders
       ]
     })
     .compileComponents();

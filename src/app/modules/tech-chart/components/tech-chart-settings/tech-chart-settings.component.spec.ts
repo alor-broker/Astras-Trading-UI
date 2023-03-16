@@ -9,6 +9,7 @@ import { of } from "rxjs";
 import { TechChartModule } from "../../tech-chart.module";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
@@ -38,7 +39,8 @@ describe('TechChartSettingsComponent', () => {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({} as TechChartSettings)),
             updateSettings: jasmine.createSpy('getSettings').and.callThrough(),
           }
-        }
+        },
+        ...commonTestProviders
       ]
     })
     .compileComponents();

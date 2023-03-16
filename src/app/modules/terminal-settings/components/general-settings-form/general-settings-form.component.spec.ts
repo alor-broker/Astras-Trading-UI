@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GeneralSettingsFormComponent } from './general-settings-form.component';
 import {
+  commonTestProviders,
   getTranslocoModule,
   ngZorroMockComponents,
   sharedModuleImportForTests
@@ -22,6 +23,9 @@ describe('GeneralSettingsFormComponent', () => {
       ],
       declarations: [
         GeneralSettingsFormComponent
+      ],
+      providers: [
+        ...commonTestProviders
       ]
     })
     .compileComponents();

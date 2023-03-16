@@ -11,6 +11,7 @@ import { CommandsService } from '../../services/commands.service';
 import { CommandContextModel } from "../../models/command-context.model";
 import { CommandParams } from "../../../../shared/models/commands/command-params.model";
 import {
+  commonTestProviders,
   getTranslocoModule,
   sharedModuleImportForTests,
   TestData
@@ -112,6 +113,7 @@ describe('StopCommandComponent', () => {
         { provide: NZ_I18N, useValue: ru_RU },
         { provide: CommandsService, useValue: spyCommands },
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
+        ...commonTestProviders
       ]
     }).compileComponents();
   });

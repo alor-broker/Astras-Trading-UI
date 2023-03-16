@@ -2,7 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MobileNavbarComponent } from './mobile-navbar.component';
 import { of } from "rxjs";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { mockComponent, ngZorroMockComponents, sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import {
+  commonTestProviders,
+  mockComponent,
+  ngZorroMockComponents,
+  sharedModuleImportForTests
+} from "../../../../shared/utils/testing";
 import { ModalService } from "../../../../shared/services/modal.service";
 
 describe('MobileNavbarComponent', () => {
@@ -32,7 +37,8 @@ describe('MobileNavbarComponent', () => {
           useValue: {
             openTerminalSettingsModal: jasmine.createSpy('openTerminalSettingsModal').and.callThrough()
           }
-        }
+        },
+        ...commonTestProviders
       ]
     })
     .compileComponents();

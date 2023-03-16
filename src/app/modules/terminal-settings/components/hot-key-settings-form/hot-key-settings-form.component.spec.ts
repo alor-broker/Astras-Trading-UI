@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HotKeySettingsFormComponent } from './hot-key-settings-form.component';
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   ngZorroMockComponents,
@@ -23,6 +24,9 @@ describe('HotKeySettingsFormComponent', () => {
       declarations: [
         HotKeySettingsFormComponent,
         mockComponent({selector: 'nz-divider'})
+      ],
+      providers: [
+        ...commonTestProviders
       ]
     })
     .compileComponents();

@@ -1,6 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { ModalService } from './modal.service';
-import { sharedModuleImportForTests } from '../utils/testing';
+import {
+  commonTestProviders,
+  sharedModuleImportForTests
+} from '../utils/testing';
 
 describe('ModalService', () => {
   let service: ModalService;
@@ -9,7 +12,8 @@ describe('ModalService', () => {
     TestBed.configureTestingModule({
       imports: [...sharedModuleImportForTests],
       providers: [
-        ModalService
+        ModalService,
+        ...commonTestProviders
       ]
     });
 

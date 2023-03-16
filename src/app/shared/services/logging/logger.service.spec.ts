@@ -6,7 +6,7 @@ describe('LoggerService', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
-    service = new LoggerService();
+    service = new LoggerService([]);
   });
 
   it('should be created', () => {

@@ -4,7 +4,10 @@ import {
   TestBed,
   tick
 } from "@angular/core/testing";
-import { sharedModuleImportForTests } from "../../shared/utils/testing";
+import {
+  commonTestProviders,
+  sharedModuleImportForTests
+} from "../../shared/utils/testing";
 import { take } from "rxjs";
 import { LocalStorageService } from "../../shared/services/local-storage.service";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
@@ -62,7 +65,8 @@ describe('Widget Settings Store', () => {
       ],
       providers: [
         { provide: LocalStorageService, useValue: localStorageServiceSpy },
-        { provide: InstrumentsService, useValue: instrumentsServiceSpy }
+        { provide: InstrumentsService, useValue: instrumentsServiceSpy },
+        ...commonTestProviders
       ]
     });
 

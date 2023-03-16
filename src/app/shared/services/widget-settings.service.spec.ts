@@ -1,6 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { WidgetSettingsService } from './widget-settings.service';
-import { sharedModuleImportForTests } from "../utils/testing";
+import {
+  commonTestProviders,
+  sharedModuleImportForTests
+} from "../utils/testing";
+import { LoggerService } from './logging/logger.service';
 
 describe('WidgetSettingsService', () => {
   let service: WidgetSettingsService;
@@ -10,7 +14,13 @@ describe('WidgetSettingsService', () => {
     TestBed.configureTestingModule({
       imports: [...sharedModuleImportForTests],
       providers: [
-        WidgetSettingsService
+        WidgetSettingsService,
+        {
+          provide: LoggerService,
+          useValue: {
+            warn: jasmine.createSpy('warn').and.callThrough()
+          }
+        }
       ],
     });
 
