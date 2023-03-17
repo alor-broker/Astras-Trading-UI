@@ -23,6 +23,7 @@ import {AppSessionTrackHook} from "./shared/services/session/app-session-track-h
 import {InitTerminalSettingsHook} from "./shared/services/app-hook/init-terminal-settings-hook";
 import {ThemeChangesHook} from "./shared/services/app-hook/theme-changes-hook";
 import {TranslationHook} from "./shared/services/app-hook/translation-hook";
+import 'chartjs-chart-treemap';
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: any) {

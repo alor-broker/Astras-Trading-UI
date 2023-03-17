@@ -49,7 +49,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
     plugins: {
       tooltip: {
         callbacks: {
-          label: (context) => {
+          label: (context: any) => {
             return `Объем: ${context.parsed.y}; Цена: ${context.parsed.x}`;
           }
         }
@@ -150,7 +150,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe(t => {
-        this.chartOptions.plugins!.tooltip!.callbacks!.label = (context) => {
+        this.chartOptions.plugins!.tooltip!.callbacks!.label = (context: any) => {
           return `${t(['volume'])}: ${context.parsed.y}; ${t(['price'])}: ${context.parsed.x}`;
         };
       });

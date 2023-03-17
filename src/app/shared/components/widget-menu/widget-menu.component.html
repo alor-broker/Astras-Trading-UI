@@ -90,6 +90,13 @@
   >
     <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.ordersBasket)" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.' + widgetNames.ordersBasket)}}</label></span>
   </li>
+  <li
+      nz-menu-item
+      (click)="selected.emit(widgetNames.treemap)"
+      *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.treemap)"
+    >
+      <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.treemap)" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.' + widgetNames.treemap)}}</label></span>
+    </li>
 
   <ng-container *ngIf="!showedWidgets.length">
     <li nz-menu-divider></li>

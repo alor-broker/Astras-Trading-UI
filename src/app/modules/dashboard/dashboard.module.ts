@@ -37,6 +37,7 @@ import {
 } from './components/mobile-instruments-history/mobile-instruments-history.component';
 import { MobileDashboardComponent } from "./components/mobile-dashboard/mobile-dashboard.component";
 import { NetworkIndicatorComponent } from "./components/network-indicator/network-indicator.component";
+import { TreemapModule } from "../treemap/treemap.module";
 
 @NgModule({
   declarations: [
@@ -51,34 +52,35 @@ import { NetworkIndicatorComponent } from "./components/network-indicator/networ
     MobileInstrumentsHistoryComponent,
     NetworkIndicatorComponent
   ],
-  imports: [
-    DashboardRoutingModule,
-    SharedModule,
-    OrderbookModule,
-    LightChartModule,
-    InstrumentsModule,
-    BlotterModule,
-    CommandModule,
-    HelpModule,
-    InfoModule,
-    TerminalSettingsModule,
-    JoyrideModule.forRoot(),
-    AllTradesModule,
-    NewsModule,
-    ExchangeRateModule,
-    TechChartModule,
-    AllInstrumentsModule,
-    OrderSubmitModule,
-    NotificationsModule,
-    FeedbackModule,
-    ApplicationMetaModule,
-    NzInputModule,
-    ExternalLinkModule,
-    OrdersBasketModule,
-    ScalperOrderBookModule,
-    NzDrawerModule,
-    // components
-  ],
+    imports: [
+        DashboardRoutingModule,
+        SharedModule,
+        OrderbookModule,
+        LightChartModule,
+        InstrumentsModule,
+        BlotterModule,
+        CommandModule,
+        HelpModule,
+        InfoModule,
+        TerminalSettingsModule,
+        JoyrideModule.forRoot(),
+        AllTradesModule,
+        NewsModule,
+        ExchangeRateModule,
+        TechChartModule,
+        AllInstrumentsModule,
+        OrderSubmitModule,
+        NotificationsModule,
+        FeedbackModule,
+        ApplicationMetaModule,
+        NzInputModule,
+        ExternalLinkModule,
+        OrdersBasketModule,
+        ScalperOrderBookModule,
+        NzDrawerModule,
+        TreemapModule,
+        // components
+    ],
   providers: [
     OnboardingService
   ]

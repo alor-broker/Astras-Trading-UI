@@ -15,6 +15,7 @@ export interface ThemeColors {
   chartGridColor: string;
   chartLabelsColor: string;
   chartPrimaryTextColor: string;
+  treemapBackground: string;
 }
 
 export interface ThemeSettings {

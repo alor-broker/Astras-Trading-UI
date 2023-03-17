@@ -12,4 +12,5 @@ export class WidgetNames {
   static readonly allInstruments = 'all-instruments';
   static readonly orderSubmit = 'order-submit';
   static readonly ordersBasket = 'orders-basket';
+  static readonly treemap = 'treemap';
 }
