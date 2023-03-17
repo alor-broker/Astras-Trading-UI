@@ -208,6 +208,11 @@ export class ManageDashboardsService {
         guid: GuidGenerator.newGuid(),
         widgetType: WidgetNames.ordersBasket,
         position: { x: 0, y: 0, cols: 1, rows: 1 }
+      },
+      {
+        guid: GuidGenerator.newGuid(),
+        widgetType: WidgetNames.treemap,
+        position: { x: 0, y: 0, cols: 1, rows: 1 }
       }
     ];
   }

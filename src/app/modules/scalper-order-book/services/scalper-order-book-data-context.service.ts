@@ -3,8 +3,10 @@ import {
   combineLatest,
   filter,
   Observable,
+  of,
   shareReplay,
-  switchMap
+  switchMap,
+  take,
 } from 'rxjs';
 import {
   ScalperOrderBookDataContext,
@@ -27,7 +29,6 @@ import {
   BodyRow,
   CurrentOrderDisplay,
   PriceRow,
-  ScalperOrderBookBody,
   ScalperOrderBookRowType
 } from '../models/scalper-order-book.model';
 import { Range } from '../../../shared/models/common.model';
@@ -39,6 +40,25 @@ import {
 } from '../../orderbook/models/orderbook-data.model';
 import { AllTradesItem } from '../../../shared/models/all-trades.model';
 import { AllTradesService } from '../../../shared/services/all-trades.service';
+import { ContentSize } from '../../../shared/models/dashboard/dashboard-item.model';
+import {
+  PriceRowsState,
+  PriceRowsStore
+} from '../utils/price-rows-store';
+import { isInstrumentEqual } from '../../../shared/utils/settings-helper';
+import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
+import { QuotesService } from '../../../shared/services/quotes.service';
+
+
+export interface ContextGetters {
+  getVisibleRowsCount: () => number,
+  isFillingByHeightNeeded: (currentRows: PriceRow[]) => boolean
+}
+
+export interface ContextChangeActions {
+  priceRowsRegenerationStarted: () => void,
+  priceRowsRegenerationCompleted: () => void,
+}
 
 @Injectable({
   providedIn: 'root'
@@ -51,14 +71,17 @@ export class ScalperOrderBookDataContextService {
     private readonly currentDashboardService: DashboardContextService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
-    private readonly allTradesService: AllTradesService
+    private readonly allTradesService: AllTradesService,
+    private readonly quotesService: QuotesService,
   ) {
   }
 
   createContext(
     widgetGuid: string,
-    priceRows$: Observable<PriceRow[]>,
-    regeneratePriceRows: (orderBookData: OrderbookData, settings: ScalperOrderBookExtendedSettings) => void
+    priceRowsStore: PriceRowsStore,
+    contentSize$: Observable<ContentSize | null>,
+    getters: ContextGetters,
+    actions: ContextChangeActions
   ): Omit<ScalperOrderBookDataContext, 'displayRange$' | 'workingVolume$'> {
     const settings$ = this.getSettingsStream(widgetGuid);
     const currentPortfolio$ = this.getOrderBookPortfolio();
@@ -69,8 +92,18 @@ export class ScalperOrderBookDataContextService {
       extendedSettings$: settings$,
       currentPortfolio$: currentPortfolio$,
       position$: position$,
-      orderBookData$: orderBookData$,
-      orderBookBody$: this.getOrderBookBody(settings$, priceRows$, orderBookData$, position$, regeneratePriceRows),
+      orderBookData$: orderBookData$.pipe(
+        map(x => x.data)
+      ),
+      orderBookBody$: this.getOrderBookBody(
+        settings$,
+        priceRowsStore,
+        orderBookData$,
+        position$,
+        contentSize$,
+        getters,
+        actions
+      ),
       currentOrders$: this.getCurrentOrdersStream(settings$, currentPortfolio$),
       trades$: this.getInstrumentTradesStream(settings$)
     };
@@ -128,17 +161,27 @@ export class ScalperOrderBookDataContextService {
     );
   }
 
-  public getOrderBookDataStream(settings$: Observable<ScalperOrderBookExtendedSettings>): Observable<OrderbookData> {
+  public getOrderBookDataStream(settings$: Observable<ScalperOrderBookExtendedSettings>): Observable<{ instrumentKey: InstrumentKey, data: OrderbookData }> {
+    const getOrderBookData = (settings: ScalperOrderBookExtendedSettings) => this.subscriptionsDataFeedService.subscribe<OrderbookRequest, OrderbookData>(
+      OrderBookDataFeedHelper.getRealtimeDateRequest(
+        settings.widgetSettings.symbol,
+        settings.widgetSettings.exchange,
+        settings.widgetSettings.instrumentGroup,
+        settings.widgetSettings.depth
+      ),
+      OrderBookDataFeedHelper.getOrderbookSubscriptionId
+    ).pipe(
+      startWith(({
+        a: [],
+        b: []
+      } as OrderbookData)),
+    );
+
     return settings$.pipe(
-      switchMap(settings => this.subscriptionsDataFeedService.subscribe<OrderbookRequest, OrderbookData>(
-        OrderBookDataFeedHelper.getRealtimeDateRequest(
-          settings.widgetSettings.symbol,
-          settings.widgetSettings.exchange,
-          settings.widgetSettings.instrumentGroup,
-          settings.widgetSettings.depth
-        ),
-        OrderBookDataFeedHelper.getOrderbookSubscriptionId
-      )),
+      mapWith(
+        settings => getOrderBookData(settings),
+        (settings, data) => ({ instrumentKey: settings.widgetSettings, data })
+      ),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
@@ -213,56 +256,77 @@ export class ScalperOrderBookDataContextService {
 
   private getOrderBookBody(
     extendedSettings$: Observable<ScalperOrderBookExtendedSettings>,
-    priceRows$: Observable<PriceRow[]>,
-    orderBookData$: Observable<OrderbookData>,
+    priceRowsStore: PriceRowsStore,
+    orderBookData$: Observable<{ instrumentKey: InstrumentKey, data: OrderbookData }>,
     position$: Observable<Position | null>,
-    regeneratePriceRows: (orderBookData: OrderbookData, settings: ScalperOrderBookExtendedSettings) => void
-  ): Observable<ScalperOrderBookBody> {
+    contentSize$: Observable<ContentSize | null>,
+    getters: ContextGetters,
+    actions: ContextChangeActions
+  ): Observable<BodyRow[]> {
     return combineLatest([
       extendedSettings$,
-      priceRows$,
+      priceRowsStore.state$,
       orderBookData$,
-      position$
+      position$,
+      contentSize$
+
     ]).pipe(
-      map(([settings, priceRows, orderBookData, position]) => {
-        return {
-          orderBookData: orderBookData,
-          bodyRows: this.mapToBodyRows(
-            settings,
-            priceRows,
-            orderBookData,
-            position,
-            regeneratePriceRows) ?? []
-        };
+      map(([settings, rowsState, orderBookData, position]) => {
+        return this.mapToBodyRows(
+          settings,
+          rowsState,
+          orderBookData,
+          position,
+          getters,
+          actions,
+          priceRowsStore
+        ) ?? [];
       }),
-      filter(x => x.bodyRows.length > 0),
+      filter(x => x.length > 0),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
   private mapToBodyRows(
     settings: ScalperOrderBookExtendedSettings,
-    priceRows: PriceRow[],
-    orderBookData: OrderbookData,
+    rowsState: PriceRowsState,
+    orderBookData: { instrumentKey: InstrumentKey, data: OrderbookData },
     position: Position | null,
-    regeneratePriceRows: (orderBookData: OrderbookData, settings: ScalperOrderBookExtendedSettings) => void
+    getters: ContextGetters,
+    actions: ContextChangeActions,
+    priceRowsStore: PriceRowsStore
   ): BodyRow[] | null {
-    if (priceRows.length === 0
-      || !this.checkPriceRowBounds(
-        priceRows,
-        orderBookData,
-        settings,
-        regeneratePriceRows)
+    if (!isInstrumentEqual(settings.widgetSettings, rowsState.instrumentKey)
+      || !isInstrumentEqual(settings.widgetSettings, orderBookData.instrumentKey)
+    ) {
+      this.regenerateRowsForHeight(null, settings, getters, actions, priceRowsStore);
+      return [];
+    }
+
+    if (rowsState.rows.length === 0
+      || getters.isFillingByHeightNeeded(rowsState.rows)) {
+      this.regenerateRowsForHeight(orderBookData.data, settings, getters, actions, priceRowsStore);
+      return [];
+    }
+
+    if (!this.checkPriceRowBounds(
+      rowsState.rows,
+      orderBookData.data,
+      settings,
+      getters,
+      actions,
+      priceRowsStore
+    )
     ) {
       return [];
     }
 
-    const orderBookBounds = this.getOrderBookBounds(orderBookData);
+    const orderBookBounds = this.getOrderBookBounds(orderBookData.data);
     const rows: BodyRow[] = [];
-    for (let i = 0; i < priceRows.length; i++) {
+    for (let i = 0; i < rowsState.rows.length; i++) {
       const mappedRow = this.mapPriceRowToOrderBook(
-        priceRows[i],
-        orderBookData,
+        rowsState.rows[i],
+        orderBookData.data,
         orderBookBounds,
         settings.widgetSettings
       );
@@ -279,11 +343,90 @@ export class ScalperOrderBookDataContextService {
     return rows;
   }
 
+  private regenerateRowsForHeight(
+    orderBookData: OrderbookData | null,
+    settings: ScalperOrderBookExtendedSettings,
+    getters: ContextGetters,
+    actions: ContextChangeActions,
+    priceRowsStore: PriceRowsStore
+  ) {
+    actions.priceRowsRegenerationStarted();
+
+    let priceBounds$: Observable<{ min: number, max: number }> | null = null;
+
+    if (orderBookData) {
+      const bounds = this.getOrderBookBounds(orderBookData);
+      const expectedMaxPrice = bounds.asksRange?.max ?? bounds.bidsRange?.max;
+      const expectedMinPrice = bounds.bidsRange?.min ?? bounds.asksRange?.min;
+
+      if (expectedMaxPrice != null && expectedMinPrice != null) {
+        priceBounds$ = of({ min: expectedMinPrice, max: expectedMaxPrice });
+      }
+    }
+
+    if (!priceBounds$) {
+      priceBounds$ = this.quotesService.getLastPrice(settings.widgetSettings).pipe(
+        filter((lastPrice): lastPrice is number => !!lastPrice),
+        map(lp => ({ min: lp, max: lp }))
+      );
+    }
+
+    priceBounds$.pipe(
+      take(1)
+    ).subscribe(x => {
+      priceRowsStore.initWithPriceRange(
+        settings.widgetSettings,
+        {
+          min: x.min,
+          max: x.max
+        },
+        settings.instrument.minstep,
+        getters.getVisibleRowsCount(),
+        () => {
+          actions.priceRowsRegenerationCompleted();
+        }
+      );
+    });
+  }
+
+  private regeneratePriceRows(
+    orderBookData: OrderbookData,
+    settings: ScalperOrderBookExtendedSettings,
+    getters: ContextGetters,
+    actions: ContextChangeActions,
+    priceRowsStore: PriceRowsStore
+  ) {
+    actions.priceRowsRegenerationStarted();
+
+    const bounds = this.getOrderBookBounds(orderBookData);
+    const expectedMaxPrice = bounds.asksRange?.max ?? bounds.bidsRange?.max;
+    const expectedMinPrice = bounds.bidsRange?.min ?? bounds.asksRange?.min;
+
+    if (!expectedMaxPrice || !expectedMinPrice) {
+      return;
+    }
+
+    priceRowsStore.initWithPriceRange(
+      settings.widgetSettings,
+      {
+        min: expectedMinPrice,
+        max: expectedMaxPrice
+      },
+      settings.instrument.minstep,
+      getters.getVisibleRowsCount(),
+      () => {
+        actions.priceRowsRegenerationCompleted();
+      }
+    );
+  }
+
   private checkPriceRowBounds(
     priceRows: PriceRow[],
     orderBookData: OrderbookData,
     settings: ScalperOrderBookExtendedSettings,
-    regeneratePriceRows: (orderBookData: OrderbookData, settings: ScalperOrderBookExtendedSettings) => void
+    getters: ContextGetters,
+    actions: ContextChangeActions,
+    priceRowsStore: PriceRowsStore
   ): boolean {
     const maxRowPrice = priceRows[0].price;
     const minRowPrice = priceRows[priceRows.length - 1].price;
@@ -293,7 +436,7 @@ export class ScalperOrderBookDataContextService {
     const expectedMinPrice = orderBookBounds.bidsRange?.min ?? orderBookBounds.asksRange?.min;
     if ((!!expectedMinPrice && expectedMinPrice < minRowPrice)
       || (!!expectedMaxPrice && expectedMaxPrice > maxRowPrice)) {
-      regeneratePriceRows(orderBookData, settings);
+      this.regeneratePriceRows(orderBookData, settings, getters, actions, priceRowsStore);
       return false;
     }
 

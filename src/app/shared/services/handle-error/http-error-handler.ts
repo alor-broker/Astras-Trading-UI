@@ -2,7 +2,7 @@ import { ApplicationErrorHandler } from "./error-handler";
 import { HttpErrorResponse } from "@angular/common/http";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { Injectable } from "@angular/core";
-import { LoggerService } from '../logger.service';
+import { LoggerService } from '../logging/logger.service';
 
 @Injectable()
 export class HttpErrorHandler implements ApplicationErrorHandler {

@@ -1,7 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TreemapWidgetComponent } from './treemap-widget.component';
-import { mockComponent, sharedModuleImportForTests, widgetSkeletonMock } from "../../../../shared/utils/testing";
+import {
+  commonTestProviders,
+  mockComponent,
+  sharedModuleImportForTests,
+  widgetSkeletonMock
+} from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 
@@ -24,7 +29,8 @@ describe('TreemapWidgetComponent', () => {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
             addSettings: jasmine.createSpy('addSettings').and.callThrough()
           }
-        }
+        },
+        ...commonTestProviders
       ],
       imports: [...sharedModuleImportForTests]
     })

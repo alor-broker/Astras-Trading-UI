@@ -11,7 +11,6 @@ import {
   mockComponent,
   ngZorroMockComponents
 } from '../../../../shared/utils/testing';
-import { QuotesService } from '../../../../shared/services/quotes.service';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
@@ -28,7 +27,7 @@ describe('ScalperOrderBookBodyComponent', () => {
         ScalperOrderBookBodyComponent,
         mockComponent({ selector: 'ats-trades-panel' }),
         mockComponent({ selector: 'ats-scalper-order-book-table' }),
-        mockComponent({ selector: 'ats-orders-indicator', inputs: ['visible']}),
+        mockComponent({ selector: 'ats-orders-indicator', inputs: ['visible'] }),
         ...ngZorroMockComponents
       ],
       providers: [
@@ -50,12 +49,6 @@ describe('ScalperOrderBookBodyComponent', () => {
               asksRange: null,
               bidsRange: null
             })
-          }
-        },
-        {
-          provide: QuotesService,
-          useValue: {
-            getLastPrice: jasmine.createSpy('getLastPrice').and.returnValue(new Subject())
           }
         },
         {

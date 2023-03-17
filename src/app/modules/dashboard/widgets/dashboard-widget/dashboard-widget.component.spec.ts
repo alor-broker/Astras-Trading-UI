@@ -6,6 +6,7 @@ import { OnboardingService } from '../../services/onboarding.service';
 
 import { DashboardWidgetComponent } from './dashboard-widget.component';
 import {
+  commonTestProviders,
   mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
@@ -32,7 +33,8 @@ describe('DashboardWidgetComponent', () => {
         mockComponent({ selector: 'ats-application-updated-widget' })
       ],
       providers: [
-        { provide: OnboardingService, useValue: spyOnboarding }
+        { provide: OnboardingService, useValue: spyOnboarding },
+        ...commonTestProviders
       ]
     }).compileComponents();
   });

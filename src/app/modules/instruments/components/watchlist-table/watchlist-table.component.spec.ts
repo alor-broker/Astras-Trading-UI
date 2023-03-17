@@ -8,7 +8,11 @@ import {
 } from 'rxjs';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { WatchlistTableComponent } from './watchlist-table.component';
-import { getTranslocoModule, sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import {
+  commonTestProviders,
+  getTranslocoModule,
+  sharedModuleImportForTests
+} from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
@@ -48,6 +52,7 @@ describe('WatchlistTableComponent', () => {
         { provide: WatchInstrumentsService, useValue: watchInstrumentsServiceSpy },
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
         { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
+        ...commonTestProviders
       ]
     }).compileComponents();
   });

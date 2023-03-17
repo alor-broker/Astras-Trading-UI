@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { HttpErrorHandler } from "./http-error-handler";
+import { LoggerService } from '../logging/logger.service';
 
 describe('HttpErrorHandler', () => {
   let service: HttpErrorHandler;
@@ -12,7 +13,13 @@ describe('HttpErrorHandler', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: NzNotificationService, useValue: notificationSpy },
-        HttpErrorHandler
+        HttpErrorHandler,
+        {
+          provide: LoggerService,
+          useValue: {
+            error: jasmine.createSpy('error').and.callThrough()
+          }
+        }
       ],
     });
     service = TestBed.inject(HttpErrorHandler);

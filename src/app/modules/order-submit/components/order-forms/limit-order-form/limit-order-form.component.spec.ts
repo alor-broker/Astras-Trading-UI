@@ -9,6 +9,7 @@ import {
 } from './limit-order-form.component';
 import { OrderSubmitModule } from '../../../order-submit.module';
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
@@ -73,6 +74,9 @@ describe('LimitOrderFormComponent', () => {
           selector: 'ats-evaluation',
           inputs: ['evaluationProperties']
         })
+      ],
+      providers:[
+        ...commonTestProviders
       ]
     })
       .compileComponents();

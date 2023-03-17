@@ -9,6 +9,7 @@ import { LimitCommandComponent } from './limit-command.component';
 import { CommandContextModel } from "../../models/command-context.model";
 import { CommandParams } from "../../../../shared/models/commands/command-params.model";
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
@@ -93,7 +94,8 @@ describe('LimitCommandComponent', () => {
         })
       ],
       providers: [
-        { provide: CommandsService, useValue: spyCommands }
+        { provide: CommandsService, useValue: spyCommands },
+        ...commonTestProviders
       ]
     })
     .compileComponents();

@@ -9,7 +9,12 @@ import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { getTranslocoModule, sharedModuleImportForTests, TestData } from "../../../../shared/utils/testing";
+import {
+  commonTestProviders,
+  getTranslocoModule,
+  sharedModuleImportForTests,
+  TestData
+} from "../../../../shared/utils/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { StopEdit } from "../../models/stop-edit";
 import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
@@ -66,6 +71,7 @@ describe('StopEditComponent', () => {
             getConverter: jasmine.createSpy('getConverter').and.returnValue(of(timezoneConverter))
           }
         },
+        ...commonTestProviders
       ]
     })
       .compileComponents();

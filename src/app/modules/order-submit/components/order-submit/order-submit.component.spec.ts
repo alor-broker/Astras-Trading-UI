@@ -9,6 +9,7 @@ import { OrderSubmitComponent } from './order-submit.component';
 import { QuotesService } from '../../../../shared/services/quotes.service';
 import { Store } from '@ngrx/store';
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
@@ -136,6 +137,7 @@ describe('OrderSubmitComponent', () => {
           provide: DashboardContextService,
           useValue: dashboardContextServiceSpy
         },
+        ...commonTestProviders
       ]
     }).compileComponents();
 

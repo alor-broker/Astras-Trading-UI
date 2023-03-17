@@ -8,6 +8,7 @@ import { MarketService } from '../../../../shared/services/market.service';
 import { Subject } from 'rxjs';
 import { ExchangeRateService } from '../../../../shared/services/exchange-rate.service';
 import {
+  commonTestProviders,
   getTranslocoModule,
   ngZorroMockComponents,
   sharedModuleImportForTests
@@ -39,7 +40,8 @@ describe('PortfoliosCurrencyFormComponent', () => {
           useValue: {
             getCurrencies: jasmine.createSpy('getCurrencies').and.returnValue(new Subject())
           }
-        }
+        },
+        ...commonTestProviders
       ]
     })
       .compileComponents();

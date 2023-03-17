@@ -7,6 +7,7 @@ import {
 
 import { ScalperOrdersService } from './scalper-orders.service';
 import {
+  commonTestProviders,
   generateRandomString,
   getRandomInt,
   sharedModuleImportForTests
@@ -77,7 +78,8 @@ describe('ScalperOrdersService', () => {
         { provide: OrderCancellerService, useValue: orderCancellerServiceSpy },
         { provide: OrderService, useValue: orderServiceSpy },
         { provide: NzNotificationService, useValue: notificationServiceSpy },
-        { provide: ModalService, useValue: modalServiceSpy }
+        { provide: ModalService, useValue: modalServiceSpy },
+        ...commonTestProviders
       ]
     });
 

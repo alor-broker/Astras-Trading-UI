@@ -7,8 +7,8 @@ import { BlotterSettingsComponent } from './blotter-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import {
+  commonTestProviders,
   getTranslocoModule,
-  ngZorroMockComponents,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -49,7 +49,8 @@ describe('BlotterSettingsComponent', () => {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)),
             updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
           }
-        }
+        },
+        ...commonTestProviders
       ]
     })
       .compileComponents();

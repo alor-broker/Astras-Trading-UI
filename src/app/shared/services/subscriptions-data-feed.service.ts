@@ -8,7 +8,6 @@ import {
   WebSocketSubject
 } from 'rxjs/webSocket';
 import { AuthService } from './auth.service';
-import { LoggerService } from './logger.service';
 import {
   BehaviorSubject,
   filter,
@@ -31,6 +30,7 @@ import {
   tap
 } from 'rxjs/operators';
 import { isOnline$ } from '../utils/network';
+import { LoggerService } from './logging/logger.service';
 
 export interface SubscriptionRequest {
   opcode: string;

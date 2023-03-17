@@ -6,6 +6,7 @@ import { CommandsService } from '../../services/commands.service';
 
 import { CommandContextModel } from "../../models/command-context.model";
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
@@ -94,7 +95,8 @@ describe('LimitEditComponent', () => {
         })
       ],
       providers: [
-        { provide: CommandsService, useValue: spyCommands }
+        { provide: CommandsService, useValue: spyCommands },
+        ...commonTestProviders
       ]
     })
     .compileComponents();

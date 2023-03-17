@@ -4,7 +4,11 @@ import {
 } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
-import { mockComponent, sharedModuleImportForTests } from 'src/app/shared/utils/testing';
+import {
+  commonTestProviders,
+  mockComponent,
+  sharedModuleImportForTests
+} from 'src/app/shared/utils/testing';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookService } from '../../services/orderbook.service';
 
@@ -79,6 +83,7 @@ describe('OrderBookComponent', () => {
         { provide: OrderbookService, useValue: spyOb },
         { provide: ModalService, useValue: modalSync },
         { provide: ThemeService, useValue: themeServiceSpy },
+        ...commonTestProviders
       ],
       imports: [
         ...sharedModuleImportForTests

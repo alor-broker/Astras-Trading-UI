@@ -1,7 +1,10 @@
 import { Store } from "@ngrx/store";
 import { MarketType } from "../../shared/models/portfolio-key.model";
 import { TestBed } from "@angular/core/testing";
-import { sharedModuleImportForTests } from "../../shared/utils/testing";
+import {
+  commonTestProviders,
+  sharedModuleImportForTests
+} from "../../shared/utils/testing";
 import { getAllPortfolios } from "./portfolios.selectors";
 import {
   BehaviorSubject,
@@ -80,7 +83,8 @@ describe('Portfolios Store', () => {
             getExchangeSettings: jasmine.createSpy('getExchangeSettings')
               .and.callFake(e => of(e === 'MOEX' ? { isDefault: true } : {}))
           }
-        }
+        },
+        ...commonTestProviders
       ]
     });
 
