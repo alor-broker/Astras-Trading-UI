@@ -1,11 +1,19 @@
-import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { ActiveElement, Chart, ChartEvent } from "chart.js";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { TreemapService } from "../../services/treemap.service";
-import { map } from "rxjs/operators";
+import { debounceTime, map, switchMap } from "rxjs/operators";
 import { ThemeService } from "../../../../shared/services/theme.service";
-import { maxDayChange, TreemapNode } from "../../models/treemap.model";
-import { BehaviorSubject, combineLatest, Observable, take, withLatestFrom } from "rxjs";
+import { averageTileSize, maxDayChange, TreemapNode } from "../../models/treemap.model";
+import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, take, withLatestFrom } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 
@@ -15,11 +23,13 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
   styleUrls: ['./treemap.component.less']
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
+  @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef;
   @Input() guid!: string;
-  ctx?: CanvasRenderingContext2D;
-  selectedSector$ = new BehaviorSubject('');
-  chart?: Chart;
   isCursorOnSector$ = new BehaviorSubject(false);
+
+  private chart?: Chart;
+  private selectedSector$ = new BehaviorSubject('');
+  private tilesCount$ = new BehaviorSubject(0);
 
   constructor(
     private readonly treemapService: TreemapService,
@@ -34,10 +44,20 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d')!;
+    this.tilesCount$.next(
+      Math.floor(this.treemapWrapperEl!.nativeElement.clientWidth * this.treemapWrapperEl!.nativeElement.clientHeight / averageTileSize)
+    );
+
+    const treemap$ = this.tilesCount$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(limit => this.treemapService.getTreemap(limit))
+    );
+
+    const ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d')!;
 
     combineLatest([
-      this.treemapService.getTreemap(),
+      treemap$,
       this.selectedSector$,
       this.themeService.getThemeSettings()
     ])
@@ -53,14 +73,14 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         })),
       )
       .subscribe(({ treemap, themeColors }) => {
-        if (!this.ctx) {
+        if (!ctx) {
           return;
         }
 
         this.chart?.clear();
         this.chart?.destroy();
 
-        this.chart = new Chart(this.ctx, {
+        this.chart = new Chart(ctx, {
           type: 'treemap',
           data: {
             datasets: [
@@ -96,6 +116,9 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
             ],
           },
           options: {
+            onResize: (chart: Chart, { width, height }) => {
+              this.tilesCount$.next(Math.floor(width * height / averageTileSize));
+            },
             onHover: (event: ChartEvent, elements: ActiveElement[]) => {
               this.isCursorOnSector$.next(elements.length === 1);
             },

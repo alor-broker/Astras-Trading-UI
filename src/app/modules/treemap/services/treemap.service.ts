@@ -17,11 +17,11 @@ export class TreemapService {
     private readonly errorHandlerService: ErrorHandlerService
   ) { }
 
-  getTreemap(): Observable<TreemapNode[]> {
+  getTreemap(limit: number): Observable<TreemapNode[]> {
     return this.http.get<TreemapNode[]>(this.baseUrl, {
       params: {
         market: 'fond',
-        limit: 70
+        limit
       }
     })
       .pipe(
