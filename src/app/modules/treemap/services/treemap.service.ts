@@ -3,6 +3,8 @@ import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
 import { Observable } from "rxjs";
 import { TreemapNode } from "../models/treemap.model";
+import { catchHttpError } from "../../../shared/utils/observable-helper";
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,8 @@ export class TreemapService {
   private baseUrl = environment.apiUrl + '/instruments/v1/TreeMap';
 
   constructor(
-    private readonly http: HttpClient
+    private readonly http: HttpClient,
+    private readonly errorHandlerService: ErrorHandlerService
   ) { }
 
   getTreemap(): Observable<TreemapNode[]> {
@@ -20,6 +23,9 @@ export class TreemapService {
         market: 'fond',
         limit: 70
       }
-    });
+    })
+      .pipe(
+        catchHttpError<TreemapNode[]>([], this.errorHandlerService)
+      );
   }
 }

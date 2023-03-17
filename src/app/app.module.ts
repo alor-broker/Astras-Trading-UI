@@ -40,7 +40,6 @@ import { TranslationHook } from "./shared/services/app-hook/translation-hook";
 import { LOGGER } from './shared/services/logging/logger-base';
 import { ConsoleLogger } from './shared/services/logging/console-logger';
 import { RemoteLogger } from './shared/services/logging/remote-logger';
-import 'chartjs-chart-treemap';
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: any) {

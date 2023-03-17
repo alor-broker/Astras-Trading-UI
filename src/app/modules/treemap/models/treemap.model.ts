@@ -1,3 +1,5 @@
+import { WidgetSettings } from "../../../shared/models/widget-settings.model";
+
 export const maxDayChange = 5;
 
 export interface TreemapNode {
@@ -6,4 +8,7 @@ export interface TreemapNode {
   marketCap: number;
   sector: string;
   symbol: string;
+}
+
+export interface TreemapSettings extends WidgetSettings {
 }

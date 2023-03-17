@@ -38,7 +38,7 @@ export class ThemeService {
     chartGridColor: '#272E3B',
     chartLabelsColor: '#97A4BB',
     chartPrimaryTextColor: '#ffffff',
-    treemapBackground: '#1F2530'
+    chartBackground: '#1F2530'
   };
 
   private readonly lightThemeColors: ThemeColors = {
@@ -53,7 +53,7 @@ export class ThemeService {
     chartGridColor: '#D8E3F5',
     chartLabelsColor: '#647188',
     chartPrimaryTextColor: '#000000',
-    treemapBackground: '#F1F4F9'
+    chartBackground: '#F1F4F9'
   };
 
   constructor(

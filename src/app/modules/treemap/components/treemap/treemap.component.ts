@@ -1,12 +1,11 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActiveElement, Chart, ChartEvent } from "chart.js";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { TreemapService } from "../../services/treemap.service";
 import { map } from "rxjs/operators";
-import { mapWith } from "../../../../shared/utils/observable-helper";
 import { ThemeService } from "../../../../shared/services/theme.service";
 import { maxDayChange, TreemapNode } from "../../models/treemap.model";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, combineLatest, Observable, take, withLatestFrom } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 
@@ -15,11 +14,11 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
   templateUrl: './treemap.component.html',
   styleUrls: ['./treemap.component.less']
 })
-export class TreemapComponent implements AfterViewInit, OnInit {
+export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   @Input() guid!: string;
-  ctx!: CanvasRenderingContext2D;
+  ctx?: CanvasRenderingContext2D;
   selectedSector$ = new BehaviorSubject('');
-  chart!: Chart;
+  chart?: Chart;
   isCursorOnSector$ = new BehaviorSubject(false);
 
   constructor(
@@ -37,25 +36,27 @@ export class TreemapComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     this.ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d')!;
 
-    this.treemapService.getTreemap()
+    combineLatest([
+      this.treemapService.getTreemap(),
+      this.selectedSector$,
+      this.themeService.getThemeSettings()
+    ])
       .pipe(
-        mapWith(
-          () => this.selectedSector$,
-          (treemap, sector) => ({ treemap, sector })
-        ),
-        map(({ treemap, sector }) => treemap
-          .map(t => ({
-            ...t,
-            dayChangeAbs: Math.abs(t.dayChange)
-          }))
-          .filter(t => t.sector.includes(sector))
-        ),
-        mapWith(
-          () => this.themeService.getThemeSettings(),
-          (treemap, theme) => ({ treemap, themeColors: theme.themeColors })
-          )
+        map(([treemap, sector, theme]) => ({
+          treemap: treemap
+            .filter(t => t.sector.includes(sector))
+            .map(t => ({
+              ...t,
+              dayChangeAbs: Math.abs(t.dayChange)
+            })),
+          themeColors: theme.themeColors
+        })),
       )
       .subscribe(({ treemap, themeColors }) => {
+        if (!this.ctx) {
+          return;
+        }
+
         this.chart?.clear();
         this.chart?.destroy();
 
@@ -83,7 +84,7 @@ export class TreemapComponent implements AfterViewInit, OnInit {
                 },
                 backgroundColor: (t: any) => {
                   if (t.raw?._data.label === t.raw?._data.sector) {
-                    return themeColors.treemapBackground;
+                    return themeColors.chartBackground;
                   } else {
                     return t.raw._data.children[0]?.dayChange > 0
                       ? themeColors.buyColor.replace('1)', `${t.raw._data.children[0]?.dayChangeAbs / maxDayChange})`)
@@ -118,16 +119,27 @@ export class TreemapComponent implements AfterViewInit, OnInit {
             },
             onClick: (event: ChartEvent, elements: ActiveElement[]) => {
               if (elements.length === 1) {
-                if (this.selectedSector$.getValue()) {
-                  setTimeout(() => this.selectedSector$.next(''), 0);
-                } else {
-                  setTimeout(() => this.selectedSector$.next((<any>elements[0].element).$context.raw.g), 0);
-                }
+                this.selectedSector$
+                  .pipe(
+                    take(1)
+                  )
+                  .subscribe(sector => {
+                    if (sector) {
+                      this.selectedSector$.next('');
+                    } else {
+                      this.selectedSector$.next((<any>elements[0].element).$context.raw.g);
+                    }
+                  });
               }
             }
           }
         });
       });
+  }
+
+  ngOnDestroy() {
+    this.selectedSector$.complete();
+    this.isCursorOnSector$.complete();
   }
 
   private getTooltipLabel = (tooltipItem: any): any => {
@@ -138,8 +150,11 @@ export class TreemapComponent implements AfterViewInit, OnInit {
     }
 
     this.getTooltipData(treemapNode.children[0])
+      .pipe(
+        take(1)
+      )
       .subscribe(data => {
-        this.chart.options.plugins!.tooltip!.callbacks!.label = (newTooltipItem: any): any => {
+        this.chart!.options.plugins!.tooltip!.callbacks!.label = (newTooltipItem: any): any => {
           if (newTooltipItem.raw._data.label === newTooltipItem.raw._data.sector) {
             return '';
           }
@@ -150,18 +165,17 @@ export class TreemapComponent implements AfterViewInit, OnInit {
             this.getTooltipLabel(newTooltipItem);
           }
         };
-        this.chart.update();
+        this.chart!.update();
       });
   };
 
   private getTooltipData(treemapNode: TreemapNode): Observable<string[]> {
     return this.quotesService.getLastQuoteInfo(treemapNode.symbol, 'MOEX')
       .pipe(
-        mapWith(
-          () => this.translatorService.getTranslator('treemap'),
-          (quote, t) => ({quote, t})
+        withLatestFrom(
+          this.translatorService.getTranslator('treemap')
         ),
-        map(({ quote, t }) => ([
+        map(([ quote, t ]) => ([
           `${t(['company'])}: ${quote?.description}`,
           `${t(['dayChange'])}: ${treemapNode.dayChange}%`,
           `${t(['marketCap'])}: ${treemapNode.marketCap}`,

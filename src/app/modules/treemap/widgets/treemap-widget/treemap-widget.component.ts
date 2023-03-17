@@ -1,10 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
-import { NewsSettings } from "../../../news/models/news-settings.model";
+import { TreemapSettings } from "../../models/treemap.model";
 
 @Component({
-  selector: 'ats-treemap-widget',
+  selector: 'ats-treemap-widget[guid]',
   templateUrl: './treemap-widget.component.html',
   styleUrls: ['./treemap-widget.component.less']
 })
@@ -19,7 +19,7 @@ export class TreemapWidgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<NewsSettings>(
+    WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<TreemapSettings>(
       this.guid,
       'TreemapSettings',
       settings => ({
