@@ -17,13 +17,18 @@
     </div>
     <div [ngClass]="{
         'loss-or-profit': true,
-        'positive': position.lossOrProfit > 0,
-        'negative': position.lossOrProfit < 0
+        'positive': position.lossOrProfitPoints > 0,
+        'negative': position.lossOrProfitPoints < 0
         }"
          [nz-tooltip]="t('scalperOrderBookCurrentPositionState.lossOrProfitTooltip')"
          [nzTooltipMouseEnterDelay]="1"
+         (click)="changeLossOrProfitDisplayType()"
     >
-      {{position.lossOrProfit}}{{t('scalperOrderBookCurrentPositionState.positions')}}.
+      <ng-container *ngIf="lossOrProfitDisplayType$ | async as lossOrProfitDisplayType">
+        <span *ngIf="lossOrProfitDisplayType === 'points'">{{position.lossOrProfitPoints}}{{t('scalperOrderBookCurrentPositionState.positions')}}.</span>
+        <span *ngIf="lossOrProfitDisplayType === 'percentage'">{{position.lossOrProfitPercent}}%</span>
+      </ng-container>
+
     </div>
   </div>
 </ng-container>

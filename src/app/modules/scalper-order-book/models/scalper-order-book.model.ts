@@ -37,5 +37,7 @@ export interface BodyRow extends PriceRow {
 export interface ScalperOrderBookPositionState {
   price: number;
   qty: number;
-  lossOrProfit: number;
+  lossOrProfitPoints: number;
+  lossOrProfitPercent: number;
 }
+
