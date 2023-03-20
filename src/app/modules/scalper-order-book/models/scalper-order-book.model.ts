@@ -2,6 +2,7 @@ import { Side } from '../../../shared/models/enums/side.model';
 
 export interface CurrentOrderDisplay {
   orderId: string;
+  symbol: string;
   exchange: string;
   portfolio: string;
   type: 'limit' | 'stoplimit' | 'stop';
@@ -36,5 +37,7 @@ export interface BodyRow extends PriceRow {
 export interface ScalperOrderBookPositionState {
   price: number;
   qty: number;
-  lossOrProfit: number;
+  lossOrProfitPoints: number;
+  lossOrProfitPercent: number;
 }
+

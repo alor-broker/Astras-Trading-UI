@@ -1,11 +1,14 @@
 import {
   Component,
   Input,
+  OnDestroy,
   OnInit
 } from '@angular/core';
 import {
+  BehaviorSubject,
   combineLatest,
-  Observable
+  Observable,
+  take
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MathHelper } from '../../../../shared/utils/math-helper';
@@ -17,16 +20,30 @@ import { ScalperOrderBookDataContextService } from '../../services/scalper-order
   templateUrl: './current-position-panel.component.html',
   styleUrls: ['./current-position-panel.component.less']
 })
-export class CurrentPositionPanelComponent implements OnInit {
+export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   @Input() guid!: string;
 
   orderBookPosition$!: Observable<ScalperOrderBookPositionState | null>;
 
+  lossOrProfitDisplayType$ = new BehaviorSubject<'points' | 'percentage'>('points');
+
   constructor(private readonly dataContextService: ScalperOrderBookDataContextService) {
+  }
+
+  changeLossOrProfitDisplayType() {
+    this.lossOrProfitDisplayType$.pipe(
+      take(1)
+    ).subscribe(currentType => {
+      this.lossOrProfitDisplayType$.next(currentType === 'points' ? 'percentage' : 'points');
+    });
   }
 
   ngOnInit(): void {
     this.orderBookPosition$ = this.getPositionStateStream();
+  }
+
+  ngOnDestroy(): void {
+    this.lossOrProfitDisplayType$.complete();
   }
 
   private getPositionStateStream(): Observable<ScalperOrderBookPositionState | null> {
@@ -48,13 +65,15 @@ export class CurrentPositionPanelComponent implements OnInit {
           : orderBook.data.a[0].p;
 
         const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
+        const rowsDifferencePercent = MathHelper.round(((bestPrice - position!.avgPrice) / position!.avgPrice) * 100 * sign, 3);
 
         const minStepDigitsAfterPoint = MathHelper.getPrecision(settings.instrument.minstep);
 
         return {
           qty: position!.qtyTFutureBatch,
           price: MathHelper.round(position!.avgPrice, minStepDigitsAfterPoint),
-          lossOrProfit: rowsDifference
+          lossOrProfitPoints: rowsDifference,
+          lossOrProfitPercent: rowsDifferencePercent
         };
       })
     );

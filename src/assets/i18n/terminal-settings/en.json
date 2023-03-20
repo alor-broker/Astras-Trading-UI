@@ -32,22 +32,7 @@
   "notificationsTab": "Notifications",
 
   "hotkeysTab": "Hotkeys",
-  "allOrderbooksHeader": "Common for all open orderbooks",
-  "emptyFieldError": "Input value",
-  "removeLimitOrdersLabel": "Remove limit orders",
-  "closeAllPositions": "Close all positions by market",
-  "centerAllOrderbooks": "Align all orderbooks",
-  "mouseHoverOrderbookHeader": "For the orderbook on which the mouse is hovering",
-  "closePosition": "Close position by market",
-  "reverseMarketPosition": "Reverse market position",
-  "buyByMarket": "Buy by market",
-  "sellByMarket": "Sell by market",
-  "sellBestOrder": "Submit the best order for sell",
-  "buyBestOrder": "Submit the best order for buy",
-  "sellBestBid": "Sell best BID",
-  "buyBestAsk": "Buy best ASK",
-  "workingVolumesHeader": "Working volumes",
-  "selectWorkingVolumeLabel": "Select working volume",
+  "noActivePortfolios": "No active portfolios",
 
-  "noActivePortfolios": "No active portfolios"
+  "emptyFieldError": "Input value"
 }

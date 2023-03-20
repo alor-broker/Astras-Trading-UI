@@ -139,6 +139,10 @@ export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
     this.commandProcessorService.processRightMouseClick(e, row, this.dataContext);
   }
 
+  updateOrderPrice(orders: CurrentOrderDisplay[], row: DisplayRow) {
+    this.commandProcessorService.updateOrdersPrice(orders, row, this.dataContext);
+  }
+
   ngOnDestroy(): void {
     this.destroyable.destroy();
   }

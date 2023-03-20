@@ -137,24 +137,39 @@
         <nz-collapse [nzBordered]="false" nzGhost class="working-volumes">
           <nz-collapse-panel [nzDisabled]="!form.controls.workingVolumes.valid" [nzHeader]="t('scalperOrderBookSettings.workingVolumesHeader')">
             <div class="hint">{{t('scalperOrderBookSettings.workingVolumesHint')}}</div>
-            <nz-form-item *ngFor="let ctrl of workingVolumes.controls; let i = index">
-              <nz-form-label nzFor="workingVolume1" nzRequired>{{t('scalperOrderBookSettings.workingVolumeLabel')}} {{i + 1}}</nz-form-label>
-              <nz-form-control [nzErrorTip]="workingVolumeError">
-                <nz-input-group>
-                  <input
-                    (mousedown)="$event.stopPropagation()"
-                    [formControl]="workingVolumeCtrl(i)"
-                    atsNumerical
-                    nz-input
-                    placeholder="1"
-                  />
-                </nz-input-group>
-              </nz-form-control>
-
-              <ng-template #workingVolumeError>
-                <span *ngIf="ctrl.errors?.required">{{t('scalperOrderBookSettings.workingVolumeRequiredError')}}</span>
-                <span *ngIf="ctrl.errors?.min">{{t('scalperOrderBookSettings.workingVolumeMinError')}}</span>
-              </ng-template>
+            <nz-form-item>
+              <div *ngFor="let ctrl of workingVolumes.controls; let i = index" class="working-volume-option">
+                  <nz-form-label nzFor="workingVolume1" nzRequired>{{t('scalperOrderBookSettings.workingVolumeLabel')}} {{i + 1}}</nz-form-label>
+                  <nz-form-control [nzErrorTip]="workingVolumeError">
+                    <nz-input-group>
+                      <input
+                        (mousedown)="$event.stopPropagation()"
+                        [formControl]="workingVolumeCtrl(i)"
+                        atsNumerical
+                        nz-input
+                        placeholder="1"
+                      />
+                    </nz-input-group>
+                  </nz-form-control>
+                <button
+                  (click)="removeWorkingVolume($event, i)"
+                  [disabled]="workingVolumes.controls.length < 2"
+                  nz-button
+                  nzType="dashed">
+                  <i nz-icon nzType="minus"></i>
+                </button>
+                <ng-template #workingVolumeError>
+                  <span *ngIf="ctrl.errors?.required">{{t('scalperOrderBookSettings.workingVolumeRequiredError')}}</span>
+                  <span *ngIf="ctrl.errors?.min">{{t('scalperOrderBookSettings.workingVolumeMinError')}}</span>
+                </ng-template>
+              </div>
+              <button (click)="addWorkingVolume($event)"
+                      [disabled]="!asFormArray(form.controls.workingVolumes).valid"
+                      class="add-volume-btn"
+                      nz-button
+                      nzType="dashed">
+                <i nz-icon nzType="plus"></i>
+              </button>
             </nz-form-item>
           </nz-collapse-panel>
         </nz-collapse>

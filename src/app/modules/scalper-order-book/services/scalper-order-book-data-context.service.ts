@@ -213,6 +213,7 @@ export class ScalperOrderBookDataContextService {
       ),
       map(orders => orders.map(x => ({
         orderId: x.id,
+        symbol: x.symbol,
         exchange: x.exchange,
         portfolio: x.portfolio,
         type: 'limit',

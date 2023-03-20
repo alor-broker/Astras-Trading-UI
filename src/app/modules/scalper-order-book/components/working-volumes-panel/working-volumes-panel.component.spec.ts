@@ -17,13 +17,6 @@ describe('WorkingVolumesPanelComponent', () => {
         {
           provide: WidgetSettingsService,
           useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject()),
-            updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
-          }
-        },
-        {
-          provide: TerminalSettingsService,
-          useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
           }
         },

@@ -14,6 +14,11 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { ScalperOrderBookWidgetComponent } from './widgets/scalper-order-book-widget/scalper-order-book-widget.component';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { OrdersIndicatorComponent } from './components/orders-indicator/orders-indicator.component';
+import {
+  CdkDrag,
+  CdkDropList,
+  CdkDropListGroup
+} from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -33,7 +38,10 @@ import { OrdersIndicatorComponent } from './components/orders-indicator/orders-i
     SharedModule,
     NzResizeObserverModule,
     NzInputModule,
-    NzSpinModule
+    NzSpinModule,
+    CdkDropListGroup,
+    CdkDropList,
+    CdkDrag
   ],
   exports: [
     ScalperOrderBookWidgetComponent
