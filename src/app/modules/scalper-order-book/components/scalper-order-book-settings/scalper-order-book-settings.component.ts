@@ -174,6 +174,26 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
+  removeWorkingVolume($event: MouseEvent, index: number) {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    this.asFormArray(this.form.controls.workingVolumes).removeAt(index);
+  }
+
+  addWorkingVolume($event: MouseEvent) {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    const workingVolumeControl = this.asFormArray(this.form.controls.workingVolumes);
+    const defaultValue = workingVolumeControl?.controls[workingVolumeControl.length - 1]?.value as number;
+    workingVolumeControl.push(this.createWorkingVolumeControl((defaultValue * 10) ?? 1));
+  }
+
+  asFormArray(control: AbstractControl): UntypedFormArray {
+    return control as UntypedFormArray;
+  }
+
   private buildForm(settings: ScalperOrderBookSettings) {
     this.form = new UntypedFormGroup({
       instrument: new UntypedFormControl({
@@ -201,9 +221,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
           .sort((a, b) => a.boundary - b.boundary)
           .map(x => this.createVolumeHighlightOptionsControl(x))
       ),
-      workingVolumes: new UntypedFormArray(settings.workingVolumes.map(
-        wv => new UntypedFormControl(wv, [Validators.required, Validators.min(1)])
-      )),
+      workingVolumes: new UntypedFormArray(settings.workingVolumes.map(wv => this.createWorkingVolumeControl(wv))),
       disableHotkeys: new UntypedFormControl(settings.disableHotkeys),
       enableMouseClickSilentOrders: new UntypedFormControl(settings.enableMouseClickSilentOrders),
       autoAlignIntervalSec: new UntypedFormControl(
@@ -228,5 +246,9 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         ]),
       color: new UntypedFormControl(option?.color, Validators.required)
     });
+  }
+
+  private createWorkingVolumeControl(value: number | null): UntypedFormControl {
+    return new UntypedFormControl(value, [Validators.required, Validators.min(1)]);
   }
 }

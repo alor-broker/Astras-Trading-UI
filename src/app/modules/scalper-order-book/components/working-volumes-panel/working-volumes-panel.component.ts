@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import {
   BehaviorSubject,
-  distinctUntilChanged,
   filter,
   Observable,
   shareReplay,
@@ -19,8 +18,6 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { Destroyable } from '../../../../shared/utils/destroyable';
 import { map } from 'rxjs/operators';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
-import { isArrayEqual } from '../../../../shared/utils/collections';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScalperOrderBookSettings } from '../../models/scalper-order-book-settings.model';
 
@@ -34,14 +31,13 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   isActive: boolean = false;
   @Input() guid!: string;
   workingVolumes$!: Observable<number[]>;
-  readonly selectedVolume$ = new BehaviorSubject<number | null>(null);
+  readonly selectedVolume$ = new BehaviorSubject<{ index: number, value: number } | null>(null);
   @Output()
   selectedVolumeChanged = new EventEmitter<number>();
   private readonly destroyable = new Destroyable();
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly terminalSettingsService: TerminalSettingsService,
     private readonly hotKeyCommandService: HotKeyCommandService
   ) {
   }
@@ -56,17 +52,16 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
       take(1),
       filter(x => x.length > 0)
     ).subscribe(x => {
-      this.selectedVolume$.next(x[0]);
+      this.selectedVolume$.next({ index: 0, value: x[0] });
     });
 
     this.selectedVolume$.pipe(
       filter(x => !!x),
       takeUntil(this.destroyable.destroyed$)
     ).subscribe(x => {
-      this.selectedVolumeChanged.emit(x!);
+      this.selectedVolumeChanged.emit(x!.value);
     });
 
-    this.initHotkeysVolumesSync();
     this.initVolumeSwitchByHotKey();
   }
 
@@ -75,23 +70,10 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     this.destroyable.destroy();
   }
 
-  selectVolume(value: number) {
-    this.selectedVolume$.next(value);
-  }
-
-  private initHotkeysVolumesSync() {
-    this.terminalSettingsService.getSettings().pipe(
-      takeUntil(this.destroyable.destroyed$),
-      distinctUntilChanged((prev, curr) =>
-        isArrayEqual(
-          prev?.hotKeysSettings?.workingVolumes ?? null,
-          curr?.hotKeysSettings?.workingVolumes ?? null,
-          (a, b) => a === b)),
-      withLatestFrom(this.workingVolumes$),
-    ).subscribe(([terminalSettings, workingVolumes]) => {
-      this.widgetSettingsService.updateSettings(this.guid, {
-        workingVolumes: terminalSettings.hotKeysSettings?.workingVolumes?.map((wv, i) => workingVolumes[i] || 10 ** i)
-      });
+  selectVolume(index: number, value: number) {
+    this.selectedVolume$.next({
+      index,
+      value
     });
   }
 
@@ -103,7 +85,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     ).subscribe(([command, workingVolumes]) => {
       const volume = workingVolumes[command.index];
       if (!!volume) {
-        this.selectVolume(volume);
+        this.selectVolume(command.index, volume);
       }
     });
   }

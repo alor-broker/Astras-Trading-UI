@@ -32,22 +32,7 @@
   "notificationsTab": "Уведомления",
 
   "hotkeysTab": "Горячие клавиши",
-  "allOrderbooksHeader": "Общие для всех открытых стаканов",
-  "emptyFieldError": "Введите значение",
-  "removeLimitOrdersLabel": "Снять лимитные заявки",
-  "closeAllPositions": "Закрыть позиции по рынку",
-  "centerAllOrderbooks": "Отцентровать стаканы по спреду",
-  "mouseHoverOrderbookHeader": "Для стакана, на который наведена мышь",
-  "closePosition": "Закрыть позицию по рынку",
-  "reverseMarketPosition": "Переворот позиции по рынку",
-  "buyByMarket": "Купить по рынку",
-  "sellByMarket": "Продать по рынку",
-  "sellBestOrder": "Выставить лучшую заявку на продажу",
-  "buyBestOrder": "Выставить лучшую заявку на покупку",
-  "sellBestBid": "Продать по лучшей цене из BID",
-  "buyBestAsk": "Купить по лучшей цене из ASK",
-  "workingVolumesHeader": "Рабочие объёмы",
-  "selectWorkingVolumeLabel": "Выбрать рабочий объём",
+  "noActivePortfolios": "Нет активных портфелей",
 
-  "noActivePortfolios": "Нет активных портфелей"
+  "emptyFieldError": "Введите значение"
 }
