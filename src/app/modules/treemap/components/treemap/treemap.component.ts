@@ -12,13 +12,13 @@ import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { TreemapService } from "../../services/treemap.service";
 import { debounceTime, map, switchMap } from "rxjs/operators";
 import { ThemeService } from "../../../../shared/services/theme.service";
-import { averageTileSize, maxDayChange, TreemapNode } from "../../models/treemap.model";
+import { TreemapNode } from "../../models/treemap.model";
 import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, take, withLatestFrom } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 
 @Component({
-  selector: 'ats-treemap',
+  selector: 'ats-treemap[guid]',
   templateUrl: './treemap.component.html',
   styleUrls: ['./treemap.component.less']
 })
@@ -30,6 +30,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   private chart?: Chart;
   private selectedSector$ = new BehaviorSubject('');
   private tilesCount$ = new BehaviorSubject(0);
+  private maxDayChange = 5;
+  private averageTileSize = 4000;
 
   constructor(
     private readonly treemapService: TreemapService,
@@ -45,7 +47,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
 
   ngAfterViewInit() {
     this.tilesCount$.next(
-      Math.floor(this.treemapWrapperEl!.nativeElement.clientWidth * this.treemapWrapperEl!.nativeElement.clientHeight / averageTileSize)
+      Math.floor(this.treemapWrapperEl!.nativeElement.clientWidth * this.treemapWrapperEl!.nativeElement.clientHeight / this.averageTileSize)
     );
 
     const treemap$ = this.tilesCount$.pipe(
@@ -107,8 +109,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                     return themeColors.chartBackground;
                   } else {
                     return t.raw._data.children[0]?.dayChange > 0
-                      ? themeColors.buyColor.replace('1)', `${t.raw._data.children[0]?.dayChangeAbs / maxDayChange})`)
-                      : themeColors.sellColor.replace('1)', `${t.raw._data.children[0]?.dayChangeAbs / maxDayChange})`);
+                      ? themeColors.buyColor.replace('1)', `${t.raw._data.children[0]?.dayChangeAbs / this.maxDayChange})`)
+                      : themeColors.sellColor.replace('1)', `${t.raw._data.children[0]?.dayChangeAbs / this.maxDayChange})`);
                   }
                 },
                 borderRadius: 4
@@ -117,7 +119,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
           },
           options: {
             onResize: (chart: Chart, { width, height }) => {
-              this.tilesCount$.next(Math.floor(width * height / averageTileSize));
+              this.tilesCount$.next(Math.floor(width * height / this.averageTileSize));
             },
             onHover: (event: ChartEvent, elements: ActiveElement[]) => {
               this.isCursorOnSector$.next(elements.length === 1);
