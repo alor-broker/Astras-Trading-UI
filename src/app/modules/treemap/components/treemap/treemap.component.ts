@@ -134,10 +134,10 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                 displayColors: false,
                 callbacks: {
                   label: this.getTooltipLabel,
-                  title(tooltipItems: any) {
+                  title(tooltipItems: TooltipItem<'treemap'>[]) {
                     return tooltipItems.length > 1
-                      ? tooltipItems[1]!.raw._data.label
-                      : tooltipItems[0]!.raw._data.label;
+                      ? (tooltipItems[1]!.raw as any)._data.label
+                      : (tooltipItems[0]!.raw as any)._data.label;
                   }
                 }
               },
