@@ -40,15 +40,18 @@ export class QuotesService {
   }
 
   getLastPrice(instrumentKey: InstrumentKey): Observable<number | null> {
-    return this.httpClient.get<Quote[]>(`${environment.apiUrl}/md/v2/Securities/${instrumentKey.exchange}:${instrumentKey.symbol}/quotes`).pipe(
-      catchHttpError<Quote[]>([], this.errorHandlerService),
-      map(quotes => {
-        if (quotes.length >= 1) {
-          return quotes[0].last_price;
-        }
-
-        return null;
+    return this.getLastQuoteInfo(instrumentKey.symbol, instrumentKey.exchange).pipe(
+      catchHttpError<Quote | null>(null, this.errorHandlerService),
+      map(quote => {
+          return quote?.last_price ?? null;
       })
+    );
+  }
+
+  getLastQuoteInfo(symbol: string, exchange: string): Observable<Quote | null> {
+    return this.httpClient.get<Quote[]>(`${environment.apiUrl}/md/v2/Securities/${exchange}:${symbol}/quotes`).pipe(
+      catchHttpError<Quote[]>([], this.errorHandlerService),
+      map(quotes => quotes[0] ?? null)
     );
   }
 }

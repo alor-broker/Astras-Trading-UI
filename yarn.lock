@@ -3533,6 +3533,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.47.0
     angular-gridster2: ^15.0.0
     chart.js: ^4.1.1
+    chartjs-chart-treemap: ^2.3.0
     d3: ^7.8.2
     eslint: ^8.30.0
     husky: ^8.0.2
@@ -3953,6 +3954,15 @@ __metadata:
   dependencies:
     "@kurkle/color": ^0.3.0
   checksum: 281b023c013de8700a5208a45d35248b02119fadb574d0c104c7e0720605e085195ce546fd3aa27625e9db1188fdd5f7491a411463b9c30b7654a5f4b13d8d80
+  languageName: node
+  linkType: hard
+
+"chartjs-chart-treemap@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "chartjs-chart-treemap@npm:2.3.0"
+  peerDependencies:
+    chart.js: ">=3.0.0"
+  checksum: f6a338acf79d796f7469c1a0f00bf0afc9372af4d4631c4410a011f0fb73f4366a8bad042c1582b367bc41c8cb89179766a581ed245eaa5b15d3c3ebd68b42e1
   languageName: node
   linkType: hard
 

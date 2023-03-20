@@ -27,7 +27,8 @@
     "TechChartSettings": "Тех. анализ",
     "AllInstrumentsSettings": "Все инструменты",
     "OrderSubmitSettings": "Выставить заявку",
-    "OrdersBasketSettings": "Корзина заявок"
+    "OrdersBasketSettings": "Корзина заявок",
+    "TreemapSettings": "Карта рынка"
   },
 
   "joyride": {

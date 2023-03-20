@@ -28,6 +28,8 @@ export class WidgetsHelper {
         return 'send';
       case WidgetNames.ordersBasket:
         return 'calculator';
+      case WidgetNames.treemap:
+        return 'layout';
       default:
         return '';
     }

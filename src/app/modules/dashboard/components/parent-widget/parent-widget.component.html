@@ -55,8 +55,13 @@
       *ngSwitchCase="'orders-basket'"
       [guid]="getGuid()"
       [isBlockWidget]="isBlockWidget">
-
     </ats-orders-basket-widget>
+    <ats-treemap-widget
+      *ngSwitchCase="'treemap'"
+      [guid]="getGuid()"
+      [isBlockWidget]="isBlockWidget"
+    >
+    </ats-treemap-widget>
   </ng-container>
 
 </div>

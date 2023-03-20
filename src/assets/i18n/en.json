@@ -27,7 +27,8 @@
     "TechChartSettings": "Tech Chart",
     "AllInstrumentsSettings": "All Instruments",
     "OrderSubmitSettings": "Order Submit",
-    "OrdersBasketSettings": "Orders Basket"
+    "OrdersBasketSettings": "Orders Basket",
+    "TreemapSettings": "Market Map"
   },
 
   "joyride": {
