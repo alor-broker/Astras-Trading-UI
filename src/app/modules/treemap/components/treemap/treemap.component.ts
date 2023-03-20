@@ -7,7 +7,7 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import { ActiveElement, Chart, ChartEvent } from "chart.js";
+import { ActiveElement, Chart, ChartEvent, TooltipItem } from "chart.js";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { TreemapService } from "../../services/treemap.service";
 import { debounceTime, map, switchMap } from "rxjs/operators";
@@ -167,8 +167,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
     this.isCursorOnSector$.complete();
   }
 
-  private getTooltipLabel = (tooltipItem: any): any => {
-    const treemapNode = tooltipItem.raw._data;
+  private getTooltipLabel = (tooltipItem: TooltipItem<'treemap'>): string | void => {
+    const treemapNode = (tooltipItem.raw as any)._data;
 
     if (treemapNode.label === treemapNode.sector) {
       return '';
