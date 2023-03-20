@@ -11,14 +11,18 @@ import {
 } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
+import { RemoteLogger } from '../services/logging/remote-logger';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private readonly authService: AuthService) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly remoteLogger: RemoteLogger
+  ) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (this.authService.isAuthRequest(req.url)) {
+    if (this.authService.isAuthRequest(req.url) || this.remoteLogger.isLoggerRequest(req.url)) {
       return next.handle(req);
     }
     return this.authService.accessToken$

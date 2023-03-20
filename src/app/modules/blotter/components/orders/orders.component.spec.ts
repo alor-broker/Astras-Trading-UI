@@ -5,7 +5,11 @@ import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { OrdersComponent } from './orders.component';
-import { mockComponent, sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import {
+  commonTestProviders,
+  mockComponent,
+  sharedModuleImportForTests
+} from '../../../../shared/utils/testing';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { of } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
@@ -44,6 +48,7 @@ describe('OrdersComponent', () => {
         { provide: ModalService, useValue: modalSpy },
         { provide: OrderCancellerService, useValue: cancelSpy },
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
+        ...commonTestProviders
       ],
       declarations: [
         OrdersComponent,

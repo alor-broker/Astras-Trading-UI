@@ -9,8 +9,8 @@ import {
   Subject
 } from 'rxjs';
 import { AuthService } from './auth.service';
-import { LoggerService } from './logger.service';
 import { BaseResponse } from '../models/ws/base-response.model';
+import { LoggerService } from './logging/logger.service';
 
 describe('SubscriptionsDataFeedService', () => {
   let service: SubscriptionsDataFeedService;

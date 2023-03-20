@@ -4,6 +4,7 @@ import { TerminalSettingsService } from '../../services/terminal-settings.servic
 import { TerminalSettingsComponent } from './terminal-settings.component';
 import {
   mockComponent,
+  commonTestProviders,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
 import { of } from 'rxjs';
@@ -30,7 +31,8 @@ describe('TerminalSettingsComponent', () => {
         mockComponent({selector: 'ats-instant-notifications-form'}),
       ],
       providers: [
-        { provide: TerminalSettingsService, useValue: tsSpy }
+        { provide: TerminalSettingsService, useValue: tsSpy },
+        ...commonTestProviders
       ]
     }).compileComponents();
   });

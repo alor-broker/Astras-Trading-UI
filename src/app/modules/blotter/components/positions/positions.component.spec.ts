@@ -5,7 +5,11 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 import { PositionsComponent } from './positions.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { mockComponent, sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import {
+  commonTestProviders,
+  mockComponent,
+  sharedModuleImportForTests
+} from "../../../../shared/utils/testing";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -30,7 +34,8 @@ describe('PositionsComponent', () => {
           provide: WidgetSettingsService,
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
         },
-        { provide: BlotterService, useClass: MockServiceBlotter }
+        { provide: BlotterService, useClass: MockServiceBlotter },
+        ...commonTestProviders
       ],
       declarations: [
         PositionsComponent,

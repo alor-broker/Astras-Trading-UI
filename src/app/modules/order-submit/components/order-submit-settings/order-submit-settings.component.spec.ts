@@ -8,6 +8,7 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { of } from 'rxjs';
 import { OrderSubmitModule } from '../../order-submit.module';
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
@@ -35,7 +36,8 @@ describe('OrderSubmitSettingsComponent', () => {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({} as OrderSubmitSettings)),
             updateSettings: jasmine.createSpy('getSettings').and.callThrough(),
           }
-        }
+        },
+        ...commonTestProviders
       ]
     })
       .compileComponents();

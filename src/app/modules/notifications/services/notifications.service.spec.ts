@@ -1,14 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 
 import { NotificationsService } from './notifications.service';
-import { sharedModuleImportForTests } from '../../../shared/utils/testing';
+import {
+  commonTestProviders,
+  sharedModuleImportForTests
+} from '../../../shared/utils/testing';
 
 describe('NotificationsService', () => {
   let service: NotificationsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports:[...sharedModuleImportForTests]
+      imports:[...sharedModuleImportForTests],
+      providers:[
+        ...commonTestProviders
+      ]
     });
     service = TestBed.inject(NotificationsService);
   });

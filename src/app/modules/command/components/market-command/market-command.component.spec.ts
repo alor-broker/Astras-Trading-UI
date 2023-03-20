@@ -7,6 +7,7 @@ import { CommandsService } from '../../services/commands.service';
 import { CommandContextModel } from "../../models/command-context.model";
 import { CommandParams } from "../../../../shared/models/commands/command-params.model";
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests,
@@ -104,7 +105,8 @@ describe('MarketCommandComponent', () => {
             getQuotes: jasmine.createSpy('getQuotes').and.returnValue(quoteMock),
             unsubscribe: jasmine.createSpy('unsubscribe').and.callThrough()
           }
-        }
+        },
+        ...commonTestProviders
       ]
     })
     .compileComponents();

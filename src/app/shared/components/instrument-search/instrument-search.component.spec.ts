@@ -6,7 +6,11 @@ import {
 import { InstrumentSearchComponent } from './instrument-search.component';
 import { InstrumentsService } from '../../../modules/instruments/services/instruments.service';
 import { of } from 'rxjs';
-import { getTranslocoModule, sharedModuleImportForTests } from '../../utils/testing';
+import {
+  commonTestProviders,
+  getTranslocoModule,
+  sharedModuleImportForTests
+} from '../../utils/testing';
 import ruInstrumentSearch from "../../../../assets/i18n/shared/instrument-search/ru.json";
 
 describe('InstrumentSearchComponent', () => {
@@ -35,7 +39,8 @@ describe('InstrumentSearchComponent', () => {
         {
           provide: InstrumentsService,
           useValue: instrumentsServiceSpy
-        }
+        },
+        ...commonTestProviders
       ]
     })
       .compileComponents();

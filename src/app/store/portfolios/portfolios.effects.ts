@@ -9,8 +9,6 @@ import {
   map
 } from 'rxjs/operators';
 import { ErrorHandlerService } from '../../shared/services/handle-error/error-handler.service';
-import { LocalStorageService } from '../../shared/services/local-storage.service';
-import { Store } from '@ngrx/store';
 import { AccountService } from '../../shared/services/account.service';
 import {
   switchMap,
@@ -19,7 +17,6 @@ import {
 import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.model';
 import { catchHttpError } from '../../shared/utils/observable-helper';
 import { PortfolioKey } from '../../shared/models/portfolio-key.model';
-import { MarketService } from "../../shared/services/market.service";
 import {
   InternalPortfoliosActions,
   PortfoliosActions
@@ -46,9 +43,6 @@ export class PortfoliosEffects {
     private readonly actions$: Actions,
     private readonly accountService: AccountService,
     private readonly errorHandlerService: ErrorHandlerService,
-    private readonly localStorage: LocalStorageService,
-    private readonly store: Store,
-    private readonly marketService: MarketService
   ) {
   }
 }

@@ -1,14 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 
 import { DashboardContextService } from './dashboard-context.service';
-import { sharedModuleImportForTests } from '../utils/testing';
+import {
+  commonTestProviders,
+  sharedModuleImportForTests
+} from '../utils/testing';
 
-describe('CurrentDashboardService', () => {
+describe('DashboardContextService', () => {
   let service: DashboardContextService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [...sharedModuleImportForTests]
+      imports: [...sharedModuleImportForTests],
+      providers: [
+        ...commonTestProviders
+      ]
     });
     service = TestBed.inject(DashboardContextService);
   });
