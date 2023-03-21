@@ -1,4 +1,4 @@
-<div class="d-flex mobile-dashboard" *transloco="let t; scope: 'shared/widget-menu'">
+<div class="d-flex mobile-dashboard" *transloco="let t">
   <nz-tabset
     *ngIf="widgets$ | async as widgets"
     nzTabPosition="bottom"
@@ -26,7 +26,7 @@
               </span>
             </ng-container>
             <ng-template #widgetLabel>
-              <span>{{t('sharedWidgetMenu.' + widget.widgetType)}}</span>
+              <span>{{t('widgetHeaders.' + widgetsHelper.getWidgetHeaderTranslateKey(widget.widgetType))}}</span>
             </ng-template>
           </div>
         </div>

@@ -34,4 +34,39 @@ export class WidgetsHelper {
         return '';
     }
   }
+
+  static getWidgetHeaderTranslateKey(widgetName: WidgetNames): string {
+    switch (widgetName) {
+      case WidgetNames.instrumentSelect:
+        return 'InstrumentSelectSettings';
+      case WidgetNames.orderBook:
+        return 'OrderbookSettings';
+      case WidgetNames.scalperOrderBook:
+        return 'ScalperOrderBookSettings';
+      case WidgetNames.lightChart:
+        return 'LightChartSettings';
+      case WidgetNames.techChart:
+        return 'TechChartSettings';
+      case WidgetNames.blotter:
+        return 'BlotterSettings';
+      case WidgetNames.instrumentInfo:
+        return 'InfoSettings';
+      case WidgetNames.news:
+        return 'NewsSettings';
+      case WidgetNames.allTrades:
+        return 'AllTradesSettings';
+      case WidgetNames.exchangeRate:
+        return 'ExchangeRateSettings';
+      case WidgetNames.allInstruments:
+        return 'AllInstrumentsSettings';
+      case WidgetNames.orderSubmit:
+        return 'OrderSubmitSettings';
+      case WidgetNames.ordersBasket:
+        return 'OrdersBasketSettings';
+      case WidgetNames.treemap:
+        return 'TreemapSettings';
+      default:
+        return '';
+    }
+  }
 }

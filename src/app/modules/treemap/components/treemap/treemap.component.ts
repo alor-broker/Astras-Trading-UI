@@ -56,8 +56,6 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
       switchMap(limit => this.treemapService.getTreemap(limit))
     );
 
-    const ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d')!;
-
     combineLatest([
       treemap$,
       this.selectedSector$,
@@ -75,6 +73,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         })),
       )
       .subscribe(({ treemap, themeColors }) => {
+        const ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d')!;
+
         if (!ctx) {
           return;
         }
