@@ -340,11 +340,11 @@ export class ScalperCommandProcessorService {
 
   private getActionMethod(action: ScalperOrderBookMouseAction): (row: { price: number }, dataContext: ScalperOrderBookDataContext) => void {
     switch (action) {
-      case ScalperOrderBookMouseAction.StopLimitBuy:
+      case ScalperOrderBookMouseAction.StopLimitBuyOrder:
         return (row, dataContext) => this.stopLimitAction(row, Side.Buy, dataContext);
-      case ScalperOrderBookMouseAction.StopLimitSell:
+      case ScalperOrderBookMouseAction.StopLimitSellOrder:
         return (row, dataContext) => this.stopLimitAction(row, Side.Sell, dataContext);
-      case ScalperOrderBookMouseAction.StopLoss:
+      case ScalperOrderBookMouseAction.StopLossOrder:
         return (row, dataContext) => this.stopLossAction(row, dataContext);
       case ScalperOrderBookMouseAction.LimitBuyOrder:
         return (row, dataContext) => this.limitOrderAction(row, Side.Buy, dataContext);

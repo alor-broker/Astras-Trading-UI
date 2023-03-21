@@ -29,9 +29,9 @@
       "limitSellOrder": "Limit Sell order",
       "marketBuyOrder": "Market Buy order",
       "marketSellOrder": "Market Sell order",
-      "stopLimitBuy": "Stop-Limit Buy order",
-      "stopLimitSell": "Stop-Limit Sell order",
-      "stopLoss": "Stop-Loss order"
+      "stopLimitBuyOrder": "Stop-Limit Buy order",
+      "stopLimitSellOrder": "Stop-Limit Sell order",
+      "stopLossOrder": "Stop-Loss order"
     }
   }
 }
