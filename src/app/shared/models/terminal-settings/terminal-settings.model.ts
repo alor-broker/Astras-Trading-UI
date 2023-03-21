@@ -23,9 +23,9 @@ export enum ScalperOrderBookMouseAction {
   LimitSellOrder = 'limitSellOrder',
   MarketBuyOrder = 'marketBuyOrder',
   MarketSellOrder = 'marketSellOrder',
-  StopLimitBuy = 'stopLimitBuy',
-  StopLimitSell = 'stopLimitSell',
-  StopLoss = 'stopLoss'
+  StopLimitBuyOrder = 'stopLimitBuyOrder',
+  StopLimitSellOrder = 'stopLimitSellOrder',
+  StopLossOrder = 'stopLossOrder'
 }
 
 export interface ScalperOrderBookMouseActionsMapItem {
@@ -85,4 +85,3 @@ export interface TerminalSettings {
   instantNotificationsSettings?: InstantNotificationsSettings;
   excludedSettings?: string[];
 }
-

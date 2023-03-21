@@ -59,19 +59,19 @@ export class TerminalSettingsHelper {
           button: 'left',
           orderBookRowType: 'ask',
           modifier: 'ctrl',
-          action: ScalperOrderBookMouseAction.StopLimitSell
+          action: ScalperOrderBookMouseAction.StopLimitSellOrder
         },
         {
           button: 'left',
           orderBookRowType: 'bid',
           modifier: 'ctrl',
-          action: ScalperOrderBookMouseAction.StopLimitBuy
+          action: ScalperOrderBookMouseAction.StopLimitBuyOrder
         },
         {
           button: 'left',
           orderBookRowType: 'any',
           modifier: 'shift',
-          action: ScalperOrderBookMouseAction.StopLoss
+          action: ScalperOrderBookMouseAction.StopLossOrder
         },
         {
           button: 'right',
@@ -100,19 +100,19 @@ export class TerminalSettingsHelper {
           button: 'left',
           orderBookRowType: 'ask',
           modifier: 'ctrl',
-          action: ScalperOrderBookMouseAction.StopLimitSell
+          action: ScalperOrderBookMouseAction.StopLimitSellOrder
         },
         {
           button: 'left',
           orderBookRowType: 'bid',
           modifier: 'ctrl',
-          action: ScalperOrderBookMouseAction.StopLimitBuy
+          action: ScalperOrderBookMouseAction.StopLimitBuyOrder
         },
         {
           button: 'left',
           orderBookRowType: 'any',
           modifier: 'shift',
-          action: ScalperOrderBookMouseAction.StopLoss
+          action: ScalperOrderBookMouseAction.StopLossOrder
         },
         {
           button: 'right',
