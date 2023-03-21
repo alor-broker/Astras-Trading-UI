@@ -1,0 +1,37 @@
+<ng-container *transloco="let t; scope: 'terminal-settings/scalper-mouse-actions-form'">
+  <form *ngIf="form" [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
+    <nz-form-item>
+      <nz-form-label nzFor="mapName" nzRequired>{{t('terminalSettingsScalperMouseActionsForm.mapNameLabel')}}</nz-form-label>
+      <nz-form-control [nzErrorTip]="t('terminalSettingsScalperMouseActionsForm.selectValueError')">
+        <nz-select [nzPlaceHolder]="t('terminalSettingsScalperMouseActionsForm.mapNameLabel')"
+                   formControlName="mapName">
+          <ng-container *ngFor="let scheme of availableDefaultSchemes">
+            <nz-option [nzLabel]="t('terminalSettingsScalperMouseActionsForm.schemes.' + scheme)"
+                       [nzValue]="scheme"></nz-option>
+          </ng-container>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <ng-container
+      *ngIf="form.getRawValue().mapName && getActionsFormScheme(form.getRawValue().mapName) as schemeActions">
+      <nz-table nzSize="small" nzTemplateMode nzBordered>
+        <thead>
+        <tr>
+          <th>{{t('terminalSettingsScalperMouseActionsForm.schemeDescription.buttonLabel')}}</th>
+          <th>{{t('terminalSettingsScalperMouseActionsForm.schemeDescription.modifierLabel')}}</th>
+          <th>{{t('terminalSettingsScalperMouseActionsForm.schemeDescription.sideLabel')}}</th>
+          <th>{{t('terminalSettingsScalperMouseActionsForm.schemeDescription.actionLabel')}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let action of schemeActions.actions">
+          <td>{{t('terminalSettingsScalperMouseActionsForm.schemeDescription.buttons.' + action.button)}}</td>
+          <td>{{action.modifier ? t('terminalSettingsScalperMouseActionsForm.schemeDescription.modifiers.' + action.modifier) : ''}}</td>
+          <td>{{t('terminalSettingsScalperMouseActionsForm.schemeDescription.sides.' + action.orderBookRowType)}}</td>
+          <td>{{t('terminalSettingsScalperMouseActionsForm.schemeDescription.actions.' + action.action)}}</td>
+        </tr>
+        </tbody>
+      </nz-table>
+    </ng-container>
+  </form>
+</ng-container>

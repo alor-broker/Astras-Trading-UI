@@ -1,7 +1,7 @@
-<ng-container *transloco="let t; scope: 'terminal-settings'">
+<ng-container *transloco="let t; scope: 'terminal-settings/portfolios-currency-form'">
   <ng-container *ngIf="currencies$ | async as currencies">
     <div *ngIf="form && form.length ===0">
-      <span nz-typography nzType="danger">{{t('terminalSettings.noActivePortfolios')}}</span>
+      <span nz-typography nzType="danger">{{t('terminalSettingsPortfoliosCurrencyForm.noActivePortfolios')}}</span>
     </div>
 
     <ng-container *ngIf="form && form.length > 0">
