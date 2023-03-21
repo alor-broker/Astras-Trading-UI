@@ -5,12 +5,12 @@
       {{name.firstName}}&nbsp;{{name.lastName}}
     </h1>
     <nz-tabset>
-      <nz-tab (nzSelect)="tabChange.emit(tabNames.usefulLinks)" [nzTitle]="t('terminalSettings.usefulLinksTab')">
+      <nz-tab (nzSelect)="tabChange.emit(tabNames.usefulLinks)" [nzTitle]="t('terminalSettings.usefulLinksTabTitle')">
         <ats-useful-links></ats-useful-links>
       </nz-tab>
 
       <nz-tab (nzSelect)="tabChange.emit(tabNames.main)" *ngIf="settingsForm"
-              [nzTitle]="t('terminalSettings.generalHeader')">
+              [nzTitle]="t('terminalSettings.generalSettingsTabTitle')">
         <ng-container *ngIf="getFormControl('generalSettings') as generalSettings">
           <ats-general-settings-form [excludedSettings]="excludedSettings" [formControl]="generalSettings"></ats-general-settings-form>
         </ng-container>
@@ -28,7 +28,7 @@
       <nz-tab
         (nzSelect)="tabChange.emit(tabNames.hotKeys)"
         *ngIf="!excludedSettings.includes('hotKeysSettings') && getFormControl('hotKeysSettings') as hotKeysSettings"
-        [nzTitle]="t('terminalSettings.hotkeysTab')">
+        [nzTitle]="t('terminalSettings.hotkeysTabTitle')">
         <ats-hot-key-settings-form [formControl]="hotKeysSettings"></ats-hot-key-settings-form>
 
         <ng-container *ngIf="getFormControl('scalperOrderBookMouseActions') as scalperOrderBookMouseActions">
@@ -41,7 +41,7 @@
       <nz-tab
         (nzSelect)="tabChange.emit(tabNames.notifications)"
         *ngIf="getFormControl('instantNotificationsSettings') as instantNotificationsSettings"
-        [nzTitle]="t('terminalSettings.notificationsTab')">
+        [nzTitle]="t('terminalSettings.notificationsTabTitle')">
         <ats-instant-notifications-form [formControl]="instantNotificationsSettings"></ats-instant-notifications-form>
       </nz-tab>
     </nz-tabset>
