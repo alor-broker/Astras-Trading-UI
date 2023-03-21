@@ -28,6 +28,7 @@ import { ModalService } from "../../../../shared/services/modal.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { Destroyable } from '../../../../shared/utils/destroyable';
 import { AtsValidators } from '../../../../shared/utils/form-validators';
+import { TerminalSettingsHelper } from '../../../../shared/utils/terminal-settings-helper';
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -142,7 +143,11 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
           Validators.required),
         portfoliosCurrency: new UntypedFormControl(currentSettings.portfoliosCurrency ?? [], AtsValidators.notNull),
         hotKeysSettings: new UntypedFormControl(currentSettings.hotKeysSettings, Validators.required),
-        instantNotificationsSettings: new UntypedFormControl(currentSettings.instantNotificationsSettings, Validators.required)
+        instantNotificationsSettings: new UntypedFormControl(currentSettings.instantNotificationsSettings, Validators.required),
+        scalperOrderBookMouseActions: new UntypedFormControl(
+          currentSettings.scalperOrderBookMouseActions ?? TerminalSettingsHelper.getScalperOrderBookMouseActionsScheme1(),
+          Validators.required
+        ),
       }
     );
   }

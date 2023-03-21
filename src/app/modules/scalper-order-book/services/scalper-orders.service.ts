@@ -19,9 +19,7 @@ import {
 import { CommandType } from "../../../shared/models/enums/command-type.model";
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
 import {
-  BodyRow,
   CurrentOrderDisplay,
-  ScalperOrderBookRowType
 } from '../models/scalper-order-book.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { MathHelper } from '../../../shared/utils/math-helper';
@@ -194,21 +192,20 @@ export class ScalperOrdersService {
     ).subscribe();
   }
 
-  setStopLimitForRow(instrumentKey: InstrumentKey, row: BodyRow, quantity: number, silent: boolean, portfolio: PortfolioKey): void {
-    if (row.rowType != ScalperOrderBookRowType.Bid && row.rowType != ScalperOrderBookRowType.Ask) {
-      return;
-    }
-
-    const side = row.rowType === ScalperOrderBookRowType.Ask
-      ? Side.Sell
-      : Side.Buy;
+  setStopLimit(
+    instrumentKey: InstrumentKey,
+    price: number,
+    quantity: number,
+    side: Side,
+    silent: boolean,
+    portfolio: PortfolioKey): void {
 
     const order: StopLimitOrder = {
       side: side,
       quantity: quantity,
-      price: row.price,
+      price: price,
       instrument: instrumentKey,
-      triggerPrice: row.price,
+      triggerPrice: price,
       condition: side === Side.Sell ? StopOrderCondition.More : StopOrderCondition.Less,
     };
 

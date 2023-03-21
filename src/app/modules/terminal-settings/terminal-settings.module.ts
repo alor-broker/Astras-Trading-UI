@@ -12,6 +12,7 @@ import { UsefulLinksComponent } from './components/useful-links/useful-links.com
 import { HotKeySettingsFormComponent } from './components/hot-key-settings-form/hot-key-settings-form.component';
 import { PortfoliosCurrencyFormComponent } from './components/portfolios-currency-form/portfolios-currency-form.component';
 import { GeneralSettingsFormComponent } from './components/general-settings-form/general-settings-form.component';
+import { ScalperMouseActionsFormComponent } from './components/scalper-mouse-actions-form/scalper-mouse-actions-form.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { GeneralSettingsFormComponent } from './components/general-settings-form
     UsefulLinksComponent,
     HotKeySettingsFormComponent,
     PortfoliosCurrencyFormComponent,
-    GeneralSettingsFormComponent
+    GeneralSettingsFormComponent,
+    ScalperMouseActionsFormComponent
   ],
   imports: [
     SharedModule,

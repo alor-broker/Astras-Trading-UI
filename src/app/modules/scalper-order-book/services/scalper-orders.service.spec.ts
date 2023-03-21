@@ -34,11 +34,7 @@ import { StopOrderCondition } from "../../../shared/models/enums/stoporder-condi
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
 import { CancelCommand } from '../../../shared/models/commands/cancel-command.model';
-import {
-  BodyRow,
-  CurrentOrderDisplay,
-  ScalperOrderBookRowType
-} from '../models/scalper-order-book.model';
+import { CurrentOrderDisplay } from '../models/scalper-order-book.model';
 import { OrderbookDataRow } from '../../orderbook/models/orderbook-data.model';
 
 describe('ScalperOrdersService', () => {
@@ -573,10 +569,11 @@ describe('ScalperOrdersService', () => {
       const quantity = getRandomInt(1, 100);
       const price = getRandomInt(1, 1000);
 
-      service.setStopLimitForRow(
+      service.setStopLimit(
         testInstrumentKey,
-        { rowType: ScalperOrderBookRowType.Ask, price } as BodyRow,
+        price,
         quantity,
+        Side.Sell,
         true,
         portfolioKey
       );
@@ -597,10 +594,11 @@ describe('ScalperOrdersService', () => {
         );
 
       orderServiceSpy.submitStopLimitOrder.calls.reset();
-      service.setStopLimitForRow(
+      service.setStopLimit(
         testInstrumentKey,
-        { rowType: ScalperOrderBookRowType.Bid, price } as BodyRow,
+        price,
         quantity,
+        Side.Buy,
         true,
         portfolioKey
       );
@@ -621,10 +619,11 @@ describe('ScalperOrdersService', () => {
         );
 
 
-      service.setStopLimitForRow(
+      service.setStopLimit(
         testInstrumentKey,
-        { rowType: ScalperOrderBookRowType.Bid, price } as BodyRow,
+        price,
         quantity,
+        Side.Buy,
         false,
         portfolioKey
       );

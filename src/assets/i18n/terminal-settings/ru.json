@@ -34,5 +34,7 @@
   "hotkeysTab": "Горячие клавиши",
   "noActivePortfolios": "Нет активных портфелей",
 
-  "emptyFieldError": "Введите значение"
+  "emptyFieldError": "Введите значение",
+
+  "scalperMouseActionsHeader": "Действия мыши"
 }

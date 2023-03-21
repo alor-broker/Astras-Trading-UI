@@ -30,6 +30,12 @@
         *ngIf="!excludedSettings.includes('hotKeysSettings') && getFormControl('hotKeysSettings') as hotKeysSettings"
         [nzTitle]="t('terminalSettings.hotkeysTab')">
         <ats-hot-key-settings-form [formControl]="hotKeysSettings"></ats-hot-key-settings-form>
+
+        <ng-container *ngIf="getFormControl('scalperOrderBookMouseActions') as scalperOrderBookMouseActions">
+          <nz-divider></nz-divider>
+          <h3>{{t('terminalSettings.scalperMouseActionsHeader')}}</h3>
+          <ats-scalper-mouse-actions-form [formControl]="scalperOrderBookMouseActions"></ats-scalper-mouse-actions-form>
+        </ng-container>
       </nz-tab>
 
       <nz-tab

@@ -34,5 +34,6 @@
   "hotkeysTab": "Hotkeys",
   "noActivePortfolios": "No active portfolios",
 
-  "emptyFieldError": "Input value"
+  "emptyFieldError": "Input value",
+  "scalperMouseActionsHeader": "Mouse Actions"
 }
