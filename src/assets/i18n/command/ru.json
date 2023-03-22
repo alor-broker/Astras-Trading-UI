@@ -35,6 +35,16 @@
   "stopEndTimeError": "Введите дату",
   "stopEndTimePlaceholder": "Выберите дату",
   "withLimitLabel": "Тип стопа",
+  "timeInForceLabel": "Тип исполнения заявки",
+  "timeInForcePlaceholder": "Выберите тип",
+  "oneDayLabel": "Поставить в очередь",
+  "immediateOrCancelLabel": "Немедленно или отклонить",
+  "fillOrKillLabel":  "Полностью или отклонить",
+  "atTheCloseLabel": "Закрытие долгов",
+  "goodTillCancelledLabel":  "Годен до отмены",
+  "isIcebergLabel": "Айсберг",
+  "icebergFixedLabel": "Видимая постоянная часть, лотов",
+  "icebergVarianceLabel": "Амплитуда отклонения, %",
 
   "stopOrderWarning": "Выставление стоп заявок происходит через новый сервис Sparker. Из-за этого могут быть ошибки, которые мы по какой-то причине не заметили. Будьте аккуратны, пожалуйста.",
 

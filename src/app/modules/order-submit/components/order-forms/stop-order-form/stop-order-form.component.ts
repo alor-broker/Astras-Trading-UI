@@ -32,9 +32,15 @@ import { QuotesService } from "../../../../../shared/services/quotes.service";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 
 export type StopOrderFormValue =
-  Omit<StopMarketOrder, 'instrument' | 'side'>
-  & Omit<StopLimitOrder, 'instrument' | 'side'>
-  & { withLimit: boolean };
+  Omit<StopMarketOrder, 'instrument' | 'side'> &
+  Omit<StopLimitOrder, 'instrument' | 'side'> &
+  {
+    withLimit: boolean;
+    isIceberg?: boolean;
+    timeInForce?: string;
+    icebergFixed?: number;
+    icebergVariance?: number;
+  };
 
 @Component({
   selector: 'ats-stop-order-form',
@@ -110,7 +116,11 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
       ),
       stopEndUnixTime: new FormControl(additions!.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
       condition: new FormControl(this.conditionType.More),
-      withLimit: new FormControl(false)
+      withLimit: new FormControl(false),
+      timeInForce: new FormControl(null),
+      isIceberg: new FormControl(false),
+      icebergFixed: new FormControl(null),
+      icebergVariance: new FormControl(null),
     });
   }
 
@@ -121,9 +131,27 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
   }
 
   protected getFormValue(): StopOrderFormValue | null {
-    const formValue = super.getFormValue();
+    let formValue = super.getFormValue();
+
     if (!formValue) {
       return formValue;
+    }
+
+    if (!formValue.isIceberg) {
+      delete formValue.icebergFixed;
+      delete formValue.icebergVariance;
+    } else {
+      formValue = {
+        ...formValue,
+        icebergFixed: Number(formValue.icebergFixed),
+        icebergVariance: Number(formValue.icebergVariance)
+      };
+    }
+
+    delete formValue.isIceberg;
+
+    if (!formValue.timeInForce) {
+      delete formValue.timeInForce;
     }
 
     return {

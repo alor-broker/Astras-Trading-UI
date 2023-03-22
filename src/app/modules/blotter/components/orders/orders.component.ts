@@ -413,7 +413,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         portfolio: order.portfolio,
         exchange: order.exchange
       },
-      side: order.side
+      side: order.side,
+      timeInForce: order.timeInForce,
+      icebergFixed: order.icebergFixed,
+      icebergVariance: order.icebergVariance
     });
   }
 

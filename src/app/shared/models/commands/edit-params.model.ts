@@ -14,5 +14,8 @@ export interface EditParams {
   stopEndUnixTime?: Date | number | null,
   triggerPrice?: number | null,
   condition?: StopOrderCondition | null,
-  cancelled?: () => void
+  cancelled?: () => void,
+  timeInForce?: string | null,
+  icebergFixed?: number | null,
+  icebergVariance?: number | null,
 }

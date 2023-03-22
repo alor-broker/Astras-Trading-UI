@@ -78,6 +78,19 @@ export class LimitEditComponent implements OnInit, OnDestroy {
 
     const formValue = this.form.value as LimitFormData;
 
+    let additionalData = {} as any;
+
+    if (formValue.isIceberg) {
+      additionalData.icebergFixed = Number(formValue.icebergFixed ?? 0);
+      if (formValue.icebergVariance) {
+        additionalData.icebergVariance = Number(formValue.icebergVariance);
+      }
+    }
+
+    if (formValue.timeInForce) {
+      additionalData.timeInForce = formValue.timeInForce;
+    }
+
     if (commandContext.commandParameters && commandContext.commandParameters.user) {
       const newCommand: LimitEdit = {
         quantity: Number(formValue.quantity),
@@ -86,7 +99,8 @@ export class LimitEditComponent implements OnInit, OnDestroy {
           ...commandContext.commandParameters.instrument,
         },
         user: commandContext.commandParameters.user,
-        id: commandContext.commandParameters.orderId
+        id: commandContext.commandParameters.orderId,
+        ...additionalData
       };
 
       this.updateEvaluation(newCommand, commandContext);
@@ -106,6 +120,10 @@ export class LimitEditComponent implements OnInit, OnDestroy {
       distinctUntilChanged((prev, curr) =>
         prev?.price == curr?.price
         && prev?.quantity == curr?.quantity
+        && prev?.timeInForce == curr?.timeInForce
+        && prev?.isIceberg == curr?.isIceberg
+        && prev?.icebergFixed == curr?.icebergFixed
+        && prev?.icebergVariance == curr?.icebergVariance
       )
     ).subscribe(() => {
       this.setLimitEditCommand(commandContext);
@@ -128,7 +146,11 @@ export class LimitEditComponent implements OnInit, OnDestroy {
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max),
           AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
-        ])
+        ]),
+      timeInForce: new FormControl(commandContext.commandParameters.timeInForce),
+      isIceberg: new FormControl(!!commandContext.commandParameters.icebergFixed || commandContext.commandParameters.icebergFixed === 0),
+      icebergFixed: new FormControl(commandContext.commandParameters.icebergFixed),
+      icebergVariance: new FormControl(commandContext.commandParameters.icebergVariance),
     });
   }
 

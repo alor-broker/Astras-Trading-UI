@@ -6,5 +6,9 @@ export interface StopFormData {
   triggerPrice: number,
   condition: StopOrderCondition,
   stopEndUnixTime?: Date,
-  withLimit: boolean
+  withLimit: boolean,
+  isIceberg?: boolean,
+  timeInForce?: string,
+  icebergFixed?: number,
+  icebergVariance?: number
 }

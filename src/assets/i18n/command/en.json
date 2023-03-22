@@ -35,6 +35,16 @@
   "stopEndTimeError": "Fill expiration date input",
   "stopEndTimePlaceholder": "Select date",
   "withLimitLabel": "Stop type",
+  "timeInForceLabel": "Order execution type",
+  "timeInForcePlaceholder": "Select type",
+  "oneDayLabel": "One day",
+  "immediateOrCancelLabel": "Immediate or cancel",
+  "fillOrKillLabel":  "Fill or kill",
+  "atTheCloseLabel": "At the close",
+  "goodTillCancelledLabel":  "Good till cancelled",
+  "isIcebergLabel": "Iceberg",
+  "icebergFixedLabel": "Visible fixed part, lots",
+  "icebergVarianceLabel": "Variance amplitude, %",
 
   "stopOrderWarning": "Stop orders are placed through the new Sparker service. Because of this, there may be errors that we for some reason did not notice. Please be careful.",
 

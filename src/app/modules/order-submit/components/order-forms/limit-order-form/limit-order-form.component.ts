@@ -25,7 +25,13 @@ import {
 } from '../../../models/order-form.model';
 import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
 
-export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { instrumentGroup: string };
+export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & {
+  instrumentGroup: string;
+  isIceberg?: boolean;
+  timeInForce?: string;
+  icebergFixed?: number;
+  icebergVariance?: number;
+};
 
 @Component({
   selector: 'ats-limit-order-form[instrument]',
@@ -64,13 +70,34 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
         ]
       ),
       instrumentGroup: new FormControl(instrument.instrumentGroup ?? ''),
+      timeInForce: new FormControl(null),
+      isIceberg: new FormControl(false),
+      icebergFixed: new FormControl(null),
+      icebergVariance: new FormControl(null)
     });
   }
 
   protected getFormValue(): LimitOrderFormValue | null {
-    const formValue = super.getFormValue();
+    let formValue = super.getFormValue();
     if (!formValue) {
       return formValue;
+    }
+
+    if (!formValue.isIceberg) {
+      delete formValue.icebergFixed;
+      delete formValue.icebergVariance;
+    } else {
+      formValue = {
+        ...formValue,
+        icebergFixed: Number(formValue.icebergFixed),
+        icebergVariance: Number(formValue.icebergVariance)
+      };
+    }
+
+    delete formValue.isIceberg;
+
+    if (!formValue.timeInForce) {
+      delete formValue.timeInForce;
     }
 
     return {

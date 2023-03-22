@@ -17,5 +17,8 @@ export interface Order {
   filledQtyBatch: number, // 0,
   filled: number, //0,
   price: number, // 270,
-  existing: boolean // true
+  existing: boolean, // true
+  timeInForce?: string,
+  icebergFixed?: number,
+  icebergVariance?: number
 }

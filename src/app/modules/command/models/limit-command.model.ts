@@ -5,5 +5,8 @@ export interface LimitCommand {
   quantity: number, //2,
   price: number, // 190.97,
   instrument: InstrumentKey,
-  user?: PortfolioKey
+  user?: PortfolioKey,
+  icebergFixed?: number,
+  icebergVariance?: number,
+  timeInForce?: string,
 }

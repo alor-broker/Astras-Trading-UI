@@ -467,7 +467,10 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       side: order.side,
       triggerPrice: order.triggerPrice,
       stopEndUnixTime: order.endTime,
-      condition: order.conditionType === 'less' ? StopOrderCondition.Less : StopOrderCondition.More
+      condition: order.conditionType === 'less' ? StopOrderCondition.Less : StopOrderCondition.More,
+      timeInForce: order.timeInForce,
+      icebergFixed: order.icebergFixed,
+      icebergVariance: order.icebergVariance
     });
   }
 

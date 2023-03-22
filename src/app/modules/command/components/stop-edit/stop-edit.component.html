@@ -97,6 +97,63 @@
         </nz-form-item>
       </div>
     </div>
+    <div *ngIf="form.getRawValue().withLimit">
+      <nz-collapse nzGhost [nzBordered]="false" class="compact">
+        <nz-collapse-panel [nzHeader]="t('command.advanced')">
+          <nz-form-label nzFor="timeInForce">{{t('command.timeInForceLabel')}}</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="timeInForce" nzAllowClear [nzPlaceHolder]="t('command.timeInForcePlaceholder')">
+              <nz-option [nzValue]="'oneday'" [nzLabel]="t('command.oneDayLabel')"></nz-option>
+              <nz-option [nzValue]="'immediateorcancel'" [nzLabel]="t('command.immediateOrCancelLabel')"></nz-option>
+              <nz-option [nzValue]="'fillorkill'" [nzLabel]="t('command.fillOrKillLabel')"></nz-option>
+              <nz-option [nzValue]="'attheclose'" [nzLabel]="t('command.atTheCloseLabel')"></nz-option>
+              <nz-option [nzValue]="'goodtillcancelled'" [nzLabel]="t('command.goodTillCancelledLabel')"></nz-option>
+            </nz-select>
+          </nz-form-control>
+
+          <nz-form-item class="iceberg-field">
+            <nz-form-control>
+              <nz-switch formControlName='isIceberg'></nz-switch>
+              <nz-form-label nzFor="isIceberg">
+                {{t('command.isIcebergLabel')}}
+              </nz-form-label>
+            </nz-form-control>
+          </nz-form-item>
+
+          <ng-container *ngIf="form.get('isIceberg')?.value">
+            <nz-form-item class="compact">
+              <nz-form-label nzFor="icebergFixed">{{t('command.icebergFixedLabel')}}</nz-form-label>
+              <nz-input-group>
+                <input
+                  nz-input
+                  atsNumerical
+                  class='ant-input'
+                  formControlName="icebergFixed"
+                  placeholder="0"
+                  (mousedown)="$event.stopPropagation()"
+                />
+              </nz-input-group>
+            </nz-form-item>
+
+            <nz-form-item class="compact">
+              <nz-form-label nzFor="icebergVariance">
+                {{t('command.icebergVarianceLabel')}}
+              </nz-form-label>
+              <nz-input-group>
+                <input
+                  nz-input
+                  atsNumerical
+                  class='ant-input'
+                  formControlName="icebergVariance"
+                  placeholder="0"
+                  (mousedown)="$event.stopPropagation()"
+                />
+              </nz-input-group>
+            </nz-form-item>
+          </ng-container>
+        </nz-collapse-panel>
+      </nz-collapse>
+    </div>
 
     <span nz-typography nzType="warning">
       {{t('command.stopOrderWarning')}}

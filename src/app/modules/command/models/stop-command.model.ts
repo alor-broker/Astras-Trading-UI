@@ -11,5 +11,8 @@ export interface StopCommand {
   triggerPrice: number,
   condition: StopOrderCondition,
   stopEndUnixTime?: Date | number,
-  side?: Side
+  side?: Side,
+  timeInForce?: string,
+  icebergFixed?: number,
+  icebergVariance?: number,
 }
