@@ -35,6 +35,7 @@ import { inputNumberValidation } from "../../../../shared/utils/validation-optio
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
+import { TimeInForce } from "../../../../shared/models/commands/command-params.model";
 
 @Component({
   selector: 'ats-stop-edit',
@@ -45,6 +46,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
   form!: FormGroup<ControlsOf<StopFormData & { side: Side }>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<EditParams> | null>(null);
   canSelectNow = false;
+  timeInForceEnum = TimeInForce;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private timezoneConverter!: TimezoneConverter;
 

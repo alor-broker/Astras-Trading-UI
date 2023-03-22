@@ -16,7 +16,7 @@ import {
   takeUntil
 } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
+import { CommandParams, TimeInForce } from 'src/app/shared/models/commands/command-params.model';
 import { CommandsService } from '../../services/commands.service';
 import { LimitCommand } from '../../models/limit-command.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
@@ -35,6 +35,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   form!: FormGroup<ControlsOf<LimitFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
+  timeInForceEnum = TimeInForce;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private service: CommandsService) {

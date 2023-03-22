@@ -1,9 +1,11 @@
+import { TimeInForce } from "../../../shared/models/commands/command-params.model";
+
 export interface LimitFormData {
   instrumentGroup?: string;
   quantity: number;
   price: number;
   isIceberg?: boolean;
-  timeInForce?: string;
+  timeInForce?: TimeInForce;
   icebergFixed?: number;
   icebergVariance?: number;
 }

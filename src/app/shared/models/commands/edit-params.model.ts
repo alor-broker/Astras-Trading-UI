@@ -2,6 +2,7 @@ import { Side } from "../enums/side.model";
 import { InstrumentKey } from "../instruments/instrument-key.model";
 import { PortfolioKey } from "../portfolio-key.model";
 import { StopOrderCondition } from "../enums/stoporder-conditions";
+import { TimeInForce } from "./command-params.model";
 
 export interface EditParams {
   type: string,
@@ -15,7 +16,7 @@ export interface EditParams {
   triggerPrice?: number | null,
   condition?: StopOrderCondition | null,
   cancelled?: () => void,
-  timeInForce?: string | null,
+  timeInForce?: TimeInForce | null,
   icebergFixed?: number | null,
   icebergVariance?: number | null,
 }

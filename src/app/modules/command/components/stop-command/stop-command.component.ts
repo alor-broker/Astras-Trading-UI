@@ -17,7 +17,7 @@ import {
   withLatestFrom
 } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
+import { CommandParams, TimeInForce } from 'src/app/shared/models/commands/command-params.model';
 import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
 import {
   addMonthsUnix,
@@ -43,6 +43,7 @@ import { AtsValidators } from "../../../../shared/utils/form-validators";
 export class StopCommandComponent implements OnInit, OnDestroy {
   form!: FormGroup<ControlsOf<StopFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
+  timeInForceEnum = TimeInForce;
   public canSelectNow = true;
   private timezoneConverter!: TimezoneConverter;
   private destroy$: Subject<boolean> = new Subject<boolean>();

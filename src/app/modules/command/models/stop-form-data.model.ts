@@ -1,4 +1,5 @@
 import { StopOrderCondition } from "src/app/shared/models/enums/stoporder-conditions";
+import { TimeInForce } from "../../../shared/models/commands/command-params.model";
 
 export interface StopFormData {
   quantity: number,
@@ -8,7 +9,7 @@ export interface StopFormData {
   stopEndUnixTime?: Date,
   withLimit: boolean,
   isIceberg?: boolean,
-  timeInForce?: string,
+  timeInForce?: TimeInForce,
   icebergFixed?: number,
   icebergVariance?: number
 }

@@ -30,6 +30,7 @@ import {
 } from '../../../models/order-form.model';
 import { QuotesService } from "../../../../../shared/services/quotes.service";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
+import { TimeInForce } from "../../../../../shared/models/commands/command-params.model";
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'> &
@@ -37,7 +38,7 @@ export type StopOrderFormValue =
   {
     withLimit: boolean;
     isIceberg?: boolean;
-    timeInForce?: string;
+    timeInForce?: TimeInForce;
     icebergFixed?: number;
     icebergVariance?: number;
   };
@@ -50,6 +51,7 @@ export type StopOrderFormValue =
 export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderFormValue, { timezoneConverter: TimezoneConverter }> {
   public canSelectNow = true;
   public conditionType = StopOrderCondition;
+  public timeInForceEnum = TimeInForce;
   private timezoneConverter!: TimezoneConverter;
 
   constructor(
@@ -131,11 +133,12 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
   }
 
   protected getFormValue(): StopOrderFormValue | null {
-    let formValue = super.getFormValue();
-
-    if (!formValue) {
-      return formValue;
+    if (!super.getFormValue()) {
+      return null;
     }
+
+    let formValue = { ...super.getFormValue()! };
+
 
     if (!formValue.isIceberg) {
       delete formValue.icebergFixed;

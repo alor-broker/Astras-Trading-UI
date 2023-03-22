@@ -37,11 +37,13 @@
   "withLimitLabel": "Stop type",
   "timeInForceLabel": "Order execution type",
   "timeInForcePlaceholder": "Select type",
-  "oneDayLabel": "One day",
-  "immediateOrCancelLabel": "Immediate or cancel",
-  "fillOrKillLabel":  "Fill or kill",
-  "atTheCloseLabel": "At the close",
-  "goodTillCancelledLabel":  "Good till cancelled",
+  "timeInForceOptions": {
+    "OneDay": "One day",
+    "ImmediateOrCancel": "Immediate or cancel",
+    "FillOrKill":  "Fill or kill",
+    "AtTheClose": "At the close",
+    "GoodTillCancelled":  "Good till cancelled"
+  },
   "isIcebergLabel": "Iceberg",
   "icebergFixedLabel": "Visible fixed part, lots",
   "icebergVarianceLabel": "Variance amplitude, %",

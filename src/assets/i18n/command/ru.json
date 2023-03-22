@@ -37,11 +37,13 @@
   "withLimitLabel": "Тип стопа",
   "timeInForceLabel": "Тип исполнения заявки",
   "timeInForcePlaceholder": "Выберите тип",
-  "oneDayLabel": "Поставить в очередь",
-  "immediateOrCancelLabel": "Немедленно или отклонить",
-  "fillOrKillLabel":  "Полностью или отклонить",
-  "atTheCloseLabel": "Закрытие долгов",
-  "goodTillCancelledLabel":  "Годен до отмены",
+  "timeInForceOptions": {
+    "OneDay": "Поставить в очередь",
+    "ImmediateOrCancel": "Немедленно или отклонить",
+    "FillOrKill":  "Полностью или отклонить",
+    "AtTheClose": "Закрытие долгов",
+    "GoodTillCancelled":  "Годен до отмены"
+  },
   "isIcebergLabel": "Айсберг",
   "icebergFixedLabel": "Видимая постоянная часть, лотов",
   "icebergVarianceLabel": "Амплитуда отклонения, %",

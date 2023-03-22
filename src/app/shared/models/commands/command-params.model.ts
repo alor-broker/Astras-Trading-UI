@@ -10,7 +10,15 @@ export interface CommandParams {
   quantity: number;
   stopEndUnixTime?: number;
   isIceberg?: boolean;
-  timeInForce?: string;
+  timeInForce?: TimeInForce;
   icebergFixed?: number;
   icebergVariance?: number;
+}
+
+export enum TimeInForce {
+  OneDay = 'oneday',
+  ImmediateOrCancel = 'immediateorcancel',
+  FillOrKill = 'fillorkill',
+  AtTheClose = 'attheclose',
+  GoodTillCancelled = 'goodtillcancelled'
 }

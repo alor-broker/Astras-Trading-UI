@@ -24,11 +24,12 @@ import {
   OrderType
 } from '../../../models/order-form.model';
 import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
+import { TimeInForce } from "../../../../../shared/models/commands/command-params.model";
 
 export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & {
   instrumentGroup: string;
   isIceberg?: boolean;
-  timeInForce?: string;
+  timeInForce?: TimeInForce;
   icebergFixed?: number;
   icebergVariance?: number;
 };
@@ -40,6 +41,7 @@ export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & {
 })
 export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFormValue> implements OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
+  timeInForceEnum = TimeInForce;
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
@@ -78,10 +80,11 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
   }
 
   protected getFormValue(): LimitOrderFormValue | null {
-    let formValue = super.getFormValue();
-    if (!formValue) {
-      return formValue;
+    if (!super.getFormValue()) {
+      return null;
     }
+
+    let formValue = { ...super.getFormValue()! };
 
     if (!formValue.isIceberg) {
       delete formValue.icebergFixed;

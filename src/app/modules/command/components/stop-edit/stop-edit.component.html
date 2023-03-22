@@ -10,7 +10,7 @@
                 &nbsp;1 {{t('command.lot')}} = {{commandContext.instrument.lotsize | shortNumber}} {{t('command.pcs')}}
               </span>
             </nz-form-label>
-            <input class='ant-input' atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
+            <input atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />
           </nz-form-control>
           <ng-template #quantityError>
             <span *ngIf="form.get('quantity')?.errors?.required">{{t('command.emptyQuantityError')}}</span>
@@ -36,7 +36,7 @@
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="triggerPriceError" [nzValidateStatus]="form.get('triggerPrice')!">
             <nz-form-label [nzNoColon]="true" nzFor="triggerPrice" nzRequired>{{t('command.triggerPriceLabel')}}</nz-form-label>
-            <input (mousedown)="$event.stopPropagation()" atsNumerical [step]="commandContext.instrument.minstep" class='ant-input'
+            <input (mousedown)="$event.stopPropagation()" atsNumerical [step]="commandContext.instrument.minstep"
                    formControlName="triggerPrice" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #triggerPriceError>
@@ -84,7 +84,7 @@
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="priceError" [nzValidateStatus]="form.get('price')!">
             <nz-form-label [nzNoColon]="true" nzFor="price" nzRequired>{{t('command.priceLabel')}}</nz-form-label>
-            <input (mousedown)="$event.stopPropagation()" atsNumerical [step]="commandContext.instrument.minstep" class='ant-input' formControlName="price" nz-input placeholder="0"/>
+            <input (mousedown)="$event.stopPropagation()" atsNumerical [step]="commandContext.instrument.minstep" formControlName="price" nz-input placeholder="0"/>
           </nz-form-control>
           <ng-template #priceError>
             <span *ngIf="form.get('price')?.errors?.required">{{t('command.emptyPriceError')}}</span>
@@ -103,21 +103,20 @@
           <nz-form-label nzFor="timeInForce">{{t('command.timeInForceLabel')}}</nz-form-label>
           <nz-form-control>
             <nz-select formControlName="timeInForce" nzAllowClear [nzPlaceHolder]="t('command.timeInForcePlaceholder')">
-              <nz-option [nzValue]="'oneday'" [nzLabel]="t('command.oneDayLabel')"></nz-option>
-              <nz-option [nzValue]="'immediateorcancel'" [nzLabel]="t('command.immediateOrCancelLabel')"></nz-option>
-              <nz-option [nzValue]="'fillorkill'" [nzLabel]="t('command.fillOrKillLabel')"></nz-option>
-              <nz-option [nzValue]="'attheclose'" [nzLabel]="t('command.atTheCloseLabel')"></nz-option>
-              <nz-option [nzValue]="'goodtillcancelled'" [nzLabel]="t('command.goodTillCancelledLabel')"></nz-option>
+              <nz-option
+                *ngFor="let timeInForce of timeInForceEnum | keyvalue"
+                [nzValue]="timeInForce.value" [nzLabel]="t('command.timeInForceOptions.' + timeInForce.key)"
+              ></nz-option>
             </nz-select>
           </nz-form-control>
 
-          <nz-form-item class="iceberg-field">
-            <nz-form-control>
-              <nz-switch formControlName='isIceberg'></nz-switch>
-              <nz-form-label nzFor="isIceberg">
-                {{t('command.isIcebergLabel')}}
-              </nz-form-label>
-            </nz-form-control>
+          <nz-form-item class="compact mt-4">
+            <label
+              formControlName="isIceberg"
+              nz-checkbox
+            >
+              {{t('command.isIcebergLabel')}}
+            </label>
           </nz-form-item>
 
           <ng-container *ngIf="form.get('isIceberg')?.value">
@@ -127,7 +126,6 @@
                 <input
                   nz-input
                   atsNumerical
-                  class='ant-input'
                   formControlName="icebergFixed"
                   placeholder="0"
                   (mousedown)="$event.stopPropagation()"
@@ -143,7 +141,6 @@
                 <input
                   nz-input
                   atsNumerical
-                  class='ant-input'
                   formControlName="icebergVariance"
                   placeholder="0"
                   (mousedown)="$event.stopPropagation()"
