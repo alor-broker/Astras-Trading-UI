@@ -1,0 +1,37 @@
+{
+  "selectValueError": "Select value",
+  "mapNameLabel": "Scheme",
+  "schemes": {
+    "scheme1": "Scheme 1",
+    "scheme2": "Scheme 2"
+  },
+  "schemeDescription": {
+    "buttonLabel": "Button",
+    "modifierLabel": "Modifier",
+    "sideLabel": "Side",
+    "actionLabel": "Action",
+    "buttons": {
+      "left": "Left",
+      "right": "Right"
+    },
+    "modifiers": {
+      "shift": "Shift",
+      "ctrl": "Ctrl"
+    },
+    "sides": {
+      "ask": "Ask",
+      "bid": "Bid",
+      "spread": "Spred",
+      "any": "Any"
+    },
+    "actions": {
+      "limitBuyOrder": "Limit Buy order",
+      "limitSellOrder": "Limit Sell order",
+      "marketBuyOrder": "Market Buy order",
+      "marketSellOrder": "Market Sell order",
+      "stopLimitBuyOrder": "Stop-Limit Buy order",
+      "stopLimitSellOrder": "Stop-Limit Sell order",
+      "stopLossOrder": "Stop-Loss order"
+    }
+  }
+}

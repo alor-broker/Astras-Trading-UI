@@ -8,12 +8,7 @@ import {
 
 import * as TerminalSettingsActions from './terminal-settings.actions';
 import { initTerminalSettingsSuccess } from './terminal-settings.actions';
-import {
-  HotKeysSettings,
-  InstantNotificationsSettings,
-  TerminalSettings
-} from '../../shared/models/terminal-settings/terminal-settings.model';
-import { TimezoneDisplayOption } from '../../shared/models/enums/timezone-display-option';
+import { TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
 import {
   map,
   tap
@@ -22,7 +17,7 @@ import { Store } from '@ngrx/store';
 import { selectTerminalSettingsState } from './terminal-settings.selectors';
 import { filter } from 'rxjs';
 import { LocalStorageService } from "../../shared/services/local-storage.service";
-import { ThemeType } from '../../shared/models/settings/theme-settings.model';
+import { TerminalSettingsHelper } from '../../shared/utils/terminal-settings-helper';
 
 @Injectable()
 export class TerminalSettingsEffects {
@@ -30,12 +25,12 @@ export class TerminalSettingsEffects {
     return this.actions$.pipe(
       ofType(TerminalSettingsActions.initTerminalSettings),
       map(() => {
-        const settings = this.readSettingsFromLocalStorage();
+        const savedSettings = this.readSettingsFromLocalStorage();
 
         return initTerminalSettingsSuccess({
             settings: {
-              ...this.getDefaultSettings(),
-              ...settings
+              ...TerminalSettingsHelper.getDefaultSettings(),
+              ...savedSettings
             }
           }
         );
@@ -70,42 +65,5 @@ export class TerminalSettingsEffects {
 
   private saveSettingsToLocalStorage(settings: TerminalSettings) {
     this.localStorage.setItem(this.settingsStorageKey, settings);
-  }
-
-  private getDefaultSettings(): TerminalSettings {
-    return {
-      timezoneDisplayOption: TimezoneDisplayOption.MskTime,
-      userIdleDurationMin: 15,
-      badgesBind: false,
-      hotKeysSettings: this.getDefaultHotkeys(),
-      designSettings: {
-        theme: ThemeType.dark
-      },
-      instantNotificationsSettings: this.getDefaultInstantNotificationsSettings()
-    } as TerminalSettings;
-  }
-
-  private getDefaultHotkeys(): HotKeysSettings {
-    return {
-      cancelOrdersKey: '~',
-      closePositionsKey: 'Escape',
-      centerOrderbookKey: ' ',
-      cancelOrderbookOrders: 'E',
-      closeOrderbookPositions: 'R',
-      reverseOrderbookPositions: 'T',
-      buyMarket: 'S',
-      sellMarket: 'A',
-      workingVolumes: ['1', '2', '3', '4'],
-      sellBestOrder: 'W',
-      buyBestOrder: 'Q',
-      sellBestBid: 'Z',
-      buyBestAsk: 'X'
-    };
-  }
-
-  private getDefaultInstantNotificationsSettings(): InstantNotificationsSettings {
-    return {
-      hiddenNotifications: []
-    };
   }
 }

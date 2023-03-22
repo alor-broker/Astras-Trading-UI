@@ -5,12 +5,13 @@ import { HotKeyCommandService } from '../../../shared/services/hot-key-command.s
 import { Side } from '../../../shared/models/enums/side.model';
 import {
   BodyRow,
-  CurrentOrderDisplay,
-  ScalperOrderBookRowType
+  CurrentOrderDisplay
 } from '../models/scalper-order-book.model';
 import {
   filter,
   iif,
+  Observable,
+  shareReplay,
   take
 } from 'rxjs';
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
@@ -24,124 +25,31 @@ import { ScalperOrderBookSettings } from '../models/scalper-order-book-settings.
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { Position } from '../../../shared/models/positions/position.model';
+import {
+  ScalperOrderBookMouseAction,
+  ScalperOrderBookMouseActionsMap
+} from '../../../shared/models/terminal-settings/terminal-settings.model';
+import { TerminalSettingsHelper } from '../../../shared/utils/terminal-settings-helper';
+import { TerminalSettingsService } from '../../terminal-settings/services/terminal-settings.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScalperCommandProcessorService {
+  private mouseActionsMap$: Observable<ScalperOrderBookMouseActionsMap> | null = null;
 
   constructor(
     private readonly hotkeysService: HotKeyCommandService,
+    private readonly terminalSettingsService: TerminalSettingsService,
     private readonly scalperOrdersService: ScalperOrdersService) {
   }
 
   processLeftMouseClick(e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext) {
-    if (row.rowType !== ScalperOrderBookRowType.Bid && row.rowType !== ScalperOrderBookRowType.Ask) {
-      return;
-    }
-
-    if (e.ctrlKey) {
-      this.callWithSettings(
-        dataContext,
-        settings => {
-          this.callWithSelectedVolume(
-            dataContext,
-            workingVolume => {
-              this.callWithPortfolioKey(
-                dataContext,
-                portfolioKey => {
-                  this.scalperOrdersService.setStopLimitForRow(
-                    settings.widgetSettings,
-                    row,
-                    workingVolume,
-                    settings.widgetSettings.enableMouseClickSilentOrders,
-                    portfolioKey
-                  );
-                }
-              );
-            });
-        });
-
-      return;
-    }
-
-    if (e.shiftKey) {
-      this.callWithSettings(
-        dataContext,
-        settings => {
-          this.callWithPortfolioKey(
-            dataContext,
-            portfolioKey => {
-              this.callWithPosition(
-                dataContext,
-                position => {
-                  this.scalperOrdersService.setStopLoss(
-                    row.price,
-                    settings.widgetSettings.enableMouseClickSilentOrders,
-                    position,
-                    settings.widgetSettings.instrumentGroup,
-                    portfolioKey
-                  );
-                }
-              );
-            }
-          );
-        }
-      );
-
-      return;
-    }
-
-    if (!e.shiftKey && !e.ctrlKey) {
-      this.callWithSettings(
-        dataContext,
-        settings => {
-          this.callWithSelectedVolume(
-            dataContext,
-            workingVolume => {
-              this.callWithPortfolioKey(
-                dataContext,
-                portfolioKey => {
-                  this.scalperOrdersService.placeLimitOrder(
-                    settings.widgetSettings,
-                    row.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell,
-                    workingVolume,
-                    row.price,
-                    settings.widgetSettings.enableMouseClickSilentOrders,
-                    portfolioKey
-                  );
-                }
-              );
-            });
-        });
-    }
+    this.processClick('left', e, row, dataContext);
   }
 
   processRightMouseClick(e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext) {
-    if (row.rowType !== ScalperOrderBookRowType.Bid && row.rowType !== ScalperOrderBookRowType.Ask) {
-      return;
-    }
-
-    this.callWithSettings(
-      dataContext,
-      settings => {
-        this.callWithSelectedVolume(
-          dataContext,
-          workingVolume => {
-            this.callWithPortfolioKey(
-              dataContext,
-              portfolioKey => {
-                this.scalperOrdersService.placeMarketOrder(
-                  settings.widgetSettings,
-                  row.rowType === ScalperOrderBookRowType.Bid ? Side.Sell : Side.Buy,
-                  workingVolume,
-                  settings.widgetSettings.enableMouseClickSilentOrders,
-                  portfolioKey
-                );
-              }
-            );
-          });
-      });
+    this.processClick('right', e, row, dataContext);
   }
 
   processHotkeyPress(command: TerminalCommand, isActive: boolean, dataContext: ScalperOrderBookDataContext) {
@@ -398,5 +306,152 @@ export class ScalperCommandProcessorService {
         map(x => Math.abs(x!))
       )
       .subscribe(workingVolume => action(workingVolume!));
+  }
+
+  private getMouseActionsMap(): Observable<ScalperOrderBookMouseActionsMap> {
+    if (!this.mouseActionsMap$) {
+      this.mouseActionsMap$ = this.terminalSettingsService.getSettings().pipe(
+        map(x => x.scalperOrderBookMouseActions ?? TerminalSettingsHelper.getScalperOrderBookMouseActionsScheme1()),
+        shareReplay(1)
+      );
+    }
+
+    return this.mouseActionsMap$;
+  }
+
+  private processClick(btn: 'left' | 'right', e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext) {
+    this.getMouseActionsMap().pipe(
+      take(1),
+      map(map => {
+        return map.actions.find(a =>
+          a.button === btn
+          && (a.orderBookRowType === row.rowType || a.orderBookRowType === 'any')
+          && ((!a.modifier && !e.ctrlKey && !e.shiftKey) || (a.modifier === 'ctrl' && e.ctrlKey) || (a.modifier === 'shift' && e.shiftKey))
+        )?.action ?? null;
+      })
+    ).subscribe(action => {
+      if (!action) {
+        return;
+      }
+
+      this.getActionMethod(action)(row, dataContext);
+    });
+  }
+
+  private getActionMethod(action: ScalperOrderBookMouseAction): (row: { price: number }, dataContext: ScalperOrderBookDataContext) => void {
+    switch (action) {
+      case ScalperOrderBookMouseAction.StopLimitBuyOrder:
+        return (row, dataContext) => this.stopLimitAction(row, Side.Buy, dataContext);
+      case ScalperOrderBookMouseAction.StopLimitSellOrder:
+        return (row, dataContext) => this.stopLimitAction(row, Side.Sell, dataContext);
+      case ScalperOrderBookMouseAction.StopLossOrder:
+        return (row, dataContext) => this.stopLossAction(row, dataContext);
+      case ScalperOrderBookMouseAction.LimitBuyOrder:
+        return (row, dataContext) => this.limitOrderAction(row, Side.Buy, dataContext);
+      case ScalperOrderBookMouseAction.LimitSellOrder:
+        return (row, dataContext) => this.limitOrderAction(row, Side.Sell, dataContext);
+      case ScalperOrderBookMouseAction.MarketBuyOrder:
+        return (row, dataContext) => this.marketOrderAction(Side.Buy, dataContext);
+      case ScalperOrderBookMouseAction.MarketSellOrder:
+        return (row, dataContext) => this.marketOrderAction(Side.Sell, dataContext);
+      default:
+        throw new Error(`Unsupported action: ${action}`);
+    }
+  }
+
+  private stopLimitAction(row: { price: number }, side: Side, dataContext: ScalperOrderBookDataContext) {
+    this.callWithSettings(
+      dataContext,
+      settings => {
+        this.callWithSelectedVolume(
+          dataContext,
+          workingVolume => {
+            this.callWithPortfolioKey(
+              dataContext,
+              portfolioKey => {
+                this.scalperOrdersService.setStopLimit(
+                  settings.widgetSettings,
+                  row.price,
+                  workingVolume,
+                  side,
+                  settings.widgetSettings.enableMouseClickSilentOrders,
+                  portfolioKey
+                );
+              }
+            );
+          });
+      });
+  }
+
+  private stopLossAction(row: { price: number }, dataContext: ScalperOrderBookDataContext) {
+    this.callWithSettings(
+      dataContext,
+      settings => {
+        this.callWithPortfolioKey(
+          dataContext,
+          portfolioKey => {
+            this.callWithPosition(
+              dataContext,
+              position => {
+                this.scalperOrdersService.setStopLoss(
+                  row.price,
+                  settings.widgetSettings.enableMouseClickSilentOrders,
+                  position,
+                  settings.widgetSettings.instrumentGroup,
+                  portfolioKey
+                );
+              }
+            );
+          }
+        );
+      }
+    );
+  }
+
+  private limitOrderAction(row: { price: number }, side: Side, dataContext: ScalperOrderBookDataContext) {
+    this.callWithSettings(
+      dataContext,
+      settings => {
+        this.callWithSelectedVolume(
+          dataContext,
+          workingVolume => {
+            this.callWithPortfolioKey(
+              dataContext,
+              portfolioKey => {
+                this.scalperOrdersService.placeLimitOrder(
+                  settings.widgetSettings,
+                  side,
+                  workingVolume,
+                  row.price,
+                  settings.widgetSettings.enableMouseClickSilentOrders,
+                  portfolioKey
+                );
+              }
+            );
+          });
+      });
+  }
+
+  private marketOrderAction(side: Side, dataContext: ScalperOrderBookDataContext) {
+    this.callWithSettings(
+      dataContext,
+      settings => {
+        this.callWithSelectedVolume(
+          dataContext,
+          workingVolume => {
+            this.callWithPortfolioKey(
+              dataContext,
+              portfolioKey => {
+                this.scalperOrdersService.placeMarketOrder(
+                  settings.widgetSettings,
+                  side,
+                  workingVolume,
+                  settings.widgetSettings.enableMouseClickSilentOrders,
+                  portfolioKey
+                );
+              }
+            );
+          });
+      });
   }
 }

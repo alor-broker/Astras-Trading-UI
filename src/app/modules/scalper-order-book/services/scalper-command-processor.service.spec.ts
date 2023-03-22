@@ -2,7 +2,10 @@ import { TestBed } from '@angular/core/testing';
 
 import { ScalperCommandProcessorService } from './scalper-command-processor.service';
 import { HotKeyCommandService } from '../../../shared/services/hot-key-command.service';
-import { BehaviorSubject } from 'rxjs';
+import {
+  BehaviorSubject,
+  of
+} from 'rxjs';
 import { ScalperOrdersService } from './scalper-orders.service';
 import { ModifierKeys } from '../../../shared/models/modifier-keys.model';
 import {
@@ -27,6 +30,8 @@ import { InstrumentKey } from '../../../shared/models/instruments/instrument-key
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { Position } from '../../../shared/models/positions/position.model';
+import { TerminalSettingsService } from '../../terminal-settings/services/terminal-settings.service';
+import { TerminalSettings } from '../../../shared/models/terminal-settings/terminal-settings.model';
 
 describe('ScalperCommandProcessorService', () => {
   let service: ScalperCommandProcessorService;
@@ -69,7 +74,7 @@ describe('ScalperCommandProcessorService', () => {
     scalperOrdersServiceSpy = jasmine.createSpyObj(
       'ScalperOrdersService',
       [
-        'setStopLimitForRow',
+        'setStopLimit',
         'setStopLoss',
         'placeLimitOrder',
         'placeMarketOrder',
@@ -111,6 +116,12 @@ describe('ScalperCommandProcessorService', () => {
         {
           provide: ScalperOrdersService,
           useValue: scalperOrdersServiceSpy
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({} as TerminalSettings))
+          }
         }
       ]
     });
@@ -452,11 +463,12 @@ describe('ScalperCommandProcessorService', () => {
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as BodyRow;
 
-        scalperOrdersServiceSpy.setStopLimitForRow.and.callFake((instrumentKey: InstrumentKey, row: BodyRow, quantity: number, silent: boolean) => {
+        scalperOrdersServiceSpy.setStopLimit.and.callFake((instrumentKey: InstrumentKey, price: number, quantity: number, side: Side, silent: boolean) => {
           done();
           expect(instrumentKey).toEqual(orderBookDefaultSettings);
-          expect(row).toEqual(testRow);
+          expect(price).toEqual(testRow.price);
           expect(quantity).toEqual(workingVolume);
+          expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell);
           expect(silent).toEqual(true);
         });
 

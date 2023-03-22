@@ -1,0 +1,37 @@
+{
+  "selectValueError": "Выберите значение",
+  "mapNameLabel": "Схема",
+  "schemes": {
+    "scheme1": "Схема 1",
+    "scheme2": "Схема 2"
+  },
+  "schemeDescription": {
+    "buttonLabel": "Клавиша",
+    "modifierLabel": "Модификатор",
+    "sideLabel": "Сторона",
+    "actionLabel": "Действие",
+    "buttons": {
+      "left": "Левая",
+      "right": "Правая"
+    },
+    "modifiers": {
+      "shift": "Shift",
+      "ctrl": "Ctrl"
+    },
+    "sides": {
+      "ask": "Продавцы",
+      "bid": "Покупатели",
+      "spread": "Спред",
+      "any": "Любая"
+    },
+    "actions": {
+      "limitBuyOrder": "Лимитная заявка на покупку",
+      "limitSellOrder": "Лимитная заявка на продажу",
+      "marketBuyOrder": "Рыночная заявка на покупку",
+      "marketSellOrder": "Рыночная заявка на продажу",
+      "stopLimitBuyOrder": "Стоп-лимит заявка на покупку",
+      "stopLimitSellOrder": "Стоп-лимит заявка на продажу",
+      "stopLossOrder": "Стоп-лосс заявка"
+    }
+  }
+}

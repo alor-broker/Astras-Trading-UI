@@ -18,6 +18,30 @@ export interface HotKeysSettings {
   sellBestBid?: string;
 }
 
+export enum ScalperOrderBookMouseAction {
+  LimitBuyOrder = 'limitBuyOrder',
+  LimitSellOrder = 'limitSellOrder',
+  MarketBuyOrder = 'marketBuyOrder',
+  MarketSellOrder = 'marketSellOrder',
+  StopLimitBuyOrder = 'stopLimitBuyOrder',
+  StopLimitSellOrder = 'stopLimitSellOrder',
+  StopLossOrder = 'stopLossOrder'
+}
+
+export interface ScalperOrderBookMouseActionsMapItem {
+  button: 'left' | 'right',
+
+  orderBookRowType: 'ask' | 'bid' | 'spread' | 'any',
+
+  modifier?: 'shift' | 'ctrl' | null,
+  action: ScalperOrderBookMouseAction
+}
+
+export interface ScalperOrderBookMouseActionsMap {
+  mapName: 'scheme1' | 'scheme2';
+  actions: ScalperOrderBookMouseActionsMapItem[];
+}
+
 export interface DesignSettings {
   theme?: ThemeType;
 }
@@ -55,9 +79,9 @@ export interface TerminalSettings {
   language?: 'en' | 'ru' | null;
   badgesBind?: boolean;
   hotKeysSettings?: HotKeysSettings;
+  scalperOrderBookMouseActions?: ScalperOrderBookMouseActionsMap;
   designSettings?: DesignSettings;
   portfoliosCurrency?: PortfolioCurrency[];
   instantNotificationsSettings?: InstantNotificationsSettings;
   excludedSettings?: string[];
 }
-

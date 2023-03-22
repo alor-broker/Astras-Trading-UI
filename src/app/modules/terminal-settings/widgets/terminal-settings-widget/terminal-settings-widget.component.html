@@ -1,6 +1,6 @@
 <div *transloco="let t; scope: 'terminal-settings'">
   <nz-modal
-    [nzTitle]="t('terminalSettings.profileHeader')"
+    [nzTitle]="t('terminalSettings.settingsDialogTitle')"
     [nzVisible]='isVisible$ | async'
     (nzOnCancel)="handleClose()">
     <ng-container *nzModalContent>
