@@ -8,6 +8,7 @@ import {
   CurrentOrderDisplay
 } from '../models/scalper-order-book.model';
 import {
+  combineLatest,
   filter,
   iif,
   Observable,
@@ -74,6 +75,29 @@ export class ScalperCommandProcessorService {
           settings.widgetSettings.enableMouseClickSilentOrders
         );
       }
+    );
+  }
+
+  getPossibleActions(): Observable<ScalperOrderBookMouseAction[]> {
+    return combineLatest([
+      this.getMouseActionsMap(),
+      this.hotkeysService.modifiers$
+    ]).pipe(
+      map(([availableActions, modifiers]) => {
+        if(modifiers.shiftKey && !modifiers.altKey && !modifiers.ctrlKey) {
+         return availableActions.actions
+           .filter(x => x.modifier === 'shift')
+           .map(x => x.action);
+        }
+
+        if(modifiers.ctrlKey && !modifiers.altKey && !modifiers.shiftKey) {
+          return availableActions.actions
+            .filter(x => x.modifier === 'ctrl')
+            .map(x => x.action);
+        }
+
+        return [];
+      })
     );
   }
 

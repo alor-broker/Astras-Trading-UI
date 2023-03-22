@@ -41,5 +41,8 @@
     <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
                           direction="down"></ats-orders-indicator>
   </div>
+  <div class="position-absolute bottom-0 w-100" id="possible-actions-panel-container">
+    <ats-possible-actions-panel></ats-possible-actions-panel>
+  </div>
 </nz-spin>
 
