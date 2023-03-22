@@ -82,12 +82,20 @@ export class ScalperOrdersService {
     const bestAsk = orderBook.a[0].p;
     const bestBid = orderBook.b[0].p;
 
-    const diff = MathHelper.round(bestAsk - bestBid, MathHelper.getPrecision(instrument.minstep));
+    const pricePrecision = Math.max(
+      MathHelper.getPrecision(instrument.minstep),
+      MathHelper.getPrecision(bestAsk),
+      MathHelper.getPrecision(bestBid)
+    );
+
+    const diff = MathHelper.round(bestAsk - bestBid, pricePrecision);
 
     if (diff > instrument.minstep) {
       price = side === Side.Sell
         ? bestAsk - instrument.minstep
         : bestBid + instrument.minstep;
+
+      price = MathHelper.round(price, pricePrecision);
     }
     else {
       price = side === Side.Sell
