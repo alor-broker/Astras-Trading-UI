@@ -16,6 +16,18 @@ export class NumericalDirective {
   constructor(private _el: ElementRef) {
   }
 
+  @HostListener('mousewheel', ['$event']) onMouseWheel(event: WheelEvent) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    let step = this.step;
+    if (event.deltaY < 0) {
+      step = -step;
+    }
+    const value = this.getStepSum(step);
+    this._el.nativeElement.value = value > 0 ? value : 0;
+  }
+
   @HostListener('beforeinput', ['$event']) onBeforeInputChange(event: InputEvent) {
     if (!event.data) {
       return;
