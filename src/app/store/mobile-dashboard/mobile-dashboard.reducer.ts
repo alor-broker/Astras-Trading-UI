@@ -60,7 +60,7 @@ export const reducer = createReducer(
     }
   })),
 
-  on(MobileDashboardActions.selectInstrument, (state, props) => {
+  on(MobileDashboardActions.selectInstrumentSuccess, (state, props) => {
     if (!state.dashboard) {
       return state;
     }

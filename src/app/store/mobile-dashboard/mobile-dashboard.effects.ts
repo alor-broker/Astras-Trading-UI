@@ -26,6 +26,7 @@ import { InstrumentKey } from "../../shared/models/instruments/instrument-key.mo
 import { WidgetSettingsService } from "../../shared/services/widget-settings.service";
 import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
 import { defaultBadgeColor } from "../../shared/utils/instruments";
+import { InstrumentsService } from "../../modules/instruments/services/instruments.service";
 
 @Injectable()
 export class MobileDashboardEffects {
@@ -123,12 +124,33 @@ export class MobileDashboardEffects {
             groupKey: defaultBadgeColor,
             instrumentKey: {
               symbol: 'SBER',
-              exchange: 'MOEX',
-              instrumentGroup: 'TQBR'
+              exchange: 'MOEX'
             }
           }
         })
       ));
+  });
+
+  setInstrumentGroupWhenSelect$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(MobileDashboardActions.selectInstrument),
+      mapWith(
+        action => this.instrumentService.getInstrument({
+          symbol: action.selection.instrumentKey.symbol,
+          exchange: action.selection.instrumentKey.exchange
+        }),
+        (action, instrument) => ({ action, instrument })
+      ),
+      map(({ action, instrument }) => {
+        let selectionCopy = JSON.parse(JSON.stringify(action.selection));
+
+        if (selectionCopy.instrumentKey.instrumentGroup === instrument?.instrumentGroup && selectionCopy.instrumentKey.exchange === 'MOEX') {
+          selectionCopy.instrumentKey.instrumentGroup = '';
+        }
+
+        return MobileDashboardActions.selectInstrumentSuccess({ selection: selectionCopy });
+      })
+    );
   });
 
   private readonly mobileDashboardStorageKey = 'mobile-dashboard';
@@ -155,7 +177,8 @@ export class MobileDashboardEffects {
     private readonly dashboardService: ManageDashboardsService,
     private readonly marketService: MarketService,
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly instrumentService: InstrumentsService
   ) {
   }
 
