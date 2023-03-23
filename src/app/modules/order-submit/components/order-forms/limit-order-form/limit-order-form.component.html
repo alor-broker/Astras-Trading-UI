@@ -36,26 +36,30 @@
       <div>
         <nz-collapse [nzBordered]="false" class="compact" nzGhost>
           <nz-collapse-panel [nzHeader]="t('command.advanced')">
-            <nz-form-label nzFor="instrumentGroup">{{t('command.instrumentGroupLabel')}}</nz-form-label>
-            <nz-form-control [nzErrorTip]="t('command.instrumentGroupError')">
-              <ats-instrument-board-select
-                [instrument]="instrument"
-                [placeholder]="t('command.instrumentGroupPlaceholder')"
-                formControlName="instrumentGroup">
-              </ats-instrument-board-select>
-            </nz-form-control>
+            <nz-form-item class="compact">
+              <nz-form-control [nzErrorTip]="t('command.instrumentGroupError')">
+                <nz-form-label nzFor="instrumentGroup">{{t('command.instrumentGroupLabel')}}</nz-form-label>
+                <ats-instrument-board-select
+                  [instrument]="instrument"
+                  [placeholder]="t('command.instrumentGroupPlaceholder')"
+                  formControlName="instrumentGroup">
+                </ats-instrument-board-select>
+              </nz-form-control>
+            </nz-form-item>
 
-            <nz-form-label nzFor="timeInForce">{{t('command.timeInForceLabel')}}</nz-form-label>
-            <nz-form-control>
-              <nz-select formControlName="timeInForce" nzAllowClear [nzPlaceHolder]="t('command.timeInForcePlaceholder')">
-                <nz-option
-                  *ngFor="let timeInForce of timeInForceEnum | keyvalue"
-                  [nzValue]="timeInForce.value" [nzLabel]="t('command.timeInForceOptions.' + timeInForce.key)"
-                ></nz-option>
-              </nz-select>
-            </nz-form-control>
+            <nz-form-item class="compact">
+              <nz-form-label nzFor="timeInForce">{{t('command.timeInForceLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName="timeInForce" nzAllowClear [nzPlaceHolder]="t('command.timeInForcePlaceholder')">
+                  <nz-option
+                    *ngFor="let timeInForce of timeInForceEnum | keyvalue"
+                    [nzValue]="timeInForce.value" [nzLabel]="t('command.timeInForceOptions.' + timeInForce.key)"
+                  ></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
 
-            <nz-form-item class="compact mt-4">
+            <nz-form-item class="compact">
               <label
                 formControlName="isIceberg"
                 nz-checkbox
@@ -65,18 +69,20 @@
             </nz-form-item>
 
             <ng-container *ngIf="form.get('isIceberg')?.value">
-              <nz-form-control class="compact" [nzErrorTip]="icebergFixedError">
+              <nz-form-item class="compact">
                 <nz-form-label nzFor="icebergFixed">{{t('command.icebergFixedLabel')}}</nz-form-label>
-                <nz-input-group>
-                  <input
-                    nz-input
-                    atsNumerical
-                    formControlName="icebergFixed"
-                    placeholder="0"
-                    (mousedown)="$event.stopPropagation()"
-                  />
-                </nz-input-group>
-              </nz-form-control>
+                <nz-form-control [nzErrorTip]="icebergFixedError">
+                  <nz-input-group>
+                    <input
+                      nz-input
+                      atsNumerical
+                      formControlName="icebergFixed"
+                      placeholder="0"
+                      (mousedown)="$event.stopPropagation()"
+                    />
+                  </nz-input-group>
+                </nz-form-control>
+              </nz-form-item>
 
               <ng-template #icebergFixedError>
                 <span *ngIf="form.get('icebergFixed')?.errors?.min">{{t('command.tooLittle')}}</span>
