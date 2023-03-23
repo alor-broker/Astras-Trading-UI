@@ -18,6 +18,8 @@
         }
 
         .table-cell {
+          padding-right: 3px;
+
           &.trade-item {
             &.ask-side-item {
               background-color: fade(@sell-color, 15%);
@@ -45,12 +47,14 @@
 
     .table-cell {
       &.current-position-range-item {
+        border-right: @border-color-base 3px solid;
+
         &.positive {
-          color: @buy-color;
+          border-right-color: @buy-color;
         }
 
         &.negative {
-          color: @sell-color;
+          border-right-color: @sell-color;
         }
       }
     }
@@ -95,7 +99,7 @@
 
   #price-panel {
     .table-cell {
-      padding-left: 5px;
+      padding-left: 3px;
       text-align: right;
     }
   }
