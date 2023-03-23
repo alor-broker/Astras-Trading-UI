@@ -121,15 +121,13 @@
               <nz-form-item class="compact">
                 <nz-form-label nzFor="icebergFixed">{{t('command.icebergFixedLabel')}}</nz-form-label>
                 <nz-form-control [nzErrorTip]="icebergFixedError">
-                  <nz-input-group>
-                    <input
-                      nz-input
-                      atsNumerical
-                      formControlName="icebergFixed"
-                      placeholder="0"
-                      (mousedown)="$event.stopPropagation()"
-                    />
-                  </nz-input-group>
+                  <input
+                    nz-input
+                    atsNumerical
+                    formControlName="icebergFixed"
+                    placeholder="0"
+                    (mousedown)="$event.stopPropagation()"
+                  />
                 </nz-form-control>
               </nz-form-item>
 
