@@ -24,6 +24,11 @@ export class NumericalDirective {
     if (event.deltaY < 0) {
       step = -step;
     }
+
+    if (event.shiftKey) {
+      step *= 10;
+    }
+
     const value = this.getStepSum(step);
     this._el.nativeElement.value = value > 0 ? value : 0;
   }
