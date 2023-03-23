@@ -151,9 +151,11 @@ export class LimitEditComponent implements OnInit, OnDestroy {
         ]),
       timeInForce: new FormControl(commandContext.commandParameters.timeInForce),
       isIceberg: new FormControl(!!commandContext.commandParameters.icebergFixed || commandContext.commandParameters.icebergFixed === 0),
-      icebergFixed: new FormControl(commandContext.commandParameters.icebergFixed),
-      icebergVariance: new FormControl(commandContext.commandParameters.icebergVariance),
-    });
+      icebergFixed: new FormControl(commandContext.commandParameters.icebergFixed, Validators.min(inputNumberValidation.min)),
+      icebergVariance: new FormControl(commandContext.commandParameters.icebergVariance, Validators.min(inputNumberValidation.min)),
+    },
+      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+    );
   }
 
   private updateEvaluation(command: LimitEdit, commandContext: CommandContextModel<EditParams>) {

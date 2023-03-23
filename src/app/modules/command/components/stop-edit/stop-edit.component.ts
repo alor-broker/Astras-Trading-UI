@@ -203,9 +203,11 @@ export class StopEditComponent implements OnInit, OnDestroy {
       side: new FormControl(initialParameters.commandParameters.side),
       timeInForce: new FormControl(initialParameters.commandParameters.timeInForce),
       isIceberg: new FormControl(!!initialParameters.commandParameters.icebergFixed || initialParameters.commandParameters.icebergFixed === 0),
-      icebergFixed: new FormControl(initialParameters.commandParameters.icebergFixed),
-      icebergVariance: new FormControl(initialParameters.commandParameters.icebergVariance),
-    });
+      icebergFixed: new FormControl(initialParameters.commandParameters.icebergFixed, Validators.min(inputNumberValidation.min)),
+      icebergVariance: new FormControl(initialParameters.commandParameters.icebergVariance, Validators.min(inputNumberValidation.min)),
+    },
+      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+    );
   }
 
   private checkNowTimeSelection(converter: TimezoneConverter) {

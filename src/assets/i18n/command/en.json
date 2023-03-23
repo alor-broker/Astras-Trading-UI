@@ -47,6 +47,7 @@
   "isIcebergLabel": "Iceberg",
   "icebergFixedLabel": "Visible fixed part, lots",
   "icebergVarianceLabel": "Variance amplitude, %",
+  "notBiggerThanError": "The value should be not bigger than \"{{fieldName}}\" field value",
 
   "stopOrderWarning": "Stop orders are placed through the new Sparker service. Because of this, there may be errors that we for some reason did not notice. Please be careful.",
 

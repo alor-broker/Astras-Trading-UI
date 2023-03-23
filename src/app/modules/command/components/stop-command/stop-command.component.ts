@@ -197,9 +197,11 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       withLimit: new FormControl(false),
       timeInForce: new FormControl(null),
       isIceberg: new FormControl(false),
-      icebergFixed: new FormControl(null),
-      icebergVariance: new FormControl(null),
-    });
+      icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
+      icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
+    },
+      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+    );
   }
 
   private initCommandForm(commandContext: CommandContextModel<CommandParams>, converter: TimezoneConverter) {

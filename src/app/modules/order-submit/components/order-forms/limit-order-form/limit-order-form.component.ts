@@ -74,9 +74,11 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
       instrumentGroup: new FormControl(instrument.instrumentGroup ?? ''),
       timeInForce: new FormControl(null),
       isIceberg: new FormControl(false),
-      icebergFixed: new FormControl(null),
-      icebergVariance: new FormControl(null)
-    });
+      icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
+      icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min))
+    },
+      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+      );
   }
 
   protected getFormValue(): LimitOrderFormValue | null {

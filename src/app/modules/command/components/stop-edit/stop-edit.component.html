@@ -120,7 +120,7 @@
           </nz-form-item>
 
           <ng-container *ngIf="form.get('isIceberg')?.value">
-            <nz-form-item class="compact">
+            <nz-form-control class="compact" [nzErrorTip]="icebergFixedError">
               <nz-form-label nzFor="icebergFixed">{{t('command.icebergFixedLabel')}}</nz-form-label>
               <nz-input-group>
                 <input
@@ -131,13 +131,20 @@
                   (mousedown)="$event.stopPropagation()"
                 />
               </nz-input-group>
-            </nz-form-item>
+            </nz-form-control>
+
+            <ng-template #icebergFixedError>
+              <span *ngIf="form.get('icebergFixed')?.errors?.min">{{t('command.tooLittle')}}</span>
+            </ng-template>
+            <span nz-typography nzType="danger" *ngIf="form.errors?.icebergFixedNotBiggerThanQuantity">
+              {{t('command.notBiggerThanError', { fieldName: t('command.quantityLabel') })}}
+            </span>
 
             <nz-form-item class="compact">
               <nz-form-label nzFor="icebergVariance">
                 {{t('command.icebergVarianceLabel')}}
               </nz-form-label>
-              <nz-input-group>
+              <nz-form-control [nzErrorTip]="icebergVarianceError">
                 <input
                   nz-input
                   atsNumerical
@@ -145,7 +152,11 @@
                   placeholder="0"
                   (mousedown)="$event.stopPropagation()"
                 />
-              </nz-input-group>
+              </nz-form-control>
+
+              <ng-template #icebergVarianceError>
+                <span *ngIf="form.get('icebergFixed')?.errors?.min">{{t('command.tooLittle')}}</span>
+              </ng-template>
             </nz-form-item>
           </ng-container>
         </nz-collapse-panel>
