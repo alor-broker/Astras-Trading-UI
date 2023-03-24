@@ -19,6 +19,7 @@ import {
   CdkDropList,
   CdkDropListGroup
 } from '@angular/cdk/drag-drop';
+import { PossibleActionsPanelComponent } from './components/possible-actions-panel/possible-actions-panel.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import {
     WorkingVolumesPanelComponent,
     ModifiersIndicatorComponent,
     ScalperOrderBookSettingsComponent,
-    OrdersIndicatorComponent
+    OrdersIndicatorComponent,
+    PossibleActionsPanelComponent
   ],
   imports: [
     CommonModule,
