@@ -35,6 +35,7 @@ import { inputNumberValidation } from "../../../../shared/utils/validation-optio
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
+import { TimeInForce } from "../../../../shared/models/commands/command-params.model";
 
 @Component({
   selector: 'ats-stop-edit',
@@ -45,6 +46,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
   form!: FormGroup<ControlsOf<StopFormData & { side: Side }>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<EditParams> | null>(null);
   canSelectNow = false;
+  timeInForceEnum = TimeInForce;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private timezoneConverter!: TimezoneConverter;
 
@@ -135,12 +137,26 @@ export class StopEditComponent implements OnInit, OnDestroy {
         JSON.stringify(prev) === JSON.stringify(curr)
       ),
     ).subscribe((val) => {
+      let additionalData = {} as any;
+
+      if (val.isIceberg) {
+        additionalData.icebergFixed = Number(val.icebergFixed ?? 0);
+        if (val.icebergVariance) {
+          additionalData.icebergVariance = Number(val.icebergVariance);
+        }
+      }
+
+      if (val.timeInForce) {
+        additionalData.timeInForce = val.timeInForce;
+      }
+
       this.setStopEdit({
         ...commandContext.commandParameters,
         ...val,
         price: Number(val.price),
         quantity: val.quantity!,
-        side: val.side!
+        side: val.side!,
+        ...additionalData
       });
     });
   }
@@ -184,8 +200,14 @@ export class StopEditComponent implements OnInit, OnDestroy {
       ),
       condition: new FormControl(initialParameters.commandParameters.condition || StopOrderCondition.More),
       withLimit: new FormControl({ value: initialParameters.commandParameters.type === 'stoplimit', disabled: true }),
-      side: new FormControl(initialParameters.commandParameters.side)
-    });
+      side: new FormControl(initialParameters.commandParameters.side),
+      timeInForce: new FormControl(initialParameters.commandParameters.timeInForce),
+      isIceberg: new FormControl(!!initialParameters.commandParameters.icebergFixed || initialParameters.commandParameters.icebergFixed === 0),
+      icebergFixed: new FormControl(initialParameters.commandParameters.icebergFixed, Validators.min(inputNumberValidation.min)),
+      icebergVariance: new FormControl(initialParameters.commandParameters.icebergVariance, Validators.min(inputNumberValidation.min)),
+    },
+      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+    );
   }
 
   private checkNowTimeSelection(converter: TimezoneConverter) {

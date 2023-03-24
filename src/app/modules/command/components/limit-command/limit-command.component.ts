@@ -16,7 +16,7 @@ import {
   takeUntil
 } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
+import { CommandParams, TimeInForce } from 'src/app/shared/models/commands/command-params.model';
 import { CommandsService } from '../../services/commands.service';
 import { LimitCommand } from '../../models/limit-command.model';
 import { LimitFormData } from '../../models/limit-form-data.model';
@@ -35,6 +35,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   form!: FormGroup<ControlsOf<LimitFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
+  timeInForceEnum = TimeInForce;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private service: CommandsService) {
@@ -84,6 +85,19 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
     const formValue = this.form.value as LimitFormData;
 
+    let additionalData = {} as any;
+
+    if (formValue.isIceberg) {
+      additionalData.icebergFixed = Number(formValue.icebergFixed ?? 0);
+      if (formValue.icebergVariance) {
+        additionalData.icebergVariance = Number(formValue.icebergVariance);
+      }
+    }
+
+    if (formValue.timeInForce) {
+      additionalData.timeInForce = formValue.timeInForce;
+    }
+
     if (commandContext.commandParameters && commandContext.commandParameters.user) {
       const newCommand: LimitCommand = {
         quantity: Number(formValue.quantity),
@@ -92,7 +106,8 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           ...commandContext.commandParameters.instrument,
           instrumentGroup: formValue.instrumentGroup ?? commandContext.commandParameters.instrument.instrumentGroup
         },
-        user: commandContext.commandParameters.user
+        user: commandContext.commandParameters.user,
+        ...additionalData
       };
 
       this.updateEvaluation(newCommand, commandContext);
@@ -123,7 +138,13 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         ]
       ),
       instrumentGroup: new FormControl(commandContext.commandParameters.instrument.instrumentGroup),
-    });
+      timeInForce: new FormControl(null),
+      isIceberg: new FormControl(false),
+      icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
+      icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
+    },
+      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+    );
   }
 
   private updateEvaluation(command: LimitCommand, commandContext: CommandContextModel<CommandParams>) {
@@ -151,6 +172,10 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         prev?.price == curr?.price
         && prev?.quantity == curr?.quantity
         && prev?.instrumentGroup == curr?.instrumentGroup
+        && prev?.timeInForce == curr?.timeInForce
+        && prev?.isIceberg == curr?.isIceberg
+        && prev?.icebergFixed == curr?.icebergFixed
+        && prev?.icebergVariance == curr?.icebergVariance
       )
     ).subscribe(() => {
       this.setLimitCommand(commandContext);

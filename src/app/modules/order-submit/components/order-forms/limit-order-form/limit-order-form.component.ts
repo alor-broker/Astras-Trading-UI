@@ -24,8 +24,15 @@ import {
   OrderType
 } from '../../../models/order-form.model';
 import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
+import { TimeInForce } from "../../../../../shared/models/commands/command-params.model";
 
-export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { instrumentGroup: string };
+export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & {
+  instrumentGroup: string;
+  isIceberg?: boolean;
+  timeInForce?: TimeInForce;
+  icebergFixed?: number;
+  icebergVariance?: number;
+};
 
 @Component({
   selector: 'ats-limit-order-form[instrument]',
@@ -34,6 +41,7 @@ export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & { in
 })
 export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFormValue> implements OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
+  timeInForceEnum = TimeInForce;
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
@@ -64,13 +72,37 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
         ]
       ),
       instrumentGroup: new FormControl(instrument.instrumentGroup ?? ''),
-    });
+      timeInForce: new FormControl(null),
+      isIceberg: new FormControl(false),
+      icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
+      icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min))
+    },
+      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+      );
   }
 
   protected getFormValue(): LimitOrderFormValue | null {
-    const formValue = super.getFormValue();
-    if (!formValue) {
-      return formValue;
+    if (!super.getFormValue()) {
+      return null;
+    }
+
+    let formValue = { ...super.getFormValue()! };
+
+    if (!formValue.isIceberg) {
+      delete formValue.icebergFixed;
+      delete formValue.icebergVariance;
+    } else {
+      formValue = {
+        ...formValue,
+        icebergFixed: Number(formValue.icebergFixed),
+        icebergVariance: Number(formValue.icebergVariance)
+      };
+    }
+
+    delete formValue.isIceberg;
+
+    if (!formValue.timeInForce) {
+      delete formValue.timeInForce;
     }
 
     return {
