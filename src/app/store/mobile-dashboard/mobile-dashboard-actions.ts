@@ -47,13 +47,6 @@ export class MobileDashboardActions {
     }>()
   );
 
-  static selectInstrumentSuccess = createAction(
-    '[Mobile Dashboard] Select Instrument Success',
-    props<{
-      selection: { groupKey: string, instrumentKey: InstrumentKey }
-    }>()
-  );
-
   static saveMobileDashboard = createAction('[Mobile Dashboard] Save Mobile Dashboard');
 
   static saveInstrumentsHistory = createAction('[Mobile Dashboard] Save Instruments History');

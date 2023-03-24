@@ -7,7 +7,7 @@
         [nzChecked]="isInstrumentEqual(selectedInstrument, instrument)"
         (click)="selectInstrument(instrument)"
       >
-        {{instrument.symbol}} <span *ngIf="instrument.instrumentGroup">({{instrument.instrumentGroup}})</span>
+        {{instrument.symbol}} <span *ngIf="instrument.instrumentGroup && instrument.showInstrumentGroup">({{instrument.instrumentGroup}})</span>
       </nz-tag>
     </ng-container>
   </ng-container>
