@@ -1,29 +1,11 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  FormControl,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators
-} from '@angular/forms';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  Observable,
-  shareReplay,
-  Subject,
-  take,
-  takeUntil
-} from "rxjs";
+import { Observable, shareReplay, Subject, take, takeUntil } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { OrderbookSettings } from '../../models/orderbook-settings.model';
+import { ColumnsOrder, OrderbookSettings } from '../../models/orderbook-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
@@ -38,6 +20,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
       max: 20
     }
   };
+  columnsOrderEnum = ColumnsOrder;
 
   @Input()
   guid!: string;
@@ -89,7 +72,8 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
         showTable: new FormControl(settings.showTable),
         showYieldForBonds: new FormControl(settings.showYieldForBonds),
         useOrderWidget: new FormControl(settings.useOrderWidget ?? false),
-        showVolume: new FormControl(settings.showVolume ?? false)
+        showVolume: new FormControl(settings.showVolume ?? false),
+        columnsOrder: new FormControl(settings.columnsOrder ?? ColumnsOrder.volumesAtTheEdges)
       });
     });
   }

@@ -8,26 +8,10 @@ import {
   Output,
   ViewEncapsulation
 } from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  of,
-  shareReplay,
-  Subject,
-  switchMap,
-  take,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, shareReplay, Subject, switchMap, take, } from 'rxjs';
 import { OrderbookService } from '../../services/orderbook.service';
-import {
-  ChartData,
-  OrderBook
-} from '../../models/orderbook.model';
-import {
-  map,
-  startWith,
-  tap
-} from 'rxjs/operators';
+import { ChartData, OrderBook } from '../../models/orderbook.model';
+import { map, startWith, tap } from 'rxjs/operators';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -40,7 +24,7 @@ import { SelectedPriceData } from "../../../../shared/models/orders/selected-ord
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { MathHelper } from "../../../../shared/utils/math-helper";
-import { OrderbookSettings } from '../../models/orderbook-settings.model';
+import { ColumnsOrder, OrderbookSettings } from '../../models/orderbook-settings.model';
 import { CurrentOrder } from '../../models/orderbook-view-row.model';
 
 interface Size {
@@ -76,10 +60,12 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   shouldShowYield$: Observable<boolean> = of(false);
   shouldShowTable$: Observable<boolean> = of(true);
   shouldShowVolumes$: Observable<boolean> = of(false);
+  columnsOrder$: Observable<ColumnsOrder> = of(ColumnsOrder.volumesAtTheEdges);
   ob$: Observable<OrderBook | null> = of(null);
   spreadDiffData$: Observable<SpreadDiffData | null> = of(null);
   maxVolume: number = 1;
   themeSettings?: ThemeSettings;
+  columnsOrderEnum = ColumnsOrder;
 
   sizes: BehaviorSubject<Size> = new BehaviorSubject<Size>({
     width: '100%',
@@ -106,6 +92,10 @@ export class OrderBookComponent implements OnInit, OnDestroy {
 
     this.shouldShowVolumes$ = settings$.pipe(
       map((s) => s.showVolume)
+    );
+
+    this.columnsOrder$ = settings$.pipe(
+      map(s => s.columnsOrder ?? ColumnsOrder.volumesAtTheEdges)
     );
 
     this.shouldShowYield$ = settings$.pipe(

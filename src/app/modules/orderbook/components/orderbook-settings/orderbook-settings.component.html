@@ -28,6 +28,15 @@
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
+      <nz-form-item>
+        <nz-form-control>
+          <nz-form-label nzRequired nzFor="columnsOrder">{{t('orderbookSettings.columnsOrderLabel')}}</nz-form-label>
+          <nz-select formControlName="columnsOrder">
+            <nz-option [nzValue]="columnsOrderEnum.volumesAtTheEdges" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheEdges')"></nz-option>
+            <nz-option [nzValue]="columnsOrderEnum.volumesAtTheMiddle" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheMiddle')"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
       <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-form-label nzFor="useOrderWidget">
           {{t('orderbookSettings.useOrderWidgetLabel')}}
