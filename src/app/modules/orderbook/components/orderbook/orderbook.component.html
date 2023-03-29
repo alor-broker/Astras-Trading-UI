@@ -26,137 +26,24 @@
     <div></div>
   </div>
 
-  <nz-table *ngIf="shouldShowTable$ | async" #basicTable [nzData]="ob.rows" nzSize="small" [nzFrontPagination]="false" id="order-book-table">
+  <ng-container *ngIf="shouldShowTable$ | async">
     <ng-container *ngIf="columnsOrder$ | async as columnsOrder">
-      <thead>
-        <tr>
-          <th [nzWidth]="'20px'" *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheEdges">Vol</th>
-          <th
-            [nzAlign]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? 'right' : 'left'"
-            [nzWidth]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? null : '20px'"
-          >
-            Bid
-          </th>
-          <th nzAlign="right" *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheMiddle">Vol</th>
-          <th *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheMiddle">Vol</th>
-          <th
-            [nzAlign]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? 'left' : 'right'"
-            [nzWidth]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? null : '20px'"
-          >
-            Ask
-          </th>
-          <th [nzWidth]="'20px'" nzAlign="right"  *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheEdges">Vol</th>
-        </tr>
-      </thead>
-      <tbody (click)="newLimitOrder($event, 0)" cdkDropListGroup>
-        <tr *ngFor='let row of basicTable.data; trackBy: getTrackKey'>
-          <ng-container *ngIf="row.bid ?? 0 > 0; else zeroBid">
-            <ng-template #bidVolumeCell>
-              <td
-                   [ngStyle]="columnsOrder === columnsOrderEnum.volumesAtTheMiddle ? getBidStyle(row.bidVolume ?? 0) : {background: 'unset'}"
-                   (click)="newLimitOrder($event, row.bid ?? 0)"
-                   cdkDropList
-                   [nzAlign]="columnsOrder === columnsOrderEnum.volumesAtTheMiddle ? 'right' : 'left'"
-                   (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid!)"
-              >
-                <button *ngIf='row.bidOrders && row.bidOrderVolume'
-                        nzSize="small"
-                        nz-button
-                        nzType="primary"
-                        cdkDrag
-                        cdkDragPreviewClass="order-book-order"
-                        [cdkDragDisabled]="row.bidOrders!.length !== 1"
-                        [cdkDragData]="row.bidOrders![0]"
-                        (click)="cancelOrder($event, row.bidOrders)">
-                  <i *ngIf='row.bidOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
-                  {{row.bidOrderVolume}}
-                </button>
-                <span class="cell-value">
-                  {{row.bidVolume}}
-                </span>
-              </td>
-            </ng-template>
-
-            <ng-container *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheEdges">
-              <ng-container *ngTemplateOutlet="bidVolumeCell"></ng-container>
-            </ng-container>
-
-            <td *ngIf="(shouldShowYield$ | async) === false"
-              (click)="newLimitOrder($event, row.bid ?? 0)"
-              [nzAlign]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? 'right' : 'left'"
-              [ngStyle]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? getBidStyle(row.bidVolume ?? 0) : {background: 'unset'}">
-              {{row.bid}}
-            </td>
-            <td *ngIf="(shouldShowYield$ | async) === true"
-              (click)="newLimitOrder($event, row.bid ?? 0)"
-              [nzAlign]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? 'right' : 'left'"
-              [ngStyle]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? getBidStyle(row.bidVolume ?? 0) : {background: 'unset'}">
-              {{row.yieldBid}}
-            </td>
-
-            <ng-container *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheMiddle">
-              <ng-container *ngTemplateOutlet="bidVolumeCell"></ng-container>
-            </ng-container>
-          </ng-container>
-          <ng-template #zeroBid>
-            <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
-          </ng-template>
-
-          <ng-container *ngIf="row.ask ?? 0 > 0; else zeroAsk">
-            <ng-template #askVolumeCell>
-              <td [ngStyle]="columnsOrder === columnsOrderEnum.volumesAtTheMiddle ? getAskStyle(row.askVolume ?? 0) : {background: 'unset'}"
-                  class='row-cell--ask-volume'
-                  [nzAlign]="columnsOrder === columnsOrderEnum.volumesAtTheMiddle ? 'left' : 'right'"
-                  (click)="newLimitOrder($event, row.ask ?? 0)"
-                  cdkDropList
-                  (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask!)"
-              >
-                <span class="cell-value">
-                  {{row.askVolume}}
-                </span>
-                <button *ngIf='row.askOrders && row.askOrderVolume'
-                        nzSize="small"
-                        nz-button
-                        nzType="primary"
-                        cdkDrag
-                        cdkDragPreviewClass="order-book-order"
-                        [cdkDragDisabled]="row.askOrders!.length !== 1"
-                        [cdkDragData]="row.askOrders![0]"
-                        (click)="cancelOrder($event, row.askOrders)">
-                  {{row.askOrderVolume}}
-                  <i *ngIf='row.askOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
-                </button>
-              </td>
-            </ng-template>
-
-            <ng-container *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheMiddle">
-              <ng-container *ngTemplateOutlet="askVolumeCell"></ng-container>
-            </ng-container>
-
-            <td *ngIf="(shouldShowYield$ | async) === false"
-              [nzAlign]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? 'left' : 'right'"
-              (click)="newLimitOrder($event, row.ask ?? 0)"
-              [ngStyle]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? getAskStyle(row.askVolume ?? 0) : {background: 'unset'}">
-              {{row.ask}}
-            </td>
-            <td *ngIf="(shouldShowYield$ | async) === true"
-              [nzAlign]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? 'left' : 'right'"
-              (click)="newLimitOrder($event, row.ask ?? 0)"
-              [ngStyle]="columnsOrder === columnsOrderEnum.volumesAtTheEdges ? getAskStyle(row.askVolume ?? 0) : {background: 'unset'}">
-              {{row.yieldAsk}}
-            </td>
-
-            <ng-container *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheEdges">
-              <ng-container *ngTemplateOutlet="askVolumeCell"></ng-container>
-            </ng-container>
-          </ng-container>
-
-          <ng-template #zeroAsk>
-            <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
-          </ng-template>
-        </tr>
-      </tbody>
+      <ats-orderbook-table-volumes-at-the-edges
+        *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheEdges"
+        [guid]="guid"
+        [ob]="ob"
+        [shouldShowYield]="shouldShowYield$ | async"
+        [themeSettings]="themeSettings"
+        [maxVolume]="maxVolume"
+      ></ats-orderbook-table-volumes-at-the-edges>
+      <ats-orderbook-table-volumes-at-the-middle
+        *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheMiddle"
+        [guid]="guid"
+        [ob]="ob"
+        [shouldShowYield]="shouldShowYield$ | async"
+        [themeSettings]="themeSettings"
+        [maxVolume]="maxVolume"
+      ></ats-orderbook-table-volumes-at-the-middle>
     </ng-container>
-  </nz-table>
-
+  </ng-container>
 </div>

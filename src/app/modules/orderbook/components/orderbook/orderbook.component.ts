@@ -8,13 +8,10 @@ import {
   Output,
   ViewEncapsulation
 } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of, shareReplay, Subject, switchMap, take, } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, shareReplay, Subject, switchMap } from 'rxjs';
 import { OrderbookService } from '../../services/orderbook.service';
 import { ChartData, OrderBook } from '../../models/orderbook.model';
 import { map, startWith, tap } from 'rxjs/operators';
-import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
-import { CommandType } from 'src/app/shared/models/enums/command-type.model';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import { getTypeByCfi } from 'src/app/shared/utils/instruments';
 import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -25,7 +22,6 @@ import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { ColumnsOrder, OrderbookSettings } from '../../models/orderbook-settings.model';
-import { CurrentOrder } from '../../models/orderbook-view-row.model';
 
 interface Size {
   width: string;
@@ -76,7 +72,6 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     private readonly settingsService: WidgetSettingsService,
     private readonly instrumentsService: InstrumentsService,
     private readonly service: OrderbookService,
-    private readonly modal: ModalService,
     private readonly widgetsDataProvider: WidgetsDataProviderService,
     private readonly themeService: ThemeService) {
   }
@@ -175,75 +170,5 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
-  }
-
-  getBidStyle(value: number) {
-    if(!this.themeSettings) {
-      return null;
-    }
-
-    const size = 100 * (value / this.maxVolume);
-    return {
-      background: `linear-gradient(270deg, ${this.themeSettings.themeColors.buyColorBackground} ${size}% , rgba(0,0,0,0) ${size}%)`,
-    };
-  }
-
-  getAskStyle(value: number) {
-    if(!this.themeSettings) {
-      return null;
-    }
-
-    const size = 100 * (value / this.maxVolume);
-    return {
-      background: `linear-gradient(90deg, ${this.themeSettings.themeColors.sellColorBackground} ${size}%, rgba(0,0,0,0) ${size}%)`,
-    };
-  }
-
-  cancelOrder(event: MouseEvent, orders: CurrentOrder[]) {
-    event.stopPropagation();
-    for (const order of orders) {
-      this.service.cancelOrder(order);
-    }
-  }
-
-  newLimitOrder(event: MouseEvent, price: number, quantity?: number) {
-    event.stopPropagation();
-    this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
-      take(1)
-    ).subscribe(settings => {
-      if (settings.useOrderWidget) {
-        this.widgetsDataProvider.setDataProviderValue<SelectedPriceData>('selectedPrice',{price, badgeColor: settings.badgeColor!});
-      } else {
-        const params: CommandParams = {
-          instrument: { ...settings },
-          price,
-          quantity: quantity ?? 1,
-          type: CommandType.Limit,
-        };
-        this.modal.openCommandModal(params);
-      }
-    });
-  }
-
-  getTrackKey(index: number): number {
-    return index;
-  }
-
-  updateOrderPrice(order: CurrentOrder, price: number) {
-    this.modal.openEditModal({
-      type: order.type,
-      quantity: order.volume,
-      orderId: order.orderId,
-      price: price,
-      instrument: {
-        symbol: order.symbol,
-        exchange: order.exchange
-      },
-      user: {
-        portfolio: order.portfolio,
-        exchange: order.exchange
-      },
-      side: order.side
-    });
   }
 }
