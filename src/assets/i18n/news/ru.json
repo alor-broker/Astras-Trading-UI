@@ -1,3 +1,8 @@
 {
-  "newsColumn": "Новость"
+  "newsColumn": "Новость",
+  "newsSections": {
+    "all": "Все",
+    "portfolio": "По портфелю",
+    "symbol": "По тикеру"
+  }
 }

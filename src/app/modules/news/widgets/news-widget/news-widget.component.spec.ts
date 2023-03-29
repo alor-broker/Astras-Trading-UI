@@ -10,6 +10,8 @@ import {
 } from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { of } from 'rxjs';
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 
 describe('NewsWidgetComponent', () => {
   let component: NewsWidgetComponent;
@@ -33,7 +35,19 @@ describe('NewsWidgetComponent', () => {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
             addSettings: jasmine.createSpy('addSettings').and.callThrough()
           }
-        }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            instrumentsSelection$: of({})
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            terminalSettingsService: of({})
+          }
+        },
       ]
     })
       .compileComponents();
