@@ -12,6 +12,11 @@
   "displayTableLabel": "Показывать таблицу",
   "displayVolumeLabel": "Показывать совокупный объём",
   "displayYieldForBondsLabel": "Показывать дох. облигаций",
+  "columnsOrderLabel": "Очерёдность столбцов",
+  "columnOrders": {
+    "volumesAtTheEdges":  "Объёмы по краям",
+    "volumesAtTheMiddle": "Объёмы по центру"
+  },
 
   "advanced": "Продвинутые",
   "instrumentGroupLabel": "Режим торгов",
