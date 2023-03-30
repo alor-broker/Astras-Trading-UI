@@ -5,10 +5,9 @@ import { interval, Observable, switchMap } from "rxjs";
 import { NewsListItem } from "../models/news.model";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
-import { Store } from "@ngrx/store";
-import { selectedPortfolioKey } from "../../../store/dashboards/dashboards.selectors";
 import { PositionsService } from "../../../shared/services/positions.service";
 import { filter } from "rxjs/operators";
+import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
 
 interface GetNewsParams {
   limit: number;
@@ -25,7 +24,7 @@ export class NewsService {
   constructor(
     private http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
-    private readonly store: Store,
+    private readonly dashboardContextService: DashboardContextService,
     private readonly positionsService: PositionsService
   ) {}
 
@@ -44,7 +43,7 @@ export class NewsService {
   }
 
   public getNewsByPortfolio(params: GetNewsParams): Observable<NewsListItem[]> {
-    return this.store.select(selectedPortfolioKey)
+    return this.dashboardContextService.selectedPortfolio$
       .pipe(
         filter(p => !!p),
         switchMap(p => this.positionsService.getAllByPortfolio(p!.portfolio, p!.exchange)),
@@ -66,7 +65,7 @@ export class NewsService {
   }
 
   public getNewNewsByPortfolio(): Observable<NewsListItem[]> {
-    return this.store.select(selectedPortfolioKey)
+    return this.dashboardContextService.selectedPortfolio$
       .pipe(
         filter(p => !!p),
         switchMap(p => this.positionsService.getAllByPortfolio(p!.portfolio, p!.exchange)),

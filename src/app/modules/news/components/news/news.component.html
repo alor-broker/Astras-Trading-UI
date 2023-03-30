@@ -1,9 +1,9 @@
 <div class="container" *transloco="let t; scope: 'news'">
   <div>
-    <nz-tabset (nzSelectChange)="newsSectionChange($event.index)" nzSize="small">
-      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.all)"></nz-tab>
-      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.portfolio)"></nz-tab>
-      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.symbol)"></nz-tab>
+    <nz-tabset nzSize="small">
+      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.All)" (nzSelect)="newsSectionChange(newsSectionEnum.All)"></nz-tab>
+      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Portfolio)" (nzSelect)="newsSectionChange(newsSectionEnum.Portfolio)"></nz-tab>
+      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Symbol)" (nzSelect)="newsSectionChange(newsSectionEnum.Symbol)"></nz-tab>
     </nz-tabset>
   </div>
   <div class="table-container"

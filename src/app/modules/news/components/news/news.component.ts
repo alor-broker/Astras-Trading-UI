@@ -27,9 +27,9 @@ import { NewsSettings } from "../../models/news-settings.model";
 import { filter } from "rxjs/operators";
 
 enum NewsSection {
-  all = 'all',
-  portfolio = 'portfolio',
-  symbol = 'symbol'
+  All = 'all',
+  Portfolio = 'portfolio',
+  Symbol = 'symbol'
 }
 
 @Component({
@@ -47,8 +47,8 @@ export class NewsComponent implements OnInit, OnDestroy {
   public isLoading = false;
   public tableConfig$?: Observable<TableConfig<NewsListItem>>;
   public newsSectionEnum = NewsSection;
-  public selectedSection = NewsSection.all;
 
+  private selectedSection = NewsSection.All;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private newsSubscription?: Subscription;
   private newNewsSubscription?: Subscription;
@@ -115,7 +115,7 @@ export class NewsComponent implements OnInit, OnDestroy {
   }
 
   private loadNews(isNewList = false): void {
-    if (this.isEndOfList) return;
+    if (this.isEndOfList && !isNewList) return;
 
     this.isLoading = true;
     this.cdr.markForCheck();
@@ -157,18 +157,8 @@ export class NewsComponent implements OnInit, OnDestroy {
       });
   }
 
-  newsSectionChange(sectionIndex: number = 0) {
-    switch (sectionIndex) {
-      case 0:
-        this.selectedSection = NewsSection.all;
-        break;
-      case 1:
-        this.selectedSection = NewsSection.portfolio;
-        break;
-      case 2:
-        this.selectedSection = NewsSection.symbol;
-        break;
-    }
+  newsSectionChange(section: NewsSection) {
+    this.selectedSection = section;
     this.loadNews(true);
   }
 
@@ -179,11 +169,11 @@ export class NewsComponent implements OnInit, OnDestroy {
     };
 
     switch (this.selectedSection) {
-      case NewsSection.all:
+      case NewsSection.All:
         return this.newsService.getNews(baseParams);
-      case NewsSection.portfolio:
+      case NewsSection.Portfolio:
         return this.newsService.getNewsByPortfolio(baseParams);
-      case NewsSection.symbol:
+      case NewsSection.Symbol:
         return this.widgetSettingsService.getSettings<NewsSettings>(this.guid)
           .pipe(
             filter(s => !!s && !!s.symbol),
@@ -200,11 +190,11 @@ export class NewsComponent implements OnInit, OnDestroy {
 
   private getNewNewsStream(): Observable<NewsListItem[]> {
     switch (this.selectedSection) {
-      case NewsSection.all:
+      case NewsSection.All:
         return this.newsService.getNewNews();
-      case NewsSection.portfolio:
+      case NewsSection.Portfolio:
         return this.newsService.getNewNewsByPortfolio();
-      case NewsSection.symbol:
+      case NewsSection.Symbol:
         return this.widgetSettingsService.getSettings<NewsSettings>(this.guid)
           .pipe(
             filter(s => !!s && !!s.symbol),
