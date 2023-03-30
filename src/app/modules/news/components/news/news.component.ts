@@ -1,13 +1,15 @@
 import {
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   Input,
   OnDestroy,
-  OnInit
+  OnInit,
+  Output
 } from '@angular/core';
 import { NewsService } from "../../services/news.service";
 import { ModalService } from "../../../../shared/services/modal.service";
-import { NewsListItem } from "../../models/news.model";
+import { NewsListItem, NewsSection } from "../../models/news.model";
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -26,12 +28,6 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { NewsSettings } from "../../models/news-settings.model";
 import { filter } from "rxjs/operators";
 
-enum NewsSection {
-  All = 'all',
-  Portfolio = 'portfolio',
-  Symbol = 'symbol'
-}
-
 @Component({
   selector: 'ats-news[guid]',
   templateUrl: './news.component.html',
@@ -39,6 +35,7 @@ enum NewsSection {
 })
 export class NewsComponent implements OnInit, OnDestroy {
   @Input() guid!: string;
+  @Output() sectionChange = new EventEmitter<NewsSection>();
 
   readonly contentSize$ = new BehaviorSubject<ContentSize>({ height: 0, width: 0 });
   public tableContainerHeight: number = 0;
@@ -159,6 +156,7 @@ export class NewsComponent implements OnInit, OnDestroy {
 
   newsSectionChange(section: NewsSection) {
     this.selectedSection = section;
+    this.sectionChange.emit(section);
     this.loadNews(true);
   }
 

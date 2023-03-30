@@ -12,6 +12,7 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { of } from 'rxjs';
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
 
 describe('NewsWidgetComponent', () => {
   let component: NewsWidgetComponent;
@@ -48,6 +49,12 @@ describe('NewsWidgetComponent', () => {
             terminalSettingsService: of({})
           }
         },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrument: jasmine.createSpy('addSettings').and.returnValue(of({}))
+          }
+        }
       ]
     })
       .compileComponents();

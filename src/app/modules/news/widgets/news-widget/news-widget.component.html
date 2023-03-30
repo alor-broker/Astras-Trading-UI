@@ -15,14 +15,17 @@
         [showBadgesMenu]="(showBadge$ | async) ?? false"
         [linkToActive]="settings.linkToActive"
         [titleIconTooltip]="t('widgetHeaders.NewsSettings')"
-        [titleText]="t('widgetHeaders.NewsSettings')"
+        [titleText]="t('widgetHeaders.NewsSettings') + ' ' + (widgetTitle$ | async)"
         helpRef="news"
         titleIcon="read"
       ></ats-widget-header>
     </ng-template>
 
     <ng-template #contentRef>
-      <ats-news [guid]="guid"></ats-news>
+      <ats-news
+        [guid]="guid"
+        (sectionChange)="sectionChange($event)"
+      ></ats-news>
     </ng-template>
   </ats-widget-skeleton>
 
