@@ -1,14 +1,22 @@
-<div class="container"
-  nzResizeObserver
-  (nzResizeObserve)="containerSizeChanged($event)">
-  <ats-infinite-scroll-table
-    [tableContainerHeight]="tableContainerHeight"
-    [tableContainerWidth]="tableContainerWidth"
-    [data]="newsList"
-    [isLoading]="isLoading"
-    [tableConfig]="tableConfig$ | async"
-    (scrolled)="scrolled()"
-    (rowClick)="openNewsModal($event)"
-  ></ats-infinite-scroll-table>
+<div class="container" *transloco="let t; scope: 'news'">
+  <div>
+    <nz-tabset nzSize="small">
+      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.All)" (nzSelect)="newsSectionChange(newsSectionEnum.All)"></nz-tab>
+      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Portfolio)" (nzSelect)="newsSectionChange(newsSectionEnum.Portfolio)"></nz-tab>
+      <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Symbol)" (nzSelect)="newsSectionChange(newsSectionEnum.Symbol)"></nz-tab>
+    </nz-tabset>
+  </div>
+  <div class="table-container"
+    nzResizeObserver
+    (nzResizeObserve)="containerSizeChanged($event)">
+    <ats-infinite-scroll-table
+      [tableContainerHeight]="tableContainerHeight"
+      [tableContainerWidth]="tableContainerWidth"
+      [data]="newsList"
+      [isLoading]="isLoading"
+      [tableConfig]="tableConfig$ | async"
+      (scrolled)="scrolled()"
+      (rowClick)="openNewsModal($event)"
+    ></ats-infinite-scroll-table>
+  </div>
 </div>
-

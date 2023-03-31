@@ -17,3 +17,9 @@ export interface NewsItemInfo {
   desc: string;
   pubDate: string;
 }
+
+export enum NewsSection {
+  All = 'all',
+  Portfolio = 'portfolio',
+  Symbol = 'symbol'
+}

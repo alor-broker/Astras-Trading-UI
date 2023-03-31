@@ -9,8 +9,9 @@ import { of } from "rxjs";
 import { ModalService } from "../../../../shared/services/modal.service";
 import {
   getTranslocoModule,
-  mockComponent
+  mockComponent, ngZorroMockComponents
 } from "../../../../shared/utils/testing";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('NewsComponent', () => {
   const testNewsItem = {
@@ -26,6 +27,7 @@ describe('NewsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         NewsComponent,
+        ...ngZorroMockComponents,
         mockComponent({
           selector: 'ats-infinite-scroll-table',
           inputs: ['data', 'isLoading', 'tableConfig', 'tableContainerHeight', 'tableContainerWidth']
@@ -46,6 +48,12 @@ describe('NewsComponent', () => {
           provide: ModalService,
           useValue: {
             openNewsModal: jasmine.createSpy('openNewsModal').and.callThrough()
+          }
+        },
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))
           }
         }
       ]
