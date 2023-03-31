@@ -55,7 +55,10 @@ export class InstrumentsService {
 
   getInstruments(filter: SearchFilter): Observable<Instrument[]> {
     return this.http.get<InstrumentSearchResponse[]>(this.url, {
-      params: { ...filter },
+      params: {
+        ...filter,
+        IncludeUnknownBoards: false
+      },
     }).pipe(
       map(resp => {
         const selects: Instrument[] = resp.map(r => ({
@@ -63,7 +66,7 @@ export class InstrumentsService {
           shortName: r.shortname,
           exchange: r.exchange,
           description: r.description,
-          instrumentGroup: r.board,
+          instrumentGroup: r.board ?? r.primary_board,
           isin: r.ISIN,
           currency: r.currency,
           minstep: r.minstep ?? 0.01
