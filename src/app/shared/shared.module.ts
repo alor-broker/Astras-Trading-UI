@@ -45,7 +45,6 @@ import { ColorPickerInputComponent } from './components/color-picker-input/color
 import { ColorChromeModule } from "ngx-color/chrome";
 import { NzPopoverModule } from "ng-zorro-antd/popover";
 import { NzInputModule } from "ng-zorro-antd/input";
-import { ShortNumberPipe } from './pipes/short-number.pipe';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NOTIFICATIONS_PROVIDER } from '../modules/notifications/services/notifications-provider';
 import { FeedbackNotificationsProvider } from '../modules/feedback/services/feedback-notifications-provider';
@@ -58,6 +57,7 @@ import { EditableStringComponent } from './components/editable-string/editable-s
 import { WidgetHeaderComponent } from './components/widget-header/widget-header.component';
 import { WidgetSkeletonComponent } from './components/widget-skeleton/widget-skeleton.component';
 import { JoyrideModule } from 'ngx-joyride';
+import { ShortNumberComponent } from './components/short-number/short-number.component';
 
 @NgModule({
   declarations: [
@@ -67,13 +67,13 @@ import { JoyrideModule } from 'ngx-joyride';
     InfiniteScrollTableComponent,
     WidgetMenuComponent,
     ColorPickerInputComponent,
-    ShortNumberPipe,
     InstrumentSearchComponent,
     ResizeColumnDirective,
     InstrumentBoardSelectComponent,
     EditableStringComponent,
     WidgetHeaderComponent,
     WidgetSkeletonComponent,
+    ShortNumberComponent,
   ],
   imports: [
     CommonModule,
@@ -170,11 +170,10 @@ import { JoyrideModule } from 'ngx-joyride';
     WidgetHeaderComponent,
     WidgetSkeletonComponent,
     EditableStringComponent,
+    ShortNumberComponent,
     // directives
     NumericalDirective,
-    ShortNumberPipe,
     ResizeColumnDirective,
-
   ],
   providers: [
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},

@@ -10,7 +10,7 @@
             <nz-form-control [nzErrorTip]="quantityError">
               <input (mousedown)="$event.stopPropagation()" atsNumerical formControlName="quantity" nz-input placeholder="0"/>
               <span *ngIf="(instrument?.lotsize ?? 1) !== 1">
-                1 {{t('command.lot')}} = {{instrument.lotsize | shortNumber}} {{t('command.pcs')}}
+                1 {{t('command.lot')}} = <ats-short-number [value]="instrument.lotsize"></ats-short-number> {{t('command.pcs')}}
               </span>
               <ng-template #quantityError>
                 <span *ngIf="form.get('quantity')?.errors?.required">{{t('command.emptyQuantityError')}}</span>

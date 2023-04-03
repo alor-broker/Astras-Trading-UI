@@ -1,0 +1,18 @@
+{
+  "trillions":  {
+    "short": "T",
+    "long": "tln"
+  },
+  "billions": {
+    "short": "B",
+    "long": "bln"
+  },
+  "millions":  {
+    "short": "M",
+    "long": "mln"
+  },
+  "thousands": {
+    "short": "K",
+    "long": "thsnd"
+  }
+}

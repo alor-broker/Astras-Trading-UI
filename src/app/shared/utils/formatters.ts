@@ -11,6 +11,34 @@ export function formatCurrency(number: number, currency: string, maxFractionDigi
   if (!maxFractionDigits) {
     maxFractionDigits = 2;
   }
+
+  const localeData = getLocaleDataByCurrency(currency);
+
+  if (localeData.locale === 'ch') {
+    return Intl.NumberFormat(localeData.locale).format(number) + ' ₣';
+  }
+
+  return Intl.NumberFormat(localeData.locale, { style: 'currency', currency: localeData.formatCode, maximumFractionDigits: maxFractionDigits }).format(number);
+}
+
+export function getCurrencySign(currency: string): string {
+  const localeData = getLocaleDataByCurrency(currency);
+  let symbol = '';
+
+  Intl.NumberFormat(localeData.locale, {
+    style: 'currency',
+    currency,
+  })
+    .formatToParts(0).forEach(({ type, value }) => {
+    if (type === 'currency') {
+      symbol = value;
+    }
+  });
+
+  return symbol;
+}
+
+function getLocaleDataByCurrency(currency: CurrencyInstrument) {
   let formatCode = 'RUB';
   let locale = 'ru';
   switch (currency) {
@@ -40,9 +68,8 @@ export function formatCurrency(number: number, currency: string, maxFractionDigi
       break;
   }
 
-  if (locale === 'ch') {
-    return Intl.NumberFormat(locale).format(number) + ' ₣';
-  }
-
-  return Intl.NumberFormat(locale, { style: 'currency', currency: formatCode, maximumFractionDigits: maxFractionDigits }).format(number);
+  return {
+    formatCode,
+    locale
+  };
 }

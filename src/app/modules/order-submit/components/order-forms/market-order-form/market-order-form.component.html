@@ -5,7 +5,7 @@
         <nz-form-label nzFor="quantity" nzRequired>{{t('command.quantityLabel')}}</nz-form-label>
         <nz-form-control [nzErrorTip]="quantityError">
           <input (mousedown)="$event.stopPropagation()" atsNumerical class='ant-input' formControlName="quantity" nz-input placeholder="0"/>
-          <span *ngIf="(instrument?.lotsize ?? 1) !== 1">1 {{t('command.lot')}} = {{instrument.lotsize | shortNumber}} {{t('command.pcs')}}</span>
+          <span *ngIf="(instrument?.lotsize ?? 1) !== 1">1 {{t('command.lot')}} = <ats-short-number [value]="instrument.lotsize"></ats-short-number> {{t('command.pcs')}}</span>
         </nz-form-control>
         <ng-template #quantityError>
           <span *ngIf="form.get('quantity')?.errors?.required">{{t('command.emptyQuantityError')}}</span>

@@ -16,6 +16,11 @@ import { TreemapNode } from "../../models/treemap.model";
 import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, take, withLatestFrom } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { MathHelper } from "../../../../shared/utils/math-helper";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { formatCurrency, getCurrencySign } from "../../../../shared/utils/formatters";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 @Component({
   selector: 'ats-treemap[guid]',
@@ -37,7 +42,10 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
     private readonly treemapService: TreemapService,
     private readonly themeService: ThemeService,
     private readonly quotesService: QuotesService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly instrumentsService: InstrumentsService,
+    private readonly dashboardContextService: DashboardContextService,
+    private readonly settingsService: WidgetSettingsService
   ) {
   }
 
@@ -156,6 +164,10 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                     }
                   });
               }
+
+              if (elements.length > 1) {
+                this.selectInstrument((<any>elements[1].element).$context.raw.g);
+              }
             }
           }
         });
@@ -198,14 +210,32 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
     return this.quotesService.getLastQuoteInfo(treemapNode.symbol, 'MOEX')
       .pipe(
         withLatestFrom(
-          this.translatorService.getTranslator('treemap')
+          this.translatorService.getTranslator('treemap'),
+          this.translatorService.getTranslator('shared/short-number'),
+          this.instrumentsService.getInstrument({ exchange: 'MOEX', symbol: treemapNode.symbol })
         ),
-        map(([ quote, t ]) => ([
-          `${t(['company'])}: ${quote?.description}`,
-          `${t(['dayChange'])}: ${treemapNode.dayChange}%`,
-          `${t(['marketCap'])}: ${treemapNode.marketCap}`,
-          `${t(['lastPrice'])}: ${quote?.last_price}`
-        ]))
+        map(([quote, tTreemap, tShortNumber, instrument]) => {
+          const marketCapBase = MathHelper.getBaseNumber(treemapNode.marketCap, true);
+          return [
+            `${tTreemap(['company'])}: ${quote?.description}`,
+            `${tTreemap(['dayChange'])}: ${treemapNode.dayChange}%`,
+            `${tTreemap(['marketCap'])}: ${marketCapBase!.value}${tShortNumber([
+              marketCapBase!.suffixName!,
+              'long'
+            ])} ${getCurrencySign(instrument!.currency)}`,
+            `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, instrument!.currency)}`
+          ];
+        })
       );
+  }
+
+  private selectInstrument(symbol: string) {
+    this.settingsService.getSettings(this.guid)
+      .pipe(
+        take(1),
+      )
+      .subscribe(s => {
+        this.dashboardContextService.selectDashboardInstrument({ exchange: 'MOEX', symbol }, s.badgeColor!);
+      });
   }
 }
