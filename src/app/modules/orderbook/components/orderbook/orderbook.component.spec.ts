@@ -12,7 +12,6 @@ import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookService } from '../../services/orderbook.service';
 
 import { OrderBookComponent } from './orderbook.component';
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   ThemeColors,
@@ -64,11 +63,11 @@ describe('OrderBookComponent', () => {
         }),
         mockComponent({
           selector: 'ats-orderbook-table-volumes-at-the-edges',
-          inputs: ['guid', 'ob', 'shouldShowYield', 'themeSettings', 'maxVolume']
+          inputs: ['guid', 'ob']
         }),
         mockComponent({
           selector: 'ats-orderbook-table-volumes-at-the-middle',
-          inputs: ['guid', 'ob', 'shouldShowYield', 'themeSettings', 'maxVolume']
+          inputs: ['guid', 'ob']
         }),
       ],
       providers: [
@@ -82,12 +81,7 @@ describe('OrderBookComponent', () => {
             }))
           }
         },
-        {
-          provide: InstrumentsService,
-          useValue: { getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({})) }
-        },
         { provide: OrderbookService, useValue: spyOb },
-        { provide: ThemeService, useValue: themeServiceSpy },
         ...commonTestProviders
       ],
       imports: [

@@ -4,8 +4,13 @@ import { OrderbookTableVolumesAtTheMiddleComponent } from './orderbook-table-vol
 import { ModalService } from "../../../../../shared/services/modal.service";
 import { OrderbookService } from "../../../services/orderbook.service";
 import { WidgetSettingsService } from "../../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
+import {
+  of,
+  Subject
+} from "rxjs";
 import { ngZorroMockComponents } from "../../../../../shared/utils/testing";
+import { InstrumentsService } from '../../../../instruments/services/instruments.service';
+import { ThemeService } from '../../../../../shared/services/theme.service';
 
 describe('OrderbookTableVolumesAtTheMiddleComponent', () => {
   let component: OrderbookTableVolumesAtTheMiddleComponent;
@@ -24,6 +29,10 @@ describe('OrderbookTableVolumesAtTheMiddleComponent', () => {
         { provide: ModalService, useValue: modalSync },
         { provide: OrderbookService, useValue: spyOb },
         {
+          provide: InstrumentsService,
+          useValue: { getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({})) }
+        },
+        {
           provide: WidgetSettingsService,
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({
@@ -31,6 +40,11 @@ describe('OrderbookTableVolumesAtTheMiddleComponent', () => {
               exchange: 'MOEX',
               showTable: true
             }))
+          }
+        },
+        { provide: ThemeService,
+          useValue: {
+            getThemeSettings: jasmine.createSpy('getThemeSettings').and.returnValue(new Subject())
           }
         },
       ]

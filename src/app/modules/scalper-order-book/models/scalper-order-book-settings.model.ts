@@ -42,6 +42,5 @@ export interface ScalperOrderBookSettings extends WidgetSettings, InstrumentKey 
   showTradesPanel?: boolean;
   showTradesClustersPanel?: boolean;
   tradesClusterPanelSettings?: TradesClusterPanelSettings;
-
-  volumeDisplayFormat?: NumberDisplayFormat
+  volumeDisplayFormat?: NumberDisplayFormat;
 }

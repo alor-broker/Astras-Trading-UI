@@ -45,3 +45,6 @@ testem.log
 .DS_Store
 Thumbs.db
 
+
+/.vs/Astras-Trading-UI/v17/.suo
+/.vs/VSWorkspaceState.json

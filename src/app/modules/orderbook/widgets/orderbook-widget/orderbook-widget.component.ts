@@ -1,16 +1,30 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit
+} from '@angular/core';
 import { OrderbookService } from '../../services/orderbook.service';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { Observable, switchMap } from 'rxjs';
+import {
+  Observable,
+  switchMap
+} from 'rxjs';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { filter, map } from 'rxjs/operators';
+import {
+  filter,
+  map
+} from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
-import { ColumnsOrder, OrderbookSettings } from '../../models/orderbook-settings.model';
+import {
+  ColumnsOrder,
+  OrderbookSettings
+} from '../../models/orderbook-settings.model';
+import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 
 @Component({
   selector: 'ats-orderbook-widget[guid][isBlockWidget]',
@@ -53,7 +67,8 @@ export class OrderbookWidgetComponent implements OnInit {
         showYieldForBonds: false,
         useOrderWidget: false,
         showVolume: false,
-        columnsOrder: ColumnsOrder.volumesAtTheEdges
+        columnsOrder: ColumnsOrder.volumesAtTheEdges,
+        volumeDisplayFormat: NumberDisplayFormat.Default
       }),
       this.dashboardContextService,
       this.widgetSettingsService

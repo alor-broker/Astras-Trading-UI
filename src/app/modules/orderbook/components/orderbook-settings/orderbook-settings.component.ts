@@ -7,6 +7,7 @@ import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { ColumnsOrder, OrderbookSettings } from '../../models/orderbook-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
+import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 
 @Component({
   selector: 'ats-orderbook-settings[settingsChange][guid]',
@@ -21,6 +22,8 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
     }
   };
   columnsOrderEnum = ColumnsOrder;
+
+  readonly availableNumberFormats = Object.values(NumberDisplayFormat);
 
   @Input()
   guid!: string;
@@ -73,7 +76,8 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
         showYieldForBonds: new FormControl(settings.showYieldForBonds),
         useOrderWidget: new FormControl(settings.useOrderWidget ?? false),
         showVolume: new FormControl(settings.showVolume ?? false),
-        columnsOrder: new FormControl(settings.columnsOrder ?? ColumnsOrder.volumesAtTheEdges)
+        columnsOrder: new FormControl(settings.columnsOrder ?? ColumnsOrder.volumesAtTheEdges),
+        volumeDisplayFormat: new UntypedFormControl(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default),
       });
     });
   }
