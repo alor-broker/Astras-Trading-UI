@@ -11,13 +11,17 @@ import { NzInputModule } from "ng-zorro-antd/input";
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { ScalperOrderBookModule } from '../scalper-order-book/scalper-order-book.module';
+import { OrderbookTableVolumesAtTheEdgesComponent } from './components/orderbook-tables/orderbook-table-volumes-at-the-edges/orderbook-table-volumes-at-the-edges.component';
+import { OrderbookTableVolumesAtTheMiddleComponent } from './components/orderbook-tables/orderbook-table-volumes-at-the-middle/orderbook-table-volumes-at-the-middle.component';
 
 @NgModule({
   declarations: [
     OrderBookComponent,
     OrderbookSettingsComponent,
     OrderbookWidgetComponent,
-    OrderbookChartComponent
+    OrderbookChartComponent,
+    OrderbookTableVolumesAtTheEdgesComponent,
+    OrderbookTableVolumesAtTheMiddleComponent
   ],
   imports: [
     CommonModule,

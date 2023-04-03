@@ -3,7 +3,6 @@ import {
   TestBed
 } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import {
   commonTestProviders,
   mockComponent,
@@ -39,7 +38,6 @@ describe('OrderBookComponent', () => {
     askVolumes: 0
   };
   spyOb.getHorizontalOrderBook.and.returnValue(of(ob));
-  const modalSync = jasmine.createSpyObj('ModalService', ['openCommandModal']);
   const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
   themeServiceSpy.getThemeSettings.and.returnValue(of({
     theme: ThemeType.dark,
@@ -63,7 +61,15 @@ describe('OrderBookComponent', () => {
         mockComponent({
           selector: 'ats-orderbook-chart',
           inputs: ['guid', 'chartData']
-        })
+        }),
+        mockComponent({
+          selector: 'ats-orderbook-table-volumes-at-the-edges',
+          inputs: ['guid', 'ob', 'shouldShowYield', 'themeSettings', 'maxVolume']
+        }),
+        mockComponent({
+          selector: 'ats-orderbook-table-volumes-at-the-middle',
+          inputs: ['guid', 'ob', 'shouldShowYield', 'themeSettings', 'maxVolume']
+        }),
       ],
       providers: [
         {
@@ -81,7 +87,6 @@ describe('OrderBookComponent', () => {
           useValue: { getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({})) }
         },
         { provide: OrderbookService, useValue: spyOb },
-        { provide: ModalService, useValue: modalSync },
         { provide: ThemeService, useValue: themeServiceSpy },
         ...commonTestProviders
       ],

@@ -1,4 +1,5 @@
 import { Side } from "src/app/shared/models/enums/side.model";
+import { TimeInForce } from "../commands/command-params.model";
 
 export interface Order {
   id: string, // 28452595240,
@@ -17,5 +18,8 @@ export interface Order {
   filledQtyBatch: number, // 0,
   filled: number, //0,
   price: number, // 270,
-  existing: boolean // true
+  existing: boolean, // true
+  timeInForce?: TimeInForce,
+  icebergFixed?: number,
+  icebergVariance?: number
 }

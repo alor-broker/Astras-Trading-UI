@@ -30,11 +30,18 @@ import {
 } from '../../../models/order-form.model';
 import { QuotesService } from "../../../../../shared/services/quotes.service";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
+import { TimeInForce } from "../../../../../shared/models/commands/command-params.model";
 
 export type StopOrderFormValue =
-  Omit<StopMarketOrder, 'instrument' | 'side'>
-  & Omit<StopLimitOrder, 'instrument' | 'side'>
-  & { withLimit: boolean };
+  Omit<StopMarketOrder, 'instrument' | 'side'> &
+  Omit<StopLimitOrder, 'instrument' | 'side'> &
+  {
+    withLimit: boolean;
+    isIceberg?: boolean;
+    timeInForce?: TimeInForce;
+    icebergFixed?: number;
+    icebergVariance?: number;
+  };
 
 @Component({
   selector: 'ats-stop-order-form',
@@ -44,6 +51,7 @@ export type StopOrderFormValue =
 export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderFormValue, { timezoneConverter: TimezoneConverter }> {
   public canSelectNow = true;
   public conditionType = StopOrderCondition;
+  public timeInForceEnum = TimeInForce;
   private timezoneConverter!: TimezoneConverter;
 
   constructor(
@@ -110,8 +118,14 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
       ),
       stopEndUnixTime: new FormControl(additions!.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
       condition: new FormControl(this.conditionType.More),
-      withLimit: new FormControl(false)
-    });
+      withLimit: new FormControl(false),
+      timeInForce: new FormControl(null),
+      isIceberg: new FormControl(false),
+      icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
+      icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
+    },
+      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+    );
   }
 
   protected getFormInitAdditions(): Observable<{ timezoneConverter: TimezoneConverter } | null> {
@@ -121,9 +135,28 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
   }
 
   protected getFormValue(): StopOrderFormValue | null {
-    const formValue = super.getFormValue();
-    if (!formValue) {
-      return formValue;
+    if (!super.getFormValue()) {
+      return null;
+    }
+
+    let formValue = { ...super.getFormValue()! };
+
+
+    if (!formValue.isIceberg) {
+      delete formValue.icebergFixed;
+      delete formValue.icebergVariance;
+    } else {
+      formValue = {
+        ...formValue,
+        icebergFixed: Number(formValue.icebergFixed),
+        icebergVariance: Number(formValue.icebergVariance)
+      };
+    }
+
+    delete formValue.isIceberg;
+
+    if (!formValue.timeInForce) {
+      delete formValue.timeInForce;
     }
 
     return {

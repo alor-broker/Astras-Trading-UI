@@ -4,6 +4,7 @@ import { MobileInstrumentsHistoryComponent } from './mobile-instruments-history.
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { of } from "rxjs";
 import { MobileDashboardService } from "../../services/mobile-dashboard.service";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
 
 describe('MobileInstrumentsHistoryComponent', () => {
   let component: MobileInstrumentsHistoryComponent;
@@ -24,6 +25,12 @@ describe('MobileInstrumentsHistoryComponent', () => {
           provide: MobileDashboardService,
           useValue: {
             getInstrumentsHistory: jasmine.createSpy('getInstrumentsHistory').and.returnValue(of([]))
+          }
+        },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of(null))
           }
         }
       ]

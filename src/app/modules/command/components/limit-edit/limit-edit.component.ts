@@ -25,6 +25,7 @@ import { inputNumberValidation } from "../../../../shared/utils/validation-optio
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
+import { TimeInForce } from "../../../../shared/models/commands/command-params.model";
 
 @Component({
   selector: 'ats-limit-edit',
@@ -35,6 +36,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
   evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   form!: FormGroup<ControlsOf<LimitFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<EditParams> | null>(null);
+  timeInForceEnum = TimeInForce;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private service: CommandsService) {
@@ -78,6 +80,19 @@ export class LimitEditComponent implements OnInit, OnDestroy {
 
     const formValue = this.form.value as LimitFormData;
 
+    let additionalData = {} as any;
+
+    if (formValue.isIceberg) {
+      additionalData.icebergFixed = Number(formValue.icebergFixed ?? 0);
+      if (formValue.icebergVariance) {
+        additionalData.icebergVariance = Number(formValue.icebergVariance);
+      }
+    }
+
+    if (formValue.timeInForce) {
+      additionalData.timeInForce = formValue.timeInForce;
+    }
+
     if (commandContext.commandParameters && commandContext.commandParameters.user) {
       const newCommand: LimitEdit = {
         quantity: Number(formValue.quantity),
@@ -86,7 +101,8 @@ export class LimitEditComponent implements OnInit, OnDestroy {
           ...commandContext.commandParameters.instrument,
         },
         user: commandContext.commandParameters.user,
-        id: commandContext.commandParameters.orderId
+        id: commandContext.commandParameters.orderId,
+        ...additionalData
       };
 
       this.updateEvaluation(newCommand, commandContext);
@@ -106,6 +122,10 @@ export class LimitEditComponent implements OnInit, OnDestroy {
       distinctUntilChanged((prev, curr) =>
         prev?.price == curr?.price
         && prev?.quantity == curr?.quantity
+        && prev?.timeInForce == curr?.timeInForce
+        && prev?.isIceberg == curr?.isIceberg
+        && prev?.icebergFixed == curr?.icebergFixed
+        && prev?.icebergVariance == curr?.icebergVariance
       )
     ).subscribe(() => {
       this.setLimitEditCommand(commandContext);
@@ -128,8 +148,14 @@ export class LimitEditComponent implements OnInit, OnDestroy {
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max),
           AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
-        ])
-    });
+        ]),
+      timeInForce: new FormControl(commandContext.commandParameters.timeInForce),
+      isIceberg: new FormControl(!!commandContext.commandParameters.icebergFixed || commandContext.commandParameters.icebergFixed === 0),
+      icebergFixed: new FormControl(commandContext.commandParameters.icebergFixed, Validators.min(inputNumberValidation.min)),
+      icebergVariance: new FormControl(commandContext.commandParameters.icebergVariance, Validators.min(inputNumberValidation.min)),
+    },
+      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+    );
   }
 
   private updateEvaluation(command: LimitEdit, commandContext: CommandContextModel<EditParams>) {

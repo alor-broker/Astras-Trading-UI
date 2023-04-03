@@ -2,6 +2,7 @@ import { StopOrderCondition } from "src/app/shared/models/enums/stoporder-condit
 import { InstrumentKey } from "src/app/shared/models/instruments/instrument-key.model";
 import { PortfolioKey } from "src/app/shared/models/portfolio-key.model";
 import { Side } from "../../../shared/models/enums/side.model";
+import { TimeInForce } from "../../../shared/models/commands/command-params.model";
 
 export interface StopCommand {
   quantity: number, //2,
@@ -11,5 +12,8 @@ export interface StopCommand {
   triggerPrice: number,
   condition: StopOrderCondition,
   stopEndUnixTime?: Date | number,
-  side?: Side
+  side?: Side,
+  timeInForce?: TimeInForce,
+  icebergFixed?: number,
+  icebergVariance?: number,
 }

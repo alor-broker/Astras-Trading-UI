@@ -12,6 +12,11 @@
   "displayTableLabel": "Display table",
   "displayVolumeLabel": "Show cumulative volume",
   "displayYieldForBondsLabel": "Display yield for bonds",
+  "columnsOrderLabel": "Columns order",
+  "columnOrders": {
+    "volumesAtTheEdges":  "Volumes at the edges",
+    "volumesAtTheMiddle": "Volumes at the middle"
+  },
 
   "advanced": "Advanced",
   "instrumentGroupLabel": "Trading mode",

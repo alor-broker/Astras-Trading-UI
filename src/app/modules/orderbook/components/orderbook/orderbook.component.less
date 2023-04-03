@@ -1,18 +1,6 @@
 @import "theme-mixin";
 
 .themeMixin({
-  :host {
-    .row-cell {
-      &--ask {
-        color: @sell-color;
-      }
-
-      &--bid {
-        color: @buy-color;
-      }
-    }
-  }
-
   .volumes {
     display: flex;
     justify-content: space-between;
@@ -47,61 +35,6 @@
     }
   }
 });
-
-#order-book-table {
-  .ant-table-content {
-    overflow-y: hidden;
-
-    tbody {
-      td {
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-        white-space: nowrap;
-
-        &.row-cell {
-          &--bid {
-            text-align: right;
-          }
-
-          &--ask-volume {
-            width: 38px;
-          }
-        }
-      }
-    }
-
-
-    tr:hover {
-      cursor: pointer;
-    }
-
-    tbody:hover {
-      cursor: pointer;
-    }
-
-    .cell-value {
-      padding: 0 0.25em;
-    }
-
-    .empty-cell {
-      width: 0;
-      padding: 0;
-    }
-
-    .cdk-drag-placeholder {
-      position: absolute;
-      margin-left: auto;
-      margin-right: auto;
-      left: 0;
-      right: 0;
-      z-index: 100;
-    }
-  }
-}
-
-.cdk-drag-preview.order-book-order {
-  display: none;
-}
 
 .spread-size-row {
   display: flex;

@@ -19,6 +19,7 @@ import {
   CdkDropList,
   CdkDropListGroup
 } from '@angular/cdk/drag-drop';
+import { PossibleActionsPanelComponent } from './components/possible-actions-panel/possible-actions-panel.component';
 import { TradeClustersPanelComponent } from './components/trade-clusters-panel/trade-clusters-panel.component';
 import { TradesClusterComponent } from './components/trades-cluster/trades-cluster.component';
 
@@ -35,7 +36,8 @@ import { TradesClusterComponent } from './components/trades-cluster/trades-clust
     ScalperOrderBookSettingsComponent,
     OrdersIndicatorComponent,
     TradeClustersPanelComponent,
-    TradesClusterComponent
+    TradesClusterComponent,
+    PossibleActionsPanelComponent
   ],
     imports: [
         CommonModule,

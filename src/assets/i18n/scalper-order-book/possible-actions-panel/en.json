@@ -1,0 +1,9 @@
+﻿{
+  "mode": "Mode",
+  "actions": {
+    "limitOrder": "limit order",
+    "marketOrder": "market order",
+    "stopLimitOrder": "stop-limit order",
+    "stopLossOrder": "stop-loss order"
+  }
+}

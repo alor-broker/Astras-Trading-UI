@@ -17,7 +17,7 @@ import {
   withLatestFrom
 } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
+import { CommandParams, TimeInForce } from 'src/app/shared/models/commands/command-params.model';
 import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
 import {
   addMonthsUnix,
@@ -43,6 +43,7 @@ import { AtsValidators } from "../../../../shared/utils/form-validators";
 export class StopCommandComponent implements OnInit, OnDestroy {
   form!: FormGroup<ControlsOf<StopFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
+  timeInForceEnum = TimeInForce;
   public canSelectNow = true;
   private timezoneConverter!: TimezoneConverter;
   private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -118,6 +119,19 @@ export class StopCommandComponent implements OnInit, OnDestroy {
 
     const formValue = this.form.value;
 
+    let additionalData = {} as any;
+
+    if (formValue.isIceberg) {
+      additionalData.icebergFixed = Number(formValue.icebergFixed ?? 0);
+      if (formValue.icebergVariance) {
+        additionalData.icebergVariance = Number(formValue.icebergVariance);
+      }
+    }
+
+    if (formValue.timeInForce) {
+      additionalData.timeInForce = formValue.timeInForce;
+    }
+
     if (initialParameters && initialParameters.user) {
       const price = Number(formValue.price);
       const newCommand: StopCommand = {
@@ -132,6 +146,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           ...initialParameters.instrument
         },
         user: initialParameters.user,
+        ...additionalData
       };
 
       this.service.setStopCommand(newCommand);
@@ -179,8 +194,14 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         : this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
       ),
       condition: new FormControl(StopOrderCondition.More),
-      withLimit: new FormControl(false)
-    });
+      withLimit: new FormControl(false),
+      timeInForce: new FormControl(null),
+      isIceberg: new FormControl(false),
+      icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
+      icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
+    },
+      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+    );
   }
 
   private initCommandForm(commandContext: CommandContextModel<CommandParams>, converter: TimezoneConverter) {
@@ -195,11 +216,16 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
       distinctUntilChanged((prev, curr) =>
-        prev?.condition == curr?.condition &&
-        prev?.price == curr?.price &&
-        prev?.quantity == curr?.quantity &&
-        prev?.triggerPrice == curr?.triggerPrice &&
-        prev?.stopEndUnixTime == curr?.stopEndUnixTime),
+        prev?.condition == curr?.condition
+        && prev?.price == curr?.price
+        && prev?.quantity == curr?.quantity
+        && prev?.triggerPrice == curr?.triggerPrice
+        && prev?.stopEndUnixTime == curr?.stopEndUnixTime
+        && prev?.timeInForce == curr?.timeInForce
+        && prev?.isIceberg == curr?.isIceberg
+        && prev?.icebergFixed == curr?.icebergFixed
+        && prev?.icebergVariance == curr?.icebergVariance
+      ),
     ).subscribe(() => {
       this.setStopCommand(commandContext.commandParameters);
     });

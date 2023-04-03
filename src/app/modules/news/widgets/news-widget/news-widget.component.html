@@ -1,26 +1,31 @@
 <ng-container *transloco="let t;">
   <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
     [content]="contentRef"
     [header]="headerRef"
     [isBlockWidget]="isBlockWidget"
     [showContentScroll]="false"
   >
-
     <ng-template #headerRef>
       <ats-widget-header
         [guid]="guid"
         [hasHelp]="true"
         [hasSettings]="false"
-        [showBadgesMenu]="false"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [linkToActive]="settings.linkToActive"
         [titleIconTooltip]="t('widgetHeaders.NewsSettings')"
-        [titleText]="t('widgetHeaders.NewsSettings')"
+        [titleText]="t('widgetHeaders.NewsSettings') + ' ' + (widgetTitle$ | async)"
         helpRef="news"
         titleIcon="read"
       ></ats-widget-header>
     </ng-template>
 
     <ng-template #contentRef>
-      <ats-news></ats-news>
+      <ats-news
+        [guid]="guid"
+        (sectionChange)="sectionChange($event)"
+      ></ats-news>
     </ng-template>
   </ats-widget-skeleton>
 
