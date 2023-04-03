@@ -1,0 +1,23 @@
+<div class="container">
+  <ng-container *ngIf="settings$ | async as settings">
+    <ng-container *ngIf="(displayItems$ | async) as displayItems">
+      <ng-container *ngFor="let item of displayItems;index as i; trackBy: trackBy">
+        <div
+          [class.border-bottom]="(i+1)%5 === 0"
+          [ngStyle]="{
+          'height': xAxisStep + 'px',
+          'line-height': xAxisStep + 'px'
+          }"
+          class="volume-cell">
+          <span
+            *ngIf="settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat">
+            {{item?.volume | shortNumber: true }}
+          </span>
+          <ng-template #defaultVolumeFormat>
+            <span>{{item?.volume}}</span>
+          </ng-template>
+        </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</div>

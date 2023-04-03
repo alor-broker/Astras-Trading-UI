@@ -60,5 +60,10 @@
       "title": "Настройки",
       "text": "Тут можно менять настройки конкретного виджета"
     }
+  },
+
+  "numberDisplayFormatOptions": {
+    "default": "Стандартный",
+    "letterSuffix": "Сокращенный"
   }
 }

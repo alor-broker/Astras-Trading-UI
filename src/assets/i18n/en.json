@@ -60,5 +60,10 @@
       "title": "Settings",
       "text": "Here you can change the settings of a widget"
     }
+  },
+
+  "numberDisplayFormatOptions": {
+    "default": "Default",
+    "letterSuffix": "Abbreviated"
   }
 }

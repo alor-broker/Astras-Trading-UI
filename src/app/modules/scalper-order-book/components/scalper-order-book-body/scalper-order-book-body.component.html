@@ -16,12 +16,17 @@
                [style.line-height]="rowHeight + 'px'"
           ></div>
         </div>
-        <div *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesPanel" id="trades">
+        <div id="trades-clusters" *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesClustersPanel">
+          <ats-trade-clusters-panel
+            [dataContext]="dataContext"
+            [xAxisStep]="rowHeight"
+          ></ats-trade-clusters-panel>
+        </div>
+        <div *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesPanel" id="current-trades">
           <ats-trades-panel
             [dataContext]="dataContext"
             [xAxisStep]="rowHeight"
-          >
-          </ats-trades-panel>
+          ></ats-trades-panel>
         </div>
         <div id="table">
           <ats-scalper-order-book-table [dataContext]="dataContext"
