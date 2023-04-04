@@ -16,11 +16,11 @@ import { TreemapNode } from "../../models/treemap.model";
 import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, take, withLatestFrom } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { MathHelper } from "../../../../shared/utils/math-helper";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { formatCurrency, getCurrencySign } from "../../../../shared/utils/formatters";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { getNumberAbbreviation } from "../../../../shared/utils/number-abbreviation";
 
 @Component({
   selector: 'ats-treemap[guid]',
@@ -215,7 +215,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
           this.instrumentsService.getInstrument({ exchange: 'MOEX', symbol: treemapNode.symbol })
         ),
         map(([quote, tTreemap, tShortNumber, instrument]) => {
-          const marketCapBase = MathHelper.getBaseNumber(treemapNode.marketCap, true);
+          const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
           return [
             `${tTreemap(['company'])}: ${quote?.description}`,
             `${tTreemap(['dayChange'])}: ${treemapNode.dayChange}%`,

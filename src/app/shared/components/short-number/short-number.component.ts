@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { FormatToBase, MathHelper } from "../../utils/math-helper";
+import { getNumberAbbreviation, NumberAbbreviation } from "../../utils/number-abbreviation";
 
 @Component({
   selector: 'ats-short-number',
@@ -12,11 +12,11 @@ export class ShortNumberComponent implements OnChanges {
   @Input() suffixForm: 'short' | 'long' = 'short';
   @Input() value?: number;
 
-  displayData: FormatToBase | null = null;
+  displayData: NumberAbbreviation | null = null;
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes) {
-      this.displayData = MathHelper.getBaseNumber(
+      this.displayData = getNumberAbbreviation(
         this.value,
         this.allowRounding,
         this.roundPrecision
