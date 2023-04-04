@@ -2,8 +2,19 @@
 
 .themeMixin({
   :host {
-    .cluster-wrapper {
-      border-right: @border-color-base 1px solid;
+    .container {
+      box-sizing: border-box;
+      &.has-left-scroll {
+        border-left: @primary-color 1px solid;
+      }
+
+      &.has-right-scroll {
+        border-right: @primary-color 1px solid;
+      }
+
+      .cluster-wrapper {
+        border-right: @border-color-base 1px solid;
+      }
     }
   }
 });
