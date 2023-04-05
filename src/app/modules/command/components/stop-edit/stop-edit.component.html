@@ -7,7 +7,7 @@
             <nz-form-label [nzNoColon]="true" nzRequired nzFor="quantity">
               {{t('command.quantityLabel')}}
               <span *ngIf="(commandContext.instrument.lotsize ?? 1) !== 1" class="lot-size-hint">
-                &nbsp;1 {{t('command.lot')}} = {{commandContext.instrument.lotsize | shortNumber}} {{t('command.pcs')}}
+                &nbsp;1 {{t('command.lot')}} = <ats-short-number [value]="commandContext.instrument.lotsize"></ats-short-number>  {{t('command.pcs')}}
               </span>
             </nz-form-label>
             <input atsNumerical formControlName="quantity" (mousedown)="$event.stopPropagation()" nz-input placeholder="0" />

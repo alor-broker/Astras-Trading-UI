@@ -45,7 +45,6 @@ import { ColorPickerInputComponent } from './components/color-picker-input/color
 import { ColorChromeModule } from "ngx-color/chrome";
 import { NzPopoverModule } from "ng-zorro-antd/popover";
 import { NzInputModule } from "ng-zorro-antd/input";
-import { ShortNumberPipe } from './pipes/short-number.pipe';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NOTIFICATIONS_PROVIDER } from '../modules/notifications/services/notifications-provider';
 import { FeedbackNotificationsProvider } from '../modules/feedback/services/feedback-notifications-provider';
@@ -58,6 +57,7 @@ import { EditableStringComponent } from './components/editable-string/editable-s
 import { WidgetHeaderComponent } from './components/widget-header/widget-header.component';
 import { WidgetSkeletonComponent } from './components/widget-skeleton/widget-skeleton.component';
 import { JoyrideModule } from 'ngx-joyride';
+import { ShortNumberComponent } from './components/short-number/short-number.component';
 import { ResizableDirective } from './directives/resizable.directive';
 
 @NgModule({
@@ -68,13 +68,13 @@ import { ResizableDirective } from './directives/resizable.directive';
     InfiniteScrollTableComponent,
     WidgetMenuComponent,
     ColorPickerInputComponent,
-    ShortNumberPipe,
     InstrumentSearchComponent,
     ResizeColumnDirective,
     InstrumentBoardSelectComponent,
     EditableStringComponent,
     WidgetHeaderComponent,
     WidgetSkeletonComponent,
+    ShortNumberComponent,
     ResizableDirective,
   ],
   imports: [
@@ -122,63 +122,62 @@ import { ResizableDirective } from './directives/resizable.directive';
     NzDividerModule,
     JoyrideModule,
   ],
-    exports: [
-        // Ng zorro
-        NzTableModule,
-        NzButtonModule,
-        NzIconModule,
-        NzLayoutModule,
-        NzFormModule,
-        NzSelectModule,
-        NzCollapseModule,
-        NzAutocompleteModule,
-        NzTagModule,
-        NzCardModule,
-        NzTabsModule,
-        NzMenuModule,
-        NzDropDownModule,
-        NzModalModule,
-        NzToolTipModule,
-        NzSwitchModule,
-        NzImageModule,
-        NzAvatarModule,
-        NzBadgeModule,
-        NzNotificationModule,
-        NzPopconfirmModule,
-        NzDescriptionsModule,
-        NzEmptyModule,
-        NzCheckboxModule,
-        ScrollingModule,
-        NzDatePickerModule,
-        NzTypographyModule,
-        NzRadioModule,
-        NzPopoverModule,
-        NzSpaceModule,
-        // modules
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        GridsterModule,
-        NgChartsModule,
-        TranslocoModule,
-        // components
-        PriceTickComponent,
-        LoadingIndicatorComponent,
-        InfiniteScrollTableComponent,
-        WidgetMenuComponent,
-        ColorPickerInputComponent,
-        InstrumentSearchComponent,
-        InstrumentBoardSelectComponent,
-        WidgetHeaderComponent,
-        WidgetSkeletonComponent,
-        EditableStringComponent,
-        // directives
-        NumericalDirective,
-        ShortNumberPipe,
-        ResizeColumnDirective,
-        ResizableDirective,
-
-    ],
+  exports: [
+    // Ng zorro
+    NzTableModule,
+    NzButtonModule,
+    NzIconModule,
+    NzLayoutModule,
+    NzFormModule,
+    NzSelectModule,
+    NzCollapseModule,
+    NzAutocompleteModule,
+    NzTagModule,
+    NzCardModule,
+    NzTabsModule,
+    NzMenuModule,
+    NzDropDownModule,
+    NzModalModule,
+    NzToolTipModule,
+    NzSwitchModule,
+    NzImageModule,
+    NzAvatarModule,
+    NzBadgeModule,
+    NzNotificationModule,
+    NzPopconfirmModule,
+    NzDescriptionsModule,
+    NzEmptyModule,
+    NzCheckboxModule,
+    ScrollingModule,
+    NzDatePickerModule,
+    NzTypographyModule,
+    NzRadioModule,
+    NzPopoverModule,
+    NzSpaceModule,
+    // modules
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    GridsterModule,
+    NgChartsModule,
+    TranslocoModule,
+    // components
+    PriceTickComponent,
+    LoadingIndicatorComponent,
+    InfiniteScrollTableComponent,
+    WidgetMenuComponent,
+    ColorPickerInputComponent,
+    InstrumentSearchComponent,
+    InstrumentBoardSelectComponent,
+    WidgetHeaderComponent,
+    WidgetSkeletonComponent,
+    EditableStringComponent,
+    ShortNumberComponent,
+    // directives
+    NumericalDirective,
+    ResizeColumnDirective,
+    ResizableDirective
+  ],
   providers: [
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},
     {provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true},

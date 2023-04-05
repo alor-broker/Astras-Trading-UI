@@ -13,10 +13,10 @@
              [ngStyle]="row.getVolumeStyle()"
              class="table-cell"
         >
-          <span
-            *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat">
-            {{row.volume | shortNumber: true }}
-          </span>
+          <ats-short-number
+            *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
+            [value]="row.volume"
+            [allowRounding]="true" ></ats-short-number>
           <ng-template #defaultVolumeFormat>
             <span>{{row.volume}}</span>
           </ng-template>

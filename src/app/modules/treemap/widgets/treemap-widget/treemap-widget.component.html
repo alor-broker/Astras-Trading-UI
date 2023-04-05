@@ -1,5 +1,6 @@
 <ng-container *transloco="let t;">
   <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
     [content]="contentRef"
     [header]="headerRef"
     [isBlockWidget]="isBlockWidget"
@@ -10,9 +11,11 @@
         [guid]="guid"
         [hasHelp]="true"
         [hasSettings]="false"
-        [showBadgesMenu]="false"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
         [titleIconTooltip]="t('widgetHeaders.TreemapSettings')"
         [titleText]="t('widgetHeaders.TreemapSettings')"
+        badgeShape="square"
         helpRef="treemap"
         titleIcon="layout"
       ></ats-widget-header>

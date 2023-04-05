@@ -34,10 +34,10 @@
             {{row.bidOrderVolume}}
           </button>
           <span class="cell-value">
-            <span
-              *ngIf="settings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat">
-              {{row.bidVolume | shortNumber: true }}
-            </span>
+            <ats-short-number
+              *ngIf="settings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
+              [value]="row.bidVolume"
+              [allowRounding]="true" ></ats-short-number>
             <ng-template #defaultVolumeFormat>
               <span>{{row.bidVolume}}</span>
             </ng-template>
@@ -81,9 +81,10 @@
             (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask!)"
         >
               <span class="cell-value">
-                <span *ngIf="settings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat">
-                  {{row.askVolume | shortNumber: true }}
-                </span>
+                <ats-short-number
+                  *ngIf="settings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
+                  [value]="row.askVolume"
+                  [allowRounding]="true" ></ats-short-number>
                 <ng-template #defaultVolumeFormat>
                   <span>{{row.askVolume}}</span>
                 </ng-template>

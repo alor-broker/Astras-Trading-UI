@@ -9,10 +9,10 @@
           'line-height': xAxisStep + 'px'
           }"
           class="volume-cell">
-          <span
-            *ngIf="settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat">
-            {{item?.volume | shortNumber: true }}
-          </span>
+          <ats-short-number
+            *ngIf="settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
+            [value]="item?.volume"
+            [allowRounding]="true"></ats-short-number>
           <ng-template #defaultVolumeFormat>
             <span>{{item?.volume}}</span>
           </ng-template>
