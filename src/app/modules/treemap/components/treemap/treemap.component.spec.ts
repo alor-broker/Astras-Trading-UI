@@ -6,6 +6,9 @@ import { of } from "rxjs";
 import { ThemeService } from "../../../../shared/services/theme.service";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 describe('TreemapComponent', () => {
   let component: TreemapComponent;
@@ -37,6 +40,24 @@ describe('TreemapComponent', () => {
           provide: TranslatorService,
           useValue: {
             getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+          }
+        },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({}))
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectDashboardInstrument: jasmine.createSpy('selectDashboardInstrument').and.callThrough()
+          }
+        },
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))
           }
         }
       ]
