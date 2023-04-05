@@ -16,6 +16,10 @@ export interface TradesClusterPanelSettings {
   volumeDisplayFormat?: NumberDisplayFormat
 }
 
+export interface OrderBookLayoutSettings {
+  widths: {[K:string]: number}
+}
+
 export enum VolumeHighlightMode {
   Off = 'off',
   BiggestVolume = 'biggestVolume',
@@ -43,4 +47,6 @@ export interface ScalperOrderBookSettings extends WidgetSettings, InstrumentKey 
   showTradesClustersPanel?: boolean;
   tradesClusterPanelSettings?: TradesClusterPanelSettings;
   volumeDisplayFormat?: NumberDisplayFormat;
+
+  layout?: OrderBookLayoutSettings;
 }
