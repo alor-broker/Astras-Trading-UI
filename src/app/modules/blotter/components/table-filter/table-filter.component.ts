@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Column } from "../../models/column.model";
 import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
+import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 
 @Component({
   selector: 'ats-table-filter',
@@ -11,7 +11,7 @@ export class TableFilterComponent implements OnChanges, OnInit {
 
   filtersForm = new UntypedFormGroup({});
 
-  @Input() columns: Column<any, any>[] = [];
+  @Input() columns: BaseColumnSettings<any>[] = [];
   @Output() filterChange = new EventEmitter();
 
   constructor() {}
@@ -24,7 +24,7 @@ export class TableFilterComponent implements OnChanges, OnInit {
     if (changes.columns) {
       this.filtersForm = new UntypedFormGroup(
         this.columns
-          .filter(col => col.hasSearch)
+          .filter(col => !!col.filterData)
           .reduce((acc, curr) => {
           acc[curr.id] = new UntypedFormControl('');
           return acc;
@@ -34,7 +34,7 @@ export class TableFilterComponent implements OnChanges, OnInit {
   }
 
   reset() {
-    const activeCol = this.columns.find(col => col.isSearchVisible);
+    const activeCol = this.columns.find(col => col.filterData?.isOpenedFilter);
 
     this.filtersForm.get(activeCol!.id)?.reset();
   }

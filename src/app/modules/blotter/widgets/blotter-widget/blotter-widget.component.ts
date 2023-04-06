@@ -69,10 +69,10 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
       settings => ({
         ...settings,
         activeTabIndex: 0,
-        tradesTable: TableSettingHelper.toTableDisplaySettings(allTradesColumns.filter(c => c.isDefault).map(c => c.columnId)),
-        positionsTable: TableSettingHelper.toTableDisplaySettings(allPositionsColumns.filter(c => c.isDefault).map(c => c.columnId)),
-        ordersTable: TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.columnId)),
-        stopOrdersTable: TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.columnId)),
+        tradesTable: TableSettingHelper.toTableDisplaySettings(allTradesColumns.filter(c => c.isDefault).map(c => c.id)),
+        positionsTable: TableSettingHelper.toTableDisplaySettings(allPositionsColumns.filter(c => c.isDefault).map(c => c.id)),
+        ordersTable: TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.id)),
+        stopOrdersTable: TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.id)),
         badgeColor: defaultBadgeColor,
         isSoldPositionsHidden: true,
         cancelOrdersWithoutConfirmation: false

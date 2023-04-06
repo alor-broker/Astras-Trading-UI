@@ -17,7 +17,7 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   allInstrumentsColumns,
-  ColumnIds,
+  ColumnId,
   InstrumentSelectSettings
 } from '../../models/instrument-select-settings.model';
 
@@ -28,7 +28,7 @@ import {
 })
 export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
   settingsForm!: UntypedFormGroup;
-  allInstrumentColumns: ColumnIds[] = allInstrumentsColumns;
+  allInstrumentColumns: ColumnId[] = allInstrumentsColumns;
   @Input()
   guid!: string;
   @Output()

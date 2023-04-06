@@ -39,7 +39,7 @@ import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import {
   allInstrumentsColumns,
-  ColumnIds,
+  ColumnId,
   InstrumentSelectSettings
 } from '../../models/instrument-select-settings.model';
 
@@ -59,7 +59,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   selectedInstruments$: Observable<InstrumentGroups> = of({});
 
   scrollHeight$: Observable<number> = of(100);
-  displayedColumns: ColumnIds[] = [];
+  displayedColumns: ColumnId[] = [];
   badgeColor: string = '';
 
   sortFns: { [keyName: string]: (a: InstrumentKey, b: InstrumentKey) => number } = {
@@ -101,7 +101,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     this.watchedInstruments$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
       takeUntil(this.destroy$),
       tap(settings => {
-        this.displayedColumns = allInstrumentsColumns.filter(c => settings.instrumentColumns.includes(c.columnId));
+        this.displayedColumns = allInstrumentsColumns.filter(c => settings.instrumentColumns.includes(c.id));
         this.badgeColor = settings.badgeColor!;
       }),
       switchMap(settings => this.watchInstrumentsService.getWatched(settings)),
@@ -162,7 +162,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   isVisibleColumn(colName: string): boolean {
-    return this.displayedColumns.map(c => c.columnId).includes(colName);
+    return this.displayedColumns.map(c => c.id).includes(colName);
   }
 
   contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedInstrument: InstrumentKey): void {

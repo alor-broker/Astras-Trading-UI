@@ -1,10 +1,10 @@
 <div *transloco="let t" class="ant-table-filter-dropdown custom-filter">
   <ng-container *ngFor='let column of columns'>
-    <div class="search-box" *ngIf='column.hasSearch && column.isSearchVisible' [formGroup]="filtersForm">
+    <div class="search-box" *ngIf='!!column.filterData && column.filterData.isOpenedFilter' [formGroup]="filtersForm">
       <input
         class="filter-input"
         type="text" nz-input
-        [placeholder]="column.searchDescription"
+        [placeholder]="column.filterData.filterName"
         [formControlName]="column.id"
       />
     </div>

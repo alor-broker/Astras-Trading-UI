@@ -18,9 +18,9 @@ import {
 } from "rxjs";
 import {
   allInstrumentsColumns,
-  AllInstrumentsSettings,
-  ColumnIds
+  AllInstrumentsSettings
 } from '../../model/all-instruments-settings.model';
+import { BaseColumnId } from "../../../../shared/models/settings/table-settings.model";
 
 @Component({
   selector: 'ats-all-instruments-settings',
@@ -31,7 +31,7 @@ export class AllInstrumentsSettingsComponent implements OnInit, OnDestroy {
   @Input() guid!: string;
   @Output() settingsChange: EventEmitter<AllInstrumentsSettings> = new EventEmitter<AllInstrumentsSettings>();
   form!: UntypedFormGroup;
-  allInstrumentsColumns: ColumnIds[] = allInstrumentsColumns;
+  allInstrumentsColumns: BaseColumnId[] = allInstrumentsColumns;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private readonly settingsService: WidgetSettingsService) {

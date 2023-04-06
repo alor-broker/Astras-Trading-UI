@@ -1,22 +1,17 @@
 import { WidgetSettings } from '../../../shared/models/widget-settings.model';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
-
-export interface ColumnIds {
-  columnId: string;
-  name: string;
-  isDefault: boolean;
-}
+import { BaseColumnId } from "../../../shared/models/settings/table-settings.model";
 
 export interface AllTradesSettings extends WidgetSettings, InstrumentKey {
   allTradesColumns: string[];
   highlightRowsBySide?: boolean;
 }
 
-export const allTradesWidgetColumns: ColumnIds[] = [
-  { columnId: 'qty', name: 'Кол-во', isDefault: true },
-  { columnId: 'price', name: 'Цена', isDefault: true },
-  { columnId: 'timestamp', name: 'Время', isDefault: true },
-  { columnId: 'side', name: 'Сторона', isDefault: false },
-  { columnId: 'oi', name: 'Откр. интерес', isDefault: false },
-  { columnId: 'existing', name: 'Новое событие', isDefault: false },
+export const allTradesWidgetColumns: BaseColumnId[] = [
+  { id: 'qty', displayName: 'Кол-во', isDefault: true },
+  { id: 'price', displayName: 'Цена', isDefault: true },
+  { id: 'timestamp', displayName: 'Время', isDefault: true },
+  { id: 'side', displayName: 'Сторона', isDefault: false },
+  { id: 'oi', displayName: 'Откр. интерес', isDefault: false },
+  { id: 'existing', displayName: 'Новое событие', isDefault: false },
 ];

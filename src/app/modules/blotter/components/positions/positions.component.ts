@@ -30,7 +30,6 @@ import {
 } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
-import { Column } from '../../models/column.model';
 import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -48,6 +47,7 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { BlotterSettings } from '../../models/blotter-settings.model';
+import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 
 interface PositionDisplay extends Position {
   volume: number
@@ -74,151 +74,97 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedInstruments$: Observable<InstrumentGroups> = of({});
   scrollHeight$: Observable<number> = of(100);
   tableInnerWidth: number = 1000;
-  allColumns: Column<PositionDisplay, PositionFilter>[] = [
+  allColumns: BaseColumnSettings<PositionDisplay>[] = [
     {
       id: 'symbol',
-      name: 'Тикер',
+      displayName: 'Тикер',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => a.symbol.localeCompare(b.symbol),
-      searchDescription: 'Поиск по Тикеру',
-      searchFn: (position, filter) => filter.symbol ? position.symbol.toLowerCase().includes(filter.symbol.toLowerCase()) : false,
-      isSearchVisible: false,
-      hasSearch: true,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
+      filterData: {
+        filterName: 'symbol',
+        isDefaultFilter: false
+      },
       tooltip: 'Биржевой идентификатор ценной бумаги',
       minWidth: 75
     },
     {
       id: 'shortName',
-      name: 'Имя',
+      displayName: 'Имя',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => a.shortName.localeCompare(b.shortName),
-      searchDescription: 'Поиск по имени',
-      searchFn: (position, filter) => filter.shortName ? position.shortName.toLowerCase().includes(filter.shortName.toLowerCase()) : false,
-      isSearchVisible: false,
-      hasSearch: true,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
+      filterData: {
+        filterName: 'shortName',
+        isDefaultFilter: false
+      },
       tooltip: 'Наименование позиции',
       minWidth: 70
     },
     {
       id: 'avgPrice',
-      name: 'Средняя',
+      displayName: 'Средняя',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.avgPrice) - Number(b.avgPrice),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Средняя цена',
       minWidth: 70
     },
     {
       id: 'qtyT0',
-      name: 'Кол-во Т0',
+      displayName: 'Кол-во Т0',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyT0) - Number(b.qtyT0),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Количество позиций с учётом сегодняшних расчётов',
       minWidth: 65
     },
     {
       id: 'qtyT1',
-      name: 'Кол-во Т1',
+      displayName: 'Кол-во Т1',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyT1) - Number(b.qtyT1),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Количество позиций с учётом завтрашних расчётов',
       minWidth: 65
     },
     {
       id: 'qtyT2',
-      name: 'Кол-во Т2',
+      displayName: 'Кол-во Т2',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyT2) - Number(b.qtyT2),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Количество позиций с учётом послезавтрашних расчётов',
       minWidth: 65
     },
     {
       id: 'qtyTFuture',
-      name: 'Кол-во ТFuture',
+      displayName: 'Кол-во ТFuture',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyTFuture) - Number(b.qtyTFuture),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Количество позиций с учётом всех заявок',
       minWidth: 65
     },
     {
       id: 'volume',
-      name: 'Объем',
+      displayName: 'Объем',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => a.volume - b.volume,
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Объём',
       minWidth: 60
     },
     {
       id: 'unrealisedPl',
-      name: 'P/L всего',
+      displayName: 'P/L всего',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => a.unrealisedPl - b.unrealisedPl,
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Соотношение прибыли и убытка',
       minWidth: 60
     },
     {
       id: 'dailyUnrealisedPl',
-      name: 'P/L дн.',
+      displayName: 'P/L дн.',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => a.dailyUnrealisedPl - b.dailyUnrealisedPl,
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Соотношение прибыли и убытка за сегодня',
       minWidth: 60
     },
   ];
-  listOfColumns: Column<PositionDisplay, PositionFilter>[] = [];
+  listOfColumns: BaseColumnSettings<PositionDisplay>[] = [];
   private readonly columnDefaultWidth = 100;
   private settings$!: Observable<BlotterSettings>;
   private badgeColor = defaultBadgeColor;
@@ -266,13 +212,12 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (tableSettings) {
           this.listOfColumns = this.allColumns
-            .map(c => ({ column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id) }))
+            .map(c => ({ column: c, columnSettings: tableSettings.columns.find(x => x.id === c.id) }))
             .filter(c => !!c.columnSettings)
             .map((column, index) => ({
               ...column.column,
-              name: t(['columns', column.column.id, 'name'], { fallback: column.column.name }),
+              displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
               tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
-              searchDescription: t(['columns', column.column.id, 'searchDescription'], { fallback: column.column.searchDescription }),
               width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
               order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
             }))
@@ -336,7 +281,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.service.selectNewInstrument(symbol, exchange, this.badgeColor);
   }
 
-  isFilterApplied(column: Column<PositionDisplay, PositionFilter>) {
+  isFilterApplied(column: BaseColumnSettings<PositionDisplay>) {
     const filter = this.searchFilter.getValue();
     return column.id in filter && !!filter[column.id];
   }
@@ -352,7 +297,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  saveColumnWidth(columnId: string, width: number) {
+  saveColumnWidth(id: string, width: number) {
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
@@ -362,7 +307,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
           settings.guid,
           {
             positionsTable: TableSettingHelper.updateColumn(
-              columnId,
+              id,
               tableSettings,
               {
                 columnWidth: width
@@ -404,8 +349,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
     let isFiltered = true;
     for (const key of Object.keys(filter)) {
       if (filter[key as keyof PositionFilter]) {
-        const column = this.listOfColumns.find(o => o.id == key);
-        if (!column!.searchFn!(position, filter)) {
+        if (filter[key] && !position[<keyof PositionDisplay>key].toString().toLowerCase().includes(filter[key]!.toLowerCase())) {
           isFiltered = false;
         }
       }

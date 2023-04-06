@@ -10,9 +10,9 @@
     [nzVirtualItemSize]="20">
     <thead *transloco="let t; scope: 'instruments/select'">
       <tr>
-        <th [nzSortFn]="sortFns[col.columnId]" *ngFor="let col of displayedColumns" [nzWidth]="(col.minWidth ?? 50) + 'px'">
-          <span nz-tooltip [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.columnId + '.tooltip', { fallback: col.tooltip })">
-            {{t('instrumentsSelect.columns.' + col.columnId + '.name', { fallback: col.name })}}
+        <th [nzSortFn]="sortFns[col.id]" *ngFor="let col of displayedColumns" [nzWidth]="(col.minWidth ?? 50) + 'px'">
+          <span nz-tooltip [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.id + '.tooltip', { fallback: col.tooltip })">
+            {{t('instrumentsSelect.columns.' + col.id + '.name', { fallback: col.displayName })}}
           </span>
         </th>
         <th [nzWidth]="'40px'">
@@ -24,7 +24,7 @@
     </thead>
     <tbody>
       <tr
-        *ngFor="let inst of nzTable.data; trackBy: getTrackKey"
+        *ngFor="let inst of nzTable.data!; trackBy: getTrackKey"
         (click)='makeActive(inst.instrument)'
         (contextmenu)="contextMenu($event, menu, inst.instrument)"
       >

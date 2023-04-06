@@ -48,7 +48,7 @@ export class InstrumentSelectWidgetComponent implements OnInit {
         ...settings,
         title: `Выбор инструмента`,
         titleIcon: 'eye',
-        instrumentColumns: allInstrumentsColumns.filter(c => c.isDefault).map(c => c.columnId),
+        instrumentColumns: allInstrumentsColumns.filter(c => c.isDefault).map(c => c.id),
         badgeColor: defaultBadgeColor
       }),
       this.widgetSettingsService

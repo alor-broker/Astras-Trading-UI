@@ -45,7 +45,7 @@ export class AllInstrumentsWidgetComponent implements OnInit {
       settings => ({
         ...settings,
         badgeColor: defaultBadgeColor,
-        allInstrumentsColumns: allInstrumentsColumns.filter(c => c.isDefault).map(col => col.columnId)
+        allInstrumentsColumns: allInstrumentsColumns.filter(c => c.isDefault).map(col => col.id)
       }),
       this.widgetSettingsService
     );
