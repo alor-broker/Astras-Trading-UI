@@ -13,6 +13,7 @@ import {
   combineLatest,
   filter,
   Observable,
+  Subject,
   takeUntil
 } from 'rxjs';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
@@ -63,6 +64,8 @@ export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
   @Input()
   isActive: boolean = false;
 
+  readonly hoveredRow$ = new Subject<{ price: number } | null>();
+
   private destroyable = new Destroyable();
 
   constructor(
@@ -108,7 +111,10 @@ export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
     this.subscribeToHotkeys();
   }
 
-  getFilteredOrders(orders: CurrentOrderDisplay[], type: 'limit' | 'stoplimit' | 'stop'): { orders: CurrentOrderDisplay[], volume: number } {
+  getFilteredOrders(orders: CurrentOrderDisplay[], type: 'limit' | 'stoplimit' | 'stop'): {
+    orders: CurrentOrderDisplay[],
+    volume: number
+  } {
     const limitOrders = orders.filter(x => x.type === type);
 
     return {
@@ -148,6 +154,10 @@ export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroyable.destroy();
+  }
+
+  updateHoveredItem(hoveredItem: { price: number } | null) {
+    this.hoveredRow$.next(hoveredItem);
   }
 
   private initDisplayItems() {

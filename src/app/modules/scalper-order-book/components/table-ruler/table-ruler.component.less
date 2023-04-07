@@ -1,0 +1,23 @@
+@import "theme-mixin";
+
+
+.themeMixin({
+  :host {
+    .marker {
+      color: white;
+      background-color: @primary-color;
+      border: @border-color-active 1px solid;
+      border-radius: @border-radius-base;
+      min-width: 15px;
+      text-align: center;
+      padding: 0 2px;
+    }
+  }
+}
+);
+
+.marker {
+  position: absolute;
+  right: 0;
+  box-sizing: border-box;
+}

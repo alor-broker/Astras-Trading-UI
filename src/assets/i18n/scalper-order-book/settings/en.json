@@ -24,6 +24,9 @@
   "volumeFormatDisplayLabel": "Volume display format",
   "instrumentGroupLabel": "Trading mode",
   "volumeHighlightFullnessLabel": "Volume bar fullness",
+  "showRulerLabel": "Show ruler",
+  "rulerSettingsLabel": "Ruler settings",
+  "markerDisplayFormatLabel": "Marker value",
 
 
   "tickerError": "Select ticker",
@@ -44,5 +47,9 @@
     "off": "Off",
     "biggestVolume": "Relative to the largest volume",
     "volumeBoundsWithFixedValue":  "By borders (more than volume)"
+  },
+  "markerDisplayFormatOptions": {
+    "points": "Points",
+    "percents": "Percents"
   }
 }

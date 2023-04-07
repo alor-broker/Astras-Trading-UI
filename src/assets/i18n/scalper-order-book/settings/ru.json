@@ -24,6 +24,9 @@
   "volumeFormatDisplayLabel": "Формат отображения объема",
   "instrumentGroupLabel": "Режим торгов",
   "volumeHighlightFullnessLabel": "Заполненность полосы объема",
+  "showRulerLabel": "Показывать линейку",
+  "rulerSettingsLabel": "Настройки линейки",
+  "markerDisplayFormatLabel": "Значение маркера",
 
   "tickerError": "Выберите тикер",
   "intervalError": "Значение должно быть от {{min}} до {{max}}",
@@ -44,5 +47,9 @@
     "off": "Отключено",
     "biggestVolume": "Относительно наибольшего объема",
     "volumeBoundsWithFixedValue":  "По границам (более объема)"
+  },
+  "markerDisplayFormatOptions": {
+    "points": "Пункты",
+    "percents": "Проценты"
   }
 }

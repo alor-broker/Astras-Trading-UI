@@ -22,6 +22,9 @@ import {
 import { PossibleActionsPanelComponent } from './components/possible-actions-panel/possible-actions-panel.component';
 import { TradeClustersPanelComponent } from './components/trade-clusters-panel/trade-clusters-panel.component';
 import { TradesClusterComponent } from './components/trades-cluster/trades-cluster.component';
+import { HoverItemDirective } from './directives/hover-item.directive';
+import { HoverItemsGroupDirective } from './directives/hover-items-group.directive';
+import { TableRulerComponent } from './components/table-ruler/table-ruler.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +40,10 @@ import { TradesClusterComponent } from './components/trades-cluster/trades-clust
     OrdersIndicatorComponent,
     TradeClustersPanelComponent,
     TradesClusterComponent,
-    PossibleActionsPanelComponent
+    PossibleActionsPanelComponent,
+    HoverItemDirective,
+    HoverItemsGroupDirective,
+    TableRulerComponent
   ],
     imports: [
         CommonModule,

@@ -9,10 +9,7 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import {
-  ScalperOrderBookDataContext,
-  ScalperOrderBookExtendedSettings
-} from '../../models/scalper-order-book-data-context.model';
+import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import {
   BehaviorSubject,
   bufferCount,
@@ -20,6 +17,7 @@ import {
   fromEvent,
   Observable,
   of,
+  shareReplay,
   Subject,
   take,
   takeUntil,
@@ -43,6 +41,7 @@ import { DOCUMENT } from '@angular/common';
 import { ContextMenuService } from '../../../../shared/services/context-menu.service';
 import { TradeClustersService } from '../../services/trade-clusters.service';
 import { toUnixTime } from '../../../../shared/utils/datetime';
+import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 
 @Component({
   selector: 'ats-trade-clusters-panel[xAxisStep][dataContext]',
@@ -59,7 +58,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   dataContext!: ScalperOrderBookDataContext;
   clusters$ = new Subject<Observable<TradesCluster>[]>;
 
-  settings$!: Observable<ScalperOrderBookExtendedSettings>;
+  settings$!: Observable<ScalperOrderBookSettings>;
 
   hScrollOffsets$ = new BehaviorSubject({ left: 0, right: 0 });
 
@@ -83,7 +82,25 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   }
 
   ngOnInit(): void {
-    this.settings$ = this.dataContext.extendedSettings$;
+    this.settings$ = this.dataContext.extendedSettings$.pipe(
+      map(x => {
+        const settings = x.widgetSettings;
+
+        if(!!settings.tradesClusterPanelSettings) {
+          return settings;
+        }
+
+        return {
+          ...settings,
+          tradesClusterPanelSettings: {
+            timeframe: ClusterTimeframe.M1,
+            displayIntervalsCount: 5,
+            volumeDisplayFormat: NumberDisplayFormat.LetterSuffix
+          }
+        };
+      }),
+      shareReplay(1)
+    );
 
     combineLatest([
       timer(0, 5000),
@@ -93,10 +110,10 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       takeUntil(this.destroyable.destroyed$)
     ).subscribe(settings => {
       this.updateScrollOffsets();
-      const panelSettings = settings.widgetSettings.tradesClusterPanelSettings!;
+      const panelSettings = settings.tradesClusterPanelSettings!;
 
       this.tradeClustersService.getHistory(
-        settings.widgetSettings,
+        settings,
         panelSettings.timeframe,
         panelSettings.displayIntervalsCount)
         .pipe(
@@ -138,10 +155,10 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       take(1)
     ).subscribe(x => {
       this.widgetSettingsService.updateSettings<ScalperOrderBookSettings>(
-        x.widgetSettings.guid,
+        x.guid,
         {
           tradesClusterPanelSettings: {
-            ...x.widgetSettings.tradesClusterPanelSettings!,
+            ...x.tradesClusterPanelSettings!,
             timeframe: value
           }
         }
@@ -154,10 +171,10 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       take(1)
     ).subscribe(x => {
       this.widgetSettingsService.updateSettings<ScalperOrderBookSettings>(
-        x.widgetSettings.guid,
+        x.guid,
         {
           tradesClusterPanelSettings: {
-            ...x.widgetSettings.tradesClusterPanelSettings!,
+            ...x.tradesClusterPanelSettings!,
             displayIntervalsCount: value
           }
         }

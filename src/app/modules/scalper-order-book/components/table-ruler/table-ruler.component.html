@@ -1,0 +1,23 @@
+<ng-container *ngIf="settings$ | async as settings">
+  <div class="h-100">
+    <ng-container *ngIf="displayMarker$ | async as displayMarker">
+  <span
+    [ngStyle]="{
+    'height': xAxisStep + 'px',
+    'line-height': xAxisStep + 'px',
+    'top': displayMarker.index * xAxisStep + 'px'
+}"
+    class="marker"
+  >
+    <ng-container *ngIf="settings.widgetSettings.rulerSettings!.markerDisplayFormat === markerDisplayFormats.Points">
+      {{displayMarker.points}}
+    </ng-container>
+    <ng-container *ngIf="settings.widgetSettings.rulerSettings!.markerDisplayFormat === markerDisplayFormats.Percents">
+      {{displayMarker.percents}}%
+    </ng-container>
+</span>
+    </ng-container>
+  </div>
+</ng-container>
+
+

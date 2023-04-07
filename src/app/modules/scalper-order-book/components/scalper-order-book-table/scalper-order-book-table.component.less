@@ -13,6 +13,10 @@
         box-sizing: border-box;
         border: @table-border-color 1px solid;
 
+        &.hovered {
+          background-color: fade(@primary-color, 15%);
+        }
+
         &:not(:first-child) {
           border-top: none;
         }
