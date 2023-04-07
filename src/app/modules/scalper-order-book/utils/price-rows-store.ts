@@ -101,11 +101,17 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     const rowsCount = Math.ceil(Math.max(priceRowsCount + 5, oneDirectionRowsCount));
 
     const minPrice = Math.min(0, priceRange.min, step);
+    let topRows = this.generatePriceSequence(startPrice + step, step, rowsCount, 0).reverse();
+    const bottomRows = this.generatePriceSequence(startPrice - step, -step, rowsCount, minPrice);
+
+    if((topRows.length + bottomRows.length) < renderRowsCount) {
+      topRows = this.generatePriceSequence(startPrice + step, step, rowsCount * 2, 0).reverse();
+    }
 
     const rows = [
-      ...this.generatePriceSequence(startPrice + step, step, rowsCount, 0).reverse(),
+      ...topRows,
       startPrice,
-      ...this.generatePriceSequence(startPrice - step, -step, rowsCount, minPrice)
+      ...bottomRows
     ].map(price => ({ price: price } as PriceRow));
 
     rows[rowsCount].isStartRow = true;
