@@ -17,16 +17,36 @@
         [nzSpan]="2"
         [nzTitle]="quantityToBuyTitle"
       >
-        <div class="clickable" (click)="quantitySelect.emit(evaluation.quantityToBuy)">
-          {{evaluation.quantityToBuy}}
+        <div
+          class="clickable"
+          nz-tooltip
+          [nzTooltipTitle]="t('command.quantityToBuyTooltip')"
+        >
+          <span (click)="quantitySelect.emit(evaluation.quantityToBuy)">
+            {{evaluation.quantityToBuy}}
+          </span>
+          /
+          <span (click)="quantitySelect.emit(evaluation.notMarginQuantityToBuy)">
+            {{evaluation.notMarginQuantityToBuy}}
+          </span>
         </div>
       </nz-descriptions-item>
       <nz-descriptions-item
         [nzSpan]="2"
         [nzTitle]="quantityToSellTitle"
       >
-        <div class="clickable" (click)="quantitySelect.emit(evaluation.quantityToSell)">
-          {{evaluation.quantityToSell}}
+        <div
+          class="clickable"
+          nz-tooltip
+          [nzTooltipTitle]="t('command.quantityToSellTooltip')"
+        >
+          <span (click)="quantitySelect.emit(evaluation.quantityToSell)">
+            {{evaluation.quantityToSell}}
+          </span>
+          /
+          <span (click)="quantitySelect.emit(evaluation.notMarginQuantityToSell)">
+            {{evaluation.notMarginQuantityToSell}}
+          </span>
         </div>
       </nz-descriptions-item>
     </nz-descriptions>
@@ -42,7 +62,6 @@
         {{t('command.quantityToSell')}}
       </div>
     </ng-template>
-
   </ng-container>
 </ng-container>
 

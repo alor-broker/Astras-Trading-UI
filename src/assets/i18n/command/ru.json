@@ -16,6 +16,8 @@
   "evaluationCommission": "Комиссия",
   "quantityToBuy": "К покупке",
   "quantityToSell": "К продаже",
+  "quantityToBuyTooltip": "Маржинальная покупка / покупка на свои",
+  "quantityToSellTooltip": "Маржинальная продажа / продажа на свои",
 
   "quantityLabel": "Кол-во лотов",
   "lot": "лот",
