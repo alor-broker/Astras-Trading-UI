@@ -201,7 +201,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (tableSettings) {
         this.listOfColumns = this.allColumns
-          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.id === c.id)}))
+          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
           .filter(c => !!c.columnSettings)
           .map((column, index) => ({
             ...column.column,

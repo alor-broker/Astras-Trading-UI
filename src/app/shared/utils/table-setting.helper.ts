@@ -16,7 +16,7 @@ export class TableSettingHelper {
 
     return {
       columns: columnIds.map(x => ({
-        id: x,
+        columnId: x,
         columnWidth: null
       }))
     };
@@ -32,7 +32,7 @@ export class TableSettingHelper {
     id: string,
     target: TableDisplaySettings,
     updates: Partial<Omit<ColumnDisplaySettings, 'id'>>): TableDisplaySettings {
-    const targetColumnIndex = target.columns.findIndex(x => x.id === id);
+    const targetColumnIndex = target.columns.findIndex(x => x.columnId === id);
 
     if (targetColumnIndex < 0) {
       return target;

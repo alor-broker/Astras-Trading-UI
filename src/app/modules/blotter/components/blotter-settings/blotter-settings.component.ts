@@ -90,10 +90,10 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
         this.form = new UntypedFormGroup({
           portfolio: new UntypedFormControl(this.toPortfolioKey(settings), Validators.required),
           exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
-          ordersColumns: new UntypedFormControl(this.toTableSettings(settings.ordersTable, settings.ordersColumns)?.columns?.map(c => c.id)),
-          stopOrdersColumns: new UntypedFormControl(this.toTableSettings(settings.stopOrdersTable, settings.stopOrdersColumns)?.columns?.map(c => c.id)),
-          tradesColumns: new UntypedFormControl(this.toTableSettings(settings.tradesTable, settings.tradesColumns)?.columns?.map(c => c.id)),
-          positionsColumns: new UntypedFormControl(this.toTableSettings(settings.positionsTable, settings.positionsColumns)?.columns?.map(c => c.id)),
+          ordersColumns: new UntypedFormControl(this.toTableSettings(settings.ordersTable, settings.ordersColumns)?.columns?.map(c => c.columnId)),
+          stopOrdersColumns: new UntypedFormControl(this.toTableSettings(settings.stopOrdersTable, settings.stopOrdersColumns)?.columns?.map(c => c.columnId)),
+          tradesColumns: new UntypedFormControl(this.toTableSettings(settings.tradesTable, settings.tradesColumns)?.columns?.map(c => c.columnId)),
+          positionsColumns: new UntypedFormControl(this.toTableSettings(settings.positionsTable, settings.positionsColumns)?.columns?.map(c => c.columnId)),
           isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden ?? false),
           cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false)
         });
@@ -169,7 +169,7 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
 
     if (currentSettings) {
       newSettings.columns.forEach((column, index) => {
-        const matchedColumn = currentSettings!.columns.find(x => x.id === column.id);
+        const matchedColumn = currentSettings!.columns.find(x => x.columnId === column.columnId);
         if (matchedColumn) {
           newSettings.columns[index] = {
             ...column,

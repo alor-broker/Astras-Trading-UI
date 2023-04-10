@@ -7,7 +7,7 @@ export interface BaseColumnId {
 }
 
 export interface ColumnDisplaySettings {
-  id: string;
+  columnId: string;
   columnWidth?: number | null;
   columnOrder?: number;
 }

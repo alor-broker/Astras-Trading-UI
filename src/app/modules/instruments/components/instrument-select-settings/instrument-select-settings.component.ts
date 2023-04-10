@@ -17,9 +17,9 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   allInstrumentsColumns,
-  ColumnId,
   InstrumentSelectSettings
 } from '../../models/instrument-select-settings.model';
+import { BaseColumnId } from "../../../../shared/models/settings/table-settings.model";
 
 @Component({
   selector: 'ats-instrument-select-settings[guid]',
@@ -28,7 +28,7 @@ import {
 })
 export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
   settingsForm!: UntypedFormGroup;
-  allInstrumentColumns: ColumnId[] = allInstrumentsColumns;
+  allInstrumentColumns: BaseColumnId[] = allInstrumentsColumns;
   @Input()
   guid!: string;
   @Output()
