@@ -38,6 +38,29 @@ export class NumericalDirective {
       return;
     }
 
+    if (event.data.length > 1) {
+      const selectionStart = (<HTMLInputElement>event.target).selectionStart!;
+      const selectionTotal = (<HTMLInputElement>event.target).selectionEnd! - selectionStart;
+
+      let newValue = (this._el.nativeElement.value ?? '').split('');
+      newValue.splice((<HTMLInputElement>event.target).selectionStart, selectionTotal, event.data);
+      newValue = newValue.join('');
+      newValue.replace(/,/g, '.');
+
+      if (isNaN(newValue)) {
+        event.stopPropagation();
+        event.preventDefault();
+        return;
+      }
+
+      event.stopPropagation();
+      event.preventDefault();
+      this._el.nativeElement.value = newValue;
+      this._el.nativeElement.dispatchEvent(new Event('input'));
+
+      return;
+    }
+
     let inputSymbol = event.data.replace(/[^0-9.,]/g, '');
     if (this.isInvalidValue(inputSymbol)) {
       event.stopPropagation();
