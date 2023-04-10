@@ -47,14 +47,12 @@ export class NumericalDirective {
       newValue = newValue.join('');
       newValue = newValue.replace(/,/g, '.');
 
+      event.stopPropagation();
+      event.preventDefault();
       if (isNaN(newValue)) {
-        event.stopPropagation();
-        event.preventDefault();
         return;
       }
 
-      event.stopPropagation();
-      event.preventDefault();
       this._el.nativeElement.value = newValue;
       this._el.nativeElement.dispatchEvent(new Event('input'));
 
