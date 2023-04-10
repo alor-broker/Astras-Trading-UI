@@ -17,8 +17,8 @@
                 >
                   <nz-option
                     *ngFor="let item of allInstrumentColumns"
-                    [nzLabel]="tSelect('instrumentsSelect.columns.' + item.columnId + '.name')"
-                    [nzValue]="item.columnId"
+                    [nzLabel]="tSelect('instrumentsSelect.columns.' + item.id + '.name')"
+                    [nzValue]="item.id"
                   ></nz-option>
                 </nz-select>
               </nz-form-control>

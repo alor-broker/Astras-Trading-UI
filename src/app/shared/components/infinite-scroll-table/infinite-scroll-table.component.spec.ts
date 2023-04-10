@@ -6,9 +6,9 @@ import { NzDropDownModule } from "ng-zorro-antd/dropdown";
 import { By } from "@angular/platform-browser";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { ColumnsSettings } from "../../models/columns-settings.model";
 import { UntypedFormControl } from "@angular/forms";
 import { TableConfig } from '../../models/table-config.model';
+import { BaseColumnSettings } from "../../models/settings/table-settings.model";
 
 @Component({
   template: `
@@ -35,16 +35,16 @@ class TestWrapperComponent implements OnInit {
 
   tableConfig: TableConfig<any> = {
     columns: [
-      { displayName: 'name1', name: 'name1', filterData: { filterName: 'name1' }, width: '50px' },
-      { displayName: 'name2', name: 'name2' },
+      { id: 'id1', displayName: 'name1', filterData: { filterName: 'name1' }, width: 50 },
+      { id: 'id2', displayName: 'name2' },
     ]
   };
 
   testData: any[] = [
-    {name1: 'testName1', name2: 'testName2', id: 1},
-    {name1: 'testName1', name2: 'testName2', id: 2},
-    {name1: 'testName1', name2: 'testName2', id: 3},
-    {name1: 'testName1', name2: 'testName2', id: 4},
+    {id1: 'testName1', id2: 'testName2', id: 1},
+    {id1: 'testName1', id2: 'testName2', id: 2},
+    {id1: 'testName1', id2: 'testName2', id: 3},
+    {id1: 'testName1', id2: 'testName2', id: 4},
   ];
   trackByFn = (e: any) => e.name;
 
@@ -118,7 +118,7 @@ describe('InfiniteScrollTableComponent', () => {
   });
 
   it('should return columns widhts', () => {
-    expect(component.getWidthArr()).toEqual(wrapperComp.tableConfig.columns.map((col: ColumnsSettings) => col.width || 'auto'));
+    expect(component.getWidthArr()).toEqual(wrapperComp.tableConfig.columns.map((col: BaseColumnSettings<any>) => col.width ? col.width + 'px' : 'auto'));
   });
 
   it('should return filter control', () => {

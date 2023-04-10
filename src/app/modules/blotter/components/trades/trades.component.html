@@ -24,11 +24,11 @@
     <thead>
       <tr cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="changeColumnOrder($event)">
         <th nzWidth="5px"></th>
-        <th *ngFor='let column of listOfColumns'
-            [nzCustomFilter]='column.hasSearch'
-            [nzSortFn]='column.sortFn'
-            [nzFilters]="column.listOfFilter"
-            [nzShowFilter]="column.hasFilter"
+        <th *ngFor="let column of listOfColumns"
+            [nzCustomFilter]="column.filterData && !column.filterData.isDefaultFilter"
+            [nzSortFn]="column.sortFn ?? false"
+            [nzFilters]="column.filterData?.filters ?? []"
+            [nzShowFilter]="column.filterData && column.filterData.isDefaultFilter"
             (nzFilterChange)="defaultFilterChange(column.id, $event)"
             [nzWidth]="column.width ? column.width + 'px': null"
             [atsResizeColumn]
@@ -43,9 +43,14 @@
             [nzTooltipTitle]="column.tooltip"
             [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
           >
-            {{column.name}}
+            {{column.displayName}}
           </span>
-          <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible" [nzActive]="!!filter" [nzDropdownMenu]="searchMenu">
+          <nz-filter-trigger
+            *ngIf="column.filterData && !column.filterData.isDefaultFilter"
+            [(nzVisible)]="!!column.filterData.isOpenedFilter"
+            [nzActive]="!!filter"
+            [nzDropdownMenu]="searchMenu"
+          >
             <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
           </nz-filter-trigger>
         </th>

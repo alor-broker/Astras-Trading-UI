@@ -77,6 +77,7 @@ export class NewsComponent implements OnInit, OnDestroy {
       map((translate) => ({
           columns: [
             {
+              id: 'header',
               name: 'header',
               displayName: translate(['newsColumn']),
               transformFn: (data: NewsListItem) => `${this.datePipe.transform(data.publishDate, '[HH:mm]')} ${data.header}`

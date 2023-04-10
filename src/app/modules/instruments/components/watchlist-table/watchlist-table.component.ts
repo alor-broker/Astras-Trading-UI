@@ -38,10 +38,9 @@ import { TableAutoHeightBehavior } from '../../../blotter/utils/table-auto-heigh
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import {
-  allInstrumentsColumns,
-  ColumnIds,
   InstrumentSelectSettings
 } from '../../models/instrument-select-settings.model';
+import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 
 @Component({
   selector: 'ats-watchlist-table[guid]',
@@ -59,7 +58,19 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   selectedInstruments$: Observable<InstrumentGroups> = of({});
 
   scrollHeight$: Observable<number> = of(100);
-  displayedColumns: ColumnIds[] = [];
+  allColumns: BaseColumnSettings<WatchedInstrument>[] = [
+    { id: 'symbol', displayName: "Тикер", tooltip: 'Биржевой идентификатор ценной бумаги', minWidth: 55 },
+    { id: 'shortName', displayName: "Назв.", tooltip: 'Название тикера', minWidth: 60 },
+    { id: 'price', displayName: "Цена", tooltip: 'Цена последней сделки' },
+    { id: 'dayChange', displayName: "Д.изм.", tooltip: 'Изменение за день' },
+    { id: 'dayChangePerPrice', displayName: "Д.изм.,%", tooltip: 'Изменение за день в %' },
+    { id: 'maxPrice', displayName: "Д.макс.", tooltip: 'Максимальная цена за день' },
+    { id: 'minPrice', displayName: "Д.мин.", tooltip: 'Минимальная цена за день' },
+    { id: 'volume', displayName: "Объём", tooltip: 'Объём' },
+    { id: 'openPrice', displayName: "Откр.", tooltip: 'Цена на начало дня' },
+    { id: 'closePrice', displayName: "Закр.", tooltip: 'Цена на конец предыдущего дня' },
+  ];
+  displayedColumns: BaseColumnSettings<WatchedInstrument>[] = [];
   badgeColor: string = '';
 
   sortFns: { [keyName: string]: (a: InstrumentKey, b: InstrumentKey) => number } = {
@@ -101,7 +112,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     this.watchedInstruments$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
       takeUntil(this.destroy$),
       tap(settings => {
-        this.displayedColumns = allInstrumentsColumns.filter(c => settings.instrumentColumns.includes(c.columnId));
+        this.displayedColumns = this.allColumns.filter(c => settings.instrumentColumns.includes(c.id));
         this.badgeColor = settings.badgeColor!;
       }),
       switchMap(settings => this.watchInstrumentsService.getWatched(settings)),
@@ -162,7 +173,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   isVisibleColumn(colName: string): boolean {
-    return this.displayedColumns.map(c => c.columnId).includes(colName);
+    return this.displayedColumns.map(c => c.id).includes(colName);
   }
 
   contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedInstrument: InstrumentKey): void {

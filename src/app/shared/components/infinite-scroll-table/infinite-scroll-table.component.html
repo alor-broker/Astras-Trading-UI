@@ -18,9 +18,9 @@
     <tr #tableRow>
       <th
         *ngFor="let column of tableConfig.columns"
-        [nzWidth]="column.width ?? null"
+        [nzWidth]="column.width ? column.width + 'px' : null"
         [nzShowSort]="!!column.sortFn"
-        [nzSortOrder]="sortedColumnName === column.name ? sortedColumnOrder : null"
+        [nzSortOrder]="sortedColumnId === column.id ? sortedColumnOrder : null"
         (nzSortOrderChange)="sortChange($event, column)"
         [nzFilters]="column.filterData?.filters || []"
         [nzFilterMultiple]="column.filterData?.isMultipleFilter!"
@@ -55,7 +55,7 @@
         [class]="tableConfig.rowConfig?.rowClass && tableConfig.rowConfig?.rowClass(data)"
       >
         <td *ngFor="let column of tableConfig.columns" class="table-cell" [class]="column.classFn && column.classFn(data)">
-          <span>{{column.transformFn && column.transformFn(data) || data[column.name]}}</span>
+          <span>{{column.transformFn && column.transformFn(data) || data[column.id]}}</span>
           <ng-container *ngIf="data['badges']?.length && column.showBadges">
             <ng-container *ngFor="let item of data['badges']">
               <nz-badge [nzColor]="item"></nz-badge>

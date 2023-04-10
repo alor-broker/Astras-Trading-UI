@@ -1,5 +1,4 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import {
   BehaviorSubject,
@@ -29,6 +28,7 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { AllInstrumentsSettings } from '../../model/all-instruments-settings.model';
 import { TableConfig } from '../../../../shared/models/table-config.model';
+import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 
 @Component({
   selector: 'ats-all-instruments',
@@ -39,34 +39,34 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   @Input() guid!: string;
   contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   public isLoading$ = new BehaviorSubject<boolean>(false);
-  public allColumns: ColumnsSettings[] = [
+  public allColumns: BaseColumnSettings<AllInstruments>[] = [
     {
-      name: 'name',
+      id: 'name',
       displayName: 'Тикер',
-      width: '100px',
-      sortFn: this.getSortFn('symbol'),
+      width: 100,
+      sortChangeFn: this.getSortFn('symbol'),
       filterData: {
         filterName: 'query'
       },
       showBadges: true
     },
-    { name: 'shortName', displayName: 'Название', width: '100px' },
+    { id: 'shortName', displayName: 'Название', width: 100 },
     {
-      name: 'currency',
+      id: 'currency',
       displayName: 'Валюта',
-      width: '90px',
+      width: 90,
       filterData: {
         filterName: 'currency',
         isOpenedFilter: false,
       },
-      sortFn: this.getSortFn('currency'),
+      sortChangeFn: this.getSortFn('currency'),
     },
     {
-      name: 'dailyGrowth',
+      id: 'dailyGrowth',
       displayName: 'Рост за сегодня',
       classFn: data => data.dailyGrowth < 0 ? 'sell' : 'buy',
-      width: '100px',
-      sortFn: this.getSortFn('dailyGrowth'),
+      width: 100,
+      sortChangeFn: this.getSortFn('dailyGrowth'),
       filterData: {
         filterName: 'dailyGrowth',
         isInterval: true,
@@ -75,10 +75,10 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       }
     },
     {
-      name: 'tradeVolume',
+      id: 'tradeVolume',
       displayName: 'Объём торгов',
-      width: '110px',
-      sortFn: this.getSortFn('tradeVolume'),
+      width: 110,
+      sortChangeFn: this.getSortFn('tradeVolume'),
       filterData: {
         filterName: 'tradeVolume',
         isInterval: true,
@@ -87,10 +87,10 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       }
     },
     {
-      name: 'exchange',
+      id: 'exchange',
       displayName: 'Биржа',
-      width: '90px',
-      sortFn: this.getSortFn('exchange'),
+      width: 90,
+      sortChangeFn: this.getSortFn('exchange'),
       filterData: {
         filterName: 'exchange',
         isOpenedFilter: false,
@@ -103,10 +103,10 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       },
     },
     {
-      name: 'market',
+      id: 'market',
       displayName: 'Рынок',
-      width: '90px',
-      sortFn: this.getSortFn('marketType'),
+      width: 90,
+      sortChangeFn: this.getSortFn('marketType'),
       filterData: {
         filterName: 'marketType',
         isOpenedFilter: false,
@@ -120,12 +120,12 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         ]
       },
     },
-    { name: 'lotSize', displayName: 'Лотность', width: '70px' },
+    { id: 'lotSize', displayName: 'Лотность', width: 70 },
     {
-      name: 'price',
+      id: 'price',
       displayName: 'Цена',
-      width: '80px',
-      sortFn: this.getSortFn('price'),
+      width: 80,
+      sortChangeFn: this.getSortFn('price'),
       filterData: {
         filterName: 'price',
         isInterval: true,
@@ -133,10 +133,10 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         intervalEndName: 'priceTo'
       }
     },
-    { name: 'priceMax', displayName: 'Макс. цена', width: '80px' },
-    { name: 'priceMin', displayName: 'Мин. цена', width: '80px' },
-    { name: 'priceScale', displayName: 'Шаг цены', width: '90px', sortFn: this.getSortFn('priceScale') },
-    { name: 'yield', displayName: 'Доходность', width: '100px', sortFn: this.getSortFn('yield') },
+    { id: 'priceMax', displayName: 'Макс. цена', width: 80 },
+    { id: 'priceMin', displayName: 'Мин. цена', width: 80 },
+    { id: 'priceScale', displayName: 'Шаг цены', width: 90, sortChangeFn: this.getSortFn('priceScale') },
+    { id: 'yield', displayName: 'Доходность', width: 100, sortChangeFn: this.getSortFn('yield') },
   ];
   public tableConfig$!: Observable<TableConfig<AllInstruments>>;
   public contextMenu: ContextMenu[] = [];
@@ -187,11 +187,11 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       map(({ settings, translate }) => {
         return {
           columns: this.allColumns
-            .filter(col => settings.allInstrumentsColumns.includes(col.name))
+            .filter(col => settings.allInstrumentsColumns.includes(col.id))
             .map(col => ({
                 ...col,
                 displayName: translate(
-                  ['columns', col.name],
+                  ['columns', col.id],
                   { fallback: col.displayName }
                 )
               })

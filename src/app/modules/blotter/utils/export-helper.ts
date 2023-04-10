@@ -1,4 +1,3 @@
-import { Column } from "../models/column.model";
 import {
   CsvFormatter,
   csvFormatterConfigDefaults,
@@ -9,17 +8,18 @@ import {
   FileType
 } from "../../../shared/utils/file-export/file-saver";
 import { BlotterSettings } from '../models/blotter-settings.model';
+import { BaseColumnSettings } from "../../../shared/models/settings/table-settings.model";
 
 export class ExportHelper {
-  public static exportToCsv<T, F>(
+  public static exportToCsv<T>(
     fileSuffix: string,
     blotterSettings: BlotterSettings,
     data: T[],
-    columns: Column<T, F>[],
+    columns: BaseColumnSettings<T>[],
     valueTranslators?: Map<string, (value: any) => string>,
   ) {
     const meta = columns.map(c => ({
-        title: c.name,
+        title: c.displayName,
         readFn: item => {
           let value = (item as any)[c.id];
           const translator = valueTranslators?.get(c.id);

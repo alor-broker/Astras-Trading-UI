@@ -15,8 +15,8 @@
             <ng-container *transloco="let tInstruments; scope: 'all-instruments/all-instruments'">
               <nz-option
                 *ngFor="let item of allInstrumentsColumns"
-                [nzLabel]="tInstruments('allInstrumentsAllInstruments.columns.' + item.columnId)"
-                [nzValue]="item.columnId"
+                [nzLabel]="tInstruments('allInstrumentsAllInstruments.columns.' + item.id)"
+                [nzValue]="item.id"
               >
               </nz-option>
             </ng-container>
