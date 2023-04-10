@@ -18,6 +18,14 @@
 
 .marker {
   position: absolute;
-  right: 0;
   box-sizing: border-box;
+  pointer-events: none;
+
+  &.left {
+    right: 0;
+  }
+
+  &.right {
+    left: 0;
+  }
 }

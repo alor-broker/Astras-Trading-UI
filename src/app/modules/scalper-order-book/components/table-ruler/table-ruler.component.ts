@@ -1,21 +1,35 @@
 import {
+  AfterViewInit,
   Component,
+  ElementRef,
+  Inject,
   Input,
-  OnInit
+  OnDestroy,
+  OnInit,
+  QueryList,
+  SkipSelf,
+  ViewChildren
 } from '@angular/core';
 import {
   ScalperOrderBookDataContext,
   ScalperOrderBookExtendedSettings
 } from '../../models/scalper-order-book-data-context.model';
 import {
+  BehaviorSubject,
   combineLatest,
   filter,
   Observable,
-  Subject
+  Subject,
+  takeUntil
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MathHelper } from '../../../../shared/utils/math-helper';
 import { MarkerDisplayFormat } from '../../models/scalper-order-book-settings.model';
+import {
+  SCALPER_ORDERBOOK_BODY_REF,
+  ScalperOrderBookBodyRef
+} from '../scalper-order-book-body/scalper-order-book-body.component';
+import { Destroyable } from '../../../../shared/utils/destroyable';
 
 interface MarkerDisplay {
   index: number;
@@ -28,28 +42,68 @@ interface MarkerDisplay {
   templateUrl: './table-ruler.component.html',
   styleUrls: ['./table-ruler.component.less']
 })
-export class TableRulerComponent implements OnInit {
+export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChildren('marker')
+  markerElRef!: QueryList<ElementRef<HTMLElement>>;
   readonly markerDisplayFormats = MarkerDisplayFormat;
-
   @Input()
   xAxisStep!: number;
   @Input()
   dataContext!: ScalperOrderBookDataContext;
   displayMarker$!: Observable<MarkerDisplay | null>;
-
+  markerPosition$ = new BehaviorSubject<'left' | 'right'>('left');
   settings$!: Observable<ScalperOrderBookExtendedSettings>;
-
+  private readonly destroyable = new Destroyable();
   private readonly activeRow$ = new Subject<{ price: number } | null>();
+
+  constructor(
+    @Inject(SCALPER_ORDERBOOK_BODY_REF)
+    @SkipSelf()
+    private readonly bodyRef: ScalperOrderBookBodyRef,
+    private readonly elementRef: ElementRef<HTMLElement>
+  ) {
+  }
 
   @Input()
   set activeRow(value: { price: number } | null) {
     this.activeRow$.next(value);
   }
 
+  ngAfterViewInit(): void {
+    this.markerElRef.changes.pipe(
+      takeUntil(this.destroyable.destroyed$)
+    ).subscribe(x => {
+      const containerBounds = this.bodyRef.getElement().nativeElement.getBoundingClientRect();
+      const elementBounds = this.elementRef.nativeElement.getBoundingClientRect();
+      const markerBounds = x.first?.nativeElement?.getBoundingClientRect();
+
+      if (!markerBounds) {
+        return;
+      }
+
+      const leftSpace = elementBounds.x - containerBounds.x;
+
+      this.markerPosition$.next(
+        leftSpace > markerBounds.width + 5
+          ? 'left'
+          : 'right'
+      );
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroyable.destroy();
+    this.markerPosition$.complete();
+  }
+
   ngOnInit(): void {
+    this.initMarkerData();
+  }
+
+  private initMarkerData() {
     this.settings$ = this.dataContext.extendedSettings$.pipe(
       map(x => {
-        if(!!x.widgetSettings.rulerSettings) {
+        if (!!x.widgetSettings.rulerSettings) {
           return x;
         }
 

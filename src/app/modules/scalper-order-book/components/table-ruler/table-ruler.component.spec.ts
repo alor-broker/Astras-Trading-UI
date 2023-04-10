@@ -1,8 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { TableRulerComponent } from './table-ruler.component';
 import { Subject } from 'rxjs';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
+import { SCALPER_ORDERBOOK_BODY_REF } from '../scalper-order-book-body/scalper-order-book-body.component';
 
 describe('TableRulerComponent', () => {
   let component: TableRulerComponent;
@@ -10,9 +14,21 @@ describe('TableRulerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TableRulerComponent ]
+      declarations: [TableRulerComponent],
+      providers: [
+        {
+          provide: SCALPER_ORDERBOOK_BODY_REF,
+          useValue: {
+            getElement: jasmine.createSpy('getElement').and.returnValue({
+              nativeElement: jasmine.createSpy('nativeElement').and.returnValue({
+                x: 0
+              })
+            })
+          }
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(TableRulerComponent);
     component = fixture.componentInstance;
