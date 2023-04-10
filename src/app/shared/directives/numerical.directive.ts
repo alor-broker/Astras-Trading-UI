@@ -45,7 +45,7 @@ export class NumericalDirective {
       let newValue = (this._el.nativeElement.value ?? '').split('');
       newValue.splice((<HTMLInputElement>event.target).selectionStart, selectionTotal, event.data);
       newValue = newValue.join('');
-      newValue.replace(/,/g, '.');
+      newValue = newValue.replace(/,/g, '.');
 
       if (isNaN(newValue)) {
         event.stopPropagation();
