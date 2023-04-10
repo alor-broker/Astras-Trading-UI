@@ -16,5 +16,8 @@ export function getDayChange(lastPrice: number, closePrice: number) {
  * @returns How much price changed for a day in percent
  */
 export function getDayChangePerPrice(lastPrice: number, closePrice: number) {
+  if (lastPrice == null || closePrice == null) {
+    return 0;
+  }
   return MathHelper.round((1 - (closePrice / lastPrice)) * 100, 2);
 }
