@@ -1,7 +1,4 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {
   CompactType,
   DisplayGrid,
@@ -12,17 +9,14 @@ import {
   PushDirections,
   Resizable,
 } from 'angular-gridster2';
-import {
-  map,
-  Observable
-} from 'rxjs';
-import { ManageDashboardsService } from 'src/app/shared/services/manage-dashboards.service';
-import {
-  DashboardItemPosition,
-  Widget
-} from '../../../../shared/models/dashboard/widget.model';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { mobileBreakpoint } from '../../../../shared/utils/device-helper';
+import {combineLatest, map, Observable, shareReplay, tap} from 'rxjs';
+import {ManageDashboardsService} from 'src/app/shared/services/manage-dashboards.service';
+import {DashboardItemPosition, Widget} from '../../../../shared/models/dashboard/widget.model';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {mobileBreakpoint} from '../../../../shared/utils/device-helper';
+import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
+import {filter} from "rxjs/operators";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 interface Safe extends GridsterConfig {
   draggable: Draggable;
@@ -38,13 +32,20 @@ type WidgetItem = { widget: Widget, gridsterItem: GridsterItem };
   styleUrls: ['./dashboard.component.less'],
 })
 export class DashboardComponent implements OnInit {
+  private readonly dashboardSize = {
+    width: 0,
+    itemDefaultWidth: 10,
+    itemDefaultHeight: 18
+  };
+
   options!: Safe;
   items$?: Observable<WidgetItem[]>;
   isBlockWidget = false;
 
   constructor(
     private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly dashboardContextService: DashboardContextService
+    private readonly dashboardContextService: DashboardContextService,
+    private readonly widgetsMetaService: WidgetsMetaService
   ) {
   }
 
@@ -133,11 +134,21 @@ export class DashboardComponent implements OnInit {
       }
     };
 
-    this.items$ = this.dashboardContextService.selectedDashboard$.pipe(
-      map(d => d.items.map(i => ({
+    const currentItems$ = this.dashboardContextService.selectedDashboard$.pipe(
+      map(s => s.items),
+      shareReplay(1)
+    );
+
+    this.items$ = combineLatest([
+      this.widgetsMetaService.getWidgetsMeta(),
+      currentItems$
+    ]).pipe(
+      tap(([meta, items]) => this.checkNotPositionedItems(items, meta)),
+      filter(([, items]) => items.every(x => !!x.position)),
+      map(([, items]) => items.map(i => ({
         widget: i,
         gridsterItem: {
-          ...i.position,
+          ...i.position!,
           guid: i.guid
         }
       })))
@@ -145,10 +156,63 @@ export class DashboardComponent implements OnInit {
   }
 
   updateWidgetPosition(widgetGuid: string, position: DashboardItemPosition) {
-    this.manageDashboardsService.updateWidgetPosition(widgetGuid, position);
+    this.manageDashboardsService.updateWidgetPositions([{widgetGuid, position}]);
   }
 
   getItemTrackKey(index: number, item: WidgetItem): string {
     return item.widget.guid;
+  }
+
+  private checkNotPositionedItems(items: Widget[], meta: WidgetMeta[]){
+    const notPositionedItem = items.find(x => !x.position);
+    if(notPositionedItem) {
+      const newPosition = {
+        x: 0,
+        y: 0,
+        cols: this.dashboardSize.itemDefaultWidth,
+        rows: this.dashboardSize.itemDefaultHeight
+      };
+
+      const otherPositionUpdates: { widgetGuid: string, position: DashboardItemPosition } [] = [];
+
+      const widgetMeta = meta.find(m => m.typeId === notPositionedItem.widgetType);
+      if (widgetMeta) {
+        if (widgetMeta.desktopMeta?.initialHeight != null) {
+          newPosition.rows = widgetMeta.desktopMeta.initialHeight;
+        }
+
+        const positionedItems = items.filter(x => !!x.position);
+
+        if (widgetMeta.desktopMeta?.initialWidth === "full-width") {
+          newPosition.cols = positionedItems.length === 0
+            ? this.dashboardSize.width
+            : Math.round(Math.max(
+              ...positionedItems.map(i => i.position!.x + i.position!.cols)
+            ));
+        }
+
+        const topOffset = newPosition.y + newPosition.rows;
+        if(widgetMeta.desktopMeta?.initialPosition === "top") {
+          if(positionedItems.some(w => newPosition.y >= w.position!.y && newPosition.y <= (w.position!.y + w.position!.rows))) {
+            positionedItems
+              .filter(w => w.position!.y >= newPosition.y)
+              .forEach(w => {
+                otherPositionUpdates.push({
+                  widgetGuid: w.guid,
+                  position: {
+                    ...w.position!,
+                    y: w.position!.y + topOffset
+                  }
+                });
+              });
+          }
+        }
+      }
+
+      this.manageDashboardsService.updateWidgetPositions([
+        {widgetGuid: notPositionedItem.guid, position: newPosition},
+        ...otherPositionUpdates
+      ]);
+    }
   }
 }
