@@ -30,6 +30,7 @@ import {
   allTradesColumns,
   BlotterSettings
 } from '../../models/blotter-settings.model';
+import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
 
 @Component({
   selector: 'ats-blotter-widget[guid][isBlockWidget]',
@@ -96,7 +97,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
 
     this.marketType$ = this.settings$
       .pipe(
-        map(s => s.marketType)
+        map(s => getMarketTypeByPortfolio(s.portfolio))
       );
   }
 
