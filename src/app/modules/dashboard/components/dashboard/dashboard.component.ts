@@ -33,7 +33,7 @@ type WidgetItem = { widget: Widget, gridsterItem: GridsterItem };
 })
 export class DashboardComponent implements OnInit {
   private readonly dashboardSize = {
-    width: 0,
+    width: 50,
     itemDefaultWidth: 10,
     itemDefaultHeight: 18
   };
