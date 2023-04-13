@@ -10,16 +10,11 @@ import {
   filter,
   map,
   Observable,
-  of,
   shareReplay,
   switchMap,
 } from 'rxjs';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import {
-  getDayChange,
-  getDayChangePerPrice
-} from 'src/app/shared/utils/price';
 import { PriceData } from '../../models/price-data.model';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { Position } from '../../../../shared/models/positions/position.model';
@@ -28,6 +23,7 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { CommandsService } from "../../services/commands.service";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import {mapWith} from "../../../../shared/utils/observable-helper";
 
 @Component({
   selector: 'ats-command-header[instrument]',
@@ -78,28 +74,31 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
     );
 
     const priceData$ = instrument$.pipe(
-      switchMap(instrument => combineLatest([
-        of(instrument),
-        this.history.getDaysOpen(instrument),
-      ])),
-      switchMap(([instrument, candle]) => combineLatest([
-        of(candle),
-        this.quoteService.getQuotes(
-          instrument.symbol,
-          instrument.exchange,
-          instrument.instrumentGroup
+      mapWith(
+        instrument => this.history.getLastTwoCandles(instrument),
+        (instrument, candles) => ({instrument, candles})
+      ),
+      mapWith(
+        s => this.quoteService.getQuotes(
+          s.instrument.symbol,
+          s.instrument.exchange,
+          s.instrument.instrumentGroup
         ),
-      ])),
-      map(([candle, quote]) => ({
-        dayChange: getDayChange(quote.last_price, candle?.close ?? 0),
-        dayChangePerPrice: getDayChangePerPrice(quote.last_price, candle?.close ?? 0),
+        (source, quote) => ({
+          candles: source.candles,
+          quote
+        })
+      ),
+      map(({candles, quote}) => ({
+        dayChange: quote.change,
+        dayChangePerPrice: quote.change_percent,
         high: quote.high_price,
         low: quote.low_price,
         lastPrice: quote.last_price,
         ask: quote.ask,
         bid: quote.bid,
-        dayOpen: candle?.open ?? 0,
-        prevClose: candle?.close ?? 0
+        dayOpen: candles?.cur?.open ?? 0,
+        prevClose: candles?.prev?.close ?? 0
       }))
     );
 

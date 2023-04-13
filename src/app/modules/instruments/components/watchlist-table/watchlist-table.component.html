@@ -54,7 +54,9 @@
         </td>
         <td *ngIf="isVisibleColumn('maxPrice')">{{ inst.maxPrice }}</td>
         <td *ngIf="isVisibleColumn('minPrice')">{{ inst.minPrice }}</td>
-        <td *ngIf="isVisibleColumn('volume')">{{ inst.volume }}</td>
+        <td *ngIf="isVisibleColumn('volume')" style="white-space: nowrap;">
+          <ats-short-number [value]="inst.volume" [allowRounding]="true" [roundPrecision]="3"></ats-short-number>
+        </td>
         <td *ngIf="isVisibleColumn('openPrice')">{{ inst.openPrice }}</td>
         <td *ngIf="isVisibleColumn('closePrice')">{{ inst.closePrice }}</td>
         <td>

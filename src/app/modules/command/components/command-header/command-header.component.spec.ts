@@ -20,11 +20,11 @@ describe('CommandHeaderComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     const quoteSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
-    const historySpy = jasmine.createSpyObj('HistoryService', ['getDaysOpen']);
+    const historySpy = jasmine.createSpyObj('HistoryService', ['getLastTwoCandles']);
     const positionSpy = jasmine.createSpyObj('PositionsService', ['getByPortfolio']);
     const commandsServiceSpy = jasmine.createSpyObj('CommandsService', ['setPriceSelected']);
 
-    historySpy.getDaysOpen.and.returnValue(of([]));
+    historySpy.getLastTwoCandles.and.returnValue(of(null));
 
     const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
     themeServiceSpy.getThemeSettings.and.returnValue(of({

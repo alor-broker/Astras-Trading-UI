@@ -1,6 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {RibbonComponent} from './ribbon.component';
 import {mockComponent} from "../../../../shared/utils/testing";
+import {HistoryService} from "../../../../shared/services/history.service";
+import {Subject} from "rxjs";
 
 describe('RibbonComponent', () => {
   let component: RibbonComponent;
@@ -11,6 +13,14 @@ describe('RibbonComponent', () => {
       declarations: [
         RibbonComponent,
         mockComponent({selector: 'ats-scrollable-row'}),
+      ],
+      providers: [
+        {
+          provide: HistoryService,
+          useValue: {
+            getLastTwoCandles: jasmine.createSpy('getLastTwoCandles').and.returnValue(new Subject())
+          }
+        }
       ]
     })
       .compileComponents();
