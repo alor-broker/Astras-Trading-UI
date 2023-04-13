@@ -5,6 +5,7 @@ import {
 import { NotificationsService } from '../../services/notifications.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { FirebaseNotificationsService } from "../../services/firebase-notifications.service";
 
 @Component({
   selector: 'ats-notification-button',
@@ -17,7 +18,8 @@ export class NotificationButtonComponent implements OnInit {
   deviceInfo$!: Observable<{isMobile: boolean}>;
 
   constructor(
-    private readonly notificationsService: NotificationsService
+    private readonly notificationsService: NotificationsService,
+    private readonly fbService: FirebaseNotificationsService,
   ) {
   }
 
@@ -26,5 +28,7 @@ export class NotificationButtonComponent implements OnInit {
       .pipe(
         map(n => n.filter(x => !x.isRead).length),
       );
+
+    this.fbService.init();
   }
 }

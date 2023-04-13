@@ -10,6 +10,7 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { ExternalLinkModule } from '../../shared/components/external-link/external-link.module';
 import { TranslocoModule } from "@ngneat/transloco";
+import { FirebaseNotificationsProvider } from "../notifications/services/firebase-notifications-provider";
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { TranslocoModule } from "@ngneat/transloco";
     ApplicationUpdatedWidgetComponent
   ],
   providers: [
-    { provide: NOTIFICATIONS_PROVIDER, useClass: ApplicationReleaseNotificationProvider, multi: true }
+    { provide: NOTIFICATIONS_PROVIDER, useClass: ApplicationReleaseNotificationProvider, multi: true },
+    { provide: NOTIFICATIONS_PROVIDER, useClass: FirebaseNotificationsProvider, multi: true },
   ]
 })
 export class ApplicationMetaModule {
