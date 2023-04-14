@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {
   CompactType,
   DisplayGrid,
-  Draggable,
+  Draggable, GridsterComponent,
   GridsterConfig,
   GridsterItem,
   GridType,
@@ -32,6 +32,9 @@ type WidgetItem = { widget: Widget, gridsterItem: GridsterItem };
   styleUrls: ['./dashboard.component.less'],
 })
 export class DashboardComponent implements OnInit {
+  @ViewChild(GridsterComponent)
+  gridster?: GridsterComponent;
+
   private readonly dashboardSize = {
     width: 50,
     itemDefaultWidth: 10,
@@ -184,11 +187,7 @@ export class DashboardComponent implements OnInit {
         const positionedItems = items.filter(x => !!x.position);
 
         if (widgetMeta.desktopMeta?.initialWidth === "full-width") {
-          newPosition.cols = positionedItems.length === 0
-            ? this.dashboardSize.width
-            : Math.round(Math.max(
-              ...positionedItems.map(i => i.position!.x + i.position!.cols)
-            ));
+          newPosition.cols = this.gridster?.columns ?? this.options.minCols ?? this.dashboardSize.width;
         }
 
         const topOffset = newPosition.y + newPosition.rows;
