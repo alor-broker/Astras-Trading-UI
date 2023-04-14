@@ -10,8 +10,6 @@ import {
   Subject
 } from 'rxjs';
 import { Candle } from '../../../shared/models/history/candle.model';
-import { BaseResponse } from '../../../shared/models/ws/base-response.model';
-import { Quote } from '../../../shared/models/quotes/quote.model';
 import { WatchlistCollection } from '../models/watchlist.model';
 import { InstrumentsService } from './instruments.service';
 import { QuotesService } from '../../../shared/services/quotes.service';
@@ -25,16 +23,23 @@ describe('WatchInstrumentsService', () => {
   let quotesServiceSpy: any;
 
   const collectionChangedMock = new Subject();
-  const daysOpenMock = new BehaviorSubject<Candle | null>({
-    low: 0
-  } as Candle);
+  const daysOpenMock = new BehaviorSubject<{ cur: Candle, prev: Candle } | null>(
+    {
+      cur: {
+        low: 0
+      } as Candle,
+      prev: {
+        low: 0
+      } as Candle
+    }
+  );
 
   beforeEach(() => {
-    historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getDaysOpen']);
+    historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getLastTwoCandles']);
     watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['getWatchlistCollection', 'collectionChanged$', 'getListItems',]);
 
     watchlistCollectionServiceSpy.collectionChanged$ = collectionChangedMock.asObservable();
-    historyServiceSpy.getDaysOpen.and.returnValue(daysOpenMock.asObservable());
+    historyServiceSpy.getLastTwoCandles.and.returnValue(daysOpenMock.asObservable());
 
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
     instrumentsServiceSpy.getInstrument.and.returnValue(new Subject());

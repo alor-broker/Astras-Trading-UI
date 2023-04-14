@@ -28,7 +28,8 @@
     "AllInstrumentsSettings": "All Instruments",
     "OrderSubmitSettings": "Order Submit",
     "OrdersBasketSettings": "Orders Basket",
-    "TreemapSettings": "Market Map"
+    "TreemapSettings": "Market Map",
+    "RibbonSettings": "Ribbon"
   },
 
   "joyride": {

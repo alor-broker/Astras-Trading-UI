@@ -30,6 +30,8 @@ export class WidgetsHelper {
         return 'calculator';
       case WidgetNames.treemap:
         return 'layout';
+      case WidgetNames.ribbon:
+        return 'stock';
       default:
         return '';
     }
@@ -65,6 +67,8 @@ export class WidgetsHelper {
         return 'OrdersBasketSettings';
       case WidgetNames.treemap:
         return 'TreemapSettings';
+      case WidgetNames.ribbon:
+        return 'RibbonSettings';
       default:
         return '';
     }

@@ -28,7 +28,8 @@
     "AllInstrumentsSettings": "Все инструменты",
     "OrderSubmitSettings": "Выставить заявку",
     "OrdersBasketSettings": "Корзина заявок",
-    "TreemapSettings": "Карта рынка"
+    "TreemapSettings": "Карта рынка",
+    "RibbonSettings": "Лента"
   },
 
   "joyride": {
