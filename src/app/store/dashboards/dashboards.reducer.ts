@@ -1,25 +1,11 @@
-import {
-  createReducer,
-  on
-} from '@ngrx/store';
-import {
-  createEntityAdapter,
-  EntityAdapter,
-  EntityState
-} from '@ngrx/entity';
-import { EntityStatus } from '../../shared/models/enums/entity-status';
-import {
-  CurrentDashboardVersion,
-  Dashboard
-} from '../../shared/models/dashboard/dashboard.model';
-import { Widget } from '../../shared/models/dashboard/widget.model';
-import { GuidGenerator } from '../../shared/utils/guid';
-import {
-  CurrentDashboardActions,
-  InternalDashboardActions,
-  ManageDashboardsActions
-} from './dashboards-actions';
-import { toInstrumentKey } from '../../shared/utils/instruments';
+import {createReducer, on} from '@ngrx/store';
+import {createEntityAdapter, EntityAdapter, EntityState} from '@ngrx/entity';
+import {EntityStatus} from '../../shared/models/enums/entity-status';
+import {CurrentDashboardVersion, Dashboard} from '../../shared/models/dashboard/dashboard.model';
+import {Widget} from '../../shared/models/dashboard/widget.model';
+import {GuidGenerator} from '../../shared/utils/guid';
+import {CurrentDashboardActions, InternalDashboardActions, ManageDashboardsActions} from './dashboards-actions';
+import {toInstrumentKey} from '../../shared/utils/instruments';
 
 export const dashboardsFeatureKey = 'dashboards';
 
@@ -43,7 +29,7 @@ export const reducer = createReducer(
     status: EntityStatus.Loading
   })),
 
-  on(ManageDashboardsActions.initDashboardsSuccess, (state, { dashboards }) => {
+  on(ManageDashboardsActions.initDashboardsSuccess, (state, {dashboards}) => {
     return adapter.addMany(
       dashboards,
       {
@@ -73,7 +59,7 @@ export const reducer = createReducer(
           version: CurrentDashboardVersion,
           title: props.title,
           isSelected: props.isSelected,
-          items: props.existedItems.map(x => ({ ...x })),
+          items: props.existedItems.map(x => ({...x})),
           instrumentsSelection: props.instrumentsSelection ?? null
         },
         updatedState);
@@ -146,32 +132,27 @@ export const reducer = createReducer(
       updatedState);
   }),
 
-  on(ManageDashboardsActions.updateWidgetPosition, (state, props) => {
+  on(ManageDashboardsActions.updateWidgetPositions, (state, props) => {
     const targetDashboard = state.entities[props.dashboardGuid];
     if (!targetDashboard) {
       return state;
     }
 
-    const targetItemIndex = targetDashboard.items.findIndex(x => x.guid === props.widgetGuid);
-    if (targetItemIndex < 0) {
-      return state;
-    }
-
-    const targetItemPosition = targetDashboard.items[targetItemIndex].position;
-    if (targetItemPosition.x === props.position.x
-      && targetItemPosition.y === props.position.y
-      && targetItemPosition.cols === props.position.cols
-      && targetItemPosition.rows === props.position.rows) {
-      return state;
-    }
-
     const updatedItems = [...targetDashboard.items];
-    updatedItems[targetItemIndex] = {
-      ...updatedItems[targetItemIndex],
-      position: {
-        ...props.position
+
+    props.updates.forEach((item) => {
+      const targetItemIndex = targetDashboard.items.findIndex(x => x.guid === item.widgetGuid);
+      if (targetItemIndex < 0) {
+        return;
       }
-    };
+
+      updatedItems[targetItemIndex] = {
+        ...updatedItems[targetItemIndex],
+        position: {
+          ...item.position
+        }
+      };
+    });
 
     return adapter.updateOne(
       {

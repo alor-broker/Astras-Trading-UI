@@ -8,7 +8,7 @@ export interface DashboardItemPosition {
 export interface Widget {
   guid: string;
   widgetType: string;
-  position: DashboardItemPosition;
+  position?: DashboardItemPosition;
 
   initialSettings?: any;
 }

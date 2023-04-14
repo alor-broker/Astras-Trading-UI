@@ -38,6 +38,7 @@ import {
 import { MobileDashboardComponent } from "./components/mobile-dashboard/mobile-dashboard.component";
 import { NetworkIndicatorComponent } from "./components/network-indicator/network-indicator.component";
 import { TreemapModule } from "../treemap/treemap.module";
+import { RibbonModule } from '../ribbon/ribbon.module';
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { TreemapModule } from "../treemap/treemap.module";
         ScalperOrderBookModule,
         NzDrawerModule,
         TreemapModule,
+        RibbonModule,
         // components
     ],
   providers: [

@@ -8,6 +8,7 @@ import { ManageDashboardsService } from 'src/app/shared/services/manage-dashboar
 import { DashboardComponent } from './dashboard.component';
 import { mockComponent } from "../../../../shared/utils/testing";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -27,13 +28,19 @@ describe('DashboardComponent', () => {
         {
           provide: ManageDashboardsService,
           useValue: {
-            updateWidgetPosition: jasmine.createSpy('updateWidgetPosition').and.callThrough()
+            updateWidgetPositions: jasmine.createSpy('updateWidgetPositions').and.callThrough()
           }
         },
         {
           provide: DashboardContextService,
           useValue: {
             selectedDashboard$: new Subject()
+          }
+        },
+        {
+          provide: WidgetsMetaService,
+          useValue: {
+            getWidgetsMeta: jasmine.createSpy('getWidgetsMeta').and.returnValue(new Subject())
           }
         },
       ]
