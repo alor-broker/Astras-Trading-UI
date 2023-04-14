@@ -13,7 +13,6 @@ import {
   shareReplay,
   switchMap,
 } from 'rxjs';
-import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { PriceData } from '../../models/price-data.model';
 import { PositionsService } from 'src/app/shared/services/positions.service';
@@ -23,7 +22,6 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { CommandsService } from "../../services/commands.service";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import {mapWith} from "../../../../shared/utils/observable-helper";
 
 @Component({
   selector: 'ats-command-header[instrument]',
@@ -37,7 +35,6 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
   constructor(
     private readonly quoteService: QuotesService,
     private readonly commandsService: CommandsService,
-    private readonly history: HistoryService,
     private readonly positionService: PositionsService,
     private readonly currentDashboardService: DashboardContextService) {
   }
@@ -74,22 +71,14 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
     );
 
     const priceData$ = instrument$.pipe(
-      mapWith(
-        instrument => this.history.getLastTwoCandles(instrument),
-        (instrument, candles) => ({instrument, candles})
+      switchMap(
+        instrument => this.quoteService.getQuotes(
+          instrument.symbol,
+          instrument.exchange,
+          instrument.instrumentGroup
+        )
       ),
-      mapWith(
-        s => this.quoteService.getQuotes(
-          s.instrument.symbol,
-          s.instrument.exchange,
-          s.instrument.instrumentGroup
-        ),
-        (source, quote) => ({
-          candles: source.candles,
-          quote
-        })
-      ),
-      map(({candles, quote}) => ({
+      map(quote => ({
         dayChange: quote.change,
         dayChangePerPrice: quote.change_percent,
         high: quote.high_price,
@@ -97,8 +86,8 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
         lastPrice: quote.last_price,
         ask: quote.ask,
         bid: quote.bid,
-        dayOpen: candles?.cur?.open ?? 0,
-        prevClose: candles?.prev?.close ?? 0
+        dayOpen: quote.open_price ?? 0,
+        prevClose: quote.prev_close_price ?? 0
       }))
     );
 

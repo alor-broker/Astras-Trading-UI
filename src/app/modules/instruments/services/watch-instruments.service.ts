@@ -150,6 +150,8 @@ export class WatchInstrumentsService {
         const updatedInstrument = <WatchedInstrument>{
           ...wi,
           prevTickPrice: wi.price,
+          closePrice: q.prev_close_price,
+          openPrice: q.open_price,
           price: q.last_price,
           dayChange: q.change,
           dayChangePerPrice: q.change_percent,
