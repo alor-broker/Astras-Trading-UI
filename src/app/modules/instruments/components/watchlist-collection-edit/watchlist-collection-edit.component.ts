@@ -73,6 +73,11 @@ export class WatchlistCollectionEditComponent implements OnInit {
     this.watchlistCollectionService.removeList(listId);
   }
 
+  hasDefaultTitle(list: Watchlist): boolean {
+    return (list.isDefault ?? false)
+      && list.title === WatchlistCollectionService.DefaultListName;
+  }
+
   private buildNewListForm() {
     this.newListForm = new UntypedFormGroup({
       title: new UntypedFormControl(null, [Validators.required, Validators.maxLength(100)])

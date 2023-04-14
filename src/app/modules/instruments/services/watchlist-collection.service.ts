@@ -27,6 +27,7 @@ export class WatchlistCollectionService {
   private readonly collectionChangedSub = new Subject();
   public readonly collectionChanged$ = this.collectionChangedSub.asObservable();
 
+  public static DefaultListName = 'Список по умолчанию';
   constructor(
     private readonly http: HttpClient,
     private readonly localStorage: LocalStorageService,
@@ -150,7 +151,7 @@ export class WatchlistCollectionService {
       collection: [
         {
           id: GuidGenerator.newGuid(),
-          title: 'Список по умолчанию',
+          title: WatchlistCollectionService.DefaultListName,
           isDefault: true,
           items: oldWatchlist
         } as Watchlist
