@@ -27,10 +27,10 @@
               *ngFor='let column of listOfColumns'
               [atsResizeColumn]
               [minWidth]="column.minWidth ?? 50"
-              [nzCustomFilter]='column.hasSearch'
-              [nzFilters]="column.listOfFilter"
-              [nzShowFilter]="column.hasFilter"
-              [nzSortFn]='column.sortFn'
+              [nzCustomFilter]='column.filterData && !column.filterData.isDefaultFilter'
+              [nzFilters]="column.filterData?.filters ?? []"
+              [nzShowFilter]="column.filterData && column.filterData.isDefaultFilter"
+              [nzSortFn]="column.sortFn ?? false"
               [nzWidth]="column.width ? column.width + 'px': null"
               cdkDrag
               cdkDragLockAxis="x"
@@ -40,10 +40,14 @@
                 [nzTooltipTitle]="column.tooltip"
                 nz-tooltip
               >
-                {{column.name}}
+                {{column.displayName}}
               </span>
-            <nz-filter-trigger *ngIf='column.hasSearch' [(nzVisible)]="column.isSearchVisible"
-                               [nzActive]="!!searchFilter" [nzDropdownMenu]="searchMenu">
+            <nz-filter-trigger
+              *ngIf="column.filterData && !column.filterData.isDefaultFilter"
+              [(nzVisible)]="!!column.filterData.isOpenedFilter"
+              [nzActive]="!!searchFilter"
+              [nzDropdownMenu]="searchMenu"
+            >
               <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon
                  nzType="search"></i>
             </nz-filter-trigger>

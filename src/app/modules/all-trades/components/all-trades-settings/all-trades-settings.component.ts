@@ -4,9 +4,9 @@ import { Subject, takeUntil } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   AllTradesSettings,
-  allTradesWidgetColumns,
-  ColumnIds
+  allTradesWidgetColumns
 } from '../../models/all-trades-settings.model';
+import { BaseColumnId } from "../../../../shared/models/settings/table-settings.model";
 
 @Component({
   selector: 'ats-all-trades-settings',
@@ -16,7 +16,7 @@ import {
 export class AllTradesSettingsComponent implements OnInit, OnDestroy {
 
   form!: UntypedFormGroup;
-  allTradesColumns: ColumnIds[] = allTradesWidgetColumns;
+  allTradesColumns: BaseColumnId[] = allTradesWidgetColumns;
   private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   @Input() guid!: string;

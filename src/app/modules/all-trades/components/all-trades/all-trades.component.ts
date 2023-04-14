@@ -4,7 +4,6 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { ColumnsSettings } from "../../../../shared/models/columns-settings.model";
 import { DatePipe } from "@angular/common";
 import { startOfDay, toUnixTimestampSeconds } from "../../../../shared/utils/datetime";
 import { filter, map, tap } from "rxjs/operators";
@@ -28,6 +27,8 @@ import {
 } from '../../../../shared/models/all-trades.model';
 import { AllTradesService } from '../../../../shared/services/all-trades.service';
 import { TableConfig } from '../../../../shared/models/table-config.model';
+import { NzTableFilterList } from "ng-zorro-antd/table";
+import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 
 @Component({
   selector: 'ats-all-trades[guid]',
@@ -56,12 +57,12 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     descending: true
   });
 
-  private readonly allColumns: ColumnsSettings[] = [
+  private readonly allColumns: BaseColumnSettings<AllTradesItem>[] = [
     {
-      name: 'qty',
+      id: 'qty',
       displayName: 'Кол-во',
       classFn: data => data.side,
-      sortFn: this.getSortFn('qty'),
+      sortChangeFn: this.getSortFn('qty'),
       filterData: {
         filterName: 'qty',
         intervalStartName: 'qtyFrom',
@@ -70,9 +71,9 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       }
     },
     {
-      name: 'price',
+      id: 'price',
       displayName: 'Цена',
-      sortFn: this.getSortFn('price'),
+      sortChangeFn: this.getSortFn('price'),
       filterData: {
         filterName: 'price',
         intervalStartName: 'priceFrom',
@@ -80,12 +81,16 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         isInterval: true
       }
     },
-    {name: 'timestamp', displayName: 'Время', transformFn: (data: AllTradesItem) => this.datePipe.transform(data.timestamp, 'HH:mm:ss')},
     {
-      name: 'side',
+      id: 'timestamp',
+      displayName: 'Время',
+      transformFn: (data: AllTradesItem) => this.datePipe.transform(data.timestamp, 'HH:mm:ss')
+    },
+    {
+      id: 'side',
       displayName: 'Сторона',
       classFn: data => data.side,
-      sortFn: this.getSortFn('side'),
+      sortChangeFn: this.getSortFn('side'),
       filterData: {
         filterName: 'side',
         isDefaultFilter: true,
@@ -95,14 +100,14 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         ]
       }
     },
-    {name: 'oi', displayName: 'Откр. интерес'},
-    {name: 'existing', displayName: 'Новое событие', transformFn: (data: AllTradesItem) => data.existing ? 'Да' : 'Нет'},
+    {id: 'oi', displayName: 'Откр. интерес'},
+    {id: 'existing', displayName: 'Новое событие', transformFn: (data: AllTradesItem) => data.existing ? 'Да' : 'Нет'},
   ];
-  private readonly fixedColumns: ColumnsSettings[] = [
+  private readonly fixedColumns: BaseColumnSettings<AllTradesItem>[] = [
     {
-      name: 'side_indicator',
+      id: 'side_indicator',
       displayName: '',
-      width: '5px',
+      width: 5,
       classFn: data => `side-indicator bg-${data.side} ${data.side}`,
       transformFn: () => '.'
     }
@@ -217,18 +222,18 @@ export class AllTradesComponent implements OnInit, OnDestroy {
             columns: [
               ...this.fixedColumns,
               ...this.allColumns
-                .filter(col => settings.allTradesColumns.includes(col.name))
+                .filter(col => settings.allTradesColumns.includes(col.id))
                 .map(col => ({
                     ...col,
                     displayName: translate(
-                      ['columns', col.name, 'displayName'],
+                      ['columns', col.id, 'displayName'],
                       { fallback: col.displayName }
                     ),
                     filterData: col.filterData && {
                       ...col.filterData,
-                      filters: col.filterData?.filters?.map(f => ({
+                      filters: (<NzTableFilterList>col.filterData?.filters)?.map(f => ({
                         text: translate(
-                          ['columns', col.name, 'filters', f.value],
+                          ['columns', col.id, 'filters', f.value],
                           { fallback: f.text }
                         ),
                         value: f.value

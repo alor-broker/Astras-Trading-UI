@@ -16,8 +16,8 @@
               <ng-container *transloco="let tTrades; scope: 'all-trades/all-trades'">
                 <nz-option
                   *ngFor="let item of allTradesColumns"
-                  [nzLabel]="tTrades('allTradesAllTrades.columns.' + item.columnId + '.displayName')"
-                  [nzValue]="item.columnId"
+                  [nzLabel]="tTrades('allTradesAllTrades.columns.' + item.id + '.displayName')"
+                  [nzValue]="item.id"
                 >
                 </nz-option>
               </ng-container>

@@ -47,8 +47,8 @@
           >
             <nz-option
               *ngFor="let item of allOrdersColumns"
-              [nzLabel]="tOrders('blotterOrders.columns.' + item.columnId + '.name')"
-              [nzValue]="item.columnId"
+              [nzLabel]="tOrders('blotterOrders.columns.' + item.id + '.name')"
+              [nzValue]="item.id"
             ></nz-option>
           </nz-select>
         </nz-form-control>
@@ -68,8 +68,8 @@
           >
             <nz-option
               *ngFor="let item of allStopOrdersColumns"
-              [nzLabel]="tStopOrders('blotterStopOrders.columns.' + item.columnId + '.name')"
-              [nzValue]="item.columnId"
+              [nzLabel]="tStopOrders('blotterStopOrders.columns.' + item.id + '.name')"
+              [nzValue]="item.id"
             ></nz-option>
           </nz-select>
         </nz-form-control>
@@ -89,8 +89,8 @@
           >
             <nz-option
               *ngFor="let item of allTradesColumns"
-              [nzLabel]="tTrades('blotterTrades.columns.' + item.columnId + '.name')"
-              [nzValue]="item.columnId"
+              [nzLabel]="tTrades('blotterTrades.columns.' + item.id + '.name')"
+              [nzValue]="item.id"
             ></nz-option>
           </nz-select>
         </nz-form-control>
@@ -110,8 +110,8 @@
           >
             <nz-option
               *ngFor="let item of allPositionsColumns"
-              [nzLabel]="tPositions('blotterPositions.columns.' + item.columnId + '.name')"
-              [nzValue]="item.columnId"
+              [nzLabel]="tPositions('blotterPositions.columns.' + item.id + '.name')"
+              [nzValue]="item.id"
             ></nz-option>
           </nz-select>
         </nz-form-control>

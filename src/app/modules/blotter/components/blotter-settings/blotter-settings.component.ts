@@ -20,7 +20,7 @@ import {
   takeUntil,
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
-import { TableDisplaySettings } from '../../../../shared/models/settings/table-display-settings.model';
+import { BaseColumnId, TableDisplaySettings } from '../../../../shared/models/settings/table-settings.model';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { Store } from '@ngrx/store';
 import { PortfolioExtended } from '../../../../shared/models/user/portfolio-extended.model';
@@ -36,8 +36,7 @@ import {
   allPositionsColumns,
   allStopOrdersColumns,
   allTradesColumns,
-  BlotterSettings,
-  ColumnIds
+  BlotterSettings
 } from '../../models/blotter-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
 
@@ -52,10 +51,10 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   @Output()
   settingsChange: EventEmitter<BlotterSettings> = new EventEmitter<BlotterSettings>();
   form!: UntypedFormGroup;
-  allOrdersColumns: ColumnIds[] = allOrdersColumns;
-  allStopOrdersColumns: ColumnIds[] = allStopOrdersColumns;
-  allTradesColumns: ColumnIds[] = allTradesColumns;
-  allPositionsColumns: ColumnIds[] = allPositionsColumns;
+  allOrdersColumns: BaseColumnId[] = allOrdersColumns;
+  allStopOrdersColumns: BaseColumnId[] = allStopOrdersColumns;
+  allTradesColumns: BaseColumnId[] = allTradesColumns;
+  allPositionsColumns: BaseColumnId[] = allPositionsColumns;
   prevSettings?: BlotterSettings;
   exchanges: string[] = exchangesList;
 

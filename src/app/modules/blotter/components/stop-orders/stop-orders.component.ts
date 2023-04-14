@@ -33,7 +33,6 @@ import {
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
-import { Column } from '../../models/column.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { BlotterService } from '../../services/blotter.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -57,6 +56,8 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { BlotterSettings } from '../../models/blotter-settings.model';
+import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
+import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -88,221 +89,168 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
 
   tableInnerWidth: number = 1000;
-  allColumns: Column<DisplayOrder, OrderFilter>[] = [
+  allColumns: BaseColumnSettings<DisplayOrder>[] = [
     {
       id: 'id',
-      name: 'Id',
+      displayName: 'Id',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(a.id) - Number(b.id),
-      searchDescription: 'Поиск по Номеру',
-      searchFn: (order, filter) => filter.id ? order.id.toLowerCase().includes(filter.id.toLowerCase()) : false,
-      isSearchVisible: false,
-      hasSearch: true,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
+      filterData: {
+        filterName: 'id',
+        isDefaultFilter: false
+      },
       tooltip: 'Идентификационный номер заявки'
     },
     {
       id: 'symbol',
-      name: 'Тикер',
+      displayName: 'Тикер',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => a.symbol.localeCompare(b.symbol),
-      searchDescription: 'Поиск по Тикеру',
-      searchFn: (order, filter) => filter.symbol ? order.symbol.toLowerCase().includes(filter.symbol.toLowerCase()) : false,
-      isSearchVisible: false,
-      hasSearch: true,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
+      filterData: {
+        filterName: 'id',
+        isDefaultFilter: false
+      },
       tooltip: 'Биржевой идентификатор ценной бумаги',
       minWidth: 75
     },
     {
       id: 'side',
-      name: 'Сторона',
+      displayName: 'Сторона',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => a.side.toString().localeCompare(b.side.toString()),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [
-        { text: 'Покупка', value: 'buy' },
-        { text: 'Продажа', value: 'sell' }
-      ],
-      isFilterVisible: false,
-      hasFilter: true,
+      filterData: {
+        filterName: 'side',
+        isDefaultFilter: true,
+        filters: [
+          { text: 'Покупка', value: 'buy' },
+          { text: 'Продажа', value: 'sell' }
+        ]
+      },
       tooltip: 'Сторона заявки (покупка/продажа)',
       minWidth: 85
     },
     {
       id: 'residue',
-      name: 'Остаток',
+      displayName: 'Остаток',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => b.filled - a.filled,
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Отношение невыполненных заявок к общему количеству',
       minWidth: 70
     },
     {
       id: 'volume',
-      name: 'Объем',
+      displayName: 'Объем',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => b.volume - a.volume,
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Объем',
       minWidth: 60
     },
     {
       id: 'qty',
-      name: 'Кол-во',
+      displayName: 'Кол-во',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => b.qty - a.qty,
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Количество заявок',
       minWidth: 65
     },
     {
       id: 'price',
-      name: 'Цена',
+      displayName: 'Цена',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => b.price - a.price,
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Цена',
       minWidth: 55
     },
     {
       id: 'triggerPrice',
-      name: 'Сигн. цена',
+      displayName: 'Сигн. цена',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => b.triggerPrice - a.triggerPrice,
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Сигнальная цена (заявка выставится, когда цена упадёт/поднимется до указанного значения)',
     },
     {
       id: 'status',
-      name: 'Статус',
+      displayName: 'Статус',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => a.status.localeCompare(b.status),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [
-        { text: 'Исполнена', value: 'filled' },
-        { text: 'Активна', value: 'working' },
-        { text: 'Отменена', value: 'canceled' }
-      ],
-      isFilterVisible: false,
-      hasFilter: true,
+      filterData: {
+        filterName: 'status',
+        isDefaultFilter: true,
+        filters: [
+          { text: 'Исполнена', value: 'filled' },
+          { text: 'Активна', value: 'working' },
+          { text: 'Отменена', value: 'canceled' }
+        ]
+      },
       tooltip: 'Стаус заявки',
       minWidth: 80
     },
     {
       id: 'conditionType',
-      name: 'Условие',
+      displayName: 'Условие',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => a.conditionType.localeCompare(b.conditionType),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [
-        { text: '>', value: 'more' },
-        { text: '<', value: 'less' }
-      ],
-      isFilterVisible: false,
-      hasFilter: true,
+      filterData: {
+        filterName: 'conditionType',
+        isDefaultFilter: true,
+        filters: [
+          { text: '>', value: 'more' },
+          { text: '<', value: 'less' }
+        ]
+      },
       tooltip: 'Условие, при котором будет выставлена заявка',
       minWidth: 85
     },
     {
       id: 'transTime',
-      name: 'Время',
+      displayName: 'Время',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(b.transTime) - Number(a.transTime),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Время совершения заявки',
       minWidth: 60
     },
     {
       id: 'exchange',
-      name: 'Биржа',
+      displayName: 'Биржа',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => b.exchange.localeCompare(a.exchange),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [
-        { text: 'ММВБ', value: 'MOEX' },
-        { text: 'СПБ', value: 'SPBX' }
-      ],
-      isFilterVisible: false,
-      hasFilter: true,
+      filterData: {
+        filterName: 'exchange',
+        isDefaultFilter: true,
+        filters: [
+          { text: 'ММВБ', value: 'MOEX' },
+          { text: 'СПБ', value: 'SPBX' }
+        ]
+      },
       tooltip: 'Наименование биржи',
       minWidth: 80
     },
     {
       id: 'type',
-      name: 'Тип',
+      displayName: 'Тип',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => b.type.localeCompare(a.type),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [
-        { text: 'Лимит', value: 'stoplimit' },
-        { text: 'Рыночн.', value: 'stop' }
-      ],
-      isFilterVisible: false,
-      hasFilter: true,
+      filterData: {
+        filterName: 'exchange',
+        isDefaultFilter: true,
+        filters: [
+          { text: 'Лимит', value: 'stoplimit' },
+          { text: 'Рыночн.', value: 'stop' }
+        ]
+      },
       tooltip: 'Тип заявки (лимитная/рыночная)',
       minWidth: 65
     },
     {
       id: 'endTime',
-      name: 'Действ. до.',
+      displayName: 'Действ. до.',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(b.endTime) - Number(a.endTime),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Срок действия заявки',
       minWidth: 65
     },
   ];
-  listOfColumns: Column<DisplayOrder, OrderFilter>[] = [];
+  listOfColumns: BaseColumnSettings<DisplayOrder>[] = [];
   selectedInstruments$: Observable<InstrumentGroups> = of({});
   settings$!: Observable<BlotterSettings>;
   scrollHeight$: Observable<number> = of(100);
@@ -357,10 +305,17 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
           .filter(c => !!c.columnSettings)
           .map((column, index) => ({
             ...column.column,
-            name: t(['columns', column.column.id, 'name'], { fallback: column.column.name }),
+            displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
             tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
-            searchDescription: t(['columns', column.column.id, 'searchDescription'], { fallback: column.column.searchDescription }),
-            listOfFilter: column.column.listOfFilter.map(f => ({ value: f.value, text: t(['columns', column.column.id, 'listOfFilter', f.value], { fallback: f.text }) })),
+            filterData: column.column.filterData
+              ? {
+                ...column.column.filterData,
+                filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
+                  value: f.value,
+                  text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
+                }))
+              }
+              : undefined,
             width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
             order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
           }))
@@ -503,7 +458,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.service.selectNewInstrument(symbol, exchange, this.badgeColor);
   }
 
-  isFilterApplied(column: Column<DisplayOrder, OrderFilter>) {
+  isFilterApplied(column: BaseColumnSettings<DisplayOrder>) {
     const filter = this.filter.getValue();
     return column.id in filter && !!filter[column.id];
   }
@@ -530,7 +485,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  saveColumnWidth(columnId: string, width: number) {
+  saveColumnWidth(id: string, width: number) {
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
@@ -540,7 +495,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
           settings.guid,
           {
             stopOrdersTable: TableSettingHelper.updateColumn(
-              columnId,
+              id,
               tableSettings,
               {
                 columnWidth: width
@@ -584,14 +539,21 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       if (filter[key as keyof OrderFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
         if (
-          column?.hasSearch && !column.searchFn!(order, filter) ||
-          column?.hasFilter && filter[key]?.length && !filter[key]?.includes((order as any)[key])
+          !column!.filterData!.isDefaultFilter && !this.searchInOrder(order, <keyof DisplayOrder>key, <string>filter[key]) ||
+          column!.filterData!.isDefaultFilter && filter[key]?.length  && !filter[key]?.includes(order[<keyof DisplayOrder>key]!.toString())
         ) {
           isFiltered = false;
         }
       }
     }
     return isFiltered;
+  }
+
+  private searchInOrder(order: DisplayOrder, key: keyof DisplayOrder, value?: string): boolean {
+    if (!value) {
+      return true;
+    }
+    return order[key]!.toString().toLowerCase().includes(value.toLowerCase());
   }
 
   private sortOrders(a: DisplayOrder, b: DisplayOrder) {

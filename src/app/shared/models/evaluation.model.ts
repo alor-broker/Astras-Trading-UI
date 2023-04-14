@@ -4,6 +4,8 @@ export interface Evaluation {
   exchange: string;
   quantityToSell: number;
   quantityToBuy: number;
+  notMarginQuantityToSell: number;
+  notMarginQuantityToBuy: number;
   orderEvaluation: number;
   commission: number;
 

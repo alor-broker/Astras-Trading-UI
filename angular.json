@@ -61,7 +61,10 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "src/styles/themes"
+                "src/styles/themes",
+                "src/styles/mixins",
+                "src/styles/utils",
+                "src/styles/components"
               ]
             },
             "scripts": [
@@ -169,7 +172,10 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "src/styles/themes"
+                "src/styles/themes",
+                "src/styles/mixins",
+                "src/styles/utils",
+                "src/styles/components"
               ]
             },
             "scripts": [

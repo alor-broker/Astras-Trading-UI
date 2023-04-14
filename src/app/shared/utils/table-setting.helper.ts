@@ -1,7 +1,7 @@
 import {
   ColumnDisplaySettings,
   TableDisplaySettings
-} from '../models/settings/table-display-settings.model';
+} from '../models/settings/table-settings.model';
 
 export class TableSettingHelper {
   /**
@@ -24,15 +24,15 @@ export class TableSettingHelper {
 
   /**
    * Updates column settings
-   * @param columnId target column id
+   * @param id target column id
    * @param target target table settings
    * @param updates column parameters to modify
    */
   static updateColumn(
-    columnId: string,
+    id: string,
     target: TableDisplaySettings,
-    updates: Partial<Omit<ColumnDisplaySettings, 'columnId'>>): TableDisplaySettings {
-    const targetColumnIndex = target.columns.findIndex(x => x.columnId === columnId);
+    updates: Partial<Omit<ColumnDisplaySettings, 'id'>>): TableDisplaySettings {
+    const targetColumnIndex = target.columns.findIndex(x => x.columnId === id);
 
     if (targetColumnIndex < 0) {
       return target;
