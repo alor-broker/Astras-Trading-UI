@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { FirebaseNotificationsService } from './firebase-notifications.service';
+import { PushNotificationsService } from './push-notifications.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { AngularFireMessaging } from "@angular/fire/compat/messaging";
 import { of } from "rxjs";
@@ -9,7 +9,7 @@ import { Store } from "@ngrx/store";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 
 describe('FirebaseNotificationsService', () => {
-  let service: FirebaseNotificationsService;
+  let service: PushNotificationsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -41,7 +41,7 @@ describe('FirebaseNotificationsService', () => {
         }
       ]
     });
-    service = TestBed.inject(FirebaseNotificationsService);
+    service = TestBed.inject(PushNotificationsService);
   });
 
   it('should be created', () => {

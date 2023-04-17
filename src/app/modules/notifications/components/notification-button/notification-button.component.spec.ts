@@ -6,7 +6,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NzDropDownModule } from "ng-zorro-antd/dropdown";
 import { NotificationsService } from "../../services/notifications.service";
 import { of } from "rxjs";
-import { FirebaseNotificationsService } from "../../services/firebase-notifications.service";
 
 describe('NotificationButtonComponent', () => {
   let component: NotificationButtonComponent;
@@ -27,12 +26,6 @@ describe('NotificationButtonComponent', () => {
           provide: NotificationsService,
           useValue: {
             getNotifications: jasmine.createSpy('getNotifications').and.returnValue(of([]))
-          }
-        },
-        {
-          provide: FirebaseNotificationsService,
-          useValue: {
-            init: jasmine.createSpy('init').and.callThrough()
           }
         }
       ]

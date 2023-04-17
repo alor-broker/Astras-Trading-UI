@@ -58,6 +58,7 @@ import { WidgetHeaderComponent } from './components/widget-header/widget-header.
 import { WidgetSkeletonComponent } from './components/widget-skeleton/widget-skeleton.component';
 import { JoyrideModule } from 'ngx-joyride';
 import { ShortNumberComponent } from './components/short-number/short-number.component';
+import { PushNotificationsProvider } from "../modules/push-notifications/services/push-notifications-provider";
 
 @NgModule({
   declarations: [
@@ -179,6 +180,7 @@ import { ShortNumberComponent } from './components/short-number/short-number.com
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},
     {provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true},
     {provide: NOTIFICATIONS_PROVIDER, useClass: FeedbackNotificationsProvider, multi: true},
+    {provide: NOTIFICATIONS_PROVIDER, useClass: PushNotificationsProvider, multi: true},
     {provide: Window, useValue: window},
   ]
 })

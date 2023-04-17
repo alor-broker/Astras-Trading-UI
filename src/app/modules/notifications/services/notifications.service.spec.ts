@@ -5,6 +5,8 @@ import {
   commonTestProviders,
   sharedModuleImportForTests
 } from '../../../shared/utils/testing';
+import { of, Subject } from "rxjs";
+import { PushNotificationsService } from "../../push-notifications/services/push-notifications.service";
 
 describe('NotificationsService', () => {
   let service: NotificationsService;
@@ -13,7 +15,14 @@ describe('NotificationsService', () => {
     TestBed.configureTestingModule({
       imports:[...sharedModuleImportForTests],
       providers:[
-        ...commonTestProviders
+        ...commonTestProviders,
+        {
+          provide: PushNotificationsService,
+          useValue: {
+            subscribeToOrderExecute: jasmine.createSpy('subscribeToOrderExecute').and.returnValue(of({})),
+            getMessages: jasmine.createSpy('getMessages').and.returnValue(new Subject()),
+          }
+        }
       ]
     });
     service = TestBed.inject(NotificationsService);
