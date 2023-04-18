@@ -260,7 +260,10 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
         const allClusters = !updates
           ? state
           : [
-            updates,
+            {
+              ...updates,
+              timestamp: this.getPeriodStart(updates.timestamp, settings.tradesClusterPanelSettings!.timeframe)
+            },
             ...state.filter(s => s.timestamp !== updates.timestamp)
           ];
 
