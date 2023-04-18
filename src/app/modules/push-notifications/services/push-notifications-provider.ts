@@ -17,7 +17,7 @@ export class PushNotificationsProvider implements NotificationsProvider {
 
   getNotifications(): Observable<NotificationMeta[]> {
     if (this.notifications$) {
-      return this.notifications$;
+      return this.notifications$.asObservable();
     }
 
     this.notifications$ = new BehaviorSubject<NotificationMeta[]>([]);
