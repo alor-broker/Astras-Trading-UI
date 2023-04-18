@@ -58,6 +58,9 @@ import { WidgetHeaderComponent } from './components/widget-header/widget-header.
 import { WidgetSkeletonComponent } from './components/widget-skeleton/widget-skeleton.component';
 import { JoyrideModule } from 'ngx-joyride';
 import { ShortNumberComponent } from './components/short-number/short-number.component';
+import { ScrollableRowComponent } from './components/scrollable-row/scrollable-row.component';
+import { ScrollableItemDirective } from "./directives/scrollable-item.directive";
+import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { PushNotificationsProvider } from "../modules/push-notifications/services/push-notifications-provider";
 
 @NgModule({
@@ -75,6 +78,8 @@ import { PushNotificationsProvider } from "../modules/push-notifications/service
     WidgetHeaderComponent,
     WidgetSkeletonComponent,
     ShortNumberComponent,
+    ScrollableRowComponent,
+    ScrollableItemDirective,
   ],
   imports: [
     CommonModule,
@@ -120,6 +125,7 @@ import { PushNotificationsProvider } from "../modules/push-notifications/service
     NzSpaceModule,
     NzDividerModule,
     JoyrideModule,
+    NzResizeObserverModule,
   ],
   exports: [
     // Ng zorro
@@ -172,9 +178,11 @@ import { PushNotificationsProvider } from "../modules/push-notifications/service
     WidgetSkeletonComponent,
     EditableStringComponent,
     ShortNumberComponent,
+    ScrollableRowComponent,
     // directives
     NumericalDirective,
     ResizeColumnDirective,
+    ScrollableItemDirective
   ],
   providers: [
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},

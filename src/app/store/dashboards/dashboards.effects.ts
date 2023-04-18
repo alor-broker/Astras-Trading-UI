@@ -104,7 +104,7 @@ export class DashboardsEffects {
         ManageDashboardsActions.renameDashboard,
         ManageDashboardsActions.addWidgets,
         ManageDashboardsActions.removeWidgets,
-        ManageDashboardsActions.updateWidgetPosition,
+        ManageDashboardsActions.updateWidgetPositions,
         ManageDashboardsActions.selectDashboard,
         ManageDashboardsActions.removeDashboard,
         ManageDashboardsActions.removeAllDashboards,

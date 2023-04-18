@@ -13,10 +13,6 @@ import {
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { WatchedInstrument } from '../models/watched-instrument.model';
-import {
-  getDayChange,
-  getDayChangePerPrice
-} from 'src/app/shared/utils/price';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from './watchlist-collection.service';
 import { InstrumentsService } from './instruments.service';
@@ -123,18 +119,18 @@ export class WatchInstrumentsService {
       take(1),
       filter((x): x is Instrument => !!x),
       switchMap(i => {
-        return this.history.getDaysOpen(i)
+        return this.history.getLastTwoCandles(i)
           .pipe(
-            map(candle => <WatchedInstrument>{
+            map(candles => <WatchedInstrument>{
               instrument: i,
-              closePrice: candle?.close ?? 0,
-              openPrice: candle?.open ?? 0,
+              closePrice: candles?.prev?.close ?? 0,
+              openPrice: candles?.cur.open ?? 0,
               prevTickPrice: 0,
               dayChange: 0,
               price: 0,
-              minPrice: candle?.low,
-              maxPrice: candle?.high,
-              volume: candle?.volume,
+              minPrice: candles?.cur?.low,
+              maxPrice: candles?.cur?.high,
+              volume: candles?.cur?.volume,
               dayChangePerPrice: 0,
             }),
             take(1)
@@ -151,14 +147,17 @@ export class WatchInstrumentsService {
 
     const sub = this.quotesService.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup)
       .subscribe(q => {
-        const dayChange = getDayChange(q.last_price, wi.closePrice);
-        const dayChangePerPrice = getDayChangePerPrice(q.last_price, wi.closePrice);
         const updatedInstrument = <WatchedInstrument>{
           ...wi,
           prevTickPrice: wi.price,
+          closePrice: q.prev_close_price,
+          openPrice: q.open_price,
           price: q.last_price,
-          dayChange,
-          dayChangePerPrice
+          dayChange: q.change,
+          dayChangePerPrice: q.change_percent,
+          minPrice: q.low_price,
+          maxPrice: q.high_price,
+          volume: q.volume
         };
 
         this.updateWatchStateItem(updatedInstrument);

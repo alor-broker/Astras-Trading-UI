@@ -10,16 +10,10 @@ import {
   filter,
   map,
   Observable,
-  of,
   shareReplay,
   switchMap,
 } from 'rxjs';
-import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
-import {
-  getDayChange,
-  getDayChangePerPrice
-} from 'src/app/shared/utils/price';
 import { PriceData } from '../../models/price-data.model';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { Position } from '../../../../shared/models/positions/position.model';
@@ -41,7 +35,6 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
   constructor(
     private readonly quoteService: QuotesService,
     private readonly commandsService: CommandsService,
-    private readonly history: HistoryService,
     private readonly positionService: PositionsService,
     private readonly currentDashboardService: DashboardContextService) {
   }
@@ -78,28 +71,23 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
     );
 
     const priceData$ = instrument$.pipe(
-      switchMap(instrument => combineLatest([
-        of(instrument),
-        this.history.getDaysOpen(instrument),
-      ])),
-      switchMap(([instrument, candle]) => combineLatest([
-        of(candle),
-        this.quoteService.getQuotes(
+      switchMap(
+        instrument => this.quoteService.getQuotes(
           instrument.symbol,
           instrument.exchange,
           instrument.instrumentGroup
-        ),
-      ])),
-      map(([candle, quote]) => ({
-        dayChange: getDayChange(quote.last_price, candle?.close ?? 0),
-        dayChangePerPrice: getDayChangePerPrice(quote.last_price, candle?.close ?? 0),
+        )
+      ),
+      map(quote => ({
+        dayChange: quote.change,
+        dayChangePerPrice: quote.change_percent,
         high: quote.high_price,
         low: quote.low_price,
         lastPrice: quote.last_price,
         ask: quote.ask,
         bid: quote.bid,
-        dayOpen: candle?.open ?? 0,
-        prevClose: candle?.close ?? 0
+        dayOpen: quote.open_price ?? 0,
+        prevClose: quote.prev_close_price ?? 0
       }))
     );
 

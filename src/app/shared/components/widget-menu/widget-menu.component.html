@@ -97,6 +97,13 @@
     >
       <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.treemap)" nzTheme="outline"></i><label> {{t('widgetHeaders.TreemapSettings')}}</label></span>
     </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.ribbon)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.ribbon)"
+  >
+    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.ribbon)" nzTheme="outline"></i><label> {{t('widgetHeaders.RibbonSettings')}}</label></span>
+  </li>
 
   <ng-container *ngIf="!showedWidgets.length">
     <li nz-menu-divider></li>

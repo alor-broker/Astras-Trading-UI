@@ -55,12 +55,14 @@ export class ManageDashboardsActions {
     }>()
   );
 
-  static updateWidgetPosition = createAction(
-    '[Dashboards] Update Widget Position',
+  static updateWidgetPositions = createAction(
+    '[Dashboards] Update Widget Positions',
     props<{
       dashboardGuid: string,
-      widgetGuid: string,
-      position: DashboardItemPosition
+      updates: {
+        widgetGuid: string,
+        position: DashboardItemPosition
+      } []
     }>()
   );
 

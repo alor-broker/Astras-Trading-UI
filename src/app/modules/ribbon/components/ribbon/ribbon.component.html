@@ -1,0 +1,16 @@
+<ats-scrollable-row>
+  <ng-container *ngFor="let index of indices$ | async">
+    <div atsScrollableItem class="item">
+      <span nz-typography><strong>{{index.name}}</strong></span>
+      <span>{{index.value | number: '1.0-2'}}</span>
+      <span [ngClass]="{
+        'change': true,
+        'positive': index.changePercent > 0,
+        'negative': index.changePercent < 0
+        }">
+        <span>{{index.changePercent < 0 ? '&#9660;' : '&#9650;'}}</span>
+        <span>{{index.changePercent > 0 ? '+' : ''}}{{index.changePercent | number: '1.0-2'}}%</span>
+      </span>
+    </div>
+  </ng-container>
+</ats-scrollable-row>
