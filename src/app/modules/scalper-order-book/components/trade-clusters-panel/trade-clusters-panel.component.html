@@ -13,7 +13,7 @@
         class="container"
       >
         <div *ngFor="let cluster of (clusters$ | async); trackBy: trackBy" class="cluster-wrapper">
-          <ats-trades-cluster [cluster]="(cluster | async)!"
+          <ats-trades-cluster [cluster]="cluster"
                               [dataContext]="dataContext"
                               [xAxisStep]="xAxisStep">
 
@@ -33,7 +33,7 @@
                 <li (click)="setIntervalsCount(item)" nz-menu-item>
               <span class="w-100 d-flex justify-content-between align-items-center">
                 <span>{{item}}</span>
-                <span *ngIf="(settings.widgetSettings.tradesClusterPanelSettings?.displayIntervalsCount ?? -1) === item"
+                <span *ngIf="(settings.tradesClusterPanelSettings?.displayIntervalsCount ?? -1) === item"
                       nz-icon
                       nzTheme="outline"
                       nzType="check">
@@ -54,7 +54,7 @@
               <span class="w-100 d-flex justify-content-between align-items-center">
                 <span>{{t('scalperOrderBookTradesClustersPanel.timeframeOptions.' + item, {fallback: item})}}</span>
                 <span
-                  *ngIf="(settings.widgetSettings.tradesClusterPanelSettings?.timeframe ?? -1) === item"
+                  *ngIf="(settings.tradesClusterPanelSettings?.timeframe ?? -1) === item"
                   nz-icon
                   nzTheme="outline"
                   nzType="check"

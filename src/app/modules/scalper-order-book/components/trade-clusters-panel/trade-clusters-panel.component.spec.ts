@@ -29,7 +29,8 @@ describe('TradeClustersPanelComponent', () => {
         {
           provide: TradeClustersService,
           useValue: {
-            getHistory: jasmine.createSpy('getHistory').and.returnValue(new Subject())
+            getHistory: jasmine.createSpy('getHistory').and.returnValue(new Subject()),
+            getClustersSubscription: jasmine.createSpy('getClustersSubscription').and.returnValue(new Subject())
           }
         },
         {
