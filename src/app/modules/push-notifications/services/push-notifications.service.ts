@@ -6,7 +6,7 @@ import { AngularFireMessaging } from "@angular/fire/compat/messaging";
 import { AuthService } from "../../../shared/services/auth.service";
 import { catchHttpError, mapWith } from "../../../shared/utils/observable-helper";
 import { catchError, filter, map } from "rxjs/operators";
-import { PriceChangeRequest } from "../../notifications/models/firebase-notifications.model";
+import { PriceChangeRequest } from "../models/firebase-notifications.model";
 import { Store } from "@ngrx/store";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { selectPortfoliosState } from "../../../store/portfolios/portfolios.selectors";
