@@ -1,13 +1,12 @@
 ﻿import { Injectable } from '@angular/core';
 import { NotificationsProvider } from '../../notifications/services/notifications-provider';
-import { Observable, shareReplay, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { NotificationMeta } from '../../notifications/models/notification.model';
-import { map, startWith } from "rxjs/operators";
 import { PushNotificationsService } from "./push-notifications.service";
 
 @Injectable()
 export class PushNotificationsProvider implements NotificationsProvider {
-  private notifications$?: Observable<NotificationMeta[]>;
+  private notifications$?: BehaviorSubject<NotificationMeta[]>;
 
   private allMessages = new Map<string, NotificationMeta>();
 
@@ -21,31 +20,45 @@ export class PushNotificationsProvider implements NotificationsProvider {
       return this.notifications$;
     }
 
-    this.notifications$ = this.pushNotificationsService.subscribeToOrderExecute()
+    this.notifications$ = new BehaviorSubject<NotificationMeta[]>([]);
+
+    this.pushNotificationsService.subscribeToOrderExecute()
       .pipe(
-        switchMap(() => this.pushNotificationsService.getMessages()),
-        map((payload) => {
-          if (!!payload?.data?.body) {
-            const messageData = JSON.parse(payload.data.body).notification;
+        switchMap(() => this.pushNotificationsService.getMessages())
+      )
+      .subscribe((payload) => {
+        if (!payload?.data?.body) {
+          return;
+        }
 
-            if (!!messageData) {
-              this.allMessages.set(payload.messageId,  {
-                id: payload.messageId,
-                date: new Date(),
-                title: messageData.title,
-                description: messageData.body,
-                isRead: false,
-                showDate: true
-              });
-            }
+        const messageData = JSON.parse(payload.data.body).notification;
+
+        if (!messageData) {
+          return;
+        }
+
+        const notification: NotificationMeta = {
+          id: payload.messageId,
+          date: new Date(),
+          title: messageData.title,
+          description: messageData.body,
+          isRead: false,
+          showDate: true,
+          markAsRead: () => {
+            this.allMessages.set(payload.messageId, {
+              ...notification,
+              isRead: true
+            });
+
+            this.notifications$!.next(Array.from(this.allMessages.values()));
           }
+        };
 
-          return Array.from(this.allMessages.values());
-        }),
-        startWith([]),
-        shareReplay(),
-      );
+        this.allMessages.set(payload.messageId, notification);
 
-    return this.notifications$;
+        this.notifications$!.next(Array.from(this.allMessages.values()));
+      });
+
+    return this.notifications$.asObservable();
   }
 }
