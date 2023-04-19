@@ -59,8 +59,9 @@ import { WidgetSkeletonComponent } from './components/widget-skeleton/widget-ske
 import { JoyrideModule } from 'ngx-joyride';
 import { ShortNumberComponent } from './components/short-number/short-number.component';
 import { ScrollableRowComponent } from './components/scrollable-row/scrollable-row.component';
-import {ScrollableItemDirective} from "./directives/scrollable-item.directive";
-import {NzResizeObserverModule} from "ng-zorro-antd/cdk/resize-observer";
+import { ScrollableItemDirective } from "./directives/scrollable-item.directive";
+import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
+import { PushNotificationsProvider } from "../modules/push-notifications/services/push-notifications-provider";
 
 @NgModule({
   declarations: [
@@ -126,67 +127,68 @@ import {NzResizeObserverModule} from "ng-zorro-antd/cdk/resize-observer";
     JoyrideModule,
     NzResizeObserverModule,
   ],
-    exports: [
-        // Ng zorro
-        NzTableModule,
-        NzButtonModule,
-        NzIconModule,
-        NzLayoutModule,
-        NzFormModule,
-        NzSelectModule,
-        NzCollapseModule,
-        NzAutocompleteModule,
-        NzTagModule,
-        NzCardModule,
-        NzTabsModule,
-        NzMenuModule,
-        NzDropDownModule,
-        NzModalModule,
-        NzToolTipModule,
-        NzSwitchModule,
-        NzImageModule,
-        NzAvatarModule,
-        NzBadgeModule,
-        NzNotificationModule,
-        NzPopconfirmModule,
-        NzDescriptionsModule,
-        NzEmptyModule,
-        NzCheckboxModule,
-        ScrollingModule,
-        NzDatePickerModule,
-        NzTypographyModule,
-        NzRadioModule,
-        NzPopoverModule,
-        NzSpaceModule,
-        // modules
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        GridsterModule,
-        NgChartsModule,
-        TranslocoModule,
-        // components
-        PriceTickComponent,
-        LoadingIndicatorComponent,
-        InfiniteScrollTableComponent,
-        WidgetMenuComponent,
-        ColorPickerInputComponent,
-        InstrumentSearchComponent,
-        InstrumentBoardSelectComponent,
-        WidgetHeaderComponent,
-        WidgetSkeletonComponent,
-        EditableStringComponent,
-        ShortNumberComponent,
-        ScrollableRowComponent,
-        // directives
-        NumericalDirective,
-        ResizeColumnDirective,
-        ScrollableItemDirective
-    ],
+  exports: [
+    // Ng zorro
+    NzTableModule,
+    NzButtonModule,
+    NzIconModule,
+    NzLayoutModule,
+    NzFormModule,
+    NzSelectModule,
+    NzCollapseModule,
+    NzAutocompleteModule,
+    NzTagModule,
+    NzCardModule,
+    NzTabsModule,
+    NzMenuModule,
+    NzDropDownModule,
+    NzModalModule,
+    NzToolTipModule,
+    NzSwitchModule,
+    NzImageModule,
+    NzAvatarModule,
+    NzBadgeModule,
+    NzNotificationModule,
+    NzPopconfirmModule,
+    NzDescriptionsModule,
+    NzEmptyModule,
+    NzCheckboxModule,
+    ScrollingModule,
+    NzDatePickerModule,
+    NzTypographyModule,
+    NzRadioModule,
+    NzPopoverModule,
+    NzSpaceModule,
+    // modules
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    GridsterModule,
+    NgChartsModule,
+    TranslocoModule,
+    // components
+    PriceTickComponent,
+    LoadingIndicatorComponent,
+    InfiniteScrollTableComponent,
+    WidgetMenuComponent,
+    ColorPickerInputComponent,
+    InstrumentSearchComponent,
+    InstrumentBoardSelectComponent,
+    WidgetHeaderComponent,
+    WidgetSkeletonComponent,
+    EditableStringComponent,
+    ShortNumberComponent,
+    ScrollableRowComponent,
+    // directives
+    NumericalDirective,
+    ResizeColumnDirective,
+    ScrollableItemDirective
+  ],
   providers: [
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},
     {provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true},
     {provide: NOTIFICATIONS_PROVIDER, useClass: FeedbackNotificationsProvider, multi: true},
+    {provide: NOTIFICATIONS_PROVIDER, useClass: PushNotificationsProvider, multi: true},
     {provide: Window, useValue: window},
   ]
 })

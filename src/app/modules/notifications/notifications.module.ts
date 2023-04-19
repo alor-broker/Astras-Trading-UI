@@ -22,18 +22,18 @@ import { NotificationsListComponent } from './components/notifications-list/noti
     NotificationButtonComponent,
     NotificationsListComponent
   ],
-    imports: [
-        CommonModule,
-        NzBadgeModule,
-        NzButtonModule,
-        NzIconModule,
-        NzPopoverModule,
-        NzCardModule,
-        NzTableModule,
-        NzTypographyModule,
-        TranslocoModule,
-        SharedModule
-    ]
+  imports: [
+    CommonModule,
+    NzBadgeModule,
+    NzButtonModule,
+    NzIconModule,
+    NzPopoverModule,
+    NzCardModule,
+    NzTableModule,
+    NzTypographyModule,
+    TranslocoModule,
+    SharedModule
+  ]
 })
 export class NotificationsModule {
 }

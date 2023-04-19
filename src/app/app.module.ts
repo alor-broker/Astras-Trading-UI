@@ -40,6 +40,10 @@ import { TranslationHook } from "./shared/services/app-hook/translation-hook";
 import { LOGGER } from './shared/services/logging/logger-base';
 import { ConsoleLogger } from './shared/services/logging/console-logger';
 import { RemoteLogger } from './shared/services/logging/remote-logger';
+import { environment } from "../environments/environment";
+import { AngularFireAuthModule } from "@angular/fire/compat/auth";
+import { AngularFireMessagingModule } from "@angular/fire/compat/messaging";
+import { AngularFireModule } from "@angular/fire/compat";
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: any) {
@@ -64,7 +68,10 @@ registerLocaleData(ru);
     EffectsModule.forRoot(),
     ...extModules,
     ApplicationMetaModule,
-    TranslocoRootModule
+    TranslocoRootModule,
+    AngularFireAuthModule,
+    AngularFireMessagingModule,
+    AngularFireModule.initializeApp(environment.firebase)
   ],
   bootstrap: [AppComponent],
   providers: [
