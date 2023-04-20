@@ -17,7 +17,6 @@ import {
   startOfDay,
   toUnixTime
 } from "../../../../../shared/utils/datetime";
-import { StopOrderCondition } from "../../../../../shared/models/enums/stoporder-conditions";
 import { Observable, switchMap, take, takeUntil } from "rxjs";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { map } from "rxjs/operators";
@@ -31,6 +30,7 @@ import {
 import { QuotesService } from "../../../../../shared/services/quotes.service";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { TimeInForce } from "../../../../../shared/models/commands/command-params.model";
+import {LessMore} from "../../../../../shared/models/enums/less-more.model";
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'> &
@@ -50,7 +50,7 @@ export type StopOrderFormValue =
 })
 export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderFormValue, { timezoneConverter: TimezoneConverter }> {
   public canSelectNow = true;
-  public conditionType = StopOrderCondition;
+  public conditionType = LessMore;
   public timeInForceEnum = TimeInForce;
   private timezoneConverter!: TimezoneConverter;
 

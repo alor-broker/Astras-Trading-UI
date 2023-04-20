@@ -22,9 +22,9 @@ import {
   throwError
 } from "rxjs";
 import { Side } from "../../models/enums/side.model";
-import { StopOrderCondition } from "../../models/enums/stoporder-conditions";
 import { toUnixTimestampSeconds } from "../../utils/datetime";
 import { InstantNotificationsService } from '../instant-notifications.service';
+import {LessMore} from "../../models/enums/less-more.model";
 
 
 describe('OrderService', () => {
@@ -349,7 +349,7 @@ describe('OrderService', () => {
         },
         side: Side.Buy,
         quantity: 100,
-        condition: StopOrderCondition.Less,
+        condition: LessMore.Less,
         triggerPrice: 50,
         stopEndUnixTime: new Date()
       };
@@ -469,7 +469,7 @@ describe('OrderService', () => {
         },
         side: Side.Buy,
         quantity: 100,
-        condition: StopOrderCondition.Less,
+        condition: LessMore.Less,
         triggerPrice: 50,
         stopEndUnixTime: new Date(),
         price: 100
@@ -724,7 +724,7 @@ describe('OrderService', () => {
         },
         quantity: 100,
         id: '123',
-        conditionType: StopOrderCondition.Less,
+        conditionType: LessMore.Less,
         triggerPrice: 100,
         side: Side.Buy,
         endTime: 123
@@ -853,7 +853,7 @@ describe('OrderService', () => {
         },
         quantity: 100,
         id: '123',
-        conditionType: StopOrderCondition.Less,
+        conditionType: LessMore.Less,
         triggerPrice: 100,
         price: 100,
         side: Side.Buy,

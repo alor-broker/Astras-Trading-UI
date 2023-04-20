@@ -46,7 +46,6 @@ import {
 } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
-import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -58,6 +57,7 @@ import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -422,7 +422,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       side: order.side,
       triggerPrice: order.triggerPrice,
       stopEndUnixTime: order.endTime,
-      condition: order.conditionType === 'less' ? StopOrderCondition.Less : StopOrderCondition.More,
+      condition: order.conditionType === 'less' ? LessMore.Less : LessMore.More,
       timeInForce: order.timeInForce,
       icebergFixed: order.icebergFixed,
       icebergVariance: order.icebergVariance

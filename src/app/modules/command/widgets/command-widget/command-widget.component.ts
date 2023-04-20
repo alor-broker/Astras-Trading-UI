@@ -1,13 +1,20 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, combineLatest, filter, Observable, of, switchMap, take } from 'rxjs';
-import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
-import { ModalService } from 'src/app/shared/services/modal.service';
-import { CommandType } from '../../../../shared/models/enums/command-type.model';
-import { NzTabComponent, NzTabSetComponent } from 'ng-zorro-antd/tabs';
-import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { map } from 'rxjs/operators';
-import { CommandContextModel } from '../../models/command-context.model';
+import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
+import {BehaviorSubject, combineLatest, filter, Observable, of, switchMap, take} from 'rxjs';
+import {CommandParams} from 'src/app/shared/models/commands/command-params.model';
+import {ModalService} from 'src/app/shared/services/modal.service';
+import {CommandType} from '../../../../shared/models/enums/command-type.model';
+import {NzTabComponent, NzTabSetComponent} from 'ng-zorro-antd/tabs';
+import {Instrument} from 'src/app/shared/models/instruments/instrument.model';
+import {InstrumentsService} from '../../../instruments/services/instruments.service';
+import {map} from 'rxjs/operators';
+import {CommandContextModel} from '../../models/command-context.model';
+
+export enum ComponentTabs {
+  LimitOrder = 'limitOrder',
+  MarketOrder = 'marketOrder',
+  StopOrder = 'stopOrder',
+  Notifications = 'notifications'
+}
 
 @Component({
   selector: 'ats-command-widget',
@@ -16,7 +23,8 @@ import { CommandContextModel } from '../../models/command-context.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CommandWidgetComponent implements OnInit {
-  readonly commandTypes = CommandType;
+  readonly componentTabs = ComponentTabs;
+
 
   @ViewChild('commandTabs', { static: false }) commandTabs?: NzTabSetComponent;
   @ViewChild('limitTab', { static: false }) limitTab?: NzTabComponent;
@@ -25,7 +33,7 @@ export class CommandWidgetComponent implements OnInit {
 
   isVisible$: Observable<boolean> = of(false);
   commandContext$?: Observable<CommandContextModel<CommandParams>>;
-  selectedCommandType$ = new BehaviorSubject<CommandType>(CommandType.Limit);
+  selectedTab$ = new BehaviorSubject<ComponentTabs>(ComponentTabs.LimitOrder);
 
   constructor(
     private readonly modal: ModalService,
@@ -57,8 +65,8 @@ export class CommandWidgetComponent implements OnInit {
     close();
   }
 
-  setSelectedCommandType(commandType: CommandType) {
-    this.selectedCommandType$.next(commandType);
+  setSelectedTab(tab: ComponentTabs) {
+    this.selectedTab$.next(tab);
   }
 
   openHelp() {
@@ -72,19 +80,37 @@ export class CommandWidgetComponent implements OnInit {
       switch (context.commandParameters.type) {
         case CommandType.Limit:
           this.activateCommandTab(this.limitTab);
+          this.setSelectedTab(ComponentTabs.LimitOrder);
           break;
         case CommandType.Market:
           this.activateCommandTab(this.marketTab);
+          this.setSelectedTab(ComponentTabs.MarketOrder);
           break;
         case CommandType.Stop:
           this.activateCommandTab(this.stopTab);
+          this.setSelectedTab(ComponentTabs.StopOrder);
           break;
         default:
           throw new Error(`Unknown command type ${context.commandParameters.type}`);
       }
-
-      this.setSelectedCommandType(context.commandParameters.type);
     });
+  }
+
+  isOrderTab(tab: ComponentTabs): boolean {
+    return [ComponentTabs.LimitOrder, ComponentTabs.MarketOrder, ComponentTabs.StopOrder].includes(tab);
+  }
+
+  toCommandType(tab: ComponentTabs): CommandType | null {
+    switch (tab) {
+      case ComponentTabs.LimitOrder:
+        return CommandType.Limit;
+      case ComponentTabs.MarketOrder:
+        return CommandType.Market;
+      case ComponentTabs.StopOrder:
+        return CommandType.Stop;
+    }
+
+    return null;
   }
 
   private activateCommandTab(targetTab?: NzTabComponent) {

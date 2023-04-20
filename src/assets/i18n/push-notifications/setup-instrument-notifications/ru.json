@@ -1,0 +1,8 @@
+﻿{
+  "priceLabel": "Цена",
+  "priceConditionLabel": "Условие",
+  "lessMoreOptions": {
+    "less": "Меньше",
+    "more": "Больше"
+  }
+}

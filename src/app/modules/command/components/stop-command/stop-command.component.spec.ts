@@ -1,6 +1,7 @@
 import {
-  ComponentFixture, fakeAsync,
-  TestBed, tick
+  ComponentFixture,
+  fakeAsync,
+  TestBed
 } from '@angular/core/testing';
 import {
   of,
@@ -32,8 +33,8 @@ import {
   NZ_I18N,
   ru_RU
 } from "ng-zorro-antd/i18n";
-import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
 import ruCommand from "../../../../../assets/i18n/command/ru.json";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
 describe('StopCommandComponent', () => {
   let component: StopCommandComponent;
@@ -245,7 +246,7 @@ describe('StopCommandComponent', () => {
       const expectedCommand: StopCommand = {
         quantity: 125,
         triggerPrice: 126,
-        condition: StopOrderCondition.Less,
+        condition: LessMore.Less,
         price: 140,
         stopEndUnixTime: timezoneConverter.terminalToUtc0Date(expectedDate),
         instrument: {
@@ -313,7 +314,7 @@ describe('StopCommandComponent', () => {
       instrument: {
         ...commandContext.commandParameters.instrument,
       },
-      condition: StopOrderCondition.More,
+      condition: LessMore.More,
       user: commandContext.commandParameters.user,
       stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndUnixTimeVal)
     };
@@ -343,7 +344,7 @@ describe('StopCommandComponent', () => {
       instrument: {
         ...commandContext.commandParameters.instrument,
       },
-      condition: StopOrderCondition.More,
+      condition: LessMore.More,
       user: commandContext.commandParameters.user,
       stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndUnixTimeVal)
     };

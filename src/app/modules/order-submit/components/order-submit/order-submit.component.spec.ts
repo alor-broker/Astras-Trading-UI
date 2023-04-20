@@ -5,7 +5,7 @@ import {
   tick
 } from '@angular/core/testing';
 
-import { OrderSubmitComponent } from './order-submit.component';
+import {ComponentTabs, OrderSubmitComponent} from './order-submit.component';
 import { QuotesService } from '../../../../shared/services/quotes.service';
 import { Store } from '@ngrx/store';
 import {
@@ -26,7 +26,6 @@ import {
 } from 'rxjs';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { OrderService } from '../../../../shared/services/orders/order.service';
-import { OrderType } from '../../models/order-form.model';
 import { LimitOrderFormValue } from '../order-forms/limit-order-form/limit-order-form.component';
 import {
   LimitOrder,
@@ -37,12 +36,12 @@ import {
 import { Side } from '../../../../shared/models/enums/side.model';
 import { MarketOrderFormValue } from '../order-forms/market-order-form/market-order-form.component';
 import { StopOrderFormValue } from '../order-forms/stop-order-form/stop-order-form.component';
-import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
 import ruOrderSubmit from "../../../../../assets/i18n/order-submit/order-submit/ru.json";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
 describe('OrderSubmitComponent', () => {
   let component: OrderSubmitComponent;
@@ -104,6 +103,10 @@ describe('OrderSubmitComponent', () => {
           selector: 'ats-working-volumes',
           inputs: ['workingVolumes', 'ask', 'bid'],
           outputs: ['itemSelected']
+        }),
+        mockComponent({
+          selector: 'ats-setup-instrument-notifications',
+          inputs: ['instrumentKey', 'active'],
         })
       ],
       providers: [
@@ -156,7 +159,7 @@ describe('OrderSubmitComponent', () => {
 
   describe('Limit Order', () => {
     beforeEach(() => {
-      component.setSelectedCommandType(OrderType.LimitOrder);
+      component.setSelectedTab(ComponentTabs.LimitOrder);
     });
 
     it('should disable buttons on invalid form', fakeAsync(() => {
@@ -218,7 +221,7 @@ describe('OrderSubmitComponent', () => {
 
   describe('Market Order', () => {
     beforeEach(() => {
-      component.setSelectedCommandType(OrderType.MarketOrder);
+      component.setSelectedTab(ComponentTabs.MarketOrder);
     });
 
     it('should disable buttons on invalid form', fakeAsync(() => {
@@ -277,7 +280,7 @@ describe('OrderSubmitComponent', () => {
 
   describe('Stop Order', () => {
     beforeEach(() => {
-      component.setSelectedCommandType(OrderType.StopOrder);
+      component.setSelectedTab(ComponentTabs.StopOrder);
     });
 
     it('should disable buttons on invalid form', fakeAsync(() => {
@@ -309,7 +312,7 @@ describe('OrderSubmitComponent', () => {
           instrument: defaultInstrument,
           side: Math.random() < 0.5 ? Side.Buy : Side.Sell,
           quantity: Math.round(Math.random() * 100),
-          condition: Math.random() < 0.5 ? StopOrderCondition.Less : StopOrderCondition.More,
+          condition: Math.random() < 0.5 ? LessMore.Less : LessMore.More,
           triggerPrice: Math.round(Math.random() * 1000),
           stopEndUnixTime: new Date()
         };
@@ -345,7 +348,7 @@ describe('OrderSubmitComponent', () => {
           instrument: defaultInstrument,
           side: Math.random() < 0.5 ? Side.Buy : Side.Sell,
           quantity: Math.round(Math.random() * 100),
-          condition: Math.random() < 0.5 ? StopOrderCondition.Less : StopOrderCondition.More,
+          condition: Math.random() < 0.5 ? LessMore.Less : LessMore.More,
           triggerPrice: Math.round(Math.random() * 1000),
           price: Math.round(Math.random() * 1000),
           stopEndUnixTime: new Date(),

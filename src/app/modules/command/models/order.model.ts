@@ -1,7 +1,7 @@
 import { Side } from "../../../shared/models/enums/side.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
-import { StopOrderCondition } from "../../../shared/models/enums/stoporder-conditions";
 import { TimeInForce } from "../../../shared/models/commands/command-params.model";
+import {LessMore} from "../../../shared/models/enums/less-more.model";
 
 export interface SubmitOrderResponse {
   message: string;
@@ -34,7 +34,7 @@ export interface LimitOrder extends OrderBase {
 
 export interface StopOrder extends OrderBase {
   triggerPrice: number,
-  conditionType: StopOrderCondition,
+  conditionType: LessMore,
   endTime: number,
 }
 
@@ -56,7 +56,7 @@ export interface StopLimitOrderEdit extends StopOrder {
 
 export interface StopMarketOrder extends OrderBase {
   triggerPrice: number;
-  condition: StopOrderCondition;
+  condition: LessMore;
   stopEndUnixTime?: Date | number;
 }
 

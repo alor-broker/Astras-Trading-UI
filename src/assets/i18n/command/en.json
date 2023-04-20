@@ -5,6 +5,7 @@
   "limitTab": "Limit",
   "marketTab": "Market",
   "stopTab": "Conditional",
+  "notificationsTab": "Notifications",
 
   "dayChangeLabel": "Diff.",
   "dayChangePerPriceLabel": "Diff.%",

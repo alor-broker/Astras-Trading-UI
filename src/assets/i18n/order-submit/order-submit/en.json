@@ -3,6 +3,8 @@
   "limitTab": "Limit",
   "marketTab": "Market",
   "stopTab": "Conditional",
+  "notificationsTab": "Notifications",
+
   "buyBtnText": "Buy",
   "sellBtnText": "Sell",
   "noBuyOrdersTooltip": "No active limit buy orders",

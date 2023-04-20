@@ -39,7 +39,7 @@
         </div>
         <div class="body">
             <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async">
-              <nz-tab #limitTab (nzSelect)="setSelectedCommandType(orderTypes.LimitOrder)" [nzTitle]="t('orderSubmitOrderSubmit.limitTab')">
+              <nz-tab #limitTab (nzSelect)="setSelectedTab(componentTabs.LimitOrder)" [nzTitle]="t('orderSubmitOrderSubmit.limitTab')">
                 <div *ngIf="settings.showVolumePanel" class="working-volumes-panel">
                   <ats-working-volumes
                     [workingVolumes]="settings.workingVolumes"
@@ -55,24 +55,35 @@
                                       [activated]="limitTab.isActive"
                 ></ats-limit-order-form>
               </nz-tab>
-              <nz-tab #marketTab (nzSelect)="setSelectedCommandType(orderTypes.MarketOrder)" [nzTitle]="t('orderSubmitOrderSubmit.marketTab')">
+              <nz-tab #marketTab (nzSelect)="setSelectedTab(componentTabs.MarketOrder)" [nzTitle]="t('orderSubmitOrderSubmit.marketTab')">
                 <ats-market-order-form (formValueChange)="setMarketOrderValue($event)"
                                        [activated]="marketTab.isActive"
                                        [initialValues]="initialValues$ | async"
                                        [instrument]="currentInstrumentWithPortfolio.instrument"
                 ></ats-market-order-form>
               </nz-tab>
-              <nz-tab #stopTab (nzSelect)="setSelectedCommandType(orderTypes.StopOrder)" [nzTitle]="t('orderSubmitOrderSubmit.stopTab')">
+              <nz-tab #stopTab (nzSelect)="setSelectedTab(componentTabs.StopOrder)" [nzTitle]="t('orderSubmitOrderSubmit.stopTab')">
                 <ats-stop-order-form (formValueChange)="setStopOrderValue($event)"
                                      [instrument]="currentInstrumentWithPortfolio.instrument"
                                      [initialValues]="initialValues$ | async"
                                      [activated]="stopTab.isActive"
                 ></ats-stop-order-form>
               </nz-tab>
+              <nz-tab #notificationsTab [nzTitle]="titleTemplate" (nzClick)="setSelectedTab(componentTabs.Notifications)">
+                <ats-setup-instrument-notifications
+                  [instrumentKey]="currentInstrumentWithPortfolio.instrument"
+                  [active]="notificationsTab.isActive"
+                >
+                </ats-setup-instrument-notifications>
+                <ng-template #titleTemplate>
+                  <span nz-icon nzType="bell" nzTheme="outline"></span>
+                  <span>{{t('orderSubmitOrderSubmit.notificationsTab')}}</span>
+                </ng-template>
+              </nz-tab>
             </nz-tabset>
         </div>
       </ng-container>
-      <div class="footer">
+      <div class="footer" *ngIf="isOrderTab(lastSelectedTab)">
         <button
           (click)="submitOrder(orderSides.Buy)"
           [disabled]="(canSubmitOrder$ | async) === false"
@@ -93,7 +104,7 @@
         </button>
       </div>
       <div class="addons">
-        <ng-container *ngIf="settings.enableLimitOrdersFastEditing && selectedOrderType=== orderTypes.LimitOrder">
+        <ng-container *ngIf="settings.enableLimitOrdersFastEditing && lastSelectedTab=== componentTabs.LimitOrder">
           <ng-container *ngIf="activeLimitOrders$ | async as activeLimitOrders">
             <div id="limit-orders-price-change-buttons">
               <div class="buttons-group buy">

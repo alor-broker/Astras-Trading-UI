@@ -18,7 +18,6 @@ import {
 } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CommandParams, TimeInForce } from 'src/app/shared/models/commands/command-params.model';
-import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
 import {
   addMonthsUnix,
   getUtcNow,
@@ -34,6 +33,7 @@ import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
 @Component({
   selector: 'ats-stop-command',
@@ -193,7 +193,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         ? new Date(commandContext.commandParameters.stopEndUnixTime)
         : this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
       ),
-      condition: new FormControl(StopOrderCondition.More),
+      condition: new FormControl(LessMore.More),
       withLimit: new FormControl(false),
       timeInForce: new FormControl(null),
       isIceberg: new FormControl(false),

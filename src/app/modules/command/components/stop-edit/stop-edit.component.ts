@@ -29,13 +29,13 @@ import {
   startOfDay,
   toUnixTime
 } from "../../../../shared/utils/datetime";
-import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { StopEdit } from "../../models/stop-edit";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { TimeInForce } from "../../../../shared/models/commands/command-params.model";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
 @Component({
   selector: 'ats-stop-edit',
@@ -198,7 +198,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
         ? new Date(initialParameters.commandParameters.stopEndUnixTime)
         : this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
       ),
-      condition: new FormControl(initialParameters.commandParameters.condition || StopOrderCondition.More),
+      condition: new FormControl(initialParameters.commandParameters.condition || LessMore.More),
       withLimit: new FormControl({ value: initialParameters.commandParameters.type === 'stoplimit', disabled: true }),
       side: new FormControl(initialParameters.commandParameters.side),
       timeInForce: new FormControl(initialParameters.commandParameters.timeInForce),

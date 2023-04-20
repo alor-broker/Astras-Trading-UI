@@ -1,0 +1,27 @@
+import {LessMore} from "../../../shared/models/enums/less-more.model";
+
+export enum PushSubscriptionType {
+  OrderExecute = 'OrderExecute',
+  PriceSpark = 'PriceSpark'
+}
+
+export interface PriceChangeRequest {
+  exchange: string;
+  priceCondition: LessMore;
+  price: string;
+  instrument: string;
+  board: string;
+}
+
+export interface SubscriptionBase {
+  id: string;
+  subscriptionType: PushSubscriptionType;
+}
+
+export interface PriceSparkSubscription extends SubscriptionBase {
+  instrument: string;
+  exchange: string;
+  board?: string;
+  price: number;
+  priceCondition: LessMore
+}
