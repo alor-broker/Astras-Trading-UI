@@ -59,9 +59,10 @@ import { WidgetSkeletonComponent } from './components/widget-skeleton/widget-ske
 import { JoyrideModule } from 'ngx-joyride';
 import { ShortNumberComponent } from './components/short-number/short-number.component';
 import { ScrollableRowComponent } from './components/scrollable-row/scrollable-row.component';
-import {ScrollableItemDirective} from "./directives/scrollable-item.directive";
-import {NzResizeObserverModule} from "ng-zorro-antd/cdk/resize-observer";
+import { ScrollableItemDirective } from "./directives/scrollable-item.directive";
+import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { ResizableDirective } from './directives/resizable.directive';
+import { PushNotificationsProvider } from "../modules/push-notifications/services/push-notifications-provider";
 
 @NgModule({
   declarations: [
@@ -190,6 +191,7 @@ import { ResizableDirective } from './directives/resizable.directive';
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},
     {provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true},
     {provide: NOTIFICATIONS_PROVIDER, useClass: FeedbackNotificationsProvider, multi: true},
+    {provide: NOTIFICATIONS_PROVIDER, useClass: PushNotificationsProvider, multi: true},
     {provide: Window, useValue: window},
   ]
 })
