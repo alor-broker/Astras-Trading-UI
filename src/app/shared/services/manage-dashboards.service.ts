@@ -40,12 +40,6 @@ export class ManageDashboardsService {
           dashboardGuid: d.guid,
           widgets: [{
             widgetType: widgetType,
-            position: {
-              x: 0,
-              y: 0,
-              cols: 10,
-              rows: 18
-            },
             initialSettings: initialSettings
           }]
         }
@@ -54,15 +48,14 @@ export class ManageDashboardsService {
 
   }
 
-  updateWidgetPosition(widgetGuid: string, position: DashboardItemPosition) {
+  updateWidgetPositions(updates: { widgetGuid: string, position: DashboardItemPosition } []) {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
     ).subscribe(d => {
-      this.store.dispatch(ManageDashboardsActions.updateWidgetPosition(
+      this.store.dispatch(ManageDashboardsActions.updateWidgetPositions(
         {
           dashboardGuid: d.guid,
-          widgetGuid: widgetGuid,
-          position
+          updates
         }
       ));
     });

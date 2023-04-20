@@ -1,23 +1,29 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
-import { ClusterTimeframe } from '../models/scalper-order-book-settings.model';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {InstrumentKey} from '../../../shared/models/instruments/instrument-key.model';
+import {ClusterTimeframe} from '../models/scalper-order-book-settings.model';
+import {Observable, take} from 'rxjs';
+import {TradesCluster} from '../models/trades-clusters.model';
+import {ErrorHandlerService} from '../../../shared/services/handle-error/error-handler.service';
+import {environment} from '../../../../environments/environment';
+import {addSeconds, toUnixTime} from '../../../shared/utils/datetime';
+import {catchHttpError} from '../../../shared/utils/observable-helper';
+import {map} from 'rxjs/operators';
 import {
-  Observable,
-  take
-} from 'rxjs';
-import { TradesCluster } from '../models/trades-clusters.model';
-import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
-import { environment } from '../../../../environments/environment';
-import {
-  addSeconds,
-  toUnixTime
-} from '../../../shared/utils/datetime';
-import { catchHttpError } from '../../../shared/utils/observable-helper';
-import { map } from 'rxjs/operators';
+  SubscriptionRequest,
+  SubscriptionsDataFeedService
+} from "../../../shared/services/subscriptions-data-feed.service";
 
 interface HistoryResponse {
   clusters: TradesCluster[]
+}
+
+interface ClustersSubscriptionRequest extends SubscriptionRequest {
+  code: string,
+  exchange: string,
+  tf: ClusterTimeframe,
+  format: string,
+  from: number
 }
 
 @Injectable({
@@ -25,6 +31,7 @@ interface HistoryResponse {
 })
 export class TradeClustersService {
   constructor(
+    private readonly subscriptionsService: SubscriptionsDataFeedService,
     private readonly httpClient: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService) {
   }
@@ -54,7 +61,20 @@ export class TradeClustersService {
     );
   }
 
-  getHistoryFromPoint(timeframe: ClusterTimeframe, intervalsCount: number): number {
+  getClustersSubscription(instrumentKey: InstrumentKey, timeframe: ClusterTimeframe, from: number): Observable<TradesCluster> {
+    return this.subscriptionsService.subscribe<ClustersSubscriptionRequest, TradesCluster>({
+        opcode: "ClustersGetAndSubscribe",
+        code: instrumentKey.symbol,
+        exchange: instrumentKey.exchange,
+        tf: timeframe,
+        format: 'Simple',
+        from: from
+      },
+      request => `${request.opcode}_${request.code}_${request.exchange}_${request.tf}_${request.from}_${request.format}`
+    );
+  }
+
+  private getHistoryFromPoint(timeframe: ClusterTimeframe, intervalsCount: number): number {
     const secondsBack = Math.round(timeframe * intervalsCount);
     return toUnixTime(addSeconds(new Date(), -secondsBack));
   }

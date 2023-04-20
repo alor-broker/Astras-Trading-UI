@@ -9,39 +9,35 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
+import {ScalperOrderBookDataContext,} from '../../models/scalper-order-book-data-context.model';
 import {
   BehaviorSubject,
   bufferCount,
   combineLatest,
   fromEvent,
   Observable,
-  of,
   shareReplay,
-  Subject,
   take,
   takeUntil,
-  timer
+  timer,
 } from 'rxjs';
-import { TradesCluster } from '../../models/trades-clusters.model';
-import {
-  finalize,
-  map,
-  tap
-} from 'rxjs/operators';
-import { NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
+import {TradesCluster} from '../../models/trades-clusters.model';
+import {finalize, map, startWith, switchMap, tap} from 'rxjs/operators';
+import {NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
 import {
   ClusterTimeframe,
-  ScalperOrderBookSettings
+  ScalperOrderBookSettings,
+  TradesClusterPanelSettings
 } from '../../models/scalper-order-book-settings.model';
-import { Destroyable } from '../../../../shared/utils/destroyable';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { CdkScrollable } from '@angular/cdk/overlay';
-import { DOCUMENT } from '@angular/common';
-import { ContextMenuService } from '../../../../shared/services/context-menu.service';
-import { TradeClustersService } from '../../services/trade-clusters.service';
-import { toUnixTime } from '../../../../shared/utils/datetime';
-import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
+import {Destroyable} from '../../../../shared/utils/destroyable';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {CdkScrollable} from '@angular/cdk/overlay';
+import {DOCUMENT} from '@angular/common';
+import {ContextMenuService} from '../../../../shared/services/context-menu.service';
+import {TradeClustersService} from '../../services/trade-clusters.service';
+import {toUnixTime} from '../../../../shared/utils/datetime';
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {NumberDisplayFormat} from "../../../../shared/models/enums/number-display-format";
 
 @Component({
   selector: 'ats-trade-clusters-panel[xAxisStep][dataContext]',
@@ -56,11 +52,12 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   xAxisStep!: number;
   @Input()
   dataContext!: ScalperOrderBookDataContext;
-  clusters$ = new Subject<Observable<TradesCluster>[]>;
+
+  clusters$!: Observable<TradesCluster[]>;
 
   settings$!: Observable<ScalperOrderBookSettings>;
 
-  hScrollOffsets$ = new BehaviorSubject({ left: 0, right: 0 });
+  hScrollOffsets$ = new BehaviorSubject({left: 0, right: 0});
 
   readonly availableTimeframes: number[] = Object.values(ClusterTimeframe).filter((v): v is number => !isNaN(Number(v)));
   readonly availableIntervalsCount = [1, 2, 5];
@@ -82,72 +79,16 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   }
 
   ngOnInit(): void {
-    this.settings$ = this.dataContext.extendedSettings$.pipe(
-      map(x => {
-        const settings = x.widgetSettings;
-
-        if(!!settings.tradesClusterPanelSettings) {
-          return settings;
-        }
-
-        return {
-          ...settings,
-          tradesClusterPanelSettings: {
-            timeframe: ClusterTimeframe.M1,
-            displayIntervalsCount: 5,
-            volumeDisplayFormat: NumberDisplayFormat.LetterSuffix
-          }
-        };
-      }),
-      shareReplay(1)
-    );
-
-    combineLatest([
-      timer(0, 5000),
-      this.settings$
-    ]).pipe(
-      map(([, settings]) => settings),
-      takeUntil(this.destroyable.destroyed$)
-    ).subscribe(settings => {
-      this.updateScrollOffsets();
-      const panelSettings = settings.tradesClusterPanelSettings!;
-
-      this.tradeClustersService.getHistory(
-        settings,
-        panelSettings.timeframe,
-        panelSettings.displayIntervalsCount)
-        .pipe(
-          take(1)
-        ).subscribe(history => {
-        this.clusters$.next([]);
-
-        if (!history) {
-          return;
-        }
-
-        const displayClusters = [];
-        const displayIntervals = this.getDisplayIntervals(panelSettings.timeframe, panelSettings.displayIntervalsCount);
-        for (let interval of displayIntervals) {
-          const cluster = history.find(x => x.timestamp === interval);
-
-          displayClusters.push(of({
-            timestamp: interval,
-            tradeClusters: cluster?.tradeClusters ?? []
-          }));
-        }
-
-        this.clusters$.next(displayClusters);
-        this.updateScrollOffsets();
-      });
-    });
+    this.initSettings();
+    this.initClustersStream();
   }
 
-  trackBy(index: number): number {
-    return index;
+  trackBy(index: number, item: TradesCluster): number {
+    return item.timestamp;
   }
 
   contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent): void {
-    this.contextMenuService.create($event, menu, { scrollStrategy: 'noop' });
+    this.contextMenuService.create($event, menu, {scrollStrategy: 'noop'});
   }
 
   setTimeframe(value: number) {
@@ -205,7 +146,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
         e.preventDefault();
         e.stopPropagation();
       }),
-      map(({ clientX }) => clientX),
+      map(({clientX}) => clientX),
       bufferCount(2),
       takeUntil(fromEvent(this.documentRef, 'mouseup')),
       finalize(() => {
@@ -247,16 +188,117 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
     if (this.scrollContainer.length > 0) {
       initScrollWatching();
-    }
-    else {
+    } else {
       this.scrollContainer.changes.pipe(
         take(1)
       ).subscribe(() => initScrollWatching());
     }
   }
 
+  private initSettings() {
+    this.settings$ = this.dataContext.extendedSettings$.pipe(
+      map(x => {
+        const settings = x.widgetSettings;
+
+        if (!!settings.tradesClusterPanelSettings) {
+          return settings;
+        }
+
+        return {
+          ...settings,
+          tradesClusterPanelSettings: {
+            timeframe: ClusterTimeframe.M1,
+            displayIntervalsCount: 5,
+            volumeDisplayFormat: NumberDisplayFormat.LetterSuffix
+          }
+        };
+      }),
+      shareReplay(1)
+    );
+  }
+
+  private initClustersStream() {
+    this.clusters$ = this.settings$.pipe(
+      mapWith(
+        s => this.tradeClustersService.getHistory(
+          s,
+          s.tradesClusterPanelSettings!.timeframe,
+          s.tradesClusterPanelSettings!.displayIntervalsCount,
+        ),
+        (settings, history) => ({settings, history})
+      ),
+      switchMap(x => this.getClusterUpdatesStream(x.settings, x.history ?? [])),
+      tap(() => this.updateScrollOffsets())
+    );
+  }
+
+  private getClusterUpdatesStream(
+    settings: ScalperOrderBookSettings,
+    history: TradesCluster[]
+  ): Observable<TradesCluster[]> {
+    const lastHistoryPoint = history.length > 0
+      ? history[0].timestamp
+      : toUnixTime(new Date());
+
+    const updatesSubscription$ = this.tradeClustersService.getClustersSubscription(
+      settings,
+      settings.tradesClusterPanelSettings!.timeframe,
+      lastHistoryPoint
+    ).pipe(
+      startWith(null)
+    );
+
+    const state = [
+      ...this.toDisplayClusters(history, settings.tradesClusterPanelSettings!)
+    ];
+
+    return combineLatest([
+      timer(0, Math.min(Math.floor((settings.tradesClusterPanelSettings!.timeframe / 2) * 1000), 60 * 1000)),
+      updatesSubscription$
+    ]).pipe(
+      map(([, updates]) => {
+        const allClusters = !updates
+          ? state
+          : [
+            {
+              ...updates,
+              timestamp: this.getPeriodStart(updates.timestamp, settings.tradesClusterPanelSettings!.timeframe)
+            },
+            ...state.filter(s => s.timestamp !== updates.timestamp)
+          ];
+
+        const updated = this.toDisplayClusters(allClusters, settings.tradesClusterPanelSettings!);
+
+        state.length = 0;
+        state.push(...updated);
+        return state;
+      })
+    );
+  }
+
   private getScrollContainer(): CdkScrollable {
     return this.scrollContainer!.first;
+  }
+
+  private toDisplayClusters(
+    allClusters: TradesCluster[],
+    settings: TradesClusterPanelSettings,
+  ): TradesCluster[] {
+    const intervalsToDisplay = this.getDisplayIntervals(
+      settings.timeframe,
+      settings.displayIntervalsCount);
+    const displayClusters: TradesCluster[] = [];
+
+    for (let interval of intervalsToDisplay) {
+      const cluster = allClusters.find(c => c.timestamp === interval);
+      displayClusters.push({
+        ...cluster,
+        timestamp: interval,
+        tradeClusters: cluster?.tradeClusters ?? []
+      });
+    }
+
+    return displayClusters;
   }
 
   private updateScrollOffsets() {
@@ -272,8 +314,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   }
 
   private getDisplayIntervals(timeframe: ClusterTimeframe, displayIntervalsCount: number): number[] {
-    const now = toUnixTime(new Date());
-    const periodStart = Math.floor(Math.floor(now / timeframe) * timeframe);
+    const periodStart = this.getPeriodStart(toUnixTime(new Date()), timeframe);
 
     const intervals = [periodStart];
     for (let i = 1; i < displayIntervalsCount; i++) {
@@ -282,5 +323,9 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     }
 
     return intervals;
+  }
+
+  private getPeriodStart(unixTime: number, timeframe: ClusterTimeframe): number {
+    return Math.floor(Math.floor(unixTime / timeframe) * timeframe);
   }
 }

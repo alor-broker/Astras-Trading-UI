@@ -16,12 +16,12 @@ export class NumericalDirective {
   constructor(private _el: ElementRef) {
   }
 
-  @HostListener('mousewheel', ['$event']) onMouseWheel(event: WheelEvent) {
+  @HostListener('wheel', ['$event']) onMouseWheel(event: WheelEvent) {
     event.stopPropagation();
     event.preventDefault();
 
     let step = this.step;
-    if (event.deltaY < 0) {
+    if (event.deltaY > 0) {
       step = -step;
     }
 
@@ -31,10 +31,32 @@ export class NumericalDirective {
 
     const value = this.getStepSum(step);
     this._el.nativeElement.value = value > 0 ? value : 0;
+    this._el.nativeElement.dispatchEvent(new Event('input'));
   }
 
   @HostListener('beforeinput', ['$event']) onBeforeInputChange(event: InputEvent) {
     if (!event.data) {
+      return;
+    }
+
+    if (event.data.length > 1) {
+      const selectionStart = (<HTMLInputElement>event.target).selectionStart!;
+      const selectionTotal = (<HTMLInputElement>event.target).selectionEnd! - selectionStart;
+
+      let newValue = (this._el.nativeElement.value ?? '').split('');
+      newValue.splice((<HTMLInputElement>event.target).selectionStart, selectionTotal, event.data);
+      newValue = newValue.join('');
+      newValue = newValue.replace(/,/g, '.');
+
+      event.stopPropagation();
+      event.preventDefault();
+      if (isNaN(newValue)) {
+        return;
+      }
+
+      this._el.nativeElement.value = newValue;
+      this._el.nativeElement.dispatchEvent(new Event('input'));
+
       return;
     }
 

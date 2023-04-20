@@ -11,7 +11,6 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import { ColumnsSettings, FilterData } from "../../models/columns-settings.model";
 import { NzTableComponent } from "ng-zorro-antd/table";
 import { Subject, takeUntil } from "rxjs";
 import { ITEM_HEIGHT } from "../../../modules/all-trades/utils/all-trades.utils";
@@ -20,6 +19,7 @@ import { debounceTime } from "rxjs/operators";
 import { ContextMenu } from "../../models/infinite-scroll-table.model";
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
 import { TableConfig } from '../../models/table-config.model';
+import { BaseColumnSettings, FilterData } from "../../models/settings/table-settings.model";
 
 @Component({
   selector: 'ats-infinite-scroll-table[tableConfig]',
@@ -61,7 +61,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   public scrollHeight = 0;
   public filtersForm = new UntypedFormGroup({});
   public activeFilterName = '';
-  public sortedColumnName = '';
+  public sortedColumnId = '';
   public sortedColumnOrder: string | null = '';
   public selectedRow: any = null;
 
@@ -113,7 +113,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   public getWidthArr() {
-    return (this.tableConfig?.columns ?? []).map(col => col.width || 'auto');
+    return (this.tableConfig?.columns ?? []).map(col => col.width ? col.width + 'px' : 'auto');
   }
 
   public getFilterControl(filterName: string): UntypedFormControl | null {
@@ -137,10 +137,10 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
     this.getFilterControl(name)?.setValue(value);
   }
 
-  public sortChange(e: string | null, column: ColumnsSettings) {
-    this.sortedColumnName = column.name;
+  public sortChange(e: string | null, column: BaseColumnSettings<any>) {
+    this.sortedColumnId = column.id;
     this.sortedColumnOrder = e;
-    column.sortFn!(e);
+    column.sortChangeFn!(e);
   }
 
   public openContextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedRow: any): void {

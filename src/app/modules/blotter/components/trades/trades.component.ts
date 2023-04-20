@@ -29,7 +29,6 @@ import {
   startWith
 } from 'rxjs/operators';
 import { Trade } from 'src/app/shared/models/trades/trade.model';
-import { Column } from '../../models/column.model';
 import { TradeFilter } from '../../models/trade-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { MathHelper } from '../../../../shared/utils/math-helper';
@@ -47,6 +46,8 @@ import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { BlotterSettings } from '../../models/blotter-settings.model';
+import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
+import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -76,125 +77,91 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   displayTrades$: Observable<DisplayTrade[]> = of([]);
   filter = new BehaviorSubject<TradeFilter>({});
   isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
-  allColumns: Column<DisplayTrade, TradeFilter>[] = [
+  allColumns: BaseColumnSettings<DisplayTrade>[] = [
     {
       id: 'id',
-      name: 'Id',
+      displayName: 'Id',
       sortOrder: null,
       sortFn: (a: DisplayTrade, b: DisplayTrade) => Number(a.id) - Number(b.id),
-      searchDescription: 'Поиск по Номеру',
-      searchFn: (trade, filter) => filter.id ? trade.id.toLowerCase().includes(filter.id.toLowerCase()) : false,
-      isSearchVisible: false,
-      hasSearch: true,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
+      filterData: {
+        filterName: 'id',
+        isDefaultFilter: false
+      },
       tooltip: 'Идентификационный номер сделки'
     },
     {
       id: 'orderno',
-      name: 'Заявка',
+      displayName: 'Заявка',
       sortOrder: null,
       sortFn: (a: DisplayTrade, b: DisplayTrade) => Number(a.orderno) - Number(b.orderno),
-      searchDescription: 'Поиск по заявке',
-      searchFn: (trade, filter) => filter.orderno ? trade.orderno.toLowerCase().includes(filter.orderno.toLowerCase()) : false,
-      isSearchVisible: false,
-      hasSearch: true,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
+      filterData: {
+        filterName: 'orderno',
+        isDefaultFilter: false
+      },
       tooltip: 'Номер заявки',
       minWidth: 80
     },
     {
       id: 'symbol',
-      name: 'Тикер',
+      displayName: 'Тикер',
       sortOrder: null,
       sortFn: (a: DisplayTrade, b: DisplayTrade) => a.symbol.localeCompare(b.symbol),
-      searchDescription: 'Поиск по Тикеру',
-      searchFn: (trade, filter) => filter.symbol ? trade.symbol.toLowerCase().includes(filter.symbol.toLowerCase()) : false,
-      isSearchVisible: false,
-      hasSearch: true,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
+      filterData: {
+        filterName: 'symbol',
+        isDefaultFilter: false
+      },
       tooltip: 'Биржевой идентификатор ценной бумаги',
       minWidth: 75
     },
     {
       id: 'side',
-      name: 'Сторона',
+      displayName: 'Сторона',
       sortOrder: null,
       sortFn: (a: DisplayTrade, b: DisplayTrade) => a.side.toString().localeCompare(b.side.toString()),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [
-        {text: 'Покупка', value: 'buy'},
-        {text: 'Продажа', value: 'sell'}
-      ],
-      isFilterVisible: false,
-      hasFilter: true,
+      filterData: {
+        filterName: 'side',
+        isDefaultFilter: true,
+        filters: [
+          { text: 'Покупка', value: 'buy' },
+          { text: 'Продажа', value: 'sell' }
+        ]
+      },
       tooltip: 'Сторона сделки (покупка/продажа)',
       minWidth: 75
     },
     {
       id: 'qty',
-      name: 'Кол-во',
+      displayName: 'Кол-во',
       sortOrder: null,
       sortFn: (a: DisplayTrade, b: DisplayTrade) => Number(a.qty) - Number(b.qty),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Количество сделок',
       minWidth: 65
     },
     {
       id: 'price',
-      name: 'Цена',
+      displayName: 'Цена',
       sortOrder: null,
       sortFn: (a: DisplayTrade, b: DisplayTrade) => Number(a.price) - Number(b.price),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Цена'
     },
     {
       id: 'date',
-      name: 'Время',
+      displayName: 'Время',
       sortOrder: null,
       sortFn: (a: DisplayTrade, b: DisplayTrade) => Number(a.date) - Number(b.date),
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Время совершения сделки',
       minWidth: 60
     },
     {
       id: 'volume',
-      name: 'Объем',
+      displayName: 'Объем',
       sortOrder: null,
       sortFn: (a: DisplayTrade, b: DisplayTrade) => b.volume - a.volume,
-      searchFn: null,
-      isSearchVisible: false,
-      hasSearch: false,
-      listOfFilter: [],
-      isFilterVisible: false,
-      hasFilter: false,
       tooltip: 'Объём',
       minWidth: 60
     },
   ];
-  listOfColumns: Column<DisplayTrade, TradeFilter>[] = [];
+  listOfColumns: BaseColumnSettings<DisplayTrade>[] = [];
   scrollHeight$: Observable<number> = of(100);
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<BlotterSettings>;
@@ -238,10 +205,17 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
           .filter(c => !!c.columnSettings)
           .map((column, index) => ({
             ...column.column,
-            name: t(['columns', column.column.id, 'name'], { fallback: column.column.name }),
+            displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
             tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
-            searchDescription: t(['columns', column.column.id, 'searchDescription'], { fallback: column.column.searchDescription }),
-            listOfFilter: column.column.listOfFilter.map(f => ({ value: f.value, text: t(['columns', column.column.id, 'listOfFilter', f.value], { fallback: f.text }) })),
+            filterData: column.column.filterData
+              ? {
+                ...column.column.filterData,
+                filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
+                  value: f.value,
+                  text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
+                }))
+              }
+              : undefined,
             width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
             order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
           }))
@@ -298,7 +272,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
     return new Date(date).toLocaleTimeString();
   }
 
-  isFilterApplied(column: Column<DisplayTrade, TradeFilter>) {
+  isFilterApplied(column: BaseColumnSettings<DisplayTrade>) {
     const filter = this.filter.getValue();
     return column.id in filter && !!filter[column.id];
   }
@@ -323,7 +297,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  saveColumnWidth(columnId: string, width: number) {
+  saveColumnWidth(id: string, width: number) {
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
@@ -333,7 +307,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
           settings.guid,
           {
             tradesTable: TableSettingHelper.updateColumn(
-              columnId,
+              id,
               tableSettings,
               {
                 columnWidth: width
@@ -377,13 +351,20 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       if (filter[key as keyof TradeFilter]) {
         const column = this.listOfColumns.find(o => o.id == key);
         if (
-          column?.hasSearch && !column.searchFn!(trade, filter) ||
-          column?.hasFilter && filter[key]?.length  && !filter[key]?.includes((trade as any)[key])
+          !column!.filterData!.isDefaultFilter && !this.searchInTrade(trade, <keyof DisplayTrade>key, <string>filter[key]) ||
+          column!.filterData!.isDefaultFilter && filter[key]?.length  && !filter[key]?.includes(trade[<keyof DisplayTrade>key]!.toString())
         ) {
           isFiltered = false;
         }
       }
     }
     return isFiltered;
+  }
+
+  private searchInTrade(order: DisplayTrade, key: keyof DisplayTrade, value?: string): boolean {
+    if (!value) {
+      return true;
+    }
+    return order[key]!.toString().toLowerCase().includes(value.toLowerCase());
   }
 }

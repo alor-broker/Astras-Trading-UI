@@ -13,7 +13,7 @@
         class="container"
       >
         <div *ngFor="let cluster of (clusters$ | async); trackBy: trackBy" class="cluster-wrapper">
-          <ats-trades-cluster [cluster]="(cluster | async)!"
+          <ats-trades-cluster [cluster]="cluster"
                               [dataContext]="dataContext"
                               [xAxisStep]="xAxisStep">
 
@@ -26,7 +26,7 @@
           <li nz-menu-group>
       <span title>
         <span nz-icon nzType="history"></span>
-        <span class="pr-3">{{t('scalperOrderBookTradesClustersPanel.displayPanelsCountMenuLabel')}}</span>
+        <span class="pl-3">{{t('scalperOrderBookTradesClustersPanel.displayPanelsCountMenuLabel')}}</span>
       </span>
             <ul>
               <ng-container *ngFor="let item of availableIntervalsCount;">
@@ -46,7 +46,7 @@
           <li nz-menu-group>
       <span title>
         <span nz-icon nzType="clock-circle"></span>
-        <span class="pr-3">{{t('scalperOrderBookTradesClustersPanel.timeframesMenuLabel')}}</span>
+        <span class="pl-3">{{t('scalperOrderBookTradesClustersPanel.timeframesMenuLabel')}}</span>
       </span>
             <ul>
               <ng-container *ngFor="let item of availableTimeframes">

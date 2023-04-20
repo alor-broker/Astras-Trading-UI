@@ -1,13 +1,12 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { TableDisplaySettings } from '../../../shared/models/settings/table-display-settings.model';
-import { Column } from '../models/column.model';
+import { BaseColumnSettings, TableDisplaySettings } from '../../../shared/models/settings/table-settings.model';
 import { TableSettingHelper } from '../../../shared/utils/table-setting.helper';
 
 export class BlotterTablesHelper {
   static changeColumnOrder(
     event: CdkDragDrop<any>,
     targetSettings: TableDisplaySettings,
-    displayColumns: Column<any, any>[]): TableDisplaySettings {
+    displayColumns: BaseColumnSettings<any>[]): TableDisplaySettings {
     let updatedSettings = targetSettings;
 
     const currentColumn = displayColumns[event.previousIndex];

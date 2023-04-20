@@ -21,6 +21,14 @@ export const environment = {
     console: {
       minLevel: 'trace'
     }
+  },
+  firebase: {
+    apiKey: "AIzaSyCI0yjnNuT8VWJG4ow38-iY231ZoTGxV-o",
+    authDomain: "lessgo-alor.firebaseapp.com",
+    projectId: "lessgo-alor",
+    storageBucket: "lessgo-alor.appspot.com",
+    messagingSenderId: "766412584747",
+    appId: "1:766412584747:web:5f84a1aaf533f01013776e"
   }
 };
 

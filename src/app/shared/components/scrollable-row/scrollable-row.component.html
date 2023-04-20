@@ -1,0 +1,9 @@
+<div class="container">
+  <div (nzResizeObserve)="checkScroll()" cdkScrollable class="items" nzResizeObserver>
+    <ng-content></ng-content>
+  </div>
+  <div (mousedown)="$event.stopPropagation()" *ngIf="hasScroll$ | async" class="scroll-buttons">
+    <span (click)="move($event, 'left')" nz-icon nzTheme="outline" nzType="left"></span>
+    <span (click)="move($event, 'right')" nz-icon nzTheme="outline" nzType="right"></span>
+  </div>
+</div>

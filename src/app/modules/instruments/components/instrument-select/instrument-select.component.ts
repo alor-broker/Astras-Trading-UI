@@ -31,7 +31,7 @@ import { InstrumentsService } from '../../services/instruments.service';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { WatchlistCollection } from '../../models/watchlist.model';
+import {Watchlist, WatchlistCollection} from '../../models/watchlist.model';
 import { DOCUMENT } from '@angular/common';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
@@ -166,6 +166,11 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
         this.settingsService.updateSettings(this.guid, { activeListId: defaultList.id });
       }
     });
+  }
+
+  hasDefaultTitle(list: Watchlist): boolean {
+    return (list.isDefault ?? false)
+      && list.title === WatchlistCollectionService.DefaultListName;
   }
 
   ngOnDestroy(): void {

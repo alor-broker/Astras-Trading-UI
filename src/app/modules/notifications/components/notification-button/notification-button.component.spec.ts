@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NotificationButtonComponent } from './notification-button.component';
-import { ngZorroMockComponents, sharedModuleImportForTests } from '../../../../shared/utils/testing';
+import { ngZorroMockComponents } from '../../../../shared/utils/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NzDropDownModule } from "ng-zorro-antd/dropdown";
 import { NotificationsService } from "../../services/notifications.service";
