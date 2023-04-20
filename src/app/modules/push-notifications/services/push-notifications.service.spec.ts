@@ -4,7 +4,6 @@ import { PushNotificationsService } from './push-notifications.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { AngularFireMessaging } from "@angular/fire/compat/messaging";
 import { of } from "rxjs";
-import { AuthService } from "../../../shared/services/auth.service";
 import { Store } from "@ngrx/store";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 
@@ -21,12 +20,6 @@ describe('FirebaseNotificationsService', () => {
           provide: AngularFireMessaging,
           useValue: {
             requestToken: of('testToken')
-          }
-        },
-        {
-          provide: AuthService,
-          useValue: {
-            currentUser$: of({ refreshToken: 'testRefreshToken' })
           }
         },
         {
