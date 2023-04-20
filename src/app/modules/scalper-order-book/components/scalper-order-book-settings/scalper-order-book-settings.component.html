@@ -3,154 +3,134 @@
   <div *ngIf="form">
     <form (ngSubmit)="submitForm()" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
       <nz-form-item>
-        <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.tickerError')">
-          <nz-form-label nzRequired nzFor="instrument">{{t('scalperOrderBookSettings.tickerLabel')}}</nz-form-label>
-          <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="exchange" nzRequired>{{t('scalperOrderBookSettings.exchangeLabel')}}</nz-form-label>
-        <nz-form-control>
-          <nz-select formControlName='exchange'>
-            <nz-option *ngFor='let exchange of exchanges' [nzLabel]="exchange" [nzValue]="exchange"></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="depth" nzRequired>{{t('scalperOrderBookSettings.depthLabel')}}</nz-form-label>
-        <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.intervalError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
-          <input
-            (mousedown)="$event.stopPropagation()"
-            atsNumerical
-            formControlName="depth"
-            nz-input
-            [placeholder]="t('scalperOrderBookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"
-          >
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item class="one-row">
-        <nz-form-label nzFor="showZeroVolumeItems">{{t('scalperOrderBookSettings.showZeroVolumeItemsLabel')}}</nz-form-label>
-        <nz-form-control>
-          <nz-switch formControlName='showZeroVolumeItems'></nz-switch>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item class="one-row">
-        <nz-form-label nzFor="showSpreadItems">{{t('scalperOrderBookSettings.showSpreadItemsLabel')}}</nz-form-label>
-        <nz-form-control>
-          <nz-switch formControlName='showSpreadItems'></nz-switch>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item class="one-row">
-        <nz-form-label nzFor="showTradesPanel">{{t('scalperOrderBookSettings.showTradesPanelLabel')}}</nz-form-label>
-        <nz-form-control>
-          <nz-switch formControlName='showTradesPanel'></nz-switch>
-        </nz-form-control>
-      </nz-form-item>
-
-      <nz-form-item class="one-row">
-        <nz-form-label nzFor="disableHotkeys">{{t('scalperOrderBookSettings.disableHotkeysLabel')}}</nz-form-label>
-        <nz-form-control>
-          <nz-switch formControlName='disableHotkeys'></nz-switch>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item class="one-row">
-        <nz-form-label nzFor="enableMouseClickSilentOrders">{{t('scalperOrderBookSettings.enableMouseClickSilentOrdersLabel')}}</nz-form-label>
-        <nz-form-control>
-          <nz-switch formControlName='enableMouseClickSilentOrders'></nz-switch>
-        </nz-form-control>
-      </nz-form-item>
-
-      <nz-form-item>
-        <nz-form-label nzFor="highlightHighVolume">{{t('scalperOrderBookSettings.highlightHighVolumeLabel')}}</nz-form-label>
-        <nz-form-control>
-          <nz-select [nzDisabled]="hasVolumeHighlightOptionsErrors()" formControlName='volumeHighlightMode'>
-            <nz-option
-              *ngFor='let option of availableVolumeHighlightModes'
-              [nzLabel]="t('scalperOrderBookSettings.highlightHighVolumeOptions.' + option, { fallback: option })"
-              [nzValue]="option"
-            ></nz-option>
-          </nz-select>
-          <span *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.BiggestVolume" nz-typography nzType="secondary">
-            {{t('scalperOrderBookSettings.biggestVolumeHint')}}
-          </span>
-          <span *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue" nz-typography nzType="secondary">
-            {{t('scalperOrderBookSettings.VolumeBoundsWithFixedValueHint')}}
-          </span>
-        </nz-form-control>
-      </nz-form-item>
-
-      <nz-form-item>
-        <nz-collapse *ngIf="showVolumeHighlightOptions()" [nzBordered]="false" nzGhost>
-          <nz-collapse-panel
-            [nzActive]="true"
-            [nzDisabled]="hasVolumeHighlightOptionsErrors()"
-            [nzHeader]="t('scalperOrderBookSettings.volumeHighlightSettingsLabel')"
-          >
-            <nz-form-item *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue">
-              <nz-form-label nzFor="volumeHighlightFullness" nzRequired>{{t('scalperOrderBookSettings.volumeHighlightFullness')}}</nz-form-label>
-              <nz-form-control [nzErrorTip]="t(
-              'scalperOrderBookSettings.intervalError',
-               {
-                min: validationOptions.volumeHighlightOption.volumeHighlightFullness.min,
-                 max: validationOptions.volumeHighlightOption.volumeHighlightFullness.max
-                 })"
-              >
-                <input (mousedown)="$event.stopPropagation()" atsNumerical nz-input formControlName="volumeHighlightFullness"/>
+        <nz-collapse [nzBordered]="false" nzGhost>
+          <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.instrumentSelectionHeader')" nzActive="true">
+            <nz-form-item>
+              <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.tickerError')">
+                <nz-form-label nzRequired nzFor="instrument">{{t('scalperOrderBookSettings.tickerLabel')}}</nz-form-label>
+                <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-              <ng-container *ngFor="let optionForm of volumeHighlightOptions.controls; index as i">
-                <div [formGroup]="asFormGroup(optionForm)" class="volume-highlight-options">
-                  <nz-form-control
-                    [nzErrorTip]="t(
-                    'scalperOrderBookSettings.intervalError',
-                    {
-                     min: validationOptions.volumeHighlightOption.boundary.min,
-                     max: validationOptions.volumeHighlightOption.boundary.max
-                    })"
-                  >
-                    <nz-form-label nzFor="boundary" nzRequired>{{t('scalperOrderBookSettings.volumeLabel')}}</nz-form-label>
-                    <input (mousedown)="$event.stopPropagation()" atsNumerical nz-input formControlName="boundary"/>
-                  </nz-form-control>
-                  <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.colorError')">
-                    <nz-form-label nzFor="color" nzRequired>{{t('scalperOrderBookSettings.colorLabel')}}</nz-form-label>
-                    <ats-color-picker-input (colorChangeComplete)="setVolumeHighlightOptionColor(i, $event)" [value]="optionForm.value.color"></ats-color-picker-input>
-                  </nz-form-control>
-                  <button (click)="removeVolumeHighlightOption($event, i)"
-                          class="volume-highlight-options-remove-btn"
-                          nz-button
-                          nzType="dashed"
-                          [disabled]="!canRemoveVolumeHighlightOption">
-                    <i nz-icon nzType="minus"></i>
-                  </button>
-                </div>
-              </ng-container>
-              <button (click)="addVolumeHighlightOption($event)" [disabled]="!volumeHighlightOptions.valid" class="add-volume-highlight-option-btn" nz-button nzType="dashed">
-                <i nz-icon nzType="plus"></i>
-              </button>
+              <nz-form-label nzFor="exchange" nzRequired>{{t('scalperOrderBookSettings.exchangeLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName='exchange'>
+                  <nz-option *ngFor='let exchange of exchanges' [nzLabel]="exchange" [nzValue]="exchange"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzFor="instrumentGroup">{{t('scalperOrderBookSettings.instrumentGroupLabel')}}</nz-form-label>
+              <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.instrumentGroupError')">
+                <ats-instrument-board-select
+                  [instrument]="form.value?.instrument ?? null"
+                  [placeholder]="t('scalperOrderBookSettings.instrumentGroupLabel')"
+                  formControlName="instrumentGroup">
+                </ats-instrument-board-select>
+              </nz-form-control>
+
             </nz-form-item>
           </nz-collapse-panel>
-        </nz-collapse>
-      </nz-form-item>
-
-      <nz-form-item>
-        <nz-collapse [nzBordered]="false" nzGhost class="working-volumes">
-          <nz-collapse-panel [nzDisabled]="!form.controls.workingVolumes.valid" [nzHeader]="t('scalperOrderBookSettings.workingVolumesHeader')">
+          <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.displaySettingsHeader')">
+            <nz-form-item>
+              <nz-form-label nzFor="depth" nzRequired>{{t('scalperOrderBookSettings.depthLabel')}}</nz-form-label>
+              <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.intervalError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
+                <input
+                  (mousedown)="$event.stopPropagation()"
+                  atsNumerical
+                  formControlName="depth"
+                  nz-input
+                  [placeholder]="t('scalperOrderBookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"
+                >
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="showZeroVolumeItems">{{t('scalperOrderBookSettings.showZeroVolumeItemsLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='showZeroVolumeItems'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="showSpreadItems">{{t('scalperOrderBookSettings.showSpreadItemsLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='showSpreadItems'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzFor="volumeDisplayFormat">{{t('scalperOrderBookSettings.volumeFormatDisplayLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName='volumeDisplayFormat'>
+                  <nz-option
+                    *ngFor='let option of availableNumberFormats'
+                    [nzLabel]="t('numberDisplayFormatOptions.' + option, { fallback: option })"
+                    [nzValue]="option"
+                  ></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzFor="autoAlignIntervalSec" class="auto-align-label">
+                {{t('scalperOrderBookSettings.autoAlignIntervalLabel')}}
+              </nz-form-label>
+              <nz-form-control
+                [nzErrorTip]="t(
+                'scalperOrderBookSettings.intervalError',
+                {
+                min: validationOptions.autoAlignIntervalSec.min,
+                max: validationOptions.autoAlignIntervalSec.max
+                })"
+              >
+                <input (mousedown)="$event.stopPropagation()" atsNumerical nz-input formControlName="autoAlignIntervalSec"/>
+                <span nz-typography nzType="secondary">
+                  {{t('scalperOrderBookSettings.autoAlignIntervalHint')}}
+                </span>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-collapse-panel>
+          <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.ordersSettingsHeader')">
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="disableHotkeys">{{t('scalperOrderBookSettings.disableHotkeysLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='disableHotkeys'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="enableMouseClickSilentOrders">{{t('scalperOrderBookSettings.enableMouseClickSilentOrdersLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='enableMouseClickSilentOrders'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-collapse-panel>
+          <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.additionalPanelsHeader')">
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="showTradesPanel">{{t('scalperOrderBookSettings.showTradesPanelLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='showTradesPanel'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="showTradesClustersPanel">{{t('scalperOrderBookSettings.showTradesClustersPanelLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='showTradesClustersPanel'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-collapse-panel>
+          <nz-collapse-panel class="working-volumes" [nzDisabled]="!form.controls.workingVolumes.valid" [nzHeader]="t('scalperOrderBookSettings.workingVolumesHeader')">
             <div class="hint">{{t('scalperOrderBookSettings.workingVolumesHint')}}</div>
             <nz-form-item>
               <div *ngFor="let ctrl of workingVolumes.controls; let i = index" class="working-volume-option">
-                  <nz-form-label nzFor="workingVolume1" nzRequired>{{t('scalperOrderBookSettings.workingVolumeLabel')}} {{i + 1}}</nz-form-label>
-                  <nz-form-control [nzErrorTip]="workingVolumeError">
-                    <nz-input-group>
-                      <input
-                        (mousedown)="$event.stopPropagation()"
-                        [formControl]="workingVolumeCtrl(i)"
-                        atsNumerical
-                        nz-input
-                        placeholder="1"
-                      />
-                    </nz-input-group>
-                  </nz-form-control>
+                <nz-form-label nzFor="workingVolume1" nzRequired>{{t('scalperOrderBookSettings.workingVolumeLabel')}} {{i + 1}}</nz-form-label>
+                <nz-form-control [nzErrorTip]="workingVolumeError">
+                  <nz-input-group>
+                    <input
+                      (mousedown)="$event.stopPropagation()"
+                      [formControl]="workingVolumeCtrl(i)"
+                      atsNumerical
+                      nz-input
+                      placeholder="1"
+                    />
+                  </nz-input-group>
+                </nz-form-control>
                 <button
                   (click)="removeWorkingVolume($event, i)"
                   [disabled]="workingVolumes.controls.length < 2"
@@ -172,37 +152,77 @@
               </button>
             </nz-form-item>
           </nz-collapse-panel>
-        </nz-collapse>
-      </nz-form-item>
-
-      <nz-form-item>
-        <nz-collapse [nzBordered]="false" nzGhost>
-          <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.advanced')">
+          <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.highlightSettingsHeader')">
             <nz-form-item>
-              <nz-form-label nzFor="instrumentGroup">{{t('scalperOrderBookSettings.instrumentGroupLabel')}}</nz-form-label>
-              <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.instrumentGroupError')">
-                <ats-instrument-board-select
-                  [instrument]="form.value?.instrument ?? null"
-                  [placeholder]="t('scalperOrderBookSettings.instrumentGroupLabel')"
-                  formControlName="instrumentGroup">
-                </ats-instrument-board-select>
+              <nz-form-label nzFor="highlightHighVolume">{{t('scalperOrderBookSettings.highlightHighVolumeLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-select [nzDisabled]="hasVolumeHighlightOptionsErrors()" formControlName='volumeHighlightMode'>
+                  <nz-option
+                    *ngFor='let option of availableVolumeHighlightModes'
+                    [nzLabel]="t('scalperOrderBookSettings.highlightHighVolumeOptions.' + option, { fallback: option })"
+                    [nzValue]="option"
+                  ></nz-option>
+                </nz-select>
+                <span *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.BiggestVolume" nz-typography nzType="secondary">
+            {{t('scalperOrderBookSettings.biggestVolumeHint')}}
+          </span>
+                <span *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue" nz-typography nzType="secondary">
+            {{t('scalperOrderBookSettings.volumeBoundsWithFixedValueHint')}}
+          </span>
               </nz-form-control>
-              <nz-form-label nzFor="autoAlignIntervalSec" class="auto-align-label">
-                {{t('scalperOrderBookSettings.autoAlignIntervalLabel')}}
-              </nz-form-label>
-              <nz-form-control
-                [nzErrorTip]="t(
-                'scalperOrderBookSettings.intervalError',
-                {
-                min: validationOptions.autoAlignIntervalSec.min,
-                max: validationOptions.autoAlignIntervalSec.max
-                })"
-              >
-                <input (mousedown)="$event.stopPropagation()" atsNumerical nz-input formControlName="autoAlignIntervalSec"/>
-                <span nz-typography nzType="secondary">
-                  {{t('scalperOrderBookSettings.autoAlignIntervalHint')}}
-                </span>
-              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-collapse *ngIf="showVolumeHighlightOptions()" [nzBordered]="false" nzGhost>
+                <nz-collapse-panel
+                  [nzActive]="true"
+                  [nzDisabled]="hasVolumeHighlightOptionsErrors()"
+                  [nzHeader]="t('scalperOrderBookSettings.volumeHighlightSettingsLabel')"
+                >
+                  <nz-form-item *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue">
+                    <nz-form-label nzFor="volumeHighlightFullness" nzRequired>{{t('scalperOrderBookSettings.volumeHighlightFullnessLabel')}}</nz-form-label>
+                    <nz-form-control [nzErrorTip]="t(
+              'scalperOrderBookSettings.intervalError',
+               {
+                min: validationOptions.volumeHighlightOption.volumeHighlightFullness.min,
+                 max: validationOptions.volumeHighlightOption.volumeHighlightFullness.max
+                 })"
+                    >
+                      <input (mousedown)="$event.stopPropagation()" atsNumerical nz-input formControlName="volumeHighlightFullness"/>
+                    </nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                    <ng-container *ngFor="let optionForm of volumeHighlightOptions.controls; index as i">
+                      <div [formGroup]="asFormGroup(optionForm)" class="volume-highlight-options">
+                        <nz-form-control
+                          [nzErrorTip]="t(
+                    'scalperOrderBookSettings.intervalError',
+                    {
+                     min: validationOptions.volumeHighlightOption.boundary.min,
+                     max: validationOptions.volumeHighlightOption.boundary.max
+                    })"
+                        >
+                          <nz-form-label nzFor="boundary" nzRequired>{{t('scalperOrderBookSettings.volumeLabel')}}</nz-form-label>
+                          <input (mousedown)="$event.stopPropagation()" atsNumerical nz-input formControlName="boundary"/>
+                        </nz-form-control>
+                        <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.colorError')">
+                          <nz-form-label nzFor="color" nzRequired>{{t('scalperOrderBookSettings.colorLabel')}}</nz-form-label>
+                          <ats-color-picker-input (colorChangeComplete)="setVolumeHighlightOptionColor(i, $event)" [value]="optionForm.value.color"></ats-color-picker-input>
+                        </nz-form-control>
+                        <button (click)="removeVolumeHighlightOption($event, i)"
+                                class="volume-highlight-options-remove-btn"
+                                nz-button
+                                nzType="dashed"
+                                [disabled]="!canRemoveVolumeHighlightOption">
+                          <i nz-icon nzType="minus"></i>
+                        </button>
+                      </div>
+                    </ng-container>
+                    <button (click)="addVolumeHighlightOption($event)" [disabled]="!volumeHighlightOptions.valid" class="add-volume-highlight-option-btn" nz-button nzType="dashed">
+                      <i nz-icon nzType="plus"></i>
+                    </button>
+                  </nz-form-item>
+                </nz-collapse-panel>
+              </nz-collapse>
             </nz-form-item>
           </nz-collapse-panel>
         </nz-collapse>

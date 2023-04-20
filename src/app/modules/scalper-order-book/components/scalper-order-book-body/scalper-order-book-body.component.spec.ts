@@ -13,6 +13,7 @@ import {
 } from '../../../../shared/utils/testing';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 
 describe('ScalperOrderBookBodyComponent', () => {
   let component: ScalperOrderBookBodyComponent;
@@ -56,6 +57,12 @@ describe('ScalperOrderBookBodyComponent', () => {
           provide: HotKeyCommandService,
           useValue: {
             commands$: new Subject()
+          }
+        },
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
           }
         }
       ]

@@ -30,6 +30,7 @@ import {
   VolumeHighlightMode,
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
+import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -50,6 +51,8 @@ interface DisplayRow extends BodyRow {
   styleUrls: ['./scalper-order-book-table.component.less']
 })
 export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
+  readonly numberFormats = NumberDisplayFormat;
+
   ordersSides = Side;
   @Input()
   rowHeight!: number;

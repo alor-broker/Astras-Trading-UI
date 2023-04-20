@@ -36,6 +36,8 @@ import {
   ScalperOrderBookRowType
 } from '../../models/scalper-order-book.model';
 import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-table.helper';
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { ScalperOrderBookSettings } from '../../models/scalper-order-book-settings.model';
 
 @Component({
   selector: 'ats-scalper-order-book-body[guid][isActive][workingVolume]',
@@ -44,6 +46,11 @@ import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-tabl
   providers: [PriceRowsStore]
 })
 export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnDestroy {
+  readonly panelIds = {
+    currentTrades: 'current-trades',
+    tradeClusters: 'trade-clusters'
+  };
+
   readonly rowHeight = 18;
 
   @ViewChild(CdkVirtualScrollViewport)
@@ -55,6 +62,8 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   readonly isLoading$ = new BehaviorSubject(false);
   dataContext!: ScalperOrderBookDataContext;
   hiddenOrdersIndicators$!: Observable<{ up: boolean, down: boolean }>;
+
+  initialWidths$!: Observable<{[K:string]: number}>;
   private readonly renderItemsRange$ = new BehaviorSubject<ListRange | null>(null);
   private readonly destroyable = new Destroyable();
   private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
@@ -64,7 +73,8 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   constructor(
     private readonly scalperOrderBookDataContextService: ScalperOrderBookDataContextService,
     private readonly priceRowsStore: PriceRowsStore,
-    private readonly hotkeysService: HotKeyCommandService) {
+    private readonly hotkeysService: HotKeyCommandService,
+    private readonly widgetSettingsService: WidgetSettingsService) {
   }
 
   @Input()
@@ -86,6 +96,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.initAutoAlign();
     this.subscribeToHotkeys();
     this.initHiddenOrdersIndicators();
+    this.initLayout();
   }
 
   ngAfterViewInit(): void {
@@ -107,6 +118,25 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.isLoading$.complete();
     this.renderItemsRange$.complete();
     this.workingVolume$.complete();
+  }
+
+  updatePanelWidth(panel: string, width: number) {
+    this.widgetSettingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(
+      take(1)
+    ).subscribe(settings => {
+      this.widgetSettingsService.updateSettings<ScalperOrderBookSettings>(
+        settings.guid,
+        {
+          layout: {
+            ...settings.layout,
+            widths: {
+              ...settings.layout?.widths,
+              [panel]: width
+            }
+          }
+        }
+      );
+    });
   }
 
   private subscribeToHotkeys() {
@@ -160,6 +190,14 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         };
       }),
       shareReplay({ bufferSize: 1, refCount: true }),
+    );
+  }
+
+  private initLayout() {
+    this.initialWidths$ = this.dataContext.extendedSettings$.pipe(
+      take(1),
+      map(x => x.widgetSettings.layout?.widths ?? {}),
+      shareReplay(1)
     );
   }
 

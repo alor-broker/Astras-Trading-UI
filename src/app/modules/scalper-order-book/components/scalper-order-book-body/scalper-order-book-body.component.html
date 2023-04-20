@@ -9,27 +9,44 @@
     class="container show-scroll"
     nzResizeObserver>
     <ng-container *ngIf="dataContext">
-      <ng-container *ngIf="dataContext.orderBookBody$ | async as orderBookBody">
-        <div id="spacer">
-          <div *cdkVirtualFor="let row of orderBookBody; templateCacheSize: 0"
-               [style.height]="rowHeight + 'px'"
-               [style.line-height]="rowHeight + 'px'"
-          ></div>
-        </div>
-        <div *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesPanel" id="trades">
-          <ats-trades-panel
-            [dataContext]="dataContext"
-            [xAxisStep]="rowHeight"
-          >
-          </ats-trades-panel>
-        </div>
-        <div id="table">
-          <ats-scalper-order-book-table [dataContext]="dataContext"
-                                        [isActive]="isActive"
-                                        [rowHeight]="rowHeight"
-          >
-          </ats-scalper-order-book-table>
-        </div>
+      <ng-container *ngIf="initialWidths$ | async as initialWidths">
+        <ng-container *ngIf="dataContext.orderBookBody$ | async as orderBookBody">
+          <div id="spacer">
+            <div *cdkVirtualFor="let row of orderBookBody; templateCacheSize: 0"
+                 [style.height]="rowHeight + 'px'"
+                 [style.line-height]="rowHeight + 'px'"
+            ></div>
+          </div>
+          <div *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesClustersPanel"
+               [id]="panelIds.tradeClusters"
+               [ngStyle]="{ 'width': (initialWidths?.[panelIds.tradeClusters] ?? 50) + 'px'}"
+               atsResizable
+               [minWidth]="20"
+               (atsWidthChanged)="updatePanelWidth(panelIds.tradeClusters, $event)">
+            <ats-trade-clusters-panel
+              [dataContext]="dataContext"
+              [xAxisStep]="rowHeight"
+            ></ats-trade-clusters-panel>
+          </div>
+          <div *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesPanel"
+               [id]="panelIds.currentTrades"
+               [ngStyle]="{ 'width': (initialWidths?.[panelIds.currentTrades] ?? 75) + 'px'}"
+               atsResizable
+               [minWidth]="20"
+               (atsWidthChanged)="updatePanelWidth(panelIds.currentTrades, $event)">
+            <ats-trades-panel
+              [dataContext]="dataContext"
+              [xAxisStep]="rowHeight"
+            ></ats-trades-panel>
+          </div>
+          <div id="table">
+            <ats-scalper-order-book-table [dataContext]="dataContext"
+                                          [isActive]="isActive"
+                                          [rowHeight]="rowHeight"
+            >
+            </ats-scalper-order-book-table>
+          </div>
+        </ng-container>
       </ng-container>
     </ng-container>
   </cdk-virtual-scroll-viewport>

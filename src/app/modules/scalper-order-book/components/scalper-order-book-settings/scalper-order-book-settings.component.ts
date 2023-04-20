@@ -29,6 +29,7 @@ import {
   VolumeHighlightMode,
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
+import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 
 @Component({
   selector: 'ats-scalper-order-book-settings[settingsChange][guid]',
@@ -57,6 +58,9 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
       max: 600
     }
   };
+
+  readonly availableNumberFormats = Object.values(NumberDisplayFormat);
+
   @Input()
   guid!: string;
   @Output()
@@ -232,6 +236,8 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
         ]
       ),
       showTradesPanel: new UntypedFormControl(settings.showTradesPanel ?? false),
+      showTradesClustersPanel: new UntypedFormControl(settings.showTradesClustersPanel ?? false),
+      volumeDisplayFormat: new UntypedFormControl(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default),
     });
   }
 

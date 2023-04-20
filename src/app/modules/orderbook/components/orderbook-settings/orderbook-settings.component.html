@@ -37,6 +37,18 @@
           </nz-select>
         </nz-form-control>
       </nz-form-item>
+      <nz-form-item>
+        <nz-form-control>
+          <nz-form-label nzFor="volumeDisplayFormat">{{t('orderbookSettings.volumeFormatDisplayLabel')}}</nz-form-label>
+          <nz-select formControlName='volumeDisplayFormat'>
+            <nz-option
+              *ngFor='let option of availableNumberFormats'
+              [nzLabel]="t('numberDisplayFormatOptions.' + option, { fallback: option })"
+              [nzValue]="option"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
       <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-form-label nzFor="useOrderWidget">
           {{t('orderbookSettings.useOrderWidgetLabel')}}
@@ -69,7 +81,7 @@
       </nz-form-item>
       <nz-form-item>
         <nz-collapse [nzBordered]="false" nzGhost>
-          <nz-collapse-panel [nzHeader]="t('orderbookSettings.advanced')">
+          <nz-collapse-panel [nzHeader]="t('orderbookSettings.advancedHeader')">
             <nz-form-control [nzErrorTip]="t('orderbookSettings.instrumentGroupError')">
               <nz-form-label nzFor="instrumentGroup">{{t('orderbookSettings.instrumentGroupLabel')}}</nz-form-label>
               <ats-instrument-board-select

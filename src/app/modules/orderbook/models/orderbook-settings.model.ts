@@ -1,5 +1,6 @@
 import { WidgetSettings } from '../../../shared/models/widget-settings.model';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
+import { NumberDisplayFormat } from '../../../shared/models/enums/number-display-format';
 
 export enum ColumnsOrder {
   volumesAtTheEdges = 'volumesAtTheEdges',
@@ -14,4 +15,6 @@ export interface OrderbookSettings extends WidgetSettings, InstrumentKey {
   useOrderWidget: boolean;
   showVolume: boolean;
   columnsOrder: ColumnsOrder;
+
+  volumeDisplayFormat?: NumberDisplayFormat;
 }

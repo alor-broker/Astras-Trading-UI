@@ -1,0 +1,11 @@
+﻿{
+  "displayPanelsCountMenuLabel": "Число интервалов",
+  "timeframesMenuLabel": "Таймфрейм",
+
+  "timeframeOptions": {
+    "60": "1 минута",
+    "300": "5 минут",
+    "900": "15 минут",
+    "3600": "1 час"
+  }
+}
