@@ -1,0 +1,11 @@
+﻿[
+  {
+    "typeId": "ribbon",
+    "desktopMeta": {
+      "icon": "stock",
+      "initialPosition": "top",
+      "initialHeight": 1,
+      "initialWidth": "full-width"
+    }
+  }
+]

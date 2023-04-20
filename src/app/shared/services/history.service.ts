@@ -1,10 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import {
-  filter,
-  map
-} from 'rxjs/operators';
+import { Observable, take } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Candle } from '../models/history/candle.model';
 import { HistoryRequest } from '../models/history/history-request.model';
@@ -26,23 +23,30 @@ export class HistoryService {
   ) {
   }
 
-  getDaysOpen(instrument: InstrumentKey): Observable<Candle> {
-    const request = {
-      symbol: instrument.symbol,
-      exchange: instrument.exchange,
-      tf: 'D',
-      from: addDaysUnix(new Date(), -14),
-      to: Math.round(Date.now() / 1000),
-      instrumentGroup: instrument.instrumentGroup
-    };
+  getLastTwoCandles(instrumentKey: InstrumentKey): Observable<{ cur: Candle, prev: Candle } | null> {
+    return this.getHistory(
+      {
+        symbol: instrumentKey.symbol,
+        exchange: instrumentKey.exchange,
+        tf: 'D',
+        from: addDaysUnix(new Date(), -30),
+        to: Math.round(Date.now() / 1000),
+      }
+    ).pipe(
+      take(1),
+      map(x => {
+        if (!x || x.history.length < 2) {
+          return null;
+        }
 
-    return this.getHistory(request).pipe(
-      filter((x): x is HistoryResponse => !!x),
-      map(resp => {
-          const [lastCandle] = resp.history.slice(-1);
-          return lastCandle;
-        },
-      ));
+        const [prev, cur] = x.history.slice(-2);
+
+        return {
+          cur,
+          prev
+        };
+      })
+    );
   }
 
   getHistory(request: HistoryRequest): Observable<HistoryResponse | null> {
