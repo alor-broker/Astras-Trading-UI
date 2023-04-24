@@ -1,4 +1,4 @@
-﻿export interface BaseHttpResponse {
+﻿export interface BaseCommandResponse {
   message: string;
   code?: string;
 }

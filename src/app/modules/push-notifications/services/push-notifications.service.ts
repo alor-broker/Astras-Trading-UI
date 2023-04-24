@@ -7,7 +7,7 @@ import {catchHttpError, mapWith} from "../../../shared/utils/observable-helper";
 import {catchError, filter, map} from "rxjs/operators";
 import {ErrorHandlerService} from "../../../shared/services/handle-error/error-handler.service";
 import {PriceChangeRequest, PushSubscriptionType, SubscriptionBase} from "../models/push-notifications.model";
-import {BaseHttpResponse} from "../../../shared/models/http-request-response.model";
+import {BaseCommandResponse} from "../../../shared/models/http-request-response.model";
 
 interface MessagePayload {
   data?: {
@@ -35,10 +35,10 @@ export class PushNotificationsService {
   ) {
   }
 
-  subscribeToOrdersExecute(portfolios: { portfolio: string, exchange: string }[]): Observable<BaseHttpResponse | null> {
+  subscribeToOrdersExecute(portfolios: { portfolio: string, exchange: string }[]): Observable<BaseCommandResponse | null> {
     return this.getToken()
       .pipe(
-        switchMap(() => this.http.post<BaseHttpResponse>(
+        switchMap(() => this.http.post<BaseCommandResponse>(
           this.baseUrl + '/actions/addOrdersExecute',
           {
             portfolios: portfolios.map(p => ({portfolio: p.portfolio, exchange: p.exchange})),
@@ -50,7 +50,7 @@ export class PushNotificationsService {
           }
           return throwError(err);
         }),
-        catchHttpError<BaseHttpResponse | null>(null, this.errorHandlerService),
+        catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         tap(r => {
           if (!!r) {
             this.subscriptionsUpdatedSub.next(PushSubscriptionType.OrderExecute);
@@ -59,18 +59,18 @@ export class PushNotificationsService {
       );
   }
 
-  subscribeToPriceChange(request: PriceChangeRequest): Observable<BaseHttpResponse | null> {
+  subscribeToPriceChange(request: PriceChangeRequest): Observable<BaseCommandResponse | null> {
     return this.getToken()
       .pipe(
         take(1),
-        switchMap(() => this.http.post<BaseHttpResponse>(this.baseUrl + '/actions/addPriceSpark', request)),
+        switchMap(() => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addPriceSpark', request)),
         catchError(err => {
           if (err.error.code === 'SubscriptionAlreadyExists') {
             return of({message: 'success', code: err.error.code});
           }
           return throwError(err);
         }),
-        catchHttpError<BaseHttpResponse | null>(null, this.errorHandlerService),
+        catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         take(1),
         tap(r => {
           if (!!r) {
@@ -103,11 +103,11 @@ export class PushNotificationsService {
     );
   }
 
-  cancelSubscription(id: string): Observable<BaseHttpResponse | null> {
+  cancelSubscription(id: string): Observable<BaseCommandResponse | null> {
     return this.getToken()
       .pipe(
-        switchMap(() => this.http.delete<BaseHttpResponse>(`${this.baseUrl}/${id}`)),
-        catchHttpError<BaseHttpResponse | null>(null, this.errorHandlerService),
+        switchMap(() => this.http.delete<BaseCommandResponse>(`${this.baseUrl}/${id}`)),
+        catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         take(1),
         tap(r => {
           if (!!r) {
@@ -126,7 +126,7 @@ export class PushNotificationsService {
       .pipe(
         filter(token => !!token),
         mapWith(
-          token => this.http.post<BaseHttpResponse>(this.baseUrl + '/actions/addToken', {token})
+          token => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addToken', {token})
             .pipe(
               catchError(err => {
                 if (err.error.code === 'TokenAlreadyExists') {
@@ -134,7 +134,7 @@ export class PushNotificationsService {
                 }
                 return throwError(err);
               }),
-              catchHttpError<BaseHttpResponse | null>(null, this.errorHandlerService)
+              catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService)
             ),
           (token, res) => res ? token : null),
         filter(token => !!token),
