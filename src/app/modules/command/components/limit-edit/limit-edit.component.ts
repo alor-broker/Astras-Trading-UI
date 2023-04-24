@@ -47,6 +47,13 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     this.commandContext$.next(value);
   }
 
+  @Input()
+  set quantity(value: {quantity: number} | null){
+    if(value?.quantity != null) {
+      this.quantitySelect(value.quantity);
+    }
+  }
+
   ngOnInit() {
     this.commandContext$.pipe(
       filter((x): x is CommandContextModel<EditParams> => !!x),
@@ -54,10 +61,6 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     ).subscribe(context => {
       this.initCommandForm(context);
     });
-
-    this.service.quantitySelected$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(qty => this.quantitySelect(qty));
   }
 
   ngOnDestroy(): void {

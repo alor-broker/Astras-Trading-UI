@@ -61,6 +61,13 @@ export class StopEditComponent implements OnInit, OnDestroy {
     this.commandContext$.next(value);
   }
 
+  @Input()
+  set quantity(value: {quantity: number} | null){
+    if(value?.quantity != null) {
+      this.form.get('quantity')?.setValue(value.quantity);
+    }
+  }
+
   ngOnInit() {
     this.commandContext$.pipe(
       filter((x): x is CommandContextModel<EditParams> => !!x),
@@ -69,12 +76,6 @@ export class StopEditComponent implements OnInit, OnDestroy {
     ).subscribe(([context, converter]) => {
       this.initCommandForm(context, converter);
       this.checkNowTimeSelection(converter);
-    });
-
-    this.service.quantitySelected$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(qty => {
-      this.form.get('quantity')?.setValue(qty);
     });
   }
 

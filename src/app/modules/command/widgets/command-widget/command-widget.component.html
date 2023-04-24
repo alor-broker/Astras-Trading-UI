@@ -9,27 +9,50 @@
       nzClosable="false"
     >
       <ng-container *nzModalContent>
-        <ats-command-header [instrument]="commandContext.instrument"></ats-command-header>
+        <ats-command-header
+          [instrument]="commandContext.instrument"
+          (priceSelected)="priceChanges$.next({ price: $event })"
+          (qtySelected)="qtyChanges$.next({ quantity: $event })"
+        >
+
+        </ats-command-header>
 
         <nz-tabset nzTabPosition="top" nzSize="small" class="command-parameters" #commandTabs>
           <nz-tab [nzTitle]="t('command.limitTab')" #limitTab (nzSelect)="setSelectedTab(componentTabs.LimitOrder)">
-            <ats-limit-command [commandContext]="commandContext"></ats-limit-command>
+            <ats-limit-command
+              [commandContext]="commandContext"
+              [price]="(priceChanges$ | async) ?? null"
+              [quantity]="(qtyChanges$ | async) ?? null"
+            ></ats-limit-command>
           </nz-tab>
           <nz-tab [nzTitle]="t('command.marketTab')" #marketTab (nzSelect)="setSelectedTab(componentTabs.MarketOrder)">
-            <ats-market-command [commandContext]="commandContext" [activated]="marketTab.isActive"></ats-market-command>
+            <ats-market-command
+              [commandContext]="commandContext"
+              [activated]="marketTab.isActive"
+              [quantity]="(qtyChanges$ | async) ?? null"
+            >
+            </ats-market-command>
           </nz-tab>
           <nz-tab [nzTitle]="t('command.stopTab')" #stopTab (nzSelect)="setSelectedTab(componentTabs.StopOrder)">
-            <ats-stop-command [commandContext]="commandContext"></ats-stop-command>
+            <ats-stop-command
+              [commandContext]="commandContext"
+              [price]="(priceChanges$ | async) ?? null"
+              [quantity]="(qtyChanges$ | async) ?? null"
+            >
+            </ats-stop-command>
           </nz-tab>
           <nz-tab #notificationsTab [nzTitle]="titleTemplate" (nzClick)="setSelectedTab(componentTabs.Notifications)">
             <ats-setup-instrument-notifications
               [instrumentKey]="commandContext.instrument"
               [active]="notificationsTab.isActive"
+              [priceChanges]="(priceChanges$ | async) ?? null"
             >
             </ats-setup-instrument-notifications>
             <ng-template #titleTemplate>
-              <span nz-icon nzType="bell" nzTheme="outline"></span>
-              <span>{{t('command.notificationsTab')}}</span>
+              <span>
+                <span nz-icon nzType="bell" nzTheme="outline"></span>
+                <span class="pl-2">{{t('command.notificationsTab')}}</span>
+              </span>
             </ng-template>
           </nz-tab>
         </nz-tabset>

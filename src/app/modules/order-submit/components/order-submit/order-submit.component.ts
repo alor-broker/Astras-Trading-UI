@@ -176,6 +176,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     );
 
     this.initCurrentAskBid();
+
+    this.initialValues$.subscribe(x => console.log(x));
   }
 
   setLimitOrderValue(formData: OrderFormValue<LimitOrderFormValue>) {

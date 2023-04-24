@@ -16,6 +16,7 @@ export interface PriceChangeRequest {
 export interface SubscriptionBase {
   id: string;
   subscriptionType: PushSubscriptionType;
+  createdAt: Date;
 }
 
 export interface PriceSparkSubscription extends SubscriptionBase {
@@ -24,4 +25,9 @@ export interface PriceSparkSubscription extends SubscriptionBase {
   board?: string;
   price: number;
   priceCondition: LessMore
+}
+
+export interface OrderExecuteSubscription extends SubscriptionBase {
+  exchange: string;
+  portfolio: string;
 }

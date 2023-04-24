@@ -1,8 +1,4 @@
 ﻿{
   "priceLabel": "Price",
-  "priceConditionLabel": "Condition",
-  "lessMoreOptions": {
-    "less": "Less",
-    "more": "More"
-  }
+  "priceConditionLabel": "Condition"
 }

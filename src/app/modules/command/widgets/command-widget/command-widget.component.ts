@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
-import {BehaviorSubject, combineLatest, filter, Observable, of, switchMap, take} from 'rxjs';
+import {BehaviorSubject, combineLatest, filter, Observable, of, Subject, switchMap, take} from 'rxjs';
 import {CommandParams} from 'src/app/shared/models/commands/command-params.model';
 import {ModalService} from 'src/app/shared/services/modal.service';
 import {CommandType} from '../../../../shared/models/enums/command-type.model';
@@ -34,6 +34,9 @@ export class CommandWidgetComponent implements OnInit {
   isVisible$: Observable<boolean> = of(false);
   commandContext$?: Observable<CommandContextModel<CommandParams>>;
   selectedTab$ = new BehaviorSubject<ComponentTabs>(ComponentTabs.LimitOrder);
+
+  priceChanges$ = new Subject<{ price: number }>();
+  qtyChanges$ = new Subject<{ quantity: number }>();
 
   constructor(
     private readonly modal: ModalService,

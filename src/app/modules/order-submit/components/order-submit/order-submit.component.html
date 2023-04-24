@@ -73,11 +73,14 @@
                 <ats-setup-instrument-notifications
                   [instrumentKey]="currentInstrumentWithPortfolio.instrument"
                   [active]="notificationsTab.isActive"
+                  [priceChanges]="(initialValues$ | async)"
                 >
                 </ats-setup-instrument-notifications>
                 <ng-template #titleTemplate>
-                  <span nz-icon nzType="bell" nzTheme="outline"></span>
-                  <span>{{t('orderSubmitOrderSubmit.notificationsTab')}}</span>
+                  <span>
+                    <span nz-icon nzType="bell" nzTheme="outline"></span>
+                    <span class="pl-2">{{t('orderSubmitOrderSubmit.notificationsTab')}}</span>
+                  </span>
                 </ng-template>
               </nz-tab>
             </nz-tabset>

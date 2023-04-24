@@ -245,14 +245,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
 
     this.settings$.pipe(
-      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)),
+      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.ordersTable, current.ordersTable)),
       mapWith(
         () => this.translatorService.getTranslator('blotter/orders'),
         (s, t) => ({ s, t })
       ),
       takeUntil(this.destroy$)
     ).subscribe(({ s, t }) => {
-      const tableSettings = s.ordersTable ?? TableSettingHelper.toTableDisplaySettings(s.ordersTable);
+      const tableSettings = s.ordersTable ?? TableSettingHelper.toTableDisplaySettings(s.ordersColumns);
 
       if (tableSettings) {
         this.listOfColumns = this.allColumns
@@ -526,7 +526,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    const initHeightWatching = (ref: ElementRef<HTMLElement>) => this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
+    const initHeightWatching = (ref: ElementRef<HTMLElement>) => {
+      // need setTimeout. nz-table does not see changes in this case
+      setTimeout(() => {
+        this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
+      });
+    };
 
     if(this.tableContainer.length > 0) {
       initHeightWatching(this.tableContainer!.first);

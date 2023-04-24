@@ -11,6 +11,7 @@ export interface BlotterSettings extends WidgetSettings {
   stopOrdersTable?: TableDisplaySettings,
   tradesTable?: TableDisplaySettings,
   positionsTable?: TableDisplaySettings,
+  notificationsTable?: TableDisplaySettings,
   isSoldPositionsHidden: boolean,
   cancelOrdersWithoutConfirmation?: boolean,
 
@@ -75,4 +76,12 @@ export const allTradesColumns: BaseColumnId[] = [
   { id: 'qty', displayName: "Кол-во", isDefault: true },
   { id: 'date', displayName: 'Время', isDefault: false },
   { id: 'volume', displayName: 'Объем', isDefault: false }
+];
+
+export const allNotificationsColumns: BaseColumnId[] = [
+  { id: 'id', displayName: "id", isDefault: false },
+  { id: 'subscriptionType', displayName: "subscriptionType", isDefault: true },
+  { id: 'instrument', displayName: "instrument", isDefault: true },
+  { id: 'priceCondition', displayName: "priceCondition", isDefault: true },
+  { id: 'price', displayName: "price", isDefault: true },
 ];

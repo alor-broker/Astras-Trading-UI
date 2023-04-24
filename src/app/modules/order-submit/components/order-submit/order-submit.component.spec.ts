@@ -106,7 +106,7 @@ describe('OrderSubmitComponent', () => {
         }),
         mockComponent({
           selector: 'ats-setup-instrument-notifications',
-          inputs: ['instrumentKey', 'active'],
+          inputs: ['instrumentKey', 'active', 'priceChanges'],
         })
       ],
       providers: [

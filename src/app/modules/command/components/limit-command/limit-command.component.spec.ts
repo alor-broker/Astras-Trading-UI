@@ -2,7 +2,6 @@ import {
   ComponentFixture,
   TestBed
 } from '@angular/core/testing';
-import { Subject } from 'rxjs';
 import { CommandsService } from '../../services/commands.service';
 
 import { LimitCommandComponent } from './limit-command.component';
@@ -27,8 +26,6 @@ describe('LimitCommandComponent', () => {
   let fixture: ComponentFixture<LimitCommandComponent>;
 
   let spyCommands: any;
-  const priceSelected$ = new Subject<number>();
-  const quantitySelected$ = new Subject<number>();
 
   const getDefaultCommandContext: () => CommandContextModel<CommandParams> = () => {
     const instrument = TestData.instruments[0];
@@ -72,9 +69,7 @@ describe('LimitCommandComponent', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand', 'priceSelected$', 'quantitySelected$']);
-    spyCommands.priceSelected$ = priceSelected$;
-    spyCommands.quantitySelected$ = quantitySelected$;
+    spyCommands = jasmine.createSpyObj('CommandsService', ['setLimitCommand']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -252,7 +247,7 @@ describe('LimitCommandComponent', () => {
         user: commandContext.commandParameters.user
       };
 
-      priceSelected$.next(expectedCommand.price);
+      component.price = {price: expectedCommand.price };
       fixture.detectChanges();
 
       expect(spyCommands.setLimitCommand).toHaveBeenCalledWith(expectedCommand);
@@ -276,7 +271,7 @@ describe('LimitCommandComponent', () => {
       user: commandContext.commandParameters.user
     };
 
-    quantitySelected$.next(expectedCommand.quantity);
+    component.quantity = { quantity: expectedCommand.quantity};
     fixture.detectChanges();
 
     expect(spyCommands.setLimitCommand).toHaveBeenCalledWith(expectedCommand);

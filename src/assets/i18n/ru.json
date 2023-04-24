@@ -62,10 +62,16 @@
       "text": "Тут можно менять настройки конкретного виджета"
     }
   },
+
   "validationErrors": {
     "emptyFieldError": "Введите значение",
     "selectValueError": "Выберите значение",
     "tooLittle": "Слишком мало",
     "tooMuch": "Слишком много"
+  },
+
+  "lessMoreOptions": {
+    "less": "Меньше",
+    "more": "Больше"
   }
 }

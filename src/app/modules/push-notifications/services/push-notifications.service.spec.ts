@@ -24,18 +24,6 @@ describe('FirebaseNotificationsService', () => {
           }
         },
         {
-          provide: AuthService,
-          useValue: {
-            currentUser$: of({ refreshToken: 'testRefreshToken' })
-          }
-        },
-        {
-          provide: Store,
-          useValue: {
-            select: jasmine.createSpy('select').and.returnValue(of({})),
-          }
-        },
-        {
           provide: ErrorHandlerService,
           useValue: {}
         }

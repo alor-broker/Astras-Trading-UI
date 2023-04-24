@@ -175,7 +175,12 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    const initHeightWatching = (ref: ElementRef<HTMLElement>) => this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
+    const initHeightWatching = (ref: ElementRef<HTMLElement>) => {
+      // need setTimeout. nz-table does not see changes in this case
+      setTimeout(() => {
+        this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
+      });
+    };
 
     if(this.tableContainer.length > 0) {
       initHeightWatching(this.tableContainer!.first);

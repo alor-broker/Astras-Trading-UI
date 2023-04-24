@@ -41,8 +41,6 @@ describe('StopCommandComponent', () => {
   let fixture: ComponentFixture<StopCommandComponent>;
 
   let spyCommands: any;
-  const priceSelected$ = new Subject<number>();
-  const quantitySelected$ = new Subject<number>();
 
   let timezoneConverterServiceSpy: any;
   const commandError$ = new Subject<boolean | null>();
@@ -91,10 +89,8 @@ describe('StopCommandComponent', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    spyCommands = jasmine.createSpyObj('CommandsService', ['setStopCommand', 'commandError$', 'priceSelected$', 'quantitySelected$']);
+    spyCommands = jasmine.createSpyObj('CommandsService', ['setStopCommand', 'commandError$']);
     spyCommands.commandError$ = commandError$;
-    spyCommands.priceSelected$ = priceSelected$;
-    spyCommands.quantitySelected$ = quantitySelected$;
 
     timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(timezoneConverter));
@@ -319,7 +315,7 @@ describe('StopCommandComponent', () => {
       stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndUnixTimeVal)
     };
 
-    priceSelected$.next(expectedCommand.price!);
+    component.price = { price: expectedCommand.price!};
     fixture.detectChanges();
 
     expect(spyCommands.setStopCommand).toHaveBeenCalledWith(expectedCommand);
@@ -349,7 +345,7 @@ describe('StopCommandComponent', () => {
       stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndUnixTimeVal)
     };
 
-    quantitySelected$.next(expectedCommand.quantity);
+    component.quantity = {quantity: expectedCommand.quantity!};
     fixture.detectChanges();
 
     expect(spyCommands.setStopCommand).toHaveBeenCalledWith(expectedCommand);
