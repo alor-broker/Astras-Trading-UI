@@ -16,7 +16,6 @@ import {
 } from 'rxjs';
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { Destroyable } from '../../../../shared/utils/destroyable';
-import { TradeDisplay } from '../../models/trade-display.model';
 import {
   ScaleLinear,
   scaleLinear
@@ -29,6 +28,7 @@ import {
 import { map } from 'rxjs/operators';
 import { AllTradesItem } from '../../../../shared/models/all-trades.model';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
+import { TradeDisplay } from '../../models/trade-display.model';
 
 interface LayerDrawer {
   zIndex: number;
@@ -57,6 +57,7 @@ interface DrewItemMeta {
 export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas')
   canvas?: ElementRef<HTMLCanvasElement>;
+
   @Input()
   xAxisStep!: number;
 

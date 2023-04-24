@@ -73,5 +73,10 @@
   "lessMoreOptions": {
     "less": "Меньше",
     "more": "Больше"
+  },
+
+  "numberDisplayFormatOptions": {
+    "default": "Стандартный",
+    "letterSuffix": "Сокращенный"
   }
 }

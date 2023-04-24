@@ -1,0 +1,23 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .volume-cell {
+      &.border-bottom {
+        border-bottom: @border-color-base 1px solid;
+      }
+    }
+  }
+});
+
+.container {
+  height: 100%;
+  min-width: 25px;
+
+  .volume-cell {
+    text-align: right;
+    box-sizing: border-box;
+
+    padding: 0 2px;
+  }
+}

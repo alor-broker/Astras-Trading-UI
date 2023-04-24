@@ -20,9 +20,11 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import {
+  ClusterTimeframe,
   ScalperOrderBookSettings,
   VolumeHighlightMode
 } from '../../models/scalper-order-book-settings.model';
+import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 
 @Component({
   selector: 'ats-scalper-order-book-widget[guid][isBlockWidget]',
@@ -79,7 +81,14 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         enableMouseClickSilentOrders: false,
         autoAlignIntervalSec: 15,
         enableAutoAlign: true,
-        showTradesPanel: true
+        showTradesPanel: true,
+        showTradesClustersPanel: true,
+        tradesClusterPanelSettings: {
+          timeframe: ClusterTimeframe.M1,
+          displayIntervalsCount: 5,
+          volumeDisplayFormat: NumberDisplayFormat.LetterSuffix
+        },
+        volumeDisplayFormat: NumberDisplayFormat.Default
       }),
       this.dashboardContextService,
       this.widgetSettingsService,

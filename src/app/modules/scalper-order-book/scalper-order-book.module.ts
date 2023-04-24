@@ -20,6 +20,8 @@ import {
   CdkDropListGroup
 } from '@angular/cdk/drag-drop';
 import { PossibleActionsPanelComponent } from './components/possible-actions-panel/possible-actions-panel.component';
+import { TradeClustersPanelComponent } from './components/trade-clusters-panel/trade-clusters-panel.component';
+import { TradesClusterComponent } from './components/trades-cluster/trades-cluster.component';
 
 @NgModule({
   declarations: [
@@ -33,18 +35,20 @@ import { PossibleActionsPanelComponent } from './components/possible-actions-pan
     ModifiersIndicatorComponent,
     ScalperOrderBookSettingsComponent,
     OrdersIndicatorComponent,
+    TradeClustersPanelComponent,
+    TradesClusterComponent,
     PossibleActionsPanelComponent
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    NzResizeObserverModule,
-    NzInputModule,
-    NzSpinModule,
-    CdkDropListGroup,
-    CdkDropList,
-    CdkDrag
-  ],
+    imports: [
+        CommonModule,
+        SharedModule,
+        NzResizeObserverModule,
+        NzInputModule,
+        NzSpinModule,
+        CdkDropListGroup,
+        CdkDropList,
+        CdkDrag
+    ],
   exports: [
     ScalperOrderBookWidgetComponent
   ]

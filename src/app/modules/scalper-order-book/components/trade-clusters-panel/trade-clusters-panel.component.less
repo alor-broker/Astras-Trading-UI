@@ -1,0 +1,35 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .container {
+      box-sizing: border-box;
+      &.has-left-scroll {
+        border-left: @primary-color 1px solid;
+      }
+
+      &.has-right-scroll {
+        border-right: @primary-color 1px solid;
+      }
+
+      .cluster-wrapper {
+        border-right: @border-color-base 1px solid;
+      }
+    }
+  }
+});
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+
+  & > div {
+    flex: 1;
+  }
+}
+
+

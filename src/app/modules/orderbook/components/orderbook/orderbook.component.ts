@@ -8,20 +8,32 @@ import {
   Output,
   ViewEncapsulation
 } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of, shareReplay, Subject, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap
+} from 'rxjs';
 import { OrderbookService } from '../../services/orderbook.service';
-import { ChartData, OrderBook } from '../../models/orderbook.model';
-import { map, startWith, tap } from 'rxjs/operators';
-import { getTypeByCfi } from 'src/app/shared/utils/instruments';
-import { InstrumentType } from 'src/app/shared/models/enums/instrument-type.model';
+import {
+  ChartData,
+  OrderBook
+} from '../../models/orderbook.model';
+import {
+  map,
+  startWith
+} from 'rxjs/operators';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
-import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { MathHelper } from "../../../../shared/utils/math-helper";
-import { ColumnsOrder, OrderbookSettings } from '../../models/orderbook-settings.model';
+import {
+  ColumnsOrder,
+  OrderbookSettings
+} from '../../models/orderbook-settings.model';
 
 interface Size {
   width: string;
@@ -47,73 +59,34 @@ export class OrderBookComponent implements OnInit, OnDestroy {
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-
-  private minSpreadDiffPercentForColorChange = 0.3;
-  private maxSpreadDiffPercentForColorChange = 1;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
-
-
-  shouldShowYield$: Observable<boolean> = of(false);
-  shouldShowTable$: Observable<boolean> = of(true);
-  shouldShowVolumes$: Observable<boolean> = of(false);
-  columnsOrder$: Observable<ColumnsOrder> = of(ColumnsOrder.volumesAtTheEdges);
   ob$: Observable<OrderBook | null> = of(null);
   spreadDiffData$: Observable<SpreadDiffData | null> = of(null);
-  maxVolume: number = 1;
   themeSettings?: ThemeSettings;
   columnsOrderEnum = ColumnsOrder;
-
+  settings$!: Observable<OrderbookSettings>;
   sizes: BehaviorSubject<Size> = new BehaviorSubject<Size>({
     width: '100%',
     height: '100%',
   });
+  private minSpreadDiffPercentForColorChange = 0.3;
+  private maxSpreadDiffPercentForColorChange = 1;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
-    private readonly instrumentsService: InstrumentsService,
     private readonly service: OrderbookService,
-    private readonly widgetsDataProvider: WidgetsDataProviderService,
-    private readonly themeService: ThemeService) {
+    private readonly widgetsDataProvider: WidgetsDataProviderService
+  ) {
   }
 
   ngOnInit(): void {
-    const settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
-      shareReplay()
+    this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
+      shareReplay(1)
     );
 
-    this.shouldShowTable$ = settings$.pipe(
-      map((s) => s.showTable)
-    );
 
-    this.shouldShowVolumes$ = settings$.pipe(
-      map((s) => s.showVolume)
-    );
-
-    this.columnsOrder$ = settings$.pipe(
-      map(s => s.columnsOrder ?? ColumnsOrder.volumesAtTheEdges)
-    );
-
-    this.shouldShowYield$ = settings$.pipe(
-      switchMap(settings => {
-        if (!settings.showYieldForBonds) {
-          return of(false);
-        }
-
-        return this.instrumentsService.getInstrument({
-          symbol: settings.symbol,
-          exchange: settings.exchange,
-          instrumentGroup: settings.instrumentGroup
-        }).pipe(
-          map(x => !!x && getTypeByCfi(x.cfiCode) === InstrumentType.Bond)
-        );
-      }),
-      shareReplay()
-    );
-
-    this.ob$ = combineLatest([settings$, this.themeService.getThemeSettings()]).pipe(
-      tap(([,theme]) => { this.themeSettings = theme;}),
-      switchMap(([settings,]) => this.service.getOrderBook(settings)),
-      tap((ob) => (this.maxVolume = ob?.maxVolume ?? 1)),
+    this.ob$ = this.settings$.pipe(
+      switchMap(settings => this.service.getOrderBook(settings)),
       startWith(<OrderBook>{
         rows: [],
         maxVolume: 1,
@@ -125,7 +98,8 @@ export class OrderBookComponent implements OnInit, OnDestroy {
         },
         bidVolumes: 0,
         askVolumes: 0,
-      })
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     this.spreadDiffData$ = this.ob$.pipe(
