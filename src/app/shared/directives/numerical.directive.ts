@@ -5,7 +5,6 @@ import {
   Input
 } from '@angular/core';
 import { MathHelper } from "../utils/math-helper";
-import {LoggerService} from "../services/logging/logger.service";
 
 @Directive({
   selector: 'input[atsNumerical]'
@@ -14,10 +13,7 @@ export class NumericalDirective {
 
   @Input() step: number = 1;
 
-  constructor(
-    private readonly _el: ElementRef,
-    private readonly logger: LoggerService
-  ) {
+  constructor(private _el: ElementRef) {
   }
 
   @HostListener('wheel', ['$event']) onMouseWheel(event: WheelEvent) {
@@ -39,9 +35,6 @@ export class NumericalDirective {
   }
 
   @HostListener('beforeinput', ['$event']) onBeforeInputChange(event: InputEvent) {
-    this.logger.info(`beforeinput event data: ${event.data}`);
-    this.logger.info(`beforeinput value: ${this._el.nativeElement.value}`);
-
     if (!event.data) {
       return;
     }
@@ -62,7 +55,6 @@ export class NumericalDirective {
       }
 
       this._el.nativeElement.value = newValue;
-      this.logger.info(`beforeinput newValue: ${newValue}`);
       this._el.nativeElement.dispatchEvent(new Event('input'));
 
       return;
@@ -70,7 +62,6 @@ export class NumericalDirective {
 
     let inputSymbol = event.data.replace(/[^0-9.,]/g, '');
     if (this.isInvalidValue(inputSymbol)) {
-      this.logger.info(`beforeinput isInvalidValue`);
       event.stopPropagation();
       event.preventDefault();
       return;
@@ -78,17 +69,12 @@ export class NumericalDirective {
     if (inputSymbol === ',') {
       event.stopPropagation();
       event.preventDefault();
-      this.logger.info(`beforeinput add point`);
       this._el.nativeElement.value = this._el.nativeElement.value + '.';
-      this.logger.info(`beforeinput newValue: ${this._el.nativeElement.value}`);
       this._el.nativeElement.dispatchEvent(new Event('input'));
     }
   }
 
   @HostListener('keydown', ['$event']) onKeyDown(event: KeyboardEvent) {
-    this.logger.info(`keydown: ${event.code}`);
-    this.logger.info(`keydown value: ${this._el.nativeElement.value}`);
-
     let step = this.step || 1;
 
     if (event.code === 'ArrowDown') {
