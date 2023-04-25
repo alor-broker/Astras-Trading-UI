@@ -80,7 +80,16 @@ export class NewsComponent implements OnInit, OnDestroy {
               id: 'header',
               name: 'header',
               displayName: translate(['newsColumn']),
-              transformFn: (data: NewsListItem) => `${this.datePipe.transform(data.publishDate, '[HH:mm]')} ${data.header}`
+              transformFn: (data: NewsListItem) => {
+                const date = new Date(data.publishDate);
+                const displayDate = date.toDateString() == new Date().toDateString()
+                  ? date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                  : `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+
+                  return `[${displayDate}] ${data.header}`;
+              }
+
+
             }
           ]
         })
@@ -158,7 +167,15 @@ export class NewsComponent implements OnInit, OnDestroy {
   newsSectionChange(section: NewsSection) {
     this.selectedSection = section;
     this.sectionChange.emit(section);
+    this.resetPosition();
     this.loadNews(true);
+  }
+
+  private resetPosition(){
+    this.isEndOfList = false;
+    this.pageNumber = 1;
+    this.newsList = [];
+    this.cdr.markForCheck();
   }
 
   private getNewsRequest(): Observable<NewsListItem[]> {
