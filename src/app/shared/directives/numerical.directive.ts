@@ -37,7 +37,11 @@ export class NumericalDirective {
     event.stopPropagation();
     event.preventDefault();
 
+    console.log('event data',event.data);
+
     const rawValue = this.getNewValue(event);
+
+    console.log('rawValue',rawValue);
     const newValueStr = this.removeExtraDots(
       rawValue
         .replace(/,/g, '.')
@@ -47,12 +51,15 @@ export class NumericalDirective {
     let newValue = Number(newValueStr);
 
     if (Number.isNaN(newValue)) {
+      console.log('isNaN');
       return;
     }
 
     this._el.nativeElement.value = newValueStr.endsWith('.')
       ? newValueStr
       : newValue.toString();
+
+    console.log('updated value', this._el.nativeElement.value);
     this._el.nativeElement.dispatchEvent(new Event('input'));
   }
 
