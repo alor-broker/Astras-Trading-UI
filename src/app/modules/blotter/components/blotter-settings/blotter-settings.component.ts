@@ -32,6 +32,7 @@ import {
 import { EntityStatus } from '../../../../shared/models/enums/entity-status';
 import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios';
 import {
+  allNotificationsColumns,
   allOrdersColumns,
   allPositionsColumns,
   allStopOrdersColumns,
@@ -55,6 +56,7 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   allStopOrdersColumns: BaseColumnId[] = allStopOrdersColumns;
   allTradesColumns: BaseColumnId[] = allTradesColumns;
   allPositionsColumns: BaseColumnId[] = allPositionsColumns;
+  allNotificationsColumns: BaseColumnId[] = allNotificationsColumns;
   prevSettings?: BlotterSettings;
   exchanges: string[] = exchangesList;
 
@@ -94,6 +96,12 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
           stopOrdersColumns: new UntypedFormControl(this.toTableSettings(settings.stopOrdersTable, settings.stopOrdersColumns)?.columns?.map(c => c.columnId)),
           tradesColumns: new UntypedFormControl(this.toTableSettings(settings.tradesTable, settings.tradesColumns)?.columns?.map(c => c.columnId)),
           positionsColumns: new UntypedFormControl(this.toTableSettings(settings.positionsTable, settings.positionsColumns)?.columns?.map(c => c.columnId)),
+          notificationsColumns: new UntypedFormControl(
+            this.toTableSettings(
+              settings.notificationsTable,
+              allNotificationsColumns.filter(c => c.isDefault).map(x => x.id)
+            )?.columns?.map(c => c.columnId)
+          ),
           isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden ?? false),
           cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false)
         });
@@ -130,6 +138,9 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
       delete newSettings.tradesColumns;
       newSettings.positionsTable = this.updateTableSettings(newSettings.positionsColumns, initialSettings.positionsTable);
       delete newSettings.positionsColumns;
+
+      newSettings.notificationsTable = this.updateTableSettings(newSettings.notificationsColumns, initialSettings.notificationsTable);
+      delete newSettings.notificationsColumns;
 
       newSettings.linkToActive = initialSettings.linkToActive && this.isPortfolioEqual(initialSettings, newSettings);
 

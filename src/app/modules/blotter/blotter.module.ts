@@ -13,6 +13,7 @@ import { NzInputModule } from "ng-zorro-antd/input";
 import { TableFilterComponent } from "./components/table-filter/table-filter.component";
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
+import { PushNotificationsComponent } from './components/push-notifications/push-notifications.component';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
     BlotterSettingsComponent,
     CommonSummaryComponent,
     ForwardSummaryComponent,
-    TableFilterComponent
+    TableFilterComponent,
+    PushNotificationsComponent
   ],
     imports: [
         SharedModule,

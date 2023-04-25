@@ -46,6 +46,20 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     this.commandContext$.next(value);
   }
 
+  @Input()
+  set price(value: {price: number} | null){
+    if(value?.price != null) {
+      this.form.get('price')?.setValue(value.price);
+    }
+  }
+
+  @Input()
+  set quantity(value: {quantity: number} | null){
+    if(value?.quantity != null) {
+      this.quantitySelect(value.quantity);
+    }
+  }
+
   ngOnInit() {
     this.commandContext$.pipe(
       filter((x): x is CommandContextModel<CommandParams> => !!x),
@@ -53,16 +67,6 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     ).subscribe(context => {
       this.initCommandForm(context);
     });
-
-    this.service.priceSelected$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(price => {
-      this.form.get('price')?.setValue(price);
-    });
-
-    this.service.quantitySelected$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(qty => this.quantitySelect(qty));
   }
 
   ngOnDestroy(): void {

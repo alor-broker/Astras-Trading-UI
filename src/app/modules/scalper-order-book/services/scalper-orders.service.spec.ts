@@ -30,12 +30,12 @@ import {
 import { Side } from "../../../shared/models/enums/side.model";
 import { CommandParams } from "../../../shared/models/commands/command-params.model";
 import { CommandType } from "../../../shared/models/enums/command-type.model";
-import { StopOrderCondition } from "../../../shared/models/enums/stoporder-conditions";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
 import { CancelCommand } from '../../../shared/models/commands/cancel-command.model';
 import { CurrentOrderDisplay } from '../models/scalper-order-book.model';
 import { OrderbookDataRow } from '../../orderbook/models/orderbook-data.model';
+import {LessMore} from "../../../shared/models/enums/less-more.model";
 
 describe('ScalperOrdersService', () => {
   let service: ScalperOrdersService;
@@ -588,7 +588,7 @@ describe('ScalperOrdersService', () => {
             price,
             instrument: testInstrumentKey,
             triggerPrice: price,
-            condition: StopOrderCondition.More
+            condition: LessMore.More
           } as StopLimitOrder,
           portfolioKey.portfolio
         );
@@ -613,7 +613,7 @@ describe('ScalperOrdersService', () => {
             price,
             instrument: testInstrumentKey,
             triggerPrice: price,
-            condition: StopOrderCondition.Less
+            condition: LessMore.Less
           } as StopLimitOrder,
           portfolioKey.portfolio
         );
@@ -760,7 +760,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Sell,
             quantity: position.qtyTFutureBatch,
             triggerPrice: expectedPrice,
-            condition: StopOrderCondition.Less,
+            condition: LessMore.Less,
             instrument: testInstrumentKey
           } as StopMarketOrder,
           portfolioKey.portfolio
@@ -777,7 +777,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Buy,
             quantity: Math.abs(position.qtyTFutureBatch),
             triggerPrice: expectedPrice,
-            condition: StopOrderCondition.More,
+            condition: LessMore.More,
             instrument: testInstrumentKey
           } as StopMarketOrder,
           portfolioKey.portfolio

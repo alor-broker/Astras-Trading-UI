@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -13,36 +13,40 @@ import {
   tap,
   withLatestFrom
 } from "rxjs";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { OrderFormUpdate, OrderFormValue, OrderType } from '../../models/order-form.model';
-import { LimitOrderFormValue } from "../order-forms/limit-order-form/limit-order-form.component";
-import { MarketOrderFormValue } from "../order-forms/market-order-form/market-order-form.component";
-import { StopOrderFormValue } from "../order-forms/stop-order-form/stop-order-form.component";
-import { Side } from "../../../../shared/models/enums/side.model";
-import { SubmitOrderResult } from "../../../command/models/order.model";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { finalize, map, startWith } from "rxjs/operators";
-import { OrderService } from "../../../../shared/services/orders/order.service";
-import { QuotesService } from "../../../../shared/services/quotes.service";
-import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
-import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
-import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
-import { Position } from "../../../../shared/models/positions/position.model";
-import { Order } from '../../../../shared/models/orders/order.model';
-import { mapWith } from '../../../../shared/utils/observable-helper';
-import { MathHelper } from '../../../../shared/utils/math-helper';
-import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
-import {
-  OrderbookData,
-  OrderbookRequest
-} from '../../../orderbook/models/orderbook-data.model';
-import { OrderBookDataFeedHelper } from '../../../orderbook/utils/order-book-data-feed.helper';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { isArrayEqual } from '../../../../shared/utils/collections';
-import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
+import {Instrument} from "../../../../shared/models/instruments/instrument.model";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
+import {OrderFormUpdate, OrderFormValue, OrderType} from '../../models/order-form.model';
+import {LimitOrderFormValue} from "../order-forms/limit-order-form/limit-order-form.component";
+import {MarketOrderFormValue} from "../order-forms/market-order-form/market-order-form.component";
+import {StopOrderFormValue} from "../order-forms/stop-order-form/stop-order-form.component";
+import {Side} from "../../../../shared/models/enums/side.model";
+import {SubmitOrderResult} from "../../../command/models/order.model";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {finalize, map, startWith} from "rxjs/operators";
+import {OrderService} from "../../../../shared/services/orders/order.service";
+import {QuotesService} from "../../../../shared/services/quotes.service";
+import {WidgetsDataProviderService} from "../../../../shared/services/widgets-data-provider.service";
+import {SelectedPriceData} from "../../../../shared/models/orders/selected-order-price.model";
+import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
+import {Position} from "../../../../shared/models/positions/position.model";
+import {Order} from '../../../../shared/models/orders/order.model';
+import {mapWith} from '../../../../shared/utils/observable-helper';
+import {MathHelper} from '../../../../shared/utils/math-helper';
+import {SubscriptionsDataFeedService} from '../../../../shared/services/subscriptions-data-feed.service';
+import {OrderbookData, OrderbookRequest} from '../../../orderbook/models/orderbook-data.model';
+import {OrderBookDataFeedHelper} from '../../../orderbook/utils/order-book-data-feed.helper';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {isArrayEqual} from '../../../../shared/utils/collections';
+import {OrderSubmitSettings} from '../../models/order-submit-settings.model';
 import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
+
+export enum ComponentTabs {
+  LimitOrder = 'limitOrder',
+  MarketOrder = 'marketOrder',
+  StopOrder = 'stopOrder',
+  Notifications = 'notifications'
+}
 
 @Component({
   selector: 'ats-order-submit[guid]',
@@ -51,6 +55,7 @@ import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
 })
 export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly orderSides = Side;
+  readonly componentTabs = ComponentTabs;
   readonly orderTypes = OrderType;
   @Input()
   guid!: string;
@@ -66,12 +71,12 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   activeLimitOrders$!: Observable<Order[]>;
 
   currentAskBid$!: Observable<{
-    ask: {volume: number, price: number} | null,
-    bid: {volume: number, price: number} | null,
+    ask: { volume: number, price: number } | null,
+    bid: { volume: number, price: number } | null,
   } | null>;
 
   settings$!: Observable<OrderSubmitSettings>;
-  selectedOrderType: OrderType = OrderType.LimitOrder;
+  lastSelectedTab: ComponentTabs = ComponentTabs.LimitOrder;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private limitOrderFormValue: LimitOrderFormValue | null = null;
@@ -90,8 +95,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  setSelectedCommandType(orderType: OrderType) {
-    this.selectedOrderType = orderType;
+  setSelectedTab(tab: ComponentTabs) {
+    this.lastSelectedTab = tab;
     this.updateCanSubmitOrder();
   }
 
@@ -102,7 +107,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     );
 
     const currentPortfolio$ = this.currentDashboardService.selectedPortfolio$.pipe(
-      distinctUntilChanged((previous, current) => isPortfoliosEqual(previous,current)),
+      distinctUntilChanged((previous, current) => isPortfoliosEqual(previous, current)),
       map(p => p.portfolio),
     );
 
@@ -118,7 +123,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
         this.marketOrderFormValue = null;
         this.stopOrderFormValue = null;
       }),
-      map(([portfolio, instrument]) => ({ instrument, portfolio })),
+      map(([portfolio, instrument]) => ({instrument, portfolio})),
       shareReplay(1)
     );
 
@@ -149,8 +154,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     );
 
     this.selectedTabIndex$ = this.currentInstrumentWithPortfolio$.pipe(
-      tap(() => this.setSelectedCommandType(this.selectedOrderType)),
-      map(() => this.getFormIndexByType(this.selectedOrderType))
+      tap(() => this.setSelectedTab(this.lastSelectedTab)),
+      map(() => this.getFormIndexByType(this.lastSelectedTab))
     );
 
     this.widgetsDataProvider.getDataProvider<SelectedPriceData>('selectedPrice')
@@ -164,31 +169,13 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     this.activeLimitOrders$ = this.currentInstrumentWithPortfolio$.pipe(
       mapWith(
         x => this.portfolioSubscriptionsService.getOrdersSubscription(x.portfolio, x.instrument.exchange),
-        (instrument, orders) => ({ instrument, orders })
+        (instrument, orders) => ({instrument, orders})
       ),
       map(s => s.orders.allOrders.filter(o => o.symbol === s.instrument.instrument.symbol && o.type === 'limit' && o.status === 'working')),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
     this.initCurrentAskBid();
-  }
-
-  private isEqualOrderSubmitSettings(
-    settings1?: OrderSubmitSettings,
-    settings2?: OrderSubmitSettings
-  ) {
-    if (settings1 && settings2) {
-      return (
-        settings1.linkToActive == settings2.linkToActive &&
-        settings1.guid == settings2.guid &&
-        settings1.symbol == settings2.symbol &&
-        settings1.exchange == settings2.exchange &&
-        settings1.enableLimitOrdersFastEditing == settings2.enableLimitOrdersFastEditing &&
-        isArrayEqual(settings1.limitOrderPriceMoveSteps, settings2.limitOrderPriceMoveSteps, (a, b) => a === b) &&
-        settings1.showVolumePanel == settings2.showVolumePanel &&
-        isArrayEqual(settings1.workingVolumes, settings2.workingVolumes, (a, b) => a === b)
-      );
-    } else return false;
   }
 
   setLimitOrderValue(formData: OrderFormValue<LimitOrderFormValue>) {
@@ -212,16 +199,16 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   submitOrder(side: Side) {
     this.currentInstrumentWithPortfolio$.pipe(
       take(1)
-    ).subscribe(({ instrument, portfolio }) => {
+    ).subscribe(({instrument, portfolio}) => {
       let order$: Observable<SubmitOrderResult> | null = null;
-      switch (this.selectedOrderType) {
-        case OrderType.LimitOrder:
+      switch (this.lastSelectedTab) {
+        case ComponentTabs.LimitOrder:
           order$ = this.prepareLimitOrder(instrument, portfolio, side);
           break;
-        case OrderType.MarketOrder:
+        case ComponentTabs.MarketOrder:
           order$ = this.prepareMarketOrder(instrument, portfolio, side);
           break;
-        case OrderType.StopOrder:
+        case ComponentTabs.StopOrder:
           order$ = this.prepareStopOrder(instrument, portfolio, side);
           break;
       }
@@ -233,8 +220,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       this.canSubmitOrder$.next(false);
       if (side === Side.Buy) {
         this.buyButtonLoading$.next(true);
-      }
-      else {
+      } else {
         this.sellButtonLoading$.next(true);
       }
 
@@ -276,6 +262,10 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     return !!orders.find(o => o.side === side);
   }
 
+  isOrderTab(tab: ComponentTabs): boolean {
+    return [ComponentTabs.LimitOrder, ComponentTabs.MarketOrder, ComponentTabs.StopOrder].includes(tab);
+  }
+
   updateLimitOrdersPrice(step: number, side: Side) {
     this.activeLimitOrders$.pipe(
       withLatestFrom(this.currentInstrumentWithPortfolio$),
@@ -306,16 +296,34 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     });
   }
 
+  private isEqualOrderSubmitSettings(
+    settings1?: OrderSubmitSettings,
+    settings2?: OrderSubmitSettings
+  ) {
+    if (settings1 && settings2) {
+      return (
+        settings1.linkToActive == settings2.linkToActive &&
+        settings1.guid == settings2.guid &&
+        settings1.symbol == settings2.symbol &&
+        settings1.exchange == settings2.exchange &&
+        settings1.enableLimitOrdersFastEditing == settings2.enableLimitOrdersFastEditing &&
+        isArrayEqual(settings1.limitOrderPriceMoveSteps, settings2.limitOrderPriceMoveSteps, (a, b) => a === b) &&
+        settings1.showVolumePanel == settings2.showVolumePanel &&
+        isArrayEqual(settings1.workingVolumes, settings2.workingVolumes, (a, b) => a === b)
+      );
+    } else return false;
+  }
+
   private updateCanSubmitOrder() {
     let isValueSet = false;
-    switch (this.selectedOrderType) {
-      case OrderType.LimitOrder:
+    switch (this.lastSelectedTab) {
+      case ComponentTabs.LimitOrder:
         isValueSet = this.limitOrderFormValue != null;
         break;
-      case OrderType.MarketOrder:
+      case ComponentTabs.MarketOrder:
         isValueSet = this.marketOrderFormValue != null;
         break;
-      case OrderType.StopOrder:
+      case ComponentTabs.StopOrder:
         isValueSet = this.stopOrderFormValue != null;
         break;
     }
@@ -368,7 +376,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       return this.orderService.submitStopLimitOrder(
         {
           ...this.stopOrderFormValue,
-          instrument: { ...instrument },
+          instrument: {...instrument},
           side: side
         },
         portfolio
@@ -378,15 +386,15 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     return this.orderService.submitStopMarketOrder(
       {
         ...this.stopOrderFormValue,
-        instrument: { ...instrument },
+        instrument: {...instrument},
         side: side
       },
       portfolio
     );
   }
 
-  private getFormIndexByType(orderType: OrderType) {
-    return [OrderType.LimitOrder, OrderType.MarketOrder, OrderType.StopOrder].indexOf(orderType);
+  private getFormIndexByType(tab: ComponentTabs) {
+    return [ComponentTabs.LimitOrder, ComponentTabs.MarketOrder, ComponentTabs.StopOrder, ComponentTabs.Notifications].indexOf(tab);
   }
 
   private initCurrentAskBid() {

@@ -5,6 +5,7 @@
   "limitTab": "Лимитная",
   "marketTab": "Рыночная",
   "stopTab": "Условная",
+  "notificationsTab": "Уведомления",
 
   "dayChangeLabel": "Изм.",
   "dayChangePerPriceLabel": "Дн.%",

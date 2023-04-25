@@ -19,6 +19,7 @@ import { StopOrderFormComponent } from './components/order-forms/stop-order-form
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { LimitOrderPriceChangeComponent } from './components/limit-order-price-change/limit-order-price-change.component';
 import { WorkingVolumesComponent } from './components/working-volumes/working-volumes.component';
+import {PushNotificationsModule} from "../push-notifications/push-notifications.module";
 
 
 @NgModule({
@@ -32,20 +33,21 @@ import { WorkingVolumesComponent } from './components/working-volumes/working-vo
     LimitOrderPriceChangeComponent,
     WorkingVolumesComponent
   ],
-    imports: [
-        CommonModule,
-        NzFormModule,
-        NzSelectModule,
-        NzCollapseModule,
-        NzWaveModule,
-        ReactiveFormsModule,
-        NzInputModule,
-        NzButtonModule,
-        NzTabsModule,
-        SharedModule,
-        CommandModule,
-        NzInputNumberModule
-    ],
+  imports: [
+    CommonModule,
+    NzFormModule,
+    NzSelectModule,
+    NzCollapseModule,
+    NzWaveModule,
+    ReactiveFormsModule,
+    NzInputModule,
+    NzButtonModule,
+    NzTabsModule,
+    SharedModule,
+    CommandModule,
+    NzInputNumberModule,
+    PushNotificationsModule
+  ],
   exports: [OrderSubmitWidgetComponent]
 })
 export class OrderSubmitModule {

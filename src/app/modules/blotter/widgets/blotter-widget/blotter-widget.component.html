@@ -82,6 +82,18 @@
               [guid]="guid"></ats-trades>
           </ng-template>
         </nz-tab>
+        <nz-tab [nzTitle]="titleTemplate" nzForceRender>
+          <ng-template nz-tab>
+            <ats-push-notifications [guid]="guid">
+            </ats-push-notifications>
+          </ng-template>
+          <ng-template #titleTemplate>
+            <span>
+              <span nz-icon nzType="bell" nzTheme="outline"></span>
+              <span class="pl-2">{{t('blotter.notificationsTab')}}</span>
+            </span>
+          </ng-template>
+        </nz-tab>
       </nz-tabset>
     </div>
   </ng-template>

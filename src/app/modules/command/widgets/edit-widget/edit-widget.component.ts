@@ -23,6 +23,8 @@ export class EditWidgetComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   command$!: Observable<LimitEdit | StopEdit | null>;
 
+  qtyChanges$ = new Subject<{ quantity: number }>();
+
   constructor(
     private command: CommandsService,
     public modal: ModalService,

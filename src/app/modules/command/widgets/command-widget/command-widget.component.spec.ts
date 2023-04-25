@@ -5,7 +5,7 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { CommandWidgetComponent } from './command-widget.component';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { getTranslocoModule } from "../../../../shared/utils/testing";
+import {getTranslocoModule, mockComponent} from "../../../../shared/utils/testing";
 
 describe('CommandWidgetComponent', () => {
   let component: CommandWidgetComponent;
@@ -20,7 +20,13 @@ describe('CommandWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CommandWidgetComponent],
+      declarations: [
+        CommandWidgetComponent,
+        mockComponent({
+          selector: 'ats-setup-instrument-notifications',
+          inputs: ['instrumentKey', 'active', 'priceChanges'],
+        })
+      ],
       imports: [
         getTranslocoModule()
       ],

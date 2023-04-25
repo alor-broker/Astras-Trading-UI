@@ -17,8 +17,8 @@ import {
 } from "../../../../shared/utils/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { StopEdit } from "../../models/stop-edit";
-import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
 import ruCommand from "../../../../../assets/i18n/command/ru.json";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
 describe('StopEditComponent', () => {
   let component: StopEditComponent;
@@ -41,7 +41,7 @@ describe('StopEditComponent', () => {
       triggerPrice: 1000,
       quantity: 15,
       stopEndUnixTime: new Date(),
-      condition: StopOrderCondition.More,
+      condition: LessMore.More,
       user: {
         portfolio: 'D1234'
       } as PortfolioKey
@@ -142,7 +142,7 @@ describe('StopEditComponent', () => {
         quantity: 125,
         triggerPrice: 110,
         stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndDate).getTime() / 1000,
-        condition: StopOrderCondition.Less,
+        condition: LessMore.Less,
         side: initialCommandContext.commandParameters.side
       };
 
@@ -150,7 +150,7 @@ describe('StopEditComponent', () => {
       component.form.controls.quantity?.setValue(125);
       component.form.controls.triggerPrice?.setValue(110);
       component.form.controls.stopEndUnixTime?.setValue(stopEndDate);
-      component.form.controls.condition?.setValue(StopOrderCondition.Less);
+      component.form.controls.condition?.setValue(LessMore.Less);
       component.form.controls.side?.setValue(Side.Buy);
 
       fixture.detectChanges();

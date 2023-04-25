@@ -117,6 +117,27 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
+          <nz-form-label nzRequired nzFor="notificationsColumns">
+            {{t('blotterSettings.notificationsColumnsLabel')}}
+          </nz-form-label>
+          <nz-select
+            *transloco="let tNotifications; scope: 'blotter/notifications'"
+            [nzMaxTagCount]="10"
+            [nzMaxTagPlaceholder]="tagPlaceHolder"
+            nzMode="multiple"
+            [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
+            formControlName="notificationsColumns"
+          >
+            <nz-option
+              *ngFor="let item of allNotificationsColumns"
+              [nzLabel]="tNotifications('blotterNotifications.columns.' + item.id + '.name')"
+              [nzValue]="item.id"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
         <nz-form-label nzFor="isSoldPositionsHidden">{{t('blotterSettings.hideSoldLabel')}}</nz-form-label>
         <nz-switch formControlName='isSoldPositionsHidden'></nz-switch>
       </nz-form-item>

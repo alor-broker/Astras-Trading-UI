@@ -29,13 +29,13 @@ import {
   startOfDay,
   toUnixTime
 } from "../../../../shared/utils/datetime";
-import { StopOrderCondition } from "../../../../shared/models/enums/stoporder-conditions";
 import { StopEdit } from "../../models/stop-edit";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { TimeInForce } from "../../../../shared/models/commands/command-params.model";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
 @Component({
   selector: 'ats-stop-edit',
@@ -61,6 +61,13 @@ export class StopEditComponent implements OnInit, OnDestroy {
     this.commandContext$.next(value);
   }
 
+  @Input()
+  set quantity(value: {quantity: number} | null){
+    if(value?.quantity != null) {
+      this.form.get('quantity')?.setValue(value.quantity);
+    }
+  }
+
   ngOnInit() {
     this.commandContext$.pipe(
       filter((x): x is CommandContextModel<EditParams> => !!x),
@@ -69,12 +76,6 @@ export class StopEditComponent implements OnInit, OnDestroy {
     ).subscribe(([context, converter]) => {
       this.initCommandForm(context, converter);
       this.checkNowTimeSelection(converter);
-    });
-
-    this.service.quantitySelected$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(qty => {
-      this.form.get('quantity')?.setValue(qty);
     });
   }
 
@@ -198,7 +199,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
         ? new Date(initialParameters.commandParameters.stopEndUnixTime)
         : this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
       ),
-      condition: new FormControl(initialParameters.commandParameters.condition || StopOrderCondition.More),
+      condition: new FormControl(initialParameters.commandParameters.condition || LessMore.More),
       withLimit: new FormControl({ value: initialParameters.commandParameters.type === 'stoplimit', disabled: true }),
       side: new FormControl(initialParameters.commandParameters.side),
       timeInForce: new FormControl(initialParameters.commandParameters.timeInForce),

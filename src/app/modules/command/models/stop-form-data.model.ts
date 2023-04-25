@@ -1,11 +1,12 @@
-import { StopOrderCondition } from "src/app/shared/models/enums/stoporder-conditions";
+
 import { TimeInForce } from "../../../shared/models/commands/command-params.model";
+import {LessMore} from "../../../shared/models/enums/less-more.model";
 
 export interface StopFormData {
   quantity: number,
   price?: number,
   triggerPrice: number,
-  condition: StopOrderCondition,
+  condition: LessMore,
   stopEndUnixTime?: Date,
   withLimit: boolean,
   isIceberg?: boolean,

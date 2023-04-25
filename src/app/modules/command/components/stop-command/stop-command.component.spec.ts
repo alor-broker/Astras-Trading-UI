@@ -1,6 +1,7 @@
 import {
-  ComponentFixture, fakeAsync,
-  TestBed, tick
+  ComponentFixture,
+  fakeAsync,
+  TestBed
 } from '@angular/core/testing';
 import {
   of,
@@ -32,16 +33,14 @@ import {
   NZ_I18N,
   ru_RU
 } from "ng-zorro-antd/i18n";
-import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
 import ruCommand from "../../../../../assets/i18n/command/ru.json";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
 describe('StopCommandComponent', () => {
   let component: StopCommandComponent;
   let fixture: ComponentFixture<StopCommandComponent>;
 
   let spyCommands: any;
-  const priceSelected$ = new Subject<number>();
-  const quantitySelected$ = new Subject<number>();
 
   let timezoneConverterServiceSpy: any;
   const commandError$ = new Subject<boolean | null>();
@@ -90,10 +89,8 @@ describe('StopCommandComponent', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    spyCommands = jasmine.createSpyObj('CommandsService', ['setStopCommand', 'commandError$', 'priceSelected$', 'quantitySelected$']);
+    spyCommands = jasmine.createSpyObj('CommandsService', ['setStopCommand', 'commandError$']);
     spyCommands.commandError$ = commandError$;
-    spyCommands.priceSelected$ = priceSelected$;
-    spyCommands.quantitySelected$ = quantitySelected$;
 
     timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(timezoneConverter));
@@ -245,7 +242,7 @@ describe('StopCommandComponent', () => {
       const expectedCommand: StopCommand = {
         quantity: 125,
         triggerPrice: 126,
-        condition: StopOrderCondition.Less,
+        condition: LessMore.Less,
         price: 140,
         stopEndUnixTime: timezoneConverter.terminalToUtc0Date(expectedDate),
         instrument: {
@@ -313,12 +310,12 @@ describe('StopCommandComponent', () => {
       instrument: {
         ...commandContext.commandParameters.instrument,
       },
-      condition: StopOrderCondition.More,
+      condition: LessMore.More,
       user: commandContext.commandParameters.user,
       stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndUnixTimeVal)
     };
 
-    priceSelected$.next(expectedCommand.price!);
+    component.price = { price: expectedCommand.price!};
     fixture.detectChanges();
 
     expect(spyCommands.setStopCommand).toHaveBeenCalledWith(expectedCommand);
@@ -343,12 +340,12 @@ describe('StopCommandComponent', () => {
       instrument: {
         ...commandContext.commandParameters.instrument,
       },
-      condition: StopOrderCondition.More,
+      condition: LessMore.More,
       user: commandContext.commandParameters.user,
       stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndUnixTimeVal)
     };
 
-    quantitySelected$.next(expectedCommand.quantity);
+    component.quantity = {quantity: expectedCommand.quantity!};
     fixture.detectChanges();
 
     expect(spyCommands.setStopCommand).toHaveBeenCalledWith(expectedCommand);

@@ -3,5 +3,6 @@
   "ordersTab": "Orders",
   "stopOrdersTab": "Stop-orders",
   "positionsTab": "Positions",
-  "tradesTab": "Trades"
+  "tradesTab": "Trades",
+  "notificationsTab": "Notifications"
 }

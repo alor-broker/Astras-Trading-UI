@@ -1,10 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { HistoryService } from 'src/app/shared/services/history.service';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { CommandHeaderComponent } from './command-header.component';
-import { CommandsService } from "../../services/commands.service";
 import { Store } from "@ngrx/store";
 import {
   ThemeColors,
@@ -21,7 +19,6 @@ describe('CommandHeaderComponent', () => {
   beforeEach(async () => {
     const quoteSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
     const positionSpy = jasmine.createSpyObj('PositionsService', ['getByPortfolio']);
-    const commandsServiceSpy = jasmine.createSpyObj('CommandsService', ['setPriceSelected']);
 
     const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
     themeServiceSpy.getThemeSettings.and.returnValue(of({
@@ -43,7 +40,6 @@ describe('CommandHeaderComponent', () => {
       providers: [
         { provide: QuotesService, useValue: quoteSpy },
         { provide: PositionsService, useValue: positionSpy },
-        { provide: CommandsService, useValue: commandsServiceSpy },
         {
           provide: Store,
           useValue: {

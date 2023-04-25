@@ -13,12 +13,19 @@
         [nzTitle]="header"
       >
         <ng-container *nzModalContent>
-          <ats-command-header [instrument]="commandContext.instrument"></ats-command-header>
+          <ats-command-header
+            [instrument]="commandContext.instrument"
+            (qtySelected)="qtyChanges$.next({ quantity: $event })"
+          >
+          </ats-command-header>
           <ats-limit-edit *ngIf='commandContext.commandParameters.type === "limit"'
-                          [commandContext]="commandContext"></ats-limit-edit>
+                          [commandContext]="commandContext"
+                          [quantity]="(qtyChanges$ | async) ?? null"
+          ></ats-limit-edit>
           <ats-stop-edit
             *ngIf='commandContext.commandParameters.type === "stop" || commandContext.commandParameters.type === "stoplimit"'
             [commandContext]="commandContext"
+            [quantity]="(qtyChanges$ | async) ?? null"
           ></ats-stop-edit>
         </ng-container>
       </nz-modal>

@@ -19,7 +19,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MarketCommandComponent } from "./market-command.component";
 import { MarketCommand } from "../../models/market-command.model";
 import { Quote } from "../../../../shared/models/quotes/quote.model";
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import ruCommand from '../../../../../assets/i18n/command/ru.json';
 import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
@@ -29,8 +29,6 @@ describe('MarketCommandComponent', () => {
   let fixture: ComponentFixture<MarketCommandComponent>;
 
   let spyCommands: any;
-  const quantitySelected$ = new Subject<number>();
-
 
   const expectedPrice = 103;
   const quoteMock = new BehaviorSubject<Quote>({
@@ -77,8 +75,7 @@ describe('MarketCommandComponent', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    spyCommands = jasmine.createSpyObj('CommandsService', ['setMarketCommand', 'quantitySelected$']);
-    spyCommands.quantitySelected$ = quantitySelected$;
+    spyCommands = jasmine.createSpyObj('CommandsService', ['setMarketCommand']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -241,7 +238,7 @@ describe('MarketCommandComponent', () => {
       user: commandContext.commandParameters.user
     };
 
-    quantitySelected$.next(expectedCommand.quantity);
+    component.quantity = {quantity: expectedCommand.quantity};
     fixture.detectChanges();
 
     expect(spyCommands.setMarketCommand).toHaveBeenCalledWith(expectedCommand);

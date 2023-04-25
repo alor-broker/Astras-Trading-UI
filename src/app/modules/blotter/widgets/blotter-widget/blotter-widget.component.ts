@@ -24,6 +24,7 @@ import { TerminalSettingsService } from '../../../terminal-settings/services/ter
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import {
+  allNotificationsColumns,
   allOrdersColumns,
   allPositionsColumns,
   allStopOrdersColumns,
@@ -74,6 +75,8 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
         positionsTable: TableSettingHelper.toTableDisplaySettings(allPositionsColumns.filter(c => c.isDefault).map(c => c.id)),
         ordersTable: TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.id)),
         stopOrdersTable: TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.id)),
+        notificationsTable: TableSettingHelper.toTableDisplaySettings(allNotificationsColumns.filter(c => c.isDefault).map(c => c.id)),
+
         badgeColor: defaultBadgeColor,
         isSoldPositionsHidden: true,
         cancelOrdersWithoutConfirmation: false

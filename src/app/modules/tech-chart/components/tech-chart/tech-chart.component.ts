@@ -61,11 +61,11 @@ import { Order } from '../../../../shared/models/orders/order.model';
 import { StopOrder } from '../../../../shared/models/orders/stop-order.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
-import { StopOrderCondition } from '../../../../shared/models/enums/stoporder-conditions';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { HashMap } from "@ngneat/transloco/lib/types";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -667,7 +667,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       side: order.side,
       triggerPrice: order.triggerPrice,
       stopEndUnixTime: order.endTime,
-      condition: order.conditionType === 'less' ? StopOrderCondition.Less : StopOrderCondition.More
+      condition: order.conditionType === 'less' ? LessMore.Less : LessMore.More
     });
 
     orderLineAdapter
