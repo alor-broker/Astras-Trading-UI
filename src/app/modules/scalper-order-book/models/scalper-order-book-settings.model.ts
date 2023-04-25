@@ -9,15 +9,23 @@ export enum ClusterTimeframe {
   H1 = 3600
 }
 
+export enum MarkerDisplayFormat {
+  Points = 'points',
+  Percents = 'percents'
+}
+
 export interface TradesClusterPanelSettings {
   timeframe: ClusterTimeframe;
   displayIntervalsCount: number;
-
   volumeDisplayFormat?: NumberDisplayFormat
 }
 
 export interface OrderBookLayoutSettings {
   widths: {[K:string]: number}
+}
+
+export interface RulerSettings {
+  markerDisplayFormat: MarkerDisplayFormat;
 }
 
 export enum VolumeHighlightMode {
@@ -47,6 +55,7 @@ export interface ScalperOrderBookSettings extends WidgetSettings, InstrumentKey 
   showTradesClustersPanel?: boolean;
   tradesClusterPanelSettings?: TradesClusterPanelSettings;
   volumeDisplayFormat?: NumberDisplayFormat;
-
   layout?: OrderBookLayoutSettings;
+  showRuler?: boolean;
+  rulerSettings?: RulerSettings;
 }

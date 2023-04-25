@@ -25,6 +25,7 @@ import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import {
+  MarkerDisplayFormat,
   ScalperOrderBookSettings,
   VolumeHighlightMode,
   VolumeHighlightOption
@@ -60,6 +61,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   };
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
+  readonly availableMarkerFormats = Object.values(MarkerDisplayFormat);
 
   @Input()
   guid!: string;
@@ -169,6 +171,10 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     return this.form?.value.volumeHighlightMode === VolumeHighlightMode.VolumeBoundsWithFixedValue;
   }
 
+  showRulerOptions() {
+    return this.form?.value.showRuler === true;
+  }
+
   hasVolumeHighlightOptionsErrors() {
     return !this.form?.controls?.volumeHighlightOptions?.valid || !this.form?.controls?.volumeHighlightFullness?.valid;
   }
@@ -238,6 +244,12 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
       showTradesPanel: new UntypedFormControl(settings.showTradesPanel ?? false),
       showTradesClustersPanel: new UntypedFormControl(settings.showTradesClustersPanel ?? false),
       volumeDisplayFormat: new UntypedFormControl(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default),
+      showRuler: new UntypedFormControl(settings.showRuler ?? false),
+      rulerSettings: new UntypedFormGroup({
+        markerDisplayFormat: new UntypedFormControl(
+          settings.rulerSettings?.markerDisplayFormat ?? MarkerDisplayFormat.Points
+        )
+      })
     });
   }
 

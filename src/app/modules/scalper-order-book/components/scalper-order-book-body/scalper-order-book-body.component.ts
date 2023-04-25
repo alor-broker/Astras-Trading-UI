@@ -1,6 +1,8 @@
 import {
   AfterViewInit,
   Component,
+  ElementRef,
+  InjectionToken,
   Input,
   OnDestroy,
   OnInit,
@@ -39,13 +41,22 @@ import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-tabl
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { ScalperOrderBookSettings } from '../../models/scalper-order-book-settings.model';
 
+export interface ScalperOrderBookBodyRef {
+  getElement(): ElementRef<HTMLElement>;
+}
+
+export const SCALPER_ORDERBOOK_BODY_REF = new InjectionToken<ScalperOrderBookBodyRef>('ScalperOrderBookBodyRef');
+
 @Component({
   selector: 'ats-scalper-order-book-body[guid][isActive][workingVolume]',
   templateUrl: './scalper-order-book-body.component.html',
   styleUrls: ['./scalper-order-book-body.component.less'],
-  providers: [PriceRowsStore]
+  providers: [
+    PriceRowsStore,
+    { provide: SCALPER_ORDERBOOK_BODY_REF, useExisting: ScalperOrderBookBodyComponent }
+  ]
 })
-export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnDestroy, ScalperOrderBookBodyRef {
   readonly panelIds = {
     currentTrades: 'current-trades',
     tradeClusters: 'trade-clusters'
@@ -63,7 +74,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   dataContext!: ScalperOrderBookDataContext;
   hiddenOrdersIndicators$!: Observable<{ up: boolean, down: boolean }>;
 
-  initialWidths$!: Observable<{[K:string]: number}>;
+  initialWidths$!: Observable<{ [K: string]: number }>;
   private readonly renderItemsRange$ = new BehaviorSubject<ListRange | null>(null);
   private readonly destroyable = new Destroyable();
   private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
@@ -74,12 +85,17 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     private readonly scalperOrderBookDataContextService: ScalperOrderBookDataContextService,
     private readonly priceRowsStore: PriceRowsStore,
     private readonly hotkeysService: HotKeyCommandService,
-    private readonly widgetSettingsService: WidgetSettingsService) {
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly ref: ElementRef<HTMLElement>) {
   }
 
   @Input()
   set workingVolume(value: number) {
     this.workingVolume$.next(value);
+  }
+
+  getElement(): ElementRef<HTMLElement> {
+    return this.ref;
   }
 
   updateContentSize(entries: ResizeObserverEntry[]) {
