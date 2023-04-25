@@ -1,10 +1,5 @@
-import {
-  Directive,
-  ElementRef,
-  HostListener,
-  Input
-} from '@angular/core';
-import { MathHelper } from "../utils/math-helper";
+import {Directive, ElementRef, HostListener, Input} from '@angular/core';
+import {MathHelper} from "../utils/math-helper";
 
 @Directive({
   selector: 'input[atsNumerical]'
@@ -35,43 +30,30 @@ export class NumericalDirective {
   }
 
   @HostListener('beforeinput', ['$event']) onBeforeInputChange(event: InputEvent) {
-    if (!event.data) {
+    if (event.inputType == "deleteContentBackward") {
       return;
     }
 
-    if (event.data.length > 1) {
-      const selectionStart = (<HTMLInputElement>event.target).selectionStart!;
-      const selectionTotal = (<HTMLInputElement>event.target).selectionEnd! - selectionStart;
+    event.stopPropagation();
+    event.preventDefault();
 
-      let newValue = (this._el.nativeElement.value ?? '').split('');
-      newValue.splice((<HTMLInputElement>event.target).selectionStart, selectionTotal, event.data);
-      newValue = newValue.join('');
-      newValue = newValue.replace(/,/g, '.');
+    const rawValue = this.getNewValue(event);
+    const newValueStr = this.removeExtraDots(
+      rawValue
+        .replace(/,/g, '.')
+        .replace(/-/g, '')
+    );
 
-      event.stopPropagation();
-      event.preventDefault();
-      if (isNaN(newValue)) {
-        return;
-      }
+    let newValue = Number(newValueStr);
 
-      this._el.nativeElement.value = newValue;
-      this._el.nativeElement.dispatchEvent(new Event('input'));
-
+    if (Number.isNaN(newValue)) {
       return;
     }
 
-    let inputSymbol = event.data.replace(/[^0-9.,]/g, '');
-    if (this.isInvalidValue(inputSymbol)) {
-      event.stopPropagation();
-      event.preventDefault();
-      return;
-    }
-    if (inputSymbol === ',') {
-      event.stopPropagation();
-      event.preventDefault();
-      this._el.nativeElement.value = this._el.nativeElement.value + '.';
-      this._el.nativeElement.dispatchEvent(new Event('input'));
-    }
+    this._el.nativeElement.value = newValueStr.endsWith('.')
+      ? newValueStr
+      : newValue.toString();
+    this._el.nativeElement.dispatchEvent(new Event('input'));
   }
 
   @HostListener('keydown', ['$event']) onKeyDown(event: KeyboardEvent) {
@@ -90,13 +72,49 @@ export class NumericalDirective {
     }
   }
 
-  private isInvalidValue(newSymbol: string): boolean {
-    return !newSymbol || ['.', ','].includes(newSymbol) && (this._el.nativeElement.value.includes('.') || !this._el.nativeElement.value);
+  private getNewValue(event: InputEvent): string {
+    const targetEl = <HTMLInputElement>event.target;
+    const selectionStart = targetEl.selectionStart ?? 0;
+    const selectionEnd = targetEl.selectionEnd ?? 0;
+
+    const currentValueArr = (this._el.nativeElement.value ?? '').split('');
+    currentValueArr.splice(targetEl.selectionStart, selectionEnd - selectionStart, event.data ?? '');
+
+    return currentValueArr.join('');
   }
 
   private getStepSum(step: number): number {
     const inputValueNumber = +this._el.nativeElement.value || 0;
     const roundingDecimals = Math.max(MathHelper.getPrecision(step), MathHelper.getPrecision(inputValueNumber));
     return MathHelper.round(inputValueNumber + step, roundingDecimals);
+  }
+
+  private removeExtraDots(input: string): string {
+    const dots = [...input].reduce((previousValue: number[], currentValue, currentIndex) => {
+        if (currentValue === '.') {
+          return [...previousValue, currentIndex];
+        }
+
+        return previousValue;
+      },
+      []
+    );
+
+    if (dots.length <= 1) {
+      return input;
+    }
+
+    let normalizedValue = '';
+    if (dots.length > 1) {
+      for (let i = 0; i < input.length; i++) {
+        if (dots.indexOf(i) > 0) {
+          continue;
+        }
+
+        normalizedValue += input[i];
+      }
+    }
+
+    return normalizedValue;
   }
 }
