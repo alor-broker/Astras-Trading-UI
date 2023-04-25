@@ -9,9 +9,10 @@ describe('DescriptionComponent', () => {
   let component: DescriptionComponent;
   let fixture: ComponentFixture<DescriptionComponent>;
 
-  const infoSpy = jasmine.createSpyObj('InfoService', ['getDescription', 'getExchangeInfo']);
+  const infoSpy = jasmine.createSpyObj('InfoService', ['getDescription', 'getExchangeInfo', 'getRisksInfo']);
   infoSpy.getDescription.and.returnValue(null);
   infoSpy.getExchangeInfo.and.returnValue(of({}));
+  infoSpy.getRisksInfo.and.returnValue(of({}));
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {

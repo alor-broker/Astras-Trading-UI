@@ -23,6 +23,8 @@ import { getTypeByCfi } from 'src/app/shared/utils/instruments';
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { MarketService } from "../../../shared/services/market.service";
 import { InfoSettings } from '../models/info-settings.model';
+import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
+import { RisksInfo } from "../models/risks.model";
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,
@@ -33,11 +35,13 @@ interface SettingsWithExchangeInfo {
 export class InfoService {
   private securitiesUrl = environment.apiUrl + '/md/v2/Securities';
   private instrumentUrl = environment.apiUrl + '/instruments/v1';
+  private clientsRiskUrl = environment.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/clientsRisk';
 
   private settings$?: Observable<SettingsWithExchangeInfo>;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
+    private readonly dashboardContextService: DashboardContextService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly marketService: MarketService
@@ -77,6 +81,26 @@ export class InfoService {
         exchangeSettings: es
       })),
       distinct()
+    );
+  }
+
+  getRisksInfo(): Observable<RisksInfo> {
+    if (!this.settings$) {
+      throw Error('Was not initialised');
+    }
+
+    return this.settings$!.pipe(
+      mapWith(
+        () => this.dashboardContextService.selectedPortfolio$,
+        (s, p) => ({s, p})
+      ),
+      switchMap(({s, p}) => this.http.get<RisksInfo>(this.clientsRiskUrl, {
+        params: {
+          portfolio: p.portfolio,
+          ticker: s.info.symbol,
+          exchange: s.info.exchange
+        }
+      }))
     );
   }
 

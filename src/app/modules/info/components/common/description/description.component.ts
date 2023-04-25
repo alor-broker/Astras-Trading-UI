@@ -3,6 +3,7 @@ import { BehaviorSubject, combineLatest, filter, Observable, Subject, switchMap,
 import { Description } from '../../../models/description.model';
 import { InfoService } from '../../../services/info.service';
 import { distinct, map } from 'rxjs/operators';
+import { RisksInfo } from "../../../models/risks.model";
 
 @Component({
   selector: 'ats-description',
@@ -14,6 +15,7 @@ export class DescriptionComponent implements OnInit, OnDestroy {
   guid!: string;
   columns: number = 1;
   description$?: Observable<Description | null>;
+  risksInfo$?: Observable<RisksInfo>;
   isLoading$ = new BehaviorSubject<boolean>(true);
   private isActivated$ = new Subject<boolean>();
 
@@ -38,6 +40,8 @@ export class DescriptionComponent implements OnInit, OnDestroy {
       switchMap(exchangeInfo => this.service.getDescription(exchangeInfo)),
       tap(() => this.isLoading$.next(false))
     );
+
+    this.risksInfo$ = this.service.getRisksInfo();
   }
 
   ngOnDestroy(): void {

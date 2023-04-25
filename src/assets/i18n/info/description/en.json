@@ -6,5 +6,7 @@
   "type": "Type",
   "lotSize": "Lot size",
   "marginBuy": "Margin buy",
-  "marginSell": "Margin sell"
+  "marginSell": "Margin sell",
+  "isMarginal": "Available for margin",
+  "isShortSellPossible": "Available for short"
 }

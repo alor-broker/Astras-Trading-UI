@@ -6,5 +6,7 @@
   "type": "Тип",
   "lotSize": "Размер лота",
   "marginBuy": "ГО на покупку",
-  "marginSell": "ГО на продажу"
+  "marginSell": "ГО на продажу",
+  "isMarginal": "Доступно в маржу",
+  "isShortSellPossible": "Доступно в шорт"
 }
