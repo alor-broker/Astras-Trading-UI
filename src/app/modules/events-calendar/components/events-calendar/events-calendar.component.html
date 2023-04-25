@@ -1,0 +1,52 @@
+<nz-tabset *transloco="let t; scope: 'events-calendar'">
+  <nz-tab [nzTitle]="t('eventsCalendar.calendarViewTabTitle')">
+    <div class="portfolio-filter">
+      <button
+        nz-button
+        nzType="text"
+        nzSize='small'
+        nz-dropdown
+        nzTrigger="click"
+        [nzDropdownMenu]="menu"
+      >
+        <span *ngIf="selectedPortfolio$ | async as selectedPortfolio; else allPortfolios">
+          {{ selectedPortfolio.portfolio }} ({{selectedPortfolio.exchange}})
+        </span>
+
+        <ng-template #allPortfolios>
+          {{t('eventsCalendar.allPortfolios')}}
+        </ng-template>
+      </button>
+    </div>
+    <ats-calendar-view></ats-calendar-view>
+  </nz-tab>
+  <nz-tab [nzTitle]="t('eventsCalendar.listViewTabTitle')">
+    <div class="portfolio-filter">
+      <button
+        nz-button
+        nzType="text"
+        nzSize='small'
+        nz-dropdown
+        nzTrigger="click"
+        [nzDropdownMenu]="menu"
+      >
+        <span *ngIf="selectedPortfolio$ | async as selectedPortfolio; else allPortfolios">
+          {{ selectedPortfolio.portfolio }} ({{selectedPortfolio.exchange}})
+        </span>
+
+        <ng-template #allPortfolios>
+          {{t('eventsCalendar.allPortfolios')}}
+        </ng-template>
+      </button>
+    </div>
+    <ats-list-view></ats-list-view>
+  </nz-tab>
+</nz-tabset>
+
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item *ngFor="let portfolio of portfolios; trackBy: portfolioTrackByFn" (click)="selectPortfolio(portfolio)">
+      {{ portfolio.portfolio }} ({{portfolio.exchange}})
+    </li>
+  </ul>
+</nz-dropdown-menu>

@@ -7,11 +7,7 @@ import { CurrencyInstrument } from "../models/enums/currencies.model";
  * @param maxFractionDigits number of digits
  * @returns formated number
  */
-export function formatCurrency(number: number, currency: string, maxFractionDigits?: number) {
-  if (!maxFractionDigits) {
-    maxFractionDigits = 2;
-  }
-
+export function formatCurrency(number: number, currency: string, maxFractionDigits = 2) {
   const localeData = getLocaleDataByCurrency(currency);
 
   if (localeData.locale === 'ch') {

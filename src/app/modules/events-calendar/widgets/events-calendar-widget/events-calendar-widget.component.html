@@ -1,0 +1,27 @@
+<ng-container *transloco="let t;">
+  <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
+    [content]="content"
+    [header]="header"
+    [isBlockWidget]="isBlockWidget"
+    [showContentScroll]="true"
+  >
+    <ng-template #header>
+      <ats-widget-header
+        [guid]="guid"
+        [hasHelp]="false"
+        [hasSettings]="false"
+        [showBadgesMenu]="false"
+        [titleText]="t('widgetHeaders.EventsCalendarSettings')"
+        [titleIconTooltip]="t('widgetHeaders.EventsCalendarSettings')"
+        titleIcon="calendar"
+      ></ats-widget-header>
+    </ng-template>
+
+    <ng-template #content>
+      <ats-events-calendar [guid]="guid"></ats-events-calendar>
+    </ng-template>
+  </ats-widget-skeleton>
+
+</ng-container>
+

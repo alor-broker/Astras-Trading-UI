@@ -29,7 +29,8 @@
     "OrderSubmitSettings": "Order Submit",
     "OrdersBasketSettings": "Orders Basket",
     "TreemapSettings": "Market Map",
-    "RibbonSettings": "Ribbon"
+    "RibbonSettings": "Ribbon",
+    "EventsCalendarSettings": "Events Calendar"
   },
 
   "joyride": {

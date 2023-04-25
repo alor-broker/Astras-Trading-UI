@@ -1,0 +1,26 @@
+<div class="events-list" *ngIf="events$ | async as events">
+  <ng-container *transloco="let t; scope: 'events-calendar'">
+    <ng-container *ngFor="let eventItem of events | keyvalue">
+      <h2> {{eventItem.key | date : 'dd MMMM yyyy'}} </h2>
+      <p *ngFor="let dateEvent of eventItem.value">
+              <span *ngIf="dateEvent.bondEvent?.couponEvent">
+                {{t('eventsCalendar.coupon')}}
+                <a (click)="selectInstrument(dateEvent.symbol)">{{dateEvent.symbol}}</a>:
+                {{dateEvent.bondEvent!.couponEvent!.date | date : 'dd.MM.yyyy'}}
+                {{formatCurrencyFn(dateEvent.bondEvent!.couponEvent!.amount, dateEvent.bondEvent!.couponEvent!.currency)}}
+              </span>
+        <span *ngIf="dateEvent.bondEvent?.amortizationEvent">
+                {{t('eventsCalendar.amortization')}} <a (click)="selectInstrument(dateEvent.symbol)">{{dateEvent.symbol}}</a>: {{dateEvent.bondEvent!.amortizationEvent!.date | date : 'dd.MM.yyyy'}}
+          {{formatCurrencyFn(dateEvent.bondEvent!.amortizationEvent!.amount, dateEvent.bondEvent!.amortizationEvent!.currency)}}
+              </span>
+        <span *ngIf="dateEvent.bondEvent?.offerEvent">
+              {{t('eventsCalendar.offer')}} <a (click)="selectInstrument(dateEvent.symbol)">{{dateEvent.symbol}}</a>: {{dateEvent.bondEvent!.offerEvent!.date | date : 'dd.MM.yyyy'}}
+            </span>
+        <span *ngIf="dateEvent.dividendEvent">
+              {{t('eventsCalendar.dividends')}} <a (click)="selectInstrument(dateEvent.symbol)">{{dateEvent.symbol}}</a>: {{dateEvent.dividendEvent!.recordDate | date : 'dd.MM.yyyy'}}
+          {{formatCurrencyFn(dateEvent.dividendEvent!.dividendPerShare, dateEvent.dividendEvent!.currency)}}
+              </span>
+      </p>
+    </ng-container>
+  </ng-container>
+</div>

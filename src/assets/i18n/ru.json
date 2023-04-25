@@ -29,7 +29,8 @@
     "OrderSubmitSettings": "Выставить заявку",
     "OrdersBasketSettings": "Корзина заявок",
     "TreemapSettings": "Карта рынка",
-    "RibbonSettings": "Лента"
+    "RibbonSettings": "Лента",
+    "EventsCalendarSettings": "Календарь событий"
   },
 
   "joyride": {

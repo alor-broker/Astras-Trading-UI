@@ -39,6 +39,7 @@ import { MobileDashboardComponent } from "./components/mobile-dashboard/mobile-d
 import { NetworkIndicatorComponent } from "./components/network-indicator/network-indicator.component";
 import { TreemapModule } from "../treemap/treemap.module";
 import { RibbonModule } from '../ribbon/ribbon.module';
+import { EventsCalendarModule } from "../events-calendar/events-calendar.module";
 
 @NgModule({
   declarations: [
@@ -81,6 +82,7 @@ import { RibbonModule } from '../ribbon/ribbon.module';
         NzDrawerModule,
         TreemapModule,
         RibbonModule,
+        EventsCalendarModule,
         // components
     ],
   providers: [

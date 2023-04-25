@@ -1,0 +1,105 @@
+<ng-container *ngIf="events$ | async as events">
+  <div class="calendars">
+    <div class="calendar-wrapper">
+      <nz-calendar
+        #leftCalendar
+        [nzDateFullCell]="leftCalendarDateCell"
+        [nzFullscreen]="false"
+        [nzDisabledDate]="disable"
+        (nzSelectChange)="onLeftValueChange($event)"
+      ></nz-calendar>
+    </div>
+
+    <div class="calendar-wrapper">
+      <nz-calendar
+        #rightCalendar
+        [nzDateFullCell]="rightCalendarDateCell"
+        [nzFullscreen]="false"
+        [nzDisabledDate]="disable"
+        (nzSelectChange)="onRightValueChange($event)"
+      ></nz-calendar>
+    </div>
+  </div>
+
+  <ng-template #leftCalendarDateCell let-date>
+    <div
+      *ngIf="isShowDate(date)"
+      (click)="selectEvent(date, events)"
+      class="date-cell"
+    >
+      <div
+        *ngIf="getDateEvents(date, events).length; else simpleDateCell"
+        [nz-popover]="null"
+        nzPopoverTrigger="click"
+        [nzPopoverTitle]="(date | date : 'dd.MM.yyyy') ?? ''"
+        [nzPopoverContent]="popoverBody"
+      >
+        {{ date | date: 'd' }}
+        <div class="event-cell"></div>
+      </div>
+
+      <ng-template #simpleDateCell>
+        {{ date | date : 'd' }}
+      </ng-template>
+    </div>
+  </ng-template>
+
+  <ng-template #rightCalendarDateCell let-date>
+    <div
+      *ngIf="isShowDate(date, false)"
+      (click)="selectEvent(date, events)"
+      class="date-cell"
+    >
+      <div
+        *ngIf="getDateEvents(date, events).length; else simpleDateCell"
+        [nz-popover]="null"
+        nzPopoverTrigger="click"
+        [nzPopoverTitle]="(date | date : 'dd.MM.yyyy') ?? ''"
+        [nzPopoverContent]="popoverBody"
+      >
+        {{ date | date: 'd' }}
+        <div class="event-cell"></div>
+      </div>
+
+      <ng-template #simpleDateCell>
+        {{ date | date : 'd' }}
+      </ng-template>
+    </div>
+  </ng-template>
+
+  <ng-template #popoverBody>
+    <nz-descriptions
+      *ngIf="selectedDateEvents$ | async as selectedDateEvents"
+      nzBordered
+      [nzColumn]="1"
+      nzSize="small"
+    >
+      <nz-descriptions-item
+        *ngFor="let dateEvent of selectedDateEvents"
+        [nzTitle]="eventTitle">
+            <span *ngIf="dateEvent.bondEvent?.couponEvent">
+              {{dateEvent.bondEvent.couponEvent.date | date : 'dd.MM.yyyy'}}
+              {{formatCurrencyFn(dateEvent.bondEvent.couponEvent.amount, dateEvent.bondEvent.couponEvent.currency)}}
+            </span>
+        <span *ngIf="dateEvent.bondEvent?.amortizationEvent">
+              {{dateEvent.bondEvent.amortizationEvent.date | date : 'dd.MM.yyyy'}}
+          {{formatCurrencyFn(dateEvent.bondEvent.amortizationEvent.amount, dateEvent.bondEvent.amortizationEvent.currency)}}
+            </span>
+        <span
+          *ngIf="dateEvent.bondEvent?.offerEvent">{{dateEvent.bondEvent.offerEvent.date | date : 'dd.MM.yyyy'}}</span>
+        <span *ngIf="dateEvent.dividendEvent">
+              {{dateEvent.dividendEvent.recordDate | date : 'dd.MM.yyyy'}}
+          {{formatCurrencyFn(dateEvent.dividendEvent.dividendPerShare, dateEvent.dividendEvent.currency)}}
+            </span>
+        <ng-template #eventTitle>
+          <ng-container *transloco="let t; scope: 'events-calendar'">
+            <span *ngIf="dateEvent.bondEvent?.couponEvent">{{t('eventsCalendar.coupon')}} {{dateEvent.symbol}}</span>
+            <span *ngIf="dateEvent.bondEvent?.amortizationEvent">{{t('eventsCalendar.amortization')}} {{dateEvent.symbol}}</span>
+            <span *ngIf="dateEvent.bondEvent?.offerEvent">{{t('eventsCalendar.offer')}} {{dateEvent.symbol}}</span>
+            <span *ngIf="dateEvent.dividendEvent">{{t('eventsCalendar.dividends')}} {{dateEvent.symbol}}</span>
+          </ng-container>
+        </ng-template>
+      </nz-descriptions-item>
+    </nz-descriptions>
+  </ng-template>
+</ng-container>
