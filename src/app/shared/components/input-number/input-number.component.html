@@ -1,0 +1,12 @@
+<input
+  #inputElement
+  nz-input
+  (mousedown)="$event.stopPropagation()"
+  [placeholder]="placeholder"
+  [readOnly]="readonly"
+  (blur)="atsBlur.emit()"
+  autocomplete="off"
+  inputmode="decimal"
+  [ngModel]="value"
+  (ngModelChange)="onModelChange($event)"
+/>

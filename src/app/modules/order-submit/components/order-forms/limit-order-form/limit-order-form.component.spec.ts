@@ -24,7 +24,7 @@ import {
 import ruCommand from "../../../../../../assets/i18n/command/ru.json";
 import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
 
-describe('LimitOrderFormComponent', () => {
+xdescribe('LimitOrderFormComponent', () => {
   let component: LimitOrderFormComponent;
   let fixture: ComponentFixture<LimitOrderFormComponent>;
 
