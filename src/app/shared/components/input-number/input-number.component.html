@@ -9,4 +9,6 @@
   inputmode="decimal"
   [ngModel]="value"
   (ngModelChange)="onModelChange($event)"
+  (keydown)="processKeydown($event)"
+  (wheel)="processWheel($event)"
 />

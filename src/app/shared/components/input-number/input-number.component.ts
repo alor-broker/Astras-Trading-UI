@@ -1,6 +1,16 @@
-import {Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  forwardRef,
+  Input,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {NG_VALUE_ACCESSOR} from "@angular/forms";
 import {ControlValueAccessorBaseComponent} from "../control-value-accessor-base/control-value-accessor-base.component";
+import {MathHelper} from "../../utils/math-helper";
 
 @Component({
   selector: 'ats-input-number',
@@ -26,7 +36,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   inputElement!: ElementRef<HTMLInputElement>;
   value?: number | null;
 
-  constructor() {
+  constructor(private readonly cdr: ChangeDetectorRef) {
     super();
   }
 
@@ -34,6 +44,8 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     // update value to prevent value emitting in this.setValue(...)
     this.value = value;
     this.setValue(value);
+    this.setDisplayValue(value);
+    this.cdr.markForCheck();
   }
 
   setValue(value: number | null) {
@@ -60,20 +72,58 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
       parsedValue = '';
     }
 
-    this.inputElement.nativeElement.value = parsedValue;
+    this.setDisplayValue(parsedValue);
     this.setValue(newValue);
+  }
+
+  processKeydown($event: KeyboardEvent) {
+    if (['ArrowDown', 'NumpadSubtract'].includes($event.code)) {
+      $event.stopPropagation();
+      $event.preventDefault();
+      this.stepChange(-1 * ($event.shiftKey ? 10 : 1));
+      return;
+    }
+
+    if (['ArrowUp', 'NumpadAdd'].includes($event.code)) {
+      $event.stopPropagation();
+      $event.preventDefault();
+      this.stepChange($event.shiftKey ? 10 : 1);
+      return;
+    }
+  }
+
+  processWheel($event: WheelEvent) {
+    $event.stopPropagation();
+    $event.preventDefault();
+
+    let multiplier = $event.deltaY > 0 ? -1 : 1;
+    if ($event.shiftKey) {
+      multiplier = multiplier * 10;
+    }
+
+    this.stepChange(multiplier);
   }
 
   protected needMarkTouched(): boolean {
     return true;
   }
 
-  /*
-    updateDisplayValue(value: number): void {
-      const displayValue = isNotNil(this.nzFormatter(value)) ? this.nzFormatter(value) : '';
-      this.displayValue = displayValue;
-      this.inputElement.nativeElement.value = `${displayValue}`;
-    }*/
+  private setDisplayValue(value: number | string | null) {
+    this.inputElement.nativeElement.value = value?.toString() ?? '';
+  }
+
+  private stepChange(multiplier: number) {
+    const step = (this.step ?? 1) * multiplier;
+    const currentValue = this.value ?? 0;
+
+    const roundingDecimals = Math.max(MathHelper.getPrecision(step), MathHelper.getPrecision(currentValue));
+
+    let newValue = MathHelper.round(currentValue + step, roundingDecimals);
+    newValue = newValue > 0 ? newValue : 0;
+
+    this.setDisplayValue(newValue);
+    this.setValue(newValue);
+  }
 
   private removeExtraDots(input: string): string {
     const dots = [...input].reduce((previousValue: number[], currentValue, currentIndex) => {

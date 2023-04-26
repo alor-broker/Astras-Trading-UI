@@ -35,13 +35,7 @@
             <nz-form-item>
               <nz-form-label nzFor="depth" nzRequired>{{t('scalperOrderBookSettings.depthLabel')}}</nz-form-label>
               <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.intervalError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
-                <input
-                  (mousedown)="$event.stopPropagation()"
-                  atsNumerical
-                  formControlName="depth"
-                  nz-input
-                  [placeholder]="t('scalperOrderBookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"
-                >
+                <ats-input-number formControlName="depth" [placeholder]="t('scalperOrderBookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"></ats-input-number>
               </nz-form-control>
             </nz-form-item>
             <nz-form-item class="one-row">
@@ -80,7 +74,7 @@
                 max: validationOptions.autoAlignIntervalSec.max
                 })"
               >
-                <input (mousedown)="$event.stopPropagation()" atsNumerical nz-input formControlName="autoAlignIntervalSec"/>
+                <ats-input-number formControlName="autoAlignIntervalSec"></ats-input-number>
                 <span nz-typography nzType="secondary">
                   {{t('scalperOrderBookSettings.autoAlignIntervalHint')}}
                 </span>
@@ -121,15 +115,7 @@
               <div *ngFor="let ctrl of workingVolumes.controls; let i = index" class="working-volume-option">
                 <nz-form-label nzFor="workingVolume1" nzRequired>{{t('scalperOrderBookSettings.workingVolumeLabel')}} {{i + 1}}</nz-form-label>
                 <nz-form-control [nzErrorTip]="workingVolumeError">
-                  <nz-input-group>
-                    <input
-                      (mousedown)="$event.stopPropagation()"
-                      [formControl]="workingVolumeCtrl(i)"
-                      atsNumerical
-                      nz-input
-                      placeholder="1"
-                    />
-                  </nz-input-group>
+                  <ats-input-number [formControl]="workingVolumeCtrl(i)" placeholder="1"></ats-input-number>
                 </nz-form-control>
                 <button
                   (click)="removeWorkingVolume($event, i)"
@@ -187,7 +173,7 @@
                  max: validationOptions.volumeHighlightOption.volumeHighlightFullness.max
                  })"
                     >
-                      <input (mousedown)="$event.stopPropagation()" atsNumerical nz-input formControlName="volumeHighlightFullness"/>
+                      <ats-input-number formControlName="volumeHighlightFullness"></ats-input-number>
                     </nz-form-control>
                   </nz-form-item>
                   <nz-form-item>
@@ -202,7 +188,7 @@
                     })"
                         >
                           <nz-form-label nzFor="boundary" nzRequired>{{t('scalperOrderBookSettings.volumeLabel')}}</nz-form-label>
-                          <input (mousedown)="$event.stopPropagation()" atsNumerical nz-input formControlName="boundary"/>
+                          <ats-input-number formControlName="boundary"></ats-input-number>
                         </nz-form-control>
                         <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.colorError')">
                           <nz-form-label nzFor="color" nzRequired>{{t('scalperOrderBookSettings.colorLabel')}}</nz-form-label>

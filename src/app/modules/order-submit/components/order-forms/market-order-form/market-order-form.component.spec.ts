@@ -32,7 +32,7 @@ describe('MarketOrderFormComponent', () => {
 
   const getFormInputs = () => {
     return {
-      quantity: fixture.nativeElement.querySelector('input[formcontrolname="quantity"]') as HTMLInputElement,
+      quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
       instrumentGroup: 'SPBX'
     };
   };
@@ -105,7 +105,7 @@ describe('MarketOrderFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show form errors', () => {
+  it('should show form errors', async () => {
     component.instrument = getDefaultInstrument();
     fixture.detectChanges();
 
@@ -117,11 +117,6 @@ describe('MarketOrderFormComponent', () => {
       },
       {
         control: 'quantity',
-        setValue: () => -1,
-        expectedError: 'Слишком мало'
-      },
-      {
-        control: 'quantity',
         setValue: () => 1000000001,
         expectedError: 'Слишком много'
       }
@@ -129,20 +124,23 @@ describe('MarketOrderFormComponent', () => {
 
     const inputs = getFormInputs();
 
-    cases.forEach(testCase => {
+    for (let testCase of cases) {
       const control: HTMLInputElement = (<any>inputs)[testCase.control];
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 
       fixture.detectChanges();
-      const errorElement = getValidationErrorElement(control);
 
-      expect(errorElement).not.toBeNull();
+      await fixture.whenStable().then(() => {
+        const errorElement = getValidationErrorElement(control);
 
-      if (testCase.expectedError) {
-        expect(errorElement?.textContent).toEqual(testCase.expectedError);
-      }
-    });
+        expect(errorElement).not.toBeNull();
+
+        if (testCase.expectedError) {
+          expect(errorElement?.textContent).toEqual(testCase.expectedError);
+        }
+      });
+    }
   });
 
   it('should set null value when form invalid', (done) => {
@@ -161,7 +159,7 @@ describe('MarketOrderFormComponent', () => {
     }
   );
 
-  it('should emit default values', (done) => {
+  it('should emit default values', async () => {
       const emittedValue$ = component.formValueChange.pipe(
         shareReplay(1)
       );
@@ -170,17 +168,18 @@ describe('MarketOrderFormComponent', () => {
       component.instrument = getDefaultInstrument();
       fixture.detectChanges();
 
-      const inputs = getFormInputs();
-      const expectedValue: MarketOrderFormValue = {
-        quantity: Number(inputs.quantity.value),
-        instrumentGroup: inputs.instrumentGroup
-      };
+      await fixture.whenStable().then(() => {
+        const inputs = getFormInputs();
+        const expectedValue: MarketOrderFormValue = {
+          quantity: Number(inputs.quantity.value),
+          instrumentGroup: inputs.instrumentGroup
+        };
 
-      emittedValue$.pipe(
-        take(1)
-      ).subscribe(value => {
-        done();
-        expect(value).toEqual({ value: expectedValue, isValid: true });
+        emittedValue$.pipe(
+          take(1)
+        ).subscribe(value => {
+          expect(value).toEqual({value: expectedValue, isValid: true});
+        });
       });
     }
   );

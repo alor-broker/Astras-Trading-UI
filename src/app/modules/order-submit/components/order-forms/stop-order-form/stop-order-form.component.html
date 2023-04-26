@@ -8,7 +8,7 @@
               {{t('command.quantityLabel')}}
             </nz-form-label>
             <nz-form-control [nzErrorTip]="quantityError">
-              <input (mousedown)="$event.stopPropagation()" atsNumerical formControlName="quantity" nz-input placeholder="0"/>
+              <ats-input-number formControlName="quantity" placeholder="0"></ats-input-number>
               <span *ngIf="(instrument?.lotsize ?? 1) !== 1">
                 1 {{t('command.lot')}} = <ats-short-number [value]="instrument.lotsize"></ats-short-number> {{t('command.pcs')}}
               </span>
@@ -35,7 +35,7 @@
           <nz-form-item class="compact">
             <nz-form-label nzFor="triggerPrice" nzRequired>{{t('command.triggerPriceLabel')}}</nz-form-label>
             <nz-form-control [nzErrorTip]="triggerPriceError">
-              <input (mousedown)="$event.stopPropagation()" atsNumerical [step]="instrument.minstep" formControlName="triggerPrice" nz-input placeholder="0"/>
+              <ats-input-number [step]="instrument.minstep" formControlName="triggerPrice" placeholder="0"></ats-input-number>
             </nz-form-control>
             <ng-template #triggerPriceError>
               <span *ngIf="form.get('triggerPrice')?.errors?.required">{{t('command.emptyPriceError')}}</span>
@@ -80,7 +80,7 @@
           <nz-form-item class="compact">
             <nz-form-label nzFor="price" nzRequired>{{t('command.priceLabel')}}</nz-form-label>
             <nz-form-control [nzErrorTip]="priceError">
-              <input (mousedown)="$event.stopPropagation()" atsNumerical [step]="instrument.minstep" formControlName="price" nz-input placeholder="0"/>
+              <ats-input-number [step]="instrument.minstep" formControlName="price" placeholder="0"></ats-input-number>
               <ng-template #priceError>
                 <span *ngIf="form.get('price')?.errors?.required">{{t('command.emptyPriceError')}}</span>
                 <span *ngIf="form.get('price')?.errors?.min">{{t('command.tooLittle')}}</span>
@@ -121,13 +121,7 @@
               <nz-form-item class="compact">
                 <nz-form-label nzFor="icebergFixed">{{t('command.icebergFixedLabel')}}</nz-form-label>
                 <nz-form-control [nzErrorTip]="icebergFixedError">
-                  <input
-                    nz-input
-                    atsNumerical
-                    formControlName="icebergFixed"
-                    placeholder="0"
-                    (mousedown)="$event.stopPropagation()"
-                  />
+                  <ats-input-number formControlName="icebergFixed" placeholder="0"></ats-input-number>
                 </nz-form-control>
               </nz-form-item>
 
@@ -143,13 +137,7 @@
                   {{t('command.icebergVarianceLabel')}}
                 </nz-form-label>
                 <nz-form-control [nzErrorTip]="icebergVarianceError">
-                  <input
-                    nz-input
-                    atsNumerical
-                    formControlName="icebergVariance"
-                    placeholder="0"
-                    (mousedown)="$event.stopPropagation()"
-                  />
+                  <ats-input-number formControlName="icebergVariance" placeholder="0"></ats-input-number>
                 </nz-form-control>
 
                 <ng-template #icebergVarianceError>

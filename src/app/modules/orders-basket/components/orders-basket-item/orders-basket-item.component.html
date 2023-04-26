@@ -19,15 +19,12 @@
           <nz-form-control
             [nzErrorTip]="t('ordersBasketOrdersBasketItem.intervalError', {min: validationOptions.quota.min, max: validationOptions.quota.max})">
             <nz-input-group nzSuffix="%">
-              <input
-                (blur)="onTouched()"
-                (mousedown)="$event.stopPropagation()"
-                [placeholder]="t('ordersBasketOrdersBasketItem.quotaPlaceholder')"
-                [step]="0.1"
-                atsNumerical
+              <ats-input-number
                 formControlName="quota"
-                nz-input
-              />
+                [step]="0.1"
+                [placeholder]="t('ordersBasketOrdersBasketItem.quotaPlaceholder')"
+                (atsBlur)="onTouched()"
+              ></ats-input-number>
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>
@@ -36,15 +33,12 @@
                          nzRequired>{{t('ordersBasketOrdersBasketItem.priceLabel')}}</nz-form-label>
           <nz-form-control
             [nzErrorTip]="priceError">
-            <input
-              (blur)="onTouched()"
-              (mousedown)="$event.stopPropagation()"
-              [placeholder]="t('ordersBasketOrdersBasketItem.pricePlaceholder')"
-              [step]="(instrument$ | async)?.minstep ?? 1"
-              atsNumerical
+            <ats-input-number
               formControlName="price"
-              nz-input
-            />
+              [step]="0.1"
+              [placeholder]="t('ordersBasketOrdersBasketItem.pricePlaceholder')"
+              (atsBlur)="onTouched()"
+            ></ats-input-number>
             <ng-template #priceError>
               <span *ngIf="form.get('price')?.errors?.required">{{t('ordersBasketOrdersBasketItem.pricePlaceholder')}}</span>
               <span *ngIf="form.get('price')?.errors?.min">{{t('ordersBasketOrdersBasketItem.intervalError', {
@@ -69,7 +63,6 @@
               (blur)="onTouched()"
               (mousedown)="$event.stopPropagation()"
               [placeholder]="t('ordersBasketOrdersBasketItem.quantityPlaceholder')"
-              atsNumerical
               class="ant-input-disabled"
               formControlName="quantity"
               nz-input

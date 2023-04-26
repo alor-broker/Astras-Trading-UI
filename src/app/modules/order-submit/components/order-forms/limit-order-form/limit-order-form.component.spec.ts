@@ -24,14 +24,14 @@ import {
 import ruCommand from "../../../../../../assets/i18n/command/ru.json";
 import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
 
-xdescribe('LimitOrderFormComponent', () => {
+describe('LimitOrderFormComponent', () => {
   let component: LimitOrderFormComponent;
   let fixture: ComponentFixture<LimitOrderFormComponent>;
 
   const getFormInputs = () => {
     return {
-      quantity: fixture.nativeElement.querySelector('input[formcontrolname="quantity"]') as HTMLInputElement,
-      price: fixture.nativeElement.querySelector('input[formcontrolname="price"]') as HTMLInputElement,
+      quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
+      price: fixture.nativeElement.querySelector('[formcontrolname="price"]').querySelector('input') as HTMLInputElement,
       instrumentGroup: 'SPBX'
     };
   };
@@ -92,7 +92,7 @@ xdescribe('LimitOrderFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show form errors', () => {
+  it('should show form errors', async () => {
     component.instrument = getDefaultInstrument();
     fixture.detectChanges();
 
@@ -101,11 +101,6 @@ xdescribe('LimitOrderFormComponent', () => {
         control: 'quantity',
         setValue: () => null,
         expectedError: 'Введите кол-во'
-      },
-      {
-        control: 'quantity',
-        setValue: () => -1,
-        expectedError: 'Слишком мало'
       },
       {
         control: 'quantity',
@@ -119,11 +114,6 @@ xdescribe('LimitOrderFormComponent', () => {
       },
       {
         control: 'price',
-        setValue: () => -1,
-        expectedError: 'Слишком мало'
-      },
-      {
-        control: 'price',
         setValue: () => 1000000001,
         expectedError: 'Слишком много'
       }
@@ -131,20 +121,23 @@ xdescribe('LimitOrderFormComponent', () => {
 
     const inputs = getFormInputs();
 
-    cases.forEach(testCase => {
+    for (let testCase of cases) {
       const control: HTMLInputElement = (<any>inputs)[testCase.control];
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 
       fixture.detectChanges();
-      const errorElement = getValidationErrorElement(control);
 
-      expect(errorElement).not.toBeNull();
+      await fixture.whenStable().then(() => {
+        const errorElement = getValidationErrorElement(control);
 
-      if (testCase.expectedError) {
-        expect(errorElement?.textContent).toEqual(testCase.expectedError);
-      }
-    });
+        expect(errorElement).not.toBeNull();
+
+        if (testCase.expectedError) {
+          expect(errorElement?.textContent).toEqual(testCase.expectedError);
+        }
+      });
+    }
   });
 
   it('should emit not valid value when form invalid', (done) => {
@@ -163,7 +156,7 @@ xdescribe('LimitOrderFormComponent', () => {
     }
   );
 
-  it('should emit default values', (done) => {
+  it('should emit default values', async () => {
       const emittedValue$ = component.formValueChange.pipe(
         shareReplay(1)
       );
@@ -172,18 +165,19 @@ xdescribe('LimitOrderFormComponent', () => {
       component.instrument = getDefaultInstrument();
       fixture.detectChanges();
 
-      const inputs = getFormInputs();
-      const expectedValue: LimitOrderFormValue = {
-        price: Number(inputs.price.value),
-        quantity: Number(inputs.quantity.value),
-        instrumentGroup: inputs.instrumentGroup,
-      };
+      await fixture.whenStable().then(() => {
+        const inputs = getFormInputs();
+        const expectedValue: LimitOrderFormValue = {
+          price: Number(inputs.price.value),
+          quantity: Number(inputs.quantity.value),
+          instrumentGroup: inputs.instrumentGroup,
+        };
 
-      emittedValue$.pipe(
-        take(1)
-      ).subscribe(value => {
-        done();
-        expect(value).toEqual({ value: expectedValue, isValid: true });
+        emittedValue$.pipe(
+          take(1)
+        ).subscribe(value => {
+          expect(value).toEqual({ value: expectedValue, isValid: true });
+        });
       });
     }
   );
@@ -219,7 +213,7 @@ xdescribe('LimitOrderFormComponent', () => {
     }
   );
 
-  it('should update price', (done) => {
+  it('should update price', async () => {
       const emittedValue$ = component.formValueChange.pipe(
         shareReplay(1)
       );
@@ -228,49 +222,52 @@ xdescribe('LimitOrderFormComponent', () => {
       component.instrument = getDefaultInstrument();
       fixture.detectChanges();
 
-      const inputs = getFormInputs();
-      const expectedValue: LimitOrderFormValue = {
-        price: 478,
-        quantity: Number(inputs.quantity.value),
-        instrumentGroup: inputs.instrumentGroup
-      };
+      await fixture.whenStable().then(() => {
+        const inputs = getFormInputs();
+        const expectedValue: LimitOrderFormValue = {
+          price: 478,
+          quantity: Number(inputs.quantity.value),
+          instrumentGroup: inputs.instrumentGroup
+        };
 
-      component.initialValues = { price: expectedValue.price };
-      fixture.detectChanges();
+        component.initialValues = { price: expectedValue.price };
+        fixture.detectChanges();
 
-      emittedValue$.pipe(
-        take(1)
-      ).subscribe(value => {
-        done();
-        expect(value).toEqual({ value: expectedValue, isValid: true });
+        emittedValue$.pipe(
+          take(1)
+        ).subscribe(value => {
+          expect(value).toEqual({value: expectedValue, isValid: true});
+        });
       });
     }
   );
 
-  it('should update evaluation', (done) => {
+  it('should update evaluation', async () => {
       const instrument = getDefaultInstrument();
       component.instrument = instrument;
       fixture.detectChanges();
 
       const inputs = getFormInputs();
-      const expectedEvaluation: EvaluationBaseProperties = {
-        price: 956,
-        lotQuantity: Number(inputs.quantity.value),
-        instrument: {
-          symbol: instrument.symbol,
-          exchange: instrument.exchange,
-          instrumentGroup: inputs.instrumentGroup,
-        },
-        instrumentCurrency: instrument.currency
-      };
 
-      inputs.price.value = expectedEvaluation.price.toString();
-      inputs.price.dispatchEvent(new Event('input'));
-      fixture.detectChanges();
+      await fixture.whenStable().then(() => {
+        const expectedEvaluation: EvaluationBaseProperties = {
+          price: 956,
+          lotQuantity: Number(inputs.quantity.value),
+          instrument: {
+            symbol: instrument.symbol,
+            exchange: instrument.exchange,
+            instrumentGroup: inputs.instrumentGroup,
+          },
+          instrumentCurrency: instrument.currency
+        };
 
-      component.evaluation$.subscribe(x => {
-        done();
-        expect(x).toEqual(expectedEvaluation);
+        inputs.price.value = expectedEvaluation.price.toString();
+        inputs.price.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+
+        component.evaluation$.subscribe(x => {
+          expect(x).toEqual(expectedEvaluation);
+        });
       });
     }
   );

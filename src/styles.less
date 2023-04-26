@@ -63,6 +63,21 @@ html {
         background-color: @text-color;
       }
     }
+
+    .ant-input-affix-wrapper {
+      ats-input-number {
+        width: 100%;
+        .ant-input {
+          padding: 0;
+          border: none;
+          outline: none;
+
+          &:focus {
+            box-shadow: none !important;
+          }
+        }
+      }
+    }
   }
 }
 );

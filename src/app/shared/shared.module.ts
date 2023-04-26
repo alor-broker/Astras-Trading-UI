@@ -34,7 +34,6 @@ import { HttpErrorHandler } from './services/handle-error/http-error-handler';
 import { LogErrorHandler } from './services/handle-error/log-error-handler';
 import { ERROR_HANDLER } from './services/handle-error/error-handler';
 import { AtsStoreModule } from '../store/ats-store.module';
-import { NumericalDirective } from './directives/numerical.directive';
 import { LoadingIndicatorComponent } from './components/loading-indicator/loading-indicator.component';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -68,7 +67,6 @@ import {InputNumberComponent} from "./components/input-number/input-number.compo
 @NgModule({
   declarations: [
     PriceTickComponent,
-    NumericalDirective,
     LoadingIndicatorComponent,
     InfiniteScrollTableComponent,
     WidgetMenuComponent,
@@ -185,7 +183,6 @@ import {InputNumberComponent} from "./components/input-number/input-number.compo
     ScrollableRowComponent,
     InputNumberComponent,
     // directives
-    NumericalDirective,
     ResizeColumnDirective,
     ScrollableItemDirective,
     ResizableDirective,
