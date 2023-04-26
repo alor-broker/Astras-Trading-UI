@@ -18,7 +18,6 @@ import {
 } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CommandParams, TimeInForce } from 'src/app/shared/models/commands/command-params.model';
-import { StopOrderCondition } from 'src/app/shared/models/enums/stoporder-conditions';
 import {
   addMonthsUnix,
   getUtcNow,
@@ -34,6 +33,7 @@ import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
 @Component({
   selector: 'ats-stop-command',
@@ -54,6 +54,20 @@ export class StopCommandComponent implements OnInit, OnDestroy {
   @Input()
   set commandContext(value: CommandContextModel<CommandParams>) {
     this.commandContext$.next(value);
+  }
+
+  @Input()
+  set price(value: {price: number} | null){
+    if(value?.price != null) {
+      this.form.get('price')?.setValue(value.price);
+    }
+  }
+
+  @Input()
+  set quantity(value: {quantity: number} | null){
+    if(value?.quantity != null) {
+      this.form.get('quantity')?.setValue(value.quantity);
+    }
   }
 
   ngOnInit() {
@@ -78,18 +92,6 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           });
         }
       });
-
-    this.service.priceSelected$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(price => {
-      this.form.get('price')?.setValue(price);
-    });
-
-    this.service.quantitySelected$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(qty => {
-      this.form.get('quantity')?.setValue(qty);
-    });
   }
 
   ngOnDestroy(): void {
@@ -193,7 +195,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         ? new Date(commandContext.commandParameters.stopEndUnixTime)
         : this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
       ),
-      condition: new FormControl(StopOrderCondition.More),
+      condition: new FormControl(LessMore.More),
       withLimit: new FormControl(false),
       timeInForce: new FormControl(null),
       isIceberg: new FormControl(false),

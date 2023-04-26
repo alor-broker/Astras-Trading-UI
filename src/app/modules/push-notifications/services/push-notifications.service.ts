@@ -1,20 +1,13 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { environment } from "../../../../environments/environment";
-import { Observable, of, shareReplay, switchMap, take, throwError } from "rxjs";
-import { AngularFireMessaging } from "@angular/fire/compat/messaging";
-import { catchHttpError, mapWith } from "../../../shared/utils/observable-helper";
-import { catchError, filter, map } from "rxjs/operators";
-import { PriceChangeRequest } from "../models/firebase-notifications.model";
-import { Store } from "@ngrx/store";
-import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
-import { selectPortfoliosState } from "../../../store/portfolios/portfolios.selectors";
-import { EntityStatus } from "../../../shared/models/enums/entity-status";
-import { PortfolioExtended } from "../../../shared/models/user/portfolio-extended.model";
-
-interface ServerResponse {
-  message: string;
-}
+import {Injectable} from '@angular/core';
+import {HttpClient} from "@angular/common/http";
+import {environment} from "../../../../environments/environment";
+import {Observable, of, shareReplay, Subject, switchMap, take, tap, throwError} from "rxjs";
+import {AngularFireMessaging} from "@angular/fire/compat/messaging";
+import {catchHttpError, mapWith} from "../../../shared/utils/observable-helper";
+import {catchError, filter, map} from "rxjs/operators";
+import {ErrorHandlerService} from "../../../shared/services/handle-error/error-handler.service";
+import {PriceChangeRequest, PushSubscriptionType, SubscriptionBase} from "../models/push-notifications.model";
+import {BaseCommandResponse} from "../../../shared/models/http-request-response.model";
 
 interface MessagePayload {
   data?: {
@@ -32,45 +25,96 @@ export class PushNotificationsService {
 
   private token$?: Observable<string | null>;
 
+  private readonly subscriptionsUpdatedSub = new Subject<PushSubscriptionType | null>();
+  readonly subscriptionsUpdated$ = this.subscriptionsUpdatedSub.asObservable();
+
   constructor(
     private readonly http: HttpClient,
     private readonly angularFireMessaging: AngularFireMessaging,
-    private readonly store: Store,
     private readonly errorHandlerService: ErrorHandlerService,
-  ) { }
+  ) {
+  }
 
-  subscribeToOrderExecute(): Observable<ServerResponse | null> {
+  subscribeToOrdersExecute(portfolios: { portfolio: string, exchange: string }[]): Observable<BaseCommandResponse | null> {
     return this.getToken()
       .pipe(
-        switchMap(() => this.store.select(selectPortfoliosState)),
-        filter(p => p.status === EntityStatus.Success),
-        map(portfoliosState => Object.values(portfoliosState.entities) as PortfolioExtended[]),
-        take(1),
-        switchMap((portfolios) => this.http.post<ServerResponse>(
+        switchMap(() => this.http.post<BaseCommandResponse>(
           this.baseUrl + '/actions/addOrdersExecute',
           {
             portfolios: portfolios.map(p => ({portfolio: p.portfolio, exchange: p.exchange})),
-          })),
+          })
+        ),
         catchError(err => {
           if (err.error.code === 'SubscriptionAlreadyExists') {
-            return of(null);
+            return of({message: 'success', code: err.error.code});
           }
           return throwError(err);
         }),
-        catchHttpError<ServerResponse | null>(null, this.errorHandlerService),
+        catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
+        tap(r => {
+          if (!!r) {
+            this.subscriptionsUpdatedSub.next(PushSubscriptionType.OrderExecute);
+          }
+        })
       );
   }
 
-  subscribeToPriceChange(body: PriceChangeRequest): Observable<ServerResponse | null> {
+  subscribeToPriceChange(request: PriceChangeRequest): Observable<BaseCommandResponse | null> {
     return this.getToken()
       .pipe(
-        switchMap(() => this.http.post<ServerResponse>(this.baseUrl + '/actions/addPriceSpark', body)),
-        catchHttpError<ServerResponse | null>(null, this.errorHandlerService),
+        take(1),
+        switchMap(() => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addPriceSpark', request)),
+        catchError(err => {
+          if (err.error.code === 'SubscriptionAlreadyExists') {
+            return of({message: 'success', code: err.error.code});
+          }
+          return throwError(err);
+        }),
+        catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
+        take(1),
+        tap(r => {
+          if (!!r) {
+            this.subscriptionsUpdatedSub.next(PushSubscriptionType.PriceSpark);
+          }
+        })
       );
   }
 
   getMessages(): Observable<MessagePayload> {
     return this.angularFireMessaging.messages as any;
+  }
+
+  getCurrentSubscriptions(): Observable<SubscriptionBase[] | null> {
+    return this.getToken().pipe(
+      filter(x => !!x),
+      switchMap(() => this.http.get<SubscriptionBase[]>(this.baseUrl)),
+      catchHttpError<SubscriptionBase[] | null>(null, this.errorHandlerService),
+      map(s => {
+        if (!s) {
+          return s;
+        }
+
+        return s.map(x => ({
+          ...x,
+          createdAt: new Date(x.createdAt)
+        }));
+      }),
+      take(1)
+    );
+  }
+
+  cancelSubscription(id: string): Observable<BaseCommandResponse | null> {
+    return this.getToken()
+      .pipe(
+        switchMap(() => this.http.delete<BaseCommandResponse>(`${this.baseUrl}/${id}`)),
+        catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
+        take(1),
+        tap(r => {
+          if (!!r) {
+            this.subscriptionsUpdatedSub.next(null);
+          }
+        })
+      );
   }
 
   private getToken(): Observable<string | null> {
@@ -82,15 +126,15 @@ export class PushNotificationsService {
       .pipe(
         filter(token => !!token),
         mapWith(
-          token => this.http.post<ServerResponse>(this.baseUrl + '/actions/addToken', { token })
+          token => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addToken', {token})
             .pipe(
               catchError(err => {
                 if (err.error.code === 'TokenAlreadyExists') {
-                  return of({ message: 'success' });
+                  return of({message: 'success', code: err.error.code});
                 }
                 return throwError(err);
               }),
-              catchHttpError<ServerResponse | null>(null, this.errorHandlerService)
+              catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService)
             ),
           (token, res) => res ? token : null),
         filter(token => !!token),

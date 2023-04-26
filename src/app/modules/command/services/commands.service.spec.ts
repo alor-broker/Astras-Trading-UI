@@ -15,7 +15,7 @@ import {
 import { of } from "rxjs";
 import { LimitCommand } from "../models/limit-command.model";
 import { StopCommand } from "../models/stop-command.model";
-import { StopOrderCondition } from "../../../shared/models/enums/stoporder-conditions";
+import {LessMore} from "../../../shared/models/enums/less-more.model";
 
 describe('CommandsService', () => {
   let service: CommandsService;
@@ -295,7 +295,7 @@ describe('CommandsService', () => {
           exchange: 'MOEX'
         },
         quantity: 100,
-        condition: StopOrderCondition.Less,
+        condition: LessMore.Less,
         triggerPrice: 50,
         stopEndUnixTime: new Date()
       };
@@ -405,7 +405,7 @@ describe('CommandsService', () => {
         },
         quantity: 100,
         price: 200,
-        condition: StopOrderCondition.Less,
+        condition: LessMore.Less,
         triggerPrice: 50,
         stopEndUnixTime: new Date()
       };

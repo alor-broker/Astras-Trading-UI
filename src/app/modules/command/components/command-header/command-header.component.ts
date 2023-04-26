@@ -1,8 +1,8 @@
 import {
-  Component,
+  Component, EventEmitter,
   Input,
   OnDestroy,
-  OnInit
+  OnInit, Output
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -20,7 +20,6 @@ import { Position } from '../../../../shared/models/positions/position.model';
 import { startWith } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { CommandsService } from "../../services/commands.service";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 
 @Component({
@@ -34,7 +33,6 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly quoteService: QuotesService,
-    private readonly commandsService: CommandsService,
     private readonly positionService: PositionsService,
     private readonly currentDashboardService: DashboardContextService) {
   }
@@ -43,6 +41,12 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
   set instrument(value: InstrumentKey) {
     this.commandInstrument$.next(value);
   }
+
+  @Output()
+  priceSelected = new EventEmitter<number>();
+
+  @Output()
+  qtySelected = new EventEmitter<number>();
 
   ngOnDestroy(): void {
     this.commandInstrument$.complete();
@@ -105,10 +109,10 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
   }
 
   public selectPrice(price: number): void {
-    this.commandsService.setPriceSelected(price);
+    this.priceSelected.emit(price);
   }
 
   public selectQuantity(qty: number): void {
-    this.commandsService.setQuantitySelected(qty);
+    this.qtySelected.emit(qty);
   }
 }

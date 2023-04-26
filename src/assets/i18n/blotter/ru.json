@@ -3,5 +3,6 @@
   "ordersTab": "Заявки",
   "stopOrdersTab": "Стопы",
   "positionsTab": "Позиции",
-  "tradesTab": "Сделки"
+  "tradesTab": "Сделки",
+  "notificationsTab": "Уведомления"
 }

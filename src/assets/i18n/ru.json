@@ -63,6 +63,18 @@
     }
   },
 
+  "validationErrors": {
+    "emptyFieldError": "Введите значение",
+    "selectValueError": "Выберите значение",
+    "tooLittle": "Слишком мало",
+    "tooMuch": "Слишком много"
+  },
+
+  "lessMoreOptions": {
+    "less": "Меньше",
+    "more": "Больше"
+  },
+
   "numberDisplayFormatOptions": {
     "default": "Стандартный",
     "letterSuffix": "Сокращенный"

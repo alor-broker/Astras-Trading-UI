@@ -62,6 +62,34 @@
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="showRuler">{{t('scalperOrderBookSettings.showRulerLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='showRuler'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="showRulerOptions()">
+              <nz-collapse [nzBordered]="false" nzGhost>
+                <nz-collapse-panel
+                  [nzActive]="true"
+                  [nzHeader]="t('scalperOrderBookSettings.rulerSettingsLabel')"
+                  [formGroup]="asFormGroup(form.controls.rulerSettings)"
+                >
+                  <nz-form-item>
+                    <nz-form-label nzFor="markerDisplayFormat">{{t('scalperOrderBookSettings.markerDisplayFormatLabel')}}</nz-form-label>
+                    <nz-form-control>
+                      <nz-select formControlName='markerDisplayFormat'>
+                        <nz-option
+                          *ngFor='let option of availableMarkerFormats'
+                          [nzLabel]="t('scalperOrderBookSettings.markerDisplayFormatOptions.' + option, { fallback: option })"
+                          [nzValue]="option"
+                        ></nz-option>
+                      </nz-select>
+                    </nz-form-control>
+                  </nz-form-item>
+                </nz-collapse-panel>
+              </nz-collapse>
+            </nz-form-item>
             <nz-form-item>
               <nz-form-label nzFor="autoAlignIntervalSec" class="auto-align-label">
                 {{t('scalperOrderBookSettings.autoAlignIntervalLabel')}}
@@ -150,11 +178,11 @@
                   ></nz-option>
                 </nz-select>
                 <span *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.BiggestVolume" nz-typography nzType="secondary">
-            {{t('scalperOrderBookSettings.biggestVolumeHint')}}
-          </span>
+                  {{t('scalperOrderBookSettings.biggestVolumeHint')}}
+                </span>
                 <span *ngIf="form.value.volumeHighlightMode === volumeHighlightModes.VolumeBoundsWithFixedValue" nz-typography nzType="secondary">
-            {{t('scalperOrderBookSettings.volumeBoundsWithFixedValueHint')}}
-          </span>
+                  {{t('scalperOrderBookSettings.volumeBoundsWithFixedValueHint')}}
+                </span>
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>

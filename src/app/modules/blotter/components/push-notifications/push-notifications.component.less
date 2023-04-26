@@ -1,0 +1,52 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .active-filter {
+      color: @primary-color
+    }
+
+    .not-active-filter {
+      color: @text-color
+    }
+  }
+});
+
+:host {
+  height: 100%;
+  .container {
+    height: 100%;
+
+    .table-container {
+      height: 100%;
+      overflow: hidden;
+      min-height: 20px;
+
+      ::ng-deep .ant-table-header {
+        overflow: hidden !important;
+      }
+
+      ::ng-deep .ant-table-footer {
+        padding-top: 0;
+        padding-bottom: 0;
+        .ant-btn {
+          padding-top: 0;
+          padding-bottom: 0;
+          height: 20px;
+        }
+      }
+    }
+  }
+}
+
+.bold {
+  font-weight: bold;
+}
+
+tr:hover {
+  cursor: pointer;
+}
+
+.symbol-name {
+  margin-right: 10px;
+}

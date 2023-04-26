@@ -9,7 +9,6 @@ import { OrderService } from "../../../shared/services/orders/order.service";
 import { Side } from "../../../shared/models/enums/side.model";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { ModalService } from "../../../shared/services/modal.service";
-import { StopOrderCondition } from "../../../shared/models/enums/stoporder-conditions";
 import {
   LimitOrder,
   MarketOrder,
@@ -23,6 +22,7 @@ import {
 } from '../models/scalper-order-book.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { MathHelper } from '../../../shared/utils/math-helper';
+import {LessMore} from "../../../shared/models/enums/less-more.model";
 
 @Injectable({
   providedIn: 'root'
@@ -214,7 +214,7 @@ export class ScalperOrdersService {
       price: price,
       instrument: instrumentKey,
       triggerPrice: price,
-      condition: side === Side.Sell ? StopOrderCondition.More : StopOrderCondition.Less,
+      condition: side === Side.Sell ? LessMore.More : LessMore.Less,
     };
 
     if (silent) {
@@ -256,7 +256,7 @@ export class ScalperOrdersService {
         instrumentGroup: instrumentGroup
       },
       triggerPrice: price,
-      condition: side === Side.Sell ? StopOrderCondition.Less : StopOrderCondition.More
+      condition: side === Side.Sell ? LessMore.Less : LessMore.More
     };
 
     if (silent) {

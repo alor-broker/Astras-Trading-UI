@@ -1,8 +1,8 @@
 import { Side } from "../enums/side.model";
 import { InstrumentKey } from "../instruments/instrument-key.model";
 import { PortfolioKey } from "../portfolio-key.model";
-import { StopOrderCondition } from "../enums/stoporder-conditions";
 import { TimeInForce } from "./command-params.model";
+import {LessMore} from "../enums/less-more.model";
 
 export interface EditParams {
   type: string,
@@ -14,7 +14,7 @@ export interface EditParams {
   side: Side,
   stopEndUnixTime?: Date | number | null,
   triggerPrice?: number | null,
-  condition?: StopOrderCondition | null,
+  condition?: LessMore | null,
   cancelled?: () => void,
   timeInForce?: TimeInForce | null,
   icebergFixed?: number | null,

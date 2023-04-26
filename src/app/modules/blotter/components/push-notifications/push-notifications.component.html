@@ -1,0 +1,106 @@
+<ng-container *transloco="let t; scope: 'blotter/notifications'">
+  <div class="container">
+    <ng-template #empty>
+      <nz-empty
+        [nzNotFoundContent]="isFilterEmpty() ? t('blotterNotifications.emptyList') : t('blotterNotifications.emptyListWithFilters')"
+        class="ant-list-empty-text"
+        nzNotFoundImage="simple">
+      </nz-empty>
+    </ng-template>
+
+    <div #tableContainer *ngIf="selectedInstruments$ | async as selectedInstruments" class="table-container">
+      <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
+        <nz-table *ngIf="displayNotifications$ | async as notifications" [nzData]="notifications"
+                  [nzFrontPagination]="false"
+                  [nzLoading]="isLoading$ | async"
+                  [nzNoResult]="empty"
+                  [nzScroll]="{ x: tableInnerWidth + 'px', y: scrollHeight - 5 + 'px' }"
+                  [nzShowPagination]="false"
+                  [nzVirtualForTrackBy]="trackBy"
+                  [nzVirtualItemSize]="20"
+                  [nzVirtualMaxBufferPx]="scrollHeight * 2"
+                  [nzVirtualMinBufferPx]="scrollHeight"
+                  nzSize="small"
+                  nzTableLayout="fixed">
+          <thead>
+          <tr (cdkDropListDropped)="changeColumnOrder($event)" cdkDropList cdkDropListOrientation="horizontal">
+            <th nzWidth="30px">
+              <span [nzTooltipTitle]="t('blotterNotifications.columns.cancel.tooltip')" nz-tooltip>
+                {{t('blotterNotifications.columns.cancel.name')}}
+              </span>
+            </th>
+            <th (atsWidthChanged)="saveColumnWidth(column.id, $event)"
+                (atsWidthChanging)="recalculateTableWidth($event)"
+                (nzFilterChange)="defaultFilterChange(column.id, $event)"
+                *ngFor='let column of listOfColumns'
+                [atsResizeColumn]
+                [minWidth]="column.minWidth ?? 50"
+                [nzCustomFilter]="column.filterData && !column.filterData.isDefaultFilter"
+                [nzFilters]="column.filterData?.filters ?? []"
+                [nzShowFilter]="column.filterData && column.filterData.isDefaultFilter"
+                [nzShowSort]="!!column.sortFn"
+                [nzSortFn]="column.sortFn ?? false"
+                [nzWidth]="column.width ? column.width + 'px': null"
+                cdkDrag
+                cdkDragLockAxis="x"
+            >
+                  <span
+                    [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+                    [nzTooltipTitle]="column.tooltip"
+                    nz-tooltip
+                  >
+                    {{column.displayName}}
+                  </span>
+              <nz-filter-trigger
+                *ngIf="column.filterData && !column.filterData.isDefaultFilter"
+                [(nzVisible)]="!!column.filterData.isOpenedFilter"
+                [nzActive]="!!filter$"
+                [nzDropdownMenu]="searchMenu"
+              >
+                <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon
+                   nzType="search"></i>
+              </nz-filter-trigger>
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <ng-template let-notification nz-virtual-scroll>
+            <tr (click)="selectInstrument(notification)">
+              <td>
+                <a (click)="cancelSubscription(notification.id)"
+                   *ngIf='notification.subscriptionType === subscriptionTypes.PriceSpark'
+                   [nzTooltipMouseEnterDelay]="0.5"
+                   [nzTooltipTitle]="t('blotterNotifications.columns.cancel.tooltip')"
+                   nz-tooltip
+                >
+                  <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+                </a>
+              </td>
+              <ng-container *ngFor='let column of listOfColumns'>
+                <td *ngIf='column.id === "id"'>{{ notification.id }}</td>
+                <td
+                  *ngIf='column.id === "subscriptionType"'>{{t('blotterNotifications.columns.subscriptionType.listOfFilter.' + notification.subscriptionType, {fallback: notification.subscriptionType}) }}</td>
+                <td *ngIf='column.id === "instrument"' class='bold'>
+                  <span class="symbol-name">{{ notification.instrument }}</span>
+                  <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
+                    <nz-badge
+                      *ngIf="item.value.symbol === notification.instrument && item.value.exchange === notification.exchange"
+                      [nzColor]="item.key"></nz-badge>
+                  </ng-container>
+                </td>
+                <td
+                  *ngIf='column.id === "priceCondition"'>{{ !notification.priceCondition ? '' : t('lessMoreOptions.' + notification.priceCondition.toLowerCase(), {fallback: notification.priceCondition}) }}</td>
+                <td *ngIf='column.id === "price"'>{{ notification.price }}</td>
+              </ng-container>
+            </tr>
+          </ng-template>
+          </tbody>
+        </nz-table>
+      </ng-container>
+    </div>
+
+    <nz-dropdown-menu #searchMenu="nzDropdownMenu">
+      <ats-table-filter (filterChange)="applyFilter($event)" [columns]="listOfColumns"></ats-table-filter>
+    </nz-dropdown-menu>
+  </div>
+</ng-container>

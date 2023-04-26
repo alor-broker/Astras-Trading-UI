@@ -3,6 +3,8 @@
   "limitTab": "Лимитная",
   "marketTab": "Рыночная",
   "stopTab": "Условная",
+  "notificationsTab": "Уведомления",
+
   "buyBtnText": "Купить",
   "sellBtnText": "Продать",
   "noBuyOrdersTooltip": "Нет активных лимитных заявок на покупку",

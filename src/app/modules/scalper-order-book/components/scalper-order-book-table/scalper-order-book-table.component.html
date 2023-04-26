@@ -1,6 +1,18 @@
 <ng-container *transloco="let t; scope: 'scalper-order-book/scalper-order-book-table'">
   <ng-container *ngIf="dataContext.extendedSettings$ | async as settings">
-    <div *ngIf="displayItems$ | async as displayItems" id="table-body-container">
+    <div class="position-absolute" *ngIf="settings.widgetSettings.showRuler">
+      <ats-table-ruler
+        [activeRow]="hoveredRow$ | async"
+        [dataContext]="dataContext"
+        [xAxisStep]="rowHeight"
+      >
+      </ats-table-ruler>
+    </div>
+    <div *ngIf="displayItems$ | async as displayItems"
+         [atsHoverItemsGroup]="settings.widgetSettings.showRuler"
+         (hoveredItemChanged)="updateHoveredItem($event?.item?.atsHoverItemData ?? null)"
+         id="table-body-container"
+    >
     <div class="table-col" id="volume-panel">
       <div (click)="leftMouseClick($event, row)"
            (contextmenu)="rightMouseClick($event, row)"
@@ -8,6 +20,9 @@
            [style.height]="rowHeight + 'px'"
            [style.line-height]="rowHeight + 'px'"
            class="table-row"
+           [class.hovered]="(hoveredRow$ | async)?.price === row.price"
+           atsHoverItem
+           [atsHoverItemData]="{price: row.price}"
       >
         <div [ngClass]="getVolumeCellClasses(row)"
              [ngStyle]="row.getVolumeStyle()"
@@ -31,6 +46,9 @@
            [style.height]="rowHeight + 'px'"
            [style.line-height]="rowHeight + 'px'"
            class="table-row"
+           [class.hovered]="(hoveredRow$ | async)?.price === row.price"
+           atsHoverItem
+           [atsHoverItemData]="{price: row.price}"
       >
         <div
           [ngClass]="getPriceCellClasses(row)"
@@ -47,6 +65,9 @@
            [style.height]="rowHeight + 'px'"
            [style.line-height]="rowHeight + 'px'"
            class="table-row"
+           [class.hovered]="(hoveredRow$ | async)?.price === row.price"
+           atsHoverItem
+           [atsHoverItemData]="{price: row.price}"
       >
         <div
           [ngClass]="getOrdersCellClasses(row)"

@@ -60,6 +60,13 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     this.commandContext$.next(value);
   }
 
+  @Input()
+  set quantity(value: {quantity: number} | null){
+    if(value?.quantity != null) {
+      this.quantitySelect(value.quantity);
+    }
+  }
+
   ngOnInit(): void {
     this.commandContext$.pipe(
       filter((x): x is CommandContextModel<CommandParams> => !!x),
@@ -68,10 +75,6 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
       this.initCommandForm(context.commandParameters);
       this.initEvaluationUpdates(context);
     });
-
-    this.service.quantitySelected$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(qty => this.quantitySelect(qty));
   }
 
   ngOnDestroy(): void {
