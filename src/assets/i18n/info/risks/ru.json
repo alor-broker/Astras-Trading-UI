@@ -1,0 +1,8 @@
+{
+  "isMarginal": "Доступно в маржу",
+  "isShortSellPossible": "Доступно в шорт",
+  "longMultiplier":  "Ставка риска понижения",
+  "shortMultiplier": "Ставка риска повышения",
+  "currencyLongMultiplier":  "Ставка риска понижения валюты торгов",
+  "currencyShortMultiplier": "Ставка риска повышения валюты торгов"
+}

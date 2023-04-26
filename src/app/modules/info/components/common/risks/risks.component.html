@@ -1,0 +1,10 @@
+<ng-container *transloco="let t; scope: 'info/risks'">
+    <nz-descriptions *ngIf="risksInfo$ | async as risksInfo" [nzColumn]="1" nzSize="small" nzBordered>
+    <nz-descriptions-item [nzTitle]="t('infoRisks.isMarginal')">{{t(risksInfo.isMarginal ? 'yes' : 'no') }}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('infoRisks.isShortSellPossible')">{{t(risksInfo.isShortSellPossible ? 'yes' : 'no') }}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('infoRisks.longMultiplier')">{{risksInfo.longMultiplier}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('infoRisks.shortMultiplier')">{{risksInfo.shortMultiplier}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('infoRisks.currencyLongMultiplier')">{{risksInfo.currencyLongMultiplier}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('infoRisks.currencyShortMultiplier')">{{risksInfo.currencyShortMultiplier}}</nz-descriptions-item>
+  </nz-descriptions>
+</ng-container>

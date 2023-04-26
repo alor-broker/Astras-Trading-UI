@@ -1,0 +1,8 @@
+{
+  "isMarginal": "Available for margin",
+  "isShortSellPossible": "Available for short",
+  "longMultiplier":  "Downside risk rate",
+  "shortMultiplier": "Upward risk rate",
+  "currencyLongMultiplier":  "Trading currency downside risk rate",
+  "currencyShortMultiplier": "Trading currency upside risk rate"
+}

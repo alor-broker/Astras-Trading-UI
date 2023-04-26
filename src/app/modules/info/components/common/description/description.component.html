@@ -10,10 +10,6 @@
       <nz-descriptions-item *ngIf="description.lotsize" [nzTitle]="t('infoDescription.lotSize')">{{description.lotsize}}</nz-descriptions-item>
       <nz-descriptions-item *ngIf="description.marginbuy" [nzTitle]="t('infoDescription.marginBuy')">{{description.marginbuy}}</nz-descriptions-item>
       <nz-descriptions-item *ngIf="description.marginsell" [nzTitle]="t('infoDescription.marginSell')">{{description.marginsell}}</nz-descriptions-item>
-      <ng-container *ngIf="risksInfo$ | async as risksInfo">
-        <nz-descriptions-item [nzTitle]="t('infoDescription.isMarginal')">{{t(risksInfo.isMarginal ? 'yes' : 'no') }}</nz-descriptions-item>
-        <nz-descriptions-item [nzTitle]="t('infoDescription.isShortSellPossible')">{{t(risksInfo.isShortSellPossible ? 'yes' : 'no') }}</nz-descriptions-item>
-      </ng-container>
     </nz-descriptions>
   </ng-container>
 </ng-container>
