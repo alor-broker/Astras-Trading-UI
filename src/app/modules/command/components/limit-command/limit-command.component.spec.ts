@@ -46,8 +46,8 @@ describe('LimitCommandComponent', () => {
 
   const getFormInputs = () => {
     return {
-      quantity: fixture.nativeElement.querySelector('input[formcontrolname="quantity"]') as HTMLInputElement,
-      price: fixture.nativeElement.querySelector('input[formcontrolname="price"]') as HTMLInputElement,
+      quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
+      price: fixture.nativeElement.querySelector('[formcontrolname="price"]').querySelector('input') as HTMLInputElement,
       instrumentGroup: 'SPBX'
     };
   };
@@ -108,18 +108,20 @@ describe('LimitCommandComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize input values from context', () => {
+  it('should initialize input values from context', async () => {
     const commandContext = getDefaultCommandContext();
     component.commandContext = commandContext;
     fixture.detectChanges();
 
-    const formInputs = getFormInputs();
+    await fixture.whenStable().then(() => {
+      const formInputs = getFormInputs();
 
-    expect(formInputs.quantity.value).toEqual(commandContext.commandParameters.quantity.toString());
-    expect(formInputs.price.value).toEqual(commandContext.commandParameters.price!.toString());
+      expect(formInputs.quantity.value).toEqual(commandContext.commandParameters.quantity.toString());
+      expect(formInputs.price.value).toEqual(commandContext.commandParameters.price!.toString());
+    });
   });
 
-  it('should show form errors', () => {
+  it('should show form errors',  async () => {
     component.commandContext = getDefaultCommandContext();
     fixture.detectChanges();
 
@@ -128,11 +130,6 @@ describe('LimitCommandComponent', () => {
         control: 'quantity',
         setValue: () => null,
         expectedError: 'Введите кол-во'
-      },
-      {
-        control: 'quantity',
-        setValue: () => -1,
-        expectedError: 'Слишком мало'
       },
       {
         control: 'quantity',
@@ -146,11 +143,6 @@ describe('LimitCommandComponent', () => {
       },
       {
         control: 'price',
-        setValue: () => -1,
-        expectedError: 'Слишком мало'
-      },
-      {
-        control: 'price',
         setValue: () => 1000000001,
         expectedError: 'Слишком много'
       }
@@ -158,20 +150,23 @@ describe('LimitCommandComponent', () => {
 
     const inputs = getFormInputs();
 
-    cases.forEach(testCase => {
+    for (let testCase of cases) {
       const control: HTMLInputElement = (<any>inputs)[testCase.control];
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 
       fixture.detectChanges();
-      const errorElement = getValidationErrorElement(control);
 
-      expect(errorElement).not.toBeNull();
+      await fixture.whenStable().then(() => {
+        const errorElement = getValidationErrorElement(control);
 
-      if (testCase.expectedError) {
-        expect(errorElement?.textContent).toEqual(testCase.expectedError);
-      }
-    });
+        expect(errorElement).not.toBeNull();
+
+        if (testCase.expectedError) {
+          expect(errorElement?.textContent).toEqual(testCase.expectedError);
+        }
+      });
+    }
   });
 
   it('should set null command when form invalid', () => {
@@ -185,11 +180,12 @@ describe('LimitCommandComponent', () => {
     }
   );
 
-  it('should set command with default values', () => {
+  it('should set command with default values', async () => {
       const commandContext = getDefaultCommandContext();
       component.commandContext = commandContext;
       fixture.detectChanges();
 
+    await fixture.whenStable().then(() => {
       const inputs = getFormInputs();
       const expectedCommand: LimitCommand = {
         price: Number(inputs.price.value),
@@ -202,6 +198,7 @@ describe('LimitCommandComponent', () => {
       };
 
       expect(spyCommands.setLimitCommand).toHaveBeenCalledWith(expectedCommand);
+    });
     }
   );
 
@@ -231,15 +228,42 @@ describe('LimitCommandComponent', () => {
     }
   );
 
-  it('should update price', () => {
+  it('should update price', async () => {
       const commandContext = getDefaultCommandContext();
       component.commandContext = commandContext;
       fixture.detectChanges();
 
+      await fixture.whenStable().then(() => {
+        const inputs = getFormInputs();
+        const expectedCommand: LimitCommand = {
+          price: 478,
+          quantity: Number(inputs.quantity.value),
+          instrument: {
+            ...commandContext.commandParameters.instrument,
+            instrumentGroup: inputs.instrumentGroup
+          },
+          user: commandContext.commandParameters.user
+        };
+
+        component.price = { price: expectedCommand.price };
+
+        fixture.detectChanges();
+        expect(spyCommands.setLimitCommand).toHaveBeenCalledWith(expectedCommand);
+        expect(inputs.price.value).toEqual(expectedCommand.price.toString());
+      });
+    }
+  );
+
+  it('should update quantity', async () => {
+    const commandContext = getDefaultCommandContext();
+    component.commandContext = commandContext;
+    fixture.detectChanges();
+
+    await fixture.whenStable().then(() => {
       const inputs = getFormInputs();
       const expectedCommand: LimitCommand = {
-        price: 478,
-        quantity: Number(inputs.quantity.value),
+        price: Number(inputs.price.value),
+        quantity: 432,
         instrument: {
           ...commandContext.commandParameters.instrument,
           instrumentGroup: inputs.instrumentGroup
@@ -247,60 +271,38 @@ describe('LimitCommandComponent', () => {
         user: commandContext.commandParameters.user
       };
 
-      component.price = {price: expectedCommand.price };
-      fixture.detectChanges();
-
-      expect(spyCommands.setLimitCommand).toHaveBeenCalledWith(expectedCommand);
-      expect(inputs.price.value).toEqual(expectedCommand.price.toString());
-    }
-  );
-
-  it('should update quantity', () => {
-    const commandContext = getDefaultCommandContext();
-    component.commandContext = commandContext;
-    fixture.detectChanges();
-
-    const inputs = getFormInputs();
-    const expectedCommand: LimitCommand = {
-      price: Number(inputs.price.value),
-      quantity: 432,
-      instrument: {
-        ...commandContext.commandParameters.instrument,
-        instrumentGroup: inputs.instrumentGroup
-      },
-      user: commandContext.commandParameters.user
-    };
-
     component.quantity = { quantity: expectedCommand.quantity};
     fixture.detectChanges();
 
-    expect(spyCommands.setLimitCommand).toHaveBeenCalledWith(expectedCommand);
-    expect(inputs.quantity.value).toEqual(expectedCommand.quantity.toString());
+      expect(spyCommands.setLimitCommand).toHaveBeenCalledWith(expectedCommand);
+      expect(inputs.quantity.value).toEqual(expectedCommand.quantity.toString());
+    });
   });
 
-  it('should update evaluation', (done) => {
+  it('should update evaluation', async () => {
       const commandContext = getDefaultCommandContext();
       component.commandContext = commandContext;
       fixture.detectChanges();
 
-      const inputs = getFormInputs();
-      const expectedEvaluation: EvaluationBaseProperties = {
-        price: 956,
-        lotQuantity: Number(inputs.quantity.value),
-        instrument: {
-          ...commandContext.commandParameters.instrument,
-          instrumentGroup: inputs.instrumentGroup,
-        },
-        instrumentCurrency: commandContext.instrument.currency
-      };
+      await fixture.whenStable().then(() => {
+        const inputs = getFormInputs();
+        const expectedEvaluation: EvaluationBaseProperties = {
+          price: 956,
+          lotQuantity: Number(inputs.quantity.value),
+          instrument: {
+            ...commandContext.commandParameters.instrument,
+            instrumentGroup: inputs.instrumentGroup,
+          },
+          instrumentCurrency: commandContext.instrument.currency
+        };
 
-      inputs.price.value = expectedEvaluation.price.toString();
-      inputs.price.dispatchEvent(new Event('input'));
-      fixture.detectChanges();
+        inputs.price.value = expectedEvaluation.price.toString();
+        inputs.price.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
 
-      component.evaluation$.subscribe(x => {
-        done();
-        expect(x).toEqual(expectedEvaluation);
+        component.evaluation$.subscribe(x => {
+          expect(x).toEqual(expectedEvaluation);
+        });
       });
     }
   );

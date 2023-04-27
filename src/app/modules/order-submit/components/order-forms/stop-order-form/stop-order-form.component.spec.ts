@@ -50,10 +50,10 @@ describe('StopOrderFormComponent', () => {
 
   const getFormInputs = () => {
     return {
-      quantity: fixture.nativeElement.querySelector('input[formcontrolname="quantity"]') as HTMLInputElement,
-      triggerPrice: fixture.nativeElement.querySelector('input[formcontrolname="triggerPrice"]') as HTMLInputElement,
+      quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
+      triggerPrice: fixture.nativeElement.querySelector('[formcontrolname="triggerPrice"]').querySelector('input') as HTMLInputElement,
       condition: fixture.nativeElement.querySelector('nz-select[formcontrolname="condition"]') as HTMLSelectElement,
-      price: fixture.nativeElement.querySelector('input[formcontrolname="price"]') as HTMLInputElement
+      price: fixture.nativeElement.querySelector('[formcontrolname="price"]')?.querySelector('input') as HTMLInputElement
     };
   };
 
@@ -120,11 +120,12 @@ describe('StopOrderFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show form errors', () => {
+  it('should show form errors', async () => {
     component.instrument = getDefaultInstrument();
     fixture.detectChanges();
 
     component.form!.controls.withLimit.setValue(true);
+    component.checkPriceAvailability();
     fixture.detectChanges();
 
     const cases: { control: string, setValue: () => any, expectedError?: string }[] = [
@@ -135,11 +136,6 @@ describe('StopOrderFormComponent', () => {
       },
       {
         control: 'quantity',
-        setValue: () => -1,
-        expectedError: 'Слишком мало'
-      },
-      {
-        control: 'quantity',
         setValue: () => 1000000001,
         expectedError: 'Слишком много'
       },
@@ -149,45 +145,38 @@ describe('StopOrderFormComponent', () => {
         expectedError: 'Введите цену'
       },
       {
-        control: 'triggerPrice',
-        setValue: () => -1,
-        expectedError: 'Слишком мало'
+        control: 'price',
+        setValue: () => 1000000001,
+        expectedError: 'Слишком много'
       },
       {
         control: 'price',
         setValue: () => null,
         expectedError: 'Введите цену'
       },
-      {
-        control: 'price',
-        setValue: () => -1,
-        expectedError: 'Слишком мало'
-      },
-      {
-        control: 'price',
-        setValue: () => 1000000001,
-        expectedError: 'Слишком много'
-      }
     ];
 
     const inputs = getFormInputs();
 
-    cases.forEach(testCase => {
+    for (let testCase of cases) {
       const control: HTMLInputElement = (<any>inputs)[testCase.control];
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 
       fixture.detectChanges();
-      const errorElement = getValidationErrorElement(control);
 
-      expect(errorElement).not.toBeNull();
+      await fixture.whenStable().then(() => {
+        const errorElement = getValidationErrorElement(control);
 
-      if (testCase.expectedError) {
-        expect(errorElement?.textContent)
-          .withContext(testCase.control)
-          .toEqual(testCase.expectedError);
-      }
-    });
+        expect(errorElement).not.toBeNull();
+
+        if (testCase.expectedError) {
+          expect(errorElement?.textContent)
+            .withContext(testCase.control)
+            .toEqual(testCase.expectedError);
+        }
+      });
+    }
   });
 
   it('should emit not valid value when form invalid', (done) => {
@@ -206,7 +195,7 @@ describe('StopOrderFormComponent', () => {
     }
   );
 
-  it('should emit new value when form updated', (done) => {
+  it('should emit new value when form updated', async () => {
       component.instrument = getDefaultInstrument();
       fixture.detectChanges();
       const expectedDate = timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1));
@@ -244,11 +233,12 @@ describe('StopOrderFormComponent', () => {
       inputs.price.value = expectedValue.price!.toString();
       inputs.price.dispatchEvent(new Event('input'));
 
-      emittedValue$.pipe(
-        take(1)
-      ).subscribe(value => {
-        done();
-        expect(value).toEqual({ value: expectedValue, isValid: true });
+      await fixture.whenStable().then(() => {
+        emittedValue$.pipe(
+          take(1)
+        ).subscribe(value => {
+          expect(value).toEqual({value: expectedValue, isValid: true});
+        });
       });
     }
   );

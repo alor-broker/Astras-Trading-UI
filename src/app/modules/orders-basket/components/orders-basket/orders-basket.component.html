@@ -33,13 +33,10 @@
             <nz-form-item>
               <nz-form-label nzRequired>{{t('ordersBasketOrdersBasket.budgetLabel')}}</nz-form-label>
               <nz-form-control [nzErrorTip]="budgetError">
-                <input
-                  (mousedown)="$event.stopPropagation()"
-                  atsNumerical
+                <ats-input-number
                   formControlName="budget"
-                  nz-input
                   [placeholder]="t('ordersBasketOrdersBasket.budgetPlaceholder')"
-                />
+                ></ats-input-number>
                 <ng-template #budgetError>
                   <span *ngIf="form.controls.budget?.errors?.required">{{t('ordersBasketOrdersBasket.budgetPlaceholder')}}</span>
                   <span *ngIf="form.controls.budget?.errors?.min">{{t('ordersBasketOrdersBasket.tooLittle')}}</span>

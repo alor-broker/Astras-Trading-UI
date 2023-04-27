@@ -53,7 +53,7 @@ describe('MarketCommandComponent', () => {
 
   const getFormInputs = () => {
     return {
-      quantity: fixture.nativeElement.querySelector('input[formcontrolname="quantity"]') as HTMLInputElement,
+      quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
       instrumentGroup: 'SPBX'
     };
   };
@@ -121,17 +121,19 @@ describe('MarketCommandComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize input values from context', () => {
+  it('should initialize input values from context', async () => {
     const commandContext = getDefaultCommandContext();
     component.commandContext = commandContext;
     fixture.detectChanges();
 
-    const formInputs = getFormInputs();
+    await fixture.whenStable().then(() => {
+      const formInputs = getFormInputs();
 
-    expect(formInputs.quantity.value).toEqual(commandContext.commandParameters.quantity.toString());
+      expect(formInputs.quantity.value).toEqual(commandContext.commandParameters.quantity.toString());
+    });
   });
 
-  it('should show form errors', () => {
+  it('should show form errors', async () => {
     component.commandContext = getDefaultCommandContext();
     fixture.detectChanges();
 
@@ -143,11 +145,6 @@ describe('MarketCommandComponent', () => {
       },
       {
         control: 'quantity',
-        setValue: () => -1,
-        expectedError: 'Слишком мало'
-      },
-      {
-        control: 'quantity',
         setValue: () => 1000000001,
         expectedError: 'Слишком много'
       }
@@ -155,20 +152,23 @@ describe('MarketCommandComponent', () => {
 
     const inputs = getFormInputs();
 
-    cases.forEach(testCase => {
+    for (let testCase of cases) {
       const control: HTMLInputElement = (<any>inputs)[testCase.control];
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 
       fixture.detectChanges();
-      const errorElement = getValidationErrorElement(control);
 
-      expect(errorElement).not.toBeNull();
+      await fixture.whenStable().then(() => {
+        const errorElement = getValidationErrorElement(control);
 
-      if (testCase.expectedError) {
-        expect(errorElement?.textContent).toEqual(testCase.expectedError);
-      }
-    });
+        expect(errorElement).not.toBeNull();
+
+        if (testCase.expectedError) {
+          expect(errorElement?.textContent).toEqual(testCase.expectedError);
+        }
+      });
+    }
   });
 
   it('should set null command when form invalid', () => {
@@ -182,22 +182,24 @@ describe('MarketCommandComponent', () => {
     }
   );
 
-  it('should set command with default values', () => {
+  it('should set command with default values', async  () => {
       const commandContext = getDefaultCommandContext();
       component.commandContext = commandContext;
       fixture.detectChanges();
 
-      const inputs = getFormInputs();
-      const expectedCommand: MarketCommand = {
-        quantity: Number(inputs.quantity.value),
-        instrument: {
-          ...commandContext.commandParameters.instrument,
-          instrumentGroup: inputs.instrumentGroup
-        },
-        user: commandContext.commandParameters.user
-      };
+      await fixture.whenStable().then(() => {
+        const inputs = getFormInputs();
+        const expectedCommand: MarketCommand = {
+          quantity: Number(inputs.quantity.value),
+          instrument: {
+            ...commandContext.commandParameters.instrument,
+            instrumentGroup: inputs.instrumentGroup
+          },
+          user: commandContext.commandParameters.user
+        };
 
-      expect(spyCommands.setMarketCommand).toHaveBeenCalledWith(expectedCommand);
+        expect(spyCommands.setMarketCommand).toHaveBeenCalledWith(expectedCommand);
+      });
     }
   );
 

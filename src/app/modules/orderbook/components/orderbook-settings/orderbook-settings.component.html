@@ -17,15 +17,7 @@
       <nz-form-item>
         <nz-form-control [nzErrorTip]="t('orderbookSettings.intervalError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
           <nz-form-label nzRequired nzFor="depth">{{t('orderbookSettings.depthLabel')}}</nz-form-label>
-          <nz-input-group>
-            <input
-              atsNumerical
-              formControlName="depth"
-              (mousedown)="$event.stopPropagation()"
-              nz-input
-              [placeholder]="t('orderbookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"
-            />
-          </nz-input-group>
+          <ats-input-number formControlName="depth" [placeholder]="t('orderbookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"></ats-input-number>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
