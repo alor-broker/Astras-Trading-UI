@@ -45,7 +45,7 @@ export class PushNotificationsService {
           })
         ),
         catchError(err => {
-          if (err.error.code === 'SubscriptionAlreadyExists') {
+          if (err.error?.code === 'SubscriptionAlreadyExists') {
             return of({message: 'success', code: err.error.code});
           }
           return throwError(err);
@@ -65,7 +65,7 @@ export class PushNotificationsService {
         take(1),
         switchMap(() => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addPriceSpark', request)),
         catchError(err => {
-          if (err.error.code === 'SubscriptionAlreadyExists') {
+          if (err.error?.code === 'SubscriptionAlreadyExists') {
             return of({message: 'success', code: err.error.code});
           }
           return throwError(err);
@@ -129,7 +129,7 @@ export class PushNotificationsService {
           token => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addToken', {token})
             .pipe(
               catchError(err => {
-                if (err.error.code === 'TokenAlreadyExists') {
+                if (err.error?.code === 'TokenAlreadyExists') {
                   return of({message: 'success', code: err.error.code});
                 }
                 return throwError(err);

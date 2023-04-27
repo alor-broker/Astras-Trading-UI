@@ -9,6 +9,7 @@ import { AboutIssueComponent } from './components/bonds/about-issue/about-issue.
 import { SharedModule } from 'src/app/shared/shared.module';
 import { InfoHeaderComponent } from './components/common/info-header/info-header.component';
 import { FinanceBarChartComponent } from './components/common/finance-bar-chart/finance-bar-chart.component';
+import { RisksComponent } from './components/common/risks/risks.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { FinanceBarChartComponent } from './components/common/finance-bar-chart/
     FinanceComponent,
     AboutIssueComponent,
     InfoHeaderComponent,
-    FinanceBarChartComponent
+    FinanceBarChartComponent,
+    RisksComponent
   ],
   imports: [
     SharedModule,
