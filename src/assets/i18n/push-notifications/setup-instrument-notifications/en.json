@@ -1,4 +1,6 @@
 ﻿{
   "priceLabel": "Price",
-  "priceConditionLabel": "Condition"
+  "priceConditionLabel": "Condition",
+
+  "notificationsDisabledWarning": "Notifications have been disabled for this site. Please enable them in your browser settings and refresh the page."
 }

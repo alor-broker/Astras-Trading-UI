@@ -7,7 +7,7 @@ import {mapWith} from "../../../../shared/utils/observable-helper";
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
 import {FormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {inputNumberValidation} from "../../../../shared/utils/validation-options";
-import {filter} from "rxjs/operators";
+import {filter, map} from "rxjs/operators";
 import {Destroyable} from "../../../../shared/utils/destroyable";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
@@ -18,6 +18,7 @@ import {Instrument} from "../../../../shared/models/instruments/instrument.model
   styleUrls: ['./setup-instrument-notifications.component.less']
 })
 export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy {
+  isNotificationsAllowed$!: Observable<boolean>;
   currentInstrumentSubscriptions$!: Observable<PriceSparkSubscription[]>;
   newPriceChangeSubscriptionForm!: UntypedFormGroup;
   readonly isLoading$ = new BehaviorSubject(false);
@@ -65,6 +66,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
 
   ngOnInit(): void {
     this.initInstrument();
+    this.initNotificationStatusCheck();
     this.initCurrentInstrumentSubscriptions();
     this.initNewPriceChangeSubscriptionForm();
 
@@ -111,9 +113,18 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
     });
   }
 
+  private initNotificationStatusCheck() {
+    this.isNotificationsAllowed$ = this.pushNotificationsService.getBrowserNotificationsStatus().pipe(
+      map(s => s === "granted"),
+      shareReplay(1)
+    );
+  }
+
   private initCurrentInstrumentSubscriptions() {
     this.currentInstrumentSubscriptions$ =
-      this.refresh$.pipe(
+      this.isNotificationsAllowed$.pipe(
+        filter(x => x),
+        switchMap(() => this.refresh$),
         switchMap(() => this.instrumentKey$),
         mapWith(instrumentKey => {
             if (!instrumentKey) {
