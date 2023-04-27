@@ -35,25 +35,34 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   @ViewChild('inputElement', {static: true})
   inputElement!: ElementRef<HTMLInputElement>;
   value?: number | null;
+  displayValue?: string | null;
 
   constructor(private readonly cdr: ChangeDetectorRef) {
     super();
   }
 
   writeValue(value: number | null): void {
+    if(value === this.value) {
+      return;
+    }
+
+    if(Number(this.displayValue) === Number(value)) {
+      return;
+    }
+
     // update value to prevent value emitting in this.setValue(...)
     this.value = value;
     this.setValue(value);
+
     this.setDisplayValue(value);
     this.cdr.markForCheck();
   }
 
   setValue(value: number | null) {
     if (this.value !== value) {
+      this.value = value;
       this.emitValue(value);
     }
-
-    this.value = value;
   }
 
   onModelChange(value: string): void {
@@ -109,7 +118,8 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   }
 
   private setDisplayValue(value: number | string | null) {
-    this.inputElement.nativeElement.value = value?.toString() ?? '';
+    this.displayValue = value?.toString() ?? '';
+    this.inputElement.nativeElement.value = this.displayValue;
   }
 
   private stepChange(multiplier: number) {

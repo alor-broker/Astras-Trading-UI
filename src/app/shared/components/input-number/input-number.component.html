@@ -7,7 +7,7 @@
   (blur)="atsBlur.emit()"
   autocomplete="off"
   inputmode="decimal"
-  [ngModel]="value"
+  [ngModel]="displayValue"
   (ngModelChange)="onModelChange($event)"
   (keydown)="processKeydown($event)"
   (wheel)="processWheel($event)"
