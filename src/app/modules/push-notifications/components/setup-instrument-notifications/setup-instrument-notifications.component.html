@@ -1,68 +1,74 @@
 <ng-container *transloco="let t; scope: 'push-notifications/setup-instrument-notifications'">
-  <nz-spin [nzSpinning]="isLoading$ | async">
-    <div class="spin-content">
-      <ng-container *ngIf="currentInstrumentSubscriptions$ | async as currentInstrumentSubscriptions">
-        <ng-container *ngFor="let currentSubscription of currentInstrumentSubscriptions">
-          <div class="d-flex justify-content-between">
-            <div class="d-flex flex-row flex-gap-5">
-              <span>{{t('pushNotificationsSetupInstrumentNotifications.priceLabel')}}</span>
-              <span>{{t('lessMoreOptions.' + currentSubscription.priceCondition.toLowerCase(), {fallback: currentSubscription.priceCondition})}}</span>
-              <span>{{currentSubscription.price}}</span>
+  <ng-container *ngIf="(isNotificationsAllowed$ | async); else notificationsDisabledWarningBlock">
+    <nz-spin [nzSpinning]="isLoading$ | async">
+      <div class="spin-content">
+        <ng-container *ngIf="currentInstrumentSubscriptions$ | async as currentInstrumentSubscriptions">
+          <ng-container *ngFor="let currentSubscription of currentInstrumentSubscriptions">
+            <div class="d-flex justify-content-between">
+              <div class="d-flex flex-row flex-gap-5">
+                <span>{{t('pushNotificationsSetupInstrumentNotifications.priceLabel')}}</span>
+                <span>{{t('lessMoreOptions.' + currentSubscription.priceCondition.toLowerCase(), {fallback: currentSubscription.priceCondition})}}</span>
+                <span>{{currentSubscription.price}}</span>
+              </div>
+              <div>
+                <button (click)="cancelSubscription(currentSubscription.id)" nz-button nzSize='small' nzType="link">
+                  <i nz-icon nzType="close"></i>
+                </button>
+              </div>
             </div>
-            <div>
-              <button (click)="cancelSubscription(currentSubscription.id)" nz-button nzSize='small' nzType="link">
-                <i nz-icon nzType="close"></i>
-              </button>
-            </div>
-          </div>
-          <nz-divider></nz-divider>
-        </ng-container>
-        <ng-container>
-          <form *ngIf="newPriceChangeSubscriptionForm" [formGroup]="newPriceChangeSubscriptionForm"
-                [nzLayout]="'vertical'" nz-form>
-            <div class="d-flex justify-content-between flex-gap-10">
-              <nz-form-item class="w-100">
-                <nz-form-control [nzErrorTip]="t('validationErrors.selectValueError')">
-                  <nz-select [nzPlaceHolder]="t('pushNotificationsSetupInstrumentNotifications.priceConditionLabel')"
-                             formControlName="priceCondition">
-                    <ng-container *ngFor="let condition of availablePriceConditions">
-                      <nz-option
-                        [nzLabel]="t('lessMoreOptions.' + condition.toLowerCase(), { fallback: condition })"
-                        [nzValue]="condition">
-                      </nz-option>
-                    </ng-container>
-                  </nz-select>
-                </nz-form-control>
-              </nz-form-item>
-              <nz-form-item class="w-100">
-                <nz-form-control [nzErrorTip]="priceError">
-                  <input (mousedown)="$event.stopPropagation()"
-                         [placeholder]="t('pushNotificationsSetupInstrumentNotifications.priceLabel')"
-                         [step]="(instrument$ | async)?.minstep ?? 1"
-                         atsNumerical
-                         formControlName="price"
-                         nz-input/>
-                </nz-form-control>
-                <ng-template #priceError>
+            <nz-divider></nz-divider>
+          </ng-container>
+          <ng-container>
+            <form *ngIf="newPriceChangeSubscriptionForm" [formGroup]="newPriceChangeSubscriptionForm"
+                  [nzLayout]="'vertical'" nz-form>
+              <div class="d-flex justify-content-between flex-gap-10">
+                <nz-form-item class="w-100">
+                  <nz-form-control [nzErrorTip]="t('validationErrors.selectValueError')">
+                    <nz-select [nzPlaceHolder]="t('pushNotificationsSetupInstrumentNotifications.priceConditionLabel')"
+                               formControlName="priceCondition">
+                      <ng-container *ngFor="let condition of availablePriceConditions">
+                        <nz-option
+                          [nzLabel]="t('lessMoreOptions.' + condition.toLowerCase(), { fallback: condition })"
+                          [nzValue]="condition">
+                        </nz-option>
+                      </ng-container>
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item class="w-100">
+                  <nz-form-control [nzErrorTip]="priceError">
+                    <input (mousedown)="$event.stopPropagation()"
+                           [placeholder]="t('pushNotificationsSetupInstrumentNotifications.priceLabel')"
+                           [step]="(instrument$ | async)?.minstep ?? 1"
+                           atsNumerical
+                           formControlName="price"
+                           nz-input/>
+                  </nz-form-control>
+                  <ng-template #priceError>
                   <span
                     *ngIf="newPriceChangeSubscriptionForm.get('price')?.errors?.required">{{t('validationErrors.emptyFieldError')}}</span>
-                  <span
-                    *ngIf="newPriceChangeSubscriptionForm.get('price')?.errors?.min">{{t('validationErrors.tooLittle')}}</span>
-                  <span
-                    *ngIf="newPriceChangeSubscriptionForm.get('price')?.errors?.max">{{t('validationErrors.tooMuch')}}</span>
-                </ng-template>
-              </nz-form-item>
-              <button
-                (click)="addSubscription()"
-                [disabled]="!newPriceChangeSubscriptionForm.valid"
-                nz-button
-                nzType="primary">
-                <i nz-icon nzType="plus"></i>
-              </button>
-            </div>
-          </form>
+                    <span
+                      *ngIf="newPriceChangeSubscriptionForm.get('price')?.errors?.min">{{t('validationErrors.tooLittle')}}</span>
+                    <span
+                      *ngIf="newPriceChangeSubscriptionForm.get('price')?.errors?.max">{{t('validationErrors.tooMuch')}}</span>
+                  </ng-template>
+                </nz-form-item>
+                <button
+                  (click)="addSubscription()"
+                  [disabled]="!newPriceChangeSubscriptionForm.valid"
+                  nz-button
+                  nzType="primary">
+                  <i nz-icon nzType="plus"></i>
+                </button>
+              </div>
+            </form>
+          </ng-container>
         </ng-container>
-      </ng-container>
-    </div>
-  </nz-spin>
+      </div>
+    </nz-spin>
+  </ng-container>
+
+  <ng-template #notificationsDisabledWarningBlock>
+    <span nz-typography nzType="warning">{{t('pushNotificationsSetupInstrumentNotifications.notificationsDisabledWarning')}}</span>
+  </ng-template>
 </ng-container>

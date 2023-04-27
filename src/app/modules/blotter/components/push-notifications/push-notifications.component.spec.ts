@@ -49,7 +49,8 @@ describe('PushNotificationsComponent', () => {
             cancelSubscription: jasmine.createSpy('cancelSubscription').and.returnValue(new Subject()),
             subscriptionsUpdated$: new Subject(),
             getMessages: jasmine.createSpy('getMessages').and.returnValue(new Subject()),
-            getCurrentSubscriptions: jasmine.createSpy('getCurrentSubscriptions').and.returnValue(new Subject())
+            getCurrentSubscriptions: jasmine.createSpy('getCurrentSubscriptions').and.returnValue(new Subject()),
+            getBrowserNotificationsStatus: jasmine.createSpy('getBrowserNotificationsStatus').and.returnValue(new Subject())
           }
         },
       ]

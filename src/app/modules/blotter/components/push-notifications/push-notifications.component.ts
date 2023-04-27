@@ -11,7 +11,7 @@ import {
   tap
 } from "rxjs";
 import {InstrumentGroups} from "../../../../shared/models/dashboard/dashboard.model";
-import {map, startWith, switchMap} from "rxjs/operators";
+import {filter, map, startWith, switchMap} from "rxjs/operators";
 import {defaultBadgeColor} from "../../../../shared/utils/instruments";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {TerminalSettingsService} from "../../../terminal-settings/services/terminal-settings.service";
@@ -52,8 +52,8 @@ type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSpar
 })
 export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly subscriptionTypes = PushSubscriptionType;
-
   readonly isLoading$ = new BehaviorSubject(false);
+
   @ViewChildren('tableContainer')
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
   tableInnerWidth: number = 1000;
@@ -61,8 +61,9 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
   @Input()
   guid!: string;
   selectedInstruments$: Observable<InstrumentGroups> = of({});
-  scrollHeight$: Observable<number> = of(100);
+  readonly scrollHeight$ = new BehaviorSubject<number>(100);
   listOfColumns: BaseColumnSettings<DisplayNotification>[] = [];
+  isNotificationsAllowed$!: Observable<boolean>;
   readonly filter$ = new BehaviorSubject<NotificationFilter>({});
   private readonly columnDefaultWidth = 100;
   private readonly destroyable = new Destroyable();
@@ -122,10 +123,9 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
 
   ngAfterViewInit(): void {
     const initHeightWatching = (ref: ElementRef<HTMLElement>) => {
-      // need setTimeout. nz-table does not see changes in this case
-      setTimeout(() => {
-        this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
-      });
+      TableAutoHeightBehavior.getScrollHeight(ref).pipe(
+        takeUntil(this.destroyable.destroyed$)
+      ).subscribe(x => this.scrollHeight$.next(x));
     };
 
     if (this.tableContainer.length > 0) {
@@ -146,6 +146,7 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
   ngOnDestroy(): void {
     this.destroyable.destroy();
     this.isLoading$.complete();
+    this.scrollHeight$.complete();
   }
 
   ngOnInit(): void {
@@ -155,6 +156,7 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
 
     this.initColumns();
     this.initSelectedInstruments();
+    this.initNotificationStatusCheck();
     this.initDisplayNotifications();
   }
 
@@ -313,7 +315,7 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
       switchMap(() => this.pushNotificationsService.getCurrentSubscriptions())
     );
 
-    this.displayNotifications$ = combineLatest([
+    const displayNotifications$ = combineLatest([
       this.settings$,
       currentPositions$,
       currentSubscriptions$,
@@ -349,6 +351,18 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
           .sort((a, b) =>  b.createdAt!.getTime() - a.createdAt!.getTime());
       }),
       tap(() => this.isLoading$.next(false))
+    );
+
+    this.displayNotifications$ = this.isNotificationsAllowed$.pipe(
+      filter(x=> x),
+      switchMap(() => displayNotifications$)
+    );
+  }
+
+  private initNotificationStatusCheck() {
+    this.isNotificationsAllowed$ = this.pushNotificationsService.getBrowserNotificationsStatus().pipe(
+      map(s => s === "granted"),
+      shareReplay(1)
     );
   }
 

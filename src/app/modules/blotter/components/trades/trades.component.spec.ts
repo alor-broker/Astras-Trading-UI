@@ -60,8 +60,6 @@ describe('TradesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TradesComponent);
     component = fixture.componentInstance;
-
-    component.scrollHeight$ = new Subject();
   });
 
   afterEach(() => fixture.destroy());

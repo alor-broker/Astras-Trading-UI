@@ -117,6 +117,10 @@ export class PushNotificationsService {
       );
   }
 
+  getBrowserNotificationsStatus(): Observable<"default" | "denied" | "granted"> {
+    return this.angularFireMessaging.requestPermission;
+  }
+
   private getToken(): Observable<string | null> {
     if (this.token$) {
       return this.token$;

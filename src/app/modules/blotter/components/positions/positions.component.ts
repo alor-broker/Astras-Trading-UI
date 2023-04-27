@@ -72,7 +72,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   displayPositions$: Observable<PositionDisplay[]> = of([]);
   searchFilter = new BehaviorSubject<PositionFilter>({});
   selectedInstruments$: Observable<InstrumentGroups> = of({});
-  scrollHeight$: Observable<number> = of(100);
+  readonly scrollHeight$ = new BehaviorSubject<number>(100);
   tableInnerWidth: number = 1000;
   allColumns: BaseColumnSettings<PositionDisplay>[] = [
     {
@@ -187,10 +187,9 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     const initHeightWatching = (ref: ElementRef<HTMLElement>) => {
-      // need setTimeout. nz-table does not see changes in this case
-      setTimeout(() => {
-        this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
-      });
+      TableAutoHeightBehavior.getScrollHeight(ref).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe(x => this.scrollHeight$.next(x));
     };
 
     if(this.tableContainer.length > 0) {
@@ -266,6 +265,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+    this.scrollHeight$.complete();
   }
 
   filterChange(newFilter: PositionFilter) {

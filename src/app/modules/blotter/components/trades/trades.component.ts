@@ -162,7 +162,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
     },
   ];
   listOfColumns: BaseColumnSettings<DisplayTrade>[] = [];
-  scrollHeight$: Observable<number> = of(100);
+  readonly scrollHeight$ = new BehaviorSubject<number>(100);
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<BlotterSettings>;
 
@@ -176,10 +176,9 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     const initHeightWatching = (ref: ElementRef<HTMLElement>) => {
-      // need setTimeout. nz-table does not see changes in this case
-      setTimeout(() => {
-        this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
-      });
+      TableAutoHeightBehavior.getScrollHeight(ref).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe(x => this.scrollHeight$.next(x));
     };
 
     if(this.tableContainer.length > 0) {
@@ -256,6 +255,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+    this.scrollHeight$.complete();
   }
 
   reset(): void {

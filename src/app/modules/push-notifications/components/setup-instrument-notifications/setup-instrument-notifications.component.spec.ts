@@ -35,6 +35,7 @@ describe('SetupInstrumentNotificationsComponent', () => {
             cancelSubscription: jasmine.createSpy('cancelSubscription').and.returnValue(new Subject()),
             subscribeToPriceChange: jasmine.createSpy('subscribeToPriceChange').and.returnValue(new Subject()),
             getCurrentSubscriptions: jasmine.createSpy('getCurrentSubscriptions').and.returnValue(new Subject()),
+            getBrowserNotificationsStatus: jasmine.createSpy('getBrowserNotificationsStatus').and.returnValue(new Subject())
           }
         },
         ...commonTestProviders
