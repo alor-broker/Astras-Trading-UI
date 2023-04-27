@@ -21,6 +21,7 @@ interface DividendEvent {
   currency: string;
   symbol: string;
   exchange: string;
+  shortName: string;
 }
 
 interface AmortizationEvent {
@@ -30,6 +31,7 @@ interface AmortizationEvent {
   date?: string;
   symbol: string;
   exchange: string;
+  shortName: string;
 }
 
 interface CouponEvent {
@@ -41,6 +43,7 @@ interface CouponEvent {
   date?: string;
   symbol: string;
   exchange: string;
+  shortName: string;
 }
 
 interface OfferEvent {
@@ -49,4 +52,5 @@ interface OfferEvent {
   date?: string;
   symbol: string;
   exchange: string;
+  shortName: string;
 }

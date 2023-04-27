@@ -87,7 +87,7 @@
 
         <nz-descriptions-item
           *ngFor="let dateEvent of (selectedDateEvents.bondEvents?.couponEvents ?? [])"
-          [nzTitle]="t('eventsCalendar.coupon') +' ' + dateEvent.symbol"
+          [nzTitle]="t('eventsCalendar.coupon') +' ' + dateEvent.shortName"
         >
           <span>
             {{dateEvent.date | date : 'dd.MM.yyyy'}}
@@ -97,7 +97,7 @@
 
         <nz-descriptions-item
           *ngFor="let dateEvent of (selectedDateEvents.bondEvents?.amortizationEvents ?? [])"
-          [nzTitle]="t('eventsCalendar.amortization') +' ' + dateEvent.symbol"
+          [nzTitle]="t('eventsCalendar.amortization') +' ' + dateEvent.shortName"
         >
           <span>
             {{dateEvent.date | date : 'dd.MM.yyyy'}}
@@ -107,7 +107,7 @@
 
         <nz-descriptions-item
           *ngFor="let dateEvent of (selectedDateEvents.bondEvents?.offerEvents ?? [])"
-          [nzTitle]="t('eventsCalendar.offer') +' ' + dateEvent.symbol"
+          [nzTitle]="t('eventsCalendar.offer') +' ' + dateEvent.shortName"
         >
           <span>
             {{dateEvent.date | date : 'dd.MM.yyyy'}}

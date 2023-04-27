@@ -10,19 +10,19 @@
         </p>
 
         <p *ngFor="let dateEvent of (eventItem.value.bondEvents?.couponEvents ?? [])">
-          {{t('eventsCalendar.coupon')}} <a (click)="selectInstrument(dateEvent.symbol)">{{dateEvent.symbol}}</a>:
+          {{t('eventsCalendar.coupon')}} <a (click)="selectInstrument(dateEvent.symbol)">{{dateEvent.shortName}}</a>:
           {{dateEvent.date | date : 'dd.MM.yyyy'}}
           {{formatCurrencyFn(dateEvent.amount, dateEvent.currency)}}
         </p>
 
         <p *ngFor="let dateEvent of (eventItem.value.bondEvents?.amortizationEvents ?? [])">
-          {{t('eventsCalendar.amortization')}} <a (click)="selectInstrument(dateEvent.symbol)">{{dateEvent.symbol}}</a>:
+          {{t('eventsCalendar.amortization')}} <a (click)="selectInstrument(dateEvent.symbol)">{{dateEvent.shortName}}</a>:
           {{dateEvent.date | date : 'dd.MM.yyyy'}}
           {{formatCurrencyFn(dateEvent.amount, dateEvent.currency)}}
         </p>
 
         <p *ngFor="let dateEvent of (eventItem.value.bondEvents?.offerEvents ?? [])">
-          {{t('eventsCalendar.offer')}} <a (click)="selectInstrument(dateEvent.symbol)">{{dateEvent.symbol}}</a>:
+          {{t('eventsCalendar.offer')}} <a (click)="selectInstrument(dateEvent.symbol)">{{dateEvent.shortName}}</a>:
           {{dateEvent.date | date : 'dd.MM.yyyy'}}
         </p>
       </ng-container>
