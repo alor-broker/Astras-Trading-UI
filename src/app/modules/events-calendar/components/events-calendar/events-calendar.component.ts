@@ -1,10 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable, switchMap, map } from "rxjs";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { Store } from "@ngrx/store";
 import { selectPortfoliosState } from "../../../../store/portfolios/portfolios.selectors";
 import { filter } from "rxjs/operators";
 import { EntityStatus } from "../../../../shared/models/enums/entity-status";
+import { PositionsService } from "../../../../shared/services/positions.service";
+import { AuthService } from "../../../../shared/services/auth.service";
 
 @Component({
   selector: 'ats-events-calendar[guid]',
@@ -16,8 +18,13 @@ export class EventsCalendarComponent implements OnInit {
 
   portfolios: PortfolioKey[] = [];
   selectedPortfolio$ = new BehaviorSubject<PortfolioKey | null>(null);
+  symbolsOfSelectedPortfolio$?: Observable<string[]>;
 
-  constructor(private readonly store: Store) {
+  constructor(
+    private readonly store: Store,
+    private readonly positionsService: PositionsService,
+    private readonly authService: AuthService
+  ) {
   }
 
   ngOnInit() {
@@ -30,9 +37,25 @@ export class EventsCalendarComponent implements OnInit {
           .filter(p => p?.exchange === 'MOEX')
           .map(p => ({ portfolio: p!.portfolio, exchange: p!.exchange, marketType: p!.marketType }));
       });
+
+    this.symbolsOfSelectedPortfolio$ = this.selectedPortfolio$.pipe(
+      switchMap(p => {
+        if (!p) {
+          return this.authService.currentUser$.pipe(
+            switchMap(u => this.positionsService.getAllByLogin(u.login!))
+          );
+        }
+
+        return this.positionsService.getAllByPortfolio(p.portfolio, p.exchange)
+          .pipe(
+            map(p => p ?? [])
+          );
+      }),
+      map(positions => positions.map(p => p.symbol))
+    );
   }
 
-  selectPortfolio(portfolio: PortfolioKey) {
+  selectPortfolio(portfolio: PortfolioKey | null) {
     this.selectedPortfolio$.next(portfolio);
   }
 

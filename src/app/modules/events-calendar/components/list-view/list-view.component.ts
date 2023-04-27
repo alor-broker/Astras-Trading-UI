@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { formatCurrency } from "../../../../shared/utils/formatters";
 import { CalendarEvents } from "../../models/events-calendar.model";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable, switchMap } from "rxjs";
 import { EventsCalendarService } from "../../services/events-calendar.service";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { addYears, getISOStringDate } from "../../../../shared/utils/datetime";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 @Component({
   selector: 'ats-list-view',
@@ -12,24 +14,44 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
   styleUrls: ['./list-view.component.less']
 })
 export class ListViewComponent implements OnInit {
+  private symbols$ = new BehaviorSubject<string[]>([]);
+  @Input()
+  set symbols(value: string[]) {
+    this.symbols$.next(value);
+  }
+
   events$ = new BehaviorSubject<CalendarEvents>({});
+  activeLang$!: Observable<string>;
 
   formatCurrencyFn = formatCurrency;
 
   constructor(
     private readonly service: EventsCalendarService,
     private readonly dashboardContextService: DashboardContextService,
+    private readonly translatorService: TranslatorService
 ) {
   }
 
   ngOnInit() {
-    this.service.getEvents()
+    this.symbols$.pipe(
+      switchMap(symbols => this.service.getEvents({
+        dateFrom: getISOStringDate(new Date()),
+        dateTo: getISOStringDate(addYears(new Date(), 1)),
+        symbols
+      }))
+    )
       .subscribe(e => {
         this.events$.next(e);
       });
+
+    this.activeLang$ = this.translatorService.getLangChanges();
   }
 
   selectInstrument(symbol: string) {
     this.dashboardContextService.selectDashboardInstrument({ symbol, exchange: 'MOEX' }, defaultBadgeColor);
+  }
+
+  isEventsEmpty(events: CalendarEvents) {
+    return JSON.stringify(events) === '{}';
   }
 }

@@ -5,5 +5,6 @@
   "coupon": "coupon payment",
   "amortization": "Amortization",
   "offer": "Offer",
-  "dividends": "Dividends announced"
+  "dividends": "Dividends announced",
+  "emptyEvents": "There is no events for selected portfolio"
 }

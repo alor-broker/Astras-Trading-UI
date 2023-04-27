@@ -1,19 +1,17 @@
 export interface CalendarEvents {
-  [date: string]: CalendarEvent[]
+  [date: string]: CalendarEvent
 }
 
 export interface CalendarEvent {
-  symbol: string;
-  exchange: string;
-  dividendEvent: DividendEvent | null;
-  bondEvent: BondEvent | null;
+  dividendEvents: DividendEvent[] | null;
+  bondEvents: BondEvent | null;
   date?: Date;
 }
 
 interface BondEvent {
-  amortizationEvent: AmortizationEvent | null;
-  couponEvent: CouponEvent | null;
-  offerEvent: OfferEvent | null;
+  amortizationEvents: AmortizationEvent[] | null;
+  couponEvents: CouponEvent[] | null;
+  offerEvents: OfferEvent[] | null;
 }
 
 interface DividendEvent {
@@ -21,6 +19,8 @@ interface DividendEvent {
   dividendPerShare: number;
   dividendYield: number;
   currency: string;
+  symbol: string;
+  exchange: string;
 }
 
 interface AmortizationEvent {
@@ -28,6 +28,8 @@ interface AmortizationEvent {
   amount: number;
   currency: string;
   date?: string;
+  symbol: string;
+  exchange: string;
 }
 
 interface CouponEvent {
@@ -37,10 +39,14 @@ interface CouponEvent {
   amount: number;
   currency: string;
   date?: string;
+  symbol: string;
+  exchange: string;
 }
 
 interface OfferEvent {
   description: string;
   bondEventType: string;
   date?: string;
+  symbol: string;
+  exchange: string;
 }
