@@ -23,7 +23,7 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
   @ViewChild('endPeriodCalendar') endPeriodCalendarComp!: NzCalendarComponent;
 
   events$ = new BehaviorSubject<CalendarEvents>({});
-  selectedMonth$ = new BehaviorSubject<Date>(new Date());
+  selectedDate$ = new BehaviorSubject<Date>(new Date());
   selectedDateEvents$ = new BehaviorSubject<CalendarEvent | null>(null);
 
   constructor(
@@ -36,7 +36,7 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
   disable = () => true;
 
   ngAfterViewInit() {
-    this.selectedMonth$
+    this.selectedDate$
       .pipe(
         distinctUntilChanged((prev, curr) => prev.toString() === curr.toString()),
         tap(date => this.changeCalendarsDate(date)),
@@ -63,7 +63,7 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
   }
 
   onDateChange(e: Date) {
-    this.selectedMonth$.next(e);
+    this.selectedDate$.next(e);
   }
 
   changeCalendarsDate(date: Date) {
