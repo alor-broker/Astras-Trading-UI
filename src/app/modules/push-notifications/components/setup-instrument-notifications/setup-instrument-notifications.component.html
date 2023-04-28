@@ -1,5 +1,5 @@
 <ng-container *transloco="let t; scope: 'push-notifications/setup-instrument-notifications'">
-  <ng-container *ngIf="(isNotificationsAllowed$ | async); else notificationsDisabledWarningBlock">
+  <ng-container *ngIf="(isNotificationsAllowed$ | async) === true">
     <nz-spin [nzSpinning]="isLoading$ | async">
       <div class="spin-content">
         <ng-container *ngIf="currentInstrumentSubscriptions$ | async as currentInstrumentSubscriptions">
@@ -37,12 +37,11 @@
                 </nz-form-item>
                 <nz-form-item class="w-100">
                   <nz-form-control [nzErrorTip]="priceError">
-                    <input (mousedown)="$event.stopPropagation()"
-                           [placeholder]="t('pushNotificationsSetupInstrumentNotifications.priceLabel')"
-                           [step]="(instrument$ | async)?.minstep ?? 1"
-                           atsNumerical
-                           formControlName="price"
-                           nz-input/>
+                    <ats-input-number
+                      [step]="(instrument$ | async)?.minstep ?? 1"
+                      formControlName="price"
+                      [placeholder]="t('pushNotificationsSetupInstrumentNotifications.priceLabel')"
+                    ></ats-input-number>
                   </nz-form-control>
                   <ng-template #priceError>
                   <span
@@ -68,7 +67,7 @@
     </nz-spin>
   </ng-container>
 
-  <ng-template #notificationsDisabledWarningBlock>
+  <ng-container *ngIf="(isNotificationsAllowed$ | async) === false">
     <span nz-typography nzType="warning">{{t('pushNotificationsSetupInstrumentNotifications.notificationsDisabledWarning')}}</span>
-  </ng-template>
+  </ng-container>
 </ng-container>
