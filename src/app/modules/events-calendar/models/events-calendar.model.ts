@@ -5,7 +5,7 @@ export interface CalendarEvents {
 export interface CalendarEvent {
   dividendEvents: DividendEvent[] | null;
   bondEvents: BondEvent | null;
-  date?: Date;
+  date: Date;
 }
 
 interface BondEvent {

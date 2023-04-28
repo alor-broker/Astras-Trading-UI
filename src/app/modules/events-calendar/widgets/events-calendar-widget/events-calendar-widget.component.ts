@@ -3,7 +3,6 @@ import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-se
 import { Observable } from "rxjs";
 import { EventsCalendarSettings } from "../../models/events-calendar-settings.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 @Component({
   selector: 'ats-events-calendar-widget[guid][isBlockWidget]',
@@ -18,14 +17,13 @@ export class EventsCalendarWidgetComponent implements OnInit {
   settings$!: Observable<EventsCalendarSettings>;
 
   constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly manageDashboardService: ManageDashboardsService,
+    private readonly widgetSettingsService: WidgetSettingsService
   ) {}
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<EventsCalendarSettings>(
       this.guid,
-      'RibbonSettings',
+      'EventsCalendarSettings',
       settings => ({
         ...settings
       }),
@@ -33,17 +31,5 @@ export class EventsCalendarWidgetComponent implements OnInit {
     );
 
     this.settings$ = this.widgetSettingsService.getSettings<EventsCalendarSettings>(this.guid);
-  }
-
-  removeWidget($event: MouseEvent | TouchEvent): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-    this.manageDashboardService.removeWidget(this.guid);
-  }
-
-  switchSettings($event: MouseEvent | null) {
-    $event?.preventDefault();
-    $event?.stopPropagation();
-    this.shouldShowSettings = !this.shouldShowSettings;
   }
 }

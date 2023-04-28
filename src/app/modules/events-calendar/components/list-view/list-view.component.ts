@@ -1,7 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { formatCurrency } from "../../../../shared/utils/formatters";
 import { CalendarEvents } from "../../models/events-calendar.model";
-import { BehaviorSubject, Observable, switchMap } from "rxjs";
+import { BehaviorSubject, Observable, Subject, switchMap, takeUntil } from "rxjs";
 import { EventsCalendarService } from "../../services/events-calendar.service";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
@@ -13,7 +13,8 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
   templateUrl: './list-view.component.html',
   styleUrls: ['./list-view.component.less']
 })
-export class ListViewComponent implements OnInit {
+export class ListViewComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<boolean>();
   private symbols$ = new BehaviorSubject<string[]>([]);
   @Input()
   set symbols(value: string[]) {
@@ -38,13 +39,19 @@ export class ListViewComponent implements OnInit {
         dateFrom: getISOStringDate(new Date()),
         dateTo: getISOStringDate(addYears(new Date(), 1)),
         symbols
-      }))
+      })),
+      takeUntil(this.destroy$)
     )
       .subscribe(e => {
         this.events$.next(e);
       });
 
     this.activeLang$ = this.translatorService.getLangChanges();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   selectInstrument(symbol: string) {

@@ -28,7 +28,7 @@ describe('EventsCalendarComponent', () => {
         ...sharedModuleImportForTests,
         getTranslocoModule({
           langs: {
-            'application-meta/application-meta-service': ruEventsCalendarTranslations
+            'events-calendar': ruEventsCalendarTranslations
           }
         })
       ],

@@ -2,26 +2,26 @@
   <div class="calendars">
     <div class="calendar-wrapper">
       <nz-calendar
-        #leftCalendar
-        [nzDateFullCell]="leftCalendarDateCell"
+        #startPeriodCalendar
+        [nzDateFullCell]="startPeriodCalendarDateCell"
         [nzFullscreen]="false"
         [nzDisabledDate]="disable"
-        (nzSelectChange)="onLeftValueChange($event)"
+        (nzSelectChange)="onDateChange($event)"
       ></nz-calendar>
     </div>
 
     <div class="calendar-wrapper">
       <nz-calendar
-        #rightCalendar
-        [nzDateFullCell]="rightCalendarDateCell"
+        #endPeriodCalendar
+        class="end-period-calendar"
+        [nzDateFullCell]="endPeriodCalendarDateCell"
         [nzFullscreen]="false"
         [nzDisabledDate]="disable"
-        (nzSelectChange)="onRightValueChange($event)"
       ></nz-calendar>
     </div>
   </div>
 
-  <ng-template #leftCalendarDateCell let-date>
+  <ng-template #startPeriodCalendarDateCell let-date>
     <div
       *ngIf="isShowDate(date)"
       (click)="selectEvent(date, events)"
@@ -29,6 +29,7 @@
     >
       <div
         *ngIf="!!getDateEvents(date, events); else simpleDateCell"
+        [class.event-date]="true"
         [nz-popover]="null"
         nzPopoverTrigger="click"
         [nzPopoverTitle]="(date | date : 'dd.MM.yyyy') ?? ''"
@@ -44,7 +45,7 @@
     </div>
   </ng-template>
 
-  <ng-template #rightCalendarDateCell let-date>
+  <ng-template #endPeriodCalendarDateCell let-date>
     <div
       *ngIf="isShowDate(date, false)"
       (click)="selectEvent(date, events)"
