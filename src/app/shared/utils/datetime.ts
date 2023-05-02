@@ -12,6 +12,32 @@ export function addMonthsUnix(date: Date, months: number): number {
 }
 
 /**
+ * Adding years to provided date
+ *
+ * @param {Date} date date
+ * @param {number} years number of years, negative if you need to substract
+ * @return {Date} updated date
+ */
+export function addYears(date: Date, years: number): Date {
+  const result = new Date(date);
+  result.setFullYear(result.getFullYear() + years);
+  return result;
+}
+
+/**
+ * Adding months to provided date
+ *
+ * @param {Date} date date
+ * @param {number} months number of months, negative if you need to substract
+ * @return {Date} updated date
+ */
+export function addMonths(date: Date, months: number): Date {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return result;
+}
+
+/**
  * Adding days to provided date
  *
  * @param {Date} date
@@ -113,6 +139,26 @@ export function startOfDay(date: Date): Date {
 }
 
 /**
+ * Sets date to first day of month
+ *
+ * @param {Date} date date
+ * @return {Date} date with first day of month
+ */
+export function startOfMonth(date: Date): Date {
+  return new Date(date.setDate(1));
+}
+
+/**
+ * Sets date to last day of month
+ *
+ * @param {Date} date date
+ * @return {Date} date with last day of month
+ */
+export function endOfMonth(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+}
+
+/**
  * Converts date to unixtime in seconds
  *
  * @param {Date} date date
@@ -141,3 +187,13 @@ export function getUtcNow(): Date {
   const now = new Date();
   return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
 }
+
+/**
+ * A function to get ISO string of date only
+ *
+ * @return {string} date only string
+ */
+export function getISOStringDate(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+

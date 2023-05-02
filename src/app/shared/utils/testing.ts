@@ -145,6 +145,12 @@ export const ngZorroMockComponents = [
     selector: 'nz-badge',
     inputs: ['nzColor', 'nzText', 'nzDropdownMenu', 'nzPopoverTitle', 'nzOffset', 'nzCount', 'nzPopoverVisible']
   }),
+  mockComponent({
+    selector: 'nz-calendar',
+    inputs: ['nzDateFullCell', 'nzFullscreen', 'nzDisabledDate']
+  }, class NzCalendarComponent {
+    onMonthSelect() {}
+  }),
   mockComponent({ selector: 'nz-tag', inputs: ['nzColor', 'nz-tooltip', 'nzTooltipMouseEnterDelay']}),
   mockComponent({ selector: 'nz-select'}),
   mockComponent({ selector: 'nz-option'}),

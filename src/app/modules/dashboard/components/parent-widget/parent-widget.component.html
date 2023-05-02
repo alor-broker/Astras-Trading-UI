@@ -68,6 +68,12 @@
       [isBlockWidget]="isBlockWidget"
     >
     </ats-ribbon-widget>
+    <ats-events-calendar-widget
+      *ngSwitchCase="'events-calendar'"
+      [guid]="getGuid()"
+      [isBlockWidget]="isBlockWidget"
+    >
+    </ats-events-calendar-widget>
   </ng-container>
 
 </div>
