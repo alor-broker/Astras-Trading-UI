@@ -141,3 +141,19 @@ export function getUtcNow(): Date {
   const now = new Date();
   return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
 }
+
+
+/**
+ * A function to get dates difference in days
+ * @param {Date} a first date
+ * @param {Date} b second date
+ * @return {number} difference in days
+ */
+export function dateDiffInDays(a: Date, b: Date) {
+  const dayMilliseconds = 1000 * 60 * 60 * 24;
+
+  const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+  const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+  return Math.floor((utc2 - utc1) / dayMilliseconds);
+}

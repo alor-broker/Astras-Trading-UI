@@ -1,6 +1,7 @@
 {
   "settingsHeader": "Настройки",
   "helpHeader": "Справка",
+  "advancedHeader": "Продвинутые",
 
   "saveBtnText": "Сохранить",
   "okBtnText": "ОК",
@@ -29,7 +30,8 @@
     "OrderSubmitSettings": "Выставить заявку",
     "OrdersBasketSettings": "Корзина заявок",
     "TreemapSettings": "Карта рынка",
-    "RibbonSettings": "Лента"
+    "RibbonSettings": "Лента",
+    "OptionBoardSettings": "Опционная доска"
   },
 
   "joyride": {
@@ -60,6 +62,20 @@
     "step7": {
       "title": "Настройки",
       "text": "Тут можно менять настройки конкретного виджета"
+    }
+  },
+
+  "form": {
+    "ticker": {
+      "label": "Тикер",
+      "commonError": "Выберите тикер"
+    },
+    "exchange": {
+      "label": "Биржа"
+    },
+    "instrumentGroup": {
+      "label": "Режим торгов",
+      "commonError": "Выберите режим торгов"
     }
   },
 

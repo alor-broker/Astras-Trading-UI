@@ -1,0 +1,138 @@
+<ng-container *transloco="let t; scope: 'option-board'">
+  <ng-container *ngIf="activeLang$ | async as activeLang">
+    <nz-spin [nzSpinning]="isLoading$ | async" [nzTip]="t('optionBoard.loadingLabel', { fallback: 'Loading...'})">
+      <ng-container *ngIf="optionsMatrix$ | async as optionsMatrix">
+        <ng-container *ngIf="optionsMatrix.priceIndex.length === 0">
+          <nz-empty
+            [nzNotFoundContent]="t('optionBoard.noOptionsMessage')"
+            class="ant-list-empty-text"
+            nzNotFoundImage="simple">
+          </nz-empty>
+        </ng-container>
+        <ng-container *ngIf="layoutSizes$ | async as layoutSizes">
+          <div (nzResizeObserve)="updateContainerSize($event)" class="h-100 w-100 d-flex flex-column" nzResizeObserver>
+            <ng-container *ngIf="contentSize$ | async as contentSize">
+              <div #header class="d-flex flex-row heading-color header">
+                <div [ngStyle]="{ width: layoutSizes.priceColumnWidth + 'px'}"
+                     class="flex-shrink-0 strike-price-cell">
+                </div>
+                <ng-container *ngFor="let date of optionsMatrix.dateIndex">
+                  <div [ngStyle]="{ width: layoutSizes.optionCellWidth + 'px'}"
+                       class="d-flex flex-column flex-shrink-0">
+                    <div class="text-center text-nowrap">
+                      {{t(
+                      'optionBoard.dayOfMonthFormat',
+                      {
+                        day: date | date: 'dd',
+                        month: date | date: 'MMM' : '': activeLang
+                      })}}
+                    </div>
+                    <div class="text-center">{{date | date: 'YYYY'}}</div>
+                    <div class="text-center text-color">
+                      <i>{{getDaysToExpirations(date) + ' ' + t('optionBoard.abbreviations.days')}}</i>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+
+              <cdk-virtual-scroll-viewport
+                [itemSize]="rowHeight"
+                [maxBufferPx]="contentSize.height"
+                [minBufferPx]="contentSize.height"
+                [orientation]="'vertical'"
+                class="flex-fill"
+              >
+                <ng-container
+                  *cdkVirtualFor="let priceIndex of optionsMatrix.priceIndex; trackBy: getPriceTrackKey; let i = index;">
+                  <div class="d-flex flex-row flex-nowrap">
+                    <div [ngStyle]="{ width: layoutSizes.priceColumnWidth + 'px', height: rowHeight + 'px'}"
+                         class="heading-color flex-shrink-0 d-flex align-items-center justify-content-center strike-price-cell"
+                    >
+                      <span>{{priceIndex}}</span>
+                    </div>
+                    <ng-container *ngIf="dataContext.currentSelection$ | async as optionsSelection">
+                      <ng-container
+                        *ngFor="let dateIndex of optionsMatrix.dateIndex; trackBy: getDateTrackKey; let j = index">
+                        <div
+                          [ngStyle]="{ width: layoutSizes.optionCellWidth + 'px', height: rowHeight + 'px'}"
+                          class="flex-shrink-0">
+                          <ng-container *ngIf="optionsMatrix.options[i][j] as option">
+                            <div
+                              #popover="nzPopover"
+                              (click)="updateOptionSelection(option, optionsMatrix.underlyingAsset!)"
+                              (mouseleave)="popover.hide();"
+                              [class.selected]="isOptionSelected(option, optionsSelection)"
+                              [nzPopoverArrowPointAtCenter]="true"
+                              [nzPopoverContent]="contentTemplate"
+                              [nzPopoverMouseLeaveDelay]="0"
+                              class="w-100 h-100 d-flex align-items-center justify-content-center option-cell"
+                              nz-popover
+                              nzPopoverPlacement="top"
+                            >
+                            <span class="text-nowrap" nz-typography
+                                  nzEllipsis>{{option.displayValue | number : '0.0-10'}}</span>
+                            </div>
+                            <ng-template #contentTemplate>
+                              <ats-option-preview [option]="option"></ats-option-preview>
+                            </ng-template>
+                          </ng-container>
+
+                          <ng-container *ngIf="!optionsMatrix.options[i][j]">
+                            <div
+                              #popover="nzPopover"
+                              (mouseleave)="popover.hide();"
+                              [nzPopoverArrowPointAtCenter]="true"
+                              [nzPopoverContent]="contentTemplate"
+                              [nzPopoverMouseLeaveDelay]="0"
+                              class="w-100 h-100 d-flex align-items-center justify-content-center"
+                              nz-popover
+                              nzPopoverPlacement="top"
+                            >
+                              <span nz-icon nzTheme="outline" nzType="close"></span>
+                            </div>
+                            <ng-template #contentTemplate>
+                              <div class="text-center" style="max-width: 150px">
+                                <span class="heading-color">
+                                  {{t(
+                                  'optionBoard.missingOptionTooltip',
+                                  {
+                                    strikePrice: priceIndex,
+                                    day: dateIndex | date: 'dd',
+                                    month: dateIndex | date: 'MMM' : '': activeLang,
+                                    year: dateIndex | date: 'YYYY'
+                                  })
+                                  }}
+                                </span>
+                              </div>
+
+                            </ng-template>
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                    </ng-container>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="currentPriceYPosition$ | async as currentPriceYPosition">
+                  <div [ngStyle]="{
+                     top: currentPriceYPosition + 'px',
+                     width: layoutSizes.priceColumnWidth + layoutSizes.optionCellWidth * optionsMatrix.dateIndex.length + 'px'
+                     }"
+                       class="current-price-line d-flex flex-row align-items-center"
+                  >
+                    <div
+                      [ngStyle]="{ width: layoutSizes.priceColumnWidth + 'px'}"
+                      class="marker text-center heading-color"
+                    >
+                      {{t('optionBoard.abbreviations.current')}}
+                    </div>
+                  </div>
+                </ng-container>
+              </cdk-virtual-scroll-viewport>
+            </ng-container>
+          </div>
+        </ng-container>
+      </ng-container>
+    </nz-spin>
+  </ng-container>
+</ng-container>
+

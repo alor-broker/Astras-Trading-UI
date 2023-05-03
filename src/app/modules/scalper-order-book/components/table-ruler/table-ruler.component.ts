@@ -71,7 +71,7 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.markerElRef.changes.pipe(
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(x => {
       const containerBounds = this.bodyRef.getElement().nativeElement.getBoundingClientRect();
       const elementBounds = this.elementRef.nativeElement.getBoundingClientRect();

@@ -68,6 +68,10 @@
       [isBlockWidget]="isBlockWidget"
     >
     </ats-ribbon-widget>
+    <ats-option-board-widget *ngSwitchCase="'option-board'"
+                             [guid]="getGuid()"
+                             [isBlockWidget]="isBlockWidget"
+    ></ats-option-board-widget>
   </ng-container>
 
 </div>

@@ -104,6 +104,13 @@
   >
     <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.ribbon)" nzTheme="outline"></i><label> {{t('widgetHeaders.RibbonSettings')}}</label></span>
   </li>
+  <li
+    nz-menu-item
+    (click)="selected.emit(widgetNames.optionBoard)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.optionBoard)"
+  >
+    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.optionBoard)" nzTheme="outline"></i><label> {{t('widgetHeaders.OptionBoardSettings')}}</label></span>
+  </li>
 
   <ng-container *ngIf="!showedWidgets.length">
     <li nz-menu-divider></li>

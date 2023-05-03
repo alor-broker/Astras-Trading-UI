@@ -2,6 +2,7 @@
   "emptyList": "No notifications configured",
   "emptyListWithFilters": "Nothing found with these filters",
 
+
   "columns": {
     "cancel": {
       "name": "Del.",

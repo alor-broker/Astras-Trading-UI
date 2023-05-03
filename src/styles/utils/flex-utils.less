@@ -1,55 +1,71 @@
 .d-flex {
   display: flex;
 
-  &.flex-row {
-    flex-direction: row;
+  &.flex {
+    &-row {
+      flex-direction: row;
+    }
+
+    &-column {
+      flex-direction: column;
+    }
+
+    &-nowrap {
+      flex-wrap: nowrap
+    }
+
+    each(range(5), {
+      &-gap-@{value} {
+        gap: @value * 1px;
+      }
+    })
   }
 
-  &.flex-column {
-    flex-direction: column;
+  .flex {
+    &-fill {
+      flex: 1 1 auto;
+    }
+
+    each(range(0, 5, 1), {
+      &-shrink-@{value} {
+        flex-shrink: @value;
+      }
+    })
   }
 
-  .flex-1 {
-    flex: 1;
+  .justify-content {
+    &-between {
+      justify-content: space-between;
+    }
+
+    &-start {
+      justify-content: flex-start;
+    }
+
+    &-end {
+      justify-content: flex-end;
+    }
+
+    &-center {
+      justify-content: center;
+    }
+
+    &-around {
+      justify-content: space-around;
+    }
+
+    &-evenly {
+      justify-content: space-evenly;
+    }
+  }
+
+  .align-items {
+    &-center {
+      align-items: center;
+    }
+
+    &-end {
+      align-items: flex-end;
+    }
   }
 }
-
-.justify-content {
-  &-between {
-    justify-content: space-between;
-  }
-
-  &-end {
-    justify-content: flex-end;
-  }
-
-  &-center {
-    justify-content: center;
-  }
-}
-
-.align-items {
-  &-center {
-    align-items: center;
-  }
-
-  &-end {
-    align-items: flex-end;
-  }
-}
-
-.flex-direction {
-  &-column {
-    flex-direction: column;
-  }
-}
-
-.flex-fill {
-  flex: 1 1 auto;
-}
-
-each(range(10), {
-  .flex-gap-@{value} {
-    gap: @value * 1px;
-  }
-});

@@ -1,0 +1,33 @@
+﻿{
+  "loadingLabel": "Загрузка...",
+  "noOptionsMessage": "Не найдено опционов выбранного типа",
+
+  "dayOfMonthFormat": "{{day}} {{month}}",
+  "missingOptionTooltip": "Нет опциона со страйком {{strikePrice}} и сроком действия до {{day}} {{month}} {{year}}",
+
+  "sideOptions": {
+    "call": "Call",
+    "put": "Put"
+  },
+
+  "parameterOptions": {
+    "price": "Цена",
+    "delta": "Delta",
+    "gamma": "Gamma",
+    "vega": "Vega",
+    "theta": "Theta",
+    "rho": "Rho",
+    "ask": "Ask",
+    "bid": "Bid"
+  },
+
+  "tabNames": {
+    "allOptions": "Все",
+    "selectedOptions": "Выбранные"
+  },
+
+  "abbreviations": {
+    "days": "д.",
+    "current": "тек."
+  }
+}

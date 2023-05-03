@@ -30,4 +30,17 @@ export class MathHelper {
 
     return p;
   }
+
+  /**
+   * Rounding a price
+   * @param dirtyPrice Number you need to round
+   * @param minStep Instrument min step
+   * @returns Rounded number
+   */
+  static roundPrice(dirtyPrice: number, minStep: number): number {
+    return this.round(
+      dirtyPrice,
+      MathHelper.getPrecision(minStep)
+    );
+  }
 }

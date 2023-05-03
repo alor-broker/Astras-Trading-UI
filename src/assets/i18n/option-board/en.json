@@ -1,0 +1,33 @@
+﻿{
+  "loadingLabel": "Loading...",
+  "noOptionsMessage": "No options found for the selected type",
+
+  "dayOfMonthFormat": "{{month}} {{day}}",
+  "missingOptionTooltip": "No option is written at strike of {{strikePrice}} and expiration of {{month}} {{day}} {{year}}",
+
+  "sideOptions": {
+    "call": "Call",
+    "put": "Put"
+  },
+
+  "parameterOptions": {
+    "price": "Price (theo)",
+    "delta": "Delta",
+    "gamma": "Gamma",
+    "vega": "Vega",
+    "theta": "Theta",
+    "rho": "Rho",
+    "ask": "Ask",
+    "bid": "Bid"
+  },
+
+  "tabNames": {
+    "allOptions": "All",
+    "selectedOptions": "Selected"
+  },
+
+  "abbreviations": {
+    "days": "D",
+    "current": "curr."
+  }
+}

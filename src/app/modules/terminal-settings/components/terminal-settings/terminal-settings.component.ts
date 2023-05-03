@@ -101,7 +101,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
 
       this.settingsForm.valueChanges
         .pipe(
-          takeUntil(this.destroyable.destroyed$)
+          takeUntil(this.destroyable)
         )
         .subscribe(() => {
           this.formChange.emit({

@@ -1,0 +1,69 @@
+﻿{
+  "loadingLabel": "Loading...",
+  "noSelectionMessage": "No options selected",
+
+  "clearConfirm": "Are you sure?",
+
+  "columns": {
+    "unselect": {
+      "name": "Del.",
+      "tooltip": "Delete from selection"
+    },
+    "symbol": {
+      "name": "Ticker",
+      "tooltip": "Exchange identifier of the security"
+    },
+    "underlyingAssetSymbol": {
+      "name": "Underlying asset",
+      "tooltip": "Underlying asset ticker"
+    },
+    "optionSide": {
+      "name": "Side",
+      "tooltip": "Option side"
+    },
+    "optionType": {
+      "name": "Type",
+      "tooltip": "Option type"
+    },
+    "strikePrice": {
+      "name": "Strike",
+      "tooltip": "Strike price"
+    },
+    "expirationDate": {
+      "name": "Expiration date",
+      "tooltip": "Options Expiration Date"
+    },
+    "ask": {
+      "name": "Ask",
+      "tooltip": "Ask"
+    },
+    "bid": {
+      "name": "Bid",
+      "tooltip": "Bid"
+    },
+    "price": {
+      "name": "Price",
+      "tooltip": "Price"
+    },
+    "delta": {
+      "name": "Delta",
+      "tooltip": "Delta"
+    },
+    "gamma": {
+      "name": "Gamma",
+      "tooltip": "Gamma"
+    },
+    "vega": {
+      "name": "Vega",
+      "tooltip": "Vega"
+    },
+    "theta": {
+      "name": "Theta",
+      "tooltip": "Theta"
+    },
+    "rho": {
+      "name": "Rho",
+      "tooltip": "Rho"
+    }
+  }
+}

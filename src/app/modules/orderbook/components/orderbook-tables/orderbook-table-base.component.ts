@@ -77,7 +77,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit, OnDestroy {
     );
 
     this.themeService.getThemeSettings().pipe(
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(s => this.themeSettings = s);
   }
 

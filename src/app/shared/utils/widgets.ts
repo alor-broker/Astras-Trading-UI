@@ -32,6 +32,8 @@ export class WidgetsHelper {
         return 'layout';
       case WidgetNames.ribbon:
         return 'stock';
+      case WidgetNames.optionBoard:
+        return 'table';
       default:
         return '';
     }
@@ -69,6 +71,8 @@ export class WidgetsHelper {
         return 'TreemapSettings';
       case WidgetNames.ribbon:
         return 'RibbonSettings';
+      case WidgetNames.optionBoard:
+        return 'OptionBoardSettings';
       default:
         return '';
     }

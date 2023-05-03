@@ -13,7 +13,7 @@
       [nzTitle]="titleTemplate"
     >
       <ng-template #titleTemplate>
-        <div class="d-flex flex-direction-column" [class.new-order]="widget.widgetType === 'order-submit'">
+        <div class="d-flex flex-column" [class.new-order]="widget.widgetType === 'order-submit'">
           <i nz-icon nzType="plus-circle" class="widget-icon" nzTheme="outline" *ngIf="widget.widgetType === 'order-submit'; else widgetIcon"></i>
           <ng-template #widgetIcon>
             <i nz-icon [nzType]="widgetsHelper.getIconName(widget.widgetType)" class="widget-icon" nzTheme="outline"></i>

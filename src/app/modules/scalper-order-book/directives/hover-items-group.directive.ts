@@ -63,7 +63,7 @@ export class HoverItemsGroupDirective<T = any> implements HoverItemsGroup<T>, On
     }
 
     this.hoveredItem$.pipe(
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(i => this.hoveredItemChanged.emit(i));
   }
 }

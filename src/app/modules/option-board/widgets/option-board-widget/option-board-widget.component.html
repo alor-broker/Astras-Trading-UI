@@ -1,0 +1,38 @@
+<ng-container *transloco="let t;">
+  <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
+    [content]="contentRef"
+    [header]="headerRef"
+    [settings]="settingsRef"
+    [showSettings]="shouldShowSettings"
+    [showContentScroll]="false"
+    [isBlockWidget]="isBlockWidget"
+  >
+
+    <ng-template #headerRef>
+      <ats-widget-header
+        (switchSettings)="onSettingsChange()"
+        [guid]="guid"
+        [hasHelp]="true"
+        [hasSettings]="true"
+        [linkToActive]="settings.linkToActive!"
+        [selectedBadgeColor]="settings.badgeColor!"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [titleText]="title$ | async"
+        [titleIconTooltip]="t('widgetHeaders.OptionBoardSettings')"
+        helpRef="option-board"
+        [titleIcon]="widgetsHelper.getIconName(widgetNames.optionBoard)"
+      ></ats-widget-header>
+    </ng-template>
+
+    <ng-template #contentRef>
+      <ats-option-board [guid]="guid"></ats-option-board>
+    </ng-template>
+
+    <ng-template #settingsRef>
+      <ats-option-board-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-option-board-settings>
+    </ng-template>
+  </ats-widget-skeleton>
+
+</ng-container>
+

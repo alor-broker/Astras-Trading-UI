@@ -118,7 +118,7 @@ export const ngZorroMockComponents = [
   mockComponent({ selector: 'nz-content' }),
   mockComponent({
     selector: 'nz-spin',
-    inputs: ['nzSpinning', 'nzIndicator']
+    inputs: ['nzSpinning', 'nzIndicator', 'nzTip']
   }),
   mockComponent({
     selector: 'nz-form-control',
@@ -146,8 +146,8 @@ export const ngZorroMockComponents = [
     inputs: ['nzColor', 'nzText', 'nzDropdownMenu', 'nzPopoverTitle', 'nzOffset', 'nzCount', 'nzPopoverVisible']
   }),
   mockComponent({ selector: 'nz-tag', inputs: ['nzColor', 'nz-tooltip', 'nzTooltipMouseEnterDelay']}),
-  mockComponent({ selector: 'nz-select'}),
-  mockComponent({ selector: 'nz-option'}),
+  mockComponent({ selector: 'nz-select', inputs: ['ngModel']}),
+  mockComponent({ selector: 'nz-option', inputs: ['nzValue', 'nzLabel']}),
   mockDirective({ selector: '[nzGutter]', inputs: ['nzGutter']}),
   mockDirective({selector: '[text]', inputs: ['text']}),
   mockDirective({selector: '[nzLayout]', inputs: ['nzLayout']}),
