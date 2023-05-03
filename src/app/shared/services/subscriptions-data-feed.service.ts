@@ -1,36 +1,25 @@
-import {
-  Inject,
-  Injectable,
-  InjectionToken
-} from '@angular/core';
-import {
-  webSocket,
-  WebSocketSubject
-} from 'rxjs/webSocket';
-import { AuthService } from './auth.service';
+import {Inject, Injectable, InjectionToken} from '@angular/core';
+import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
+import {AuthService} from './auth.service';
 import {
   BehaviorSubject,
   filter,
   interval,
-  Observable,
+  Observable, of, race,
   shareReplay,
   Subject,
   Subscription,
   switchMap,
-  take
+  take,
+  timer
 } from 'rxjs';
-import { BaseResponse } from '../models/ws/base-response.model';
-import { ConfirmResponse } from '../models/ws/confirm-response.model';
-import { environment } from '../../../environments/environment';
-import { GuidGenerator } from '../utils/guid';
-import {
-  finalize,
-  map,
-  takeWhile,
-  tap
-} from 'rxjs/operators';
-import { isOnline$ } from '../utils/network';
-import { LoggerService } from './logging/logger.service';
+import {BaseResponse} from '../models/ws/base-response.model';
+import {ConfirmResponse} from '../models/ws/confirm-response.model';
+import {environment} from '../../../environments/environment';
+import {GuidGenerator} from '../utils/guid';
+import {finalize, map, takeWhile, tap} from 'rxjs/operators';
+import {isOnline$} from '../utils/network';
+import {LoggerService} from './logging/logger.service';
 
 export interface SubscriptionRequest {
   opcode: string;
@@ -56,7 +45,8 @@ interface SocketState {
   isClosing: boolean;
   reconnectSub: Subscription | null;
 
-  offlineSub: Subscription | null
+  offlineSub: Subscription | null;
+  pingPongSub: Subscription | null;
 }
 
 export const RXJS_WEBSOCKET_CTOR = new InjectionToken<typeof webSocket>(
@@ -77,7 +67,9 @@ export class SubscriptionsDataFeedService {
 
   private readonly options = {
     reconnectTimeout: 2000,
-    reconnectAttempts: 5
+    reconnectAttempts: 5,
+    pingTimeout: 5000,
+    pingLatency: 3000
   };
 
   constructor(
@@ -90,7 +82,7 @@ export class SubscriptionsDataFeedService {
   public getConnectionStatus(): Observable<boolean> {
     return this.isConnected$.pipe(
       map(x => {
-        if(!this.socketState) {
+        if (!this.socketState) {
           return true;
         }
 
@@ -124,7 +116,7 @@ export class SubscriptionsDataFeedService {
           this.dropSubscription(socketState, subscriptionId);
         }),
         map(x => x.data as R),
-        shareReplay({ bufferSize: 1, refCount: true })
+        shareReplay({bufferSize: 1, refCount: true})
       ),
       subscription: messageSubscription
     };
@@ -155,7 +147,7 @@ export class SubscriptionsDataFeedService {
     }
   }
 
-  private createSubscription(request: WsRequestMessage, state: SocketState): Observable<WsResponseMessage> {
+  private createSubscription(request: WsRequestMessage, state: SocketState, enableConfirmResponse = false): Observable<WsResponseMessage> {
     return this.getCurrentAccessToken().pipe(
       take(1),
       switchMap(token => {
@@ -169,11 +161,13 @@ export class SubscriptionsDataFeedService {
             guid: request.guid,
             token: token
           }),
-          (value) => value.guid === request.guid && !!value.data
+          (value) => (value.guid === request.guid && (!!value.data))
+            || (enableConfirmResponse && value.requestGuid === request.guid)
         );
       })
     );
   }
+
 
   private getSocket(): SocketState {
     if (!!this.socketState && this.isStateValid(this.socketState)) {
@@ -186,12 +180,14 @@ export class SubscriptionsDataFeedService {
       subscriptionsMap: new Map<string, SubscriptionState>(),
       webSocketSubject: null,
       reconnectSub: null,
-      offlineSub: null
+      offlineSub: null,
+      pingPongSub: null
     };
 
     socketState.webSocketSubject = this.createWebSocketSubject(socketState);
 
     this.initReconnectOnDisconnection(socketState);
+    this.initPingPong(socketState);
 
     this.socketState = socketState;
 
@@ -218,8 +214,8 @@ export class SubscriptionsDataFeedService {
             socketState.webSocketSubject?.complete();
             socketState.webSocketSubject = null;
 
-            this.reconnect(socketState);
             this.isConnected$.next(false);
+            this.reconnect(socketState);
 
             return;
           }
@@ -249,9 +245,42 @@ export class SubscriptionsDataFeedService {
       });
   }
 
+  private initPingPong(state: SocketState) {
+    state.pingPongSub?.unsubscribe();
+
+    const sendPing = () => {
+      if(!this.isStateValid(state)) {
+        return of(null);
+      }
+
+      return this.createSubscription(
+        {
+          guid: GuidGenerator.newGuid(),
+          opcode: 'ping',
+          confirm: true
+        } as WsRequestMessage,
+        state,
+        true
+      );
+    };
+
+    const readPong = () => race([
+      sendPing(),
+      timer(this.options.pingLatency).pipe(map(() => null)),
+    ]);
+
+    state.pingPongSub = timer(this.options.pingTimeout, this.options.pingTimeout).pipe(
+      switchMap(() => readPong())
+    ).subscribe(x => {
+      const isConnected = !!x && this.isStateValid(state);
+      this.isConnected$.next(isConnected);
+    });
+  }
+
   private clean(state: SocketState) {
     state.reconnectSub?.unsubscribe();
     state.offlineSub?.unsubscribe();
+    state.pingPongSub?.unsubscribe();
   }
 
   private getCurrentAccessToken(): Observable<string> {
@@ -282,6 +311,8 @@ export class SubscriptionsDataFeedService {
         this.logger.trace(this.toLoggerMessage(`Reconnect to ${subscriptionId}`));
         state.subscription = this.subscribeToMessages(this.createSubscription(state.request, socketState), state.messageSource, subscriptionId);
       });
+
+      this.initPingPong(socketState);
     });
   }
 
