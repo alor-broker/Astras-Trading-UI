@@ -270,10 +270,10 @@ export class SubscriptionsDataFeedService {
     ]);
 
     state.pingPongSub = timer(this.options.pingTimeout, this.options.pingTimeout).pipe(
-      switchMap(() => readPong())
+      switchMap(() => readPong()),
+      filter(() => this.isStateValid(state))
     ).subscribe(x => {
-      const isConnected = !!x && this.isStateValid(state);
-      this.isConnected$.next(isConnected);
+      this.isConnected$.next(!!x);
     });
   }
 
