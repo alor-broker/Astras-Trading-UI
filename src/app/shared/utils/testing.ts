@@ -154,6 +154,7 @@ export const ngZorroMockComponents = [
   mockComponent({ selector: 'nz-tag', inputs: ['nzColor', 'nz-tooltip', 'nzTooltipMouseEnterDelay']}),
   mockComponent({ selector: 'nz-select'}),
   mockComponent({ selector: 'nz-option'}),
+  mockComponent({ selector: 'nz-divider'}),
   mockDirective({ selector: '[nzGutter]', inputs: ['nzGutter']}),
   mockDirective({selector: '[text]', inputs: ['text']}),
   mockDirective({selector: '[nzLayout]', inputs: ['nzLayout']}),

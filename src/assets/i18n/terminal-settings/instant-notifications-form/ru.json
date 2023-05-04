@@ -1,4 +1,6 @@
 {
+  "appNotificationsTitle": "Уведомления приложения",
+  "pushNotificationsTitle": "Push-уведомления",
   "orderCreatedLabel": "Заявка выставлена",
   "orderSubmitFailedLabel": "Ошибка выставления заявки",
   "orderFilledLabel": "Заявка исполнилась",
@@ -6,5 +8,7 @@
   "orderCancelledLabel": "Заявка отменена",
   "orderUpdatedLabel": "Заявка изменена",
   "orderUpdateFailedLabel": "Ошибка изменения заявки",
-  "orderStatusChangedLabel": "Изменение статуса заявки"
+  "orderStatusChangedLabel": "Изменение статуса заявки",
+  "hiddenPortfoliosForNotificationsLabel": "Скрыть уведомления для портфелей",
+  "hiddenPortfoliosForNotificationsPlaceholder": "Выберите портфели"
 }
