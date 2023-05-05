@@ -9,6 +9,8 @@ import { Observable, filter, map } from "rxjs";
 import { selectPortfoliosState } from "../../../../store/portfolios/portfolios.selectors";
 import { EntityStatus } from "../../../../shared/models/enums/entity-status";
 import { Store } from "@ngrx/store";
+import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
+import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
 
 @Component({
   selector: 'ats-instant-notifications-form',
@@ -28,8 +30,8 @@ implements OnInit {
   editableNotificationTypes: { value: OrdersInstantNotificationType, enabled: boolean }[] = [];
   currentValue: InstantNotificationsSettings | null = null;
 
-  excludedPortfolios: string[] = [];
-  portfolios$?: Observable<string[]>;
+  excludedPortfolios: PortfolioKey[] = [];
+  portfolios$?: Observable<PortfolioKey[]>;
 
   private isTouched = false;
 
@@ -45,7 +47,7 @@ implements OnInit {
       map(ps => {
         return Object.values(ps.entities)
           .filter(p => !!p)
-          .map(p => (JSON.stringify({ portfolio: p!.portfolio, exchange: p!.exchange })));
+          .map(p => ({ portfolio: p!.portfolio, exchange: p!.exchange }));
       }),
     );
   }
@@ -77,12 +79,7 @@ implements OnInit {
     this.emitValue(this.currentValue);
   }
 
-  getPortfolioLabel(portfolio: string) {
-    const p = JSON.parse(portfolio);
-    return `${p.portfolio} (${p.exchange})`;
-  }
-
-  excludedPortfoliosChange(portfolios: string[]) {
+  excludedPortfoliosChange(portfolios: PortfolioKey[]) {
     this.currentValue = {
       ...this.currentValue,
       hiddenPortfoliosForNotifications: portfolios
@@ -91,6 +88,10 @@ implements OnInit {
     this.checkIfTouched();
     this.emitValue(this.currentValue);
   }
+
+  compareFn = (op1?: PortfolioKey, op2?: PortfolioKey) => {
+    return !!op1 && !!op2 && isPortfoliosEqual(op1, op2);
+  };
 
   protected needMarkTouched(): boolean {
     if (!this.isTouched) {

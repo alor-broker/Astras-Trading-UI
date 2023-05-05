@@ -70,7 +70,7 @@ export type InstantNotificationType = CommonInstantNotificationType | OrdersInst
 
 export interface InstantNotificationsSettings {
   hiddenNotifications?: InstantNotificationType[];
-  hiddenPortfoliosForNotifications?: string[];
+  hiddenPortfoliosForNotifications?: PortfolioKey[];
 }
 
 

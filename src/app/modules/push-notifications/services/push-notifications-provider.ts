@@ -43,7 +43,6 @@ export class PushNotificationsProvider implements NotificationsProvider {
       switchMap(allPortfolios => this.terminalSettingsService.getSettings()
           .pipe(
             map(s => s.instantNotificationsSettings?.hiddenPortfoliosForNotifications ?? []),
-            map(portfolios => portfolios.map(p => JSON.parse(p))),
             map(excludedPortfolios => allPortfolios.filter(p => !excludedPortfolios.find(ep => isPortfoliosEqual(p, ep)))),
           ),
       ),

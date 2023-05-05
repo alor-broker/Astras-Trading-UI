@@ -41,28 +41,25 @@ export class PushNotificationsService {
   ) {
   }
 
-  subscribeToOrdersExecute(portfolios: { portfolio: string, exchange: string }[]): Observable<(BaseCommandResponse | null)[]> {
-    return this.getToken()
+  subscribeToOrdersExecute(portfolios: { portfolio: string, exchange: string }[]): Observable<BaseCommandResponse | null> {
+    return this.cancelOrderExecuteSubscriptions(portfolios)
       .pipe(
-        switchMap(() => this.getCurrentSubscriptions()),
-        map(subs => <OrderExecuteSubscription[]>(subs ?? []).filter(s => s.subscriptionType === PushSubscriptionType.OrderExecute)),
-        switchMap((subs: OrderExecuteSubscription[]) => {
-          const subsToDelete = subs
-            .filter(s => !portfolios.find(p => s.portfolio === p.portfolio && s.exchange === p.exchange))
-            .map(s => s.id)
-            .map(id => this.cancelSubscription(id));
-
-          const newSubs = portfolios
-            .filter(p => !subs.find(s => s.portfolio === p.portfolio && s.exchange === p.exchange))
-            .map(p => ({portfolio: p.portfolio, exchange: p.exchange}))
-            .map(p => this.subscribeToOrderExecute(p));
-
-          if (!subsToDelete.length && !newSubs.length) {
-            return of([]);
+        switchMap(isNeedResubscribe => {
+          if (!isNeedResubscribe) {
+            return of({message: 'success'});
           }
 
-          return forkJoin([...subsToDelete, ...newSubs]);
+          return this.http.post<BaseCommandResponse | null>(this.baseUrl + '/actions/addOrdersExecute', {
+            portfolios: portfolios.map(p => ({portfolio: p.portfolio, exchange: p.exchange}))
+          });
         }),
+        catchError(err => {
+          if (err.error?.code === 'SubscriptionAlreadyExists') {
+            return of({message: 'success', code: err.error.code});
+          }
+          return throwError(err);
+        }),
+        catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         tap(r => {
           if (!!r) {
             this.subscriptionsUpdatedSub.next(PushSubscriptionType.OrderExecute);
@@ -177,5 +174,36 @@ export class PushNotificationsService {
       );
 
     return this.token$;
+  }
+
+  private cancelOrderExecuteSubscriptions(portfolios: { portfolio: string, exchange: string }[]): Observable<boolean> {
+    return this.getToken()
+      .pipe(
+        switchMap(() => this.getCurrentSubscriptions()),
+        map(subs => (subs ?? []).filter((s): s is OrderExecuteSubscription => s.subscriptionType === PushSubscriptionType.OrderExecute)),
+        switchMap((subs: OrderExecuteSubscription[]) => {
+          const isNeedResubscribe = subs.length !== portfolios.length || subs.reduce((acc, curr) => {
+            if (!acc) {
+              return !portfolios.find(p => p.portfolio === curr.portfolio && p.exchange === curr.exchange);
+            }
+
+            return acc;
+          }, false);
+
+          if (!isNeedResubscribe) {
+            return of(false);
+          }
+
+          const subsToDelete = subs
+            .map(s => s.id)
+            .map(id => this.cancelSubscription(id));
+
+
+          return forkJoin(subsToDelete.length ? subsToDelete : [of(null)])
+            .pipe(
+              map(() => true)
+            );
+        })
+      );
   }
 }

@@ -1,7 +1,7 @@
 <ng-container *transloco="let t; scope: 'terminal-settings/instant-notifications-form'">
   <div>
     <h3>{{t('terminalSettingsInstantNotificationsForm.appNotificationsTitle')}}</h3>
-    <div class="d-flex flex-direction-column flex-gap-15 mt-10">
+    <div class="d-flex flex-column flex-gap-15 mt-10">
       <ng-container *ngFor="let notificationType of editableNotificationTypes">
         <div class="d-flex flex-row flex-gap-2">
           <div class="flex-1 label">
@@ -24,6 +24,7 @@
         <nz-select
           nzMode="multiple"
           nzAllowClear
+          [compareWith]="compareFn"
           [nzPlaceHolder]="t('terminalSettingsInstantNotificationsForm.hiddenPortfoliosForNotificationsPlaceholder')"
           [ngModel]="excludedPortfolios"
           (ngModelChange)="excludedPortfoliosChange($event)"
@@ -31,7 +32,7 @@
           <nz-option
             *ngFor="let p of portfolios"
             [nzValue]="p"
-            [nzLabel]="getPortfolioLabel(p)"></nz-option>
+            [nzLabel]="p.portfolio + ' (' + p.exchange + ')'"></nz-option>
         </nz-select>
       </nz-form-control>
     </nz-form-item>
