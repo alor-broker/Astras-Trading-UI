@@ -14,6 +14,7 @@ import {
 } from "../models/push-notifications.model";
 import { BaseCommandResponse } from "../../../shared/models/http-request-response.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
+import { isPortfoliosEqual } from "../../../shared/utils/portfolios";
 
 interface MessagePayload {
   data?: {
@@ -184,7 +185,7 @@ export class PushNotificationsService {
         switchMap((subs: OrderExecuteSubscription[]) => {
           const isNeedResubscribe = subs.length !== portfolios.length || subs.reduce((acc, curr) => {
             if (!acc) {
-              return !portfolios.find(p => p.portfolio === curr.portfolio && p.exchange === curr.exchange);
+              return !portfolios.find(p => isPortfoliosEqual(p, curr));
             }
 
             return acc;
