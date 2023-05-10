@@ -1,13 +1,20 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../../../../environments/environment";
-import {Observable, of, shareReplay, Subject, switchMap, take, tap, throwError} from "rxjs";
-import {AngularFireMessaging} from "@angular/fire/compat/messaging";
-import {catchHttpError, mapWith} from "../../../shared/utils/observable-helper";
-import {catchError, filter, map} from "rxjs/operators";
-import {ErrorHandlerService} from "../../../shared/services/handle-error/error-handler.service";
-import {PriceChangeRequest, PushSubscriptionType, SubscriptionBase} from "../models/push-notifications.model";
-import {BaseCommandResponse} from "../../../shared/models/http-request-response.model";
+import { Injectable } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
+import { environment } from "../../../../environments/environment";
+import { forkJoin, Observable, of, shareReplay, Subject, switchMap, take, tap, throwError } from "rxjs";
+import { AngularFireMessaging } from "@angular/fire/compat/messaging";
+import { catchHttpError, mapWith } from "../../../shared/utils/observable-helper";
+import { catchError, filter, map } from "rxjs/operators";
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import {
+  OrderExecuteSubscription,
+  PriceChangeRequest,
+  PushSubscriptionType,
+  SubscriptionBase
+} from "../models/push-notifications.model";
+import { BaseCommandResponse } from "../../../shared/models/http-request-response.model";
+import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
+import { isPortfoliosEqual } from "../../../shared/utils/portfolios";
 
 interface MessagePayload {
   data?: {
@@ -36,14 +43,17 @@ export class PushNotificationsService {
   }
 
   subscribeToOrdersExecute(portfolios: { portfolio: string, exchange: string }[]): Observable<BaseCommandResponse | null> {
-    return this.getToken()
+    return this.cancelOrderExecuteSubscriptions(portfolios)
       .pipe(
-        switchMap(() => this.http.post<BaseCommandResponse>(
-          this.baseUrl + '/actions/addOrdersExecute',
-          {
-            portfolios: portfolios.map(p => ({portfolio: p.portfolio, exchange: p.exchange})),
-          })
-        ),
+        switchMap(isNeedResubscribe => {
+          if (!isNeedResubscribe) {
+            return of({message: 'success'});
+          }
+
+          return this.http.post<BaseCommandResponse | null>(this.baseUrl + '/actions/addOrdersExecute', {
+            portfolios: portfolios.map(p => ({portfolio: p.portfolio, exchange: p.exchange}))
+          });
+        }),
         catchError(err => {
           if (err.error?.code === 'SubscriptionAlreadyExists') {
             return of({message: 'success', code: err.error.code});
@@ -56,6 +66,25 @@ export class PushNotificationsService {
             this.subscriptionsUpdatedSub.next(PushSubscriptionType.OrderExecute);
           }
         })
+      );
+  }
+
+  subscribeToOrderExecute(portfolio: PortfolioKey): Observable<BaseCommandResponse | null> {
+    return this.getToken()
+      .pipe(
+        filter(t => !!t),
+        switchMap(() => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addOrderExecute', {
+          exchange: portfolio.exchange,
+          portfolio: portfolio.portfolio
+        })),
+        catchError(err => {
+          if (err.error?.code === 'SubscriptionAlreadyExists') {
+            return of({message: 'success', code: err.error.code});
+          }
+          return throwError(err);
+        }),
+        catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
+        take(1),
       );
   }
 
@@ -146,5 +175,36 @@ export class PushNotificationsService {
       );
 
     return this.token$;
+  }
+
+  private cancelOrderExecuteSubscriptions(portfolios: { portfolio: string, exchange: string }[]): Observable<boolean> {
+    return this.getToken()
+      .pipe(
+        switchMap(() => this.getCurrentSubscriptions()),
+        map(subs => (subs ?? []).filter((s): s is OrderExecuteSubscription => s.subscriptionType === PushSubscriptionType.OrderExecute)),
+        switchMap((subs: OrderExecuteSubscription[]) => {
+          const isNeedResubscribe = subs.length !== portfolios.length || subs.reduce((acc, curr) => {
+            if (!acc) {
+              return !portfolios.find(p => isPortfoliosEqual(p, curr));
+            }
+
+            return acc;
+          }, false);
+
+          if (!isNeedResubscribe) {
+            return of(false);
+          }
+
+          const subsToDelete = subs
+            .map(s => s.id)
+            .map(id => this.cancelSubscription(id));
+
+
+          return forkJoin(subsToDelete.length ? subsToDelete : [of(null)])
+            .pipe(
+              map(() => true)
+            );
+        })
+      );
   }
 }

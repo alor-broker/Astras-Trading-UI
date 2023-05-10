@@ -1,16 +1,40 @@
 <ng-container *transloco="let t; scope: 'terminal-settings/instant-notifications-form'">
   <div>
-    <ng-container *ngFor="let notificationType of editableNotificationTypes">
-      <div class="d-flex flex-row flex-gap-2">
-        <div class="flex-1 label">
-          {{t('terminalSettingsInstantNotificationsForm.' + notificationType.value + 'Label')}}
+    <h3>{{t('terminalSettingsInstantNotificationsForm.appNotificationsTitle')}}</h3>
+    <div class="d-flex flex-column flex-gap-15 mt-10">
+      <ng-container *ngFor="let notificationType of editableNotificationTypes">
+        <div class="d-flex flex-row flex-gap-2">
+          <div class="flex-1 label">
+            {{t('terminalSettingsInstantNotificationsForm.' + notificationType.value + 'Label')}}
+          </div>
+          <div>
+            <nz-switch (click)="toggleNotificationType(notificationType.value)" [ngModel]="notificationType.enabled"
+                       [nzControl]="true"></nz-switch>
+          </div>
         </div>
-        <div>
-          <nz-switch (click)="toggleNotificationType(notificationType.value)" [ngModel]="notificationType.enabled"
-                     [nzControl]="true"></nz-switch>
-        </div>
-      </div>
-      <nz-divider class="compact"></nz-divider>
-    </ng-container>
+      </ng-container>
+    </div>
+
+    <nz-divider class="compact"></nz-divider>
+
+    <h3>{{t('terminalSettingsInstantNotificationsForm.pushNotificationsTitle')}}</h3>
+    <nz-form-item *ngIf="portfolios$ | async as portfolios">
+      <nz-form-label>{{t('terminalSettingsInstantNotificationsForm.hiddenPortfoliosForNotificationsLabel')}}</nz-form-label>
+      <nz-form-control class="w-100">
+        <nz-select
+          nzMode="multiple"
+          nzAllowClear
+          [compareWith]="compareFn"
+          [nzPlaceHolder]="t('terminalSettingsInstantNotificationsForm.hiddenPortfoliosForNotificationsPlaceholder')"
+          [ngModel]="excludedPortfolios"
+          (ngModelChange)="excludedPortfoliosChange($event)"
+        >
+          <nz-option
+            *ngFor="let p of portfolios"
+            [nzValue]="p"
+            [nzLabel]="p.portfolio + ' (' + p.exchange + ')'"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
   </div>
 </ng-container>

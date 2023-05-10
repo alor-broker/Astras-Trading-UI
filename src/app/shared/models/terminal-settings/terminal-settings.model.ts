@@ -69,7 +69,8 @@ export enum CommonInstantNotificationType {
 export type InstantNotificationType = CommonInstantNotificationType | OrdersInstantNotificationType;
 
 export interface InstantNotificationsSettings {
-  hiddenNotifications?: InstantNotificationType[]
+  hiddenNotifications?: InstantNotificationType[];
+  hiddenPortfoliosForNotifications?: PortfolioKey[];
 }
 
 
