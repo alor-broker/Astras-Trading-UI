@@ -1,0 +1,47 @@
+<ng-container *transloco="let t; scope: 'arbitration-extension/arbitration-extension-manage'">
+  <div class="d-flex flex-direction-column" [formGroup]="firstLegFormGroup">
+    <h2>{{t('arbitrationExtensionArbitrationExtensionManage.firstLegTitle')}}</h2>
+
+    <nz-form-item>
+        <nz-form-label>{{t('arbitrationExtensionArbitrationExtensionManage.instrumentLabel')}}</nz-form-label>
+      <nz-form-control>
+        <ats-instrument-search formControlName="instrument"></ats-instrument-search>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+        <nz-form-label>{{t('arbitrationExtensionArbitrationExtensionManage.quantityLabel')}}</nz-form-label>
+      <nz-form-control>
+        <ats-input-number placeholder="0" formControlName="quantity"></ats-input-number>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+        <nz-form-label>{{t('arbitrationExtensionArbitrationExtensionManage.calculationRatioLabel')}}</nz-form-label>
+      <nz-form-control>
+        <ats-input-number placeholder="0" formControlName="ratio"></ats-input-number>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div class="d-flex flex-direction-column" [formGroup]="secondLegFormGroup">
+    <h2>{{t('arbitrationExtensionArbitrationExtensionManage.secondLegTitle')}}</h2>
+
+    <nz-form-item>
+        <nz-form-label>{{t('arbitrationExtensionArbitrationExtensionManage.instrumentLabel')}}</nz-form-label>
+      <nz-form-control>
+        <ats-instrument-search formControlName="instrument"></ats-instrument-search>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+        <nz-form-label>{{t('arbitrationExtensionArbitrationExtensionManage.quantityLabel')}}</nz-form-label>
+      <nz-form-control>
+        <ats-input-number placeholder="0" formControlName="quantity"></ats-input-number>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+        <nz-form-label>{{t('arbitrationExtensionArbitrationExtensionManage.calculationRatioLabel')}}</nz-form-label>
+      <nz-form-control>
+        <ats-input-number placeholder="0" formControlName="ratio"></ats-input-number>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</ng-container>

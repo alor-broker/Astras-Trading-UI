@@ -1,0 +1,67 @@
+<ng-container *transloco="let t; scope: 'arbitration-extension/arbitration-extension-table'">
+  <nz-table
+    #nzTable
+    *ngIf="items$ | async as orders"
+    [nzData]="orders"
+    [nzFrontPagination]="false"
+    [nzNoResult]="empty"
+    [nzShowPagination]="false"
+    nzSize="small"
+    nzTableLayout="fixed"
+  >
+    <thead>
+      <tr>
+        <th
+            *ngFor='let column of listOfColumns'
+            [nzWidth]="column.width ? column.width + 'px': null"
+        >
+          {{t('arbitrationExtensionArbitrationExtensionTable.columns.' + column.id)}}
+        </th>
+        <th nzWidth="50px" nzAlign="center">
+          <a (click)="addExtension()">
+            <i nz-icon nzTheme="outline" nzType="plus-circle"></i>
+          </a>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let ext of nzTable.data!">
+          <ng-container *ngFor='let column of listOfColumns'>
+            <td *ngIf='column.id === "symbols"' class='bold'>
+              <span class="symbol-name">{{ ext.firstLeg.instrument.symbol }}/{{ext.secondLeg.instrument.symbol}}</span>
+            </td>
+            <td *ngIf='column.id === "buyExtension"'>{{ ext.buyExtension | number}}</td>
+            <td *ngIf='column.id === "sellExtension"'>{{ ext.sellExtension | number}}</td>
+            <td *ngIf='column.id === "operation"'>
+              <div class="d-flex">
+                <button class="flex-1 buy-btn" nz-button (click)="buyExtension(ext)">
+                  {{t('arbitrationExtensionArbitrationExtensionTable.buyBtnText')}}
+                </button>
+                <button class="flex-1 sell-btn" nz-button (click)="sellExtension(ext)">
+                  {{t('arbitrationExtensionArbitrationExtensionTable.sellBtnText')}}
+                </button>
+              </div>
+            </td>
+          </ng-container>
+          <td>
+            <div class="actions-cell">
+              <a (click)="editExtension(ext)">
+                <i nz-icon nzTheme="outline" nzType="edit"></i>
+              </a>
+              <a (click)="removeExtension(ext.id!)">
+                <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </nz-table>
+
+  <ng-template #empty>
+    <nz-empty
+      [nzNotFoundContent]="t('arbitrationExtensionArbitrationExtensionTable.emptyListText')"
+      class="ant-list-empty-text"
+      nzNotFoundImage="simple">
+    </nz-empty>
+  </ng-template>
+</ng-container>

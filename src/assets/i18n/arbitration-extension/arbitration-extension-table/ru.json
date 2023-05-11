@@ -1,0 +1,11 @@
+{
+  "buyBtnText": "Купить",
+  "sellBtnText": "Продать",
+  "emptyListText": "Список раздвижек пуст",
+  "columns": {
+    "symbols": "Инструменты",
+    "buyExtension": "Рыночная раздвижка на покупку",
+    "sellExtension": "Рыночная раздвижка на продажу",
+    "operation": "Операция"
+  }
+}

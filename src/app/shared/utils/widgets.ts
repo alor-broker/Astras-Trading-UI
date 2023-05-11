@@ -34,6 +34,8 @@ export class WidgetsHelper {
         return 'stock';
       case WidgetNames.eventsCalendar:
         return 'calendar';
+      case WidgetNames.arbitrationExtension:
+        return 'fork';
       default:
         return '';
     }
@@ -73,6 +75,8 @@ export class WidgetsHelper {
         return 'RibbonSettings';
       case WidgetNames.eventsCalendar:
         return 'EventsCalendarSettings';
+      case WidgetNames.arbitrationExtension:
+        return 'ArbitrationExtensionSettings';
       default:
         return '';
     }

@@ -4,6 +4,7 @@
 
   "saveBtnText": "Save",
   "okBtnText": "OK",
+  "addBtnText": "Add",
   "cancelBtnText": "Cancel",
   "editBtnText": "Edit",
   "resetBtnText": "Reset",
@@ -30,7 +31,8 @@
     "OrdersBasketSettings": "Orders Basket",
     "TreemapSettings": "Market Map",
     "RibbonSettings": "Ribbon",
-    "EventsCalendarSettings": "Events Calendar"
+    "EventsCalendarSettings": "Events Calendar",
+    "ArbitrationExtensionSettings": "Arbitration Extension"
   },
 
   "joyride": {

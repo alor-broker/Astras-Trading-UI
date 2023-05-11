@@ -1,0 +1,20 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host ::ng-deep {
+    .buy-btn {
+      background-color: @buy-color;
+      color: white;
+    }
+
+    .sell-btn {
+      background-color: @sell-color;
+      color: white;
+    }
+  }
+});
+
+.actions-cell {
+  display: flex;
+  justify-content: space-around;
+}

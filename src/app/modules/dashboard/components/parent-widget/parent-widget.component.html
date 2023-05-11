@@ -74,6 +74,12 @@
       [isBlockWidget]="isBlockWidget"
     >
     </ats-events-calendar-widget>
+    <ats-arbitration-extension-widget
+      *ngSwitchCase="'arbitration-extension'"
+      [guid]="getGuid()"
+      [isBlockWidget]="isBlockWidget"
+    >
+    </ats-arbitration-extension-widget>
   </ng-container>
 
 </div>

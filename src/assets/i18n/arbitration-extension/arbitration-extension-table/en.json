@@ -1,0 +1,11 @@
+{
+  "buyBtnText": "Buy",
+  "sellBtnText": "Sell",
+  "emptyListText": "Extensions list is empty",
+  "columns": {
+    "symbols": "Instruments",
+    "buyExtension": "Market extension to buy",
+    "sellExtension": "Market extension to sell",
+    "operation": "Operation"
+  }
+}
