@@ -44,7 +44,7 @@
     "OneDay": "Поставить в очередь",
     "ImmediateOrCancel": "Немедленно или отклонить",
     "FillOrKill":  "Полностью или отклонить",
-    "AtTheClose": "Закрытие долгов",
+    "AtTheClose": "До конца торговой сессии",
     "GoodTillCancelled":  "Годен до отмены"
   },
   "isIcebergLabel": "Айсберг",

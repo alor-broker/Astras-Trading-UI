@@ -44,7 +44,7 @@
     "OneDay": "One day",
     "ImmediateOrCancel": "Immediate or cancel",
     "FillOrKill":  "Fill or kill",
-    "AtTheClose": "At the close",
+    "AtTheClose": "Till the trading session ends",
     "GoodTillCancelled":  "Good till cancelled"
   },
   "isIcebergLabel": "Iceberg",
