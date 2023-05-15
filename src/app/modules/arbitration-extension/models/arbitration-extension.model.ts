@@ -4,8 +4,8 @@ export interface ArbitrationExtension {
   id?: string;
   firstLeg: ExtensionLeg;
   secondLeg: ExtensionLeg;
-  buyExtension: number;
-  sellExtension: number;
+  buyExtension?: number;
+  sellExtension?: number;
 }
 
 export interface ExtensionLeg {

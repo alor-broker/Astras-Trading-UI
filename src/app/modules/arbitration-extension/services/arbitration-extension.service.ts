@@ -55,8 +55,10 @@ export class ArbitrationExtensionService {
                 map(([ firstLeg, secondLeg ]) => ({ firstLeg, secondLeg })),
                 map(quotes => ({
                   ...ext,
-                  buyExtension: quotes.firstLeg.ask * ext.firstLeg.quantity - quotes.secondLeg.bid * ext.secondLeg.quantity,
-                  sellExtension: quotes.firstLeg.bid * ext.firstLeg.quantity - quotes.secondLeg.ask * ext.secondLeg.quantity
+                  buyExtension: quotes.firstLeg.ask * ext.firstLeg.quantity * ext.firstLeg.ratio -
+                    quotes.secondLeg.bid * ext.secondLeg.quantity * ext.secondLeg.ratio,
+                  sellExtension: quotes.firstLeg.bid * ext.firstLeg.quantity * ext.firstLeg.ratio -
+                    quotes.secondLeg.ask * ext.secondLeg.quantity * ext.secondLeg.ratio
                 }))
               );
           }));
@@ -72,8 +74,6 @@ export class ArbitrationExtensionService {
           {
             ...newExt,
             id: GuidGenerator.newGuid(),
-            buyExtension: newExt.firstLeg.quantity,
-            sellExtension: newExt.secondLeg.quantity,
           },
           ...extensions]);
       });
@@ -90,9 +90,7 @@ export class ArbitrationExtensionService {
 
           return {
             ...ext,
-            ...extension,
-            buyExtension: extension.firstLeg.quantity,
-            sellExtension: extension.secondLeg.quantity,
+            ...extension
           };
         }));
       });
