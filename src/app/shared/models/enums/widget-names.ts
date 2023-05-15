@@ -15,5 +15,5 @@ export class WidgetNames {
   static readonly treemap = 'treemap';
   static readonly ribbon = 'ribbon';
   static readonly eventsCalendar = 'events-calendar';
-  static readonly arbitrationExtension = 'arbitration-extension';
+  static readonly arbitrageSpread = 'arbitrage-spread';
 }

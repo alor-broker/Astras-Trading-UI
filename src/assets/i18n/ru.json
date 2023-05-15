@@ -32,7 +32,7 @@
     "TreemapSettings": "Карта рынка",
     "RibbonSettings": "Лента",
     "EventsCalendarSettings": "Календарь событий",
-    "ArbitrationExtensionSettings": "Арбитражная раздвижка"
+    "ArbitrageSpreadSettings": "Арбитражная раздвижка"
   },
 
   "joyride": {

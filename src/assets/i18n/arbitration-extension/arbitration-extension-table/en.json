@@ -4,8 +4,8 @@
   "emptyListText": "Extensions list is empty",
   "columns": {
     "symbols": "Instruments",
-    "buyExtension": "Market extension to buy",
-    "sellExtension": "Market extension to sell",
+    "buyExtension": "Buy",
+    "sellExtension": "Sell",
     "operation": "Operation"
   }
 }

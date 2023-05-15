@@ -113,10 +113,10 @@
   </li>
   <li
     nz-menu-item
-    (click)="selected.emit(widgetNames.arbitrationExtension)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.arbitrationExtension)"
+    (click)="selected.emit(widgetNames.arbitrageSpread)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.arbitrageSpread)"
   >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.arbitrationExtension)" nzTheme="outline"></i><label> {{t('widgetHeaders.ArbitrationExtensionSettings')}}</label></span>
+    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.arbitrageSpread)" nzTheme="outline"></i><label> {{t('widgetHeaders.ArbitrageSpreadSettings')}}</label></span>
   </li>
 
   <ng-container *ngIf="!showedWidgets.length">
