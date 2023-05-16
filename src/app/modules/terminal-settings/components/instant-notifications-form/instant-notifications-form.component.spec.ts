@@ -5,6 +5,8 @@ import {
   getTranslocoModule,
   ngZorroMockComponents
 } from '../../../../shared/utils/testing';
+import { Store } from "@ngrx/store";
+import { of } from "rxjs";
 
 describe('InstantNotificationsFormComponent', () => {
   let component: InstantNotificationsFormComponent;
@@ -16,6 +18,14 @@ describe('InstantNotificationsFormComponent', () => {
       declarations: [
         InstantNotificationsFormComponent,
         ...ngZorroMockComponents
+      ],
+      providers: [
+        {
+          provide: Store,
+          useValue: {
+            select: jasmine.createSpy('select').and.returnValue(of({}))
+          }
+        }
       ]
     })
     .compileComponents();

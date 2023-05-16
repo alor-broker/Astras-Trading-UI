@@ -106,6 +106,13 @@
   </li>
   <li
     nz-menu-item
+    (click)="selected.emit(widgetNames.eventsCalendar)"
+    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.eventsCalendar)"
+  >
+    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.eventsCalendar)" nzTheme="outline"></i><label> {{t('widgetHeaders.EventsCalendarSettings')}}</label></span>
+  </li>
+  <li
+    nz-menu-item
     (click)="selected.emit(widgetNames.optionBoard)"
     *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.optionBoard)"
   >

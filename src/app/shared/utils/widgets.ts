@@ -32,6 +32,8 @@ export class WidgetsHelper {
         return 'layout';
       case WidgetNames.ribbon:
         return 'stock';
+      case WidgetNames.eventsCalendar:
+        return 'calendar';
       case WidgetNames.optionBoard:
         return 'table';
       default:
@@ -71,6 +73,8 @@ export class WidgetsHelper {
         return 'TreemapSettings';
       case WidgetNames.ribbon:
         return 'RibbonSettings';
+      case WidgetNames.eventsCalendar:
+        return 'EventsCalendarSettings';
       case WidgetNames.optionBoard:
         return 'OptionBoardSettings';
       default:

@@ -1,0 +1,61 @@
+<ng-container *transloco="let t; scope: 'events-calendar'">
+  <nz-tabset>
+    <nz-tab [nzTitle]="t('eventsCalendar.calendarViewTabTitle')">
+      <div class="portfolio-filter">
+        <button
+          nz-button
+          nzType="text"
+          nzSize='small'
+          nz-dropdown
+          nzTrigger="click"
+          [nzDropdownMenu]="menu"
+        >
+          <span *ngIf="selectedPortfolio$ | async as selectedPortfolio; else allPortfolios">
+            {{ selectedPortfolio.portfolio }} ({{selectedPortfolio.exchange}})
+          </span>
+
+          <ng-template #allPortfolios>
+            {{t('eventsCalendar.allPortfolios')}}
+          </ng-template>
+        </button>
+      </div>
+      <ng-container *ngIf="symbolsOfSelectedPortfolio$ | async as symbols">
+        <ats-calendar-view [symbols]="symbols"></ats-calendar-view>
+      </ng-container>
+    </nz-tab>
+    <nz-tab [nzTitle]="t('eventsCalendar.listViewTabTitle')">
+      <div class="portfolio-filter">
+        <button
+          nz-button
+          nzType="text"
+          nzSize='small'
+          nz-dropdown
+          nzTrigger="click"
+          [nzDropdownMenu]="menu"
+        >
+          <span *ngIf="selectedPortfolio$ | async as selectedPortfolio; else allPortfolios">
+            {{ selectedPortfolio.portfolio }} ({{selectedPortfolio.exchange}})
+          </span>
+
+          <ng-template #allPortfolios>
+            {{t('eventsCalendar.allPortfolios')}}
+          </ng-template>
+        </button>
+      </div>
+      <ng-container *ngIf="symbolsOfSelectedPortfolio$ | async as symbols">
+        <ats-list-view [symbols]="symbols"></ats-list-view>
+      </ng-container>
+    </nz-tab>
+  </nz-tabset>
+
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <ul nz-menu>
+      <li nz-menu-item (click)="selectPortfolio(null)">
+        {{t('eventsCalendar.allPortfolios')}}
+      </li>
+      <li nz-menu-item *ngFor="let portfolio of portfolios; trackBy: portfolioTrackByFn" (click)="selectPortfolio(portfolio)">
+        {{ portfolio.portfolio }} ({{portfolio.exchange}})
+      </li>
+    </ul>
+  </nz-dropdown-menu>
+</ng-container>

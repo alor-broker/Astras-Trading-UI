@@ -14,5 +14,6 @@ export class WidgetNames {
   static readonly ordersBasket = 'orders-basket';
   static readonly treemap = 'treemap';
   static readonly ribbon = 'ribbon';
+  static readonly eventsCalendar = 'events-calendar';
   static readonly optionBoard = 'option-board';
 }
