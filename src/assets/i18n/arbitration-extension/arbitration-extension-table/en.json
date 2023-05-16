@@ -6,6 +6,7 @@
     "symbols": "Instruments",
     "buyExtension": "Buy",
     "sellExtension": "Sell",
-    "operation": "Operation"
+    "operation": "Operation",
+    "volume": "Order volume"
   }
 }

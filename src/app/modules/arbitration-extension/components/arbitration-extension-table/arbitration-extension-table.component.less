@@ -11,10 +11,35 @@
       background-color: @sell-color;
       color: white;
     }
+
+    .buy-badge {
+      .ant-badge-count {
+        background-color: @buy-color;
+      }
+    }
+
+    .sell-badge {
+      .ant-badge-count {
+        background-color: @sell-color;
+      }
+    }
   }
 });
 
 .actions-cell {
   display: flex;
   justify-content: space-around;
+}
+
+.compact {
+  margin: 0;
+}
+
+
+:host ::ng-deep {
+  .ant-badge-count {
+    right: -5px;
+    padding-left: 3px;
+    padding-right: 3px;
+  }
 }

@@ -20,6 +20,22 @@
         <ats-input-number placeholder="0" formControlName="ratio"></ats-input-number>
       </nz-form-control>
     </nz-form-item>
+    <nz-form-item *ngIf="portfolios$ | async as portfolios">
+        <nz-form-label>{{t('arbitrationExtensionArbitrationExtensionManage.portfolioLabel')}}</nz-form-label>
+      <nz-form-control>
+        <nz-select
+          formControlName="portfolio"
+          [compareWith]="isPortfoliosEqual"
+          [nzPlaceHolder]="t('arbitrationExtensionArbitrationExtensionManage.portfolioPlaceholder')"
+        >
+          <nz-option
+            *ngFor="let p of portfolios"
+            [nzLabel]="p.portfolio + ' (' + p.exchange + ')'"
+            [nzValue]="p"
+          ></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
   </div>
 
   <div class="d-flex flex-direction-column" [formGroup]="secondLegFormGroup">
@@ -41,6 +57,22 @@
         <nz-form-label>{{t('arbitrationExtensionArbitrationExtensionManage.calculationRatioLabel')}}</nz-form-label>
       <nz-form-control>
         <ats-input-number placeholder="0" formControlName="ratio"></ats-input-number>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item *ngIf="portfolios$ | async as portfolios">
+      <nz-form-label>{{t('arbitrationExtensionArbitrationExtensionManage.portfolioLabel')}}</nz-form-label>
+      <nz-form-control>
+        <nz-select
+          formControlName="portfolio"
+          [compareWith]="isPortfoliosEqual"
+          [nzPlaceHolder]="t('arbitrationExtensionArbitrationExtensionManage.portfolioPlaceholder')"
+        >
+          <nz-option
+            *ngFor="let p of portfolios"
+            [nzLabel]="p.portfolio + ' (' + p.exchange + ')'"
+            [nzValue]="p"
+          ></nz-option>
+        </nz-select>
       </nz-form-control>
     </nz-form-item>
   </div>

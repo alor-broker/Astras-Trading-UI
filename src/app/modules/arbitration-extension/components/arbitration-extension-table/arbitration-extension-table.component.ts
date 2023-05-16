@@ -1,9 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Observable } from "rxjs";
+import { Observable, tap } from "rxjs";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { ArbitrationExtensionService } from "../../services/arbitration-extension.service";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { ArbitrationExtension } from "../../models/arbitration-extension.model";
+import { UntypedFormArray, UntypedFormControl, Validators } from "@angular/forms";
 
 @Component({
   selector: 'ats-arbitration-extension[guid]',
@@ -15,10 +16,13 @@ export class ArbitrationExtensionTableComponent implements OnInit {
 
   items$?: Observable<ArbitrationExtension[]>;
 
+  volumesForm = new UntypedFormArray([]);
+
   listOfColumns: BaseColumnSettings<ArbitrationExtension>[] = [
     { id: 'symbols', displayName: 'Инструменты' },
     { id: 'buyExtension', displayName: 'Рыночная раздвижка на покупку' },
     { id: 'sellExtension', displayName: 'Рыночная раздвижка на продажу' },
+    { id: 'volume', displayName: 'Объём заявки', width: 60 },
     { id: 'operation', displayName: 'Операция' },
   ];
 
@@ -29,7 +33,10 @@ export class ArbitrationExtensionTableComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.items$ = this.service.getExtensionsSubscription();
+    this.items$ = this.service.getExtensionsSubscription()
+      .pipe(
+        tap(items => this.volumesForm = new UntypedFormArray(items.map(() => new UntypedFormControl(1, Validators.required))))
+      );
   }
 
   addExtension() {
@@ -44,13 +51,23 @@ export class ArbitrationExtensionTableComponent implements OnInit {
     this.service.removeExtension(extId);
   }
 
-  buyExtension(ext: ArbitrationExtension) {
-    this.service.buyExtension(ext.firstLeg, ext.secondLeg)
+  buyExtension(ext: ArbitrationExtension, index: number) {
+    let volume = this.getVolumeControl(index)?.value;
+
+    this.service.buyExtension(ext.firstLeg, ext.secondLeg, volume)
       .subscribe();
   }
 
-  sellExtension(ext: ArbitrationExtension) {
-    this.service.buyExtension(ext.secondLeg, ext.firstLeg)
+  sellExtension(ext: ArbitrationExtension, index: number) {
+    let volume = this.getVolumeControl(index)?.value;
+
+    this.service.buyExtension(ext.secondLeg, ext.firstLeg, volume)
       .subscribe();
   }
+
+  getVolumeControl(index: number): UntypedFormControl | undefined {
+    return this.volumesForm.at(index) as UntypedFormControl;
+  }
+
+  getAbs = Math.abs;
 }

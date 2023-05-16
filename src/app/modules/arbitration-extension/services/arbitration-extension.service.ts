@@ -6,8 +6,8 @@ import { GuidGenerator } from "../../../shared/utils/guid";
 import { QuotesService } from "../../../shared/services/quotes.service";
 import { OrderService } from "../../../shared/services/orders/order.service";
 import { Side } from "../../../shared/models/enums/side.model";
-import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
-import { mapWith } from "../../../shared/utils/observable-helper";
+import { PositionsService } from "../../../shared/services/positions.service";
+import { AuthService } from "../../../shared/services/auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,8 @@ export class ArbitrationExtensionService {
     private readonly localStorage: LocalStorageService,
     private readonly quotesService: QuotesService,
     private readonly orderService: OrderService,
-    private readonly dashboardService: DashboardContextService
+    private readonly positionsService: PositionsService,
+    private readonly authService: AuthService
   ) { }
 
   getExtensionsSubscription(): Observable<ArbitrationExtension[]> {
@@ -49,16 +50,36 @@ export class ArbitrationExtensionService {
                 ext.secondLeg.instrument.symbol,
                 ext.secondLeg.instrument.exchange,
                 ext.secondLeg.instrument.instrumentGroup
-              )
+              ),
+              this.authService.currentUser$
+                .pipe(
+                  take(1),
+                  switchMap(user => this.positionsService.getAllByLogin(user.login!))
+                )
             ])
               .pipe(
-                map(([ firstLeg, secondLeg ]) => ({ firstLeg, secondLeg })),
-                map(quotes => ({
+                map(([firstLeg, secondLeg, positions]) => ({
                   ...ext,
-                  buyExtension: quotes.firstLeg.ask * ext.firstLeg.quantity * ext.firstLeg.ratio -
-                    quotes.secondLeg.bid * ext.secondLeg.quantity * ext.secondLeg.ratio,
-                  sellExtension: quotes.firstLeg.bid * ext.firstLeg.quantity * ext.firstLeg.ratio -
-                    quotes.secondLeg.ask * ext.secondLeg.quantity * ext.secondLeg.ratio
+                  firstLeg: {
+                    ...ext.firstLeg,
+                    positionsCount: positions.find(p =>
+                      p.exchange === ext.firstLeg.portfolio.exchange &&
+                      p.portfolio === ext.firstLeg.portfolio.portfolio &&
+                      p.symbol === ext.firstLeg.instrument.symbol
+                    )?.qtyTFutureBatch ?? 0
+                  },
+                  secondLeg: {
+                    ...ext.secondLeg,
+                    positionsCount: positions.find(p =>
+                      p.exchange === ext.secondLeg.portfolio.exchange &&
+                      p.portfolio === ext.secondLeg.portfolio.portfolio &&
+                      p.symbol === ext.secondLeg.instrument.symbol
+                    )?.qtyTFutureBatch ?? 0
+                  },
+                  buyExtension: firstLeg.ask * ext.firstLeg.quantity * ext.firstLeg.ratio -
+                    secondLeg.bid * ext.secondLeg.quantity * ext.secondLeg.ratio,
+                  sellExtension: firstLeg.bid * ext.firstLeg.quantity * ext.firstLeg.ratio -
+                    secondLeg.ask * ext.secondLeg.quantity * ext.secondLeg.ratio
                 }))
               );
           }));
@@ -108,19 +129,14 @@ export class ArbitrationExtensionService {
     this.localStorage.setItem(this.extensionsKey, extensions);
   }
 
-  buyExtension(firstLeg: ExtensionLeg, secondLeg: ExtensionLeg) {
-    return this.dashboardService.selectedPortfolio$
-      .pipe(
-        take(1),
-        mapWith(
-          (portfolio) => this.orderService.submitMarketOrder({
+  buyExtension(firstLeg: ExtensionLeg, secondLeg: ExtensionLeg, volume = 1) {
+    return this.orderService.submitMarketOrder({
             instrument: firstLeg.instrument,
             side: Side.Buy,
-            quantity: firstLeg.quantity
-          }, portfolio.portfolio),
-          (portfolio, order) => ({ portfolio, order })
-        ),
-        switchMap(({ portfolio, order }) => {
+            quantity: firstLeg.quantity * volume
+          }, firstLeg.portfolio.portfolio)
+      .pipe(
+        switchMap((order) => {
           if (!order) {
             return of(null);
           }
@@ -128,7 +144,7 @@ export class ArbitrationExtensionService {
             instrument: secondLeg.instrument,
             side: Side.Sell,
             quantity: secondLeg.quantity
-          }, portfolio.portfolio);
+          }, secondLeg.portfolio.portfolio);
         })
       );
   }

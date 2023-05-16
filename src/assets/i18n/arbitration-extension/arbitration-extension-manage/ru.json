@@ -3,5 +3,7 @@
   "secondLegTitle": "Вторая нога",
   "instrumentLabel": "Инструмент",
   "quantityLabel": "Кол-во лотов",
-  "calculationRatioLabel": "Коэффициент для расчетов"
+  "calculationRatioLabel": "Коэффициент для расчетов",
+  "portfolioLabel": "Портфель",
+  "portfolioPlaceholder": "Выберите портфель"
 }

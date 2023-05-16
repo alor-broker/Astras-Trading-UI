@@ -25,19 +25,43 @@
       </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let ext of nzTable.data!">
+        <tr *ngFor="let ext of nzTable.data!; let i = index">
           <ng-container *ngFor='let column of listOfColumns'>
             <td *ngIf='column.id === "symbols"' class='bold'>
-              <span class="symbol-name">{{ ext.firstLeg.instrument.symbol }}/{{ext.secondLeg.instrument.symbol}}</span>
+              <nz-badge
+                nzSize="small"
+                [nzCount]="getAbs(ext.firstLeg.positionsCount!)"
+                [class.mr-8]="!!ext.firstLeg.positionsCount"
+                [class.buy-badge]="ext.firstLeg.positionsCount! > 0"
+                [class.sell-badge]="ext.firstLeg.positionsCount! < 0"
+              >
+               <span class="symbol-name">{{ ext.firstLeg.instrument.symbol }}</span>
+              </nz-badge>
+              /
+              <nz-badge
+                nzSize="small"
+                [nzCount]="getAbs(ext.secondLeg.positionsCount!)"
+                [class.buy-badge]="ext.secondLeg.positionsCount! > 0"
+                [class.sell-badge]="ext.secondLeg.positionsCount! < 0"
+              >
+                <span class="symbol-name">{{ext.secondLeg.instrument.symbol}}</span>
+              </nz-badge>
             </td>
             <td *ngIf='column.id === "buyExtension"'>{{ ext.buyExtension | number}}</td>
             <td *ngIf='column.id === "sellExtension"'>{{ ext.sellExtension | number}}</td>
+            <td *ngIf='column.id === "volume"'>
+              <nz-form-item class="compact">
+                <nz-form-control>
+                  <ats-input-number placeholder="0" [formControl]="getVolumeControl(i)!"></ats-input-number>
+                </nz-form-control>
+              </nz-form-item>
+            </td>
             <td *ngIf='column.id === "operation"'>
               <div class="d-flex">
-                <button class="flex-1 buy-btn" nz-button (click)="buyExtension(ext)">
+                <button [disabled]="getVolumeControl(i)?.invalid" class="flex-1 buy-btn" nz-button (click)="buyExtension(ext, i)">
                   {{t('arbitrationExtensionArbitrationExtensionTable.buyBtnText')}}
                 </button>
-                <button class="flex-1 sell-btn" nz-button (click)="sellExtension(ext)">
+                <button [disabled]="getVolumeControl(i)?.invalid" class="flex-1 sell-btn" nz-button (click)="sellExtension(ext, i)">
                   {{t('arbitrationExtensionArbitrationExtensionTable.sellBtnText')}}
                 </button>
               </div>

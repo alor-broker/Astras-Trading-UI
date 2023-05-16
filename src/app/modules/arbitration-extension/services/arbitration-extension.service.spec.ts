@@ -6,6 +6,8 @@ import { QuotesService } from "../../../shared/services/quotes.service";
 import { of } from "rxjs";
 import { OrderService } from "../../../shared/services/orders/order.service";
 import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
+import { PositionsService } from "../../../shared/services/positions.service";
+import { AuthService } from "../../../shared/services/auth.service";
 
 describe('ArbitrationExtensionService', () => {
   let service: ArbitrationExtensionService;
@@ -36,6 +38,18 @@ describe('ArbitrationExtensionService', () => {
           provide: DashboardContextService,
           useValue: {
             selectedPortfolio$: of({ portfolio: 'Test portfolio' })
+          }
+        },
+        {
+          provide: PositionsService,
+          useValue: {
+            getAllByLogin: jasmine.createSpy('getAllByLogin').and.returnValue(of([]))
+          }
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            currentUser$: of({ login: 'testLogin' })
           }
         }
       ]
