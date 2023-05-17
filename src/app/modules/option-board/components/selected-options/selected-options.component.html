@@ -59,7 +59,7 @@
               </td>
               <ng-container *ngFor='let column of displayColumns'>
                 <td *ngIf='column.id === "symbol"' [nzLeft]="column.leftFixed ?? false">{{ option.symbol }}</td>
-                <td *ngIf='column.id === "optionSide"'>{{ option.underlyingAssetSymbol }}</td>
+                <td *ngIf='column.id === "underlyingAssetSymbol"'>{{ option.underlyingAssetSymbol }}</td>
                 <td *ngIf='column.id === "optionSide"'>{{ option.optionSide }}</td>
                 <td *ngIf='column.id === "optionType"'>{{ option.optionType }}</td>
                 <td *ngIf='column.id === "strikePrice"'>{{ option.strikePrice | number : '0.0-10' }}</td>
