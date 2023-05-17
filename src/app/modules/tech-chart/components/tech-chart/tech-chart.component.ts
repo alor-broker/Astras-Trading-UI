@@ -21,6 +21,7 @@ import {
   withLatestFrom
 } from 'rxjs';
 import {
+  ChartingLibraryFeatureset,
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
   InitialSettingsMap,
@@ -368,7 +369,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       enabled_features: [
         'side_toolbar_in_fullscreen_mode',
         'chart_crosshair_menu'
-      ]
+      ] as unknown as ChartingLibraryFeatureset[]
     };
 
     const chartWidget = new widget(config);
