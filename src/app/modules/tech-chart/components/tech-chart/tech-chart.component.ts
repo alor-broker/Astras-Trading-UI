@@ -314,7 +314,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       else {
         this.chartState.widget.activeChart().setSymbol(
-          `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
+          this.toTvSymbol(settings),
           () => {
             this.initPositionDisplay(settings, theme.themeColors);
             this.initOrdersDisplay(settings, theme.themeColors);
@@ -334,7 +334,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       debug: false,
       // base options
       container: this.chartContainer.nativeElement,
-      symbol: `${settings.exchange}:${settings.symbol}:${settings.instrumentGroup}`,
+      symbol: this.toTvSymbol(settings),
       interval: (settings.chartSettings?.['chart.lastUsedTimeBasedResolution'] ?? '1D') as ResolutionString,
       locale: this.translatorService.getActiveLang() as LanguageCode,
       library_path: '/assets/charting_library/',
@@ -399,6 +399,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       );
     });
+  }
+
+  private toTvSymbol(instrumentKey: InstrumentKey): string {
+    return `${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup ?? ''}`;
   }
 
   private subscribeToChartEvents(widget: IChartingLibraryWidget) {
