@@ -1,0 +1,13 @@
+{
+  "buyBtnText": "Купить",
+  "sellBtnText": "Продать",
+  "addBtnText": "Добавить",
+  "emptyListText": "Список раздвижек пуст",
+  "columns": {
+    "symbols": "Инструменты",
+    "buySpread": "Рыночная раздвижка на покупку",
+    "sellSpread": "Рыночная раздвижка на продажу",
+    "operation": "Операция",
+    "volume": "Объём заявки"
+  }
+}

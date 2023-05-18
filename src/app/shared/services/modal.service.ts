@@ -10,7 +10,6 @@ import { ReleaseMeta } from '../../modules/application-meta/models/application-r
 import { NzModalService } from "ng-zorro-antd/modal";
 import { ModalOptions } from "ng-zorro-antd/modal/modal-types";
 import { DashboardContextService } from './dashboard-context.service';
-import { ArbitrationExtension } from "../../modules/arbitration-extension/models/arbitration-extension.model";
 
 @Injectable({
   providedIn: 'root'
@@ -38,11 +37,6 @@ export class ModalService {
   private shouldShowApplicationUpdatedModal = new BehaviorSubject<boolean>(false);
   private applicationUpdatedParams = new BehaviorSubject<ReleaseMeta | null>(null);
   applicationUpdatedParams$ = this.applicationUpdatedParams.asObservable();
-
-  private shouldShowExtensionModal = new BehaviorSubject<boolean>(false);
-  private extensionParams = new BehaviorSubject<ArbitrationExtension | null>(null);
-  shouldShowExtensionModal$ = this.shouldShowExtensionModal.asObservable();
-  extensionParams$ = this.extensionParams.asObservable();
 
   shouldShowCommandModal$ = this.shouldShowCommandModal.asObservable();
   commandParams$ = this.commandParams.asObservable();
@@ -119,11 +113,6 @@ export class ModalService {
     this.nzModalService.confirm(options);
   }
 
-  openExtensionModal(extension?: ArbitrationExtension | null) {
-    this.extensionParams.next(extension ?? null);
-    this.shouldShowExtensionModal.next(true);
-  }
-
   closeTerminalSettingsModal() {
     this.shouldShowTerminalSettingsModal.next(false);
   }
@@ -152,10 +141,5 @@ export class ModalService {
   closeApplicationUpdatedModal() {
     this.shouldShowApplicationUpdatedModal.next(false);
     this.applicationUpdatedParams.next(null);
-  }
-
-  closeExtensionModal() {
-    this.extensionParams.next(null);
-    this.shouldShowExtensionModal.next(false);
   }
 }

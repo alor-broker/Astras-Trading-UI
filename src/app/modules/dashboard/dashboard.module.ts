@@ -40,7 +40,7 @@ import { NetworkIndicatorComponent } from "./components/network-indicator/networ
 import { TreemapModule } from "../treemap/treemap.module";
 import { RibbonModule } from '../ribbon/ribbon.module';
 import { EventsCalendarModule } from "../events-calendar/events-calendar.module";
-import { ArbitrationExtensionModule } from "../arbitration-extension/arbitration-extension.module";
+import { ArbitrageSpreadModule } from "../arbitrage-spread/arbitrage-spread.module";
 
 @NgModule({
   declarations: [
@@ -84,7 +84,7 @@ import { ArbitrationExtensionModule } from "../arbitration-extension/arbitration
         TreemapModule,
         RibbonModule,
         EventsCalendarModule,
-        ArbitrationExtensionModule,
+        ArbitrageSpreadModule,
         // components
     ],
   providers: [

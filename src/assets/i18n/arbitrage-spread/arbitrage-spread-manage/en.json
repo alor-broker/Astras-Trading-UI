@@ -1,0 +1,14 @@
+{
+  "firstLegTitle": "First leg",
+  "secondLegTitle": "Second leg",
+  "instrumentLabel": "Instrument",
+  "quantityLabel": "Lots quantity",
+  "calculationRatioLabel": "Calculation ratio",
+  "portfolioLabel": "Portfolio",
+  "portfolioPlaceholder": "Select portfolio",
+  "instrumentRequiredError": "Select instrument",
+  "quantityRequiredError": "Input quantity",
+  "ratioRequiredError": "Input ratio",
+  "tooLittle": "Too little",
+  "tooMuch": "Too much"
+}
