@@ -7,7 +7,7 @@ import {
 } from '@ngrx/effects';
 
 import * as TerminalSettingsActions from './terminal-settings.actions';
-import { initTerminalSettingsSuccess } from './terminal-settings.actions';
+import {initTerminalSettingsSuccess, updateTerminalSettingsSuccess} from './terminal-settings.actions';
 import { TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
 import {
   map,
@@ -45,10 +45,8 @@ export class TerminalSettingsEffects {
         map(([, settings]) => settings.settings),
         filter((settings): settings is TerminalSettings => !!settings),
         tap(settings => this.saveSettingsToLocalStorage(settings)),
+        map(() => updateTerminalSettingsSuccess())
       );
-    },
-    {
-      dispatch: false
     });
 
   private readonly settingsStorageKey = 'terminalSettings';
