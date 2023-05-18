@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {filter, Observable, take} from 'rxjs';
 import {AccountService} from 'src/app/shared/services/account.service';
-import {FullName} from '../../../shared/models/user/full-name.model';
 import {Store} from '@ngrx/store';
 import {TerminalSettings} from '../../../shared/models/terminal-settings/terminal-settings.model';
 import {selectTerminalSettingsState} from '../../../store/terminal-settings/terminal-settings.selectors';
@@ -21,11 +20,6 @@ export class TerminalSettingsService {
     private readonly actions$: Actions
   ) {
   }
-
-  getFullName(): Observable<FullName> {
-    return this.profile.getFullName();
-  }
-
   getSettings(): Observable<TerminalSettings> {
     return this.store.select(selectTerminalSettingsState)
       .pipe(
