@@ -122,8 +122,18 @@
                     <div
                       [ngStyle]="{ width: layoutSizes.priceColumnWidth + 'px'}"
                       class="marker text-center heading-color"
+                      nz-tooltip
+                      [nzTooltipTitle]="t(
+                      'optionBoard.currentPriceTooltip',
+                      {
+                      price: optionsMatrix.underlyingAsset?.lastPrice
+                      }
+                      )"
                     >
-                      {{t('optionBoard.abbreviations.current')}}
+                    </div>
+                    <div
+                      class="line flex-fill"
+                    >
                     </div>
                   </div>
                 </ng-container>

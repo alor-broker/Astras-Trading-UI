@@ -4,6 +4,7 @@
 
   "dayOfMonthFormat": "{{day}} {{month}}",
   "missingOptionTooltip": "Нет опциона со страйком {{strikePrice}} и сроком действия до {{day}} {{month}} {{year}}",
+  "currentPriceTooltip": "Текущая цена: {{price}}",
 
   "sideOptions": {
     "call": "Call",
@@ -27,7 +28,6 @@
   },
 
   "abbreviations": {
-    "days": "д.",
-    "current": "тек."
+    "days": "д."
   }
 }

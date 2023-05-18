@@ -19,16 +19,12 @@
       }
     }
 
-    .strike-price-cell {
-      position: sticky;
-      left: 0;
-      background-color: @component-background;
-    }
-
     .current-price-line {
-      background: @primary-color;
-
       .marker {
+        border: 1px @primary-color solid;
+      }
+
+      .line {
         background: @primary-color;
       }
     }
@@ -48,23 +44,27 @@
   overflow-x: hidden;
 }
 
+.strike-price-cell {
+  position: sticky;
+  left: 0;
+  background-color: transparent;
+}
+
 .current-price-line {
   position: absolute;
   height: 2px;
-  opacity: 0.8;
-
-  &:hover {
-    opacity: 1;
-  }
 
   .marker {
     height: 12px;
-    line-height: 10px;
+    line-height: 12px;
     border-radius: 5px;
-    font-size: smaller;
 
     position: sticky;
     left: 0;
+  }
+
+  .line {
+    height: 2px;
   }
 }
 

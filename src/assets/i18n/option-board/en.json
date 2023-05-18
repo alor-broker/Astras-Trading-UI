@@ -4,6 +4,7 @@
 
   "dayOfMonthFormat": "{{month}} {{day}}",
   "missingOptionTooltip": "No option is written at strike of {{strikePrice}} and expiration of {{month}} {{day}} {{year}}",
+  "currentPriceTooltip": "Current price: {{price}}",
 
   "sideOptions": {
     "call": "Call",
@@ -27,7 +28,6 @@
   },
 
   "abbreviations": {
-    "days": "D",
-    "current": "curr."
+    "days": "D"
   }
 }
