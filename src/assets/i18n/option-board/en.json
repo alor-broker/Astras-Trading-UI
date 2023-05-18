@@ -11,7 +11,7 @@
   },
 
   "parameterOptions": {
-    "price": "Price (theo)",
+    "price": "Price",
     "delta": "Delta",
     "gamma": "Gamma",
     "vega": "Vega",
