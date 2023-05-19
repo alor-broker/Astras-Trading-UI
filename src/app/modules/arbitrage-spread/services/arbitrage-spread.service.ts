@@ -8,6 +8,7 @@ import { OrderService } from "../../../shared/services/orders/order.service";
 import { Side } from "../../../shared/models/enums/side.model";
 import { PositionsService } from "../../../shared/services/positions.service";
 import { AuthService } from "../../../shared/services/auth.service";
+import { SubmitOrderResult } from "../../command/models/order.model";
 
 @Injectable({
   providedIn: 'root'
@@ -134,7 +135,7 @@ export class ArbitrageSpreadService {
     this.localStorage.setItem(this.spreadsKey, spreads);
   }
 
-  buySpread(spread: ArbitrageSpread, volume = 1, isReverseBuy = false) {
+  buySpread(spread: ArbitrageSpread, volume = 1, isReverseBuy = false): Observable<SubmitOrderResult | null> {
     return this.orderService.submitMarketOrder({
             instrument: spread.firstLeg.instrument,
             side: isReverseBuy ? Side.Sell : Side.Buy,
