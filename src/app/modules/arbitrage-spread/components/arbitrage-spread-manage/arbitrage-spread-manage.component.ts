@@ -112,8 +112,9 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
       if (!value.secondLeg?.instrument) {
         this.secondLegFormGroup.get('portfolio')?.reset(null, { emitEvent: false });
       }
+
       this.formChange.emit({
-        value,
+        value: this.form.value,
         isValid: this.form.valid
       });
     });
