@@ -148,7 +148,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
         commandContext.commandParameters.price ?? 1,
         [
           Validators.required,
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max),
           AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
         ]),

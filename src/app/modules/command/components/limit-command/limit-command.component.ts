@@ -136,7 +136,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         commandContext.commandParameters.price ?? 1,
         [
           Validators.required,
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max),
           AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
         ]
@@ -161,9 +161,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
       instrumentCurrency: commandContext.instrument?.currency
     };
 
-    if (evaluation.price > 0) {
-      this.evaluation$.next(evaluation);
-    }
+    this.evaluation$.next(evaluation);
   }
 
   private initCommandForm(commandContext: CommandContextModel<CommandParams>) {

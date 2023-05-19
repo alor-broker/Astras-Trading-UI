@@ -35,7 +35,7 @@
           <nz-form-item class="compact">
             <nz-form-label nzFor="triggerPrice" nzRequired>{{t('command.triggerPriceLabel')}}</nz-form-label>
             <nz-form-control [nzErrorTip]="triggerPriceError">
-              <ats-input-number [step]="instrument.minstep" formControlName="triggerPrice" placeholder="0"></ats-input-number>
+              <ats-input-number [step]="instrument.minstep" [allowNegative]="true" formControlName="triggerPrice" placeholder="0"></ats-input-number>
             </nz-form-control>
             <ng-template #triggerPriceError>
               <span *ngIf="form.get('triggerPrice')?.errors?.required">{{t('command.emptyPriceError')}}</span>
@@ -80,7 +80,7 @@
           <nz-form-item class="compact">
             <nz-form-label nzFor="price" nzRequired>{{t('command.priceLabel')}}</nz-form-label>
             <nz-form-control [nzErrorTip]="priceError">
-              <ats-input-number [step]="instrument.minstep" formControlName="price" placeholder="0"></ats-input-number>
+              <ats-input-number [step]="instrument.minstep" [allowNegative]="true" formControlName="price" placeholder="0"></ats-input-number>
               <ng-template #priceError>
                 <span *ngIf="form.get('price')?.errors?.required">{{t('command.emptyPriceError')}}</span>
                 <span *ngIf="form.get('price')?.errors?.min">{{t('command.tooLittle')}}</span>
