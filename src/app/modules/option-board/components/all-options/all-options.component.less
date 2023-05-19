@@ -19,7 +19,14 @@
       }
     }
 
-    .current-price-line {
+    .strike-price-cell {
+      position: sticky;
+      left: 0;
+      background-color: @component-background;
+      z-index: 10;
+    }
+
+    .current-price-line-item {
       .marker {
         border: 1px @primary-color solid;
       }
@@ -44,27 +51,30 @@
   overflow-x: hidden;
 }
 
-.strike-price-cell {
-  position: sticky;
-  left: 0;
-  background-color: transparent;
-}
-
-.current-price-line {
+.current-price-line-item {
   position: absolute;
-  height: 2px;
+  width: 100%;
 
   .marker {
-    height: 12px;
+    @marker-height: 12px;
+
+    height: @marker-height;
+    margin-top: calc(-1 * @marker-height / 2);
     line-height: 12px;
     border-radius: 5px;
 
     position: sticky;
     left: 0;
+
+    z-index: 10;
   }
 
   .line {
-    height: 2px;
+    @line-height: 2px;
+    height: @line-height;
+    margin-top: calc(-1 * @line-height / 2);
+
+    z-index: 5;
   }
 }
 

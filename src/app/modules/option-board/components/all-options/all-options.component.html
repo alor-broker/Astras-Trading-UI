@@ -114,26 +114,28 @@
                 </ng-container>
                 <ng-container *ngIf="currentPriceYPosition$ | async as currentPriceYPosition">
                   <div [ngStyle]="{
-                     top: currentPriceYPosition + 'px',
-                     width: layoutSizes.priceColumnWidth + layoutSizes.optionCellWidth * optionsMatrix.dateIndex.length + 'px'
+                     top: currentPriceYPosition + 'px'
                      }"
-                       class="current-price-line d-flex flex-row align-items-center"
-                  >
-                    <div
-                      [ngStyle]="{ width: layoutSizes.priceColumnWidth + 'px'}"
-                      class="marker text-center heading-color"
-                      nz-tooltip
-                      [nzTooltipTitle]="t(
+                       [nzTooltipTitle]="t(
                       'optionBoard.currentPriceTooltip',
                       {
                       price: optionsMatrix.underlyingAsset?.lastPrice
                       }
                       )"
+                       class="current-price-line-item"
+                       nz-tooltip
+                  >
+                    <div [ngStyle]="{ width: layoutSizes.priceColumnWidth + 'px'}"
+                         class="marker text-center heading-color"
                     >
                     </div>
-                    <div
-                      class="line flex-fill"
-                    >
+                  </div>
+                  <div [ngStyle]="{
+                     top: currentPriceYPosition + 'px'
+                     }"
+                       class="current-price-line-item"
+                  >
+                    <div class="line w-100">
                     </div>
                   </div>
                 </ng-container>
