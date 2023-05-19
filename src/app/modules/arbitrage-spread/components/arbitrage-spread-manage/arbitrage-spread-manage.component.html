@@ -49,13 +49,17 @@
           formControlName="portfolio"
           [compareWith]="isPortfoliosEqual"
           [nzPlaceHolder]="t('arbitrageSpreadArbitrageSpreadManage.portfolioPlaceholder')"
+          [nzNotFoundContent]="emptyPortfolios"
         >
           <nz-option
-            *ngFor="let p of portfolios"
+            *ngFor="let p of getAvailablePortfolios(portfolios)"
             [nzLabel]="p.portfolio + ' (' + p.exchange + ')'"
             [nzValue]="p"
           ></nz-option>
         </nz-select>
+
+
+
       </nz-form-control>
     </nz-form-item>
   </div>
@@ -110,9 +114,10 @@
           formControlName="portfolio"
           [compareWith]="isPortfoliosEqual"
           [nzPlaceHolder]="t('arbitrageSpreadArbitrageSpreadManage.portfolioPlaceholder')"
+          [nzNotFoundContent]="emptyPortfolios"
         >
           <nz-option
-            *ngFor="let p of portfolios"
+            *ngFor="let p of getAvailablePortfolios(portfolios, false)"
             [nzLabel]="p.portfolio + ' (' + p.exchange + ')'"
             [nzValue]="p"
           ></nz-option>
@@ -120,4 +125,11 @@
       </nz-form-control>
     </nz-form-item>
   </div>
+
+  <ng-template #emptyPortfolios>
+    <nz-empty
+      [nzNotFoundContent]="t('arbitrageSpreadArbitrageSpreadManage.portfoliosEmpty')"
+      nzNotFoundImage="simple"
+    ></nz-empty>
+  </ng-template>
 </ng-container>

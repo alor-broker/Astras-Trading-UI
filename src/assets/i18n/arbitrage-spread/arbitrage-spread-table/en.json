@@ -2,7 +2,7 @@
   "buyBtnText": "Buy",
   "sellBtnText": "Sell",
   "addBtnText": "Add",
-  "emptyListText": "Extensions list is empty",
+  "emptyListText": "Spreads list is empty",
   "columns": {
     "symbols": "Instruments",
     "buySpread": "Buy",

@@ -6,6 +6,7 @@
   "calculationRatioLabel": "Коэффициент для расчетов",
   "portfolioLabel": "Портфель",
   "portfolioPlaceholder": "Выберите портфель",
+  "portfoliosEmpty": "Список портфелей пуст, либо не выбран инструмент",
   "instrumentRequiredError": "Выберите инструмент",
   "quantityRequiredError": "Введите количество",
   "ratioRequiredError": "Введите коэфициент",

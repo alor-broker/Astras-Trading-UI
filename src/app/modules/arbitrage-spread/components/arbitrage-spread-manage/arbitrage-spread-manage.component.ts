@@ -105,6 +105,13 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
     }
 
     this.formChangeSub = this.form.valueChanges.subscribe(value => {
+      if (!value.firstLeg?.instrument) {
+        this.firstLegFormGroup.get('portfolio')?.reset(null, { emitEvent: false });
+      }
+
+      if (!value.secondLeg?.instrument) {
+        this.secondLegFormGroup.get('portfolio')?.reset(null, { emitEvent: false });
+      }
       this.formChange.emit({
         value,
         isValid: this.form.valid
@@ -114,5 +121,14 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.formChangeSub?.unsubscribe();
+  }
+
+  getAvailablePortfolios(allPortfolios: PortfolioKey[], isFirstLeg = true) {
+    const selectedInstrument = this[isFirstLeg ? 'firstLegFormGroup' : 'secondLegFormGroup']?.get('instrument')?.value;
+    if (!selectedInstrument) {
+      return [];
+    }
+
+    return allPortfolios.filter(p => p.exchange === selectedInstrument.exchange);
   }
 }
