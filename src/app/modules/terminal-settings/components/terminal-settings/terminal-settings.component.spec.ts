@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TerminalSettingsService } from '../../services/terminal-settings.service';
 
 import { TerminalSettingsComponent } from './terminal-settings.component';
 import {
@@ -7,16 +6,13 @@ import {
   commonTestProviders,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
-import { of } from 'rxjs';
-import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
-import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
+import {Subject} from 'rxjs';
+import {AccountService} from "../../../../shared/services/account.service";
+import {TerminalSettingsService} from "../../services/terminal-settings.service";
 
 describe('TerminalSettingsComponent', () => {
   let component: TerminalSettingsComponent;
   let fixture: ComponentFixture<TerminalSettingsComponent>;
-
-  const tsSpy = jasmine.createSpyObj('TerminalSettingsService', ['getFullName', 'getSettings']);
-  tsSpy.getSettings.and.returnValue(of({ timezoneDisplayOption: TimezoneDisplayOption.MskTime } as TerminalSettings));
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
@@ -31,7 +27,18 @@ describe('TerminalSettingsComponent', () => {
         mockComponent({selector: 'ats-instant-notifications-form'}),
       ],
       providers: [
-        { provide: TerminalSettingsService, useValue: tsSpy },
+        {
+          provide: AccountService,
+          useValue: {
+            getFullName: jasmine.createSpy('getFullName').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+          }
+        },
         ...commonTestProviders
       ]
     }).compileComponents();

@@ -15,6 +15,10 @@ export const updateTerminalSettings = createAction(
   props<{ updates: Partial<TerminalSettings> }>()
 );
 
+export const updateTerminalSettingsSuccess = createAction(
+  '[TerminalSettings] Update Settings (SUCCESS)'
+);
+
 
 
 
