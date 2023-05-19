@@ -181,7 +181,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
         price,
         [
           Validators.required,
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max),
           AtsValidators.priceStepMultiplicity(initialParameters.instrument.minstep || 0)
         ]
@@ -190,7 +190,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
         initialParameters.commandParameters.triggerPrice!,
         [
           Validators.required,
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max),
           AtsValidators.priceStepMultiplicity(initialParameters.instrument.minstep || 0)
         ]

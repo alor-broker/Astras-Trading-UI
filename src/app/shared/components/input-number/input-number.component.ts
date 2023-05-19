@@ -25,11 +25,16 @@ import {MathHelper} from "../../utils/math-helper";
   ],
 })
 export class InputNumberComponent extends ControlValueAccessorBaseComponent<number> {
+  private readonly minus = '-';
   @Input()
   step: number = 1;
   @Input()
   placeholder: string = '';
-  @Input() readonly: boolean = false;
+  @Input()
+  readonly: boolean = false;
+  @Input()
+  allowNegative = false;
+
   @Output()
   atsBlur = new EventEmitter();
   @ViewChild('inputElement', {static: true})
@@ -66,17 +71,26 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   }
 
   onModelChange(value: string): void {
-    let parsedValue = this.removeExtraDots(
-      value
-        .trim()
-        .replace(/,/g, '.')
-        .replace(/[^\d.]/g, '')
-    );
+    let parsedValue = value
+      .trim()
+      .replace(/,/g, '.')
+      .replace(/[^\d.-]/g, '');
+
+    parsedValue = this.removeExtraSymbol('.', parsedValue);
+
+    if(this.allowNegative) {
+      parsedValue = this.removeExtraSign(parsedValue);
+    } else {
+      parsedValue = parsedValue.replace(/-/g, '');
+    }
 
     let newValue: number | null = parsedValue.length > 0
       ? Number(parsedValue)
       : null;
-    if (newValue != null && Number.isNaN(newValue)) {
+
+    if(parsedValue === this.minus && this.allowNegative) {
+      newValue = null;
+    } else if (newValue != null && Number.isNaN(newValue)) {
       newValue = this.value ?? null;
       parsedValue = '';
     }
@@ -86,14 +100,14 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   }
 
   processKeydown($event: KeyboardEvent) {
-    if (['ArrowDown', 'NumpadSubtract'].includes($event.code)) {
+    if (['ArrowDown'].includes($event.code)) {
       $event.stopPropagation();
       $event.preventDefault();
       this.stepChange(-1 * ($event.shiftKey ? 10 : 1));
       return;
     }
 
-    if (['ArrowUp', 'NumpadAdd'].includes($event.code)) {
+    if (['ArrowUp'].includes($event.code)) {
       $event.stopPropagation();
       $event.preventDefault();
       this.stepChange($event.shiftKey ? 10 : 1);
@@ -129,15 +143,15 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     const roundingDecimals = Math.max(MathHelper.getPrecision(step), MathHelper.getPrecision(currentValue));
 
     let newValue = MathHelper.round(currentValue + step, roundingDecimals);
-    newValue = newValue > 0 ? newValue : 0;
+    newValue = (newValue > 0 || this.allowNegative) ? newValue : 0;
 
     this.setDisplayValue(newValue);
     this.setValue(newValue);
   }
 
-  private removeExtraDots(input: string): string {
-    const dots = [...input].reduce((previousValue: number[], currentValue, currentIndex) => {
-        if (currentValue === '.') {
+  private removeExtraSymbol(symbol: string, input: string): string {
+    const symbolIndexes = [...input].reduce((previousValue: number[], currentValue, currentIndex) => {
+        if (currentValue === symbol) {
           return [...previousValue, currentIndex];
         }
 
@@ -146,14 +160,14 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
       []
     );
 
-    if (dots.length <= 1) {
+    if (symbolIndexes.length <= 1) {
       return input;
     }
 
     let normalizedValue = '';
-    if (dots.length > 1) {
+    if (symbolIndexes.length > 1) {
       for (let i = 0; i < input.length; i++) {
-        if (dots.indexOf(i) > 0) {
+        if (symbolIndexes.indexOf(i) > 0) {
           continue;
         }
 
@@ -162,5 +176,14 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     }
 
     return normalizedValue;
+  }
+
+  private removeExtraSign(input: string): string {
+    let startSymbol = '';
+    if(input.startsWith(this.minus)) {
+      startSymbol = this.minus;
+    }
+
+    return startSymbol + input.replace(/-/g, '');
   }
 }
