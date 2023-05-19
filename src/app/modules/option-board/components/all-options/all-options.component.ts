@@ -177,7 +177,8 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const priceColumnWidth = Math.max(this.defaultLayoutSizes.priceColumnWidth, Math.floor(matrix.meta!.maxPriceIndexLength * symbolMultiplier));
 
-      const fullWidthOptionCellWidth = Math.floor((fullWidth - priceColumnWidth - 5) / matrix.dateIndex.length);
+      const scrollCorrection = 7;
+      const fullWidthOptionCellWidth = Math.floor((fullWidth - priceColumnWidth - scrollCorrection) / matrix.dateIndex.length);
       const symbolsOptionCellWidth = Math.floor(matrix.meta!.maxDisplayParameterLength * symbolMultiplier);
 
       this.layoutSizes$.next({
