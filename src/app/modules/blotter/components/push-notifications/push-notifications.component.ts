@@ -124,7 +124,7 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
   ngAfterViewInit(): void {
     const initHeightWatching = (ref: ElementRef<HTMLElement>) => {
       TableAutoHeightBehavior.getScrollHeight(ref).pipe(
-        takeUntil(this.destroyable.destroyed$)
+        takeUntil(this.destroyable)
       ).subscribe(x => this.scrollHeight$.next(x));
     };
 
@@ -244,7 +244,7 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
         () => this.translatorService.getTranslator('blotter/notifications'),
         (s, t) => ({s, t})
       ),
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(({s, t}) => {
       const tableSettings = s.notificationsTable ?? TableSettingHelper.toTableDisplaySettings(allNotificationsColumns.filter(c => c.isDefault).map(c => c.id));
 

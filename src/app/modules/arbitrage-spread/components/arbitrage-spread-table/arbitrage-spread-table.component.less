@@ -1,0 +1,39 @@
+@import "theme-mixin";
+@import "buy-sell-button-mixin";
+
+.themeMixin({
+  :host ::ng-deep {
+    .buy-btn {
+      .buySellButton(@buy-color, white, @buy-color-disabled, @buy-color-background-disabled);
+    }
+
+    .sell-btn {
+      .buySellButton(@sell-color, white, @sell-color-disabled, @sell-color-background-disabled);
+    }
+
+    .buy-badge {
+      .ant-badge-count {
+        background-color: @buy-color;
+      }
+    }
+
+    .sell-badge {
+      .ant-badge-count {
+        background-color: @sell-color;
+      }
+    }
+  }
+});
+
+.compact {
+  margin: 0;
+}
+
+
+:host ::ng-deep {
+  .ant-badge-count {
+    right: -5px;
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+}

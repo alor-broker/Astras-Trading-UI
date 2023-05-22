@@ -40,6 +40,8 @@ import { NetworkIndicatorComponent } from "./components/network-indicator/networ
 import { TreemapModule } from "../treemap/treemap.module";
 import { RibbonModule } from '../ribbon/ribbon.module';
 import { EventsCalendarModule } from "../events-calendar/events-calendar.module";
+import { OptionBoardModule } from "../option-board/option-board.module";
+import { ArbitrageSpreadModule } from "../arbitrage-spread/arbitrage-spread.module";
 
 @NgModule({
   declarations: [
@@ -83,7 +85,9 @@ import { EventsCalendarModule } from "../events-calendar/events-calendar.module"
         TreemapModule,
         RibbonModule,
         EventsCalendarModule,
-        // components
+        OptionBoardModule,
+        ArbitrageSpreadModule,
+      // components
     ],
   providers: [
     OnboardingService

@@ -118,7 +118,7 @@ export const ngZorroMockComponents = [
   mockComponent({ selector: 'nz-content' }),
   mockComponent({
     selector: 'nz-spin',
-    inputs: ['nzSpinning', 'nzIndicator']
+    inputs: ['nzSpinning', 'nzIndicator', 'nzTip']
   }),
   mockComponent({
     selector: 'nz-form-control',
@@ -139,7 +139,7 @@ export const ngZorroMockComponents = [
   }),
   mockComponent({
     selector: 'nz-modal',
-    inputs: ['nzCancelText', 'nzVisible', 'nzTitle']
+    inputs: ['nzCancelText', 'nzVisible', 'nzTitle', 'nzMaskClosable']
   }),
   mockComponent({
     selector: 'nz-badge',
@@ -152,8 +152,8 @@ export const ngZorroMockComponents = [
     onMonthSelect() {}
   }),
   mockComponent({ selector: 'nz-tag', inputs: ['nzColor', 'nz-tooltip', 'nzTooltipMouseEnterDelay']}),
-  mockComponent({ selector: 'nz-select'}),
-  mockComponent({ selector: 'nz-option'}),
+  mockComponent({ selector: 'nz-select', inputs: ['ngModel'] }),
+  mockComponent({ selector: 'nz-option', inputs: ['nzValue', 'nzLabel'] }),
   mockComponent({ selector: 'nz-divider'}),
   mockDirective({ selector: '[nzGutter]', inputs: ['nzGutter']}),
   mockDirective({selector: '[text]', inputs: ['text']}),

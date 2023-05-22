@@ -34,6 +34,10 @@ export class WidgetsHelper {
         return 'stock';
       case WidgetNames.eventsCalendar:
         return 'calendar';
+      case WidgetNames.optionBoard:
+        return 'table';
+      case WidgetNames.arbitrageSpread:
+        return 'fork';
       default:
         return '';
     }
@@ -73,6 +77,10 @@ export class WidgetsHelper {
         return 'RibbonSettings';
       case WidgetNames.eventsCalendar:
         return 'EventsCalendarSettings';
+      case WidgetNames.optionBoard:
+        return 'OptionBoardSettings';
+      case WidgetNames.arbitrageSpread:
+        return 'ArbitrageSpreadSettings';
       default:
         return '';
     }

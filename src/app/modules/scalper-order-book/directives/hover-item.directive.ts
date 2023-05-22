@@ -41,13 +41,13 @@ export class HoverItemDirective<T = any> implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     fromEvent(this.el.nativeElement, 'mouseenter').pipe(
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(() => {
       this.group.setHoveredItem(this);
     });
 
     fromEvent(this.el.nativeElement, 'mouseleave').pipe(
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(() => {
       this.group.removeItemHover(this);
     });

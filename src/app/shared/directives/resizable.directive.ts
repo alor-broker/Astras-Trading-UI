@@ -57,7 +57,7 @@ export class ResizableDirective implements OnInit, OnDestroy {
     this.renderer.appendChild(this.targetElement, resizer);
 
     fromEvent<MouseEvent>(resizer, 'click').pipe(
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe((e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -88,7 +88,7 @@ export class ResizableDirective implements OnInit, OnDestroy {
             })
           );
         }),
-        takeUntil(this.destroyable.destroyed$)
+        takeUntil(this.destroyable)
       ).subscribe(w => {
           this.ngZone.run(() => {
             this.targetElement.style.width = `${w}px`;

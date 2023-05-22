@@ -117,7 +117,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
 
   ngAfterViewInit(): void {
     this.scrollContainer.renderedRangeStream.pipe(
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(x => this.renderItemsRange$.next({
         start: x.start,
         end: x.end > 0 ? x.end - 1 : x.end
@@ -157,7 +157,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
 
   private subscribeToHotkeys() {
     this.hotkeysService.commands$.pipe(
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(command => {
       if (command.type === ScalperOrderBookCommands.centerOrderBook) {
         this.alignTable();
@@ -174,7 +174,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         })
       ),
       switchMap(s => s.enabled ? interval(s.interval * 1000) : NEVER),
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(() => {
       this.alignTable();
     });
@@ -308,7 +308,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       withLatestFrom(this.priceRowsStore.state$.pipe(map(x => x.rows))),
       filter(([, priceRows]) => priceRows.length > 0),
       map(([index, priceRows]) => ({ index, priceRows })),
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(x => {
       const bufferItemsCount = 10;
       const topScrollOffset = this.scrollContainer.measureScrollOffset('top');
