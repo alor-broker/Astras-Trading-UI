@@ -3,7 +3,7 @@
   [nzTitle]="header"
   nzClosable="true"
   [nzVisible]='isVisible$ | async'
-  [nzMaskClosable]='true'
+  [nzMaskClosable]='false'
   (nzOnCancel)="handleCancel()"
 >
   <ng-template #header>
@@ -28,5 +28,6 @@
       <ng-container *ngIf="spreadInfo$ | async; else newExt">{{t('saveBtnText')}}</ng-container>
       <ng-template #newExt>{{t('addBtnText')}}</ng-template>
     </button>
+    <button nz-button nzType="default" (click)="handleCancel()">{{t('cancelBtnText')}}</button>
   </ng-container>
 </nz-modal>

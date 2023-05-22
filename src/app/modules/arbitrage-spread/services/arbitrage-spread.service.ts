@@ -135,10 +135,10 @@ export class ArbitrageSpreadService {
     this.localStorage.setItem(this.spreadsKey, spreads);
   }
 
-  buySpread(spread: ArbitrageSpread, volume = 1, isReverseBuy = false): Observable<SubmitOrderResult | null> {
+  buySpread(spread: ArbitrageSpread, volume = 1, side: Side = Side.Buy): Observable<SubmitOrderResult | null> {
     return this.orderService.submitMarketOrder({
             instrument: spread.firstLeg.instrument,
-            side: isReverseBuy ? Side.Sell : Side.Buy,
+            side: side,
             quantity: spread.firstLeg.quantity * volume
           }, spread.firstLeg.portfolio.portfolio)
       .pipe(
@@ -148,7 +148,7 @@ export class ArbitrageSpreadService {
           }
           return this.orderService.submitMarketOrder({
             instrument: spread.secondLeg.instrument,
-            side: isReverseBuy ? Side.Buy : Side.Sell,
+            side: side === Side.Sell ? Side.Buy : Side.Sell,
             quantity: spread.secondLeg.quantity * volume
           }, spread.secondLeg.portfolio.portfolio);
         })

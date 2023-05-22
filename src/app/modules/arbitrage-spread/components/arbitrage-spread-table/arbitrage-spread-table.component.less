@@ -1,15 +1,14 @@
 @import "theme-mixin";
+@import "buy-sell-button-mixin";
 
 .themeMixin({
   :host ::ng-deep {
     .buy-btn {
-      background-color: @buy-color;
-      color: white;
+      .buySellButton(@buy-color, white, @buy-color-disabled, @buy-color-background-disabled);
     }
 
     .sell-btn {
-      background-color: @sell-color;
-      color: white;
+      .buySellButton(@sell-color, white, @sell-color-disabled, @sell-color-background-disabled);
     }
 
     .buy-badge {

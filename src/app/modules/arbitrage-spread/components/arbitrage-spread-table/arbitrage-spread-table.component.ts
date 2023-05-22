@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { ArbitrageSpreadService } from "../../services/arbitrage-spread.service";
 import { ArbitrageSpread } from "../../models/arbitrage-spread.model";
+import { Side } from "../../../../shared/models/enums/side.model";
 
 @Component({
   selector: 'ats-arbitrage-spread[guid]',
@@ -57,7 +58,7 @@ export class ArbitrageSpreadTableComponent implements OnInit {
   sellSpread(spread: ArbitrageSpread) {
     let volume = this.volumes[spread.id!];
 
-    this.service.buySpread(spread, volume, true)
+    this.service.buySpread(spread, volume, Side.Sell)
       .subscribe();
   }
 

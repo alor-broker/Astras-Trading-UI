@@ -4,13 +4,13 @@
 
     <nz-form-item class="compact">
       <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.instrumentRequiredError')">
-        <nz-form-label>{{t('arbitrageSpreadArbitrageSpreadManage.instrumentLabel')}}</nz-form-label>
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.instrumentLabel')}}</nz-form-label>
         <ats-instrument-search formControlName="instrument"></ats-instrument-search>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control [nzErrorTip]="quantityError">
-        <nz-form-label>{{t('arbitrageSpreadArbitrageSpreadManage.quantityLabel')}}</nz-form-label>
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.quantityLabel')}}</nz-form-label>
         <ats-input-number placeholder="0" formControlName="quantity"></ats-input-number>
       </nz-form-control>
       <ng-template #quantityError>
@@ -27,7 +27,7 @@
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control [nzErrorTip]="ratioError">
-        <nz-form-label>{{t('arbitrageSpreadArbitrageSpreadManage.calculationRatioLabel')}}</nz-form-label>
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.calculationRatioLabel')}}</nz-form-label>
         <ats-input-number placeholder="0" formControlName="ratio"></ats-input-number>
       </nz-form-control>
       <ng-template #ratioError>
@@ -44,7 +44,7 @@
     </nz-form-item>
     <nz-form-item *ngIf="portfolios$ | async as portfolios" class="compact">
       <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.portfolioPlaceholder')">
-        <nz-form-label>{{t('arbitrageSpreadArbitrageSpreadManage.portfolioLabel')}}</nz-form-label>
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.portfolioLabel')}}</nz-form-label>
         <nz-select
           formControlName="portfolio"
           [compareWith]="isPortfoliosEqual"
@@ -57,9 +57,6 @@
             [nzValue]="p"
           ></nz-option>
         </nz-select>
-
-
-
       </nz-form-control>
     </nz-form-item>
   </div>
@@ -69,13 +66,13 @@
 
     <nz-form-item class="compact">
       <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.instrumentRequiredError')">
-        <nz-form-label>{{t('arbitrageSpreadArbitrageSpreadManage.instrumentLabel')}}</nz-form-label>
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.instrumentLabel')}}</nz-form-label>
         <ats-instrument-search formControlName="instrument"></ats-instrument-search>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control [nzErrorTip]="quantityError">
-        <nz-form-label>{{t('arbitrageSpreadArbitrageSpreadManage.quantityLabel')}}</nz-form-label>
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.quantityLabel')}}</nz-form-label>
         <ats-input-number placeholder="0" formControlName="quantity"></ats-input-number>
       </nz-form-control>
             <ng-template #quantityError>
@@ -92,7 +89,7 @@
     </nz-form-item>
     <nz-form-item class="compact">
       <nz-form-control [nzErrorTip]="ratioError">
-        <nz-form-label>{{t('arbitrageSpreadArbitrageSpreadManage.calculationRatioLabel')}}</nz-form-label>
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.calculationRatioLabel')}}</nz-form-label>
         <ats-input-number placeholder="0" formControlName="ratio"></ats-input-number>
       </nz-form-control>
       <ng-template #ratioError>
@@ -109,7 +106,7 @@
     </nz-form-item>
     <nz-form-item *ngIf="portfolios$ | async as portfolios" class="compact">
       <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.portfolioPlaceholder')">
-        <nz-form-label>{{t('arbitrageSpreadArbitrageSpreadManage.portfolioLabel')}}</nz-form-label>
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.portfolioLabel')}}</nz-form-label>
         <nz-select
           formControlName="portfolio"
           [compareWith]="isPortfoliosEqual"
