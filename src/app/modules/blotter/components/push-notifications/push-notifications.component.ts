@@ -307,16 +307,13 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
       )
     );
 
-    const currentSubscriptions$ = this.pushNotificationsService.subscriptionsUpdated$
-      .pipe(
-        startWith({}),
-        mapWith(
-          () => this.pushNotificationsService.getMessages().pipe(startWith({})),
-          () => null
-        ),
-        tap(() => this.isLoading$.next(true)),
-        switchMap(() => this.pushNotificationsService.getCurrentSubscriptions())
-      );
+    const currentSubscriptions$ = combineLatest([
+      this.pushNotificationsService.subscriptionsUpdated$.pipe(startWith({})),
+      this.pushNotificationsService.getMessages().pipe(startWith({})),
+    ]).pipe(
+      tap(() => this.isLoading$.next(true)),
+      switchMap(() => this.pushNotificationsService.getCurrentSubscriptions())
+    );
 
     const displayNotifications$ = combineLatest([
       this.settings$,

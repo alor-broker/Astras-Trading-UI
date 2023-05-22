@@ -79,7 +79,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
 
     this.pushNotificationsService.getMessages()
       .pipe(
-        takeUntil(this.destroyable.destroyed$)
+        takeUntil(this.destroyable)
       )
       .subscribe(() => this.refresh$.next(null));
   }
