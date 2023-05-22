@@ -10,9 +10,6 @@ import { InstrumentKey } from '../../../shared/models/instruments/instrument-key
 export interface PriceRowsState {
   instrumentKey: InstrumentKey | null;
   rowStep: number | null;
-
-  minPrice: number | null;
-
   directionRowsCount: number;
   rows: PriceRow[];
 }
@@ -20,7 +17,6 @@ export interface PriceRowsState {
 const initialState: PriceRowsState = {
   instrumentKey: null,
   rowStep: null,
-  minPrice: null,
   directionRowsCount: 100,
   rows: []
 };
@@ -43,7 +39,7 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
       filter(s => !!s.rowStep)
     ).subscribe(state => {
       const step = state.rowStep!;
-      const topRows = this.generatePriceSequence(state.rows[0].price + step, step, itemsToAdd, 0)
+      const topRows = this.generatePriceSequence(state.rows[0].price + step, step, itemsToAdd)
         .reverse()
         .map(price => ({ price: price } as PriceRow));
 
@@ -67,15 +63,9 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     ).subscribe(state => {
       const step = state.rowStep!;
       const lastElement = state.rows[state.rows.length - 1];
-      const minPrice = state.minPrice ?? 0;
-      if (lastElement.price <= minPrice) {
-        callback?.(0);
-        return;
-      }
 
       const itemsToAdd = Math.max(state.directionRowsCount, minItemsToAdd);
-      const bottomRows = this.generatePriceSequence(lastElement.price - step, -step, itemsToAdd, minPrice)
-        .filter(price => price > 0)
+      const bottomRows = this.generatePriceSequence(lastElement.price - step, -step, itemsToAdd)
         .map(price => ({ price: price } as PriceRow));
 
       this.patchState({
@@ -100,12 +90,11 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
 
     const rowsCount = Math.ceil(Math.max(priceRowsCount + 5, oneDirectionRowsCount));
 
-    const minPrice = Math.min(0, priceRange.min, step);
-    let topRows = this.generatePriceSequence(startPrice + step, step, rowsCount, 0).reverse();
-    const bottomRows = this.generatePriceSequence(startPrice - step, -step, rowsCount, minPrice);
+    let topRows = this.generatePriceSequence(startPrice + step, step, rowsCount).reverse();
+    const bottomRows = this.generatePriceSequence(startPrice - step, -step, rowsCount);
 
     if((topRows.length + bottomRows.length) < renderRowsCount) {
-      topRows = this.generatePriceSequence(startPrice + step, step, rowsCount * 2, 0).reverse();
+      topRows = this.generatePriceSequence(startPrice + step, step, rowsCount * 2,).reverse();
     }
 
     const rows = [
@@ -119,7 +108,6 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     this.setState({
       instrumentKey,
       rowStep: step,
-      minPrice,
       directionRowsCount: rowsCount,
       rows: rows
     });
@@ -129,11 +117,10 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     }
   }
 
-  private generatePriceSequence(start: number, step: number, count: number, min: number): number[] {
+  private generatePriceSequence(start: number, step: number, count: number): number[] {
     const pricePrecision = MathHelper.getPrecision(step);
     return [...Array(count).keys()]
       .map(i => start + (i * step))
-      .map(x => MathHelper.round(x, pricePrecision))
-      .filter(x => x >= min);
+      .map(x => MathHelper.round(x, pricePrecision));
   }
 }

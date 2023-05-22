@@ -102,7 +102,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
         1,
         [
           Validators.required,
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max),
           AtsValidators.priceStepMultiplicity(instrument.minstep)
         ]
@@ -111,7 +111,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
         1,
         [
           Validators.required,
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max),
           AtsValidators.priceStepMultiplicity(instrument.minstep)
         ]

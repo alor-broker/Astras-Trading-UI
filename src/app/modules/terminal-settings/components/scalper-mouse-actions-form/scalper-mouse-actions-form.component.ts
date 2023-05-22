@@ -56,7 +56,7 @@ export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseCo
     });
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(() => {
       this.checkIfTouched();
 

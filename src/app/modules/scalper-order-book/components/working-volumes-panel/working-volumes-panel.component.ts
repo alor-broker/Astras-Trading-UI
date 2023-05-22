@@ -57,7 +57,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
 
     this.selectedVolume$.pipe(
       filter(x => !!x),
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(x => {
       this.selectedVolumeChanged.emit(x!.value);
     });
@@ -81,7 +81,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     this.hotKeyCommandService.commands$.pipe(
       filter(x => x.type === 'workingVolumes' && x.index != null && this.isActive),
       withLatestFrom(this.workingVolumes$),
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(([command, workingVolumes]) => {
       const volume = workingVolumes[command.index];
       if (!!volume) {

@@ -102,7 +102,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getTradesStream(),
       this.themeService.getThemeSettings()
     ]).pipe(
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(([size, priceItems, trades, themeSettings]) => {
       const canvas = this.canvas?.nativeElement!;
       const context = canvas.getContext('2d')!;

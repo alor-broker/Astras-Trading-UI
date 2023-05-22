@@ -1,0 +1,84 @@
+<ng-container *transloco="let t; scope: 'option-board/selected-options'">
+  <div #tableContainer (nzResizeObserve)="updateContainerSize($event)" class="h-100 w-100" nzResizeObserver>
+    <ng-template #empty>
+      <nz-empty
+        [nzNotFoundContent]="t('optionBoardSelectedOptions.noSelectionMessage')"
+        class="ant-list-empty-text"
+        nzNotFoundImage="simple">
+      </nz-empty>
+    </ng-template>
+    <ng-container *ngIf="tableScroll$ | async as tableScroll">
+      <ng-container *ngIf="displayColumns$ | async as displayColumns">
+        <nz-table #table *ngIf="detailsDisplay$ | async as details"
+                  [nzData]="details"
+                  [nzFrontPagination]="false"
+                  [nzLoading]="isLoading$ | async"
+                  [nzNoResult]="empty"
+                  [nzScroll]="{ y: tableScroll.height + 'px' }"
+                  [nzShowPagination]="false"
+                  nzSize="small"
+        >
+          <thead>
+          <tr>
+            <th nzWidth="30px" nzLeft>
+                  <span class="text-nowrap">
+                    <a (nzOnConfirm)="clearSelection()"
+                       [nzCancelText]="t('no')"
+                       [nzOkText]="t('yes')"
+                       [nzPopconfirmTitle]="t('optionBoardSelectedOptions.clearConfirm')"
+                       nz-popconfirm>{{t('optionBoardSelectedOptions.columns.unselect.name')}}</a>
+                  </span>
+            </th>
+            <th
+              *ngFor='let column of displayColumns'
+              [nzWidth]="column.width ? column.width + 'px': null"
+              [nzLeft]="column.leftFixed ?? false"
+            >
+              <span
+                [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+                [nzTooltipTitle]="column.tooltip ?? null"
+                class="text-nowrap"
+                nz-tooltip
+              >
+                {{column.displayName}}
+              </span>
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <ng-container *ngFor="let option of table.data">
+            <tr (click)="selectOption($event, option)" class="cursor-pointer">
+              <td nzLeft>
+                <a (click)="unselectOption($event, option)"
+                   [nzTooltipMouseEnterDelay]="0.5"
+                   [nzTooltipTitle]="t('optionBoardSelectedOptions.columns.unselect.tooltip')"
+                   nz-tooltip
+                >
+                  <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+                </a>
+              </td>
+              <ng-container *ngFor='let column of displayColumns'>
+                <td *ngIf='column.id === "symbol"' [nzLeft]="column.leftFixed ?? false">{{ option.symbol }}</td>
+                <td *ngIf='column.id === "underlyingAssetSymbol"'>{{ option.underlyingAssetSymbol }}</td>
+                <td *ngIf='column.id === "optionSide"'>{{ option.optionSide }}</td>
+                <td *ngIf='column.id === "optionType"'>{{ option.optionType }}</td>
+                <td *ngIf='column.id === "strikePrice"'>{{ option.strikePrice | number : '0.0-10' }}</td>
+                <td *ngIf='column.id === "expirationDate"'
+                    class="text-nowrap">{{formatExpirationDate(option.expirationDate)}}</td>
+                <td *ngIf='column.id === "ask"'>{{ option.ask | number : '0.0-10' }}</td>
+                <td *ngIf='column.id === "bid"'>{{ option.bid | number : '0.0-10' }}</td>
+                <td *ngIf='column.id === "price"'>{{ option.price | number : '0.0-10' }}</td>
+                <td *ngIf='column.id === "delta"'>{{ option.delta | number : '0.0-2' }}</td>
+                <td *ngIf='column.id === "gamma"'>{{ option.gamma | number : '0.0-2' }}</td>
+                <td *ngIf='column.id === "vega"'>{{ option.vega | number : '0.0-2' }}</td>
+                <td *ngIf='column.id === "theta"'>{{ option.theta | number : '0.0-2' }}</td>
+                <td *ngIf='column.id === "rho"'>{{ option.rho | number : '0.0-2' }}</td>
+              </ng-container>
+            </tr>
+          </ng-container>
+          </tbody>
+        </nz-table>
+      </ng-container>
+    </ng-container>
+  </div>
+</ng-container>

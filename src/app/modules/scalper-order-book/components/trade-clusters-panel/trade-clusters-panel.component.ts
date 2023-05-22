@@ -182,7 +182,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   ngAfterViewInit(): void {
     const initScrollWatching = () => {
       this.getScrollContainer().elementScrolled().pipe(
-        takeUntil(this.destroyable.destroyed$)
+        takeUntil(this.destroyable)
       ).subscribe(() => this.updateScrollOffsets());
     };
 

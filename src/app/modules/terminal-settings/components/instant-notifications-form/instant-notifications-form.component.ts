@@ -1,10 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
   InstantNotificationsSettings,
   OrdersInstantNotificationType
 } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
+import { Observable, filter, map } from "rxjs";
+import { selectPortfoliosState } from "../../../../store/portfolios/portfolios.selectors";
+import { EntityStatus } from "../../../../shared/models/enums/entity-status";
+import { Store } from "@ngrx/store";
+import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
+import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
 
 @Component({
   selector: 'ats-instant-notifications-form',
@@ -18,13 +24,32 @@ import { ControlValueAccessorBaseComponent } from '../../../../shared/components
     }
   ]
 })
-export class InstantNotificationsFormComponent extends ControlValueAccessorBaseComponent<InstantNotificationsSettings> {
+export class InstantNotificationsFormComponent
+extends ControlValueAccessorBaseComponent<InstantNotificationsSettings>
+implements OnInit {
   editableNotificationTypes: { value: OrdersInstantNotificationType, enabled: boolean }[] = [];
   currentValue: InstantNotificationsSettings | null = null;
+
+  excludedPortfolios: PortfolioKey[] = [];
+  portfolios$?: Observable<PortfolioKey[]>;
+
   private isTouched = false;
 
-  constructor() {
+  constructor(
+    private readonly store: Store
+  ) {
     super();
+  }
+
+  ngOnInit() {
+    this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
+      filter(p => p.status === EntityStatus.Success),
+      map(ps => {
+        return Object.values(ps.entities)
+          .filter(p => !!p)
+          .map(p => ({ portfolio: p!.portfolio, exchange: p!.exchange }));
+      }),
+    );
   }
 
   writeValue(value: InstantNotificationsSettings): void {
@@ -35,6 +60,8 @@ export class InstantNotificationsFormComponent extends ControlValueAccessorBaseC
         value: x,
         enabled: !this.currentValue?.hiddenNotifications?.includes(x)
       }));
+
+    this.excludedPortfolios = value.hiddenPortfoliosForNotifications ?? [];
   }
 
   toggleNotificationType(notificationType: OrdersInstantNotificationType) {
@@ -43,14 +70,28 @@ export class InstantNotificationsFormComponent extends ControlValueAccessorBaseC
       notification.enabled = !notification.enabled;
     }
 
+    this.currentValue = {
+      ...this.currentValue,
+      hiddenNotifications: this.editableNotificationTypes.filter(x => !x.enabled).map(x => x.value)
+    };
+
     this.checkIfTouched();
-    this.emitValue(
-      {
-        ...this.currentValue,
-        hiddenNotifications: this.editableNotificationTypes.filter(x => !x.enabled).map(x => x.value)
-      }
-    );
+    this.emitValue(this.currentValue);
   }
+
+  excludedPortfoliosChange(portfolios: PortfolioKey[]) {
+    this.currentValue = {
+      ...this.currentValue,
+      hiddenPortfoliosForNotifications: portfolios
+    };
+
+    this.checkIfTouched();
+    this.emitValue(this.currentValue);
+  }
+
+  compareFn = (op1?: PortfolioKey, op2?: PortfolioKey) => {
+    return !!op1 && !!op2 && isPortfoliosEqual(op1, op2);
+  };
 
   protected needMarkTouched(): boolean {
     if (!this.isTouched) {

@@ -94,7 +94,7 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
     );
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(() => {
       {
         this.checkIfTouched();

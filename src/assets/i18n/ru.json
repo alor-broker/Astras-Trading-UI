@@ -1,6 +1,7 @@
 {
   "settingsHeader": "Настройки",
   "helpHeader": "Справка",
+  "advancedHeader": "Продвинутые",
 
   "saveBtnText": "Сохранить",
   "okBtnText": "ОК",
@@ -32,6 +33,7 @@
     "TreemapSettings": "Карта рынка",
     "RibbonSettings": "Лента",
     "EventsCalendarSettings": "Календарь событий",
+    "OptionBoardSettings": "Опционная доска",
     "ArbitrageSpreadSettings": "Арбитражная раздвижка"
   },
 
@@ -63,6 +65,20 @@
     "step7": {
       "title": "Настройки",
       "text": "Тут можно менять настройки конкретного виджета"
+    }
+  },
+
+  "form": {
+    "ticker": {
+      "label": "Тикер",
+      "commonError": "Выберите тикер"
+    },
+    "exchange": {
+      "label": "Биржа"
+    },
+    "instrumentGroup": {
+      "label": "Режим торгов",
+      "commonError": "Выберите режим торгов"
     }
   },
 

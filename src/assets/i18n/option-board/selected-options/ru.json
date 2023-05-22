@@ -1,0 +1,69 @@
+﻿{
+  "loadingLabel": "Загрузка...",
+  "noSelectionMessage": "Нет выбранных опционов",
+
+  "clearConfirm": "Точно удалить все выбранные опционы?",
+
+  "columns": {
+    "unselect": {
+      "name": "Удл.",
+      "tooltip": "Убрать из выделения"
+    },
+    "symbol": {
+      "name": "Тикер",
+      "tooltip": "Биржевой идентификатор ценной бумаги"
+    },
+    "underlyingAssetSymbol": {
+      "name": "Базовый актив",
+      "tooltip": "Тикер базового актива"
+    },
+    "optionSide": {
+      "name": "Сторона",
+      "tooltip": "Сторона оциона"
+    },
+    "optionType": {
+      "name": "Тип",
+      "tooltip": "Тип опциона"
+    },
+    "strikePrice": {
+      "name": "Cтрайк",
+      "tooltip": "Cтрайк цена"
+    },
+    "expirationDate": {
+      "name": "Срок действия",
+      "tooltip": "Срок действия опциона"
+    },
+    "ask": {
+      "name": "Ask",
+      "tooltip": "Ask"
+    },
+    "bid": {
+      "name": "Bid",
+      "tooltip": "Bid"
+    },
+    "price": {
+      "name": "Цена",
+      "tooltip": "Цена"
+    },
+    "delta": {
+      "name": "Delta",
+      "tooltip": "Delta"
+    },
+    "gamma": {
+      "name": "Gamma",
+      "tooltip": "Gamma"
+    },
+    "vega": {
+      "name": "Vega",
+      "tooltip": "Vega"
+    },
+    "theta": {
+      "name": "Theta",
+      "tooltip": "Theta"
+    },
+    "rho": {
+      "name": "Rho",
+      "tooltip": "Rho"
+    }
+  }
+}

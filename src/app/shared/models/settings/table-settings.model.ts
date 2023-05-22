@@ -28,6 +28,7 @@ export interface BaseColumnSettings<T> extends Omit<BaseColumnId, 'isDefault'> {
   tooltip?: string;
   minWidth?: number | null;
   order?: number | null;
+  leftFixed?: boolean;
 }
 
 export interface FilterData {

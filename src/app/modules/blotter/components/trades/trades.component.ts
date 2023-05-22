@@ -214,6 +214,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
             filterData: column.column.filterData
               ? {
                 ...column.column.filterData,
+                filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
                 filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
                   value: f.value,
                   text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})

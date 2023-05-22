@@ -66,7 +66,7 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
         1,
         [
           Validators.required,
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max),
           AtsValidators.priceStepMultiplicity(instrument!.minstep)
         ]

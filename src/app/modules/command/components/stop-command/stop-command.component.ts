@@ -177,7 +177,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         price,
         [
           Validators.required,
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max),
           AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
         ]
@@ -186,7 +186,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         1,
         [
           Validators.required,
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max),
           AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
         ]

@@ -23,7 +23,7 @@
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="priceError"  [nzValidateStatus]="form.get('price')!">
             <nz-form-label [nzNoColon]="true" [nzSm]="6" [nzXs]="24" nzRequired nzFor="price">{{t('command.priceLabel')}}</nz-form-label>
-            <ats-input-number formControlName="price" [step]="commandContext.instrument.minstep" placeholder="0"></ats-input-number>
+            <ats-input-number formControlName="price" [step]="commandContext.instrument.minstep" [allowNegative]="true" placeholder="0"></ats-input-number>
           </nz-form-control>
           <ng-template #priceError>
             <span *ngIf="form.get('price')?.errors?.required">{{t('command.emptyPriceError')}}</span>

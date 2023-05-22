@@ -207,7 +207,7 @@ export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
         () => this.hotkeysService.commands$,
         (settings, command) => ({ settings, command })
       ),
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(({ settings, command }) => {
       if (settings.widgetSettings.disableHotkeys) {
         return;

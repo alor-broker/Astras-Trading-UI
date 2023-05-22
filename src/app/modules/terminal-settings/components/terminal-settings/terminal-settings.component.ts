@@ -29,6 +29,7 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { Destroyable } from '../../../../shared/utils/destroyable';
 import { AtsValidators } from '../../../../shared/utils/form-validators';
 import { TerminalSettingsHelper } from '../../../../shared/utils/terminal-settings-helper';
+import {AccountService} from "../../../../shared/services/account.service";
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -49,7 +50,8 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   private readonly destroyable = new Destroyable();
 
   constructor(
-    private readonly service: TerminalSettingsService,
+    private readonly accountService: AccountService,
+    private readonly terminalSettingsService: TerminalSettingsService,
     private readonly dashboardService: ManageDashboardsService,
     private modal: ModalService,
     private readonly translatorService: TranslatorService,
@@ -57,7 +59,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.fullName$ = this.service.getFullName();
+    this.fullName$ = this.accountService.getFullName();
     this.initForm();
   }
 
@@ -90,7 +92,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   }
 
   private initForm() {
-    this.service.getSettings()
+    this.terminalSettingsService.getSettings()
       .pipe(
         take(1)
       ).subscribe(settings => {
@@ -101,7 +103,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
 
       this.settingsForm.valueChanges
         .pipe(
-          takeUntil(this.destroyable.destroyed$)
+          takeUntil(this.destroyable)
         )
         .subscribe(() => {
           this.formChange.emit({

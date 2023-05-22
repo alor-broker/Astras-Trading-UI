@@ -48,6 +48,7 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import {NzTableFilterList} from "ng-zorro-antd/table/src/table.types";
 
 interface PositionDisplay extends Position {
   volume: number
@@ -223,7 +224,17 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
               displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
               tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
               width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
-              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index),
+              filterData: column.column.filterData
+                ? {
+                  ...column.column.filterData,
+                  filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                  filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
+                    value: f.value,
+                    text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
+                  }))
+                }
+                : undefined,
             }))
             .sort((a, b) => a.order - b.order);
         }

@@ -15,7 +15,6 @@ import {
   UntypedFormGroup,
   Validators
 } from "@angular/forms";
-import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import {
   Observable,
   shareReplay,
@@ -41,7 +40,6 @@ export class OrderSubmitSettingsComponent implements OnInit, OnDestroy {
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
-  exchanges: string[] = exchangesList;
   deviceInfo$!: Observable<any>;
 
   readonly validationOptions = {
