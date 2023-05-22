@@ -15,8 +15,9 @@ import {
 import { BaseCommandResponse } from "../../../shared/models/http-request-response.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { isPortfoliosEqual } from "../../../shared/utils/portfolios";
+import firebase from "firebase/compat";
 
-interface MessagePayload {
+interface MessagePayload extends firebase.messaging.MessagePayload {
   data?: {
     body?: string
   },
@@ -113,8 +114,9 @@ export class PushNotificationsService {
 
   getMessages(): Observable<MessagePayload> {
     if (!this.messages$) {
-      this.messages$ = (this.angularFireMessaging.messages as Observable<any>)
+      this.messages$ = this.angularFireMessaging.messages
         .pipe(
+          map(payload => payload as MessagePayload),
           shareReplay(1)
         );
     }
