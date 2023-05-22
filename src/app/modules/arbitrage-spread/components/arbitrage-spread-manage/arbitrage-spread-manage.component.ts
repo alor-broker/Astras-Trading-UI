@@ -104,15 +104,7 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
       this.form.get('id')?.patchValue(this.spread.id);
     }
 
-    this.formChangeSub = this.form.valueChanges.subscribe(value => {
-      if (!value.firstLeg?.instrument) {
-        this.firstLegFormGroup.get('portfolio')?.reset(null, { emitEvent: false });
-      }
-
-      if (!value.secondLeg?.instrument) {
-        this.secondLegFormGroup.get('portfolio')?.reset(null, { emitEvent: false });
-      }
-
+    this.formChangeSub = this.form.valueChanges.subscribe(() => {
       this.formChange.emit({
         value: this.form.value,
         isValid: this.form.valid
@@ -131,5 +123,13 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
     }
 
     return allPortfolios.filter(p => p.exchange === selectedInstrument.exchange);
+  }
+
+  instrumentChange(isFirstLeg = true) {
+    if (isFirstLeg) {
+      this.firstLegFormGroup.get('portfolio')?.reset(null, { emitEvent: false });
+    } else {
+      this.secondLegFormGroup.get('portfolio')?.reset(null, { emitEvent: false });
+    }
   }
 }

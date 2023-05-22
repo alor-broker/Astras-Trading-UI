@@ -5,7 +5,7 @@
     <nz-form-item class="compact">
       <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.instrumentRequiredError')">
         <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.instrumentLabel')}}</nz-form-label>
-        <ats-instrument-search formControlName="instrument"></ats-instrument-search>
+        <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentChange()"></ats-instrument-search>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
@@ -67,7 +67,7 @@
     <nz-form-item class="compact">
       <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.instrumentRequiredError')">
         <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.instrumentLabel')}}</nz-form-label>
-        <ats-instrument-search formControlName="instrument"></ats-instrument-search>
+        <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentChange(false)"></ats-instrument-search>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item class="compact">
