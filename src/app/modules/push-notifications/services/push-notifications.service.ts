@@ -35,6 +35,8 @@ export class PushNotificationsService {
   private readonly subscriptionsUpdatedSub = new Subject<PushSubscriptionType | null>();
   readonly subscriptionsUpdated$ = this.subscriptionsUpdatedSub.asObservable();
 
+  private messages$?: Observable<MessagePayload>;
+
   constructor(
     private readonly http: HttpClient,
     private readonly angularFireMessaging: AngularFireMessaging,
@@ -110,7 +112,14 @@ export class PushNotificationsService {
   }
 
   getMessages(): Observable<MessagePayload> {
-    return this.angularFireMessaging.messages as any;
+    if (!this.messages$) {
+      this.messages$ = (this.angularFireMessaging.messages as Observable<any>)
+        .pipe(
+          shareReplay(1)
+        );
+    }
+
+    return this.messages$;
   }
 
   getCurrentSubscriptions(): Observable<SubscriptionBase[] | null> {

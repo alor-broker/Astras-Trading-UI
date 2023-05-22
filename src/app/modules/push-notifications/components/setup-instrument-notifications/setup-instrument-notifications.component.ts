@@ -7,7 +7,7 @@ import {mapWith} from "../../../../shared/utils/observable-helper";
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
 import {FormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {inputNumberValidation} from "../../../../shared/utils/validation-options";
-import {filter, map} from "rxjs/operators";
+import { filter, map } from "rxjs/operators";
 import {Destroyable} from "../../../../shared/utils/destroyable";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
@@ -76,6 +76,12 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
     ).subscribe(() => {
       this.refresh$.next(null);
     });
+
+    this.pushNotificationsService.getMessages()
+      .pipe(
+        takeUntil(this.destroyable.destroyed$)
+      )
+      .subscribe(() => this.refresh$.next(null));
   }
 
   cancelSubscription(id: string) {
