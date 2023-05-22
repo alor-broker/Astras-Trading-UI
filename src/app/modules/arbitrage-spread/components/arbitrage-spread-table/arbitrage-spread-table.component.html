@@ -65,17 +65,17 @@
             </td>
             <td *ngIf='column.id === "operation"'>
               <div class="d-flex">
-                <button [disabled]="!isVolumeValid(spread.id!)" class="flex-1 buy-btn" nz-button (click)="buySpread(spread)">
+                <button [disabled]="!isVolumeValid(spread.id!)" class="flex-fill buy-btn" nz-button (click)="buySpread(spread)">
                   {{t('arbitrageSpreadArbitrageSpreadTable.buyBtnText')}}
                 </button>
-                <button [disabled]="!isVolumeValid(spread.id!)" class="flex-1 sell-btn" nz-button (click)="sellSpread(spread)">
+                <button [disabled]="!isVolumeValid(spread.id!)" class="flex-fill sell-btn" nz-button (click)="sellSpread(spread)">
                   {{t('arbitrageSpreadArbitrageSpreadTable.sellBtnText')}}
                 </button>
               </div>
             </td>
           </ng-container>
           <td>
-            <div class="d-flex justify-content-around">
+            <div class="d-flex justify-content-evenly">
               <a (click)="editSpread(spread)">
                 <i nz-icon nzTheme="outline" nzType="edit"></i>
               </a>
