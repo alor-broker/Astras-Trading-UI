@@ -5,6 +5,7 @@
 
   "saveBtnText": "Сохранить",
   "okBtnText": "ОК",
+  "addBtnText": "Добавить",
   "cancelBtnText": "Отмена",
   "editBtnText": "Изменить",
   "resetBtnText": "Сбросить",
@@ -32,7 +33,8 @@
     "TreemapSettings": "Карта рынка",
     "RibbonSettings": "Лента",
     "EventsCalendarSettings": "Календарь событий",
-    "OptionBoardSettings": "Опционная доска"
+    "OptionBoardSettings": "Опционная доска",
+    "ArbitrageSpreadSettings": "Арбитражная раздвижка"
   },
 
   "joyride": {

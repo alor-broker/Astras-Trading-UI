@@ -1,0 +1,13 @@
+{
+  "buyBtnText": "Buy",
+  "sellBtnText": "Sell",
+  "addBtnText": "Add",
+  "emptyListText": "Spreads list is empty",
+  "columns": {
+    "symbols": "Instruments",
+    "buySpread": "Buy",
+    "sellSpread": "Sell",
+    "operation": "Operation",
+    "volume": "Order volume"
+  }
+}

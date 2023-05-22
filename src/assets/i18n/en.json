@@ -5,6 +5,7 @@
 
   "saveBtnText": "Save",
   "okBtnText": "OK",
+  "addBtnText": "Add",
   "cancelBtnText": "Cancel",
   "editBtnText": "Edit",
   "resetBtnText": "Reset",
@@ -32,7 +33,8 @@
     "TreemapSettings": "Market Map",
     "RibbonSettings": "Ribbon",
     "EventsCalendarSettings": "Events Calendar",
-    "OptionBoardSettings": "Option Board"
+    "OptionBoardSettings": "Option Board",
+    "ArbitrageSpreadSettings": "Arbitrage Spread"
   },
 
   "joyride": {
