@@ -5,7 +5,7 @@ import { map } from "rxjs/operators";
 import { HashMap } from "@ngneat/transloco/lib/types";
 import { getTranslationPath } from "../utils/translation-helper";
 
-type TranslatorFn = (key: string[], params?: HashMap) => string;
+export type TranslatorFn = (key: string[], params?: HashMap) => string;
 
 @Injectable({
   providedIn: 'root'

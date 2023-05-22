@@ -1,7 +1,6 @@
 ﻿{
   "emptyList": "Нет настроенных уведомлений",
   "emptyListWithFilters": "С такими фильтрами ничего не найдено",
-  "cancelConfirm": "Точно от",
 
   "columns": {
     "cancel": {

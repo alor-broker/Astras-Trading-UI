@@ -1,13 +1,11 @@
-import { Subject } from 'rxjs';
+import {Subject} from 'rxjs';
 
-export class Destroyable {
-  readonly destroyed$ = new Subject<boolean>();
-
+export class Destroyable extends Subject<void> {
   private onDestroyActions: (() => void)[] = [];
 
   destroy() {
-    this.destroyed$.next(true);
-    this.destroyed$.complete();
+    this.next();
+    this.complete();
 
     this.onDestroyActions.forEach(x => x());
   }

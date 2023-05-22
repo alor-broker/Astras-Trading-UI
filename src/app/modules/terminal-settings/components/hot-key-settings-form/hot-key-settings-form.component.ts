@@ -94,7 +94,7 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
 
     this.form.valueChanges.pipe(
       distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(() => {
       this.checkIfTouched();
       this.emitValue(

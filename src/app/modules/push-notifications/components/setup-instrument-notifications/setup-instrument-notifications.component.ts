@@ -72,7 +72,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
 
     this.pushNotificationsService.subscriptionsUpdated$.pipe(
       filter(x => x == null || x === PushSubscriptionType.PriceSpark),
-      takeUntil(this.destroyable.destroyed$)
+      takeUntil(this.destroyable)
     ).subscribe(() => {
       this.refresh$.next(null);
     });

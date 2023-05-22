@@ -1,6 +1,7 @@
 {
   "settingsHeader": "Settings",
   "helpHeader": "Help",
+  "advancedHeader": "Advanced",
 
   "saveBtnText": "Save",
   "okBtnText": "OK",
@@ -30,7 +31,8 @@
     "OrdersBasketSettings": "Orders Basket",
     "TreemapSettings": "Market Map",
     "RibbonSettings": "Ribbon",
-    "EventsCalendarSettings": "Events Calendar"
+    "EventsCalendarSettings": "Events Calendar",
+    "OptionBoardSettings": "Option Board"
   },
 
   "joyride": {
@@ -61,6 +63,20 @@
     "step7": {
       "title": "Settings",
       "text": "Here you can change the settings of a widget"
+    }
+  },
+
+  "form": {
+    "ticker": {
+      "label": "Ticker",
+      "commonError": "Select ticker"
+    },
+    "exchange": {
+      "label": "Exchange"
+    },
+    "instrumentGroup": {
+      "label": "Trading mode",
+      "commonError": "Select trading mode"
     }
   },
 
