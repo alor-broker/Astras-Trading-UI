@@ -15,8 +15,9 @@ import {
 import { BaseCommandResponse } from "../../../shared/models/http-request-response.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { isPortfoliosEqual } from "../../../shared/utils/portfolios";
+import firebase from "firebase/compat";
 
-interface MessagePayload {
+interface MessagePayload extends firebase.messaging.MessagePayload {
   data?: {
     body?: string
   },
@@ -34,6 +35,8 @@ export class PushNotificationsService {
 
   private readonly subscriptionsUpdatedSub = new Subject<PushSubscriptionType | null>();
   readonly subscriptionsUpdated$ = this.subscriptionsUpdatedSub.asObservable();
+
+  private messages$?: Observable<MessagePayload>;
 
   constructor(
     private readonly http: HttpClient,
@@ -110,7 +113,15 @@ export class PushNotificationsService {
   }
 
   getMessages(): Observable<MessagePayload> {
-    return this.angularFireMessaging.messages as any;
+    if (!this.messages$) {
+      this.messages$ = this.angularFireMessaging.messages
+        .pipe(
+          map(payload => payload as MessagePayload),
+          shareReplay(1)
+        );
+    }
+
+    return this.messages$;
   }
 
   getCurrentSubscriptions(): Observable<SubscriptionBase[] | null> {

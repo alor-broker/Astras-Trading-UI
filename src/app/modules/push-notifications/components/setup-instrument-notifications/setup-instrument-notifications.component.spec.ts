@@ -4,12 +4,10 @@ import { SetupInstrumentNotificationsComponent } from './setup-instrument-notifi
 import {
   commonTestProviders,
   getTranslocoModule, mockComponent,
-  ngZorroMockComponents,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import {PushNotificationsService} from "../../services/push-notifications.service";
 import {Subject} from "rxjs";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 
 describe('SetupInstrumentNotificationsComponent', () => {
@@ -35,7 +33,8 @@ describe('SetupInstrumentNotificationsComponent', () => {
             cancelSubscription: jasmine.createSpy('cancelSubscription').and.returnValue(new Subject()),
             subscribeToPriceChange: jasmine.createSpy('subscribeToPriceChange').and.returnValue(new Subject()),
             getCurrentSubscriptions: jasmine.createSpy('getCurrentSubscriptions').and.returnValue(new Subject()),
-            getBrowserNotificationsStatus: jasmine.createSpy('getBrowserNotificationsStatus').and.returnValue(new Subject())
+            getBrowserNotificationsStatus: jasmine.createSpy('getBrowserNotificationsStatus').and.returnValue(new Subject()),
+            getMessages: jasmine.createSpy('getMessages').and.returnValue(new Subject()),
           }
         },
         ...commonTestProviders
