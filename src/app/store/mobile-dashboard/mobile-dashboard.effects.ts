@@ -1,31 +1,22 @@
-import { Injectable } from '@angular/core';
-import {
-  Actions,
-  createEffect,
-  ofType
-} from '@ngrx/effects';
-import { LocalStorageService } from '../../shared/services/local-storage.service';
-import { Store } from '@ngrx/store';
-import {
-  filter,
-  map,
-} from 'rxjs/operators';
-import { GuidGenerator } from '../../shared/utils/guid';
-import { distinctUntilChanged, take, tap, withLatestFrom } from 'rxjs';
-import {
-  Dashboard,
-} from '../../shared/models/dashboard/dashboard.model';
-import { ManageDashboardsService } from '../../shared/services/manage-dashboards.service';
-import { instrumentsHistory, mobileDashboard } from './mobile-dashboard.selectors';
-import { MobileDashboardActions } from './mobile-dashboard-actions';
-import { mapWith } from "../../shared/utils/observable-helper";
-import { PortfoliosStreams } from "../portfolios/portfolios.streams";
-import { getDefaultPortfolio, isPortfoliosEqual } from "../../shared/utils/portfolios";
-import { MarketService } from "../../shared/services/market.service";
-import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
-import { WidgetSettingsService } from "../../shared/services/widget-settings.service";
-import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
-import { defaultBadgeColor } from "../../shared/utils/instruments";
+import {Injectable} from '@angular/core';
+import {Actions, createEffect, ofType} from '@ngrx/effects';
+import {LocalStorageService} from '../../shared/services/local-storage.service';
+import {Store} from '@ngrx/store';
+import {filter, map, switchMap,} from 'rxjs/operators';
+import {GuidGenerator} from '../../shared/utils/guid';
+import {distinctUntilChanged, EMPTY, of, take, tap, withLatestFrom} from 'rxjs';
+import {Dashboard,} from '../../shared/models/dashboard/dashboard.model';
+import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
+import {instrumentsHistory, mobileDashboard} from './mobile-dashboard.selectors';
+import {MobileDashboardActions} from './mobile-dashboard-actions';
+import {mapWith} from "../../shared/utils/observable-helper";
+import {PortfoliosStreams} from "../portfolios/portfolios.streams";
+import {getDefaultPortfolio, isPortfoliosEqual} from "../../shared/utils/portfolios";
+import {MarketService} from "../../shared/services/market.service";
+import {InstrumentKey} from "../../shared/models/instruments/instrument-key.model";
+import {WidgetSettingsService} from "../../shared/services/widget-settings.service";
+import {TerminalSettingsService} from "../../modules/terminal-settings/services/terminal-settings.service";
+import {defaultBadgeColor} from "../../shared/utils/instruments";
 
 @Injectable()
 export class MobileDashboardEffects {
@@ -68,7 +59,7 @@ export class MobileDashboardEffects {
         })
       );
     },
-    { dispatch: false }
+    {dispatch: false}
   );
 
   createSaveInstrumentsHistoryAction = createEffect(() => {
@@ -81,15 +72,15 @@ export class MobileDashboardEffects {
   });
 
   saveInstrumentsHistory$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(MobileDashboardActions.saveInstrumentsHistory),
-      withLatestFrom(this.store.select(instrumentsHistory)),
-      tap(([, instruments]) => {
-        this.saveInstrumentsHistoryToLocalStorage(instruments ?? []);
-      })
-    );
-  },
-    { dispatch: false }
+      return this.actions$.pipe(
+        ofType(MobileDashboardActions.saveInstrumentsHistory),
+        withLatestFrom(this.store.select(instrumentsHistory)),
+        tap(([, instruments]) => {
+          this.saveInstrumentsHistoryToLocalStorage(instruments ?? []);
+        })
+      );
+    },
+    {dispatch: false}
   );
 
   setDefaultPortfolioForMobileDashboard$ = createEffect(() => {
@@ -97,17 +88,17 @@ export class MobileDashboardEffects {
       filter(d => !!d),
       mapWith(
         () => PortfoliosStreams.getAllPortfolios(this.store),
-        (dashboard, allPortfolios) => ({ dashboard, allPortfolios })
+        (dashboard, allPortfolios) => ({dashboard, allPortfolios})
       ),
-      filter(({ dashboard, allPortfolios }) =>
+      filter(({dashboard, allPortfolios}) =>
         !dashboard!.selectedPortfolio ||
         !allPortfolios.find(p => isPortfoliosEqual(p, dashboard!.selectedPortfolio))
       ),
       mapWith(
         () => this.marketService.getDefaultExchange(),
-        (source, defaultExchange) => ({ ...source, defaultExchange })
+        (source, defaultExchange) => ({...source, defaultExchange})
       ),
-      map( ({ allPortfolios, defaultExchange}) => MobileDashboardActions.selectPortfolio({
+      map(({allPortfolios, defaultExchange}) => MobileDashboardActions.selectPortfolio({
         portfolioKey: getDefaultPortfolio(allPortfolios, defaultExchange ?? null)
       }))
     );
@@ -115,25 +106,36 @@ export class MobileDashboardEffects {
 
   setDefaultInstrumentsSelectionForMobileDashboard$ = createEffect(() => {
     return this.store.select(mobileDashboard).pipe(
-      filter(d => !!d),
-      distinctUntilChanged((previous, current) => previous?.guid === current!.guid),
-      filter(d => !d!.instrumentsSelection),
-      map(() => MobileDashboardActions.selectInstrument({
-          selection: {
-            groupKey: defaultBadgeColor,
-            instrumentKey: {
-              symbol: 'SBER',
-              exchange: 'MOEX',
-              instrumentGroup: 'TQBR'
-            }
+      filter((d): d is Dashboard => !!d),
+      filter(d => !d.instrumentsSelection),
+      distinctUntilChanged((previous, current) => previous.guid === current.guid),
+      mapWith(
+        () => this.marketService.getAllExchanges().pipe(take(1)),
+        (dashboard, marketSettings) => ({dashboard, marketSettings})
+      ),
+      switchMap(({dashboard, marketSettings}) => {
+          let exchangeSettings = marketSettings.find(x => x.settings.isDefault);
+          if (dashboard.selectedPortfolio) {
+            exchangeSettings = marketSettings.find(x => x.exchange === dashboard.selectedPortfolio!.portfolio) ?? exchangeSettings;
           }
-        })
+
+          if (!exchangeSettings || !exchangeSettings.settings.defaultInstrument) {
+            return EMPTY;
+          }
+
+          return of(MobileDashboardActions.selectInstrument({
+              selection: {
+                groupKey: defaultBadgeColor,
+                instrumentKey: {
+                  ...exchangeSettings!.settings.defaultInstrument,
+                  exchange: exchangeSettings!.exchange
+                }
+              }
+            }
+          ));
+        }
       ));
   });
-
-  private readonly mobileDashboardStorageKey = 'mobile-dashboard';
-  private readonly instrumentsHistoryStorageKey = 'instruments-history';
-
   createDefaultMobileDashboard$ = createEffect(() =>
     this.actions$.pipe(
       ofType(MobileDashboardActions.initMobileDashboardSuccess),
@@ -147,6 +149,8 @@ export class MobileDashboardEffects {
       })
     )
   );
+  private readonly mobileDashboardStorageKey = 'mobile-dashboard';
+  private readonly instrumentsHistoryStorageKey = 'instruments-history';
 
   constructor(
     private readonly actions$: Actions,
@@ -182,7 +186,7 @@ export class MobileDashboardEffects {
       )
       .subscribe(s => {
         if (!s.excludedSettings?.length) {
-          this.terminalSettingsService.updateSettings({ excludedSettings: ['hotKeysSettings', 'badgesBind'] });
+          this.terminalSettingsService.updateSettings({excludedSettings: ['hotKeysSettings', 'badgesBind']});
         }
       });
   }

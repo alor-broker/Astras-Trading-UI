@@ -1,23 +1,37 @@
-{
-  "MOEX": {
-    "usesIsin": true,
-    "hasIssue": true,
-    "hasPayments": true,
-    "currencyInstrument": "RUB",
-    "isDefault": true,
-    "market": {
-      "CURR": {},
-      "FOND": {},
-      "FORTS": {}
+[
+  {
+    "exchange": "MOEX",
+    "settings": {
+      "usesIsin": true,
+      "hasIssue": true,
+      "hasPayments": true,
+      "currencyInstrument": "RUB",
+      "isDefault": true,
+      "market": {
+        "CURR": {},
+        "FOND": {},
+        "FORTS": {}
+      },
+      "defaultInstrument": {
+        "symbol": "GAZP",
+        "instrumentGroup": "TQBR"
+      }
     }
   },
-  "SPBX": {
-    "isInternational": true,
-    "hasFinance": true,
-    "hasDividends": true,
-    "currencyInstrument": "USD000UTSTOM",
-    "market": {
-      "SPBX": {}
+  {
+    "exchange": "SPBX",
+    "settings": {
+      "isInternational": true,
+      "hasFinance": true,
+      "hasDividends": true,
+      "currencyInstrument": "USD000UTSTOM",
+      "market": {
+        "SPBX": {}
+      },
+      "defaultInstrument": {
+        "symbol": "GAZP",
+        "instrumentGroup": "SPBX"
+      }
     }
   }
-}
+]
