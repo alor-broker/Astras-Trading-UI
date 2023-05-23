@@ -39,6 +39,7 @@ import {
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import {environment} from "../../../../../environments/environment";
 
 @Component({
   selector: 'ats-navbar',
@@ -46,6 +47,8 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
   styleUrls: ['./navbar.component.less'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  readonly externalLinks = environment.externalLinks;
+
   isSideMenuVisible = false;
 
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
