@@ -15,11 +15,9 @@
         [hasSettings]="true"
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [titleIconTooltip]="t('widgetHeaders.InstrumentSelectSettings')"
-        [titleText]="t('widgetHeaders.InstrumentSelectSettings')"
+        [titleText]="titleText"
         badgeShape="square"
-        helpRef="instrument-select"
-        titleIcon="eye"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 

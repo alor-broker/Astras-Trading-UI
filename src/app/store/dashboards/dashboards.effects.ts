@@ -47,9 +47,21 @@ export class DashboardsEffects {
         action => this.store.select(getDashboardItems(action.dashboardGuid)).pipe(take(1)),
         (action, items) => ({dashboardGuid: action.dashboardGuid, items: items ?? []})
       ),
-      switchMap(({dashboardGuid, items}) => of(
+      mapWith(
+        () => this.dashboardService.getDefaultDashboardConfig(),
+        (source, defaultConfig) => ({...source, defaultConfig})
+      ),
+      switchMap(({dashboardGuid, items, defaultConfig}) => of(
         ManageDashboardsActions.removeWidgets({dashboardGuid, widgetIds: items.map(i => i.guid)}),
-        ManageDashboardsActions.addWidgets({dashboardGuid, widgets: this.dashboardService.getDefaultWidgetsSet()})
+        ManageDashboardsActions.addWidgets({
+            dashboardGuid,
+            widgets: defaultConfig.desktop.widgets.map(w => ({
+              widgetType: w.widgetTypeId,
+              position: w.position,
+              initialSettings: w.initialSettings
+            }))
+          }
+        )
       ))
     );
   });
@@ -162,7 +174,11 @@ export class DashboardsEffects {
     return this.actions$.pipe(
       ofType(ManageDashboardsActions.initDashboardsSuccess),
       filter(action => action.dashboards.length === 0),
-      switchMap(() => {
+      mapWith(
+        () => this.dashboardService.getDefaultDashboardConfig(),
+        (source, defaultConfig) => defaultConfig
+      ),
+      switchMap(defaultConfig => {
         const convertedDashboardItems = this.readObsoleteDashboardFromLocalStorage();
         const newDashboardAction = ManageDashboardsActions.addDashboard({
           guid: GuidGenerator.newGuid(),
@@ -188,7 +204,11 @@ export class DashboardsEffects {
           newDashboardAction,
           ManageDashboardsActions.addWidgets({
             dashboardGuid: newDashboardAction.guid,
-            widgets: this.dashboardService.getDefaultWidgetsSet()
+            widgets: defaultConfig.desktop.widgets.map(w => ({
+              widgetType: w.widgetTypeId,
+              position: w.position,
+              initialSettings: w.initialSettings
+            }))
           })
         );
       })

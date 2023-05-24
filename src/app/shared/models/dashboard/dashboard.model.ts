@@ -1,6 +1,6 @@
 // increase version if model has incompatible changes
 
-import { Widget } from './widget.model';
+import {DashboardItemPosition, Widget} from './widget.model';
 import { PortfolioKey } from '../portfolio-key.model';
 import { InstrumentKey } from '../instruments/instrument-key.model';
 
@@ -21,4 +21,23 @@ export interface Dashboard {
 
 export interface InstrumentGroups {
   [groupKey: string]: InstrumentKey
+}
+
+export interface DefaultDashboardItem {
+  widgetTypeId: string;
+  initialSettings?: any;
+}
+
+export interface DefaultDesktopDashboardItem extends DefaultDashboardItem{
+  position: DashboardItemPosition
+}
+
+export interface DefaultDashboardConfig {
+  desktop: {
+    widgets: DefaultDesktopDashboardItem[]
+  };
+
+  mobile: {
+    widgets: DefaultDashboardItem[]
+  }
 }

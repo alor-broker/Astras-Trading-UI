@@ -2,7 +2,8 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {
   CompactType,
   DisplayGrid,
-  Draggable, GridsterComponent,
+  Draggable,
+  GridsterComponent,
   GridsterConfig,
   GridsterItem,
   GridType,
@@ -17,6 +18,7 @@ import {mobileBreakpoint} from '../../../../shared/utils/device-helper';
 import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
 import {filter} from "rxjs/operators";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 interface Safe extends GridsterConfig {
   draggable: Draggable;
@@ -24,7 +26,7 @@ interface Safe extends GridsterConfig {
   pushDirections: PushDirections;
 }
 
-type WidgetItem = { widget: Widget, gridsterItem: GridsterItem };
+type WidgetItem = { instance: WidgetInstance, gridsterItem: GridsterItem };
 
 @Component({
   selector: 'ats-dashboard',
@@ -34,16 +36,14 @@ type WidgetItem = { widget: Widget, gridsterItem: GridsterItem };
 export class DashboardComponent implements OnInit {
   @ViewChild(GridsterComponent)
   gridster?: GridsterComponent;
-
+  options!: Safe;
+  items$?: Observable<WidgetItem[]>;
+  isBlockWidget = false;
   private readonly dashboardSize = {
     width: 50,
     itemDefaultWidth: 10,
     itemDefaultHeight: 18
   };
-
-  options!: Safe;
-  items$?: Observable<WidgetItem[]>;
-  isBlockWidget = false;
 
   constructor(
     private readonly manageDashboardsService: ManageDashboardsService,
@@ -114,7 +114,7 @@ export class DashboardComponent implements OnInit {
           this.isBlockWidget = false;
         }
       },
-      pushDirections: { north: true, east: true, south: true, west: true },
+      pushDirections: {north: true, east: true, south: true, west: true},
       pushResizeItems: false,
       pushItems: true,
       swap: false,
@@ -148,13 +148,18 @@ export class DashboardComponent implements OnInit {
     ]).pipe(
       tap(([meta, items]) => this.checkNotPositionedItems(items, meta)),
       filter(([, items]) => items.every(x => !!x.position)),
-      map(([, items]) => items.map(i => ({
-        widget: i,
-        gridsterItem: {
-          ...i.position!,
-          guid: i.guid
-        }
-      })))
+      map(([meta, items]) => items.map(i => ({
+          instance: {
+            instance: i,
+            widgetMeta: meta.find(m => m.typeId === i.widgetType)
+          } as WidgetInstance,
+          gridsterItem: {
+            ...i.position!,
+            guid: i.guid
+          }
+        }))
+          .filter(x => !!x.instance.widgetMeta)
+      )
     );
   }
 
@@ -163,12 +168,12 @@ export class DashboardComponent implements OnInit {
   }
 
   getItemTrackKey(index: number, item: WidgetItem): string {
-    return item.widget.guid;
+    return item.instance.instance.guid;
   }
 
-  private checkNotPositionedItems(items: Widget[], meta: WidgetMeta[]){
+  private checkNotPositionedItems(items: Widget[], meta: WidgetMeta[]) {
     const notPositionedItem = items.find(x => !x.position);
-    if(notPositionedItem) {
+    if (notPositionedItem) {
       const newPosition = {
         x: 0,
         y: 0,
@@ -180,19 +185,19 @@ export class DashboardComponent implements OnInit {
 
       const widgetMeta = meta.find(m => m.typeId === notPositionedItem.widgetType);
       if (widgetMeta) {
-        if (widgetMeta.desktopMeta?.initialHeight != null) {
-          newPosition.rows = widgetMeta.desktopMeta.initialHeight;
+        if (widgetMeta.desktopMeta?.addOptions?.initialHeight != null) {
+          newPosition.rows = widgetMeta.desktopMeta.addOptions.initialHeight;
         }
 
         const positionedItems = items.filter(x => !!x.position);
 
-        if (widgetMeta.desktopMeta?.initialWidth === "full-width") {
+        if (widgetMeta.desktopMeta?.addOptions?.isFullWidth) {
           newPosition.cols = this.gridster?.columns ?? this.options.minCols ?? this.dashboardSize.width;
         }
 
         const topOffset = newPosition.y + newPosition.rows;
-        if(widgetMeta.desktopMeta?.initialPosition === "top") {
-          if(positionedItems.some(w => newPosition.y >= w.position!.y && newPosition.y <= (w.position!.y + w.position!.rows))) {
+        if (widgetMeta.desktopMeta?.addOptions?.initialPosition === "top") {
+          if (positionedItems.some(w => newPosition.y >= w.position!.y && newPosition.y <= (w.position!.y + w.position!.rows))) {
             positionedItems
               .filter(w => w.position!.y >= newPosition.y)
               .forEach(w => {

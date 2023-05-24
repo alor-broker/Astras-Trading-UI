@@ -18,10 +18,8 @@
         [linkToActive]="settings.linkToActive"
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [titleIconTooltip]="t('widgetHeaders.ScalperOrderBookSettings')"
         [titleText]="title$ | async"
-        helpRef="scalper-order-book"
-        titleIcon="ordered-list"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 

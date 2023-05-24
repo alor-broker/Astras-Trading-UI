@@ -11,15 +11,17 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { OrdersBasketSettings } from '../../models/orders-basket-settings.model';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-orders-basket-widget[guid][isBlockWidget]',
+  selector: 'ats-orders-basket-widget[widgetInstance][isBlockWidget]',
   templateUrl: './orders-basket-widget.component.html',
   styleUrls: ['./orders-basket-widget.component.less']
 })
 export class OrdersBasketWidgetComponent implements OnInit {
   @Input()
-  guid!: string;
+  widgetInstance!: WidgetInstance;
+
   @Input()
   isBlockWidget!: boolean;
   settings$!: Observable<OrdersBasketSettings>;
@@ -33,9 +35,13 @@ export class OrdersBasketWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createPortfolioLinkedWidgetSettingsIfMissing<OrdersBasketSettings>(
-      this.guid,
+      this.widgetInstance,
       'OrdersBasketSettings',
       settings => ({
         ...settings

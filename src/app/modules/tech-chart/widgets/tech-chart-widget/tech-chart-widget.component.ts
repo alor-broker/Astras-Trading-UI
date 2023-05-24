@@ -21,9 +21,10 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-tech-chart-widget[guid][isBlockWidget]',
+  selector: 'ats-tech-chart-widget[widgetInstance][isBlockWidget]',
   templateUrl: './tech-chart-widget.component.html',
   styleUrls: ['./tech-chart-widget.component.less'],
   providers: [TechChartDatafeedService]
@@ -31,7 +32,8 @@ import { TechChartSettings } from '../../models/tech-chart-settings.model';
 export class TechChartWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
   @Input()
-  guid!: string;
+  widgetInstance!: WidgetInstance;
+
   @Input()
   isBlockWidget!: boolean;
   settings$!: Observable<TechChartSettings>;
@@ -46,13 +48,17 @@ export class TechChartWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   onSettingsChange() {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<TechChartSettings>(
-      this.guid,
+      this.widgetInstance,
       'TechChartSettings',
       settings => ({
         ...settings,

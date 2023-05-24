@@ -15,10 +15,8 @@
         [linkToActive]="settings.linkToActive"
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [titleIconTooltip]="t('widgetHeaders.InfoSettings')"
         [titleText]="title$ | async"
-        helpRef="instrument-info"
-        titleIcon="info"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 

@@ -19,6 +19,8 @@ import { TerminalSettingsService } from '../../../terminal-settings/services/ter
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { LOGGER } from '../../../../shared/services/logging/logger-base';
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 describe('OrderSubmitWidgetComponent', () => {
   let component: OrderSubmitWidgetComponent;
@@ -86,6 +88,13 @@ describe('OrderSubmitWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderSubmitWidgetComponent);
     component = fixture.componentInstance;
+
+    component.widgetInstance = {
+      instance: {
+        guid: 'guid'
+      } as Widget,
+      widgetMeta: {} as WidgetMeta
+    };
     fixture.detectChanges();
   });
 

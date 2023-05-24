@@ -8,6 +8,8 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 describe('TreemapWidgetComponent', () => {
   let component: TreemapWidgetComponent;
@@ -41,6 +43,13 @@ describe('TreemapWidgetComponent', () => {
 
     fixture = TestBed.createComponent(TreemapWidgetComponent);
     component = fixture.componentInstance;
+
+    component.widgetInstance = {
+      instance: {
+        guid: 'guid'
+      } as Widget,
+      widgetMeta: {} as WidgetMeta
+    };
     fixture.detectChanges();
   });
 

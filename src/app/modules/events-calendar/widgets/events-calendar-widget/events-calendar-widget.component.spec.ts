@@ -5,6 +5,8 @@ import { widgetSkeletonMock } from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 describe('EventsCalendarWidgetComponent', () => {
   let component: EventsCalendarWidgetComponent;
@@ -37,6 +39,13 @@ describe('EventsCalendarWidgetComponent', () => {
 
     fixture = TestBed.createComponent(EventsCalendarWidgetComponent);
     component = fixture.componentInstance;
+
+    component.widgetInstance = {
+      instance: {
+        guid: 'guid'
+      } as Widget,
+      widgetMeta: {} as WidgetMeta
+    };
     fixture.detectChanges();
   });
 

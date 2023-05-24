@@ -68,5 +68,7 @@
 </div>
 
 <nz-dropdown-menu #menu="nzDropdownMenu">
-  <ats-widget-menu [showedWidgets]="showedWidgetNames" (selected)="addWidget($event)"></ats-widget-menu>
+  <ng-container *ngIf="menuWidgets$ | async as displayWidgets">
+    <ats-widget-menu [showedWidgets]="displayWidgets" (selected)="addWidget($event)"></ats-widget-menu>
+  </ng-container>
 </nz-dropdown-menu>

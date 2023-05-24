@@ -19,10 +19,8 @@
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
         [titleText]="t('widgetHeaders.AllInstrumentsSettings')"
-        [titleIconTooltip]="t('widgetHeaders.AllInstrumentsSettings')"
         badgeShape="square"
-        helpRef="all-instruments"
-        titleIcon="profile"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 

@@ -16,27 +16,6 @@
 
   "maxTagPlaceholder": "and {{count}} more selected",
 
-  "widgetHeaders": {
-    "OrderbookSettings": "Orderbook",
-    "ScalperOrderBookSettings": "Scalper Orderbook",
-    "InstrumentSelectSettings": "Instrument Select",
-    "LightChartSettings": "Chart",
-    "BlotterSettings": "Blotter",
-    "InfoSettings": "Info",
-    "AllTradesSettings": "All Trades",
-    "NewsSettings": "News",
-    "ExchangeRateSettings": "Exchange Rate",
-    "TechChartSettings": "Tech Chart",
-    "AllInstrumentsSettings": "All Instruments",
-    "OrderSubmitSettings": "Order Submit",
-    "OrdersBasketSettings": "Orders Basket",
-    "TreemapSettings": "Market Map",
-    "RibbonSettings": "Ribbon",
-    "EventsCalendarSettings": "Events Calendar",
-    "OptionBoardSettings": "Option Board",
-    "ArbitrageSpreadSettings": "Arbitrage Spread"
-  },
-
   "joyride": {
     "step1": {
       "title": "Portfolio select",

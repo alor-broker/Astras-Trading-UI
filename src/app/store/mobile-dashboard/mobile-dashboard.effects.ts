@@ -140,11 +140,19 @@ export class MobileDashboardEffects {
     this.actions$.pipe(
       ofType(MobileDashboardActions.initMobileDashboardSuccess),
       filter(action => !action.mobileDashboard),
-      map(() => {
+      mapWith(
+        () => this.dashboardService.getDefaultDashboardConfig(),
+        (source, defaultConfig) => defaultConfig
+      ),
+      map(defaultConfig => {
         return MobileDashboardActions.addMobileDashboard({
           guid: GuidGenerator.newGuid(),
           title: 'Mobile dashboard',
-          items: this.dashboardService.getMobileDashboardWidgets()
+          items: defaultConfig.mobile.widgets.map(w => ({
+            guid: GuidGenerator.newGuid(),
+            widgetType: w.widgetTypeId,
+            initialSettings: w.initialSettings
+          }))
         });
       })
     )

@@ -18,10 +18,8 @@
         [linkToActive]="settings.linkToActive"
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [titleIconTooltip]="t('widgetHeaders.TechChartSettings')"
         [titleText]="title$ | async"
-        helpRef="tech-chart"
-        titleIcon="fund"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 

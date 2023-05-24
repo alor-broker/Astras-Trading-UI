@@ -19,9 +19,7 @@
         [selectedBadgeColor]="settings.badgeColor!"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
         [titleText]="title$ | async"
-        [titleIconTooltip]="t('widgetHeaders.OptionBoardSettings')"
-        helpRef="option-board"
-        [titleIcon]="widgetsHelper.getIconName(widgetNames.optionBoard)"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 

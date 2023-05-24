@@ -11,7 +11,6 @@ import {
   take
 } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
-import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -54,7 +53,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
   selectedDashboard$!: Observable<Dashboard>;
-  names = WidgetNames;
   themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
 

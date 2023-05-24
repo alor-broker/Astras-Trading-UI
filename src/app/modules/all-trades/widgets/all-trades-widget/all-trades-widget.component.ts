@@ -23,16 +23,18 @@ import {
   AllTradesSettings,
   allTradesWidgetColumns
 } from '../../models/all-trades-settings.model';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-all-trades-widget[guid][isBlockWidget]',
+  selector: 'ats-all-trades-widget[widgetInstance][isBlockWidget]',
   templateUrl: './all-trades-widget.component.html',
   styleUrls: ['./all-trades-widget.component.less']
 })
 export class AllTradesWidgetComponent implements OnInit {
 
   shouldShowSettings: boolean = false;
-  @Input() public guid!: string;
+  @Input()
+  widgetInstance!: WidgetInstance;
 
   @Input()
   isBlockWidget!: boolean;
@@ -47,13 +49,17 @@ export class AllTradesWidgetComponent implements OnInit {
     private readonly instrumentService: InstrumentsService) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   onSettingsChange() {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<AllTradesSettings>(
-      this.guid,
+      this.widgetInstance,
       'AllTradesSettings',
       settings => ({
         ...settings,
