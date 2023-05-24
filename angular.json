@@ -71,6 +71,9 @@
             },
             "scripts": [
               "src/assets/lib/charting_library/charting_library.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "flat"
             ]
           },
           "configurations": {
@@ -78,12 +81,12 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1500kb",
-                  "maximumError": "2.2mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "2.5mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
+                  "maximumWarning": "4.5kb",
                   "maximumError": "9kb"
                 }
               ],
@@ -103,12 +106,12 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1500kb",
-                  "maximumError": "2.2mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "2.5mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
+                  "maximumWarning": "4.5kb",
                   "maximumError": "9kb"
                 }
               ],
