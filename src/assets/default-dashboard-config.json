@@ -96,7 +96,7 @@
         "widgetTypeId": "orders-basket"
       },
       {
-        "widgetTypeId": "otreemap"
+        "widgetTypeId": "treemap"
       }
     ]
   }

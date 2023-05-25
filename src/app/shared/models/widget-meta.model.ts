@@ -55,6 +55,7 @@ export interface WidgetMeta {
    */
   mobileMeta?: {
     ribbonIcon: string;
+    enabled: boolean;
     widgetName?: WidgetName;
   }
 }

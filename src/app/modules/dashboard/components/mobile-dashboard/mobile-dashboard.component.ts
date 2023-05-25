@@ -34,7 +34,7 @@ export class MobileDashboardComponent implements OnInit {
           instance: x,
           widgetMeta: meta.find(m => m.typeId === x.widgetType)
         } as WidgetInstance))
-          .filter(x => !!x.widgetMeta && x.widgetMeta.mobileMeta);
+          .filter(x => !!x.widgetMeta && x.widgetMeta.mobileMeta && x.widgetMeta.mobileMeta.enabled);
       }),
       shareReplay(1)
     );

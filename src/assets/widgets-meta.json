@@ -58,7 +58,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "ribbonIcon": "ordered-list"
+      "ribbonIcon": "ordered-list",
+      "enabled": true
     }
   },
   {
@@ -120,7 +121,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "ribbonIcon": "sliders"
+      "ribbonIcon": "sliders",
+      "enabled": true
     }
   },
   {
@@ -182,7 +184,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "ribbonIcon": "table"
+      "ribbonIcon": "table",
+      "enabled": true
     }
   },
   {
@@ -215,7 +218,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "ribbonIcon": "info"
+      "ribbonIcon": "info",
+      "enabled": true
     }
   },
   {
@@ -247,7 +251,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "ribbonIcon": "read"
+      "ribbonIcon": "read",
+      "enabled": true
     }
   },
   {
@@ -280,7 +285,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "ribbonIcon": "unordered-list"
+      "ribbonIcon": "unordered-list",
+      "enabled": true
     }
   },
   {
@@ -312,7 +318,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "ribbonIcon": "line-chart"
+      "ribbonIcon": "line-chart",
+      "enabled": true
     }
   },
   {
@@ -344,7 +351,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "ribbonIcon": "profile"
+      "ribbonIcon": "profile",
+      "enabled": true
     }
   },
   {
@@ -378,6 +386,7 @@
     },
     "mobileMeta": {
       "ribbonIcon": "plus-circle",
+      "enabled": true,
       "widgetName": {
         "default": "Order",
         "translations": {
@@ -416,7 +425,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "ribbonIcon": "calculator"
+      "ribbonIcon": "calculator",
+      "enabled": true
     }
   },
   {
@@ -448,7 +458,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "ribbonIcon": "layout"
+      "ribbonIcon": "layout",
+      "enabled": true
     }
   },
   {
