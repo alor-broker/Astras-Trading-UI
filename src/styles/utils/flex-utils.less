@@ -31,6 +31,12 @@
         flex-shrink: @value;
       }
     })
+
+    each(range(0, 5, 1), {
+      &-grow-@{value} {
+        flex-grow: @value;
+      }
+    })
   }
 
   &.justify-content {

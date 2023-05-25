@@ -90,6 +90,15 @@
                    nz-popconfirm>
                   <i nz-icon nzTheme="outline" nzType="close-circle"></i>
                 </a>
+                &nbsp;
+                <a
+                  *ngIf="ord.groupId"
+                  nz-tooltip=""
+                  [nzTooltipTitle]="t('blotterStopOrders.orderGroupsTooltip')"
+                  (click)="openOrdersGroup(ord.groupId)"
+                >
+                  <i nz-icon nzTheme="outline" nzType="apartment"></i>
+                </a>
               </td>
               <ng-container *ngFor='let column of listOfColumns'>
                 <td *ngIf='column.id === "id"'>{{ ord.id }}</td>

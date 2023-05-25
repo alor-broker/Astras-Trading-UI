@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  BehaviorSubject,
   combineLatest,
   Observable,
   of,
@@ -28,6 +29,11 @@ import { BlotterSettings } from '../models/blotter-settings.model';
 
 @Injectable()
 export class BlotterService {
+
+  private shouldShowOrderGroupModal = new BehaviorSubject<boolean>(false);
+  private orderGroupParams = new BehaviorSubject<string | null>(null);
+  shouldShowOrderGroupModal$ = this.shouldShowOrderGroupModal.asObservable();
+  orderGroupParams$ = this.orderGroupParams.asObservable();
 
   constructor(
     private readonly notification: OrdersNotificationsService,
@@ -168,5 +174,15 @@ export class BlotterService {
       varMargin: formatCurrency(risks.varMargin / exchangeRate, currency),
       isLimitsSet: risks.isLimitsSet
     } as ForwardRisksView;
+  }
+
+  openOrderGroupModal(groupId: string) {
+    this.orderGroupParams.next(groupId);
+    this.shouldShowOrderGroupModal.next(true);
+  }
+
+  closeOrderGroupModal() {
+    this.orderGroupParams.next(null);
+    this.shouldShowOrderGroupModal.next(false);
   }
 }

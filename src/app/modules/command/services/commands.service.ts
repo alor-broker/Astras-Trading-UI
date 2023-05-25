@@ -192,10 +192,18 @@ export class CommandsService {
             return this.getEmptyCommandError();
           }
 
+          if (limitCommand.topOrderPrice || limitCommand.bottomOrderPrice) {
+            return this.orderService.submitOrdersGroup({
+              ...limitCommand,
+              side
+            },
+              limitCommand.user?.portfolio ?? '');
+          }
+
           return this.orderService.submitLimitOrder(
             {
               ...limitCommand,
-              side: side
+              side
             },
             limitCommand.user?.portfolio ?? ''
           );

@@ -1,0 +1,27 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host ::ng-deep {
+    .sell {
+      color: @sell-color;
+    }
+
+    .buy {
+      color: @buy-color;
+    }
+
+    .status {
+      &-canceled {
+        background-color: @sell-color-background;
+      }
+
+      &-active {
+        background-color: @disabled-color;
+      }
+
+      &-filled {
+        background-color: @buy-color-background;
+      }
+    }
+  }
+});

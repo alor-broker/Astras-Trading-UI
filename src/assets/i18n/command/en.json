@@ -57,5 +57,10 @@
   "advanced": "Advanced",
   "instrumentGroupLabel": "Group",
   "instrumentGroupError": "Fill the group field",
-  "instrumentGroupPlaceholder": "Trading mode"
+  "instrumentGroupPlaceholder": "Trading mode",
+  "topOrderPriceLabel": "Order from above (>)",
+  "bottomOrderPriceLabel": "Order from below (<)",
+  "sideLabel": "Side",
+  "buySideLabel": "Buy",
+  "sellSideLabel": "Sell"
 }

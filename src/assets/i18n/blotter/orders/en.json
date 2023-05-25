@@ -77,5 +77,6 @@
   "emptyOrdersWithFilters": "Nothing found with these filters",
   "cancelConfirm": "Are you sure?",
   "cancelAll": "Cancel all",
-  "exportToFile": "Export to file"
+  "exportToFile": "Export to file",
+  "orderGroupsTooltip": "Show linked orders"
 }

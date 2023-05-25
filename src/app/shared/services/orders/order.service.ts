@@ -4,8 +4,10 @@ import {
   HttpErrorResponse
 } from "@angular/common/http";
 import {
+  forkJoin,
   Observable,
   of,
+  switchMap,
   take,
   tap
 } from "rxjs";
@@ -31,6 +33,9 @@ import { GuidGenerator } from "../../utils/guid";
 import { httpLinkRegexp } from "../../utils/regexps";
 import { InstantNotificationsService } from '../instant-notifications.service';
 import { OrdersInstantNotificationType } from '../../models/terminal-settings/terminal-settings.model';
+import { mapWith } from "../../utils/observable-helper";
+import { LessMore } from "../../models/enums/less-more.model";
+import { OrdersGroupService } from "./orders-group.service";
 
 @Injectable({
   providedIn: 'root'
@@ -38,9 +43,11 @@ import { OrdersInstantNotificationType } from '../../models/terminal-settings/te
 export class OrderService {
   private readonly baseApiUrl = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
 
-  constructor(private readonly httpService: HttpClient,
-              private readonly instantNotificationsService: InstantNotificationsService,
-              private readonly errorHandlerService: ErrorHandlerService
+  constructor(
+    private readonly httpService: HttpClient,
+    private readonly instantNotificationsService: InstantNotificationsService,
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly ordersGroupService: OrdersGroupService
   ) {
   }
 
@@ -130,6 +137,64 @@ export class OrderService {
         }
       })
     );
+  }
+
+  submitOrdersGroup(limitOrder: LimitOrder, portfolio: string): Observable<SubmitOrderResult> {
+    const orders: Observable<SubmitOrderResult>[] = [];
+
+    if (limitOrder.topOrderPrice) {
+      orders.push(this.submitStopLimitOrder({
+          ...limitOrder,
+          condition: LessMore.More,
+          triggerPrice: limitOrder.topOrderPrice!,
+          side: limitOrder.topOrderSide!
+        },
+        portfolio
+      ));
+    }
+
+    if (limitOrder.bottomOrderPrice) {
+      orders.push(this.submitStopLimitOrder({
+          ...limitOrder,
+          condition: LessMore.Less,
+          triggerPrice: limitOrder.bottomOrderPrice!,
+          side: limitOrder.bottomOrderSide!
+        },
+        portfolio
+      ));
+    }
+
+    return this.submitLimitOrder(
+      {
+        ...limitOrder
+      },
+      portfolio
+    )
+      .pipe(
+        mapWith(
+          (res) => res.isSuccess
+            ? forkJoin(orders)
+            : of([]),
+          (res, stopOrders) => res.isSuccess
+            ? [res, ...stopOrders]
+            : []
+        ),
+        switchMap(ordersRes => {
+          if (!ordersRes.length) {
+            return of({isSuccess: false});
+          }
+
+          return this.ordersGroupService.createOrdersGroup({
+            orders: ordersRes.map((orderRes, i) => ({
+              orderId: orderRes.orderNumber!,
+              exchange: limitOrder.instrument.exchange,
+              portfolio: portfolio,
+              type: i === 0 ? 'Limit' : 'StopLimit'
+            })),
+            ExecutionPolicy : 'OnExecuteOrCancel'
+          });
+        })
+      );
   }
 
   private prepareStopEndUnixTimeValue(order: StopMarketOrder): number | null {

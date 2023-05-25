@@ -336,6 +336,19 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       return null;
     }
 
+    if (this.limitOrderFormValue.topOrderPrice || this.limitOrderFormValue.bottomOrderPrice) {
+      return this.orderService.submitOrdersGroup(
+        {
+          ...this.limitOrderFormValue,
+          instrument: {
+            ...instrument,
+            instrumentGroup: this.limitOrderFormValue.instrumentGroup ?? instrument.instrumentGroup
+          },
+          side
+        },
+        portfolio);
+    }
+
     return this.orderService.submitLimitOrder(
       {
         ...this.limitOrderFormValue,

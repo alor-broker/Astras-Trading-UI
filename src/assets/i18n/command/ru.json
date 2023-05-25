@@ -57,5 +57,10 @@
   "advanced": "Продвинутые",
   "instrumentGroupLabel": "Группа",
   "instrumentGroupError": "Введите группу",
-  "instrumentGroupPlaceholder": "Режим торгов"
+  "instrumentGroupPlaceholder": "Режим торгов",
+  "topOrderPriceLabel": "Условная заявка сверху (>)",
+  "bottomOrderPriceLabel": "Условная заявка снизу (<)",
+  "sideLabel": "Сторона",
+  "buySideLabel": "Покупка",
+  "sellSideLabel": "Продажа"
 }

@@ -30,6 +30,10 @@ export interface LimitOrder extends OrderBase {
   icebergFixed?: number;
   icebergVariance?: number;
   timeInForce?: TimeInForce;
+  topOrderPrice?: number | null;
+  topOrderSide?: Side;
+  bottomOrderPrice?: number | null;
+  bottomOrderSide?: Side;
 }
 
 export interface StopOrder extends OrderBase {

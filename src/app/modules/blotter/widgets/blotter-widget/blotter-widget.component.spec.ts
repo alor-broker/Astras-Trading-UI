@@ -37,6 +37,7 @@ describe('BlotterWidgetComponent', () => {
         mockComponent({ selector: 'ats-orders', inputs: ['shouldShowSettings', 'guid'] }),
         mockComponent({ selector: 'ats-stop-orders', inputs: ['shouldShowSettings', 'guid'] }),
         mockComponent({ selector: 'ats-trades', inputs: ['shouldShowSettings', 'guid'] }),
+        mockComponent({ selector: 'ats-orders-group-modal-widget', inputs: ['guid'] }),
         ...ngZorroMockComponents,
         widgetSkeletonMock
       ],

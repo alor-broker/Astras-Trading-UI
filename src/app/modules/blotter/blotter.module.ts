@@ -14,6 +14,11 @@ import { TableFilterComponent } from "./components/table-filter/table-filter.com
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { PushNotificationsComponent } from './components/push-notifications/push-notifications.component';
+import {
+  OrdersGroupModalWidgetComponent
+} from './widgets/orders-group-modal-widget/orders-group-modal-widget.component';
+import { OrdersGroupModalComponent } from './components/orders-group-modal/orders-group-modal.component';
+import { NzTreeModule } from "ng-zorro-antd/tree";
 
 
 @NgModule({
@@ -27,17 +32,21 @@ import { PushNotificationsComponent } from './components/push-notifications/push
     CommonSummaryComponent,
     ForwardSummaryComponent,
     TableFilterComponent,
-    PushNotificationsComponent
+    PushNotificationsComponent,
+    OrdersGroupModalWidgetComponent,
+    OrdersGroupModalComponent
   ],
-    imports: [
-        SharedModule,
-        BlotterRoutingModule,
-        NzInputModule,
-        DragDropModule,
-        NzResizeObserverModule
-    ],
+  imports: [
+    SharedModule,
+    BlotterRoutingModule,
+    NzInputModule,
+    DragDropModule,
+    NzResizeObserverModule,
+    NzTreeModule
+  ],
   exports: [
     BlotterWidgetComponent
   ]
 })
-export class BlotterModule { }
+export class BlotterModule {
+}

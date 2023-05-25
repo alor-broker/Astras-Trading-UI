@@ -1,0 +1,20 @@
+<nz-modal
+  *transloco="let t; scope: 'blotter/orders-group'"
+  [nzTitle]="header"
+  nzClosable="true"
+  [nzVisible]='isVisible$ | async'
+  [nzMaskClosable]='true'
+  (nzOnCancel)="handleCancel()"
+>
+  <ng-template #header>
+    <div class="header">
+      {{t('blotterOrdersGroup.modalTitle')}}
+    </div>
+  </ng-template>
+  <ng-container *nzModalContent>
+    <ats-orders-group-modal [groupId]="(groupId$ | async)!" [guid]="guid"></ats-orders-group-modal>
+  </ng-container>
+  <ng-container *nzModalFooter>
+    <button nz-button nzType="primary" (click)="handleCancel()">{{t('okBtnText')}}</button>
+  </ng-container>
+</nz-modal>

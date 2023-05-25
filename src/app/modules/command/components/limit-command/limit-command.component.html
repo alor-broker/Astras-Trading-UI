@@ -99,6 +99,44 @@
               </ng-template>
             </nz-form-item>
           </ng-container>
+
+          <div class="d-flex flex-gap-10">
+            <nz-form-item class="compact">
+              <nz-form-control [nzErrorTip]="t('command.tooLittle')">
+                <nz-form-label nzFor="topOrderPrice">{{t('command.topOrderPriceLabel')}}</nz-form-label>
+                <ats-input-number formControlName="topOrderPrice" placeholder="0"></ats-input-number>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item class="compact">
+              <nz-form-control>
+                <nz-form-label [nzNoColon]="true" nzFor="topOrderSide">{{t('command.sideLabel')}}</nz-form-label>
+                <nz-select formControlName="topOrderSide">
+                  <nz-option [nzValue]="'buy'" [nzLabel]="t('command.buySideLabel')"></nz-option>
+                  <nz-option [nzValue]="'sell'" [nzLabel]="t('command.sellSideLabel')"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="d-flex flex-gap-10">
+            <nz-form-item class="compact">
+              <nz-form-control [nzErrorTip]="t('command.tooLittle')">
+                <nz-form-label nzFor="bottomOrderPrice">{{t('command.bottomOrderPriceLabel')}}</nz-form-label>
+                <ats-input-number formControlName="bottomOrderPrice" placeholder="0"></ats-input-number>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item class="compact">
+              <nz-form-control>
+                <nz-form-label [nzNoColon]="true" nzFor="bottomOrderSide">{{t('command.sideLabel')}}</nz-form-label>
+                <nz-select formControlName="bottomOrderSide">
+                  <nz-option [nzValue]="'buy'" [nzLabel]="t('command.buySideLabel')"></nz-option>
+                  <nz-option [nzValue]="'sell'" [nzLabel]="t('command.sellSideLabel')"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
         </nz-collapse-panel>
       </nz-collapse>
     </div>

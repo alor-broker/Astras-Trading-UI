@@ -77,5 +77,6 @@
   "emptyOrdersWithFilters": "С такими фильтрами ничего не найдено",
   "cancelConfirm": "Точно отменить?",
   "cancelAll": "Снять все",
-  "exportToFile": "Сохранить в файл"
+  "exportToFile": "Сохранить в файл",
+  "orderGroupsTooltip": "Показать связанные заявки"
 }

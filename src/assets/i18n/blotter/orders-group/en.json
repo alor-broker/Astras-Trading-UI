@@ -1,0 +1,14 @@
+{
+  "modalTitle": "Linked orders",
+  "idLabel": "Id",
+  "symbolLabel": "Symbol",
+  "priceLabel": "Price",
+  "qtyLabel": "Qty",
+  "triggerPriceLabel": "Trigger price",
+  "conditionLabel": "Condition",
+  "groupStatus": {
+    "Active": "Group is active",
+    "Canceled": "Group is canceled",
+    "Filled": "Group is filled"
+  }
+}
