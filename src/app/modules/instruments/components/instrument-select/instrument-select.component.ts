@@ -35,7 +35,6 @@ import {Watchlist, WatchlistCollection} from '../../models/watchlist.model';
 import { DOCUMENT } from '@angular/common';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
-import {DomHelper} from "../../../../shared/utils/dom-helper";
 
 @Component({
   selector: 'ats-instrument-select[guid]',
@@ -129,7 +128,6 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
     );
 
     fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
-      filter(() => !DomHelper.isModalOpen()),
       filter(e => e.ctrlKey && e.code === 'KeyF' && !e.cancelBubble),
       takeUntil(this.destroy$)
     ).subscribe((e) => {
