@@ -9,6 +9,7 @@ export const allInstrumentsColumns: BaseColumnId[] = [
   { id: 'name', displayName: "Тикер", isDefault: true },
   { id: 'shortName', displayName: "Название", isDefault: true },
   { id: 'dailyGrowth', displayName: "Рост за сегодня", isDefault: true },
+  { id: 'dailyGrowthPercent', displayName: "Рост за сегодня, %", isDefault: false },
   { id: 'tradeVolume', displayName: "Объём торгов", isDefault: true },
   { id: 'currency', displayName: "Валюта", isDefault: true },
   { id: 'exchange', displayName: "Биржа", isDefault: false },

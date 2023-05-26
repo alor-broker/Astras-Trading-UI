@@ -4,6 +4,7 @@
     "shortName": "Name",
     "currency":  "Currency",
     "dailyGrowth": "Daily growth",
+    "dailyGrowthPercent": "Daily growth, %",
     "tradeVolume":  "Trade Volume",
     "exchange": "Exchange",
     "market":  "Market",
