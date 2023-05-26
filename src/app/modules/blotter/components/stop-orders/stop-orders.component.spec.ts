@@ -11,7 +11,7 @@ import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
-  commonTestProviders,
+  commonTestProviders, getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
@@ -36,6 +36,7 @@ describe('StopOrdersComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
+        getTranslocoModule(),
         ...sharedModuleImportForTests
       ],
       providers: [
@@ -53,7 +54,8 @@ describe('StopOrdersComponent', () => {
       ],
       declarations: [
         StopOrdersComponent,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] })
+        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] })
       ]
     }).compileComponents();
   });

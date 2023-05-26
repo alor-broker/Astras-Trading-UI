@@ -8,7 +8,7 @@
       </nz-empty>
     </ng-template>
 
-    <div #tableContainer *ngIf="selectedInstruments$ | async as selectedInstruments" class="table-container">
+    <div #tableContainer class="table-container">
       <ng-container *ngIf="(isNotificationsAllowed$ | async) === true">
         <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
           <nz-table *ngIf="displayNotifications$ | async as notifications" [nzData]="notifications"
@@ -83,11 +83,7 @@
                     *ngIf='column.id === "subscriptionType"'>{{t('blotterNotifications.columns.subscriptionType.listOfFilter.' + notification.subscriptionType, {fallback: notification.subscriptionType}) }}</td>
                   <td *ngIf='column.id === "instrument"' class='bold'>
                     <span class="symbol-name">{{ notification.instrument }}</span>
-                    <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
-                      <nz-badge
-                        *ngIf="item.value.symbol === notification.instrument && item.value.exchange === notification.exchange"
-                        [nzColor]="item.key"></nz-badge>
-                    </ng-container>
+                    <ats-instrument-badge-display [instrumentKey]="{symbol: notification.instrument, exchange: notification.exchange}"></ats-instrument-badge-display>
                   </td>
                   <td
                     *ngIf='column.id === "priceCondition"'>{{ !notification.priceCondition ? '' : t('lessMoreOptions.' + notification.priceCondition.toLowerCase(), {fallback: notification.priceCondition}) }}</td>

@@ -1,0 +1,3 @@
+<ng-container *ngIf="selectedInstruments$ | async as selectedInstruments">
+  <ats-merged-badge [colors]="getApplicableBadges(selectedInstruments)"></ats-merged-badge>
+</ng-container>

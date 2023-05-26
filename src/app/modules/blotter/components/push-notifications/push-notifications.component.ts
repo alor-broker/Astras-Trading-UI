@@ -10,11 +10,9 @@ import {
   takeUntil,
   tap
 } from "rxjs";
-import {InstrumentGroups} from "../../../../shared/models/dashboard/dashboard.model";
 import {filter, map, startWith, switchMap} from "rxjs/operators";
 import {defaultBadgeColor} from "../../../../shared/utils/instruments";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
-import {TerminalSettingsService} from "../../../terminal-settings/services/terminal-settings.service";
 import {TableAutoHeightBehavior} from "../../utils/table-auto-height.behavior";
 import {
   OrderExecuteSubscription,
@@ -60,7 +58,6 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
   displayNotifications$: Observable<DisplayNotification[]> = of([]);
   @Input()
   guid!: string;
-  selectedInstruments$: Observable<InstrumentGroups> = of({});
   readonly scrollHeight$ = new BehaviorSubject<number>(100);
   listOfColumns: BaseColumnSettings<DisplayNotification>[] = [];
   isNotificationsAllowed$!: Observable<boolean>;
@@ -114,7 +111,6 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly blotterService: BlotterService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
     private readonly pushNotificationsService: PushNotificationsService,
     private readonly translatorService: TranslatorService) {
   }
@@ -122,21 +118,19 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
   isFilterEmpty = () => Object.keys(this.filter$.getValue()).length === 0;
 
   ngAfterViewInit(): void {
-    const initHeightWatching = (ref: ElementRef<HTMLElement>) => {
-      TableAutoHeightBehavior.getScrollHeight(ref).pipe(
-        takeUntil(this.destroyable)
-      ).subscribe(x => this.scrollHeight$.next(x));
-    };
+    const container$ =  this.tableContainer.changes.pipe(
+      map(x => x.first),
+      startWith(this.tableContainer.first),
+      filter((x): x is ElementRef<HTMLElement> => !!x),
+      shareReplay(1)
+    );
 
-    if (this.tableContainer.length > 0) {
-      initHeightWatching(this.tableContainer!.first);
-    } else {
-      this.tableContainer.changes.pipe(
-        take(1)
-      ).subscribe((x: QueryList<ElementRef<HTMLElement>>) => {
-        initHeightWatching(x.first);
-      });
-    }
+    container$.pipe(
+      switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
+      takeUntil(this.destroyable)
+    ).subscribe(x => {
+      setTimeout(()=> this.scrollHeight$.next(x));
+    });
   }
 
   trackBy(index: number, notification: DisplayNotification): string {
@@ -155,7 +149,6 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
     );
 
     this.initColumns();
-    this.initSelectedInstruments();
     this.initNotificationStatusCheck();
     this.initDisplayNotifications();
   }
@@ -239,7 +232,10 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
 
   private initColumns() {
     this.settings$.pipe(
-      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.notificationsTable, current.notificationsTable)),
+      distinctUntilChanged((previous, current) =>
+        TableSettingHelper.isTableSettingsEqual(previous?.notificationsTable, current.notificationsTable)
+        && previous.badgeColor === current.badgeColor
+      ),
       mapWith(
         () => this.translatorService.getTranslator('blotter/notifications'),
         (s, t) => ({s, t})
@@ -276,20 +272,6 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
 
       this.badgeColor = s.badgeColor!;
     });
-  }
-
-  private initSelectedInstruments() {
-    this.selectedInstruments$ = combineLatest([
-      this.dashboardContextService.instrumentsSelection$,
-      this.terminalSettingsService.getSettings()
-    ]).pipe(
-      map(([badges, settings]) => {
-        if (settings.badgesBind) {
-          return badges;
-        }
-        return {[defaultBadgeColor]: badges[defaultBadgeColor]};
-      })
-    );
   }
 
   private initDisplayNotifications() {

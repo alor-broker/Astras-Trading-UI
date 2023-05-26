@@ -13,17 +13,16 @@ import {
 } from '@angular/core';
 import {
   BehaviorSubject,
-  combineLatest,
   distinctUntilChanged,
   Observable,
-  of,
+  of, shareReplay,
   Subject,
   switchMap,
   take,
   takeUntil
 } from 'rxjs';
 import {
-  debounceTime,
+  debounceTime, filter,
   map,
   mergeMap,
   startWith
@@ -37,7 +36,6 @@ import { NzTableComponent } from 'ng-zorro-antd/table';
 import { ExportHelper } from "../../utils/export-helper";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -45,7 +43,6 @@ import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import {NzTableFilterList} from "ng-zorro-antd/table/src/table.types";
@@ -72,7 +69,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayPositions$: Observable<PositionDisplay[]> = of([]);
   searchFilter = new BehaviorSubject<PositionFilter>({});
-  selectedInstruments$: Observable<InstrumentGroups> = of({});
   readonly scrollHeight$ = new BehaviorSubject<number>(100);
   tableInnerWidth: number = 1000;
   allColumns: BaseColumnSettings<PositionDisplay>[] = [
@@ -175,7 +171,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly service: BlotterService,
     private readonly settingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
     private readonly translatorService: TranslatorService
   ) {
   }
@@ -187,26 +182,29 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
 
   ngAfterViewInit(): void {
-    const initHeightWatching = (ref: ElementRef<HTMLElement>) => {
-      TableAutoHeightBehavior.getScrollHeight(ref).pipe(
-        takeUntil(this.destroy$)
-      ).subscribe(x => this.scrollHeight$.next(x));
-    };
+    const container$ =  this.tableContainer.changes.pipe(
+      map(x => x.first),
+      startWith(this.tableContainer.first),
+      filter((x): x is ElementRef<HTMLElement> => !!x),
+      shareReplay(1)
+    );
 
-    if(this.tableContainer.length > 0) {
-      initHeightWatching(this.tableContainer!.first);
-    } else {
-      this.tableContainer.changes.pipe(
-        take(1)
-      ).subscribe((x: QueryList<ElementRef<HTMLElement>>) => initHeightWatching(x.first));
-    }
+    container$.pipe(
+      switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
+      takeUntil(this.destroy$)
+    ).subscribe(x => {
+      setTimeout(()=> this.scrollHeight$.next(x));
+    });
   }
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
 
     this.settings$.pipe(
-      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)),
+      distinctUntilChanged((previous, current) =>
+        TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)
+        && previous.badgeColor === current.badgeColor
+      ),
       mapWith(
         () => this.translatorService.getTranslator('blotter/positions'),
         (s, t) => ({ s, t })
@@ -257,20 +255,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
         map(f => positions.filter(o => this.justifyFilter(o, f)))
       ))
     );
-
-    this.selectedInstruments$ = combineLatest([
-      this.dashboardContextService.instrumentsSelection$,
-      this.terminalSettingsService.getSettings()
-    ])
-      .pipe(
-        takeUntil(this.destroy$),
-        map(([badges, settings]) => {
-          if (settings.badgesBind) {
-            return badges;
-          }
-          return { [defaultBadgeColor]: badges[defaultBadgeColor] };
-        })
-      );
   }
 
   ngOnDestroy(): void {
