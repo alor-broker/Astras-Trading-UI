@@ -35,6 +35,7 @@ import { InstantNotificationsService } from '../instant-notifications.service';
 import { OrdersInstantNotificationType } from '../../models/terminal-settings/terminal-settings.model';
 import { OrdersGroupService } from "./orders-group.service";
 import { OrderCancellerService } from "../order-canceller.service";
+import { ExecutionPolicy } from "../../models/orders/orders-group.model";
 
 @Injectable({
   providedIn: 'root'
@@ -142,7 +143,7 @@ export class OrderService {
   submitOrdersGroup(
     orders: ((LimitOrder | StopLimitOrder | StopMarketOrder) & { type: 'Limit' | 'StopLimit' | 'Stop' })[],
     portfolio: string,
-    executionType: string
+    executionPolicy: ExecutionPolicy
   ): Observable<SubmitOrderResult> {
 
     return forkJoin(orders.map(o => {
@@ -191,7 +192,7 @@ export class OrderService {
               portfolio: portfolio,
               type: orders[i].type
             })),
-            ExecutionPolicy : executionType
+            executionPolicy
           });
         })
       );

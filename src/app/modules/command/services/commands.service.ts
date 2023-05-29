@@ -9,6 +9,7 @@ import { LimitOrder, StopLimitOrder, StopMarketOrder, SubmitOrderResult } from "
 import { OrderService } from "../../../shared/services/orders/order.service";
 import { StopEdit } from "../models/stop-edit";
 import { LessMore } from "../../../shared/models/enums/less-more.model";
+import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
 
 @Injectable({
   providedIn: 'root'
@@ -124,7 +125,7 @@ export class CommandsService {
               }
             ];
 
-            return this.orderService.submitOrdersGroup(orders, stopCommand.user?.portfolio ?? '', 'OnExecuteOrCancel');
+            return this.orderService.submitOrdersGroup(orders, stopCommand.user?.portfolio ?? '', ExecutionPolicy.OnExecuteOrCancel);
           }
 
           if (stopCommand.price != null) {
@@ -242,7 +243,7 @@ export class CommandsService {
               });
             }
 
-            return this.orderService.submitOrdersGroup(orders, limitCommand.user?.portfolio ?? '', 'TriggerBracketOrders');
+            return this.orderService.submitOrdersGroup(orders, limitCommand.user?.portfolio ?? '', ExecutionPolicy.TriggerBracketOrders);
           }
 
           return this.orderService.submitLimitOrder(

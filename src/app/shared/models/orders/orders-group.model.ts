@@ -2,6 +2,13 @@ import { NzTreeNodeOptions } from "ng-zorro-antd/core/tree/nz-tree-base-node";
 import { Order } from "./order.model";
 import { StopOrder } from "./stop-order.model";
 
+export enum ExecutionPolicy {
+  OnExecuteOrCancel = 'OnExecuteOrCancel',
+  IgnoreCancel = 'IgnoreCancel',
+  IgnoreCancelEditingSupport = 'IgnoreCancelEditingSupport',
+  TriggerBracketOrders = 'TriggerBracketOrders'
+}
+
 export interface CreateOrderGroupReq {
   orders: {
     orderId: string;
@@ -9,21 +16,18 @@ export interface CreateOrderGroupReq {
     portfolio: string;
     type: 'Limit' | 'StopLimit' | 'Stop';
   }[],
-  ExecutionPolicy: string;
+  executionPolicy: ExecutionPolicy;
 }
 
 export interface OrdersGroup {
   id: string,
   orders: OrdersGroupItem[],
-  executionPolicy: 'OnExecuteOrCancel' | 'IgnoreCancel' | 'IgnoreCancelEditingSupport',
+  executionPolicy: ExecutionPolicy,
   status: 'Active' | 'Canceled' | 'Filled'
 }
 
 export interface OrdersGroupItem {
-  exchange: string;
-  portfolio: string;
   orderId: string;
-  type: 'Limit' | 'StopLimit' | 'Stop';
 }
 
 export interface OrdersGroupTreeNode extends NzTreeNodeOptions {

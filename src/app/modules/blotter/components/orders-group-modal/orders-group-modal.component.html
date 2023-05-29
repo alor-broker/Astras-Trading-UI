@@ -6,14 +6,15 @@
   >
     <ng-template #treeNode let-data>
       <ng-container *ngIf="data.origin.group">
-        <span
+        <div
           *ngIf="data.origin.status"
           [class.status-canceled]="data.origin.status === 'Canceled'"
           [class.status-active]="data.origin.status === 'Active'"
           [class.status-filled]="data.origin.status === 'Filled'"
           nz-tooltip=""
           [nzTooltipTitle]="t('blotterOrdersGroup.groupStatus.' + data.origin.status)"
-        >&nbsp;&nbsp;</span>
+          class="status-indicator"
+        ></div>
         {{t('blotterOrdersGroup.groupIdLabel')}}: <b>{{data.origin.group.displayId}}</b>
         {{t('blotterOrdersGroup.instrumentsLabel')}}: <b>{{data.origin.group.instruments}}</b>
         {{t('blotterOrdersGroup.priceLabel')}}: <b>{{data.origin.group.prices}}</b>

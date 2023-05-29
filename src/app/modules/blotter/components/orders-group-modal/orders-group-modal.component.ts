@@ -56,10 +56,25 @@ export class OrdersGroupModalComponent implements OnInit {
                 return null;
               }
 
-              const groupOrderMinPrice = Math.min(...groupOrders.map(o => (o as StopOrder).triggerPrice || o.price));
-              const groupOrderMaxPrice = Math.max(...groupOrders.map(o => (o as StopOrder).triggerPrice || o.price));
-              const groupOrderMinQty = Math.min(...groupOrders.map(o => o.qtyBatch));
-              const groupOrderMaxQty = Math.max(...groupOrders.map(o => o.qtyBatch));
+              let groupOrderMinPrice = (groupOrders[0] as StopOrder).triggerPrice || groupOrders[0].price;
+              let groupOrderMaxPrice = (groupOrders[0] as StopOrder).triggerPrice || groupOrders[0].price;
+              let groupOrderMinQty = groupOrders[0].qtyBatch;
+              let groupOrderMaxQty = groupOrders[0].qtyBatch;
+
+              groupOrders.forEach(o => {
+                if (groupOrderMinPrice > ((o as StopOrder).triggerPrice || o.price)) {
+                  groupOrderMinPrice = (o as StopOrder).triggerPrice || o.price;
+                }
+                if (groupOrderMaxPrice < ((o as StopOrder).triggerPrice || o.price)) {
+                  groupOrderMaxPrice = (o as StopOrder).triggerPrice || o.price;
+                }
+                if (groupOrderMinQty > o.qtyBatch) {
+                  groupOrderMinQty = o.qtyBatch;
+                }
+                if (groupOrderMaxQty < o.qtyBatch) {
+                  groupOrderMinPrice = o.qtyBatch;
+                }
+              });
 
               return {
                 title: '',
