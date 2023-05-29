@@ -524,7 +524,9 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  openOrdersGroup(groupId: string) {
+  openOrdersGroup(groupId: string, event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
     this.service.openOrderGroupModal(groupId);
   }
 

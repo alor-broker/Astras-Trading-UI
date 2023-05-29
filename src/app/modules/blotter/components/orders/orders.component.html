@@ -94,7 +94,7 @@
                   *ngIf="ord.groupId"
                   nz-tooltip=""
                   [nzTooltipTitle]="t('blotterBlotterCommon.orderGroupsTooltip')"
-                  (click)="openOrdersGroup(ord.groupId)"
+                  (click)="openOrdersGroup(ord.groupId, $event)"
                 >
                   <i nz-icon nzTheme="outline" nzType="apartment"></i>
                 </a>
