@@ -1,4 +1,4 @@
-<div *ngIf="selectedInstruments$ | async as selectedInstruments" #tableContainer class="table-container">
+<div #tableContainer class="table-container">
   <nz-table *ngIf="watchedInstruments$ | async as instruments"
     #nzTable
     [nzData]="instruments"
@@ -30,14 +30,7 @@
       >
         <td *ngIf="isVisibleColumn('symbol')" class="ticker">
           <span class="ticker-name">{{ inst.instrument.symbol }}</span>
-          <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
-            <nz-badge
-              *ngIf="item.value.symbol === inst.instrument.symbol &&
-                item.value.exchange === inst.instrument.exchange &&
-                item.value.instrumentGroup === inst.instrument.instrumentGroup"
-              [nzColor]="item.key"
-            ></nz-badge>
-          </ng-container>
+          <ats-instrument-badge-display [instrumentKey]="inst.instrument"></ats-instrument-badge-display>
         </td>
         <td *ngIf="isVisibleColumn('shortName')">
           {{inst.instrument.shortName}}

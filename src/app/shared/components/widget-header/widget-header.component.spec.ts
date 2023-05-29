@@ -8,6 +8,8 @@ import { ManageDashboardsService } from '../../services/manage-dashboards.servic
 import { ModalService } from '../../services/modal.service';
 import { ngZorroMockComponents } from '../../utils/testing';
 import {TranslatorService} from "../../services/translator.service";
+import {DashboardContextService} from "../../services/dashboard-context.service";
+import {Subject} from "rxjs";
 
 
 describe('WidgetHeaderComponent', () => {
@@ -32,6 +34,12 @@ describe('WidgetHeaderComponent', () => {
           provide: ManageDashboardsService,
           useValue: {
             removeWidget: jasmine.createSpy('removeWidget').and.callThrough()
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            instrumentsSelection$: new Subject()
           }
         },
         {

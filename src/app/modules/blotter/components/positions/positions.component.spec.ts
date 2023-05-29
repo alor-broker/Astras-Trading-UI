@@ -6,7 +6,7 @@ import { PositionsComponent } from './positions.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import {
-  commonTestProviders,
+  commonTestProviders, getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
@@ -27,6 +27,7 @@ describe('PositionsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        getTranslocoModule(),
         ...sharedModuleImportForTests
       ],
       providers: [
@@ -39,7 +40,8 @@ describe('PositionsComponent', () => {
       ],
       declarations: [
         PositionsComponent,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] })
+        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] })
       ]
     })
       .compileComponents();
