@@ -12,20 +12,6 @@ export interface CreateOrderGroupReq {
   ExecutionPolicy: string;
 }
 
-export interface OrdersGroupRes {
-  Id: string,
-  Orders: OrdersGroupResItem[],
-  ExecutionPolicy: 'OnExecuteOrCancel' | 'IgnoreCancel' | 'IgnoreCancelEditingSupport',
-  Status: 'Active' | 'Canceled' | 'Filled'
-}
-
-export interface OrdersGroupResItem {
-  Exchange: string;
-  Portfolio: string;
-  OrderId: string;
-  Type: 'Limit' | 'StopLimit' | 'Stop';
-}
-
 export interface OrdersGroup {
   id: string,
   orders: OrdersGroupItem[],

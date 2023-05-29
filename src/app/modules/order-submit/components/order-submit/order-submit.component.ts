@@ -352,7 +352,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
           triggerPrice: this.limitOrderFormValue.topOrderPrice!,
           side: this.limitOrderFormValue.topOrderSide!,
           type: 'StopLimit',
-          instrument
+          instrument,
+          activate: false
         });
       }
 
@@ -363,11 +364,12 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
           triggerPrice: this.limitOrderFormValue.bottomOrderPrice!,
           side: this.limitOrderFormValue.bottomOrderSide!,
           type: 'StopLimit',
-          instrument
+          instrument,
+          activate: false
         });
       }
 
-      return this.orderService.submitOrdersGroup(orders, portfolio);
+      return this.orderService.submitOrdersGroup(orders, portfolio, 'TriggerBracketOrders');
     }
 
     return this.orderService.submitLimitOrder(
@@ -422,7 +424,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
         }
       ];
 
-      return this.orderService.submitOrdersGroup(orders, portfolio);
+      return this.orderService.submitOrdersGroup(orders, portfolio, 'OnExecuteOrCancel');
     }
 
     if (this.stopOrderFormValue.withLimit) {

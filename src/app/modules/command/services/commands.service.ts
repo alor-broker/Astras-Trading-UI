@@ -124,7 +124,7 @@ export class CommandsService {
               }
             ];
 
-            return this.orderService.submitOrdersGroup(orders, stopCommand.user?.portfolio ?? '');
+            return this.orderService.submitOrdersGroup(orders, stopCommand.user?.portfolio ?? '', 'OnExecuteOrCancel');
           }
 
           if (stopCommand.price != null) {
@@ -226,7 +226,8 @@ export class CommandsService {
                 condition: LessMore.More,
                 triggerPrice: limitCommand.topOrderPrice!,
                 side: limitCommand.topOrderSide!,
-                type: 'StopLimit'
+                type: 'StopLimit',
+                activate: false
               });
             }
 
@@ -236,11 +237,12 @@ export class CommandsService {
                 condition: LessMore.Less,
                 triggerPrice: limitCommand.bottomOrderPrice!,
                 side: limitCommand.bottomOrderSide!,
-                type: 'StopLimit'
+                type: 'StopLimit',
+                activate: false
               });
             }
 
-            return this.orderService.submitOrdersGroup(orders, limitCommand.user?.portfolio ?? '');
+            return this.orderService.submitOrdersGroup(orders, limitCommand.user?.portfolio ?? '', 'TriggerBracketOrders');
           }
 
           return this.orderService.submitLimitOrder(

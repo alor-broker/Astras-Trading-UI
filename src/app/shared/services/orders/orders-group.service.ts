@@ -4,8 +4,8 @@ import { catchHttpError } from "../../utils/observable-helper";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
 import { ErrorHandlerService } from "../handle-error/error-handler.service";
-import { Observable, map, tap, BehaviorSubject, switchMap, shareReplay, forkJoin } from "rxjs";
-import { CreateOrderGroupReq, OrdersGroup, OrdersGroupRes } from "../../models/orders/orders-group.model";
+import { Observable, tap, BehaviorSubject, switchMap, shareReplay, forkJoin } from "rxjs";
+import { CreateOrderGroupReq, OrdersGroup } from "../../models/orders/orders-group.model";
 import { OrderCancellerService } from "../order-canceller.service";
 
 
@@ -29,7 +29,7 @@ export class OrdersGroupService {
       .pipe(
         catchHttpError<SubmitOrderResult>({ isSuccess: false }, this.errorHandlerService),
         tap((res) => {
-          if (!res.isSuccess) {
+          if (res.isSuccess === false) {
             forkJoin([
               req.orders.map(o => this.canceller.cancelOrder({
                 orderid: o.orderId,
@@ -41,7 +41,6 @@ export class OrdersGroupService {
               .subscribe();
           } else {
             this.refresh$.next(null);
-
           }
         })
       );
@@ -51,18 +50,7 @@ export class OrdersGroupService {
     if (!this.orderGroups$) {
       this.orderGroups$ = this.refresh$
         .pipe(
-          switchMap(() => this.http.get<OrdersGroupRes[]>(`${this.orderGroupsUrl}`)),
-          map(groups => groups.map(g => ({
-            id: g.Id,
-            executionPolicy: g.ExecutionPolicy,
-            status: g.Status,
-            orders: g.Orders.map(o => ({
-              exchange: o.Exchange,
-              portfolio: o.Portfolio,
-              orderId: o.OrderId,
-              type: o.Type
-            }))
-          }))),
+          switchMap(() => this.http.get<OrdersGroup[]>(`${this.orderGroupsUrl}`)),
           shareReplay(1)
         );
     }

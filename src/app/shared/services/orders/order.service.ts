@@ -141,7 +141,8 @@ export class OrderService {
 
   submitOrdersGroup(
     orders: ((LimitOrder | StopLimitOrder | StopMarketOrder) & { type: 'Limit' | 'StopLimit' | 'Stop' })[],
-    portfolio: string
+    portfolio: string,
+    executionType: string
   ): Observable<SubmitOrderResult> {
 
     return forkJoin(orders.map(o => {
@@ -190,7 +191,7 @@ export class OrderService {
               portfolio: portfolio,
               type: orders[i].type
             })),
-            ExecutionPolicy : 'OnExecuteOrCancel'
+            ExecutionPolicy : executionType
           });
         })
       );

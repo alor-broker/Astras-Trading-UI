@@ -71,6 +71,7 @@ export interface StopLimitOrder extends StopMarketOrder {
   icebergFixed?: number;
   icebergVariance?: number;
   timeInForce?: TimeInForce;
+  activate?: boolean;
 }
 
 export interface LinkedOrder {
