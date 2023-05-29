@@ -6,7 +6,7 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { OrdersComponent } from './orders.component';
 import {
-  commonTestProviders,
+  commonTestProviders, getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
@@ -37,6 +37,7 @@ describe('OrdersComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
+        getTranslocoModule(),
         ...sharedModuleImportForTests
       ],
       providers: [
@@ -52,7 +53,8 @@ describe('OrdersComponent', () => {
       ],
       declarations: [
         OrdersComponent,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] })
+        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] })
       ]
     })
       .compileComponents();

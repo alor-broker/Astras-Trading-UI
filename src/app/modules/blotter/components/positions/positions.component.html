@@ -6,7 +6,7 @@
       nzNotFoundImage="simple">
     </nz-empty>
   </ng-template>
-  <div #tableContainer *ngIf="selectedInstruments$ | async as selectedInstruments" class="table-container">
+  <div #tableContainer class="table-container">
     <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
       <nz-table #nzTable *ngIf="displayPositions$ | async as positions" [nzData]="positions"
                 [nzFooter]="footer"
@@ -60,10 +60,7 @@
             <ng-container *ngFor='let column of listOfColumns'>
               <td *ngIf='column.id === "symbol"' class='bold'>
                 <span class="symbol-name">{{ pos.symbol }}</span>
-                <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
-                  <nz-badge *ngIf="item.value.symbol === pos.symbol && item.value.exchange === pos.exchange"
-                            [nzColor]="item.key"></nz-badge>
-                </ng-container>
+                <ats-instrument-badge-display [instrumentKey]="pos"></ats-instrument-badge-display>
               </td>
               <td *ngIf='column.id === "shortName"'>{{ pos.shortName }}</td>
               <td *ngIf='column.id === "avgPrice"'>{{ roundPrice(pos.avgPrice) | number }}</td>

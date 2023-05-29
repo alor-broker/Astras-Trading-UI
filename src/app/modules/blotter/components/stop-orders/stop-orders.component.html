@@ -9,7 +9,7 @@
       </nz-empty>
     </ng-template>
 
-    <div #tableContainer *ngIf="selectedInstruments$ | async as selectedInstruments" class="table-container">
+    <div #tableContainer class="table-container">
       <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
         <nz-table #nzTable *ngIf="displayOrders$ | async as orders" [nzData]="orders"
                   [nzFooter]="footer"
@@ -104,10 +104,7 @@
                 <td *ngIf='column.id === "id"'>{{ ord.id }}</td>
                 <td *ngIf='column.id === "symbol"' class='bold'>
                   <span class="symbol-name">{{ ord.symbol }}</span>
-                  <ng-container *ngFor="let item of (selectedInstruments | keyvalue)">
-                    <nz-badge *ngIf="item.value.symbol === ord.symbol && item.value.exchange === ord.exchange"
-                              [nzColor]="item.key"></nz-badge>
-                  </ng-container>
+                  <ats-instrument-badge-display [instrumentKey]="ord"></ats-instrument-badge-display>
                 </td>
                 <td *ngIf='column.id === "side"'
                     [class]='ord.side.toString() === "sell" ? "sell" : "buy"'>{{ ord.side }}</td>
