@@ -5,9 +5,10 @@ import { LimitCommand } from '../models/limit-command.model';
 import { LimitEdit } from '../models/limit-edit.model';
 import { MarketCommand } from '../models/market-command.model';
 import { StopCommand } from '../models/stop-command.model';
-import { SubmitOrderResult } from "../models/order.model";
+import { LimitOrder, StopLimitOrder, StopMarketOrder, SubmitOrderResult } from "../models/order.model";
 import { OrderService } from "../../../shared/services/orders/order.service";
 import { StopEdit } from "../models/stop-edit";
+import { LessMore } from "../../../shared/models/enums/less-more.model";
 
 @Injectable({
   providedIn: 'root'
@@ -108,12 +109,31 @@ export class CommandsService {
             return this.getEmptyCommandError();
           }
 
+          if (stopCommand.allowLinkedOrder) {
+            const orders: (StopLimitOrder & { type: 'Limit' | 'StopLimit' | 'Stop' })[] = [
+              {
+                ...stopCommand as StopLimitOrder,
+                type: stopCommand.price == null ? 'Stop' : 'StopLimit',
+                side
+              },
+              {
+                ...stopCommand.linkedOrder! as StopLimitOrder,
+                type: stopCommand.linkedOrder.price == null ? 'Stop' : 'StopLimit',
+                instrument: stopCommand.instrument,
+                side: stopCommand.linkedOrder.side!
+              }
+            ];
+
+            return this.orderService.submitOrdersGroup(orders, stopCommand.user?.portfolio ?? '');
+          }
+
           if (stopCommand.price != null) {
             return this.orderService.submitStopLimitOrder(
               {
                 ...stopCommand,
                 price: stopCommand.price,
-                side: side
+                side: side,
+                linkedOrder: {}
               },
               stopCommand.user?.portfolio ?? ''
             );
@@ -121,7 +141,8 @@ export class CommandsService {
             return this.orderService.submitStopMarketOrder(
               {
                 ...stopCommand,
-                side: side
+                side: side,
+                linkedOrder: {}
               },
               stopCommand.user?.portfolio ?? ''
             );
@@ -193,11 +214,33 @@ export class CommandsService {
           }
 
           if (limitCommand.topOrderPrice || limitCommand.bottomOrderPrice) {
-            return this.orderService.submitOrdersGroup({
+            const orders: ((LimitOrder | StopLimitOrder | StopMarketOrder) & { type: 'Limit' | 'StopLimit' | 'Stop' })[] = [{
               ...limitCommand,
+              type: 'Limit',
               side
-            },
-              limitCommand.user?.portfolio ?? '');
+            }];
+
+            if (limitCommand.topOrderPrice) {
+              orders.push({
+                ...limitCommand,
+                condition: LessMore.More,
+                triggerPrice: limitCommand.topOrderPrice!,
+                side: limitCommand.topOrderSide!,
+                type: 'StopLimit'
+              });
+            }
+
+            if (limitCommand.bottomOrderPrice) {
+              orders.push({
+                ...limitCommand,
+                condition: LessMore.Less,
+                triggerPrice: limitCommand.bottomOrderPrice!,
+                side: limitCommand.bottomOrderSide!,
+                type: 'StopLimit'
+              });
+            }
+
+            return this.orderService.submitOrdersGroup(orders, limitCommand.user?.portfolio ?? '');
           }
 
           return this.orderService.submitLimitOrder(

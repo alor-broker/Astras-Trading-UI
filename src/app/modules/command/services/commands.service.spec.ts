@@ -5,17 +5,11 @@ import { CommandsService } from './commands.service';
 import { OrderService } from "../../../shared/services/orders/order.service";
 import { Side } from "../../../shared/models/enums/side.model";
 import { MarketCommand } from "../models/market-command.model";
-import {
-  LimitOrder,
-  MarketOrder,
-  StopLimitOrder,
-  StopMarketOrder,
-  SubmitOrderResult
-} from "../models/order.model";
+import { LimitOrder, MarketOrder, StopLimitOrder, StopMarketOrder, SubmitOrderResult } from "../models/order.model";
 import { of } from "rxjs";
 import { LimitCommand } from "../models/limit-command.model";
 import { StopCommand } from "../models/stop-command.model";
-import {LessMore} from "../../../shared/models/enums/less-more.model";
+import { LessMore } from "../../../shared/models/enums/less-more.model";
 
 describe('CommandsService', () => {
   let service: CommandsService;
@@ -297,7 +291,13 @@ describe('CommandsService', () => {
         quantity: 100,
         condition: LessMore.Less,
         triggerPrice: 50,
-        stopEndUnixTime: new Date()
+        stopEndUnixTime: new Date(),
+        linkedOrder: {
+          quantity: 1,
+          triggerPrice: 1,
+          condition: LessMore.Less
+        },
+        allowLinkedOrder: false
       };
 
       service.setStopCommand(command);
@@ -407,7 +407,13 @@ describe('CommandsService', () => {
         price: 200,
         condition: LessMore.Less,
         triggerPrice: 50,
-        stopEndUnixTime: new Date()
+        stopEndUnixTime: new Date(),
+        linkedOrder: {
+          quantity: 1,
+          triggerPrice: 1,
+          condition: LessMore.Less
+        },
+        allowLinkedOrder: false
       };
 
       service.setStopCommand(command);

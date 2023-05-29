@@ -62,5 +62,7 @@
   "bottomOrderPriceLabel": "Order from below (<)",
   "sideLabel": "Side",
   "buySideLabel": "Buy",
-  "sellSideLabel": "Sell"
+  "sellSideLabel": "Sell",
+  "allowLinkedOrderLabel": "Add linked order"
+
 }

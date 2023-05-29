@@ -80,10 +80,16 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
         timeInForce: new FormControl(null),
         isIceberg: new FormControl(false),
         icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
-        icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
+        icebergVariance: new FormControl(null, [
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
+        ]),
         topOrderPrice: new FormControl(null, Validators.min(inputNumberValidation.min)),
         topOrderSide: new FormControl(Side.Buy),
-        bottomOrderPrice: new FormControl(null, Validators.min(inputNumberValidation.min)),
+        bottomOrderPrice: new FormControl(null, [
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
+        ]),
         bottomOrderSide: new FormControl(Side.Buy),
       },
       AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)

@@ -67,16 +67,5 @@
       "name": "Действ. до.",
       "tooltip": "Срок действия заявки"
     }
-  },
-  "orderStatus": {
-    "filled": "Исполн",
-    "canceled": "Отменен",
-    "working":  "Активен"
-  },
-  "emptyOrders": "Заявок сегодня не было",
-  "emptyOrdersWithFilters": "С такими фильтрами ничего не найдено",
-  "cancelConfirm": "Точно отменить?",
-  "cancelAll": "Снять все",
-  "exportToFile": "Сохранить в файл",
-  "orderGroupsTooltip": "Показать связанные заявки"
+  }
 }

@@ -4,18 +4,10 @@ import { catchHttpError } from "../../utils/observable-helper";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
 import { ErrorHandlerService } from "../handle-error/error-handler.service";
-import { Observable, map, tap, BehaviorSubject, switchMap, shareReplay } from "rxjs";
-import { OrdersGroup, OrdersGroupRes } from "../../models/orders/orders-group.model";
+import { Observable, map, tap, BehaviorSubject, switchMap, shareReplay, forkJoin } from "rxjs";
+import { CreateOrderGroupReq, OrdersGroup, OrdersGroupRes } from "../../models/orders/orders-group.model";
+import { OrderCancellerService } from "../order-canceller.service";
 
-interface CreateOrderGroupReq {
-  orders: {
-      orderId: string;
-      exchange: string;
-      portfolio: string;
-      type: 'Limit' | 'StopLimit';
-    }[],
-  ExecutionPolicy: string;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -28,14 +20,30 @@ export class OrdersGroupService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly canceller: OrderCancellerService
   ) { }
 
   createOrdersGroup(req: CreateOrderGroupReq) {
     return this.http.post<SubmitOrderResult>(this.orderGroupsUrl, req)
       .pipe(
         catchHttpError<SubmitOrderResult>({ isSuccess: false }, this.errorHandlerService),
-        tap(() => this.refresh$.next(null))
+        tap((res) => {
+          if (!res.isSuccess) {
+            forkJoin([
+              req.orders.map(o => this.canceller.cancelOrder({
+                orderid: o.orderId,
+                portfolio: o.portfolio,
+                exchange: o.exchange,
+                stop: o.type !== 'Limit'
+              }))
+            ])
+              .subscribe();
+          } else {
+            this.refresh$.next(null);
+
+          }
+        })
       );
   }
 

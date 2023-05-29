@@ -157,9 +157,15 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         isIceberg: new FormControl(false),
         icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
         icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
-        topOrderPrice: new FormControl(null, Validators.min(inputNumberValidation.min)),
+        topOrderPrice: new FormControl(null, [
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
+        ]),
         topOrderSide: new FormControl(Side.Buy),
-        bottomOrderPrice: new FormControl(null, Validators.min(inputNumberValidation.min)),
+        bottomOrderPrice: new FormControl(null, [
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
+        ]),
         bottomOrderSide: new FormControl(Side.Buy)
       },
       AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)

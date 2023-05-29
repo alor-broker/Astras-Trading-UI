@@ -1,6 +1,5 @@
 import {
   ComponentFixture,
-  fakeAsync,
   TestBed
 } from '@angular/core/testing';
 import {
@@ -239,7 +238,7 @@ describe('StopCommandComponent', () => {
           ...commandContext.commandParameters.instrument
         },
         user: commandContext.commandParameters.user
-      };
+      } as StopCommand;
 
       component.form.controls.stopEndUnixTime?.setValue(expectedDate);
       component.form.controls.withLimit.setValue(true);
@@ -304,7 +303,7 @@ describe('StopCommandComponent', () => {
           condition: LessMore.More,
         user: commandContext.commandParameters.user,
         stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndUnixTimeVal)
-      };
+      } as StopCommand;
 
     component.price = { price: expectedCommand.price!};
     fixture.detectChanges();
@@ -336,7 +335,7 @@ describe('StopCommandComponent', () => {
           condition: LessMore.More,
         user: commandContext.commandParameters.user,
         stopEndUnixTime: timezoneConverter.terminalToUtc0Date(stopEndUnixTimeVal)
-      };
+      } as StopCommand;
 
     component.quantity = {quantity: expectedCommand.quantity!};
     fixture.detectChanges();

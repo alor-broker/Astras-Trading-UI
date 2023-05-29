@@ -1,5 +1,7 @@
 {
   "modalTitle": "Linked orders",
+  "groupIdLabel": "Group id",
+  "instrumentsLabel": "Symbol(s)",
   "idLabel": "Id",
   "symbolLabel": "Symbol",
   "priceLabel": "Price",

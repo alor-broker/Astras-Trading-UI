@@ -24,7 +24,7 @@ import {
   startOfDay,
   toUnixTime
 } from 'src/app/shared/utils/datetime';
-import { StopFormData } from '../../models/stop-form-data.model';
+import { LinkedOrderFormData, StopFormData } from '../../models/stop-form-data.model';
 import { CommandsService } from '../../services/commands.service';
 import { StopCommand } from '../../models/stop-command.model';
 import { CommandContextModel } from '../../models/command-context.model';
@@ -34,6 +34,7 @@ import { inputNumberValidation } from "../../../../shared/utils/validation-optio
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
+import { Side } from "../../../../shared/models/enums/side.model";
 
 @Component({
   selector: 'ats-stop-command',
@@ -134,6 +135,11 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       additionalData.timeInForce = formValue.timeInForce;
     }
 
+    if (formValue.allowLinkedOrder) {
+      additionalData.allowLinkedOrder = formValue.allowLinkedOrder;
+      additionalData.linkedOrder = formValue.linkedOrder;
+    }
+
     if (initialParameters && initialParameters.user) {
       const price = Number(formValue.price);
       const newCommand: StopCommand = {
@@ -201,8 +207,46 @@ export class StopCommandComponent implements OnInit, OnDestroy {
       isIceberg: new FormControl(false),
       icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
       icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
+      allowLinkedOrder: new FormControl(false),
+      linkedOrder: new FormGroup<ControlsOf<LinkedOrderFormData>>({
+        quantity: new FormControl(
+          1,
+          [
+            Validators.min(inputNumberValidation.min),
+            Validators.max(inputNumberValidation.max)
+          ]
+        ),
+        triggerPrice: new FormControl(
+          1,
+          [
+            Validators.min(inputNumberValidation.negativeMin),
+            Validators.max(inputNumberValidation.max),
+            AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
+          ]
+        ),
+        price: new FormControl(
+          1,
+          [
+            Validators.min(inputNumberValidation.negativeMin),
+            Validators.max(inputNumberValidation.max),
+            AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
+          ]
+        ),
+        stopEndUnixTime: new FormControl(!!commandContext.commandParameters.stopEndUnixTime
+          ? new Date(commandContext.commandParameters.stopEndUnixTime)
+          : this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
+        ),
+        condition: new FormControl(LessMore.More),
+        withLimit: new FormControl(false),
+        side: new FormControl(Side.Buy)
+      })
     },
-      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+      [
+        AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value),
+        AtsValidators.requiredIfTrue('allowLinkedOrder', 'linkedOrder.quantity'),
+        AtsValidators.requiredIfTrue('allowLinkedOrder', 'linkedOrder.triggerPrice'),
+        AtsValidators.requiredIfTrue('allowLinkedOrder', 'linkedOrder.price')
+      ]
     );
   }
 
@@ -227,6 +271,8 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         && prev?.isIceberg == curr?.isIceberg
         && prev?.icebergFixed == curr?.icebergFixed
         && prev?.icebergVariance == curr?.icebergVariance
+        && prev?.allowLinkedOrder == curr?.allowLinkedOrder
+        && JSON.stringify(prev?.linkedOrder) == JSON.stringify(curr?.linkedOrder)
       ),
     ).subscribe(() => {
       this.setStopCommand(commandContext.commandParameters);

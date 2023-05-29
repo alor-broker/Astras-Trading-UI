@@ -214,8 +214,8 @@ export class ScalperOrdersService {
       price: price,
       instrument: instrumentKey,
       triggerPrice: price,
-      condition: side === Side.Sell ? LessMore.More : LessMore.Less,
-    };
+      condition: side === Side.Sell ? LessMore.More : LessMore.Less
+    } as StopLimitOrder;
 
     if (silent) {
       this.orderService.submitStopLimitOrder(order, portfolio.portfolio).subscribe();
@@ -257,7 +257,7 @@ export class ScalperOrdersService {
       },
       triggerPrice: price,
       condition: side === Side.Sell ? LessMore.Less : LessMore.More
-    };
+    } as StopMarketOrder;
 
     if (silent) {
       this.orderService.submitStopMarketOrder(order, portfolio.portfolio).subscribe();

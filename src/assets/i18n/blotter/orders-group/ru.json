@@ -1,5 +1,7 @@
 {
   "modalTitle": "Связанные заявки",
+  "groupIdLabel": "Id группы",
+  "instrumentsLabel": "Инструмент(ы)",
   "idLabel": "Id",
   "symbolLabel": "Инструмент",
   "priceLabel": "Цена",

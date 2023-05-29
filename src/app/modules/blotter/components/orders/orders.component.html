@@ -1,8 +1,8 @@
-<ng-container *transloco="let t; scope: 'blotter/orders'">
+<ng-container *transloco="let t; scope: 'blotter/blotter-common'">
   <div *ngIf="settings$ | async as settings" class="container">
     <ng-template #empty>
       <nz-empty
-        [nzNotFoundContent]="isFilterDisabled() ? t('blotterOrders.emptyOrders') : t('blotterOrders.emptyOrdersWithFilters')"
+        [nzNotFoundContent]="isFilterDisabled() ? t('blotterBlotterCommon.emptyOrders') : t('blotterBlotterCommon.emptyOrdersWithFilters')"
         class="ant-list-empty-text"
         nzNotFoundImage="simple">
       </nz-empty>
@@ -31,8 +31,8 @@
                        [nzCancelText]="t('no')"
                        [nzCondition]="settings.cancelOrdersWithoutConfirmation ?? false"
                        [nzOkText]="t('yes')"
-                       [nzPopconfirmTitle]="t('blotterOrders.cancelConfirm')"
-                       nz-popconfirm>{{t('blotterOrders.cancelAll')}}</a>
+                       [nzPopconfirmTitle]="t('blotterBlotterCommon.cancelConfirm')"
+                       nz-popconfirm>{{t('blotterBlotterCommon.cancelAll')}}</a>
                   </span>
             </th>
             <th (atsWidthChanged)="saveColumnWidth(column.id, $event)"
@@ -85,7 +85,7 @@
                    [nzCancelText]="t('no')"
                    [nzCondition]="settings.cancelOrdersWithoutConfirmation ?? false"
                    [nzOkText]="t('yes')"
-                   [nzPopconfirmTitle]="t('blotterOrders.cancelConfirm')"
+                   [nzPopconfirmTitle]="t('blotterBlotterCommon.cancelConfirm')"
                    nz-popconfirm>
                   <i nz-icon nzTheme="outline" nzType="close-circle"></i>
                 </a>
@@ -93,7 +93,7 @@
                 <a
                   *ngIf="ord.groupId"
                   nz-tooltip=""
-                  [nzTooltipTitle]="t('blotterOrders.orderGroupsTooltip')"
+                  [nzTooltipTitle]="t('blotterBlotterCommon.orderGroupsTooltip')"
                   (click)="openOrdersGroup(ord.groupId)"
                 >
                   <i nz-icon nzTheme="outline" nzType="apartment"></i>
@@ -135,7 +135,7 @@
       <div class="export-button-container">
         <button (click)="exportToFile()" *ngIf="canExport" nz-button nzType="link">
           <i nz-icon nzType="download"></i>
-          {{t('blotterOrders.exportToFile')}}
+          {{t('blotterBlotterCommon.exportToFile')}}
         </button>
       </div>
     </ng-template>

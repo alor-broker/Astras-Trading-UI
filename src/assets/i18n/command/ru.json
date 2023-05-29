@@ -62,5 +62,6 @@
   "bottomOrderPriceLabel": "Условная заявка снизу (<)",
   "sideLabel": "Сторона",
   "buySideLabel": "Покупка",
-  "sellSideLabel": "Продажа"
+  "sellSideLabel": "Продажа",
+  "allowLinkedOrderLabel": "Добавить связанную заявку"
 }

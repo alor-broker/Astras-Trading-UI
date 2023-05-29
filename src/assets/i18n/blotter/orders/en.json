@@ -67,16 +67,5 @@
       "name": "End time",
       "tooltip": "Order validity period"
     }
-  },
-  "orderStatus": {
-    "filled": "Done",
-    "canceled": "Canceled",
-    "working":  "Active"
-  },
-  "emptyOrders": "There are no orders today",
-  "emptyOrdersWithFilters": "Nothing found with these filters",
-  "cancelConfirm": "Are you sure?",
-  "cancelAll": "Cancel all",
-  "exportToFile": "Export to file",
-  "orderGroupsTooltip": "Show linked orders"
+  }
 }

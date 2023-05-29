@@ -89,10 +89,10 @@
   </div>
 
   <ng-template #footer>
-    <div class="export-button-container">
+    <div class="export-button-container" *transloco="let tCommon; scope: 'blotter/blotter-common'">
       <button (click)="exportToFile()" *ngIf="canExport" nz-button nzType="link">
         <i nz-icon nzType="download"></i>
-        {{t('blotterPositions.exportToFile')}}
+        {{tCommon('blotterBlotterCommon.exportToFile')}}
       </button>
     </div>
   </ng-template>

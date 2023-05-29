@@ -62,6 +62,8 @@ export interface StopMarketOrder extends OrderBase {
   triggerPrice: number;
   condition: LessMore;
   stopEndUnixTime?: Date | number;
+  linkedOrder: LinkedOrder;
+  allowLinkedOrder?: boolean;
 }
 
 export interface StopLimitOrder extends StopMarketOrder {
@@ -69,4 +71,14 @@ export interface StopLimitOrder extends StopMarketOrder {
   icebergFixed?: number;
   icebergVariance?: number;
   timeInForce?: TimeInForce;
+}
+
+export interface LinkedOrder {
+  quantity?: number;
+  triggerPrice?: number;
+  price?: number;
+  stopEndUnixTime?: Date;
+  condition?: LessMore;
+  withLimit?: boolean;
+  side?: Side;
 }

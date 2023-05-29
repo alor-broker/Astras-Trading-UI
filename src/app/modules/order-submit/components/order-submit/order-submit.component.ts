@@ -21,7 +21,7 @@ import {LimitOrderFormValue} from "../order-forms/limit-order-form/limit-order-f
 import {MarketOrderFormValue} from "../order-forms/market-order-form/market-order-form.component";
 import {StopOrderFormValue} from "../order-forms/stop-order-form/stop-order-form.component";
 import {Side} from "../../../../shared/models/enums/side.model";
-import {SubmitOrderResult} from "../../../command/models/order.model";
+import { LimitOrder, StopLimitOrder, StopMarketOrder, SubmitOrderResult } from "../../../command/models/order.model";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {finalize, map, startWith} from "rxjs/operators";
 import {OrderService} from "../../../../shared/services/orders/order.service";
@@ -40,6 +40,7 @@ import {DashboardContextService} from '../../../../shared/services/dashboard-con
 import {isArrayEqual} from '../../../../shared/utils/collections';
 import {OrderSubmitSettings} from '../../models/order-submit-settings.model';
 import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
+import { LessMore } from "../../../../shared/models/enums/less-more.model";
 
 export enum ComponentTabs {
   LimitOrder = 'limitOrder',
@@ -337,16 +338,36 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     }
 
     if (this.limitOrderFormValue.topOrderPrice || this.limitOrderFormValue.bottomOrderPrice) {
-      return this.orderService.submitOrdersGroup(
-        {
+      const orders: ((LimitOrder | StopLimitOrder | StopMarketOrder) & { type: 'Limit' | 'StopLimit' | 'Stop' })[] = [{
+        ...this.limitOrderFormValue,
+        type: 'Limit',
+        side,
+        instrument
+      }];
+
+      if (this.limitOrderFormValue.topOrderPrice) {
+        orders.push({
           ...this.limitOrderFormValue,
-          instrument: {
-            ...instrument,
-            instrumentGroup: this.limitOrderFormValue.instrumentGroup ?? instrument.instrumentGroup
-          },
-          side
-        },
-        portfolio);
+          condition: LessMore.More,
+          triggerPrice: this.limitOrderFormValue.topOrderPrice!,
+          side: this.limitOrderFormValue.topOrderSide!,
+          type: 'StopLimit',
+          instrument
+        });
+      }
+
+      if (this.limitOrderFormValue.bottomOrderPrice) {
+        orders.push({
+          ...this.limitOrderFormValue,
+          condition: LessMore.Less,
+          triggerPrice: this.limitOrderFormValue.bottomOrderPrice!,
+          side: this.limitOrderFormValue.bottomOrderSide!,
+          type: 'StopLimit',
+          instrument
+        });
+      }
+
+      return this.orderService.submitOrdersGroup(orders, portfolio);
     }
 
     return this.orderService.submitLimitOrder(
@@ -383,6 +404,25 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   private prepareStopOrder(instrument: InstrumentKey, portfolio: string, side: Side): Observable<SubmitOrderResult> | null {
     if (!this.stopOrderFormValue) {
       return null;
+    }
+
+    if (this.stopOrderFormValue.allowLinkedOrder) {
+      const orders: (StopLimitOrder & { type: 'StopLimit' | 'Stop' })[] = [
+        {
+          ...this.stopOrderFormValue,
+          type: this.stopOrderFormValue.withLimit ? 'StopLimit' : 'Stop',
+          side,
+          instrument: {...instrument}
+        },
+        {
+          ...this.stopOrderFormValue.linkedOrder! as StopLimitOrder,
+          type: this.stopOrderFormValue.linkedOrder.withLimit ? 'StopLimit' : 'Stop',
+          instrument: {...instrument},
+          side: this.stopOrderFormValue.linkedOrder.side!
+        }
+      ];
+
+      return this.orderService.submitOrdersGroup(orders, portfolio);
     }
 
     if (this.stopOrderFormValue.withLimit) {
