@@ -4,6 +4,8 @@ import {WidgetSettingsService} from "../../../../shared/services/widget-settings
 import {of} from "rxjs";
 import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
 import {mockComponent, ngZorroMockComponents} from "../../../../shared/utils/testing";
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 describe('RibbonWidgetComponent', () => {
   let component: RibbonWidgetComponent;
@@ -38,6 +40,13 @@ describe('RibbonWidgetComponent', () => {
 
     fixture = TestBed.createComponent(RibbonWidgetComponent);
     component = fixture.componentInstance;
+
+    component.widgetInstance = {
+      instance: {
+        guid: 'guid'
+      } as Widget,
+      widgetMeta: {} as WidgetMeta
+    };
     fixture.detectChanges();
   });
 

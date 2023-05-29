@@ -4,7 +4,6 @@ import { CommandParams } from '../models/commands/command-params.model';
 import { EditParams } from '../models/commands/edit-params.model';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { NewsListItem } from "../../modules/news/models/news.model";
-import { WidgetNames } from "../models/enums/widget-names";
 import { NewFeedback } from '../../modules/feedback/models/feedback.model';
 import { ReleaseMeta } from '../../modules/application-meta/models/application-release.model';
 import { NzModalService } from "ng-zorro-antd/modal";
@@ -23,7 +22,7 @@ export class ModalService {
   private editParams = new BehaviorSubject<EditParams | null>(null);
   private shouldShowEditModal = new BehaviorSubject<boolean>(false);
 
-  private helpParams = new BehaviorSubject<WidgetNames | null>(null);
+  private helpParams = new BehaviorSubject<string | null>(null);
   private shouldShowHelpModal = new BehaviorSubject<boolean>(false);
 
   private shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
@@ -85,9 +84,9 @@ export class ModalService {
     this.editParams.next(data);
   }
 
-  openHelpModal(widgetName: WidgetNames) {
+  openHelpModal(helpRef: string) {
     this.shouldShowHelpModal.next(true);
-    this.helpParams.next(widgetName);
+    this.helpParams.next(helpRef);
   }
 
   openTerminalSettingsModal() {

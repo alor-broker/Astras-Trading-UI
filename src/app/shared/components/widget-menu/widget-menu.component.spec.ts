@@ -1,7 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { WidgetMenuComponent } from './widget-menu.component';
-import { getTranslocoModule, ngZorroMockComponents } from "../../utils/testing";
+import {WidgetMenuComponent} from './widget-menu.component';
+import {getTranslocoModule, ngZorroMockComponents} from "../../utils/testing";
+import {WidgetsMetaService} from "../../services/widgets-meta.service";
+import {of} from "rxjs";
 
 describe('WidgetMenuComponent', () => {
   let component: WidgetMenuComponent;
@@ -13,9 +15,17 @@ describe('WidgetMenuComponent', () => {
         WidgetMenuComponent,
         ...ngZorroMockComponents
       ],
-      imports: [getTranslocoModule()]
+      imports: [getTranslocoModule()],
+      providers: [
+        {
+          provide: WidgetsMetaService,
+          useValue: {
+            getWidgetsMeta: jasmine.createSpy('getWidgetsMeta').and.returnValue(of([]))
+          }
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

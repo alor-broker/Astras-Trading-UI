@@ -20,16 +20,18 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-order-submit-widget[guid][isBlockWidget]',
+  selector: 'ats-order-submit-widget[widgetInstance][isBlockWidget]',
   templateUrl: './order-submit-widget.component.html',
   styleUrls: ['./order-submit-widget.component.less']
 })
 export class OrderSubmitWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
   @Input()
-  guid!: string;
+  widgetInstance!: WidgetInstance;
+
   @Input()
   isBlockWidget!: boolean;
   settings$!: Observable<OrderSubmitSettings>;
@@ -45,13 +47,17 @@ export class OrderSubmitWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   onSettingsChange() {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<OrderSubmitSettings>(
-      this.guid,
+      this.widgetInstance,
       'OrderSubmitSettings',
       settings => ({
         ...settings,

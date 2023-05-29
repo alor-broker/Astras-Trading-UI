@@ -1,11 +1,580 @@
 ﻿[
   {
-    "typeId": "ribbon",
+    "typeId": "instrument-select",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "InstrumentsModule",
+        "componentName": "InstrumentSelectWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Instrument Select",
+      "translations": {
+        "ru": "Выбор инструмента",
+        "en": "Instrument Select"
+      }
+    },
     "desktopMeta": {
-      "icon": "stock",
-      "initialPosition": "top",
-      "initialHeight": 1,
-      "initialWidth": "full-width"
+      "headerIcon": "eye",
+      "galleryIcon": "eye",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 1,
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "order-book",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "OrderbookModule",
+        "componentName": "OrderbookWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Orderbook",
+      "translations": {
+        "ru": "Стакан",
+        "en": "Orderbook"
+      }
+    },
+    "hasInstrumentBind": true,
+    "desktopMeta": {
+      "headerIcon": "ordered-list",
+      "galleryIcon": "ordered-list",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 2,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "ribbonIcon": "ordered-list",
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "scalper-order-book",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "ScalperOrderBookModule",
+        "componentName": "ScalperOrderBookWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Scalper Orderbook",
+      "translations": {
+        "ru": "Скальперский стакан",
+        "en": "Scalper Orderbook"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "ordered-list",
+      "galleryIcon": "ordered-list",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 3,
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "light-chart",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "LightChartModule",
+        "componentName": "LightChartWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Chart",
+      "translations": {
+        "ru": "График",
+        "en": "Chart"
+      }
+    },
+    "hasInstrumentBind": true,
+    "desktopMeta": {
+      "headerIcon": "sliders",
+      "galleryIcon": "sliders",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 4,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "ribbonIcon": "sliders",
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "tech-chart",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "TechChartModule",
+        "componentName": "TechChartWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Tech Chart",
+      "translations": {
+        "ru": "Тех. анализ",
+        "en": "Tech Chart"
+      }
+    },
+    "hasInstrumentBind": true,
+    "desktopMeta": {
+      "headerIcon": "fund",
+      "galleryIcon": "fund",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 5,
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "blotter",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "BlotterModule",
+        "componentName": "BlotterWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Blotter",
+      "translations": {
+        "ru": "Блоттер",
+        "en": "Blotter"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "table",
+      "galleryIcon": "table",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 6,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "ribbonIcon": "table",
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "instrument-info",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "InfoModule",
+        "componentName": "InfoWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Info",
+      "translations": {
+        "ru": "Инфо",
+        "en": "Info"
+      }
+    },
+    "hasInstrumentBind": true,
+    "desktopMeta": {
+      "headerIcon": "info",
+      "galleryIcon": "info",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 7,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "ribbonIcon": "info",
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "news",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "NewsModule",
+        "componentName": "NewsWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "News",
+      "translations": {
+        "ru": "Новости",
+        "en": "News"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "read",
+      "galleryIcon": "read",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 8,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "ribbonIcon": "read",
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "all-trades",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "AllTradesModule",
+        "componentName": "AllTradesWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "All Trades",
+      "translations": {
+        "ru": "Все сделки",
+        "en": "All Trades"
+      }
+    },
+    "hasInstrumentBind": true,
+    "desktopMeta": {
+      "headerIcon": "unordered-list",
+      "galleryIcon": "unordered-list",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 9,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "ribbonIcon": "unordered-list",
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "exchange-rate",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "ExchangeRateModule",
+        "componentName": "ExchangeRateWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Exchange Rate",
+      "translations": {
+        "ru": "Курсы валют",
+        "en": "Exchange Rate"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "line-chart",
+      "galleryIcon": "line-chart",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 10,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "ribbonIcon": "line-chart",
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "all-instruments",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "AllInstrumentsModule",
+        "componentName": "AllInstrumentsWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "All Instruments",
+      "translations": {
+        "ru": "Все инструменты",
+        "en": "All Instruments"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "profile",
+      "galleryIcon": "profile",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 11,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "ribbonIcon": "profile",
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "order-submit",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "OrderSubmitModule",
+        "componentName": "OrderSubmitWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Order Submit",
+      "translations": {
+        "ru": "Выставить заявку",
+        "en": "Order Submit"
+      }
+    },
+    "hasInstrumentBind": true,
+    "desktopMeta": {
+      "headerIcon": "send",
+      "galleryIcon": "send",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 12,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "ribbonIcon": "plus-circle",
+      "enabled": true,
+      "widgetName": {
+        "default": "Order",
+        "translations": {
+          "ru": "Заявка",
+          "en": "Order"
+        }
+      }
+    }
+  },
+  {
+    "typeId": "orders-basket",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "OrdersBasketModule",
+        "componentName": "OrdersBasketWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Orders Basket",
+      "translations": {
+        "ru": "Корзина заявок",
+        "en": "Orders Basket"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "calculator",
+      "galleryIcon": "calculator",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 13,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "ribbonIcon": "calculator",
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "treemap",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "TreemapModule",
+        "componentName": "TreemapWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Market Map",
+      "translations": {
+        "ru": "Карта рынка",
+        "en": "Market Map"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "layout",
+      "galleryIcon": "layout",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 14,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "ribbonIcon": "layout",
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "ribbon",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "RibbonModule",
+        "componentName": "RibbonWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Ribbon",
+      "translations": {
+        "ru": "Лента",
+        "en": "Ribbon"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "stock",
+      "galleryIcon": "stock",
+      "addOptions": {
+        "initialPosition": "top",
+        "isFullWidth": true,
+        "initialHeight": 1
+      },
+      "galleryOrder": 15,
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "events-calendar",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "EventsCalendarModule",
+        "componentName": "EventsCalendarWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Events Calendar",
+      "translations": {
+        "ru": "Календарь событий",
+        "en": "Events Calendar"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "calendar",
+      "galleryIcon": "calendar",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 16,
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "option-board",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "OptionBoardModule",
+        "componentName": "OptionBoardWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Option Board",
+      "translations": {
+        "ru": "Опционная доска",
+        "en": "Option Board"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "table",
+      "galleryIcon": "table",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 17,
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "arbitrage-spread",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "ArbitrageSpreadModule",
+        "componentName": "ArbitrageSpreadWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Arbitrage Spread",
+      "translations": {
+        "ru": "Арбитражная раздвижка",
+        "en": "Arbitrage Spread"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "fork",
+      "galleryIcon": "fork",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 18,
+      "enabled": true
     }
   }
 ]

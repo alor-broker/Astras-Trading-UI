@@ -25,9 +25,10 @@ import {
   OrderbookSettings
 } from '../../models/orderbook-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-orderbook-widget[guid][isBlockWidget]',
+  selector: 'ats-orderbook-widget[widgetInstance][isBlockWidget]',
   templateUrl: './orderbook-widget.component.html',
   styleUrls: ['./orderbook-widget.component.less'],
   providers: [OrderbookService]
@@ -35,7 +36,7 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 export class OrderbookWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
   @Input()
-  guid!: string;
+  widgetInstance!: WidgetInstance;
 
   @Input()
   isBlockWidget!: boolean;
@@ -55,9 +56,13 @@ export class OrderbookWidgetComponent implements OnInit {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<OrderbookSettings>(
-      this.guid,
+      this.widgetInstance,
       'OrderbookSettings',
       settings => ({
         ...settings,

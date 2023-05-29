@@ -20,6 +20,9 @@ import {
 } from '../models/feedback.model';
 import { NotificationMeta } from '../../notifications/models/notification.model';
 import { TranslatorService } from "../../../shared/services/translator.service";
+import {TimezoneConverterService} from "../../../shared/services/timezone-converter.service";
+import {TimezoneConverter} from "../../../shared/utils/timezone-converter";
+import {TimezoneDisplayOption} from "../../../shared/models/enums/timezone-display-option";
 
 describe('FeedbackNotificationsProvider', () => {
   let provider: FeedbackNotificationsProvider;
@@ -68,6 +71,12 @@ describe('FeedbackNotificationsProvider', () => {
           provide: TranslatorService,
           useValue: {
             getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+          }
+        },
+        {
+          provide: TimezoneConverterService,
+          useValue: {
+            getConverter: jasmine.createSpy('getConverter').and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)))
           }
         }
       ]

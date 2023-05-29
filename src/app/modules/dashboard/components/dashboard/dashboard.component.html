@@ -3,7 +3,7 @@
     <div>
       <gridster-item [item]="item.gridsterItem" *ngFor="let item of items; trackBy: getItemTrackKey">
         <div class="widget-container">
-          <ats-parent-widget [widget]="item.widget" [isBlockWidget]="isBlockWidget"></ats-parent-widget>
+          <ats-parent-widget [widget]="item.instance" [isBlockWidget]="isBlockWidget"></ats-parent-widget>
         </div>
       </gridster-item>
     </div>

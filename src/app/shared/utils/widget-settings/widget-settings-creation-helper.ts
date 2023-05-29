@@ -12,20 +12,22 @@ import {
 } from '../instruments';
 import { InstrumentKey } from '../../models/instruments/instrument-key.model';
 import { PortfolioKey } from '../../models/portfolio-key.model';
+import {WidgetInstance} from "../../models/dashboard/dashboard-item.model";
 
 export class WidgetSettingsCreationHelper {
   static createWidgetSettingsIfMissing<T extends WidgetSettings>(
-    widgetGuid: string,
+    widgetInstance: WidgetInstance,
     settingsType: string,
     fill: (settings: T) => T,
     widgetSettingsService: WidgetSettingsService) {
-    widgetSettingsService.getSettingsOrNull(widgetGuid).pipe(
+    widgetSettingsService.getSettingsOrNull(widgetInstance.instance.guid).pipe(
       take(1),
       filter(x => !x)
     ).subscribe(() => {
       const settings = {
-        guid: widgetGuid,
-        settingsType
+        guid: widgetInstance.instance.guid,
+        settingsType,
+        ...widgetInstance.instance.initialSettings
       } as T;
 
       widgetSettingsService.addSettings([fill(settings)]);
@@ -33,13 +35,13 @@ export class WidgetSettingsCreationHelper {
   }
 
   static createInstrumentLinkedWidgetSettingsIfMissing<T extends WidgetSettings & InstrumentKey>(
-    widgetGuid: string,
+    widgetInstance: WidgetInstance,
     settingsType: string,
     fill: (settings: T) => T,
     dashboardContextService: DashboardContextService,
     widgetSettingsService: WidgetSettingsService
   ) {
-    widgetSettingsService.getSettingsOrNull(widgetGuid).pipe(
+    widgetSettingsService.getSettingsOrNull(widgetInstance.instance.guid).pipe(
       take(1),
       filter(x => !x),
       switchMap(() => dashboardContextService.instrumentsSelection$),
@@ -47,11 +49,11 @@ export class WidgetSettingsCreationHelper {
     ).subscribe(instrumentSelection => {
       const groupKey = defaultBadgeColor;
       const settings = {
-        guid: widgetGuid,
+        guid: widgetInstance.instance.guid,
         linkToActive: true,
         ...toInstrumentKey(instrumentSelection[groupKey]),
-        badgeColor: groupKey
-
+        badgeColor: groupKey,
+        ...widgetInstance.instance.initialSettings
       } as T;
 
       widgetSettingsService.addSettings([fill(settings)]);
@@ -59,23 +61,23 @@ export class WidgetSettingsCreationHelper {
   }
 
   static createPortfolioLinkedWidgetSettingsIfMissing<T extends WidgetSettings & PortfolioKey>(
-    widgetGuid: string,
+    widgetInstance: WidgetInstance,
     settingsType: string,
     fill: (settings: T) => T,
     dashboardContextService: DashboardContextService,
     widgetSettingsService: WidgetSettingsService
   ) {
-    widgetSettingsService.getSettingsOrNull(widgetGuid).pipe(
+    widgetSettingsService.getSettingsOrNull(widgetInstance.instance.guid).pipe(
       take(1),
       filter(x => !x),
       switchMap(() => dashboardContextService.selectedPortfolio$),
       take(1)
     ).subscribe(portfolio => {
       const settings = {
-        guid: widgetGuid,
+        guid: widgetInstance.instance.guid,
         linkToActive: true,
         ...portfolio,
-
+        ...widgetInstance.instance.initialSettings
       } as T;
 
       widgetSettingsService.addSettings([fill(settings)]);

@@ -1,140 +1,20 @@
-<ul nz-menu nzMode="inline" *transloco="let t; scope: 'shared/widget-menu'">
-  <li nz-menu-divider *ngIf="isMobile$ | async"></li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.instrumentSelect)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.instrumentSelect)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.instrumentSelect)" nzTheme="outline"></i><label>&nbsp;{{t('widgetHeaders.InstrumentSelectSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.orderBook)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.orderBook)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.orderBook)" nzTheme="outline"></i> <label>&nbsp;{{t('widgetHeaders.OrderbookSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.scalperOrderBook)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.scalperOrderBook)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.scalperOrderBook)" nzTheme="outline"></i> <label>&nbsp;{{t('widgetHeaders.ScalperOrderBookSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.lightChart)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.lightChart)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.lightChart)" nzTheme="outline"></i><label>&nbsp;{{t('widgetHeaders.LightChartSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.techChart)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.techChart)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.techChart)" nzTheme="outline"></i><label> {{t('widgetHeaders.TechChartSettings')}}</label></span>
-  </li>
-  <li nz-menu-item
-      (click)="selected.emit(widgetNames.blotter)"
-      *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.blotter)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.blotter)" nzTheme="outline"></i><label>&nbsp;{{t('widgetHeaders.BlotterSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.instrumentInfo)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.instrumentInfo)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.instrumentInfo)" nzTheme="outline"></i><label>&nbsp;{{t('widgetHeaders.InfoSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.news)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.news)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.news)" nzTheme="outline"></i><label> {{t('widgetHeaders.NewsSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.allTrades)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.allTrades)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.allTrades)" nzTheme="outline"></i><label> {{t('widgetHeaders.AllTradesSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.exchangeRate)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.exchangeRate)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.exchangeRate)" nzTheme="outline"></i><label> {{t('widgetHeaders.ExchangeRateSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.allInstruments)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.allInstruments)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.allInstruments)" nzTheme="outline"></i><label> {{t('widgetHeaders.AllInstrumentsSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.orderSubmit)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.orderSubmit)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.orderSubmit)" nzTheme="outline"></i><label> {{t('widgetHeaders.OrderSubmitSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.ordersBasket)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.ordersBasket)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.ordersBasket)" nzTheme="outline"></i><label> {{t('widgetHeaders.OrdersBasketSettings')}}</label></span>
-  </li>
-  <li
-      nz-menu-item
-      (click)="selected.emit(widgetNames.treemap)"
-      *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.treemap)"
-    >
-      <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.treemap)" nzTheme="outline"></i><label> {{t('widgetHeaders.TreemapSettings')}}</label></span>
-    </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.ribbon)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.ribbon)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.ribbon)" nzTheme="outline"></i><label> {{t('widgetHeaders.RibbonSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.eventsCalendar)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.eventsCalendar)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.eventsCalendar)" nzTheme="outline"></i><label> {{t('widgetHeaders.EventsCalendarSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.optionBoard)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.optionBoard)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.optionBoard)" nzTheme="outline"></i><label> {{t('widgetHeaders.OptionBoardSettings')}}</label></span>
-  </li>
-  <li
-    nz-menu-item
-    (click)="selected.emit(widgetNames.arbitrageSpread)"
-    *ngIf="!showedWidgets.length || showedWidgets.includes(widgetNames.arbitrageSpread)"
-  >
-    <span><i nz-icon [nzType]="widgetsHelper.getIconName(widgetNames.arbitrageSpread)" nzTheme="outline"></i><label> {{t('widgetHeaders.ArbitrageSpreadSettings')}}</label></span>
-  </li>
-
-  <ng-container *ngIf="!showedWidgets.length">
-    <li nz-menu-divider></li>
-
+<ul *transloco="let t; scope: 'shared/widget-menu'" nz-menu nzMode="inline">
+  <ng-container *ngFor="let widget of widgetsMeta$ | async">
     <li
+      (click)="selected.emit(widget.typeId)"
       nz-menu-item
-      (click)="resetDashboard.emit()"
-      *ngIf="showResetItem"
     >
-      <span><i nz-icon nzType="appstore" nzTheme="outline"></i><label> {{t('sharedWidgetMenu.standardView')}} </label></span>
+      <span><i [nzType]="widget.icon" nz-icon nzTheme="outline"></i><label>&nbsp;{{widget.name}}</label></span>
+    </li>
+  </ng-container>
+
+  <ng-container *ngIf="showResetItem">
+    <li nz-menu-divider></li>
+    <li (click)="resetDashboard.emit()" nz-menu-item>
+      <span>
+        <i nz-icon nzTheme="outline" nzType="appstore"></i>
+        <label> {{t('sharedWidgetMenu.standardView')}} </label>
+      </span>
     </li>
   </ng-container>
 </ul>

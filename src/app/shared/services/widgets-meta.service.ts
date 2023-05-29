@@ -9,7 +9,7 @@ import {HttpClient} from "@angular/common/http";
 export class WidgetsMetaService {
   private meta$?: Observable<WidgetMeta[]>;
 
-  constructor(private readonly http: HttpClient) {
+  constructor(private readonly httpClient: HttpClient) {
   }
 
   getWidgetsMeta(): Observable<WidgetMeta[]> {
@@ -21,7 +21,7 @@ export class WidgetsMetaService {
   }
 
   private readMeta() {
-    this.meta$ = this.http.get<WidgetMeta[]>('../../../assets/widgets-meta.json')
+    this.meta$ = this.httpClient.get<WidgetMeta[]>('../../../assets/widgets-meta.json')
       .pipe(
         shareReplay(1)
       );

@@ -25,18 +25,18 @@ import {
   LightChartSettings,
   TimeFrameDisplayMode
 } from '../../models/light-chart-settings.model';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-light-chart-widget[guid][isBlockWidget]',
+  selector: 'ats-light-chart-widget[widgetInstance][isBlockWidget]',
   templateUrl: './light-chart-widget.component.html',
   styleUrls: ['./light-chart-widget.component.less']
 })
 export class LightChartWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
 
-
   @Input()
-  guid!: string;
+  widgetInstance!: WidgetInstance;
 
   @Input()
   isBlockWidget!: boolean;
@@ -53,13 +53,17 @@ export class LightChartWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   onSettingsChange() {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<LightChartSettings>(
-      this.guid,
+      this.widgetInstance,
       'LightChartSettings',
       settings => ({
         ...settings,

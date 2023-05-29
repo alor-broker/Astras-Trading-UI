@@ -4,10 +4,12 @@ import {
 } from '@angular/core/testing';
 
 import { InstrumentSelectWidgetComponent } from './instrument-select-widget.component';
-import { mockComponent } from "../../../../shared/utils/testing";
+import {getTranslocoModule, mockComponent, widgetSkeletonMock} from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { of } from 'rxjs';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 describe('InstrumentSelectWidgetComponent', () => {
   let component: InstrumentSelectWidgetComponent;
@@ -16,6 +18,7 @@ describe('InstrumentSelectWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [getTranslocoModule()],
       declarations: [
         InstrumentSelectWidgetComponent,
         mockComponent({
@@ -24,8 +27,9 @@ describe('InstrumentSelectWidgetComponent', () => {
         }),
         mockComponent({
           selector: 'ats-instrument-select-settings',
-          inputs: ['guid',]
-        })
+          inputs: ['guid']
+        }),
+        widgetSkeletonMock
       ],
       providers: [
         {
@@ -49,6 +53,17 @@ describe('InstrumentSelectWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(InstrumentSelectWidgetComponent);
     component = fixture.componentInstance;
+
+    component.widgetInstance = {
+      instance: {
+        guid: 'guid'
+      } as Widget,
+      widgetMeta: {
+        widgetName: {
+          translations: {}
+        }
+      } as WidgetMeta
+    };
     fixture.detectChanges();
   });
 

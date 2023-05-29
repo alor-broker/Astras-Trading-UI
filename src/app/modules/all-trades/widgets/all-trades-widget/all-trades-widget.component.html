@@ -18,10 +18,8 @@
         [linkToActive]="settings.linkToActive"
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [titleIconTooltip]="t('widgetHeaders.AllTradesSettings')"
         [titleText]="title$ | async"
-        helpRef="all-trades"
-        titleIcon="unordered-list"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 

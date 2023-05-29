@@ -75,6 +75,13 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       }
     },
     {
+      id: 'dailyGrowthPercent',
+      displayName: 'Рост за сегодня, %',
+      classFn: data => data.dailyGrowth < 0 ? 'sell' : 'buy',
+      width: 100,
+      sortChangeFn: this.getSortFn('dailyGrowthPercent')
+    },
+    {
       id: 'tradeVolume',
       displayName: 'Объём торгов',
       width: 110,

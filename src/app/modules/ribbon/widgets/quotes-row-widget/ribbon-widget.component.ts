@@ -8,9 +8,10 @@ import { Observable } from 'rxjs';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { ManageDashboardsService } from '../../../../shared/services/manage-dashboards.service';
 import { RibbonSettings } from '../../models/ribbon-settings.model';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-ribbon-widget[guid][isBlockWidget]',
+  selector: 'ats-ribbon-widget[widgetInstance][isBlockWidget]',
   templateUrl: './ribbon-widget.component.html',
   styleUrls: ['./ribbon-widget.component.less']
 })
@@ -18,7 +19,7 @@ export class RibbonWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
 
   @Input()
-  guid!: string;
+  widgetInstance!: WidgetInstance;
   @Input()
   isBlockWidget!: boolean;
 
@@ -30,9 +31,13 @@ export class RibbonWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<RibbonSettings>(
-      this.guid,
+      this.widgetInstance,
       'RibbonSettings',
       settings => ({
         ...settings

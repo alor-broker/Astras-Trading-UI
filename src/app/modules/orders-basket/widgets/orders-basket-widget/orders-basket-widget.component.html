@@ -12,10 +12,8 @@
         [hasHelp]="true"
         [hasSettings]="false"
         [showBadgesMenu]="false"
-        [titleIconTooltip]="t('widgetHeaders.OrdersBasketSettings')"
         [titleText]="title$ | async"
-        helpRef="orders-basket"
-        titleIcon="calculator"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 

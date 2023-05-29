@@ -2,8 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MobileDashboardComponent } from './mobile-dashboard.component';
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { of } from "rxjs";
+import {of, Subject} from "rxjs";
 import { getTranslocoModule } from "../../../../shared/utils/testing";
+import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
 
 describe('MobileDashboardComponent', () => {
   let component: MobileDashboardComponent;
@@ -18,6 +19,12 @@ describe('MobileDashboardComponent', () => {
           provide: DashboardContextService,
           useValue: {
             selectedDashboard$: of({})
+          }
+        },
+        {
+          provide: WidgetsMetaService,
+          useValue: {
+            getWidgetsMeta: jasmine.createSpy('getWidgetsMeta').and.returnValue(new Subject())
           }
         }
       ]

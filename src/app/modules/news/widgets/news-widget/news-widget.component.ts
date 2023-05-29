@@ -13,14 +13,17 @@ import { TerminalSettingsService } from "../../../terminal-settings/services/ter
 import { NewsSection } from "../../models/news.model";
 import { map } from "rxjs/operators";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-news-widget[guid][isBlockWidget]',
+  selector: 'ats-news-widget[widgetInstance][isBlockWidget]',
   templateUrl: './news-widget.component.html',
   styleUrls: ['./news-widget.component.less']
 })
 export class NewsWidgetComponent implements OnInit {
-  @Input() public guid!: string;
+  @Input()
+  widgetInstance!: WidgetInstance;
+
   @Input()
   isBlockWidget!: boolean;
   settings$!: Observable<NewsSettings>;
@@ -35,9 +38,13 @@ export class NewsWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<NewsSettings>(
-      this.guid,
+      this.widgetInstance,
       'NewsSettings',
       settings => ({
         ...settings
