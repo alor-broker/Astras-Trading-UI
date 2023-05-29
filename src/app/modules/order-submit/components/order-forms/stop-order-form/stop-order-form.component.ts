@@ -150,7 +150,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
               AtsValidators.priceStepMultiplicity(instrument.minstep || 0)
             ]
           ),
-          stopEndUnixTime: new FormControl(this.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
+          stopEndUnixTime: new FormControl(additions!.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))
           ),
           condition: new FormControl(LessMore.More),
           withLimit: new FormControl(false),
