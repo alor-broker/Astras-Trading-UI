@@ -100,7 +100,9 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
       take(1)
     ).subscribe(portfolios => {
       this.form = new UntypedFormArray(
-        portfolios.map(p => new UntypedFormGroup({
+        portfolios
+          .sort((a, b) => a.portfolio.exchange.localeCompare(b.portfolio.exchange) || a.portfolio.portfolio.localeCompare(b.portfolio.portfolio))
+          .map(p => new UntypedFormGroup({
           currency: new UntypedFormControl(p.currency, Validators.required),
           portfolio: new UntypedFormControl(p.portfolio)
         }))
