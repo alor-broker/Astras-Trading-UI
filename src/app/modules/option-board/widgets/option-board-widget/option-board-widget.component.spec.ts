@@ -8,6 +8,8 @@ import {DashboardContextService} from "../../../../shared/services/dashboard-con
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {LOGGER} from "../../../../shared/services/logging/logger-base";
 import {mockComponent, widgetSkeletonMock} from "../../../../shared/utils/testing";
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 describe('OptionBoardWidgetComponent', () => {
   let component: OptionBoardWidgetComponent;
@@ -70,6 +72,13 @@ describe('OptionBoardWidgetComponent', () => {
 
     fixture = TestBed.createComponent(OptionBoardWidgetComponent);
     component = fixture.componentInstance;
+
+    component.widgetInstance = {
+      instance: {
+        guid: 'guid'
+      } as Widget,
+      widgetMeta: {} as WidgetMeta
+    };
     fixture.detectChanges();
   });
 

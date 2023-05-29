@@ -13,15 +13,18 @@ import {
   allInstrumentsColumns,
   AllInstrumentsSettings
 } from '../../model/all-instruments-settings.model';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-all-instruments-widget[guid][isBlockWidget]',
+  selector: 'ats-all-instruments-widget[widgetInstance][isBlockWidget]',
   templateUrl: './all-instruments-widget.component.html',
   styleUrls: ['./all-instruments-widget.component.less']
 })
 export class AllInstrumentsWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
-  @Input() public guid!: string;
+  @Input()
+  widgetInstance!: WidgetInstance;
+
   @Input()
   isBlockWidget!: boolean;
 
@@ -34,13 +37,17 @@ export class AllInstrumentsWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   onSettingsChange() {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<AllInstrumentsSettings>(
-      this.guid,
+      this.widgetInstance,
       'AllInstrumentsSettings',
       settings => ({
         ...settings,

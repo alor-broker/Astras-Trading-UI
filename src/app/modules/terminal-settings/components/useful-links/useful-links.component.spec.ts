@@ -20,7 +20,7 @@ describe('UsefulLinksComponent', () => {
       declarations: [
         UsefulLinksComponent,
         ...ngZorroMockComponents,
-        mockComponent({ selector: 'ats-external-link' })
+        mockComponent({ selector: 'ats-external-link', inputs: ['href'] })
       ]
     })
       .compileComponents();

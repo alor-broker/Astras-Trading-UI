@@ -9,15 +9,18 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { Observable } from 'rxjs';
 import { ExchangeRateSettings } from '../../models/exchange-rate-settings.model';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 
 @Component({
-  selector: 'ats-exchange-rate-widget[guid][isBlockWidget]',
+  selector: 'ats-exchange-rate-widget[widgetInstance][isBlockWidget]',
   templateUrl: './exchange-rate-widget.component.html',
   styleUrls: ['./exchange-rate-widget.component.less']
 })
 export class ExchangeRateWidgetComponent implements OnInit {
-  @Input() public guid!: string;
+  @Input()
+  widgetInstance!: WidgetInstance;
+
   @Input()
   isBlockWidget!: boolean;
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
@@ -28,9 +31,13 @@ export class ExchangeRateWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<ExchangeRateSettings>(
-      this.guid,
+      this.widgetInstance,
       'ExchangeRateSettings',
       settings => ({
         ...settings,

@@ -3,15 +3,18 @@ import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-se
 import { Observable } from "rxjs";
 import { EventsCalendarSettings } from "../../models/events-calendar-settings.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-events-calendar-widget[guid][isBlockWidget]',
+  selector: 'ats-events-calendar-widget[widgetInstance][isBlockWidget]',
   templateUrl: './events-calendar-widget.component.html',
   styleUrls: ['./events-calendar-widget.component.less']
 })
 export class EventsCalendarWidgetComponent implements OnInit {
-  @Input() guid!: string;
-  @Input() isBlockWidget!: boolean;
+  @Input()
+  widgetInstance!: WidgetInstance;
+  @Input()
+  isBlockWidget!: boolean;
 
   shouldShowSettings: boolean = false;
   settings$!: Observable<EventsCalendarSettings>;
@@ -20,9 +23,13 @@ export class EventsCalendarWidgetComponent implements OnInit {
     private readonly widgetSettingsService: WidgetSettingsService
   ) {}
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<EventsCalendarSettings>(
-      this.guid,
+      this.widgetInstance,
       'EventsCalendarSettings',
       settings => ({
         ...settings

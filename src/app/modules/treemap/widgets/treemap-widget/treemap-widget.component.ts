@@ -6,14 +6,17 @@ import { SettingsHelper } from "../../../../shared/utils/settings-helper";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { Observable } from "rxjs";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-treemap-widget[guid]',
+  selector: 'ats-treemap-widget[widgetInstance]',
   templateUrl: './treemap-widget.component.html',
   styleUrls: ['./treemap-widget.component.less']
 })
 export class TreemapWidgetComponent implements OnInit {
-  @Input() guid!: string;
+  @Input()
+  widgetInstance!: WidgetInstance;
+
   @Input() isBlockWidget!: boolean;
 
   settings$!: Observable<TreemapSettings>;
@@ -25,9 +28,13 @@ export class TreemapWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<TreemapSettings>(
-      this.guid,
+      this.widgetInstance,
       'TreemapSettings',
       settings => ({
         ...settings,

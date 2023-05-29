@@ -16,6 +16,8 @@ import { Store } from "@ngrx/store";
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { BlotterSettings } from '../../models/blotter-settings.model';
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 describe('BlotterWidgetComponent', () => {
   let component: BlotterWidgetComponent;
@@ -85,6 +87,13 @@ describe('BlotterWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BlotterWidgetComponent);
     component = fixture.componentInstance;
+
+    component.widgetInstance = {
+      instance: {
+        guid: 'guid'
+      } as Widget,
+      widgetMeta: {} as WidgetMeta
+    };
     fixture.detectChanges();
   });
 

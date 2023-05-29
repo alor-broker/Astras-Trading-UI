@@ -13,6 +13,8 @@ import { of } from 'rxjs';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 const settings = {
   symbol: 'SBER',
@@ -78,6 +80,13 @@ describe('OrderbookWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderbookWidgetComponent);
     component = fixture.componentInstance;
+
+    component.widgetInstance = {
+      instance: {
+        guid: 'guid'
+      } as Widget,
+      widgetMeta: {} as WidgetMeta
+    };
     fixture.detectChanges();
   });
 

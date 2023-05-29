@@ -19,9 +19,7 @@
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
         [titleText]="title$ | async"
-        [titleIconTooltip]="t('widgetHeaders.OrderSubmitSettings')"
-        helpRef="order-submit"
-        titleIcon="send"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 

@@ -1,26 +1,28 @@
 import { Injectable } from '@angular/core';
 import {
-  Observable,
+  Observable, shareReplay,
   take,
 } from 'rxjs';
-import { WidgetNames } from '../models/enums/widget-names';
 import { LocalStorageService } from "./local-storage.service";
 import {
-  DashboardItemPosition,
-  Widget
+  DashboardItemPosition
 } from '../models/dashboard/widget.model';
 import { Store } from '@ngrx/store';
-import { Dashboard } from '../models/dashboard/dashboard.model';
+import {Dashboard, DefaultDashboardConfig} from '../models/dashboard/dashboard.model';
 import { allDashboards } from '../../store/dashboards/dashboards.selectors';
 import { GuidGenerator } from '../utils/guid';
 import { ManageDashboardsActions } from '../../store/dashboards/dashboards-actions';
 import { DashboardContextService } from './dashboard-context.service';
+import {HttpClient} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root',
 })
 export class ManageDashboardsService {
+  private defaultConfig$?: Observable<DefaultDashboardConfig>;
+
   constructor(
+    private readonly httpClient: HttpClient,
     private readonly localStorage: LocalStorageService,
     private readonly store: Store,
     private readonly dashboardContextService: DashboardContextService
@@ -119,98 +121,22 @@ export class ManageDashboardsService {
     this.store.dispatch(ManageDashboardsActions.selectDashboard({ dashboardGuid: guid }));
   }
 
-  getDefaultWidgetsSet(): Omit<Widget, 'guid'> [] {
-    return [
-      {
-        widgetType: WidgetNames.techChart,
-        position: { x: 0, y: 0, cols: 30, rows: 18 }
-      },
-      {
-        widgetType: WidgetNames.orderBook,
-        position: { x: 30, y: 0, cols: 10, rows: 18 }
-      },
-      {
-        widgetType: WidgetNames.instrumentInfo,
-        position: { x: 40, y: 0, cols: 10, rows: 18 }
-      },
-      {
-        widgetType: WidgetNames.blotter,
-        position: { x: 0, y: 18, cols: 25, rows: 12 },
-        initialSettings: { activeTabIndex: 3 }
-      },
-      {
-        widgetType: WidgetNames.blotter,
-        position: { x: 25, y: 18, cols: 15, rows: 12 },
-        initialSettings: { activeTabIndex: 0 }
-      },
-      {
-        widgetType: WidgetNames.instrumentSelect,
-        position: { x: 40, y: 18, cols: 10, rows: 12 }
-      }
-    ];
-  }
+  getDefaultDashboardConfig(): Observable<DefaultDashboardConfig> {
+    if (!this.defaultConfig$) {
+      this.readDefaultConfig();
+    }
 
-  getMobileDashboardWidgets(): Widget[] {
-    return [
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.orderSubmit,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.instrumentInfo,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.blotter,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.orderBook,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.lightChart,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.news,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.allInstruments,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.allTrades,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.exchangeRate,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.ordersBasket,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      },
-      {
-        guid: GuidGenerator.newGuid(),
-        widgetType: WidgetNames.treemap,
-        position: { x: 0, y: 0, cols: 1, rows: 1 }
-      }
-    ];
+    return this.defaultConfig$!;
   }
 
   private reloadPage() {
     window.location.reload();
+  }
+
+  private readDefaultConfig() {
+    this.defaultConfig$ = this.httpClient.get<DefaultDashboardConfig>('../../../assets/default-dashboard-config.json')
+      .pipe(
+        shareReplay(1)
+      );
   }
 }

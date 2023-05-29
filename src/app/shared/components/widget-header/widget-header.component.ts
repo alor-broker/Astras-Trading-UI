@@ -1,13 +1,11 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output
-} from '@angular/core';
-import { WidgetSettingsService } from '../../services/widget-settings.service';
-import { ManageDashboardsService } from '../../services/manage-dashboards.service';
-import { ModalService } from '../../services/modal.service';
-import { instrumentsBadges } from '../../utils/instruments';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {WidgetSettingsService} from '../../services/widget-settings.service';
+import {ManageDashboardsService} from '../../services/manage-dashboards.service';
+import {ModalService} from '../../services/modal.service';
+import {instrumentsBadges} from '../../utils/instruments';
+import {WidgetMeta} from "../../models/widget-meta.model";
+import {TranslatorService} from "../../services/translator.service";
+import {WidgetsHelper} from "../../utils/widgets";
 
 @Component({
   selector: 'ats-widget-header[guid]',
@@ -30,10 +28,7 @@ export class WidgetHeaderComponent {
   badgeShape: 'circle' | 'square' = 'circle';
 
   @Input()
-  titleIcon?: string | null = null;
-
-  @Input()
-  titleIconTooltip?: string | null = null;
+  widgetMeta?: WidgetMeta;
 
   @Input()
   titleText: string | null = null;
@@ -47,9 +42,6 @@ export class WidgetHeaderComponent {
   @Input()
   hasHelp: boolean = false;
 
-  @Input()
-  helpRef: string = '';
-
   @Output()
   switchSettings = new EventEmitter();
 
@@ -57,11 +49,12 @@ export class WidgetHeaderComponent {
     private readonly settingsService: WidgetSettingsService,
     private readonly manageDashboardService: ManageDashboardsService,
     private readonly modal: ModalService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
   switchBadgeColor(badgeColor: string) {
-    this.settingsService.updateSettings(this.guid, { badgeColor });
+    this.settingsService.updateSettings(this.guid, {badgeColor});
   }
 
   changeLinkToActive($event: MouseEvent | TouchEvent, linkToActive: boolean): void {
@@ -87,10 +80,18 @@ export class WidgetHeaderComponent {
     $event.preventDefault();
     $event.stopPropagation();
 
-    if (!this.helpRef || this.helpRef.length === 0) {
-      throw new Error('Unknown helpRef');
+    if (!this.widgetMeta) {
+      throw new Error('Unknown widgetMeta');
     }
 
-    this.modal.openHelpModal(this.helpRef);
+    this.modal.openHelpModal(this.widgetMeta.typeId);
+  }
+
+  getIconTooltip(): string {
+    if (!this.widgetMeta) {
+      return '';
+    }
+
+    return WidgetsHelper.getWidgetName(this.widgetMeta.widgetName, this.translatorService.getActiveLang());
   }
 }

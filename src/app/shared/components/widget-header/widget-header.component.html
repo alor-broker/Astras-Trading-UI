@@ -20,29 +20,26 @@
       </ul>
     </nz-dropdown-menu>
 
-    <div class="title" *ngIf="titleIcon || titleText">
-      <ng-container *ngIf="titleIcon; else simpleTitle">
-        <div class="title-with-icon">
+    <div class="title" *ngIf="widgetMeta">
+      <ng-container>
+        <div class="title-with-icon" *ngIf="widgetMeta.desktopMeta?.headerIcon">
           <i nz-icon
              class="title-icon"
-             [nzType]="titleIcon"
+             [nzType]="widgetMeta.desktopMeta!.headerIcon"
              nzTheme="outline"
              nz-popover
              nzPopoverPlacement="bottom"
-             [nzPopoverContent]="titleIconTooltip!"
+             [nzPopoverContent]="getIconTooltip()"
           ></i>
-          <ng-container *ngTemplateOutlet="simpleTitle"></ng-container>
+          <label
+            class="title-text"
+            nz-popover
+            nzPopoverPlacement="bottom"
+            [nzPopoverContent]="titleText!">
+            {{titleText}}
+          </label>
         </div>
       </ng-container>
-      <ng-template #simpleTitle>
-        <label
-          class="title-text"
-          nz-popover
-          nzPopoverPlacement="bottom"
-          [nzPopoverContent]="titleText!">
-          {{titleText}}
-        </label>
-      </ng-template>
     </div>
   </div>
 

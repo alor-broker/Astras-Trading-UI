@@ -13,11 +13,9 @@
         [hasSettings]="false"
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [titleIconTooltip]="t('widgetHeaders.TreemapSettings')"
         [titleText]="t('widgetHeaders.TreemapSettings')"
         badgeShape="square"
-        helpRef="treemap"
-        titleIcon="layout"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 

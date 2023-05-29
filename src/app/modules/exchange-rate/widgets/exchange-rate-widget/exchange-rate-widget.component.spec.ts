@@ -10,6 +10,8 @@ import {
 } from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { of } from 'rxjs';
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 describe('ExchangeRateWidgetComponent', () => {
   let component: ExchangeRateWidgetComponent;
@@ -42,6 +44,13 @@ describe('ExchangeRateWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ExchangeRateWidgetComponent);
     component = fixture.componentInstance;
+
+    component.widgetInstance = {
+      instance: {
+        guid: 'guid'
+      } as Widget,
+      widgetMeta: {} as WidgetMeta
+    };
     fixture.detectChanges();
   });
 

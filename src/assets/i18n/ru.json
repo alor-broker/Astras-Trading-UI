@@ -16,27 +16,6 @@
 
   "maxTagPlaceholder": "и ещё {{count}} выбранных",
 
-  "widgetHeaders": {
-    "OrderbookSettings": "Стакан",
-    "ScalperOrderBookSettings": "Скальперский стакан",
-    "InstrumentSelectSettings": "Выбор инструмента",
-    "LightChartSettings": "График",
-    "BlotterSettings": "Блоттер",
-    "InfoSettings": "Инфо",
-    "AllTradesSettings": "Все сделки",
-    "NewsSettings": "Новости",
-    "ExchangeRateSettings": "Курсы валют",
-    "TechChartSettings": "Тех. анализ",
-    "AllInstrumentsSettings": "Все инструменты",
-    "OrderSubmitSettings": "Выставить заявку",
-    "OrdersBasketSettings": "Корзина заявок",
-    "TreemapSettings": "Карта рынка",
-    "RibbonSettings": "Лента",
-    "EventsCalendarSettings": "Календарь событий",
-    "OptionBoardSettings": "Опционная доска",
-    "ArbitrageSpreadSettings": "Арбитражная раздвижка"
-  },
-
   "joyride": {
     "step1": {
       "title": "Выбор портфеля",

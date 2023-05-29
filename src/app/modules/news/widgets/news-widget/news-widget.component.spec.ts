@@ -13,6 +13,8 @@ import { of } from 'rxjs';
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 describe('NewsWidgetComponent', () => {
   let component: NewsWidgetComponent;
@@ -63,6 +65,13 @@ describe('NewsWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NewsWidgetComponent);
     component = fixture.componentInstance;
+
+    component.widgetInstance = {
+      instance: {
+        guid: 'guid'
+      } as Widget,
+      widgetMeta: {} as WidgetMeta
+    };
     fixture.detectChanges();
   });
 

@@ -4,6 +4,8 @@ import { ArbitrageSpreadWidgetComponent } from './arbitrage-spread-widget.compon
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { mockComponent, widgetSkeletonMock } from "../../../../shared/utils/testing";
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 describe('ArbitrageSpreadWidgetComponent', () => {
   let component: ArbitrageSpreadWidgetComponent;
@@ -34,6 +36,13 @@ describe('ArbitrageSpreadWidgetComponent', () => {
 
     fixture = TestBed.createComponent(ArbitrageSpreadWidgetComponent);
     component = fixture.componentInstance;
+
+    component.widgetInstance = {
+      instance: {
+        guid: 'guid'
+      } as Widget,
+      widgetMeta: {} as WidgetMeta
+    };
     fixture.detectChanges();
   });
 
