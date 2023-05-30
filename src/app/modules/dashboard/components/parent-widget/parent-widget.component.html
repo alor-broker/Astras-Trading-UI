@@ -26,7 +26,9 @@
                         [isBlockWidget]="isBlockWidget"></ats-blotter-widget>
     <ats-info-widget *ngSwitchCase="'instrument-info'"
                      [guid]="getGuid()"
-                     [isBlockWidget]="isBlockWidget"></ats-info-widget>
+                     [isBlockWidget]="isBlockWidget"
+                     [isVisible]="isVisible"
+    ></ats-info-widget>
     <ats-all-trades-widget *ngSwitchCase="'all-trades'"
                            [guid]="getGuid()"
                            [isBlockWidget]="isBlockWidget"

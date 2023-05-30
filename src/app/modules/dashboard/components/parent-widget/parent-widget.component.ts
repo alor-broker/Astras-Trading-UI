@@ -28,6 +28,10 @@ export class ParentWidgetComponent implements OnInit, OnDestroy {
   isBlockWidget!: boolean;
   @Input()
   widget!: Widget;
+
+  @Input()
+  isVisible: boolean = true;
+
   isLinked$?: Observable<boolean>;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 

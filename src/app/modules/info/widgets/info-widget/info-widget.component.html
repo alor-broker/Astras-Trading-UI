@@ -25,7 +25,7 @@
     <ng-template #contentRef>
       <ng-container *transloco="let t; scope: 'info'">
         <div *ngIf="info$ | async as info">
-          <ats-info-header [info]="info"></ats-info-header>
+          <ats-info-header [info]="info" [isVisible]="isVisible"></ats-info-header>
           <nz-tabset (mousedown)='$event.stopPropagation()' *ngIf="info.type === 'bond'" nzSize="small"
                      nzTabPosition="top">
             <nz-tab #instrumentTab [nzTitle]="t('info.instrumentTab')">

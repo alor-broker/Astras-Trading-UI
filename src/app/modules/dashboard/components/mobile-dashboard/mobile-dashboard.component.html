@@ -8,6 +8,7 @@
     [(nzSelectedIndex)]="selectedTabIndex"
   >
     <nz-tab
+      #tab
       *ngFor="let widget of widgets"
       nzForceRender
       [nzTitle]="titleTemplate"
@@ -31,7 +32,7 @@
           </div>
         </div>
       </ng-template>
-      <ats-parent-widget [widget]="widget"></ats-parent-widget>
+      <ats-parent-widget [widget]="widget" [isVisible]="tab.isActive"></ats-parent-widget>
     </nz-tab>
   </nz-tabset>
 </div>
