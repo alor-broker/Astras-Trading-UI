@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  distinctUntilChanged,
   filter,
   Observable, switchMap,
   take
@@ -18,6 +19,7 @@ import { DeviceService } from "./device.service";
 import { MobileDashboardActions } from "../../store/mobile-dashboard/mobile-dashboard-actions";
 import { MobileDashboardStreams } from "../../store/mobile-dashboard/mobile-dashboard.streams";
 import { mapWith } from "../utils/observable-helper";
+import { isPortfoliosEqual } from "../utils/portfolios";
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +34,8 @@ export class DashboardContextService {
   get selectedPortfolio$(): Observable<PortfolioKey> {
     return this.selectedDashboard$.pipe(
       map(d => d.selectedPortfolio),
-      filter((p): p is PortfolioKey => !!p)
+      filter((p): p is PortfolioKey => !!p),
+      distinctUntilChanged((prev, curr) => isPortfoliosEqual(prev, curr ))
     );
   }
 
