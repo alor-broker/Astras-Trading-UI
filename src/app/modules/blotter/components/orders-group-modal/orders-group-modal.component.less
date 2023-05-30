@@ -29,5 +29,10 @@
 .status-indicator {
   display: inline-block;
   width: 7px;
-  height: 1em;
+}
+
+:host ::ng-deep {
+  .ant-tree-node-content-wrapper {
+    pointer-events: none;
+  }
 }

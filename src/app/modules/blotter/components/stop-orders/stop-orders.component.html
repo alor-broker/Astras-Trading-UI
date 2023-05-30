@@ -78,11 +78,12 @@
                   [class]='ord.side.toString() === "sell" ? "side-sell" : "side-buy"'>&nbsp;</span>
               </td>
               <td>
-                <a (click)="editOrder(ord)" *ngIf='ord.status.toString() === "working"'>
+                <a (click)="editOrder(ord, $event)" *ngIf='ord.status.toString() === "working"'>
                   <i nz-icon nzTheme="outline" nzType="edit"></i>
                 </a>
                 &nbsp;
                 <a (nzOnConfirm)="cancelOrder(ord.id)" *ngIf='ord.status.toString() === "working"'
+                   (click)="$event.preventDefault(); $event.stopPropagation()"
                    [nzCancelText]="t('no')"
                    [nzCondition]="settings.cancelOrdersWithoutConfirmation ?? false"
                    [nzOkText]="t('yes')"

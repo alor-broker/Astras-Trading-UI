@@ -351,7 +351,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  editOrder(order: Order) {
+  editOrder(order: Order, event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
     this.modal.openEditModal({
       type: order.type,
       quantity: order.qty - (order.filledQtyBatch ?? 0),

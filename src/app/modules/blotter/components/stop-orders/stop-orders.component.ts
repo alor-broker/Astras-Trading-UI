@@ -400,7 +400,10 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  editOrder(order: StopOrder) {
+  editOrder(order: StopOrder, event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
     this.modal.openEditModal({
       type: order.type,
       quantity: order.qty,

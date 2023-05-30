@@ -62,18 +62,10 @@ export class OrdersGroupModalComponent implements OnInit {
               let groupOrderMaxQty = groupOrders[0].qtyBatch;
 
               groupOrders.forEach(o => {
-                if (groupOrderMinPrice > ((o as StopOrder).triggerPrice || o.price)) {
-                  groupOrderMinPrice = (o as StopOrder).triggerPrice || o.price;
-                }
-                if (groupOrderMaxPrice < ((o as StopOrder).triggerPrice || o.price)) {
-                  groupOrderMaxPrice = (o as StopOrder).triggerPrice || o.price;
-                }
-                if (groupOrderMinQty > o.qtyBatch) {
-                  groupOrderMinQty = o.qtyBatch;
-                }
-                if (groupOrderMaxQty < o.qtyBatch) {
-                  groupOrderMinPrice = o.qtyBatch;
-                }
+                groupOrderMinPrice = Math.min(groupOrderMinPrice, (o as StopOrder).triggerPrice || o.price);
+                groupOrderMaxPrice = Math.max(groupOrderMaxPrice, (o as StopOrder).triggerPrice || o.price);
+                groupOrderMinQty = Math.min(groupOrderMinQty, o.qtyBatch);
+                groupOrderMaxQty = Math.max(groupOrderMaxQty, o.qtyBatch);
               });
 
               return {
