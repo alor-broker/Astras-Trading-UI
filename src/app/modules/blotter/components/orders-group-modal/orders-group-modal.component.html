@@ -1,0 +1,56 @@
+<ng-container *ngIf="groups$ | async as groups">
+  <nz-tree
+    *transloco="let t; scope: 'blotter/orders-group'"
+    [nzData]="groups"
+    [nzTreeTemplate]="treeNode"
+  >
+    <ng-template #treeNode let-data>
+      <div *ngIf="data.origin.group" class="d-flex flex-wrap flex-gap-5">
+        <div
+          *ngIf="data.origin.status"
+          [class.status-canceled]="data.origin.status === 'Canceled'"
+          [class.status-active]="data.origin.status === 'Active'"
+          [class.status-filled]="data.origin.status === 'Filled'"
+          nz-tooltip=""
+          [nzTooltipTitle]="t('blotterOrdersGroup.groupStatus.' + data.origin.status)"
+          class="status-indicator"
+        ></div>
+        <div class="text-nowrap">
+          {{t('blotterOrdersGroup.groupIdLabel')}}: <b>{{data.origin.group.displayId}}</b>
+        </div>
+        <div class="text-nowrap">
+          {{t('blotterOrdersGroup.instrumentsLabel')}}: <b class="text-nowrap">{{data.origin.group.instruments}}</b>
+        </div>
+        <div class="text-nowrap">
+          {{t('blotterOrdersGroup.priceLabel')}}: <b class="text-nowrap">{{data.origin.group.prices}}</b>
+        </div>
+        <div class="text-nowrap">
+          {{t('blotterOrdersGroup.qtyLabel')}}: <b class="text-nowrap">{{data.origin.group.qtys}}</b>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap flex-gap-5" *ngIf="data.origin.order">
+        <div class="text-nowrap">
+          {{t('blotterOrdersGroup.idLabel')}}: <b>{{data.origin.order.id}}</b>
+        </div>
+        <div class="text-nowrap">
+          {{t('blotterOrdersGroup.symbolLabel')}}: <b class="text-nowrap">{{data.origin.order.symbol}}</b>
+        </div>
+        <div class="text-nowrap">
+          <ng-container *ngIf="data.origin.order.price">
+            {{t('blotterOrdersGroup.priceLabel')}}: <b [class]="data.origin.order.side + ' text-nowrap'">{{data.origin.order.price}}</b>
+          </ng-container>
+        </div>
+        <div class="text-nowrap">
+          {{t('blotterOrdersGroup.qtyLabel')}}: <b class="text-nowrap">{{data.origin.order.qtyBatch}}</b>
+        </div>
+        <div class="text-nowrap">
+          <span *ngIf="data.origin.order.stopPrice">
+            {{t('blotterOrdersGroup.triggerPriceLabel')}}:
+            <b class="text-nowrap">{{data.origin.order.condition === 'more' ? '>' : '<'}}{{data.origin.order.stopPrice}}</b>
+          </span>
+        </div>
+      </div>
+    </ng-template>
+  </nz-tree>
+</ng-container>

@@ -6,15 +6,24 @@ import { TimeInForce } from "../../../shared/models/commands/command-params.mode
 import {LessMore} from "../../../shared/models/enums/less-more.model";
 
 export interface StopCommand {
-  quantity: number, //2,
-  price?: number, // 190.97,
-  instrument: InstrumentKey,
-  user?: PortfolioKey,
-  triggerPrice: number,
-  condition: LessMore,
-  stopEndUnixTime?: Date | number,
-  side?: Side,
-  timeInForce?: TimeInForce,
-  icebergFixed?: number,
-  icebergVariance?: number,
+  quantity: number; //2,
+  price?: number; // 190.97,
+  instrument: InstrumentKey;
+  user?: PortfolioKey;
+  triggerPrice: number;
+  condition: LessMore;
+  stopEndUnixTime?: Date | number;
+  side?: Side;
+  timeInForce?: TimeInForce;
+  icebergFixed?: number;
+  icebergVariance?: number;
+  allowLinkedOrder?: boolean;
+  linkedOrder: {
+    quantity: number; //2,
+    price?: number; // 190.97,
+    triggerPrice: number;
+    condition: LessMore;
+    stopEndUnixTime?: Date | number;
+    side?: Side;
+  }
 }

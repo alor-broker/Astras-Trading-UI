@@ -25,6 +25,7 @@ import {
 } from '../../../models/order-form.model';
 import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
 import { TimeInForce } from "../../../../../shared/models/commands/command-params.model";
+import { Side } from "../../../../../shared/models/enums/side.model";
 
 export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & {
   instrumentGroup: string;
@@ -32,6 +33,10 @@ export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & {
   timeInForce?: TimeInForce;
   icebergFixed?: number;
   icebergVariance?: number;
+  topOrderPrice?: number | null;
+  topOrderSide?: Side;
+  bottomOrderPrice?: number | null;
+  bottomOrderSide?: Side;
 };
 
 @Component({
@@ -54,31 +59,41 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
 
   protected buildForm(instrument: Instrument): FormGroup<ControlsOf<LimitOrderFormValue>> {
     return new FormGroup<ControlsOf<LimitOrderFormValue>>({
-      quantity: new FormControl(
-        1,
-        [
-          Validators.required,
+        quantity: new FormControl(
+          1,
+          [
+            Validators.required,
+            Validators.min(inputNumberValidation.min),
+            Validators.max(inputNumberValidation.max),
+          ]
+        ),
+        price: new FormControl(
+          1,
+          [
+            Validators.required,
+            Validators.min(inputNumberValidation.negativeMin),
+            Validators.max(inputNumberValidation.max),
+            AtsValidators.priceStepMultiplicity(instrument!.minstep)
+          ]
+        ),
+        instrumentGroup: new FormControl(instrument.instrumentGroup ?? ''),
+        timeInForce: new FormControl(null),
+        isIceberg: new FormControl(false),
+        icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
+        icebergVariance: new FormControl(null, [
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max),
-        ]
-      ),
-      price: new FormControl(
-        1,
-        [
-          Validators.required,
-          Validators.min(inputNumberValidation.negativeMin),
-          Validators.max(inputNumberValidation.max),
-          AtsValidators.priceStepMultiplicity(instrument!.minstep)
-        ]
-      ),
-      instrumentGroup: new FormControl(instrument.instrumentGroup ?? ''),
-      timeInForce: new FormControl(null),
-      isIceberg: new FormControl(false),
-      icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
-      icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min))
-    },
+          Validators.max(inputNumberValidation.max)
+        ]),
+        topOrderPrice: new FormControl(null, Validators.min(inputNumberValidation.min)),
+        topOrderSide: new FormControl(Side.Buy),
+        bottomOrderPrice: new FormControl(null, [
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
+        ]),
+        bottomOrderSide: new FormControl(Side.Buy),
+      },
       AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
-      );
+    );
   }
 
   protected getFormValue(): LimitOrderFormValue | null {

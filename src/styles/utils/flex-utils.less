@@ -14,6 +14,10 @@
       flex-wrap: nowrap
     }
 
+    &-wrap {
+      flex-wrap: wrap;
+    }
+
     each(range(15), {
       &-gap-@{value} {
         gap: @value * 1px;
@@ -29,6 +33,12 @@
     each(range(0, 5, 1), {
       &-shrink-@{value} {
         flex-shrink: @value;
+      }
+    })
+
+    each(range(0, 5, 1), {
+      &-grow-@{value} {
+        flex-grow: @value;
       }
     })
   }

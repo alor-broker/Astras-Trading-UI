@@ -107,4 +107,29 @@ export class AtsValidators {
       };
     };
   }
+
+  /**
+   * Validating necessity of dependent field, if dependency field has value
+   * @returns validation result
+   */
+  static requiredIfTrue(dependencyField: string, dependentField: string): ValidatorFn {
+    return (form: AbstractControl): ValidationErrors | null => {
+      const dependencyFieldValue = dependencyField.split('.')
+        .reduce((acc, curr) => acc[curr], form.value);
+      const dependentFieldValue = dependentField.split('.')
+        .reduce((acc, curr) => acc[curr], form.value);
+
+      if (!dependencyFieldValue || dependentFieldValue) {
+        return null;
+      }
+
+      const dependentFieldName = dependentField.split('.')
+        .map(s => s[0].toUpperCase() + s.slice(1))
+        .join('');
+
+      return {
+        ['requiredIfTrue' + dependentFieldName]: true
+      };
+    };
+  }
 }

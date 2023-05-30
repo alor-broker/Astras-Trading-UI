@@ -4,8 +4,10 @@ import {
   HttpErrorResponse
 } from "@angular/common/http";
 import {
+  forkJoin,
   Observable,
   of,
+  switchMap,
   take,
   tap
 } from "rxjs";
@@ -31,6 +33,9 @@ import { GuidGenerator } from "../../utils/guid";
 import { httpLinkRegexp } from "../../utils/regexps";
 import { InstantNotificationsService } from '../instant-notifications.service';
 import { OrdersInstantNotificationType } from '../../models/terminal-settings/terminal-settings.model';
+import { OrdersGroupService } from "./orders-group.service";
+import { OrderCancellerService } from "../order-canceller.service";
+import { ExecutionPolicy } from "../../models/orders/orders-group.model";
 
 @Injectable({
   providedIn: 'root'
@@ -38,9 +43,12 @@ import { OrdersInstantNotificationType } from '../../models/terminal-settings/te
 export class OrderService {
   private readonly baseApiUrl = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
 
-  constructor(private readonly httpService: HttpClient,
-              private readonly instantNotificationsService: InstantNotificationsService,
-              private readonly errorHandlerService: ErrorHandlerService
+  constructor(
+    private readonly httpService: HttpClient,
+    private readonly instantNotificationsService: InstantNotificationsService,
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly ordersGroupService: OrdersGroupService,
+    private readonly canceller: OrderCancellerService,
   ) {
   }
 
@@ -130,6 +138,64 @@ export class OrderService {
         }
       })
     );
+  }
+
+  submitOrdersGroup(
+    orders: ((LimitOrder | StopLimitOrder | StopMarketOrder) & { type: 'Limit' | 'StopLimit' | 'Stop' })[],
+    portfolio: string,
+    executionPolicy: ExecutionPolicy
+  ): Observable<SubmitOrderResult> {
+
+    return forkJoin(orders.map(o => {
+      switch (o.type) {
+        case 'Limit':
+          return this.submitLimitOrder(o as LimitOrder, portfolio);
+        case 'Stop':
+          return this.submitStopMarketOrder(o as StopMarketOrder, portfolio);
+        case 'StopLimit':
+          return this.submitStopLimitOrder(o as StopLimitOrder, portfolio);
+        default:
+          return this.submitLimitOrder(o as LimitOrder, portfolio);
+      }
+    }))
+      .pipe(
+        switchMap(ordersRes => {
+          if (!ordersRes.length) {
+            return of({isSuccess: false});
+          }
+
+          const orderIds = ordersRes
+            .filter(or => !!or.orderNumber)
+            .map(or => or.orderNumber!);
+
+
+          if (orderIds.length !== orders.length) {
+            return forkJoin(ordersRes.map((ord, i) => ord.orderNumber
+              ? this.canceller.cancelOrder({
+                  orderid: ord.orderNumber!,
+                  portfolio,
+                  exchange: orders[i].instrument.exchange,
+                  stop: orders[i].type !== 'Limit'
+                })
+              : of(null)
+              )
+            )
+              .pipe(
+                map(() => ({isSuccess: false}))
+              );
+          }
+
+          return this.ordersGroupService.createOrdersGroup({
+            orders: ordersRes.map((orderRes, i) => ({
+              orderId: orderRes.orderNumber!,
+              exchange: orders[i].instrument.exchange,
+              portfolio: portfolio,
+              type: orders[i].type
+            })),
+            executionPolicy
+          });
+        })
+      );
   }
 
   private prepareStopEndUnixTimeValue(order: StopMarketOrder): number | null {

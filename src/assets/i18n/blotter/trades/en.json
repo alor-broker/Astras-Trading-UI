@@ -41,6 +41,5 @@
     }
   },
   "emptyTrades": "There are no trades today",
-  "emptyTradesWithFilters": "Nothing found with these filters",
-  "exportToFile": "Export to file"
+  "emptyTradesWithFilters": "Nothing found with these filters"
 }

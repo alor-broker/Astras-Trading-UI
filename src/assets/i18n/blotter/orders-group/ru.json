@@ -1,0 +1,16 @@
+{
+  "modalTitle": "Связанные заявки",
+  "groupIdLabel": "Id группы",
+  "instrumentsLabel": "Инструмент(ы)",
+  "idLabel": "Id",
+  "symbolLabel": "Инструмент",
+  "priceLabel": "Цена",
+  "qtyLabel": "Кол-во",
+  "triggerPriceLabel": "Сигн. цена",
+  "conditionLabel": "Условие",
+  "groupStatus": {
+    "Active": "Группа активна",
+    "Canceled": "Группа отменена",
+    "Filled": "Группа выполнена"
+  }
+}

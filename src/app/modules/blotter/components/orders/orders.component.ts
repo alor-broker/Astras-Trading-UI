@@ -48,6 +48,7 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -233,7 +234,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly ordersGroupService: OrdersGroupService
   ) {
   }
 
@@ -292,15 +294,17 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.displayOrders$ = combineLatest([
       this.orders$,
       this.filter,
-      this.timezoneConverterService.getConverter()
+      this.timezoneConverterService.getConverter(),
+      this.ordersGroupService.getAllOrderGroups()
     ]).pipe(
-      map(([orders, f, converter]) => orders
+      map(([orders, f, converter, groups]) => orders
         .map(o => ({
           ...o,
           residue: `${o.filled}/${o.qty}`,
           volume: MathHelper.round(o.qtyUnits * o.price, 2),
           transTime: converter.toTerminalDate(o.transTime),
-          endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime
+          endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime,
+          groupId: groups.find(g => !!g.orders.find(go => go.orderId === o.id))?.id
         }))
         .filter(o => this.justifyFilter(o, f))
         .sort(this.sortOrders))
@@ -347,7 +351,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  editOrder(order: Order) {
+  editOrder(order: Order, event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
     this.modal.openEditModal({
       type: order.type,
       quantity: order.qty - (order.filledQtyBatch ?? 0),
@@ -467,6 +474,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       );
     });
+  }
+
+  openOrdersGroup(groupId: string, event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.service.openOrderGroupModal(groupId);
   }
 
   trackBy(index: number, order: DisplayOrder): string {

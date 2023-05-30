@@ -1,12 +1,6 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {
-  StopOrderFormComponent,
-  StopOrderFormValue
-} from './stop-order-form.component';
+import { StopOrderFormComponent, StopOrderFormValue } from './stop-order-form.component';
 import { Instrument } from '../../../../../shared/models/instruments/instrument.model';
 import {
   commonTestProviders,
@@ -14,28 +8,18 @@ import {
   sharedModuleImportForTests,
   TestData
 } from '../../../../../shared/utils/testing';
-import {
-  of,
-  shareReplay,
-  Subject,
-  take
-} from 'rxjs';
+import { of, shareReplay, Subject, take } from 'rxjs';
 import { TimezoneConverter } from '../../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../../shared/models/enums/timezone-display-option';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import {
-  NZ_I18N,
-  ru_RU
-} from 'ng-zorro-antd/i18n';
+import { NZ_I18N, ru_RU } from 'ng-zorro-antd/i18n';
 import { TimezoneConverterService } from '../../../../../shared/services/timezone-converter.service';
 import { OrderSubmitModule } from '../../../order-submit.module';
-import {
-  addMonthsUnix,
-  getUtcNow
-} from '../../../../../shared/utils/datetime';
+import { addMonthsUnix, getUtcNow } from '../../../../../shared/utils/datetime';
 import ruCommand from "../../../../../../assets/i18n/command/ru.json";
 import { QuotesService } from '../../../../../shared/services/quotes.service';
-import {LessMore} from "../../../../../shared/models/enums/less-more.model";
+import { LessMore } from "../../../../../shared/models/enums/less-more.model";
+import { Side } from "../../../../../shared/models/enums/side.model";
 
 describe('StopOrderFormComponent', () => {
   let component: StopOrderFormComponent;
@@ -206,7 +190,17 @@ describe('StopOrderFormComponent', () => {
         condition: LessMore.Less,
         price: 140,
         stopEndUnixTime: timezoneConverter.terminalToUtc0Date(expectedDate),
-        withLimit: true
+        withLimit: true,
+        linkedOrder: {
+          quantity: 1,
+          triggerPrice: 1,
+          price: 1,
+          stopEndUnixTime: timezoneConverter.terminalToUtc0Date(expectedDate),
+          side: Side.Buy,
+          withLimit: false,
+          condition: LessMore.More
+        },
+        allowLinkedOrder: false
       };
 
       const emittedValue$ = component.formValueChange.pipe(

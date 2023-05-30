@@ -352,7 +352,7 @@ describe('OrderService', () => {
         condition: LessMore.Less,
         triggerPrice: 50,
         stopEndUnixTime: new Date()
-      };
+      } as StopMarketOrder;
 
       httpSpy.post.and.callFake((url: string, body: any) => {
         done();
@@ -473,7 +473,7 @@ describe('OrderService', () => {
         triggerPrice: 50,
         stopEndUnixTime: new Date(),
         price: 100
-      };
+      } as StopLimitOrder;
 
       httpSpy.post.and.callFake((url: string, body: any) => {
         done();

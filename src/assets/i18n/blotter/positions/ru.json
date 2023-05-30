@@ -44,6 +44,5 @@
     }
   },
   "emptyPositions": "Позиций нет",
-  "emptyPositionsWithFilters": "С такими фильтрами ничего не найдено",
-  "exportToFile": "Сохранить в файл"
+  "emptyPositionsWithFilters": "С такими фильтрами ничего не найдено"
 }
