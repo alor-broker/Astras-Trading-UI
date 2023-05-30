@@ -71,7 +71,7 @@
         <nz-form-label nzFor="showYieldForBonds">{{t('orderbookSettings.displayYieldForBondsLabel')}}</nz-form-label>
         <nz-switch formControlName='showYieldForBonds'></nz-switch>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-collapse [nzBordered]="false" nzGhost>
           <nz-collapse-panel [nzHeader]="t('orderbookSettings.advancedHeader')">
             <nz-form-control [nzErrorTip]="t('orderbookSettings.instrumentGroupError')">
