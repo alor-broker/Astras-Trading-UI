@@ -21,7 +21,15 @@ export class WidgetsMetaService {
   }
 
   private readMeta() {
-    this.meta$ = this.httpClient.get<WidgetMeta[]>('../../../assets/widgets-meta.json')
+    this.meta$ = this.httpClient.get<WidgetMeta[]>(
+      '../../../assets/widgets-meta.json',
+      {
+        headers: {
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache"
+        }
+      }
+    )
       .pipe(
         shareReplay(1)
       );

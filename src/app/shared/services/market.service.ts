@@ -39,7 +39,15 @@ export class MarketService {
       this.settings$ = this.http.get<{
         exchange: string,
         settings: ExchangeSettings
-      }[]>('../../../assets/marketSettings.json')
+      }[]>(
+        '../../../assets/marketSettings.json',
+        {
+          headers: {
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+          }
+        }
+      )
         .pipe(
           shareReplay(1)
         );
