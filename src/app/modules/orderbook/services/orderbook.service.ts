@@ -104,10 +104,10 @@ export class OrderbookService {
 
     for (let i = 0; i < Math.max(orderBookData.a.length, orderBookData.b.length); i++) {
       const row: OrderBookViewRow = {
-        ask: orderBookData.a[i]?.p ?? 0,
+        ask: orderBookData.a[i]?.p,
         askVolume: orderBookData.a[i]?.v ?? 0,
         yieldAsk: orderBookData.a[i]?.y ?? 0,
-        bid: orderBookData.b[i]?.p ?? 0,
+        bid: orderBookData.b[i]?.p,
         bidVolume: orderBookData.b[i]?.v ?? 0,
         yieldBid: orderBookData.b[i]?.y ?? 0,
         askOrders: [],
