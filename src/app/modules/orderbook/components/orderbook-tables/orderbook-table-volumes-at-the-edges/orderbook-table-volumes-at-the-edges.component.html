@@ -14,12 +14,12 @@
     </thead>
     <tbody (click)="newLimitOrder($event, 0)" cdkDropListGroup>
     <tr *ngFor='let row of basicTable.data; trackBy: getTrackKey'>
-      <ng-container *ngIf="row.bid ?? 0 > 0; else zeroBid">
+      <ng-container *ngIf="row.bid || (row.bid === 0); else zeroBid">
         <td
           [ngStyle]="{background: 'unset'}"
-          (click)="newLimitOrder($event, row.bid ?? 0)"
+          (click)="newLimitOrder($event, row.bid)"
           cdkDropList
-          (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid!)"
+          (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid)"
         >
           <button *ngIf='row.bidOrders && row.bidOrderVolume'
                   nzSize="small"
@@ -45,13 +45,13 @@
         </td>
 
         <td *ngIf="(shouldShowYield$ | async) === false"
-            (click)="newLimitOrder($event, row.bid ?? 0)"
+            (click)="newLimitOrder($event, row.bid)"
             nzAlign="right"
             [ngStyle]="getBidStyle(row.bidVolume ?? 0)">
           {{row.bid}}
         </td>
         <td *ngIf="(shouldShowYield$ | async) === true"
-            (click)="newLimitOrder($event, row.bid ?? 0)"
+            (click)="newLimitOrder($event, row.bid)"
             nzAlign="right"
             [ngStyle]="getBidStyle(row.bidVolume ?? 0)">
           {{row.yieldBid}}
@@ -61,14 +61,14 @@
         <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
       </ng-template>
 
-      <ng-container *ngIf="row.ask ?? 0 > 0; else zeroAsk">
+      <ng-container *ngIf="row.ask || (row.ask === 0); else zeroAsk">
         <td *ngIf="(shouldShowYield$ | async) === false"
-            (click)="newLimitOrder($event, row.ask ?? 0)"
+            (click)="newLimitOrder($event, row.ask)"
             [ngStyle]="getAskStyle(row.askVolume ?? 0)">
           {{row.ask}}
         </td>
         <td *ngIf="(shouldShowYield$ | async) === true"
-            (click)="newLimitOrder($event, row.ask ?? 0)"
+            (click)="newLimitOrder($event, row.ask)"
             [ngStyle]="getAskStyle(row.askVolume ?? 0)">
           {{row.yieldAsk}}
         </td>
@@ -76,9 +76,9 @@
         <td [ngStyle]="{background: 'unset'}"
             class='row-cell--ask-volume'
             nzAlign="right"
-            (click)="newLimitOrder($event, row.ask ?? 0)"
+            (click)="newLimitOrder($event, row.ask)"
             cdkDropList
-            (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask!)"
+            (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask)"
         >
               <span class="cell-value">
                 <ats-short-number

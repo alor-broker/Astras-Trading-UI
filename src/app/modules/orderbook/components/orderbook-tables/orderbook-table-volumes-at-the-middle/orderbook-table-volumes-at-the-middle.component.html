@@ -10,24 +10,24 @@
     </thead>
     <tbody (click)="newLimitOrder($event, 0)" cdkDropListGroup>
     <tr *ngFor='let row of basicTable.data; trackBy: getTrackKey'>
-      <ng-container *ngIf="row.bid ?? 0 > 0; else zeroBid">
+      <ng-container *ngIf="row.bid || (row.bid === 0); else zeroBid">
         <td *ngIf="(shouldShowYield$ | async) === false"
-            (click)="newLimitOrder($event, row.bid ?? 0)"
+            (click)="newLimitOrder($event, row.bid)"
             [ngStyle]="{background: 'unset'}">
           {{row.bid}}
         </td>
         <td *ngIf="(shouldShowYield$ | async) === true"
-            (click)="newLimitOrder($event, row.bid ?? 0)"
+            (click)="newLimitOrder($event, row.bid)"
             [ngStyle]="{background: 'unset'}">
           {{row.yieldBid}}
         </td>
 
         <td
           [ngStyle]="getBidStyle(row.bidVolume ?? 0)"
-          (click)="newLimitOrder($event, row.bid ?? 0)"
+          (click)="newLimitOrder($event, row.bid)"
           cdkDropList
           nzAlign="right"
-          (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid!)"
+          (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid)"
         >
           <button *ngIf='row.bidOrders && row.bidOrderVolume'
                   nzSize="small"
@@ -52,16 +52,17 @@
           </span>
         </td>
       </ng-container>
+
       <ng-template #zeroBid>
         <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
       </ng-template>
 
-      <ng-container *ngIf="row.ask ?? 0 > 0; else zeroAsk">
+      <ng-container *ngIf="row.ask || (row.ask === 0); else zeroAsk">
         <td [ngStyle]="getAskStyle(row.askVolume ?? 0)"
             class='row-cell--ask-volume'
-            (click)="newLimitOrder($event, row.ask ?? 0)"
+            (click)="newLimitOrder($event, row.ask)"
             cdkDropList
-            (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask!)"
+            (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask)"
         >
           <span class="cell-value">
             <ats-short-number
@@ -88,13 +89,13 @@
 
         <td *ngIf="(shouldShowYield$ | async) === false"
             nzAlign="right"
-            (click)="newLimitOrder($event, row.ask ?? 0)"
+            (click)="newLimitOrder($event, row.ask)"
             [ngStyle]="{background: 'unset'}">
           {{row.ask}}
         </td>
         <td *ngIf="(shouldShowYield$ | async) === true"
             nzAlign="right"
-            (click)="newLimitOrder($event, row.ask ?? 0)"
+            (click)="newLimitOrder($event, row.ask)"
             [ngStyle]="{background: 'unset'}">
           {{row.yieldAsk}}
         </td>
