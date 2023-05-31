@@ -29,10 +29,16 @@
 .status-indicator {
   display: inline-block;
   width: 7px;
+  pointer-events: initial;
+  cursor: default;
 }
 
 :host ::ng-deep {
   .ant-tree-node-content-wrapper {
     pointer-events: none;
+
+    &:hover {
+      background-color: transparent;
+    }
   }
 }

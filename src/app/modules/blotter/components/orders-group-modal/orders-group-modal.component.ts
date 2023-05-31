@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Observable, switchMap, combineLatest, map } from "rxjs";
+import { AfterViewInit, Component, Input } from '@angular/core';
+import { Observable, switchMap, combineLatest, map, tap } from "rxjs";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -15,7 +15,7 @@ import { StopOrder } from "../../../../shared/models/orders/stop-order.model";
   templateUrl: './orders-group-modal.component.html',
   styleUrls: ['./orders-group-modal.component.less']
 })
-export class OrdersGroupModalComponent implements OnInit {
+export class OrdersGroupModalComponent implements AfterViewInit {
   @Input() guid!: string;
   @Input() groupId?: string;
 
@@ -28,7 +28,7 @@ export class OrdersGroupModalComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     const allOrders$ = this.widgetSettingsService.getSettings<BlotterSettings>(this.guid)
       .pipe(
         switchMap((s) => combineLatest([
@@ -98,7 +98,12 @@ export class OrdersGroupModalComponent implements OnInit {
               } as OrdersGroupTreeNode;
             })
             .filter((g): g is OrdersGroupTreeNode => !!g);
-        })
+        }),
+        tap(() => document.querySelectorAll('.orders-group-tree nz-tree-node-title')
+          .forEach((node: any) => {
+            node.removeAttribute('title');
+          })
+        )
       );
   }
 }
