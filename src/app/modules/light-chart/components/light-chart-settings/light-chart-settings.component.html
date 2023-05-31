@@ -31,7 +31,7 @@
         </nz-select>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item>
+    <nz-form-item *ngIf="!deviceInfo.isMobile">
       <nz-collapse [nzBordered]="false" nzGhost>
         <nz-collapse-panel [nzHeader]="t('lightChartSettings.advanced')">
           <nz-form-control [nzErrorTip]="t('lightChartSettings.instrumentGroupError')">

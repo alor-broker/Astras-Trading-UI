@@ -7,13 +7,25 @@
 @import 'text-utils';
 @import 'color-utils';
 
-body {
-  margin: 0;
-}
-
 html {
   height: 100%;
   margin: 0;
+
+  body {
+    margin: 0;
+  }
+}
+
+html.mobile {
+  overflow: hidden;
+  width: 100%;
+
+  body {
+    height: 100%;
+    position: fixed;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .themeMixin(

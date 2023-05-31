@@ -38,6 +38,9 @@ export class InfoWidgetComponent implements OnInit {
   @Input()
   isBlockWidget!: boolean;
 
+  @Input()
+  isVisible: boolean = true;
+
   settings$!: Observable<InfoSettings>;
   showBadge$!: Observable<boolean>;
   title$!: Observable<string>;

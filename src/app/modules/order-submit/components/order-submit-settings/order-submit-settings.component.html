@@ -111,7 +111,7 @@
           </nz-collapse-panel>
         </nz-collapse>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-collapse [nzBordered]="false" nzGhost>
           <nz-collapse-panel [nzHeader]="t('orderSubmitOrderSubmitSettings.advancedHeader')">
             <nz-form-label nzFor="instrumentGroup">{{t('orderSubmitOrderSubmitSettings.instrumentGroupLabel')}}</nz-form-label>

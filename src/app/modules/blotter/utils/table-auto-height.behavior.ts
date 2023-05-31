@@ -17,7 +17,13 @@ export class TableAutoHeightBehavior {
       const tableFooter = tableContainer.nativeElement.querySelector('.ant-table-footer');
 
       entries.forEach(x => {
-        subject.next(Math.floor(x.contentRect.height - (tableHeader?.clientHeight ?? 0) - (tableFooter?.clientHeight ?? 0)));
+        const newHeight = Math.floor(x.contentRect.height - (tableHeader?.clientHeight ?? 0) - (tableFooter?.clientHeight ?? 0));
+
+        if(newHeight > 0) {
+          subject.next(newHeight);
+        } else {
+          subject.next(startHeight);
+        }
       });
     });
 

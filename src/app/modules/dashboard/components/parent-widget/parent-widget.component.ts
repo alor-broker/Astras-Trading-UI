@@ -15,6 +15,8 @@ export class ParentWidgetComponent implements OnDestroy {
   isBlockWidget!: boolean;
   @Input()
   widget!: WidgetInstance;
+  @Input()
+  isVisible: boolean = true;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
