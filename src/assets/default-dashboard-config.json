@@ -1,0 +1,103 @@
+﻿{
+  "desktop": {
+    "widgets": [
+      {
+        "widgetTypeId": "tech-chart",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "cols": 30,
+          "rows": 18
+        }
+      },
+      {
+        "widgetTypeId": "order-book",
+        "position": {
+          "x": 30,
+          "y": 0,
+          "cols": 10,
+          "rows": 18
+        }
+      },
+      {
+        "widgetTypeId": "instrument-info",
+        "position": {
+          "x": 40,
+          "y": 0,
+          "cols": 10,
+          "rows": 18
+        }
+      },
+      {
+        "widgetTypeId": "blotter",
+        "position": {
+          "x": 0,
+          "y": 18,
+          "cols": 25,
+          "rows": 12
+        },
+        "initialSettings": {
+          "activeTabIndex": 3
+        }
+      },
+      {
+        "widgetTypeId": "blotter",
+        "position": {
+          "x": 25,
+          "y": 18,
+          "cols": 15,
+          "rows": 12
+        },
+        "initialSettings": {
+          "activeTabIndex": 0
+        }
+      },
+      {
+        "widgetTypeId": "instrument-select",
+        "position": {
+          "x": 40,
+          "y": 18,
+          "cols": 10,
+          "rows": 12
+        }
+      }
+    ]
+  },
+  "mobile": {
+    "widgets": [
+      {
+        "widgetTypeId": "order-submit"
+      },
+      {
+        "widgetTypeId": "instrument-info"
+      },
+      {
+        "widgetTypeId": "blotter"
+      },
+      {
+        "widgetTypeId": "order-book"
+      },
+      {
+        "widgetTypeId": "light-chart"
+      },
+      {
+        "widgetTypeId": "news"
+      },
+      {
+        "widgetTypeId": "all-instruments"
+      },
+      {
+        "widgetTypeId": "all-trades"
+      },
+      {
+        "widgetTypeId": "exchange-rate"
+      },
+      {
+        "widgetTypeId": "orders-basket"
+      },
+      {
+        "widgetTypeId": "treemap"
+      }
+    ]
+  }
+}

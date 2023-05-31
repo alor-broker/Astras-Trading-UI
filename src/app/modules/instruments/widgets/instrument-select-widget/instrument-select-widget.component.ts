@@ -14,9 +14,12 @@ import {
   allInstrumentsColumns,
   InstrumentSelectSettings
 } from '../../models/instrument-select-settings.model';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {WidgetsHelper} from "../../../../shared/utils/widgets";
 
 @Component({
-  selector: 'ats-instrument-select-widget[guid][isBlockWidget]',
+  selector: 'ats-instrument-select-widget[widgetInstance][isBlockWidget]',
   templateUrl: './instrument-select-widget.component.html',
   styleUrls: ['./instrument-select-widget.component.less'],
   providers: [WatchInstrumentsService]
@@ -24,16 +27,22 @@ import {
 export class InstrumentSelectWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
   @Input()
-  guid!: string;
+  widgetInstance!: WidgetInstance;
   @Input()
   isBlockWidget!: boolean;
   settings$!: Observable<InstrumentSelectSettings>;
   showBadge$!: Observable<boolean>;
 
+  titleText!: string;
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly translatorService: TranslatorService
   ) {
+  }
+
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
   }
 
   onSettingsChange() {
@@ -42,7 +51,7 @@ export class InstrumentSelectWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<InstrumentSelectSettings>(
-      this.guid,
+      this.widgetInstance,
       'InstrumentSelectSettings',
       settings => ({
         ...settings,
@@ -56,5 +65,7 @@ export class InstrumentSelectWidgetComponent implements OnInit {
 
     this.settings$ = this.widgetSettingsService.getSettings<InstrumentSelectSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
+
+    this.titleText = WidgetsHelper.getWidgetName(this.widgetInstance.widgetMeta.widgetName, this.translatorService.getActiveLang());
   }
 }

@@ -25,6 +25,7 @@ import { inputNumberValidation } from "../../../../shared/utils/validation-optio
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
+import { Side } from "../../../../shared/models/enums/side.model";
 
 @Component({
   selector: 'ats-limit-command',
@@ -102,6 +103,16 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
       additionalData.timeInForce = formValue.timeInForce;
     }
 
+    if (formValue.bottomOrderPrice) {
+      additionalData.bottomOrderPrice = formValue.bottomOrderPrice;
+      additionalData.bottomOrderSide = formValue.bottomOrderSide;
+    }
+
+    if (formValue.topOrderPrice) {
+      additionalData.topOrderPrice = formValue.topOrderPrice;
+      additionalData.topOrderSide = formValue.topOrderSide;
+    }
+
     if (commandContext.commandParameters && commandContext.commandParameters.user) {
       const newCommand: LimitCommand = {
         quantity: Number(formValue.quantity),
@@ -124,29 +135,39 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
 
   private buildForm(commandContext: CommandContextModel<CommandParams>): FormGroup<ControlsOf<LimitFormData>> {
     return new FormGroup<ControlsOf<LimitFormData>>({
-      quantity: new FormControl(
-        commandContext.commandParameters.quantity ?? 1,
-        [
-          Validators.required,
+        quantity: new FormControl(
+          commandContext.commandParameters.quantity ?? 1,
+          [
+            Validators.required,
+            Validators.min(inputNumberValidation.min),
+            Validators.max(inputNumberValidation.max),
+          ]
+        ),
+        price: new FormControl(
+          commandContext.commandParameters.price ?? 1,
+          [
+            Validators.required,
+            Validators.min(inputNumberValidation.negativeMin),
+            Validators.max(inputNumberValidation.max),
+            AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
+          ]
+        ),
+        instrumentGroup: new FormControl(commandContext.commandParameters.instrument.instrumentGroup),
+        timeInForce: new FormControl(null),
+        isIceberg: new FormControl(false),
+        icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
+        icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
+        topOrderPrice: new FormControl(null, [
           Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max),
-        ]
-      ),
-      price: new FormControl(
-        commandContext.commandParameters.price ?? 1,
-        [
-          Validators.required,
-          Validators.min(inputNumberValidation.negativeMin),
-          Validators.max(inputNumberValidation.max),
-          AtsValidators.priceStepMultiplicity(commandContext.instrument.minstep || 0)
-        ]
-      ),
-      instrumentGroup: new FormControl(commandContext.commandParameters.instrument.instrumentGroup),
-      timeInForce: new FormControl(null),
-      isIceberg: new FormControl(false),
-      icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
-      icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
-    },
+          Validators.max(inputNumberValidation.max)
+        ]),
+        topOrderSide: new FormControl(Side.Buy),
+        bottomOrderPrice: new FormControl(null, [
+          Validators.min(inputNumberValidation.min),
+          Validators.max(inputNumberValidation.max)
+        ]),
+        bottomOrderSide: new FormControl(Side.Buy)
+      },
       AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
     );
   }
@@ -178,6 +199,10 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         && prev?.isIceberg == curr?.isIceberg
         && prev?.icebergFixed == curr?.icebergFixed
         && prev?.icebergVariance == curr?.icebergVariance
+        && prev?.topOrderPrice == curr?.topOrderPrice
+        && prev?.topOrderSide == curr?.topOrderSide
+        && prev?.bottomOrderPrice == curr?.bottomOrderPrice
+        && prev?.bottomOrderSide == curr?.bottomOrderSide
       )
     ).subscribe(() => {
       this.setLimitCommand(commandContext);

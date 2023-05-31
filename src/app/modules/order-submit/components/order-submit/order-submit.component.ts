@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -13,33 +13,35 @@ import {
   tap,
   withLatestFrom
 } from "rxjs";
-import {Instrument} from "../../../../shared/models/instruments/instrument.model";
-import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
-import {InstrumentsService} from "../../../instruments/services/instruments.service";
-import {OrderFormUpdate, OrderFormValue, OrderType} from '../../models/order-form.model';
-import {LimitOrderFormValue} from "../order-forms/limit-order-form/limit-order-form.component";
-import {MarketOrderFormValue} from "../order-forms/market-order-form/market-order-form.component";
-import {StopOrderFormValue} from "../order-forms/stop-order-form/stop-order-form.component";
-import {Side} from "../../../../shared/models/enums/side.model";
-import {SubmitOrderResult} from "../../../command/models/order.model";
-import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
-import {finalize, map, startWith} from "rxjs/operators";
-import {OrderService} from "../../../../shared/services/orders/order.service";
-import {QuotesService} from "../../../../shared/services/quotes.service";
-import {WidgetsDataProviderService} from "../../../../shared/services/widgets-data-provider.service";
-import {SelectedPriceData} from "../../../../shared/models/orders/selected-order-price.model";
-import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
-import {Position} from "../../../../shared/models/positions/position.model";
-import {Order} from '../../../../shared/models/orders/order.model';
-import {mapWith} from '../../../../shared/utils/observable-helper';
-import {MathHelper} from '../../../../shared/utils/math-helper';
-import {SubscriptionsDataFeedService} from '../../../../shared/services/subscriptions-data-feed.service';
-import {OrderbookData, OrderbookRequest} from '../../../orderbook/models/orderbook-data.model';
-import {OrderBookDataFeedHelper} from '../../../orderbook/utils/order-book-data-feed.helper';
-import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
-import {isArrayEqual} from '../../../../shared/utils/collections';
-import {OrderSubmitSettings} from '../../models/order-submit-settings.model';
-import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
+import { Instrument } from "../../../../shared/models/instruments/instrument.model";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { OrderFormUpdate, OrderFormValue, OrderType } from '../../models/order-form.model';
+import { LimitOrderFormValue } from "../order-forms/limit-order-form/limit-order-form.component";
+import { MarketOrderFormValue } from "../order-forms/market-order-form/market-order-form.component";
+import { StopOrderFormValue } from "../order-forms/stop-order-form/stop-order-form.component";
+import { Side } from "../../../../shared/models/enums/side.model";
+import { LimitOrder, StopLimitOrder, StopMarketOrder, SubmitOrderResult } from "../../../command/models/order.model";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { finalize, map, startWith } from "rxjs/operators";
+import { OrderService } from "../../../../shared/services/orders/order.service";
+import { QuotesService } from "../../../../shared/services/quotes.service";
+import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
+import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { Position } from "../../../../shared/models/positions/position.model";
+import { Order } from '../../../../shared/models/orders/order.model';
+import { mapWith } from '../../../../shared/utils/observable-helper';
+import { MathHelper } from '../../../../shared/utils/math-helper';
+import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
+import { OrderbookData, OrderbookRequest } from '../../../orderbook/models/orderbook-data.model';
+import { OrderBookDataFeedHelper } from '../../../orderbook/utils/order-book-data-feed.helper';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { isArrayEqual } from '../../../../shared/utils/collections';
+import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
+import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
+import { LessMore } from "../../../../shared/models/enums/less-more.model";
+import { ExecutionPolicy } from "../../../../shared/models/orders/orders-group.model";
 
 export enum ComponentTabs {
   LimitOrder = 'limitOrder',
@@ -336,6 +338,41 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       return null;
     }
 
+    if (this.limitOrderFormValue.topOrderPrice || this.limitOrderFormValue.bottomOrderPrice) {
+      const orders: ((LimitOrder | StopLimitOrder | StopMarketOrder) & { type: 'Limit' | 'StopLimit' | 'Stop' })[] = [{
+        ...this.limitOrderFormValue,
+        type: 'Limit',
+        side,
+        instrument
+      }];
+
+      if (this.limitOrderFormValue.topOrderPrice) {
+        orders.push({
+          ...this.limitOrderFormValue,
+          condition: LessMore.More,
+          triggerPrice: this.limitOrderFormValue.topOrderPrice!,
+          side: this.limitOrderFormValue.topOrderSide!,
+          type: 'StopLimit',
+          instrument,
+          activate: false
+        });
+      }
+
+      if (this.limitOrderFormValue.bottomOrderPrice) {
+        orders.push({
+          ...this.limitOrderFormValue,
+          condition: LessMore.Less,
+          triggerPrice: this.limitOrderFormValue.bottomOrderPrice!,
+          side: this.limitOrderFormValue.bottomOrderSide!,
+          type: 'StopLimit',
+          instrument,
+          activate: false
+        });
+      }
+
+      return this.orderService.submitOrdersGroup(orders, portfolio, ExecutionPolicy.TriggerBracketOrders);
+    }
+
     return this.orderService.submitLimitOrder(
       {
         ...this.limitOrderFormValue,
@@ -370,6 +407,25 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   private prepareStopOrder(instrument: InstrumentKey, portfolio: string, side: Side): Observable<SubmitOrderResult> | null {
     if (!this.stopOrderFormValue) {
       return null;
+    }
+
+    if (this.stopOrderFormValue.allowLinkedOrder) {
+      const orders: (StopLimitOrder & { type: 'StopLimit' | 'Stop' })[] = [
+        {
+          ...this.stopOrderFormValue,
+          type: this.stopOrderFormValue.withLimit ? 'StopLimit' : 'Stop',
+          side,
+          instrument: {...instrument}
+        },
+        {
+          ...this.stopOrderFormValue.linkedOrder! as StopLimitOrder,
+          type: this.stopOrderFormValue.linkedOrder.withLimit ? 'StopLimit' : 'Stop',
+          instrument: {...instrument},
+          side: this.stopOrderFormValue.linkedOrder.side!
+        }
+      ];
+
+      return this.orderService.submitOrdersGroup(orders, portfolio, ExecutionPolicy.OnExecuteOrCancel);
     }
 
     if (this.stopOrderFormValue.withLimit) {

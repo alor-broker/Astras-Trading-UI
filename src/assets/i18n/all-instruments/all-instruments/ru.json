@@ -4,6 +4,7 @@
     "shortName": "Название",
     "currency":  "Валюта",
     "dailyGrowth": "Рост за сегодня",
+    "dailyGrowthPercent": "Рост за сегодня, %",
     "tradeVolume":  "Объём торгов",
     "exchange": "Биржа",
     "market":  "Рынок",

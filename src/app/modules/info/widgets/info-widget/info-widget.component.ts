@@ -22,16 +22,18 @@ import {
 } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InfoSettings } from '../../models/info-settings.model';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-info-widget[guid][isBlockWidget]',
+  selector: 'ats-info-widget[widgetInstance][isBlockWidget]',
   templateUrl: './info-widget.component.html',
   styleUrls: ['./info-widget.component.less'],
   providers: [InfoService]
 })
 export class InfoWidgetComponent implements OnInit {
   @Input()
-  guid!: string;
+  widgetInstance!: WidgetInstance;
+
 
   @Input()
   isBlockWidget!: boolean;
@@ -53,9 +55,13 @@ export class InfoWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<InfoSettings>(
-      this.guid,
+      this.widgetInstance,
       'InfoSettings',
       settings => ({
         ...settings,

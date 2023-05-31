@@ -22,7 +22,7 @@ import { TableSettingHelper } from '../../../../shared/utils/table-setting.helpe
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
-import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
+import {ContentSize, WidgetInstance} from '../../../../shared/models/dashboard/dashboard-item.model';
 import {
   allNotificationsColumns,
   allOrdersColumns,
@@ -34,7 +34,7 @@ import {
 import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
 
 @Component({
-  selector: 'ats-blotter-widget[guid][isBlockWidget]',
+  selector: 'ats-blotter-widget[widgetInstance][isBlockWidget]',
   templateUrl: './blotter-widget.component.html',
   styleUrls: ['./blotter-widget.component.less'],
   providers: [
@@ -45,7 +45,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   readonly marketTypes = MarketType;
   shouldShowSettings: boolean = false;
   @Input()
-  guid!: string;
+  widgetInstance!: WidgetInstance;
   @Input()
   isBlockWidget!: boolean;
   activeTabIndex$ = of(0);
@@ -64,13 +64,16 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createPortfolioLinkedWidgetSettingsIfMissing<BlotterSettings>(
-      this.guid,
+      this.widgetInstance,
       'BlotterSettings',
       settings => ({
         ...settings,
-        activeTabIndex: 0,
         tradesTable: TableSettingHelper.toTableDisplaySettings(allTradesColumns.filter(c => c.isDefault).map(c => c.id)),
         positionsTable: TableSettingHelper.toTableDisplaySettings(allPositionsColumns.filter(c => c.isDefault).map(c => c.id)),
         ordersTable: TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.id)),
@@ -109,7 +112,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   }
 
   onIndexChange(event: NzTabChangeEvent) {
-    this.widgetSettingsService.updateSettings(this.guid, { activeTabIndex: event.index ?? 0 });
+    this.widgetSettingsService.updateSettings(this.widgetInstance.instance.guid, { activeTabIndex: event.index ?? 0 });
   }
 
   ngOnDestroy() {

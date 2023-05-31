@@ -5,7 +5,6 @@
     nzSize="large"
     class="mobile-dashboard-menu"
     [nzAnimated]="false"
-    [(nzSelectedIndex)]="selectedTabIndex"
   >
     <nz-tab
       #tab
@@ -14,21 +13,11 @@
       [nzTitle]="titleTemplate"
     >
       <ng-template #titleTemplate>
-        <div class="d-flex flex-column" [class.new-order]="widget.widgetType === 'order-submit'">
-          <i nz-icon nzType="plus-circle" class="widget-icon" nzTheme="outline" *ngIf="widget.widgetType === 'order-submit'; else widgetIcon"></i>
-          <ng-template #widgetIcon>
-            <i nz-icon [nzType]="widgetsHelper.getIconName(widget.widgetType)" class="widget-icon" nzTheme="outline"></i>
-          </ng-template>
+        <div class="d-flex flex-column" [class.new-order]="widget.instance.widgetType === 'order-submit'">
+          <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
 
           <div class="widget-label">
-            <ng-container *ngIf="widget.widgetType === 'order-submit'; else widgetLabel">
-              <span *transloco="let tDashboard; scope: 'dashboard/mobile-dashboard'">
-                {{tDashboard('dashboardMobileDashboard.orderLabel')}}
-              </span>
-            </ng-container>
-            <ng-template #widgetLabel>
-              <span>{{t('widgetHeaders.' + widgetsHelper.getWidgetHeaderTranslateKey(widget.widgetType))}}</span>
-            </ng-template>
+            <span>{{getWidgetName(widget.widgetMeta)}}</span>
           </div>
         </div>
       </ng-template>

@@ -44,6 +44,5 @@
     }
   },
   "emptyPositions": "There are no positions",
-  "emptyPositionsWithFilters": "Nothing found with these filters",
-  "exportToFile": "Export to file"
+  "emptyPositionsWithFilters": "Nothing found with these filters"
 }

@@ -9,11 +9,12 @@ import {
   ViewChildren
 } from '@angular/core';
 import {
-  combineLatest,
   Observable,
-  of, Subject,
+  of,
+  shareReplay,
+  Subject,
   switchMap,
-  take, takeUntil,
+  take,
   tap
 } from 'rxjs';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
@@ -27,20 +28,15 @@ import {
 import { getPropertyFromPath } from "../../../../shared/utils/object-helper";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
-import { WidgetNames } from "../../../../shared/models/enums/widget-names";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import {
-  defaultBadgeColor,
-  toInstrumentKey
-} from "../../../../shared/utils/instruments";
-import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
+import {toInstrumentKey} from "../../../../shared/utils/instruments";
 import { TableAutoHeightBehavior } from '../../../blotter/utils/table-auto-height.behavior';
-import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import {
   InstrumentSelectSettings
 } from '../../models/instrument-select-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
 
 @Component({
   selector: 'ats-watchlist-table[guid]',
@@ -55,7 +51,6 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
   watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
-  selectedInstruments$: Observable<InstrumentGroups> = of({});
 
   scrollHeight$: Observable<number> = of(100);
   allColumns: BaseColumnSettings<WatchedInstrument>[] = [
@@ -84,15 +79,8 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     openPrice: this.getSortFn('openPrice'),
     closePrice: this.getSortFn('closePrice'),
   };
-  showedWidgetNames = [
-    WidgetNames.lightChart,
-    WidgetNames.techChart,
-    WidgetNames.orderBook,
-    WidgetNames.scalperOrderBook,
-    WidgetNames.allTrades,
-    WidgetNames.instrumentInfo,
-    WidgetNames.orderSubmit
-  ];
+
+  menuWidgets$!: Observable<string[] | null>;
 
   private selectedInstrument: InstrumentKey | null = null;
   private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -104,34 +92,24 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly nzContextMenuService: NzContextMenuService,
     private readonly dashboardService: ManageDashboardsService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly widgetsMetaService: WidgetsMetaService
   ) {
   }
 
   ngOnInit(): void {
     this.watchedInstruments$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
-      takeUntil(this.destroy$),
       tap(settings => {
         this.displayedColumns = this.allColumns.filter(c => settings.instrumentColumns.includes(c.id));
         this.badgeColor = settings.badgeColor!;
       }),
       switchMap(settings => this.watchInstrumentsService.getWatched(settings)),
+      shareReplay(1)
     );
 
-    this.selectedInstruments$ = combineLatest([
-      this.currentDashboardService.instrumentsSelection$,
-      this.terminalSettingsService.getSettings()
-    ])
-      .pipe(
-        takeUntil(this.destroy$),
-        map(([badges, settings]) => {
-          if (settings.badgesBind) {
-            return badges;
-          }
-
-          return { [defaultBadgeColor]: badges[defaultBadgeColor] };
-        })
-      );
+    this.menuWidgets$ = this.widgetsMetaService.getWidgetsMeta().pipe(
+      map(widgets => widgets.filter(x => x.hasInstrumentBind).map(x => x.typeId)),
+      shareReplay(1)
+    );
   }
 
   ngAfterViewInit(): void {
@@ -181,9 +159,9 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     this.nzContextMenuService.create($event, menu);
   }
 
-  addWidget(type: WidgetNames): void {
+  addWidget(type: string): void {
     this.dashboardService.addWidget(
-      type.toString(),
+      type,
       {
         linkToActive: false,
         ...toInstrumentKey(this.selectedInstrument!)

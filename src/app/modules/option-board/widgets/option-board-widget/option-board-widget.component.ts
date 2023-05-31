@@ -10,20 +10,17 @@ import {SettingsHelper} from "../../../../shared/utils/settings-helper";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {filter, map} from "rxjs/operators";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
-import {WidgetsHelper} from "../../../../shared/utils/widgets";
-import {WidgetNames} from "../../../../shared/models/enums/widget-names";
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-option-board-widget[guid][isBlockWidget]',
+  selector: 'ats-option-board-widget[widgetInstance][isBlockWidget]',
   templateUrl: './option-board-widget.component.html',
   styleUrls: ['./option-board-widget.component.less']
 })
 export class OptionBoardWidgetComponent implements OnInit {
-  widgetNames = WidgetNames;
-  widgetsHelper = WidgetsHelper;
   shouldShowSettings: boolean = false;
   @Input()
-  guid!: string;
+  widgetInstance!: WidgetInstance;
   @Input()
   isBlockWidget!: boolean;
   settings$!: Observable<OptionBoardSettings>;
@@ -39,13 +36,17 @@ export class OptionBoardWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   onSettingsChange() {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<OptionBoardSettings>(
-      this.guid,
+      this.widgetInstance,
       'OptionBoardSettings',
       settings => ({
         ...settings

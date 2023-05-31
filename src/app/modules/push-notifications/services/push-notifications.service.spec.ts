@@ -1,12 +1,14 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { PushNotificationsService } from './push-notifications.service';
-import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { AngularFireMessaging } from "@angular/fire/compat/messaging";
-import { of } from "rxjs";
-import { AuthService } from "../../../shared/services/auth.service";
-import { Store } from "@ngrx/store";
-import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import {PushNotificationsService} from './push-notifications.service';
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {AngularFireMessaging} from "@angular/fire/compat/messaging";
+import {of, Subject} from "rxjs";
+import {ErrorHandlerService} from "../../../shared/services/handle-error/error-handler.service";
+import {TimezoneConverterService} from "../../../shared/services/timezone-converter.service";
+import {TimezoneConverter} from "../../../shared/utils/timezone-converter";
+import {TimezoneDisplayOption} from "../../../shared/models/enums/timezone-display-option";
+import {LocalStorageService} from "../../../shared/services/local-storage.service";
 
 describe('FirebaseNotificationsService', () => {
   let service: PushNotificationsService;
@@ -26,6 +28,20 @@ describe('FirebaseNotificationsService', () => {
         {
           provide: ErrorHandlerService,
           useValue: {}
+        },
+        {
+          provide: LocalStorageService,
+          useValue: {
+            getItemStream: jasmine.createSpy('getItemStream').and.returnValue(new Subject()),
+            setItem: jasmine.createSpy('setItem').and.callThrough(),
+            getItem: jasmine.createSpy('getItem').and.returnValue(undefined),
+          }
+        },
+        {
+          provide: TimezoneConverterService,
+          useValue: {
+            getConverter: jasmine.createSpy('getConverter').and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)))
+          }
         }
       ]
     });

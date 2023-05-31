@@ -31,6 +31,8 @@ import { QuotesService } from "../../../../../shared/services/quotes.service";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { TimeInForce } from "../../../../../shared/models/commands/command-params.model";
 import {LessMore} from "../../../../../shared/models/enums/less-more.model";
+import { LinkedOrderFormData } from "../../../../command/models/stop-form-data.model";
+import { Side } from "../../../../../shared/models/enums/side.model";
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'> &
@@ -123,8 +125,43 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
       isIceberg: new FormControl(false),
       icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
       icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
-    },
-      AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
+      allowLinkedOrder: new FormControl(false),
+      linkedOrder: new FormGroup<ControlsOf<LinkedOrderFormData>>({
+          quantity: new FormControl(
+            1,
+            [
+              Validators.min(inputNumberValidation.min),
+              Validators.max(inputNumberValidation.max)
+            ]
+          ),
+          triggerPrice: new FormControl(
+            1,
+            [
+              Validators.min(inputNumberValidation.negativeMin),
+              Validators.max(inputNumberValidation.max),
+              AtsValidators.priceStepMultiplicity(instrument.minstep || 0)
+            ]
+          ),
+          price: new FormControl(
+            1,
+            [
+              Validators.min(inputNumberValidation.negativeMin),
+              Validators.max(inputNumberValidation.max),
+              AtsValidators.priceStepMultiplicity(instrument.minstep || 0)
+            ]
+          ),
+          stopEndUnixTime: new FormControl(additions!.timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1))),
+          condition: new FormControl(LessMore.More),
+          withLimit: new FormControl(false),
+          side: new FormControl(Side.Buy)
+        })
+      },
+      [
+        AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value),
+        AtsValidators.requiredIfTrue('allowLinkedOrder', 'linkedOrder.quantity'),
+        AtsValidators.requiredIfTrue('allowLinkedOrder', 'linkedOrder.triggerPrice'),
+        AtsValidators.requiredIfTrue('allowLinkedOrder', 'linkedOrder.price')
+      ]
     );
   }
 
@@ -167,6 +204,12 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
       stopEndUnixTime: !!formValue.stopEndUnixTime
         ? this.timezoneConverter.terminalToUtc0Date(formValue.stopEndUnixTime as Date)
         : undefined,
+      linkedOrder: {
+        ...formValue.linkedOrder,
+        stopEndUnixTime: !!formValue.linkedOrder.stopEndUnixTime
+          ? this.timezoneConverter.terminalToUtc0Date(formValue.linkedOrder.stopEndUnixTime as Date)
+          : undefined,
+      }
     };
   }
 

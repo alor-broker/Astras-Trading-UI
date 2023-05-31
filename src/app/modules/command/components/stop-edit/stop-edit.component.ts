@@ -37,13 +37,17 @@ import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { TimeInForce } from "../../../../shared/models/commands/command-params.model";
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
 
+interface StopEditFormData extends Omit<StopFormData, 'linkedOrder'> {
+  side: Side;
+}
+
 @Component({
   selector: 'ats-stop-edit',
   templateUrl: './stop-edit.component.html',
   styleUrls: ['./stop-edit.component.less']
 })
 export class StopEditComponent implements OnInit, OnDestroy {
-  form!: FormGroup<ControlsOf<StopFormData & { side: Side }>>;
+  form!: FormGroup<ControlsOf<StopEditFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<EditParams> | null>(null);
   canSelectNow = false;
   timeInForceEnum = TimeInForce;
@@ -96,7 +100,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formValue = this.form.getRawValue() as StopFormData;
+    const formValue = this.form.getRawValue() as StopEditFormData;
 
     if (initialParameters && initialParameters.user) {
       const price = Number(formValue.price);
@@ -162,13 +166,13 @@ export class StopEditComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buildForm(initialParameters: CommandContextModel<EditParams>): FormGroup<ControlsOf<StopFormData & { side: Side }>> {
+  private buildForm(initialParameters: CommandContextModel<EditParams>): FormGroup<ControlsOf<StopEditFormData>> {
     let price = initialParameters.commandParameters.price;
     if (price == 1 || price == null) {
       price = 0;
     }
 
-    return new FormGroup<ControlsOf<StopFormData & { side: Side }>>({
+    return new FormGroup<ControlsOf<StopEditFormData>>({
       quantity: new FormControl(
         initialParameters.commandParameters.quantity ?? 1,
         [

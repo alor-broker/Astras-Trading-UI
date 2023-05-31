@@ -10,6 +10,10 @@ export interface ExchangeSettings {
   isInternational?: boolean;
   isDefault?: boolean;
   usesIsin?: boolean;
+  defaultInstrument: {
+    symbol: string;
+    instrumentGroup?: string;
+  }
 }
 
 export interface MarketSettings {}

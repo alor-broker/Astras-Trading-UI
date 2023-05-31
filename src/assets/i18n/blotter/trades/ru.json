@@ -41,6 +41,5 @@
     }
   },
   "emptyTrades": "Сделок сегодня не было",
-  "emptyTradesWithFilters": "С такими фильтрами ничего не найдено",
-  "exportToFile": "Сохранить в файл"
+  "emptyTradesWithFilters": "С такими фильтрами ничего не найдено"
 }

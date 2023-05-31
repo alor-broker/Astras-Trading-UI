@@ -11,7 +11,6 @@ import {
   take
 } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
-import { WidgetNames } from 'src/app/shared/models/enums/widget-names';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
 import { CommandType } from 'src/app/shared/models/enums/command-type.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -39,6 +38,7 @@ import {
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import {environment} from "../../../../../environments/environment";
 
 @Component({
   selector: 'ats-navbar',
@@ -46,12 +46,13 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
   styleUrls: ['./navbar.component.less'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  readonly externalLinks = environment.externalLinks;
+
   isSideMenuVisible = false;
 
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
   selectedDashboard$!: Observable<Dashboard>;
-  names = WidgetNames;
   themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
 

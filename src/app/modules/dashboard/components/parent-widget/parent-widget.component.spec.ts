@@ -1,12 +1,7 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ParentWidgetComponent } from './parent-widget.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
-import { mockComponent } from "../../../../shared/utils/testing";
+import {ParentWidgetComponent} from './parent-widget.component';
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
 describe('ParentWidgetComponent', () => {
   let component: ParentWidgetComponent;
@@ -16,20 +11,7 @@ describe('ParentWidgetComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
-        ParentWidgetComponent,
-        mockComponent({
-          selector: 'ats-widget-header',
-          inputs: ['guid', 'hasSettings', 'shouldShowSettings', 'hasHelp']
-        })
-      ],
-      providers: [
-        {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
-            updateIsLinked: jasmine.createSpy('updateIsLinked').and.callThrough()
-          }
-        }
+        ParentWidgetComponent
       ]
     }).compileComponents();
   });
@@ -38,9 +20,14 @@ describe('ParentWidgetComponent', () => {
     fixture = TestBed.createComponent(ParentWidgetComponent);
     component = fixture.componentInstance;
     component.widget = {
-      guid: '123',
-      position: { x: 0, y: 0, rows: 1, cols: 1 },
-      widgetType: 'test-widget'
+      instance: {
+        guid: '123',
+        position: {x: 0, y: 0, rows: 1, cols: 1},
+        widgetType: 'test-widget'
+      },
+      widgetMeta: {
+
+      } as WidgetMeta
     };
     fixture.detectChanges();
   });

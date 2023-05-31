@@ -1,12 +1,6 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {
-  LimitOrderFormComponent,
-  LimitOrderFormValue
-} from './limit-order-form.component';
+import { LimitOrderFormComponent, LimitOrderFormValue } from './limit-order-form.component';
 import { OrderSubmitModule } from '../../../order-submit.module';
 import {
   commonTestProviders,
@@ -17,12 +11,10 @@ import {
 } from '../../../../../shared/utils/testing';
 import { Instrument } from '../../../../../shared/models/instruments/instrument.model';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import {
-  shareReplay,
-  take
-} from 'rxjs';
+import { shareReplay, take } from 'rxjs';
 import ruCommand from "../../../../../../assets/i18n/command/ru.json";
 import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
+import { Side } from "../../../../../shared/models/enums/side.model";
 
 describe('LimitOrderFormComponent', () => {
   let component: LimitOrderFormComponent;
@@ -171,6 +163,10 @@ describe('LimitOrderFormComponent', () => {
           price: Number(inputs.price.value),
           quantity: Number(inputs.quantity.value),
           instrumentGroup: inputs.instrumentGroup,
+          topOrderPrice: null,
+          topOrderSide: Side.Buy,
+          bottomOrderPrice: null,
+          bottomOrderSide: Side.Buy
         };
 
         emittedValue$.pipe(
@@ -190,7 +186,11 @@ describe('LimitOrderFormComponent', () => {
       const expectedValue: LimitOrderFormValue = {
         price: 999,
         quantity: 125,
-        instrumentGroup: 'SPBX'
+        instrumentGroup: 'SPBX',
+        topOrderPrice: null,
+        topOrderSide: Side.Buy,
+        bottomOrderPrice: null,
+        bottomOrderSide: Side.Buy
       };
 
       const emittedValue$ = component.formValueChange.pipe(
@@ -227,7 +227,11 @@ describe('LimitOrderFormComponent', () => {
         const expectedValue: LimitOrderFormValue = {
           price: 478,
           quantity: Number(inputs.quantity.value),
-          instrumentGroup: inputs.instrumentGroup
+          instrumentGroup: inputs.instrumentGroup,
+          topOrderPrice: null,
+          topOrderSide: Side.Buy,
+          bottomOrderPrice: null,
+          bottomOrderSide: Side.Buy
         };
 
         component.initialValues = { price: expectedValue.price };

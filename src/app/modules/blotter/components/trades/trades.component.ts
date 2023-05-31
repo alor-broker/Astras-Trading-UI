@@ -16,7 +16,7 @@ import {
   combineLatest,
   distinctUntilChanged,
   Observable,
-  of,
+  of, shareReplay,
   Subject,
   switchMap,
   take,
@@ -24,6 +24,7 @@ import {
 } from 'rxjs';
 import {
   debounceTime,
+  filter,
   map,
   mergeMap,
   startWith
@@ -175,26 +176,29 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    const initHeightWatching = (ref: ElementRef<HTMLElement>) => {
-      TableAutoHeightBehavior.getScrollHeight(ref).pipe(
-        takeUntil(this.destroy$)
-      ).subscribe(x => this.scrollHeight$.next(x));
-    };
+    const container$ =  this.tableContainer.changes.pipe(
+      map(x => x.first),
+      startWith(this.tableContainer.first),
+      filter((x): x is ElementRef<HTMLElement> => !!x),
+      shareReplay(1)
+    );
 
-    if(this.tableContainer.length > 0) {
-      initHeightWatching(this.tableContainer!.first);
-    } else {
-      this.tableContainer.changes.pipe(
-        take(1)
-      ).subscribe((x: QueryList<ElementRef<HTMLElement>>) => initHeightWatching(x.first));
-    }
+    container$.pipe(
+      switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
+      takeUntil(this.destroy$)
+    ).subscribe(x => {
+      setTimeout(()=> this.scrollHeight$.next(x));
+    });
   }
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
 
     this.settings$.pipe(
-      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)),
+      distinctUntilChanged((previous, current) =>
+        TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)
+        && previous.badgeColor === current.badgeColor
+      ),
       mapWith(
         () => this.translatorService.getTranslator('blotter/trades'),
         (s, t) => ({ s, t })

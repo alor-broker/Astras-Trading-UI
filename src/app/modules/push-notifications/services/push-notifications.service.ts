@@ -1,20 +1,20 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { environment } from "../../../../environments/environment";
-import { forkJoin, Observable, of, shareReplay, Subject, switchMap, take, tap, throwError } from "rxjs";
-import { AngularFireMessaging } from "@angular/fire/compat/messaging";
-import { catchHttpError, mapWith } from "../../../shared/utils/observable-helper";
-import { catchError, filter, map } from "rxjs/operators";
-import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import {Injectable, OnDestroy} from '@angular/core';
+import {HttpClient} from "@angular/common/http";
+import {environment} from "../../../../environments/environment";
+import {forkJoin, Observable, of, shareReplay, Subject, switchMap, take, tap, throwError} from "rxjs";
+import {AngularFireMessaging} from "@angular/fire/compat/messaging";
+import {catchHttpError, mapWith} from "../../../shared/utils/observable-helper";
+import {catchError, filter, map} from "rxjs/operators";
+import {ErrorHandlerService} from "../../../shared/services/handle-error/error-handler.service";
 import {
   OrderExecuteSubscription,
   PriceChangeRequest,
   PushSubscriptionType,
   SubscriptionBase
 } from "../models/push-notifications.model";
-import { BaseCommandResponse } from "../../../shared/models/http-request-response.model";
-import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import { isPortfoliosEqual } from "../../../shared/utils/portfolios";
+import {BaseCommandResponse} from "../../../shared/models/http-request-response.model";
+import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
+import {isPortfoliosEqual} from "../../../shared/utils/portfolios";
 import firebase from "firebase/compat";
 
 interface MessagePayload extends firebase.messaging.MessagePayload {
@@ -27,7 +27,7 @@ interface MessagePayload extends firebase.messaging.MessagePayload {
 @Injectable({
   providedIn: 'root'
 })
-export class PushNotificationsService {
+export class PushNotificationsService implements OnDestroy {
 
   private readonly baseUrl = environment.apiUrl + '/commandapi/observatory/subscriptions';
 
@@ -45,7 +45,10 @@ export class PushNotificationsService {
   ) {
   }
 
-  subscribeToOrdersExecute(portfolios: { portfolio: string, exchange: string }[]): Observable<BaseCommandResponse | null> {
+  subscribeToOrdersExecute(portfolios: {
+    portfolio: string,
+    exchange: string
+  }[]): Observable<BaseCommandResponse | null> {
     return this.cancelOrderExecuteSubscriptions(portfolios)
       .pipe(
         switchMap(isNeedResubscribe => {
@@ -159,6 +162,10 @@ export class PushNotificationsService {
 
   getBrowserNotificationsStatus(): Observable<"default" | "denied" | "granted"> {
     return this.angularFireMessaging.requestPermission;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptionsUpdatedSub.complete();
   }
 
   private getToken(): Observable<string | null> {

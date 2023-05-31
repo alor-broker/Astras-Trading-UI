@@ -26,9 +26,10 @@ import {
   VolumeHighlightMode
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-scalper-order-book-widget[guid][isBlockWidget]',
+  selector: 'ats-scalper-order-book-widget[widgetInstance][isBlockWidget]',
   templateUrl: './scalper-order-book-widget.component.html',
   styleUrls: ['./scalper-order-book-widget.component.less']
 })
@@ -38,7 +39,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
   @Input()
   isBlockWidget!: boolean;
   @Input()
-  guid!: string;
+  widgetInstance!: WidgetInstance;
 
   @Input()
   isActive: boolean = false;
@@ -55,13 +56,17 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
   ) {
   }
 
+  get guid(): string {
+    return this.widgetInstance.instance.guid;
+  }
+
   onSettingsChange() {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<ScalperOrderBookSettings>(
-      this.guid,
+      this.widgetInstance,
       'ScalperOrderBookSettings',
       settings => ({
         ...settings,

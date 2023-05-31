@@ -16,13 +16,13 @@ import {
   combineLatest,
   distinctUntilChanged,
   Observable,
-  of,
+  of, shareReplay,
   Subject,
   switchMap,
   take,
   takeUntil
 } from 'rxjs';
-import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/operators';
+import {catchError, debounceTime, filter, map, mergeMap, startWith, tap} from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
@@ -38,7 +38,6 @@ import {
   isEqualPortfolioDependedSettings
 } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -46,10 +45,10 @@ import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -218,7 +217,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     },
   ];
   listOfColumns: BaseColumnSettings<DisplayOrder>[] = [];
-  selectedInstruments$: Observable<InstrumentGroups> = of({});
   settings$!: Observable<BlotterSettings>;
   readonly scrollHeight$ = new BehaviorSubject<number>(100);
 
@@ -236,8 +234,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly ordersGroupService: OrdersGroupService
   ) {
   }
 
@@ -245,7 +243,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
 
     this.settings$.pipe(
-      distinctUntilChanged((previous, current) => TableSettingHelper.isTableSettingsEqual(previous?.ordersTable, current.ordersTable)),
+      distinctUntilChanged((previous, current) =>
+        TableSettingHelper.isTableSettingsEqual(previous?.ordersTable, current.ordersTable)
+        && previous.badgeColor === current.badgeColor
+      ),
       mapWith(
         () => this.translatorService.getTranslator('blotter/orders'),
         (s, t) => ({ s, t })
@@ -293,15 +294,17 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.displayOrders$ = combineLatest([
       this.orders$,
       this.filter,
-      this.timezoneConverterService.getConverter()
+      this.timezoneConverterService.getConverter(),
+      this.ordersGroupService.getAllOrderGroups()
     ]).pipe(
-      map(([orders, f, converter]) => orders
+      map(([orders, f, converter, groups]) => orders
         .map(o => ({
           ...o,
           residue: `${o.filled}/${o.qty}`,
           volume: MathHelper.round(o.qtyUnits * o.price, 2),
           transTime: converter.toTerminalDate(o.transTime),
-          endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime
+          endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime,
+          groupId: groups.find(g => !!g.orders.find(go => go.orderId === o.id))?.id
         }))
         .filter(o => this.justifyFilter(o, f))
         .sort(this.sortOrders))
@@ -312,20 +315,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       catchError((_, caught) => caught),
       takeUntil(this.destroy$)
     ).subscribe();
-
-    this.selectedInstruments$ = combineLatest([
-      this.dashboardContextService.instrumentsSelection$,
-      this.terminalSettingsService.getSettings()
-    ])
-      .pipe(
-        takeUntil(this.destroy$),
-        map(([badges, settings]) => {
-          if (settings.badgesBind) {
-            return badges;
-          }
-          return {[defaultBadgeColor]: badges[defaultBadgeColor]};
-        })
-      );
   }
 
   ngOnDestroy(): void {
@@ -362,7 +351,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  editOrder(order: Order) {
+  editOrder(order: Order, event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
     this.modal.openEditModal({
       type: order.type,
       quantity: order.qty - (order.filledQtyBatch ?? 0),
@@ -484,6 +476,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  openOrdersGroup(groupId: string, event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.service.openOrderGroupModal(groupId);
+  }
+
   trackBy(index: number, order: DisplayOrder): string {
     return order.id;
   }
@@ -528,18 +526,18 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    const initHeightWatching = (ref: ElementRef<HTMLElement>) => {
-      TableAutoHeightBehavior.getScrollHeight(ref).pipe(
-        takeUntil(this.destroy$)
-      ).subscribe(x => this.scrollHeight$.next(x));
-    };
+    const container$ =  this.tableContainer.changes.pipe(
+      map(x => x.first),
+      startWith(this.tableContainer.first),
+      filter((x): x is ElementRef<HTMLElement> => !!x),
+      shareReplay(1)
+    );
 
-    if(this.tableContainer.length > 0) {
-      initHeightWatching(this.tableContainer!.first);
-    } else {
-      this.tableContainer.changes.pipe(
-        take(1)
-      ).subscribe((x: QueryList<ElementRef<HTMLElement>>) => initHeightWatching(x.first));
-    }
+    container$.pipe(
+      switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
+      takeUntil(this.destroy$)
+    ).subscribe(x => {
+      setTimeout(()=> this.scrollHeight$.next(x));
+    });
   }
 }

@@ -314,7 +314,9 @@ describe('OrderSubmitComponent', () => {
           quantity: Math.round(Math.random() * 100),
           condition: Math.random() < 0.5 ? LessMore.Less : LessMore.More,
           triggerPrice: Math.round(Math.random() * 1000),
-          stopEndUnixTime: new Date()
+          stopEndUnixTime: new Date(),
+          linkedOrder: {},
+          allowLinkedOrder: false
         };
 
       component.setStopOrderValue({
@@ -324,7 +326,9 @@ describe('OrderSubmitComponent', () => {
           condition: expectedOrder.condition,
           stopEndUnixTime: expectedOrder.stopEndUnixTime,
           withLimit: false,
-          price: 0
+          price: 0,
+          linkedOrder: {},
+          allowLinkedOrder: false
         },
         isValid: true
       });
@@ -352,6 +356,8 @@ describe('OrderSubmitComponent', () => {
           triggerPrice: Math.round(Math.random() * 1000),
           price: Math.round(Math.random() * 1000),
           stopEndUnixTime: new Date(),
+          linkedOrder: {},
+          allowLinkedOrder: false
         };
 
       component.setStopOrderValue({
@@ -361,7 +367,9 @@ describe('OrderSubmitComponent', () => {
           condition: expectedOrder.condition,
           stopEndUnixTime: expectedOrder.stopEndUnixTime,
           withLimit: true,
-          price: expectedOrder.price
+          price: expectedOrder.price,
+          linkedOrder: {},
+          allowLinkedOrder: false
         },
         isValid: true
       });

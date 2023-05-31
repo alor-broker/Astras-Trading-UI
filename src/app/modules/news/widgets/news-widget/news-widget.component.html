@@ -14,10 +14,8 @@
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
         [linkToActive]="settings.linkToActive"
-        [titleIconTooltip]="t('widgetHeaders.NewsSettings')"
         [titleText]="t('widgetHeaders.NewsSettings') + ' ' + (widgetTitle$ | async)"
-        helpRef="news"
-        titleIcon="read"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 

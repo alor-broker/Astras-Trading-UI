@@ -1,9 +1,15 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { WidgetNames } from "../../models/enums/widget-names";
-import { Observable } from "rxjs";
-import { DeviceService } from "../../services/device.service";
-import { map } from "rxjs/operators";
-import { WidgetsHelper } from "../../utils/widgets";
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {WidgetsMetaService} from "../../services/widgets-meta.service";
+import {combineLatest, Observable, shareReplay} from "rxjs";
+import {map} from "rxjs/operators";
+import {TranslatorService} from "../../services/translator.service";
+import {WidgetsHelper} from "../../utils/widgets";
+
+interface WidgetDisplay {
+  typeId: string,
+  icon: string,
+  name: string
+}
 
 @Component({
   selector: 'ats-widget-menu',
@@ -17,17 +23,34 @@ export class WidgetMenuComponent implements OnInit {
   @Output() public selected = new EventEmitter<string>();
   @Output() public resetDashboard = new EventEmitter<void>();
 
-  public widgetNames = WidgetNames;
-  public widgetsHelper = WidgetsHelper;
-  public isMobile$!: Observable<boolean>;
+  widgetsMeta$!: Observable<WidgetDisplay[]>;
 
   constructor(
-    private readonly deviceService: DeviceService
-  ) {}
+    private readonly widgetsMetaService: WidgetsMetaService,
+    private readonly translatorService: TranslatorService
+  ) {
+  }
 
   ngOnInit() {
-    this.isMobile$ = this.deviceService.deviceInfo$.pipe(
-      map(info => info.isMobile)
+    this.widgetsMeta$ = combineLatest([
+        this.widgetsMetaService.getWidgetsMeta(),
+        this.translatorService.getLangChanges()
+      ]
+    ).pipe(
+      map(([meta, lang]) => meta
+        .filter(x => !!x.desktopMeta && x.desktopMeta.enabled)
+        .filter(x => this.showedWidgets.length === 0 || this.showedWidgets.includes(x.typeId))
+        .sort((a, b) => {
+            return (a.desktopMeta!.galleryOrder ?? 0) - (b.desktopMeta!.galleryOrder ?? 0);
+          }
+        )
+        .map(x => ({
+          typeId: x.typeId,
+          name: WidgetsHelper.getWidgetName(x.widgetName, lang) ?? x.typeId,
+          icon: x.desktopMeta?.galleryIcon ?? 'appstore'
+        }))
+      ),
+      shareReplay(1)
     );
   }
 }

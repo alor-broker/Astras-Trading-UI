@@ -96,6 +96,54 @@
                 </ng-template>
               </nz-form-item>
             </ng-container>
+
+            <div class="d-flex flex-gap-10">
+              <nz-form-item class="compact flex-grow-2">
+                <nz-form-label nzFor="topOrderPrice">{{t('command.topOrderPriceLabel')}}</nz-form-label>
+                <nz-form-control [nzErrorTip]="topOrderPriceError">
+                  <ats-input-number formControlName="topOrderPrice" placeholder="0" [allowNegative]="true"></ats-input-number>
+                </nz-form-control>
+              </nz-form-item>
+
+              <ng-template #topOrderPriceError>
+                <span *ngIf="form.get('topOrderPrice')?.errors?.min">{{t('command.tooLittle')}}</span>
+                <span *ngIf="form.get('topOrderPrice')?.errors?.max">{{t('command.tooMuch')}}</span>
+              </ng-template>
+
+              <nz-form-item class="compact flex-grow-1">
+                <nz-form-label [nzNoColon]="true" nzFor="topOrderSide">{{t('command.sideLabel')}}</nz-form-label>
+                <nz-form-control>
+                  <nz-select formControlName="topOrderSide">
+                    <nz-option [nzValue]="'buy'" [nzLabel]="t('command.buySideLabel')"></nz-option>
+                    <nz-option [nzValue]="'sell'" [nzLabel]="t('command.sellSideLabel')"></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div class="d-flex flex-gap-10">
+              <nz-form-item class="compact flex-grow-2">
+                <nz-form-label nzFor="bottomOrderPrice">{{t('command.bottomOrderPriceLabel')}}</nz-form-label>
+                <nz-form-control [nzErrorTip]="bottomOrderPriceError">
+                  <ats-input-number formControlName="bottomOrderPrice" placeholder="0" [allowNegative]="true"></ats-input-number>
+                </nz-form-control>
+              </nz-form-item>
+
+              <ng-template #bottomOrderPriceError>
+                <span *ngIf="form.get('bottomOrderPrice')?.errors?.min">{{t('command.tooLittle')}}</span>
+                <span *ngIf="form.get('bottomOrderPrice')?.errors?.max">{{t('command.tooMuch')}}</span>
+              </ng-template>
+
+              <nz-form-item class="compact flex-grow-1">
+                <nz-form-label [nzNoColon]="true" nzFor="bottomOrderSide">{{t('command.sideLabel')}}</nz-form-label>
+                <nz-form-control>
+                  <nz-select formControlName="bottomOrderSide">
+                    <nz-option [nzValue]="'buy'" [nzLabel]="t('command.buySideLabel')"></nz-option>
+                    <nz-option [nzValue]="'sell'" [nzLabel]="t('command.sellSideLabel')"></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
           </nz-collapse-panel>
         </nz-collapse>
       </div>

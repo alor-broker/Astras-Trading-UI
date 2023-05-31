@@ -18,11 +18,9 @@
         [linkToActive]="settings.linkToActive"
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [titleIconTooltip]="t('widgetHeaders.BlotterSettings')"
         [titleText]="title$ | async"
         badgeShape="square"
-        helpRef="blotter"
-        titleIcon="table"
+        [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
   </ats-widget-skeleton>
@@ -102,3 +100,5 @@
 <ng-template #settingsRef>
   <ats-blotter-settings (settingsChange)="onSettingsChange()" [guid]='guid'></ats-blotter-settings>
 </ng-template>
+
+<ats-orders-group-modal-widget [guid]="guid"></ats-orders-group-modal-widget>
