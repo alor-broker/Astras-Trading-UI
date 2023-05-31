@@ -134,7 +134,15 @@ export class ManageDashboardsService {
   }
 
   private readDefaultConfig() {
-    this.defaultConfig$ = this.httpClient.get<DefaultDashboardConfig>('../../../assets/default-dashboard-config.json')
+    this.defaultConfig$ = this.httpClient.get<DefaultDashboardConfig>(
+      '../../../assets/default-dashboard-config.json',
+      {
+        headers: {
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache"
+        }
+      }
+    )
       .pipe(
         shareReplay(1)
       );
