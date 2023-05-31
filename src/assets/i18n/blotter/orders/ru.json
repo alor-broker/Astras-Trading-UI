@@ -40,7 +40,8 @@
       "listOfFilter": {
         "filled": "Исполнена",
         "working": "Активна",
-        "canceled": "Отменена"
+        "canceled": "Отменена",
+        "rejected": "Отложена"
       }
     },
     "transTime": {

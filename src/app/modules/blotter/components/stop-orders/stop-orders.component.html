@@ -119,7 +119,7 @@
                 <td *ngIf='column.id === "status"' [class]='ord.status.toString() === "filled"
                 ? (ord.status.toString() === "sell" ? "sell" : "buy") :
                 (ord.status.toString() === "canceled" ? "cancelled" : "bold" )'>
-                  {{ t('blotterStopOrders.orderStatus.' + ord.status, {fallback: ord.status}) }}
+                  {{ t('blotterBlotterCommon.orderStatus.' + ord.status, {fallback: ord.status}) }}
                 </td>
                 <td *ngIf='column.id === "conditionType"'>{{ ord.conditionType }}</td>
                 <td *ngIf='column.id === "transTime"'>{{ formatDate(ord.transTime) }}</td>

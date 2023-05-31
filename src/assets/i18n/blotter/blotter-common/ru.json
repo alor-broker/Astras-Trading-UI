@@ -1,8 +1,9 @@
 {
   "orderStatus": {
     "filled": "Исполн",
-    "canceled": "Отменен",
-    "working":  "Активен"
+    "canceled": "Отменён",
+    "working":  "Активен",
+    "rejected": "Отложен"
   },
   "emptyOrders": "Заявок сегодня не было",
   "emptyOrdersWithFilters": "С такими фильтрами ничего не найдено",

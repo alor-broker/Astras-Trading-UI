@@ -40,7 +40,8 @@
       "listOfFilter": {
         "filled": "Filled",
         "working": "Active",
-        "canceled": "Canceled"
+        "canceled": "Canceled",
+        "rejected": "Suspended"
       }
     },
     "transTime": {

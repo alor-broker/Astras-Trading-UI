@@ -2,7 +2,8 @@
   "orderStatus": {
     "filled": "Done",
     "canceled": "Canceled",
-    "working":  "Active"
+    "working":  "Active",
+    "rejected": "Suspended"
   },
   "emptyOrders": "There are no orders today",
   "emptyOrdersWithFilters": "Nothing found with these filters",

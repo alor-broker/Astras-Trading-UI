@@ -161,7 +161,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         filters: [
           { text: 'Исполнена', value: 'filled' },
           { text: 'Активна', value: 'working' },
-          { text: 'Отменена', value: 'canceled' }
+          { text: 'Отменена', value: 'canceled' },
+          { text: 'Отложена', value: 'rejected' }
         ]
       },
       tooltip: 'Стаус заявки',
