@@ -158,12 +158,12 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
         icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
         topOrderPrice: new FormControl(null, [
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max)
         ]),
         topOrderSide: new FormControl(Side.Buy),
         bottomOrderPrice: new FormControl(null, [
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max)
         ]),
         bottomOrderSide: new FormControl(Side.Buy)
