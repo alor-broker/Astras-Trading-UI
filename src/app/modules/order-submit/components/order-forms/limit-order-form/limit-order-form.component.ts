@@ -84,10 +84,13 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
           Validators.min(inputNumberValidation.min),
           Validators.max(inputNumberValidation.max)
         ]),
-        topOrderPrice: new FormControl(null, Validators.min(inputNumberValidation.min)),
+        topOrderPrice: new FormControl(null, [
+          Validators.min(inputNumberValidation.negativeMin),
+          Validators.max(inputNumberValidation.max)
+        ]),
         topOrderSide: new FormControl(Side.Buy),
         bottomOrderPrice: new FormControl(null, [
-          Validators.min(inputNumberValidation.min),
+          Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max)
         ]),
         bottomOrderSide: new FormControl(Side.Buy),
