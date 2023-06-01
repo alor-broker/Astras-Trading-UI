@@ -75,6 +75,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+  isModalOpened$?: Observable<boolean>;
   displayOrders$: Observable<DisplayOrder[]> = of([]);
   filter = new BehaviorSubject<OrderFilter>({});
   isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
@@ -315,6 +316,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       catchError((_, caught) => caught),
       takeUntil(this.destroy$)
     ).subscribe();
+
+    this.isModalOpened$ = this.service.shouldShowOrderGroupModal$;
   }
 
   ngOnDestroy(): void {
