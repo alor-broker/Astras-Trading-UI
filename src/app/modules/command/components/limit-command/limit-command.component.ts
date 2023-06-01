@@ -12,6 +12,7 @@ import {
 import {
   BehaviorSubject,
   filter,
+  Observable,
   Subject,
   takeUntil
 } from 'rxjs';
@@ -33,7 +34,8 @@ import { Side } from "../../../../shared/models/enums/side.model";
   styleUrls: ['./limit-command.component.less']
 })
 export class LimitCommandComponent implements OnInit, OnDestroy {
-  evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
+  evaluationSubject = new BehaviorSubject<EvaluationBaseProperties | null>(null);
+  evaluation$?: Observable<EvaluationBaseProperties | null>;
   form!: FormGroup<ControlsOf<LimitFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
   timeInForceEnum = TimeInForce;
@@ -75,7 +77,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
 
     this.commandContext$.complete();
-    this.evaluation$.complete();
+    this.evaluationSubject.complete();
   }
 
   quantitySelect(qty: number) {
@@ -182,12 +184,19 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
       instrumentCurrency: commandContext.instrument?.currency
     };
 
-    this.evaluation$.next(evaluation);
+    this.evaluationSubject.next(evaluation);
   }
 
   private initCommandForm(commandContext: CommandContextModel<CommandParams>) {
     this.form = this.buildForm(commandContext);
     this.setLimitCommand(commandContext);
+
+    this.evaluation$ = this.evaluationSubject.asObservable()
+      .pipe(
+        distinctUntilChanged((prev, curr) =>
+          JSON.stringify(prev) === JSON.stringify(curr)
+        )
+      );
 
     this.form.valueChanges.pipe(
       takeUntil(this.destroy$),

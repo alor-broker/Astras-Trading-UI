@@ -300,7 +300,7 @@ describe('LimitCommandComponent', () => {
         inputs.price.dispatchEvent(new Event('input'));
         fixture.detectChanges();
 
-        component.evaluation$.subscribe(x => {
+        component.evaluation$?.subscribe(x => {
           expect(x).toEqual(expectedEvaluation);
         });
       });
