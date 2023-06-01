@@ -1,7 +1,7 @@
 <ng-container *ngIf="groups$ | async as groups">
   <nz-tree
     *transloco="let t; scope: 'blotter/orders-group'"
-    class="orders-group-tree"
+    #ordersGroupTree
     [nzData]="groups"
     [nzTreeTemplate]="treeNode"
   >

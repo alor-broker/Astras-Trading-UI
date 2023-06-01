@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, Input } from '@angular/core';
-import { Observable, switchMap, combineLatest, map, tap } from "rxjs";
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { Observable, switchMap, combineLatest, map, takeUntil, Subject, filter, startWith } from "rxjs";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -15,10 +15,13 @@ import { StopOrder } from "../../../../shared/models/orders/stop-order.model";
   templateUrl: './orders-group-modal.component.html',
   styleUrls: ['./orders-group-modal.component.less']
 })
-export class OrdersGroupModalComponent implements AfterViewInit {
+export class OrdersGroupModalComponent implements AfterViewInit, OnDestroy {
   @Input() guid!: string;
   @Input() groupId?: string;
 
+  @ViewChildren('ordersGroupTree', {read: ElementRef}) ordersGroupTree!: QueryList<ElementRef>;
+
+  private destroy$: Subject<boolean> = new Subject<boolean>();
   groups$?: Observable<OrdersGroupTreeNode[]>;
 
   constructor(
@@ -98,12 +101,25 @@ export class OrdersGroupModalComponent implements AfterViewInit {
               } as OrdersGroupTreeNode;
             })
             .filter((g): g is OrdersGroupTreeNode => !!g);
-        }),
-        tap(() => document.querySelectorAll('.orders-group-tree nz-tree-node-title')
-          .forEach((node: any) => {
-            node.removeAttribute('title');
-          })
-        )
+        })
       );
+
+    this.ordersGroupTree.changes.pipe(
+      map(q => q.first),
+      startWith(this.ordersGroupTree.first),
+      filter((el): el is ElementRef<HTMLElement> => !!el),
+      takeUntil(this.destroy$)
+    )
+      .subscribe(tree => {
+        tree.nativeElement.querySelectorAll('nz-tree-node-title')
+          .forEach(node => {
+            node.removeAttribute('title');
+          });
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }
