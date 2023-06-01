@@ -298,11 +298,14 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         && previous.badgeColor === current.badgeColor
       ),
       mapWith(
-        () => this.translatorService.getTranslator('blotter/stop-orders'),
-        (s, t) => ({ s, t })
+        () => combineLatest([
+          this.translatorService.getTranslator('blotter/stop-orders'),
+          this.translatorService.getTranslator('blotter/blotter-common')
+        ]),
+        (s, [tStopOrders, tCommon]) => ({ s, tStopOrders, tCommon })
       ),
       takeUntil(this.destroy$)
-    ).subscribe(({ s, t }) => {
+    ).subscribe(({ s, tStopOrders, tCommon }) => {
       const tableSettings = s.stopOrdersTable ?? TableSettingHelper.toTableDisplaySettings(s.stopOrdersColumns);
 
       if (tableSettings) {
@@ -311,15 +314,15 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
           .filter(c => !!c.columnSettings)
           .map((column, index) => ({
             ...column.column,
-            displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-            tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
+            displayName: tStopOrders(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
+            tooltip: tStopOrders(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
             filterData: column.column.filterData
               ? {
                 ...column.column.filterData,
-                filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                filterName: tStopOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
                 filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
                   value: f.value,
-                  text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
+                  text: tCommon([column.column.id + 'Filters', f.value], {fallback: f.text})
                 }))
               }
               : undefined,

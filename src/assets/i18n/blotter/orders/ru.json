@@ -36,13 +36,7 @@
     },
     "status": {
       "name": "Статус",
-      "tooltip": "Стаус заявки",
-      "listOfFilter": {
-        "filled": "Исполнена",
-        "working": "Активна",
-        "canceled": "Отменена",
-        "rejected": "Отложена"
-      }
+      "tooltip": "Стаус заявки"
     },
     "transTime": {
       "name": "Время",
@@ -50,19 +44,11 @@
     },
     "exchange": {
       "name": "Биржа",
-      "tooltip": "Наименование биржи",
-      "listOfFilter": {
-        "MOEX": "ММВБ",
-        "SPBX": "СПБ"
-      }
+      "tooltip": "Наименование биржи"
     },
     "type": {
       "name": "Тип",
-      "tooltip": "Тип заявки (лимитная/рыночная)",
-      "listOfFilter": {
-        "limit": "Лимит",
-        "market": "Рыночн."
-      }
+      "tooltip": "Тип заявки (лимитная/рыночная)"
     },
     "endTime": {
       "name": "Действ. до.",

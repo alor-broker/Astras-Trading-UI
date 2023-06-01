@@ -249,11 +249,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         && previous.badgeColor === current.badgeColor
       ),
       mapWith(
-        () => this.translatorService.getTranslator('blotter/orders'),
-        (s, t) => ({ s, t })
+        () => combineLatest([
+          this.translatorService.getTranslator('blotter/orders'),
+          this.translatorService.getTranslator('blotter/blotter-common')
+        ]),
+        (s, [tOrders, tCommon]) => ({s, tOrders, tCommon})
       ),
       takeUntil(this.destroy$)
-    ).subscribe(({ s, t }) => {
+    ).subscribe(({ s, tOrders, tCommon }) => {
       const tableSettings = s.ordersTable ?? TableSettingHelper.toTableDisplaySettings(s.ordersColumns);
 
       if (tableSettings) {
@@ -262,15 +265,15 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
           .filter(c => !!c.columnSettings)
           .map((column, index) => ({
             ...column.column,
-            displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-            tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
+            displayName: tOrders(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
+            tooltip: tOrders(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
             filterData: column.column.filterData
               ? {
                 ...column.column.filterData,
-                filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                filterName: tOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
                 filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
                   value: f.value,
-                  text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
+                  text: tCommon([column.column.id + 'Filters', f.value], {fallback: f.text})
                 }))
               }
               : undefined,
