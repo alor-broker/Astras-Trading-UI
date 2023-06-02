@@ -15,9 +15,11 @@
     "MOEX": "MOEX",
     "SPBX": "SPBX"
   },
-  "ypeFilters": {
+  "typeFilters": {
     "limit": "Limit",
-    "market": "Market"
+    "market": "Market",
+    "stoplimit": "Stop-limit",
+    "stop": "Stop-market"
   },
   "sideFilters": {
     "buy": "Buy",

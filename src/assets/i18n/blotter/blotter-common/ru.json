@@ -17,7 +17,9 @@
   },
   "typeFilters": {
     "limit": "Лимит",
-    "market": "Рыночн."
+    "market": "Рыночн.",
+    "stoplimit": "Стоп-лимит",
+    "stop": "Стоп-маркет"
   },
   "sideFilters": {
     "buy": "Покупка",
