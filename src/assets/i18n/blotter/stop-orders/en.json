@@ -12,11 +12,7 @@
     },
     "side": {
       "name": "Side",
-      "tooltip": "Order side (buy/sell)",
-      "listOfFilter": {
-        "buy": "Buy",
-        "sell": "Sell"
-      }
+      "tooltip": "Order side (buy/sell)"
     },
     "residue": {
       "name": "Residue",
@@ -40,12 +36,7 @@
     },
     "status": {
       "name": "Status",
-      "tooltip": "Order status",
-      "listOfFilter": {
-        "filled": "Filled",
-        "working": "Active",
-        "canceled": "Canceled"
-      }
+      "tooltip": "Order status"
     },
     "conditionType": {
       "name": "Condition",
@@ -57,19 +48,11 @@
     },
     "exchange": {
       "name": "Exchange",
-      "tooltip": "Exchange name",
-      "listOfFilter": {
-        "MOEX": "MOEX",
-        "SPBX": "SPBX"
-      }
+      "tooltip": "Exchange name"
     },
     "type": {
       "name": "Type",
-      "tooltip": "Order type (limit/market)",
-      "listOfFilter": {
-        "limit": "Limit",
-        "market": "Market"
-      }
+      "tooltip": "Order type (limit/market)"
     },
     "endTime": {
       "name": "End time",
