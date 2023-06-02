@@ -13,7 +13,9 @@ import { LimitOrder } from "../../../../command/models/order.model";
 import {
   BehaviorSubject,
   filter,
+  Observable,
   take,
+  distinctUntilChanged
 } from "rxjs";
 import { InstrumentKey } from "../../../../../shared/models/instruments/instrument-key.model";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
@@ -45,12 +47,13 @@ export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & {
   styleUrls: ['./limit-order-form.component.less']
 })
 export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFormValue> implements OnDestroy {
-  evaluation$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
+  evaluationSubject = new BehaviorSubject<EvaluationBaseProperties | null>(null);
+  evaluation$?: Observable<EvaluationBaseProperties | null>;
   timeInForceEnum = TimeInForce;
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
-    this.evaluation$.complete();
+    this.evaluationSubject.complete();
   }
 
   quantitySelect(qty: number) {
@@ -132,7 +135,7 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
 
   protected onFormValueEmitted(value: LimitOrderFormValue | null) {
     if (!value) {
-      this.evaluation$.next(null);
+      this.evaluationSubject.next(null);
       return;
     }
 
@@ -140,7 +143,7 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
       filter((i): i is Instrument => !!i),
       take(1)
     ).subscribe(instrument => {
-      this.evaluation$.next({
+      this.evaluationSubject.next({
         price: Number(value.price),
         lotQuantity: value.quantity,
         instrument: {
@@ -164,5 +167,14 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
     if (!!values?.quantity && values.quantity !== Number(this.form?.get('quantity')?.value ?? 0)) {
       this.form?.controls.quantity.setValue(values.quantity);
     }
+  }
+
+  protected onFormCreated() {
+    this.evaluation$ = this.evaluationSubject.asObservable()
+      .pipe(
+        distinctUntilChanged((prev, curr) =>
+          JSON.stringify(prev) === JSON.stringify(curr)
+        )
+      );
   }
 }
