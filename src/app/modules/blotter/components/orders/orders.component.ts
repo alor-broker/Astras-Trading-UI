@@ -49,6 +49,7 @@ import { BlotterSettings } from '../../models/blotter-settings.model';
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
+import { DomHelper } from "../../../../shared/utils/dom-helper";
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -75,6 +76,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+  isModalOpened = DomHelper.isModalOpen;
   displayOrders$: Observable<DisplayOrder[]> = of([]);
   filter = new BehaviorSubject<OrderFilter>({});
   isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;

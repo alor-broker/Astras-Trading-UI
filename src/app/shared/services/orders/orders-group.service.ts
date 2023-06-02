@@ -60,6 +60,7 @@ export class OrdersGroupService {
       this.orderGroups$ = this.refresh$
         .pipe(
           switchMap(() => this.http.get<OrdersGroup[]>(`${this.orderGroupsUrl}`)),
+          catchHttpError<OrdersGroup[]>([], this.errorHandlerService),
           shareReplay(1)
         );
     }
