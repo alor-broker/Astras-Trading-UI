@@ -99,8 +99,10 @@
 
             <div class="d-flex flex-gap-10">
               <nz-form-item class="compact flex-grow-2">
-                <nz-form-label nzFor="topOrderPrice">{{t('command.topOrderPriceLabel')}}</nz-form-label>
-                <nz-form-control [nzErrorTip]="topOrderPriceError">
+                <nz-form-label nzFor="topOrderPrice" class="flex-fill">
+                  {{t('command.topOrderPriceLabel')}}
+                </nz-form-label>
+                <nz-form-control [nzErrorTip]="topOrderPriceError" class="flex-fill">
                   <ats-input-number formControlName="topOrderPrice" placeholder="0" [allowNegative]="true"></ats-input-number>
                 </nz-form-control>
               </nz-form-item>
@@ -111,8 +113,10 @@
               </ng-template>
 
               <nz-form-item class="compact flex-grow-1">
-                <nz-form-label [nzNoColon]="true" nzFor="topOrderSide">{{t('command.sideLabel')}}</nz-form-label>
-                <nz-form-control>
+                <nz-form-label [nzNoColon]="true" nzFor="topOrderSide" class="flex-fill">
+                  {{t('command.sideLabel')}}
+                </nz-form-label>
+                <nz-form-control class="flex-fill">
                   <nz-select formControlName="topOrderSide">
                     <nz-option [nzValue]="'buy'" [nzLabel]="t('command.buySideLabel')"></nz-option>
                     <nz-option [nzValue]="'sell'" [nzLabel]="t('command.sellSideLabel')"></nz-option>
@@ -123,8 +127,10 @@
 
             <div class="d-flex flex-gap-10">
               <nz-form-item class="compact flex-grow-2">
-                <nz-form-label nzFor="bottomOrderPrice">{{t('command.bottomOrderPriceLabel')}}</nz-form-label>
-                <nz-form-control [nzErrorTip]="bottomOrderPriceError">
+                <nz-form-label nzFor="bottomOrderPrice" class="flex-fill">
+                  {{t('command.bottomOrderPriceLabel')}}
+                </nz-form-label>
+                <nz-form-control [nzErrorTip]="bottomOrderPriceError" class="flex-fill">
                   <ats-input-number formControlName="bottomOrderPrice" placeholder="0" [allowNegative]="true"></ats-input-number>
                 </nz-form-control>
               </nz-form-item>
@@ -135,8 +141,10 @@
               </ng-template>
 
               <nz-form-item class="compact flex-grow-1">
-                <nz-form-label [nzNoColon]="true" nzFor="bottomOrderSide">{{t('command.sideLabel')}}</nz-form-label>
-                <nz-form-control>
+                <nz-form-label [nzNoColon]="true" nzFor="bottomOrderSide" class="flex-fill">
+                  {{t('command.sideLabel')}}
+                </nz-form-label>
+                <nz-form-control class="flex-fill">
                   <nz-select formControlName="bottomOrderSide">
                     <nz-option [nzValue]="'buy'" [nzLabel]="t('command.buySideLabel')"></nz-option>
                     <nz-option [nzValue]="'sell'" [nzLabel]="t('command.sellSideLabel')"></nz-option>
