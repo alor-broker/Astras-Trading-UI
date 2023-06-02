@@ -5,6 +5,7 @@ import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import { OrderCancellerService } from "../order-canceller.service";
 import { of } from "rxjs";
+import { InstantNotificationsService } from "../instant-notifications.service";
 
 describe('OrdersGroupService', () => {
   let service: OrdersGroupService;
@@ -21,6 +22,12 @@ describe('OrdersGroupService', () => {
           provide: OrderCancellerService,
           useValue: {
             cancelOrder: jasmine.createSpy('cancelOrder').and.returnValue(of({}))
+          }
+        },
+        {
+          provide: InstantNotificationsService,
+          useValue: {
+            showNotification: jasmine.createSpy('showNotification').and.callThrough()
           }
         }
       ]

@@ -7,6 +7,8 @@ import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import { Observable, tap, BehaviorSubject, switchMap, shareReplay, forkJoin } from "rxjs";
 import { CreateOrderGroupReq, OrdersGroup } from "../../models/orders/orders-group.model";
 import { OrderCancellerService } from "../order-canceller.service";
+import { InstantNotificationsService } from "../instant-notifications.service";
+import { CommonInstantNotificationType } from "../../models/terminal-settings/terminal-settings.model";
 
 
 @Injectable({
@@ -21,7 +23,8 @@ export class OrdersGroupService {
   constructor(
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
-    private readonly canceller: OrderCancellerService
+    private readonly canceller: OrderCancellerService,
+    private readonly instantNotificationsService: InstantNotificationsService
   ) { }
 
   createOrdersGroup(req: CreateOrderGroupReq) {
@@ -41,6 +44,12 @@ export class OrdersGroupService {
               .subscribe();
           } else {
             this.refresh$.next(null);
+            this.instantNotificationsService.showNotification(
+              CommonInstantNotificationType.Common,
+              'success',
+              `Группа создана`,
+              `Группа с заявками ${req.orders.map(o => o.orderId).join(', ')} успешно создана`
+            );
           }
         })
       );
