@@ -7,7 +7,6 @@ import {
 } from '@ngrx/effects';
 
 import * as TerminalSettingsActions from './terminal-settings.actions';
-import {initTerminalSettingsSuccess, updateTerminalSettingsSuccess} from './terminal-settings.actions';
 import { TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
 import {
   map,
@@ -18,6 +17,7 @@ import { selectTerminalSettingsState } from './terminal-settings.selectors';
 import { filter } from 'rxjs';
 import { LocalStorageService } from "../../shared/services/local-storage.service";
 import { TerminalSettingsHelper } from '../../shared/utils/terminal-settings-helper';
+import {saveTerminalSettingsSuccess, initTerminalSettingsSuccess} from "./terminal-settings.actions";
 
 @Injectable()
 export class TerminalSettingsEffects {
@@ -38,14 +38,14 @@ export class TerminalSettingsEffects {
     );
   });
 
-  updateSettings$ = createEffect(() => {
+  saveSettings$ = createEffect(() => {
       return this.actions$.pipe(
         ofType(TerminalSettingsActions.updateTerminalSettings),
         concatLatestFrom(() => this.store.select(selectTerminalSettingsState)),
         map(([, settings]) => settings.settings),
         filter((settings): settings is TerminalSettings => !!settings),
         tap(settings => this.saveSettingsToLocalStorage(settings)),
-        map(() => updateTerminalSettingsSuccess())
+        map(() => saveTerminalSettingsSuccess())
       );
     });
 

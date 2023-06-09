@@ -12,11 +12,11 @@ export const initTerminalSettingsSuccess = createAction(
 
 export const updateTerminalSettings = createAction(
   '[TerminalSettings] Update Settings',
-  props<{ updates: Partial<TerminalSettings> }>()
+  props<{ updates: Partial<TerminalSettings>, freezeChanges: boolean }>()
 );
 
-export const updateTerminalSettingsSuccess = createAction(
-  '[TerminalSettings] Update Settings (SUCCESS)'
+export const saveTerminalSettingsSuccess = createAction(
+  '[TerminalSettings] Save Settings (SUCCESS)'
 );
 
 
