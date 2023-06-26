@@ -8,8 +8,14 @@ import { TerminalSettings } from '../../shared/models/terminal-settings/terminal
 
 export const terminalSettingsFeatureKey = 'terminalSettings';
 
+enum FrozenStatus {
+  Frozen = 'Frozen'
+}
+
+type TerminalSettingsEntityStatus = EntityStatus | FrozenStatus;
+
 export interface State {
-  status: EntityStatus,
+  status: TerminalSettingsEntityStatus,
   settings?: TerminalSettings
 }
 
@@ -35,11 +41,12 @@ export const reducer = createReducer(
 
   })),
 
-  on(TerminalSettingsActions.updateTerminalSettings, (state, { updates }) => ({
+  on(TerminalSettingsActions.updateTerminalSettings, (state, { updates, freezeChanges }) => ({
     ...state,
+    status: freezeChanges ? FrozenStatus.Frozen : EntityStatus.Success,
     settings: {
       ...state.settings,
       ...updates
     }
-  })),
+  }))
 );

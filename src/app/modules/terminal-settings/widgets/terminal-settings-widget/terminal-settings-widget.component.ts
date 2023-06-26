@@ -57,6 +57,7 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
 
         this.terminalSettingsService.updateSettings(
           newSettings,
+          isReloadNeeded,
           () => {
             if (isReloadNeeded) {
               window.location.reload();

@@ -99,7 +99,8 @@ describe('Terminal Settings Store', () => {
       });
 
       store.dispatch(updateTerminalSettings({
-        updates: updatedSettings
+        updates: updatedSettings,
+        freezeChanges:false
       }));
     }
   );

@@ -28,12 +28,12 @@ import {
   PortfolioKey,
   PortfolioKeyEqualityComparer
 } from "../../shared/models/portfolio-key.model";
-import { selectTerminalSettingsState } from "../terminal-settings/terminal-settings.selectors";
-import { State } from "../terminal-settings/terminal-settings.reducer";
 import { mapWith } from '../../shared/utils/observable-helper';
 import { InstrumentEqualityComparer } from '../../shared/utils/instruments';
 import { InstrumentKey } from '../../shared/models/instruments/instrument-key.model';
 import { DashboardContextService } from "../../shared/services/dashboard-context.service";
+import {TerminalSettingsStreams} from "../terminal-settings/terminal-settings.streams";
+import {TerminalSettings} from "../../shared/models/terminal-settings/terminal-settings.model";
 
 @Injectable()
 export class WidgetSettingsBridgeEffects {
@@ -101,15 +101,15 @@ export class WidgetSettingsBridgeEffects {
   });
 
   terminalSettingsChange$ = createEffect(() => {
-    return this.store.select(selectTerminalSettingsState)
+    return TerminalSettingsStreams.getSettings(this.store)
       .pipe(
         withLatestFrom(this.store.select(getAllSettings)
           .pipe(
             map(ws => ws.filter(s => !!s.badgeColor).map(s => s.guid))
           )
         ),
-        map(([ts, settingGuids]: [State, string[]]) => {
-          if (!ts.settings?.badgesBind) {
+        map(([ts, settingGuids]: [TerminalSettings, string[]]) => {
+          if (!ts.badgesBind) {
             return setDefaultBadges({ settingGuids });
           }
           return setDefaultBadges({ settingGuids: [] });
