@@ -5,9 +5,8 @@ import { LocalStorageService } from "../../../shared/services/local-storage.serv
 import { QuotesService } from "../../../shared/services/quotes.service";
 import { of, filter, take, skip } from "rxjs";
 import { OrderService } from "../../../shared/services/orders/order.service";
-import { PositionsService } from "../../../shared/services/positions.service";
-import { AuthService } from "../../../shared/services/auth.service";
 import { Side } from "../../../shared/models/enums/side.model";
+import { PortfolioSubscriptionsService } from "../../../shared/services/portfolio-subscriptions.service";
 
 const spreadItem = {
   id: 'spreadId',
@@ -35,7 +34,7 @@ describe('ArbitrageSpreadService', () => {
   let localStorageSpy = jasmine.createSpyObj('localStorageSpy', ['getItem', 'setItem']);
   let orderServiceSpy = jasmine.createSpyObj('orderServiceSpy', ['submitMarketOrder']);
   let quotesServiceSpy = jasmine.createSpyObj('quotesServiceSpy', ['getQuotes']);
-  let positionsServiceSpy = jasmine.createSpyObj('positionsServiceSpy', ['getAllByLogin']);
+  let portfolioSubscriptionsServiceSpy = jasmine.createSpyObj('portfolioSubscriptionsServiceSpy', ['getAllPositionsSubscription']);
 
   beforeEach(() => {
     localStorageSpy.getItem = jasmine.createSpy('getItem').and.returnValue([]);
@@ -56,14 +55,8 @@ describe('ArbitrageSpreadService', () => {
           useValue: orderServiceSpy
         },
         {
-          provide: PositionsService,
-          useValue: positionsServiceSpy
-        },
-        {
-          provide: AuthService,
-          useValue: {
-            currentUser$: of({ login: 'testLogin' })
-          }
+          provide: PortfolioSubscriptionsService,
+          useValue: portfolioSubscriptionsServiceSpy
         }
       ]
     });
@@ -79,7 +72,7 @@ describe('ArbitrageSpreadService', () => {
 
     localStorageSpy.getItem = jasmine.createSpy('getItem').and.returnValue([spreadItem]);
     quotesServiceSpy.getQuotes = jasmine.createSpy('getQuotes').and.returnValue(of(quote));
-    positionsServiceSpy.getAllByLogin = jasmine.createSpy('getAllByLogin').and.returnValue(of([
+    portfolioSubscriptionsServiceSpy.getAllPositionsSubscription = jasmine.createSpy('getAllPositionsSubscription').and.returnValue(of([
       {
         exchange: spreadItem.firstLeg.portfolio.exchange,
         portfolio: spreadItem.firstLeg.portfolio.portfolio,

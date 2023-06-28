@@ -6,9 +6,8 @@ import { GuidGenerator } from "../../../shared/utils/guid";
 import { QuotesService } from "../../../shared/services/quotes.service";
 import { OrderService } from "../../../shared/services/orders/order.service";
 import { Side } from "../../../shared/models/enums/side.model";
-import { PositionsService } from "../../../shared/services/positions.service";
-import { AuthService } from "../../../shared/services/auth.service";
 import { SubmitOrderResult } from "../../command/models/order.model";
+import { PortfolioSubscriptionsService } from "../../../shared/services/portfolio-subscriptions.service";
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +25,7 @@ export class ArbitrageSpreadService {
     private readonly localStorage: LocalStorageService,
     private readonly quotesService: QuotesService,
     private readonly orderService: OrderService,
-    private readonly positionsService: PositionsService,
-    private readonly authService: AuthService
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
   ) { }
 
   getSpreadsSubscription(): Observable<ArbitrageSpread[]> {
@@ -57,18 +55,21 @@ export class ArbitrageSpreadService {
                 spread.secondLeg.instrument.exchange,
                 spread.secondLeg.instrument.instrumentGroup
               ),
-              this.authService.currentUser$
-                .pipe(
-                  take(1),
-                  switchMap(user => this.positionsService.getAllByLogin(user.login!))
-                )
+              this.portfolioSubscriptionsService.getAllPositionsSubscription(
+                spread.firstLeg.portfolio.portfolio,
+                spread.firstLeg.portfolio.exchange
+              ),
+              this.portfolioSubscriptionsService.getAllPositionsSubscription(
+                spread.secondLeg.portfolio.portfolio,
+                spread.secondLeg.portfolio.exchange
+              )
             ])
               .pipe(
-                map(([firstLeg, secondLeg, positions]) => ({
+                map(([firstLeg, secondLeg, firstLegPositions, secondLegPositions]) => ({
                   ...spread,
                   firstLeg: {
                     ...spread.firstLeg,
-                    positionsCount: positions.find(p =>
+                    positionsCount: firstLegPositions.find(p =>
                       p.exchange === spread.firstLeg.portfolio.exchange &&
                       p.portfolio === spread.firstLeg.portfolio.portfolio &&
                       p.symbol === spread.firstLeg.instrument.symbol
@@ -76,7 +77,7 @@ export class ArbitrageSpreadService {
                   },
                   secondLeg: {
                     ...spread.secondLeg,
-                    positionsCount: positions.find(p =>
+                    positionsCount: secondLegPositions.find(p =>
                       p.exchange === spread.secondLeg.portfolio.exchange &&
                       p.portfolio === spread.secondLeg.portfolio.portfolio &&
                       p.symbol === spread.secondLeg.instrument.symbol
