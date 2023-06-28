@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
-import {combineLatest, Observable, shareReplay} from "rxjs";
+import {combineLatest, distinctUntilChanged, Observable, shareReplay, take} from "rxjs";
 import {map} from "rxjs/operators";
 import {WidgetsHelper} from "../../../../shared/utils/widgets";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {arraysEqual} from "ng-zorro-antd/core/util";
 
 @Component({
   selector: 'ats-mobile-dashboard',
@@ -25,9 +26,13 @@ export class MobileDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    const widgets$ = this.dashboardContextService.selectedDashboard$.pipe(
+      distinctUntilChanged((previous, current) => arraysEqual(previous.items.map(x => x.guid), current.items.map(x => x.guid)))
+    );
+
     this.widgets$ = combineLatest([
-      this.dashboardContextService.selectedDashboard$,
-      this.widgetsMetaService.getWidgetsMeta()
+      widgets$,
+      this.widgetsMetaService.getWidgetsMeta().pipe(take(1))
     ]).pipe(
       map(([dashboard, meta]) => {
         return dashboard.items.map(x => ({
