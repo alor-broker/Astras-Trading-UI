@@ -22,7 +22,7 @@ import {
 } from 'rxjs';
 import {
   ChartingLibraryFeatureset,
-  ChartingLibraryWidgetOptions,
+  ChartingLibraryWidgetOptions, CustomTimezoneId, GmtTimezoneId,
   IChartingLibraryWidget,
   InitialSettingsMap,
   IOrderLineAdapter,
@@ -67,6 +67,9 @@ import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { HashMap } from "@ngneat/transloco/lib/types";
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
+import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
+import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
+import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-display-option";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -145,6 +148,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
   private lastTheme?: ThemeSettings;
   private lastLang?: string;
+  private lastTimezone?: TimezoneDisplayOption;
   private translateFn!: (key: string[], params?: HashMap) => string;
 
   constructor(
@@ -158,7 +162,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private readonly currentDashboardService: DashboardContextService,
     private readonly orderCancellerService: OrderCancellerService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly timezoneConverterService: TimezoneConverterService
   ) {
   }
 
@@ -197,11 +202,13 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     combineLatest([
       chartSettings$,
       this.themeService.getThemeSettings(),
-      this.translatorService.getTranslator('tech-chart/tech-chart')
+      this.translatorService.getTranslator('tech-chart/tech-chart'),
+      this.timezoneConverterService.getConverter(),
     ]).pipe(
-      map(([, theme, translator]) => ({
+      map(([, theme, translator, timezoneConverter]) => ({
         theme,
-        translator
+        translator,
+        timezoneConverter
       })),
       // read settings with recent changes
       withLatestFrom(this.settings$!),
@@ -215,11 +222,15 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.createChart(
         x.settings.widgetSettings,
         x.theme,
-        this.lastTheme && this.lastTheme.theme !== x.theme.theme || this.lastLang !== this.translatorService.getActiveLang()
+        x.timezoneConverter,
+        this.lastTheme && this.lastTheme.theme !== x.theme.theme
+        || this.lastLang !== this.translatorService.getActiveLang()
+        || this.lastTimezone !== x.timezoneConverter.displayTimezone
       );
 
       this.lastTheme = x.theme;
       this.lastLang = this.translatorService.getActiveLang();
+      this.lastTimezone = x.timezoneConverter.displayTimezone;
     });
   }
 
@@ -307,7 +318,11 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 
-  private createChart(settings: TechChartSettings, theme: ThemeSettings, forceRecreate: boolean = false) {
+  private createChart(
+    settings: TechChartSettings,
+    theme: ThemeSettings,
+    timezoneConverter: TimezoneConverter,
+    forceRecreate: boolean = false) {
     if (this.chartState) {
       if (forceRecreate) {
         this.chartState.widget?.remove();
@@ -329,6 +344,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    const currentTimezone = timezoneConverter.getTimezone();
+
     const config: ChartingLibraryWidgetOptions = {
       // debug
       debug: false,
@@ -344,7 +361,14 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       // additional options
       fullscreen: false,
       autosize: true,
-      timezone: 'exchange',
+      timezone: currentTimezone.name as any,
+      custom_timezones: [
+        {
+          id: currentTimezone.name as CustomTimezoneId,
+          alias: `Etc/GMT${currentTimezone.utcOffset > 0 ? '+' : '-'}${currentTimezone.formattedOffset}` as GmtTimezoneId,
+          title: currentTimezone.name
+        }
+      ],
       theme: theme.theme === ThemeType.default ? 'Light' : 'Dark',
       time_frames: [
         { text: '1000y', resolution: '1M' as ResolutionString, description: this.translateFn(['timeframes', 'all', 'desc']), title: this.translateFn(['timeframes', 'all', 'title']) },

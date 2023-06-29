@@ -1,11 +1,13 @@
-﻿import { TimezoneDisplayOption } from '../models/enums/timezone-display-option';
-import { fromUnixTime } from './datetime';
+﻿import {TimezoneDisplayOption} from '../models/enums/timezone-display-option';
+import {fromUnixTime} from './datetime';
 
 /**
  * Responsible for converting time with different timezones
  */
 export class TimezoneConverter {
-  constructor(private readonly displayTimezone: TimezoneDisplayOption) {
+  static moscowTimezone = 'Europe/Moscow';
+
+  constructor(public readonly displayTimezone: TimezoneDisplayOption) {
   }
 
   /**
@@ -53,6 +55,39 @@ export class TimezoneConverter {
     return new Date(convertedDate.getTime());
   }
 
+  /**
+   * Returns timezone options in accordance with the current displayTimezone.
+   * @returns timezone options
+   */
+  public getTimezone(): { name: string, utcOffset: number, formattedOffset: string } {
+    let offset = new Date().getTimezoneOffset();
+    let timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    if (this.displayTimezone === TimezoneDisplayOption.MskTime) {
+      timezoneName = TimezoneConverter.moscowTimezone;
+      const localTime = new Date();
+      localTime.setMilliseconds(0);
+      localTime.setSeconds(0);
+      const mskTime = this.toMskTime(localTime);
+      const correction = ((localTime.getTime() - mskTime.getTime()) / 1000 / 60);
+      offset = localTime.getTimezoneOffset() + correction;
+    }
+
+    const hoursOffset = Math.trunc(offset / 60);
+    const minutesOffset = Math.abs(Math.round(((offset / 60) - hoursOffset) * 60));
+    let formattedOffset = `${Math.abs(hoursOffset)}`;
+    if (minutesOffset > 0) {
+      formattedOffset += `:${minutesOffset}`;
+    }
+
+    return {
+      name: timezoneName,
+      utcOffset: offset,
+      formattedOffset: formattedOffset
+    };
+  }
+
+
   private toUtcCorrectedDate(date: Date) {
     const convertedDate = new Date(date);
     convertedDate.setMinutes(convertedDate.getMinutes() - convertedDate.getTimezoneOffset());
@@ -60,6 +95,6 @@ export class TimezoneConverter {
   }
 
   private toMskTime(utcDate: Date): Date {
-    return new Date(utcDate.toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
+    return new Date(utcDate.toLocaleString('en-US', {timeZone: TimezoneConverter.moscowTimezone}));
   }
 }
