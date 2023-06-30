@@ -28,6 +28,9 @@ import { PortfolioSubscriptionsService } from '../../../../shared/services/portf
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
+import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
+import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-display-option";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -125,6 +128,12 @@ describe('TechChartComponent', () => {
           useValue: {
             getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => '')),
             getActiveLang: jasmine.createSpy('getActiveLang').and.returnValue('ru')
+          }
+        },
+        {
+          provide: TimezoneConverterService,
+          useValue: {
+            getConverter: jasmine.createSpy('getConverter').and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime))),
           }
         },
         ...commonTestProviders
