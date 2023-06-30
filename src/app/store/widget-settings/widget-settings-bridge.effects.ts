@@ -40,7 +40,11 @@ export class WidgetSettingsBridgeEffects {
   newInstrumentSelected$ = createEffect(() => {
     const dashboardSettingsUpdate$ = this.dashboardContextService.selectedDashboard$.pipe(
       filter(d => !!d.instrumentsSelection),
-      distinctUntilChanged((previous, current) => JSON.stringify(previous?.instrumentsSelection) === JSON.stringify(current.instrumentsSelection)),
+      distinctUntilChanged((previous, current) =>
+        previous.guid === current.guid
+        && previous.items.length === current.items.length
+        && JSON.stringify(previous?.instrumentsSelection) === JSON.stringify(current.instrumentsSelection)
+      ),
       mapWith(() => this.store.select(getInstrumentLinkedSettings), (d, settings) => ({ d, settings })),
       map(({ d, settings }) => {
         const dashboardWidgetGuids = d.items.map(x => x.guid);
