@@ -17,7 +17,6 @@ export class ArbitrageSpreadWidgetComponent implements OnInit {
   isBlockWidget!: boolean;
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<ArbitrageSpreadSettings>;
-
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService
   ) {

@@ -34,7 +34,7 @@ export class WidgetHeaderComponent implements OnInit {
   widgetMeta?: WidgetMeta;
 
   @Input()
-  titleText: string | null = null;
+  customTitle: string | null = null;
 
   @Input()
   linkToActive?: boolean;
@@ -47,6 +47,8 @@ export class WidgetHeaderComponent implements OnInit {
 
   @Output()
   switchSettings = new EventEmitter();
+
+  titleText!: string;
 
   badgeOptions$!: Observable<{
     color: string,
@@ -93,6 +95,10 @@ export class WidgetHeaderComponent implements OnInit {
       }),
       shareReplay(1)
     );
+
+    this.titleText = !!this.widgetMeta
+      ? WidgetsHelper.getWidgetName(this.widgetMeta.widgetName, this.translatorService.getActiveLang())
+      : '';
   }
 
   switchBadgeColor(badgeColor: string) {
@@ -130,10 +136,12 @@ export class WidgetHeaderComponent implements OnInit {
   }
 
   getIconTooltip(): string {
-    if (!this.widgetMeta) {
-      return '';
-    }
+    return this.titleText;
+  }
 
-    return WidgetsHelper.getWidgetName(this.widgetMeta.widgetName, this.translatorService.getActiveLang());
+  get title(): string {
+    return !!this.customTitle
+      ? this.customTitle
+      : this.titleText;
   }
 }

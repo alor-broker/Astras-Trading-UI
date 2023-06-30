@@ -25,7 +25,6 @@ export class ExchangeRateWidgetComponent implements OnInit {
   isBlockWidget!: boolean;
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<ExchangeRateSettings>;
-
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService
   ) {

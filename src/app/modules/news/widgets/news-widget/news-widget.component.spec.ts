@@ -15,6 +15,7 @@ import { TerminalSettingsService } from "../../../terminal-settings/services/ter
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {TranslatorService} from "../../../../shared/services/translator.service";
 
 describe('NewsWidgetComponent', () => {
   let component: NewsWidgetComponent;
@@ -56,6 +57,12 @@ describe('NewsWidgetComponent', () => {
           useValue: {
             getInstrument: jasmine.createSpy('addSettings').and.returnValue(of({}))
           }
+        },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getActiveLang: jasmine.createSpy('getActiveLang').and.returnValue('ru')
+          }
         }
       ]
     })
@@ -70,7 +77,7 @@ describe('NewsWidgetComponent', () => {
       instance: {
         guid: 'guid'
       } as Widget,
-      widgetMeta: {} as WidgetMeta
+      widgetMeta: {widgetName: {}} as WidgetMeta
     };
     fixture.detectChanges();
   });
