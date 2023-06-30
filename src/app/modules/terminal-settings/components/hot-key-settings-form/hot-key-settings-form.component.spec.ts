@@ -5,10 +5,10 @@ import {
   commonTestProviders,
   getTranslocoModule,
   mockComponent,
-  ngZorroMockComponents,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { HotKeyInputComponent } from "../hot-key-input/hot-key-input.component";
 
 describe('HotKeySettingsFormComponent', () => {
   let component: HotKeySettingsFormComponent;
@@ -23,7 +23,8 @@ describe('HotKeySettingsFormComponent', () => {
       ],
       declarations: [
         HotKeySettingsFormComponent,
-        mockComponent({selector: 'nz-divider'})
+        mockComponent({selector: 'nz-divider'}),
+        HotKeyInputComponent
       ],
       providers: [
         ...commonTestProviders

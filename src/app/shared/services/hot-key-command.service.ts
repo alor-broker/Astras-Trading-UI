@@ -19,7 +19,7 @@ import {
   startWith,
   tap
 } from "rxjs/operators";
-import { HotKeysSettings } from "../models/terminal-settings/terminal-settings.model";
+import { HotKeyMeta, HotKeysSettings } from "../models/terminal-settings/terminal-settings.model";
 import { TerminalCommand } from "../models/terminal-command";
 import { ModifierKeys } from "../models/modifier-keys.model";
 
@@ -61,7 +61,7 @@ export class HotKeyCommandService {
       map(x => x.hotKeysSettings),
       filter((x): x is HotKeysSettings => !!x),
       switchMap((hotKeysSettings: { [key: string]: any | undefined | null }) => {
-        const hotKeyMap = new Map<string, { commandType: string, index?: number }>();
+        const hotKeyMap = new Map<string | HotKeyMeta, { commandType: string, index?: number }>();
         Object.keys(hotKeysSettings).forEach(command => {
           const key = hotKeysSettings[command] as any | undefined | null;
           if (!!key && (typeof key === 'string' || key instanceof String)) {
@@ -71,6 +71,13 @@ export class HotKeyCommandService {
             );
 
             return;
+          }
+
+          if (!!key && key.code && key.key) {
+            hotKeyMap.set(
+              key,
+              { commandType: HotKeyCommandService.mapToCommandType(command) }
+            );
           }
 
           if (!!key && Array.isArray(key)) {
@@ -94,12 +101,36 @@ export class HotKeyCommandService {
               x.preventDefault();
             }
 
-            let mappedCommand = hotKeyMap.get(x.key);
+            let mappedCommand: { commandType: string, index?: number } | null | undefined = null;
+
+            hotKeyMap.forEach((value, key) => {
+              if (typeof key === 'string' && key === x.key) {
+                mappedCommand = value;
+                return;
+              }
+
+              const keyMeta = key as HotKeyMeta;
+
+              if (keyMeta.key && keyMeta.code) {
+                if (hotKeysSettings.extraHotKeys) {
+                  if (x.code === keyMeta.code && this.checkPressedModifierKeys(x, keyMeta)) {
+
+                    mappedCommand = value;
+                  }
+                } else {
+                  if (x.key === keyMeta.key && this.checkPressedModifierKeys(x, keyMeta)) {
+                    mappedCommand = value;
+                  }
+                }
+              }
+            });
+
+
             if (mappedCommand != null) {
               return {
                 key: x.key,
-                type: mappedCommand.commandType,
-                index: mappedCommand.index
+                type: (mappedCommand as { commandType: string, index?: number }).commandType,
+                index: (mappedCommand as { commandType: string, index?: number }).index
               } as TerminalCommand;
             }
 
@@ -139,5 +170,24 @@ export class HotKeyCommandService {
         startWith({ shiftKey: false, ctrlKey: false, altKey: false }),
         shareReplay(1)
       );
+  }
+
+  private checkPressedModifierKeys(pressedKey: KeyboardEvent, keyMeta: HotKeyMeta): boolean {
+    let result = true;
+
+    if (keyMeta.altKey) {
+      result = result && pressedKey.altKey;
+    }
+
+    if (keyMeta.shiftKey) {
+      result = result && pressedKey.shiftKey;
+    }
+
+    if (keyMeta.ctrlKey) {
+      result = result && (pressedKey.ctrlKey || pressedKey.metaKey);
+
+    }
+
+    return result;
   }
 }

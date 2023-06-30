@@ -1,0 +1,16 @@
+<nz-form-item *transloco="let t; scope: 'terminal-settings/hot-key-settings-form'">
+  <nz-form-label nzFor="sellBestBid">{{t('terminalSettingsHotKeySettingsForm.' + actionName)}}</nz-form-label>
+  <nz-form-control [nzErrorTip]="controlError">
+    <input
+      (keydown)="hotkeyChange($event)"
+      (mousedown)="$event.stopPropagation()"
+      [formControl]="control"
+      nz-input
+      readonly
+    />
+    <ng-template #controlError>
+      <span *ngIf="control.errors?.required">{{t('terminalSettingsHotKeySettingsForm.emptyFieldError')}}</span>
+      <span *ngIf="control.errors?.notUnique">{{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}</span>
+    </ng-template>
+  </nz-form-control>
+</nz-form-item>

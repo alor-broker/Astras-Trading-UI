@@ -2,20 +2,29 @@
 import { ThemeType } from '../settings/theme-settings.model';
 import { PortfolioKey } from "../portfolio-key.model";
 
+export interface HotKeyMeta {
+  key: string;
+  code: string;
+  shiftKey?: boolean;
+  ctrlKey?: boolean;
+  altKey?: boolean;
+}
+
 export interface HotKeysSettings {
-  cancelOrdersKey?: string;
-  closePositionsKey?: string;
-  centerOrderbookKey?: string;
-  cancelOrderbookOrders?: string;
-  closeOrderbookPositions?: string;
-  reverseOrderbookPositions?: string;
-  buyMarket?: string;
-  sellMarket?: string;
+  cancelOrdersKey?: HotKeyMeta | string;
+  closePositionsKey?: HotKeyMeta | string;
+  centerOrderbookKey?: HotKeyMeta | string;
+  cancelOrderbookOrders?: HotKeyMeta | string;
+  closeOrderbookPositions?: HotKeyMeta | string;
+  reverseOrderbookPositions?: HotKeyMeta | string;
+  buyMarket?: HotKeyMeta | string;
+  sellMarket?: HotKeyMeta | string;
   workingVolumes?: string[];
-  sellBestOrder?: string;
-  buyBestOrder?: string;
-  buyBestAsk?: string;
-  sellBestBid?: string;
+  sellBestOrder?: HotKeyMeta | string;
+  buyBestOrder?: HotKeyMeta | string;
+  buyBestAsk?: HotKeyMeta | string;
+  sellBestBid?: HotKeyMeta | string;
+  extraHotKeys?: boolean;
 }
 
 export enum ScalperOrderBookMouseAction {

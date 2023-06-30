@@ -13,6 +13,7 @@ import { HotKeySettingsFormComponent } from './components/hot-key-settings-form/
 import { PortfoliosCurrencyFormComponent } from './components/portfolios-currency-form/portfolios-currency-form.component';
 import { GeneralSettingsFormComponent } from './components/general-settings-form/general-settings-form.component';
 import { ScalperMouseActionsFormComponent } from './components/scalper-mouse-actions-form/scalper-mouse-actions-form.component';
+import { HotKeyInputComponent } from './components/hot-key-input/hot-key-input.component';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { ScalperMouseActionsFormComponent } from './components/scalper-mouse-act
     HotKeySettingsFormComponent,
     PortfoliosCurrencyFormComponent,
     GeneralSettingsFormComponent,
-    ScalperMouseActionsFormComponent
+    ScalperMouseActionsFormComponent,
+    HotKeyInputComponent
   ],
   imports: [
     SharedModule,
