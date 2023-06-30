@@ -189,6 +189,18 @@ export class DashboardComponent implements OnInit {
           newPosition.rows = widgetMeta.desktopMeta.addOptions.initialHeight;
         }
 
+        if (widgetMeta.desktopMeta?.addOptions?.initialHeightPx != null && this.gridster?.curRowHeight != null) {
+          const expectedHeight = widgetMeta.desktopMeta.addOptions.initialHeightPx;
+          let rowsHeight = this.dashboardSize.itemDefaultHeight;
+          if( this.gridster.curRowHeight > expectedHeight) {
+            rowsHeight = 1;
+          } else {
+            rowsHeight = Math.ceil(expectedHeight / this.gridster.curRowHeight);
+          }
+
+          newPosition.rows = rowsHeight;
+        }
+
         const positionedItems = items.filter(x => !!x.position);
 
         if (widgetMeta.desktopMeta?.addOptions?.isFullWidth) {
