@@ -484,7 +484,7 @@
       "addOptions": {
         "initialPosition": "top",
         "isFullWidth": true,
-        "initialHeight": 1
+        "initialHeightPx": 30
       },
       "galleryOrder": 15,
       "enabled": true

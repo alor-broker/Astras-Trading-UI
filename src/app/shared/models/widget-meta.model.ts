@@ -40,6 +40,7 @@ export interface WidgetMeta {
       initialPosition?: 'auto' | 'top'
       isFullWidth: boolean
       initialHeight?: number,
+      initialHeightPx?: number,
       initialWidth?: number
     },
 
