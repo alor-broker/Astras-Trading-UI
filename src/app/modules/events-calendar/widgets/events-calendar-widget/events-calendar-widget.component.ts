@@ -18,7 +18,6 @@ export class EventsCalendarWidgetComponent implements OnInit {
 
   shouldShowSettings: boolean = false;
   settings$!: Observable<EventsCalendarSettings>;
-
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService
   ) {}

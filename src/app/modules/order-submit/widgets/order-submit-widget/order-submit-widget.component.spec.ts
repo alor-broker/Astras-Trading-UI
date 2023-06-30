@@ -93,7 +93,7 @@ describe('OrderSubmitWidgetComponent', () => {
       instance: {
         guid: 'guid'
       } as Widget,
-      widgetMeta: {} as WidgetMeta
+      widgetMeta: {widgetName: {}} as WidgetMeta
     };
     fixture.detectChanges();
   });

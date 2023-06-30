@@ -9,9 +9,9 @@
       </nz-empty>
     </ng-template>
 
-    <div #tableContainer class="table-container">
+    <div #tableContainer class="table-container" *ngIf="displayOrders$ | async as orders">
       <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
-        <nz-table #nzTable *ngIf="displayOrders$ | async as orders" [nzData]="orders"
+        <nz-table #nzTable [nzData]="orders"
                   [nzFooter]="footer"
                   [nzFrontPagination]="false"
                   [nzNoResult]="empty"

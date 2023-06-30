@@ -6,9 +6,9 @@
       nzNotFoundImage="simple">
     </nz-empty>
   </ng-template>
-  <div #tableContainer class="table-container">
+  <div #tableContainer class="table-container" *ngIf="displayPositions$ | async as positions">
     <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
-      <nz-table #nzTable *ngIf="displayPositions$ | async as positions" [nzData]="positions"
+      <nz-table #nzTable [nzData]="positions"
                 [nzFooter]="footer"
                 [nzFrontPagination]="false"
                 [nzNoResult]="empty"

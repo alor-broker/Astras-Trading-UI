@@ -7,9 +7,9 @@
     </nz-empty>
   </ng-template>
 
-  <div class="table-container" #tableContainer>
+  <div class="table-container" #tableContainer *ngIf="displayTrades$ | async as trades">
     <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
-      <nz-table *ngIf="displayTrades$ | async as trades" #nzTable [nzData]="trades"
+      <nz-table  #nzTable [nzData]="trades"
       [nzNoResult]="empty"
       nzTableLayout="fixed"
       nzSize="small"
