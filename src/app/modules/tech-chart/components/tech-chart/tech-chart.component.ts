@@ -24,10 +24,9 @@ import {
   ChartingLibraryFeatureset,
   ChartingLibraryWidgetOptions, CustomTimezoneId, GmtTimezoneId,
   IChartingLibraryWidget,
-  InitialSettingsMap,
   IOrderLineAdapter,
   IPositionLineAdapter,
-  ISettingsAdapter, LanguageCode,
+  LanguageCode,
   PlusClickParams,
   ResolutionString,
   SubscribeEventsMap,
@@ -273,51 +272,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  private createSettingsAdapter(initialSettings: TechChartSettings): ISettingsAdapter {
-    const scope = this;
-
-    return {
-      get initialSettings(): InitialSettingsMap | undefined {
-        return initialSettings.chartSettings;
-      },
-
-      setValue(key: string, value: string): void {
-        scope.settings$?.pipe(
-          take(1)
-        ).subscribe(settings => {
-          scope.settingsService.updateSettings<TechChartSettings>(
-            settings.widgetSettings.guid,
-            {
-              chartSettings: {
-                ...settings.widgetSettings.chartSettings,
-                [key]: value
-              }
-            }
-          );
-        });
-      },
-
-      removeValue(key: string): void {
-        scope.settings$?.pipe(
-          take(1)
-        ).subscribe(settings => {
-          const updatedSettings = {
-            ...settings.widgetSettings.chartSettings
-          };
-
-          delete updatedSettings[key];
-
-          scope.settingsService.updateSettings<TechChartSettings>(
-            settings.widgetSettings.guid,
-            {
-              chartSettings: updatedSettings
-            }
-          );
-        });
-      }
-    };
-  }
-
   private createChart(
     settings: TechChartSettings,
     theme: ThemeSettings,
@@ -352,12 +306,11 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       // base options
       container: this.chartContainer.nativeElement,
       symbol: this.toTvSymbol(settings),
-      interval: (settings.chartSettings?.['chart.lastUsedTimeBasedResolution'] ?? '1D') as ResolutionString,
+      interval: ((<any>settings.chartLayout)?.charts?.[0]?.panes?.[0]?.sources?.[0]?.state?.interval ?? '1D') as ResolutionString,
       locale: this.translatorService.getActiveLang() as LanguageCode,
       library_path: '/assets/charting_library/',
       custom_css_url: '../tv-custom-styles.css',
       datafeed: this.techChartDatafeedService,
-      settings_adapter: this.createSettingsAdapter(settings),
       // additional options
       fullscreen: false,
       autosize: true,
@@ -370,6 +323,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       ],
       theme: theme.theme === ThemeType.default ? 'Light' : 'Dark',
+      saved_data: settings.chartLayout,
+      auto_save_delay: 1,
       time_frames: [
         { text: '1000y', resolution: '1M' as ResolutionString, description: this.translateFn(['timeframes', 'all', 'desc']), title: this.translateFn(['timeframes', 'all', 'title']) },
         { text: '3y', resolution: '1M' as ResolutionString, description: this.translateFn(['timeframes', '3y', 'desc']), title: this.translateFn(['timeframes', '3y', 'title']) },
@@ -435,6 +390,23 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       'onPlusClick',
       (params: PlusClickParams) => this.selectPrice(params.price)
     );
+
+    this.subscribeToChartEvent(
+      widget,
+      'onAutoSaveNeeded',
+      () => this.saveChartLayout(widget)
+    );
+  }
+
+  private saveChartLayout(widget: IChartingLibraryWidget) {
+    widget.save(state => {
+      this.settingsService.updateSettings<TechChartSettings>(
+        this.guid,
+        {
+          chartLayout: state
+        }
+      );
+    });
   }
 
   private subscribeToChartEvent(target: IChartingLibraryWidget, event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap]) {
