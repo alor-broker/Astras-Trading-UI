@@ -15,7 +15,7 @@
     [nzLoading]="isLoading"
   >
     <thead>
-    <tr #tableRow>
+    <tr #headerRow>
       <th
         *ngFor="let column of tableConfig.columns"
         [nzWidth]="column.width ? column.width + 'px' : null"

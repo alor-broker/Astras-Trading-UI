@@ -15,8 +15,6 @@ import {
   InstrumentSelectSettings
 } from '../../models/instrument-select-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
-import {TranslatorService} from "../../../../shared/services/translator.service";
-import {WidgetsHelper} from "../../../../shared/utils/widgets";
 
 @Component({
   selector: 'ats-instrument-select-widget[widgetInstance][isBlockWidget]',
@@ -32,12 +30,9 @@ export class InstrumentSelectWidgetComponent implements OnInit {
   isBlockWidget!: boolean;
   settings$!: Observable<InstrumentSelectSettings>;
   showBadge$!: Observable<boolean>;
-
-  titleText!: string;
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -65,7 +60,5 @@ export class InstrumentSelectWidgetComponent implements OnInit {
 
     this.settings$ = this.widgetSettingsService.getSettings<InstrumentSelectSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
-
-    this.titleText = WidgetsHelper.getWidgetName(this.widgetInstance.widgetMeta.widgetName, this.translatorService.getActiveLang());
   }
 }

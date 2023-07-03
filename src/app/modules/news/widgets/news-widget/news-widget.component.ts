@@ -14,6 +14,8 @@ import { NewsSection } from "../../models/news.model";
 import { map } from "rxjs/operators";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {WidgetsHelper} from "../../../../shared/utils/widgets";
 
 @Component({
   selector: 'ats-news-widget[widgetInstance][isBlockWidget]',
@@ -29,12 +31,14 @@ export class NewsWidgetComponent implements OnInit {
   settings$!: Observable<NewsSettings>;
   showBadge$!: Observable<boolean>;
   widgetTitle$: Observable<string> = of('');
+  titleText!: string;
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardService: DashboardContextService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly instrumentsService: InstrumentsService
+    private readonly instrumentsService: InstrumentsService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -55,6 +59,7 @@ export class NewsWidgetComponent implements OnInit {
 
     this.settings$ = this.widgetSettingsService.getSettings<NewsSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
+    this.titleText =  WidgetsHelper.getWidgetName(this.widgetInstance.widgetMeta.widgetName, this.translatorService.getActiveLang());
   }
 
   sectionChange(section: NewsSection) {

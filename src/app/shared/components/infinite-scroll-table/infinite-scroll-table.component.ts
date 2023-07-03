@@ -1,6 +1,5 @@
 import {
-  AfterViewInit,
-  Component,
+  AfterViewInit, Component,
   ElementRef,
   EventEmitter,
   Input,
@@ -12,14 +11,16 @@ import {
   ViewChild
 } from '@angular/core';
 import { NzTableComponent } from "ng-zorro-antd/table";
-import { Subject, takeUntil } from "rxjs";
+import {filter, Subject, take, takeUntil} from "rxjs";
 import { ITEM_HEIGHT } from "../../../modules/all-trades/utils/all-trades.utils";
 import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
-import { debounceTime } from "rxjs/operators";
+import {debounceTime, map, startWith} from "rxjs/operators";
 import { ContextMenu } from "../../models/infinite-scroll-table.model";
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
 import { TableConfig } from '../../models/table-config.model';
 import { BaseColumnSettings, FilterData } from "../../models/settings/table-settings.model";
+import {ViewChildren} from "@angular/core";
+import {QueryList} from "@angular/core";
 
 @Component({
   selector: 'ats-infinite-scroll-table[tableConfig]',
@@ -53,7 +54,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   @Output() public filterApplied = new EventEmitter();
 
   @ViewChild('dataTable', {static: false}) public dataTable!: NzTableComponent<any>;
-  @ViewChild('tableRow') headerRowEl!: ElementRef;
+  @ViewChildren('headerRow') headerRowEl!: QueryList<ElementRef>;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
   private visibleItemsCount = 1;
@@ -66,7 +67,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   public selectedRow: any = null;
 
   constructor(
-    private readonly nzContextMenuService: NzContextMenuService,
+    private readonly nzContextMenuService: NzContextMenuService
   ) {
   }
 
@@ -109,7 +110,13 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
           this.scrolled.emit(this.filtersForm.value);
         }
       });
-    this.calculateScrollHeight();
+
+    this.headerRowEl.changes.pipe(
+      map(x => x.first),
+      startWith(this.headerRowEl.first),
+      filter(x => !!x),
+      take(1)
+    ).subscribe(()=> this.calculateScrollHeight());
   }
 
   public getWidthArr() {
@@ -155,7 +162,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   private calculateScrollHeight() {
     this.scrollHeight = this.tableContainerHeight -
-      InfiniteScrollTableComponent.getElementHeight(this.headerRowEl?.nativeElement);
+      InfiniteScrollTableComponent.getElementHeight(this.headerRowEl?.first?.nativeElement);
+
     this.visibleItemsCount = Math.ceil(this.scrollHeight / this.itemHeight);
   }
 

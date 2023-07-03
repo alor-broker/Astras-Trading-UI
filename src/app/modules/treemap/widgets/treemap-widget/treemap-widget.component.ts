@@ -21,7 +21,6 @@ export class TreemapWidgetComponent implements OnInit {
 
   settings$!: Observable<TreemapSettings>;
   showBadge$!: Observable<boolean>;
-
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly terminalSettingsService: TerminalSettingsService

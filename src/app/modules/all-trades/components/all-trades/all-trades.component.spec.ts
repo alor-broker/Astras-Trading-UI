@@ -5,6 +5,9 @@ import { of } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { getTranslocoModule, mockComponent } from "../../../../shared/utils/testing";
 import { AllTradesService } from '../../../../shared/services/all-trades.service';
+import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
+import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
+import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-display-option";
 
 describe('AllTradesComponent', () => {
   let component: AllTradesComponent;
@@ -36,6 +39,12 @@ describe('AllTradesComponent', () => {
           useValue: {
             getTradesList: jasmine.createSpy('getTradesList').and.returnValue(of([])),
             getNewTradesSubscription: jasmine.createSpy('getNewTradesSubscription').and.returnValue(of({})),
+          }
+        },
+        {
+          provide: TimezoneConverterService,
+          useValue: {
+            getConverter: jasmine.createSpy('getConverter').and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime))),
           }
         }
       ]

@@ -6,9 +6,9 @@ import {
 } from '@angular/core';
 import { DatePipe } from "@angular/common";
 import { startOfDay, toUnixTimestampSeconds } from "../../../../shared/utils/datetime";
-import { filter, map, tap } from "rxjs/operators";
+import {filter, map, tap} from "rxjs/operators";
 import {
-  BehaviorSubject,
+  BehaviorSubject, combineLatest,
   Observable,
   shareReplay,
   Subject,
@@ -29,6 +29,8 @@ import { AllTradesService } from '../../../../shared/services/all-trades.service
 import { TableConfig } from '../../../../shared/models/table-config.model';
 import { NzTableFilterList } from "ng-zorro-antd/table";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
+import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
 
 @Component({
   selector: 'ats-all-trades[guid]',
@@ -39,16 +41,17 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   @Input() guid!: string;
 
   contentSize$ = new BehaviorSubject<ContentSize | null>(null);
-  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private datePipe = new DatePipe('ru-RU');
   private take = 50;
   private settings$!: Observable<AllTradesSettings>;
 
   public tableContainerHeight: number = 0;
   public tableContainerWidth: number = 0;
-  public tradesList$ = new BehaviorSubject<AllTradesItem[]>([]);
-  public isLoading$ = new BehaviorSubject<boolean>(false);
-  private filters$ = new BehaviorSubject<AllTradesFilters>({
+
+  public readonly isLoading$ = new BehaviorSubject<boolean>(false);
+  public readonly tradesList$ = new BehaviorSubject<AllTradesItem[]>([]);
+  private readonly filters$ = new BehaviorSubject<AllTradesFilters>({
     take: this.take,
     exchange: '',
     symbol: '',
@@ -84,7 +87,15 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     {
       id: 'timestamp',
       displayName: 'Время',
-      transformFn: (data: AllTradesItem) => this.datePipe.transform(data.timestamp, 'HH:mm:ss')
+      transformFn: (data: AllTradesItem) => {
+        const timezone = this.timezoneConverter?.getTimezone();
+        const timezoneName = !!timezone ? `UTC${timezone.utcOffset < 0 ? '+' : '-'}${timezone.formattedOffset}` : null;
+        return this.datePipe.transform(
+          data.timestamp,
+          'HH:mm:ss',
+          timezoneName ?? TimezoneConverter.moscowTimezone
+        );
+      }
     },
     {
       id: 'side',
@@ -112,13 +123,16 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       transformFn: () => '.'
     }
   ];
+  private timezoneConverter?: TimezoneConverter;
 
   tableConfig$!: Observable<TableConfig<AllTradesItem>>;
 
   constructor(
     private readonly allTradesService: AllTradesService,
     private readonly settingsService: WidgetSettingsService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly timezoneConverterService: TimezoneConverterService,
+
   ) {
   }
 
@@ -142,6 +156,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         take: this.take
       });
     });
+
   }
 
   public scrolled(): void {
@@ -271,8 +286,16 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   }
 
   private initTrades() {
-    this.filters$.pipe(
-      tap(() => this.isLoading$.next(true)),
+    combineLatest([
+      this.filters$,
+      this.timezoneConverterService.getConverter()
+    ])
+    .pipe(
+      tap(([, timezoneConverter]) => {
+        this.timezoneConverter = timezoneConverter;
+        this.isLoading$.next(true);
+      }),
+      map(([filters,]) => filters),
       mapWith(
         f => this.allTradesService.getTradesList(f),
         (filters, res) => ({ filters, res })
