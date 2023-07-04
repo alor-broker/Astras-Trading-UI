@@ -3,6 +3,7 @@ import {
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
+  fromEvent,
   Observable,
   of,
   shareReplay,
@@ -292,6 +293,11 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
     const currentSubscriptions$ = combineLatest([
       this.pushNotificationsService.subscriptionsUpdated$.pipe(startWith({})),
       this.pushNotificationsService.getMessages().pipe(startWith({})),
+      fromEvent(document, 'visibilitychange')
+        .pipe(
+          filter(() => document.visibilityState === 'visible'),
+          startWith(null)
+        )
     ]).pipe(
       tap(() => this.isLoading$.next(true)),
       switchMap(() => this.pushNotificationsService.getCurrentSubscriptions())
@@ -336,7 +342,7 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
     );
 
     this.displayNotifications$ = this.isNotificationsAllowed$.pipe(
-      filter(x=> x),
+      filter(x => x),
       switchMap(() => displayNotifications$)
     );
   }
