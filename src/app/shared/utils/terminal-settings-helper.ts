@@ -25,19 +25,67 @@ export class TerminalSettingsHelper {
 
   static getDefaultHotkeys(): HotKeysSettings {
     return {
-      cancelOrdersKey: '~',
-      closePositionsKey: 'Escape',
-      centerOrderbookKey: ' ',
-      cancelOrderbookOrders: 'E',
-      closeOrderbookPositions: 'R',
-      reverseOrderbookPositions: 'T',
-      buyMarket: 'S',
-      sellMarket: 'A',
+      cancelOrdersKey: {
+        key: '~',
+        code: 'Backquote',
+        shiftKey: true
+      },
+      closePositionsKey: {
+        key: 'Escape',
+        code: 'Escape',
+        shiftKey: true
+      },
+      centerOrderbookKey: {
+        key: ' ',
+        code: 'Space',
+        shiftKey: true
+      },
+      cancelOrderbookOrders: {
+        key: 'E',
+        code: 'KeyE',
+        shiftKey: true
+      },
+      closeOrderbookPositions: {
+        key: 'R',
+        code: 'KeyR',
+        shiftKey: true
+      },
+      reverseOrderbookPositions: {
+        key: 'T',
+        code: 'KeyT',
+        shiftKey: true
+      },
+      buyMarket: {
+        key: 'S',
+        code: 'KeyS',
+        shiftKey: true
+      },
+      sellMarket: {
+        key: 'A',
+        code: 'KeyA',
+        shiftKey: true
+      },
       workingVolumes: ['1', '2', '3', '4'],
-      sellBestOrder: 'W',
-      buyBestOrder: 'Q',
-      sellBestBid: 'Z',
-      buyBestAsk: 'X'
+      sellBestOrder: {
+        key: 'W',
+        code: 'KeyW',
+        shiftKey: true
+      },
+      buyBestOrder: {
+        key: 'Q',
+        code: 'KeyQ',
+        shiftKey: true
+      },
+      sellBestBid: {
+        key: 'Z',
+        code: 'KeyZ',
+        shiftKey: true
+      },
+      buyBestAsk: {
+        key: 'X',
+        code: 'KeyX',
+        shiftKey: true
+      }
     };
   }
 

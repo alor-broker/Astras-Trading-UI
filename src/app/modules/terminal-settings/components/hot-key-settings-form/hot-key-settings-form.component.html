@@ -1,46 +1,40 @@
 <ng-container *transloco="let t; scope: 'terminal-settings/hot-key-settings-form'">
   <form *ngIf="form" [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
+    <div class="d-flex flex-row flex-gap-2">
+      <div class="flex-fill label">
+        {{t('terminalSettingsHotKeySettingsForm.extraHotkeysLabel')}}
+        <span
+          [nzTooltipTitle]="t('terminalSettingsHotKeySettingsForm.extraHotkeysTooltip')"
+          nz-icon
+          nz-tooltip=""
+          nzType="question-circle"
+        ></span>
+      </div>
+      <div>
+        <nz-switch formControlName="extraHotKeys"></nz-switch>
+      </div>
+    </div>
+    <nz-divider></nz-divider>
     <ng-container>
       <h3>{{t('terminalSettingsHotKeySettingsForm.allOrderbooksHeader')}}</h3>
-
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'cancelOrdersKey'}"></ng-container>
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'closePositionsKey'}"></ng-container>
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'centerOrderbookKey'}"></ng-container>
+      <ats-hot-key-input actionName="cancelOrdersKey" formControlName="cancelOrdersKey"></ats-hot-key-input>
+      <ats-hot-key-input actionName="closePositionsKey" formControlName="closePositionsKey"></ats-hot-key-input>
+      <ats-hot-key-input actionName="centerOrderbookKey" formControlName="centerOrderbookKey"></ats-hot-key-input>
     </ng-container>
     <nz-divider></nz-divider>
     <ng-container>
       <h3>{{t('terminalSettingsHotKeySettingsForm.mouseHoverOrderbookHeader')}}</h3>
-
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'cancelOrderbookOrders'}"></ng-container>
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'closeOrderbookPositions'}"></ng-container>
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'reverseOrderbookPositions'}"></ng-container>
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'buyMarket'}"></ng-container>
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'sellMarket'}"></ng-container>
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'sellBestOrder'}"></ng-container>
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'buyBestOrder'}"></ng-container>
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'sellBestBid'}"></ng-container>
-      <ng-container *ngTemplateOutlet="hotKeyTemplate; context: { actionName : 'buyBestAsk'}"></ng-container>
+      <ats-hot-key-input actionName="cancelOrderbookOrders" formControlName="cancelOrderbookOrders"></ats-hot-key-input>
+      <ats-hot-key-input actionName="closeOrderbookPositions" formControlName="closeOrderbookPositions"></ats-hot-key-input>
+      <ats-hot-key-input actionName="reverseOrderbookPositions" formControlName="reverseOrderbookPositions"></ats-hot-key-input>
+      <ats-hot-key-input actionName="buyMarket" formControlName="buyMarket"></ats-hot-key-input>
+      <ats-hot-key-input actionName="sellMarket" formControlName="sellMarket"></ats-hot-key-input>
+      <ats-hot-key-input actionName="sellBestOrder" formControlName="sellBestOrder"></ats-hot-key-input>
+      <ats-hot-key-input actionName="buyBestOrder" formControlName="buyBestOrder"></ats-hot-key-input>
+      <ats-hot-key-input actionName="sellBestBid" formControlName="sellBestBid"></ats-hot-key-input>
+      <ats-hot-key-input actionName="buyBestAsk" formControlName="buyBestAsk"></ats-hot-key-input>
     </ng-container>
     <nz-divider></nz-divider>
-
-    <ng-template #hotKeyTemplate let-actionName="actionName">
-      <nz-form-item>
-        <nz-form-label nzFor="sellBestBid">{{t('terminalSettingsHotKeySettingsForm.' + actionName)}}</nz-form-label>
-        <nz-form-control [nzErrorTip]="controlError">
-          <input
-            (keydown)="hotkeyChange($event, form.get(actionName))"
-            (mousedown)="$event.stopPropagation()"
-            [formControlName]=actionName
-            nz-input
-            readonly
-          />
-          <ng-template #controlError>
-            <span *ngIf="form.get(actionName)?.errors?.required">{{t('terminalSettingsHotKeySettingsForm.emptyFieldError')}}</span>
-            <span *ngIf="form.get(actionName)?.errors?.notUnique">{{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}</span>
-          </ng-template>
-        </nz-form-control>
-      </nz-form-item>
-    </ng-template>
 
     <ng-container *ngIf="workingVolumes">
       <h3>{{t('terminalSettingsHotKeySettingsForm.workingVolumesHeader')}}</h3>

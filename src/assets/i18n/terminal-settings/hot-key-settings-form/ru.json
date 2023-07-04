@@ -1,4 +1,6 @@
 {
+  "extraHotkeysLabel": "Игнорировать язык клавиатуры",
+  "extraHotkeysTooltip": "клавиши будут срабатывать независимо от текущего языка клавиатуры",
   "allOrderbooksHeader": "Общие для всех открытых стаканов",
   "cancelOrdersKey": "Снять лимитные заявки",
   "cancelOrderbookOrders": "Снять лимитные заявки",

@@ -20,6 +20,7 @@ import {
   takeUntil
 } from 'rxjs';
 import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
+import { TerminalSettingsHelper } from "../../../../shared/utils/terminal-settings-helper";
 
 @Component({
   selector: 'ats-hot-key-settings-form',
@@ -90,7 +91,23 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
       buyBestAsk: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       sellBestBid: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       workingVolumes: new UntypedFormArray([]),
+      extraHotKeys: new UntypedFormControl(false)
     });
+
+    this.form.get('extraHotKeys')?.valueChanges
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.destroyable)
+      )
+      .subscribe(() => {
+        const defaultHotKeys: HotKeysSettings = TerminalSettingsHelper.getDefaultHotkeys();
+
+        Object.entries(this.form.controls).forEach(([key, control]) => {
+          if (typeof control.value === 'string') {
+            control.setValue(defaultHotKeys[<keyof HotKeysSettings>key]);
+          }
+        });
+      });
 
     this.form.valueChanges.pipe(
       distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),

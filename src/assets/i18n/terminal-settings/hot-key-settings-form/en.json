@@ -1,4 +1,6 @@
 {
+  "extraHotkeysLabel": "Ignore keyboard layout",
+  "extraHotkeysTooltip": "Keypress will be emitted regardless of the selected keyboard layout",
   "allOrderbooksHeader": "Common for all open orderbooks",
   "cancelOrdersKey": "Remove limit orders",
   "cancelOrderbookOrders": "Remove limit orders",
