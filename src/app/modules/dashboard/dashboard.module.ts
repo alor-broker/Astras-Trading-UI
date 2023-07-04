@@ -42,6 +42,7 @@ import { RibbonModule } from '../ribbon/ribbon.module';
 import { EventsCalendarModule } from "../events-calendar/events-calendar.module";
 import { OptionBoardModule } from "../option-board/option-board.module";
 import { ArbitrageSpreadModule } from "../arbitrage-spread/arbitrage-spread.module";
+import {PortfolioSummaryModule} from "../portfolio-summary/portfolio-summary.module";
 
 @NgModule({
   declarations: [
@@ -87,7 +88,8 @@ import { ArbitrageSpreadModule } from "../arbitrage-spread/arbitrage-spread.modu
         EventsCalendarModule,
         OptionBoardModule,
         ArbitrageSpreadModule,
-      // components
+        PortfolioSummaryModule,
+        // components
     ],
   providers: [
     OnboardingService

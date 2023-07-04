@@ -5,16 +5,16 @@ import {
 
 import { ForwardSummaryComponent } from './forward-summary.component';
 import { of } from "rxjs";
-import { BlotterService } from "../../services/blotter.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { getTranslocoModule } from "../../../../shared/utils/testing";
+import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
 
 describe('ForwardSummaryComponent', () => {
   let component: ForwardSummaryComponent;
   let fixture: ComponentFixture<ForwardSummaryComponent>;
-  const spyBlotter = jasmine.createSpyObj('BlotterService', ['getForwardRisks']);
-  spyBlotter.getForwardRisks.and.returnValue(of(null));
+  const spyPortfolioSummaryService = jasmine.createSpyObj('PortfolioSummaryService', ['getForwardRisks']);
+  spyPortfolioSummaryService.getForwardRisks.and.returnValue(of(null));
   const settingsMock = {
     exchange: 'MOEX',
     portfolio: 'D39004',
@@ -32,7 +32,7 @@ describe('ForwardSummaryComponent', () => {
         getTranslocoModule()
       ],
       providers: [
-        { provide: BlotterService, useValue: spyBlotter },
+        { provide: PortfolioSummaryService, useValue: spyPortfolioSummaryService },
         {
           provide: WidgetSettingsService,
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }

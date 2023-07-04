@@ -18,7 +18,7 @@
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.vmInterClTitle')">{{summary.vmInterCl}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.vmCurrentPositionsTitle')">{{summary.vmCurrentPositions}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.varMarginTitle')">{{summary.varMargin}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.isLimitsSetTitle')">{{summary.isLimitsSet ? 'Да' : 'Нет'}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.isLimitsSetTitle')">{{summary.isLimitsSet ? t('yes') : t('no')}}</nz-descriptions-item>
   </nz-descriptions>
 </ng-container>
 </div>

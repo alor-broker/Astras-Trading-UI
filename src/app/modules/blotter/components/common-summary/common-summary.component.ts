@@ -11,11 +11,11 @@ import {
   of,
   switchMap
 } from 'rxjs';
-import { CommonSummaryView } from '../../models/common-summary-view.model';
-import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { BlotterSettings } from '../../models/blotter-settings.model';
+import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
+import {CommonSummaryView} from "../../../../shared/models/common-summary-view.model";
 
 @Component({
   selector: 'ats-common-summary[guid]',
@@ -34,7 +34,7 @@ export class CommonSummaryComponent implements OnInit {
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
-    private readonly service: BlotterService,
+    private readonly service: PortfolioSummaryService,
   ) {
   }
 

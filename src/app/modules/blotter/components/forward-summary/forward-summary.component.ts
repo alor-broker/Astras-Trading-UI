@@ -8,11 +8,11 @@ import {
   Observable,
   switchMap
 } from "rxjs";
-import { BlotterService } from "../../services/blotter.service";
-import { ForwardRisksView } from "../../models/forward-risks-view.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { BlotterSettings } from '../../models/blotter-settings.model';
+import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
+import {ForwardRisksView} from "../../../../shared/models/forward-risks-view.model";
 
 @Component({
   selector: 'ats-forward-summary[guid]',
@@ -29,7 +29,7 @@ export class ForwardSummaryComponent implements OnInit {
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
-    private readonly service: BlotterService,
+    private readonly service: PortfolioSummaryService,
   ) {
   }
 
