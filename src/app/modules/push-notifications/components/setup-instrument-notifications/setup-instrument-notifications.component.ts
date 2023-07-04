@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, NEVER, Observable, of, shareReplay, switchMap, take, takeUntil} from "rxjs";
+import { BehaviorSubject, fromEvent, NEVER, Observable, of, shareReplay, switchMap, take, takeUntil } from "rxjs";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {PushNotificationsService} from "../../services/push-notifications.service";
 import {PriceSparkSubscription, PushSubscriptionType} from "../../models/push-notifications.model";
@@ -69,6 +69,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
     this.initNotificationStatusCheck();
     this.initCurrentInstrumentSubscriptions();
     this.initNewPriceChangeSubscriptionForm();
+    this.initNotificationsUpdateSubscription();
 
     this.pushNotificationsService.subscriptionsUpdated$.pipe(
       filter(x => x == null || x === PushSubscriptionType.PriceSpark),
@@ -190,5 +191,14 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
         Validators.required
       )
     });
+  }
+
+  private initNotificationsUpdateSubscription() {
+    fromEvent(document, 'visibilitychange')
+      .pipe(
+        filter(() => document.visibilityState === 'visible'),
+        takeUntil(this.destroyable)
+      )
+      .subscribe(() => this.refresh$.next(null));
   }
 }
