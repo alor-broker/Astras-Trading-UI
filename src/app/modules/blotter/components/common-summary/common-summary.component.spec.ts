@@ -3,18 +3,18 @@ import {
   TestBed
 } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { BlotterService } from '../../services/blotter.service';
 
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { CommonSummaryComponent } from './common-summary.component';
 import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { getTranslocoModule } from "../../../../shared/utils/testing";
+import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
 
 describe('CommonSummaryComponent', () => {
   let component: CommonSummaryComponent;
   let fixture: ComponentFixture<CommonSummaryComponent>;
-  const spyBlotter = jasmine.createSpyObj('BlotterService', ['getCommonSummary']);
-  spyBlotter.getCommonSummary.and.returnValue(of(null));
+  const spyPortfolioSummaryService = jasmine.createSpyObj('PortfolioSummaryService', ['getCommonSummary']);
+  spyPortfolioSummaryService.getCommonSummary.and.returnValue(of(null));
 
   const settingsMock = {
     exchange: 'MOEX',
@@ -34,7 +34,7 @@ describe('CommonSummaryComponent', () => {
         getTranslocoModule(),
       ],
       providers: [
-        { provide: BlotterService, useValue: spyBlotter },
+        { provide: PortfolioSummaryService, useValue: spyPortfolioSummaryService },
         {
           provide: WidgetSettingsService,
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }

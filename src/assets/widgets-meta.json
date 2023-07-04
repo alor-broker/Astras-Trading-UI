@@ -484,7 +484,7 @@
       "addOptions": {
         "initialPosition": "top",
         "isFullWidth": true,
-        "initialHeightPx": 30
+        "initialHeightPx": 25
       },
       "galleryOrder": 15,
       "enabled": true
@@ -574,6 +574,33 @@
         "initialWidth": 10
       },
       "galleryOrder": 18,
+      "enabled": true
+    }
+  },
+  {
+    "typeId": "portfolio-summary",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "PortfolioSummaryModule",
+        "componentName": "PortfolioSummaryWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Portfolio Summary",
+      "translations": {
+        "ru": "Сводка по портфелю",
+        "en": "Portfolio Summary"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "wallet",
+      "galleryIcon": "wallet",
+      "addOptions": {
+        "isFullWidth": true,
+        "initialHeightPx": 25
+      },
+      "galleryOrder": 19,
       "enabled": true
     }
   }

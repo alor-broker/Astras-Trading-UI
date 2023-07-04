@@ -86,6 +86,12 @@
       [isBlockWidget]="isBlockWidget"
     >
     </ats-arbitrage-spread-widget>
+    <ats-portfolio-summary-widget
+      *ngSwitchCase="'portfolio-summary'"
+      [widgetInstance]="widget"
+      [isBlockWidget]="isBlockWidget"
+    >
+    </ats-portfolio-summary-widget>
   </ng-container>
 
 </div>

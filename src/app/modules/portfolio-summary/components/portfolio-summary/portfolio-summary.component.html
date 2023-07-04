@@ -1,0 +1,108 @@
+<ng-container *ngIf="settings$ | async as settings">
+  <ng-container *ngIf="!settings.marketType || settings.marketType !== marketTypes.Forward">
+    <ng-container *transloco="let t; scope: 'blotter/common-summary'">
+      <ats-scrollable-row *ngIf="commonSummary$ | async as commonSummary">
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterCommonSummary.portfolioLiquidationTitle')}}:</span>
+          <span>{{commonSummary.portfolioEvaluation}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterCommonSummary.portfolioEvaluationTitle')}}:</span>
+          <span>{{commonSummary.portfolioEvaluation}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterCommonSummary.profitTitle')}}:</span>
+          <span [class]="commonSummary.profitRate > 0 ? 'buy' : 'sell'">{{commonSummary.profit}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterCommonSummary.profitRateTitle')}}:</span>
+          <span [class]="commonSummary.profitRate > 0 ? 'buy' : 'sell'">{{commonSummary.profitRate}}%</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterCommonSummary.buyingPowerAtMorningTitle')}}:</span>
+          <span>{{commonSummary.buyingPowerAtMorning}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterCommonSummary.initialMarginTitle')}}:</span>
+          <span>{{commonSummary.initialMargin}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterCommonSummary.riskBeforeForcePositionClosingTitle')}}:</span>
+          <span>{{commonSummary.riskBeforeForcePositionClosing}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterCommonSummary.commissionTitle')}}:</span>
+          <span>{{commonSummary.commission}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterCommonSummary.buyingPowerTitle')}}:</span>
+          <span>{{commonSummary.buyingPower}}</span>
+        </div>
+      </ats-scrollable-row>
+    </ng-container>
+  </ng-container>
+
+  <ng-container *ngIf="settings.marketType === marketTypes.Forward">
+    <ng-container *transloco="let t; scope: 'blotter/forward-summary'">
+      <ats-scrollable-row *ngIf="forwardSummary$ | async as forwardSummary">
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.moneyFreeTitle')}}:</span>
+          <span>{{forwardSummary.moneyFree}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.moneyBlockedTitle')}}:</span>
+          <span>{{forwardSummary.moneyBlocked}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.feeTitle')}}:</span>
+          <span>{{forwardSummary.fee}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.moneyOldTitle')}}:</span>
+          <span>{{forwardSummary.moneyOld}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.moneyAmountTitle')}}:</span>
+          <span>{{forwardSummary.moneyAmount}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.moneyPledgeAmountTitle')}}:</span>
+          <span>{{forwardSummary.moneyPledgeAmount}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.vmInterClTitle')}}:</span>
+          <span>{{forwardSummary.vmInterCl}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.vmCurrentPositionsTitle')}}:</span>
+          <span>{{forwardSummary.vmCurrentPositions}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.varMarginTitle')}}:</span>
+          <span>{{forwardSummary.varMargin}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.isLimitsSetTitle')}}:</span>
+          <span>{{forwardSummary.isLimitsSet ? t('yes') : t('no')}}</span>
+        </div>
+      </ats-scrollable-row>
+    </ng-container>
+  </ng-container>
+</ng-container>
