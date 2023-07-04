@@ -597,6 +597,7 @@
       "headerIcon": "wallet",
       "galleryIcon": "wallet",
       "addOptions": {
+        "initialPosition": "below",
         "isFullWidth": true,
         "initialHeightPx": 25
       },

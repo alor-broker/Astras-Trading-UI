@@ -37,7 +37,7 @@ export interface WidgetMeta {
      * Options used when widget is adding to dashboard
      */
     addOptions: {
-      initialPosition?: 'auto' | 'top'
+      initialPosition?: 'auto' | 'top' | 'below'
       isFullWidth: boolean
       initialHeight?: number,
       initialHeightPx?: number,

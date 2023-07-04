@@ -191,7 +191,7 @@ export class DashboardComponent implements OnInit {
 
         if (widgetMeta.desktopMeta?.addOptions?.initialHeightPx != null && this.gridster?.curRowHeight != null) {
           const expectedHeight = widgetMeta.desktopMeta.addOptions.initialHeightPx;
-          let rowsHeight = this.dashboardSize.itemDefaultHeight;
+          let rowsHeight: number;
           if( this.gridster.curRowHeight > expectedHeight) {
             rowsHeight = 1;
           } else {
@@ -222,6 +222,8 @@ export class DashboardComponent implements OnInit {
                 });
               });
           }
+        } else if(widgetMeta.desktopMeta?.addOptions?.initialPosition === "below" && this.gridster!.grid.length > 0) {
+          newPosition.y = Math.max(...this.gridster!.grid.map(x=> x.item.y + x.item.rows));
         }
       }
 
