@@ -98,7 +98,7 @@
             </ng-container>
 
             <div class="d-flex flex-gap-10">
-              <nz-form-item class="compact flex-grow-2">
+              <nz-form-item class="compact flex-shrink-2 w-100">
                 <nz-form-label nzFor="topOrderPrice" class="flex-fill">
                   {{t('command.topOrderPriceLabel')}}
                 </nz-form-label>
@@ -112,7 +112,7 @@
                 <span *ngIf="form.get('topOrderPrice')?.errors?.max">{{t('command.tooMuch')}}</span>
               </ng-template>
 
-              <nz-form-item class="compact flex-grow-1">
+              <nz-form-item class="compact flex-shrink-3 w-100">
                 <nz-form-label [nzNoColon]="true" nzFor="topOrderSide" class="flex-fill">
                   {{t('command.sideLabel')}}
                 </nz-form-label>
@@ -126,7 +126,7 @@
             </div>
 
             <div class="d-flex flex-gap-10">
-              <nz-form-item class="compact flex-grow-2">
+              <nz-form-item class="compact flex-shrink-2 w-100">
                 <nz-form-label nzFor="bottomOrderPrice" class="flex-fill">
                   {{t('command.bottomOrderPriceLabel')}}
                 </nz-form-label>
@@ -140,7 +140,7 @@
                 <span *ngIf="form.get('bottomOrderPrice')?.errors?.max">{{t('command.tooMuch')}}</span>
               </ng-template>
 
-              <nz-form-item class="compact flex-grow-1">
+              <nz-form-item class="compact flex-shrink-3 w-100">
                 <nz-form-label [nzNoColon]="true" nzFor="bottomOrderSide" class="flex-fill">
                   {{t('command.sideLabel')}}
                 </nz-form-label>
