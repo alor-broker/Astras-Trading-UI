@@ -60,7 +60,8 @@ export const reducer = createReducer(
           title: props.title,
           isSelected: props.isSelected,
           items: props.existedItems.map(x => ({...x})),
-          instrumentsSelection: props.instrumentsSelection ?? null
+          instrumentsSelection: props.instrumentsSelection ?? null,
+          sourceGuid: props.sourceGuid
         },
         updatedState);
     }),

@@ -35,7 +35,8 @@ export class ManageDashboardsActions {
       title: string,
       isSelected: boolean,
       existedItems: Widget[],
-      instrumentsSelection?: InstrumentGroups
+      instrumentsSelection?: InstrumentGroups,
+      sourceGuid?: string
     }>()
   );
 
@@ -94,6 +95,13 @@ export class ManageDashboardsActions {
   static removeAllDashboards = createAction('[Dashboards] Remove All Dashboards');
 
   static saveDashboards = createAction('[Dashboards] Save Dashboards');
+
+  static copyDashboard = createAction(
+    '[Dashboards] Copy Dashboard',
+    props<{
+      dashboardGuid: string
+    }>()
+  );
 }
 
 export class CurrentDashboardActions {

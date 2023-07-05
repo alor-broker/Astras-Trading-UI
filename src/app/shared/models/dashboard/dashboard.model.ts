@@ -17,6 +17,8 @@ export interface Dashboard {
   selectedPortfolio?: PortfolioKey | null;
 
   instrumentsSelection?: InstrumentGroups | null;
+
+  sourceGuid?: string;
 }
 
 export interface InstrumentGroups {

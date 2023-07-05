@@ -2,8 +2,9 @@
   "defaultDashboardName": "Дашборд по умолчанию",
   "newDashboardTitlePlaceholder": "Название нового дашборда",
   "stringLenghtError": "Введите от {{min}} до {{max}} символов",
-  "removeConfirmationTitle": "Подтвердите действие",
+  "actionConfirmationTitle": "Подтвердите действие",
   "removeConfirmationMessage": "Вы уверены, что хотите удалить дашборд '{{title}}'?",
+  "copyConfirmationMessage": "Копировать дашборд '{{title}}' со всеми виджетами?",
   "confirmButtonText": "Да",
   "cancelButtonText": "Нет"
 }

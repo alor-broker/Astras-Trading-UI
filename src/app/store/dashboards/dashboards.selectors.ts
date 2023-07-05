@@ -20,11 +20,6 @@ export const selectedDashboard = createSelector(
   }
 );
 
-export const selectedPortfolioKey = createSelector(
-  selectedDashboard,
-  s => s?.selectedPortfolio
-);
-
 export const allDashboards = createSelector(
   selectDashboardsState,
   selectors.selectAll
