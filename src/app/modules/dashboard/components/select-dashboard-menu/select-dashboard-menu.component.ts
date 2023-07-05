@@ -72,7 +72,7 @@ export class SelectDashboardMenuComponent implements OnInit {
       })),
       map(({ t, allDashboards }) => allDashboards.map(d => ({
         ...d,
-        title: d.title === DefaultDashboardName ? t(['defaultDashboardName']) : d.title
+        title: d.title.includes(DefaultDashboardName) ? d.title.replace(DefaultDashboardName, t(['defaultDashboardName']))  : d.title
       })))
     );
   }
@@ -104,7 +104,22 @@ export class SelectDashboardMenuComponent implements OnInit {
         nzOnOk: () => this.dashboardService.removeDashboard(dashboard.guid)
       });
     });
+  }
 
+  copyDashboard(dashboard: Dashboard) {
+    this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
+      take(1)
+    ).subscribe(t => {
+      this.modal.confirm({
+        nzTitle: t(['actionConfirmationTitle']),
+        nzContent: t(['copyConfirmationMessage'], { title: dashboard.title }),
+        nzOkText: t(['confirmButtonText']),
+        nzOkType: 'primary',
+        nzOkDanger: true,
+        nzCancelText: t(['cancelButtonText']),
+        nzOnOk: () => this.dashboardService.copyDashboard(dashboard.guid)
+      });
+    });
   }
 
   renameDashboard(guid: string, newTitle: string) {

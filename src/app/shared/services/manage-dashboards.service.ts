@@ -104,6 +104,10 @@ export class ManageDashboardsService {
     this.store.dispatch(ManageDashboardsActions.removeDashboard({ dashboardGuid: guid }));
   }
 
+  copyDashboard(guid: string) {
+    this.store.dispatch(ManageDashboardsActions.copyDashboard({ dashboardGuid: guid }));
+  }
+
   addDashboard(title: string) {
     this.store.dispatch(ManageDashboardsActions.addDashboard({
       guid: GuidGenerator.newGuid(),

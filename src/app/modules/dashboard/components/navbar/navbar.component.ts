@@ -76,7 +76,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       mapWith(() => this.dashboardContextService.selectedDashboard$, (t, d) => ({ t, d })),
       map(({ t, d }) => ({
         ...d,
-        title: d.title === DefaultDashboardName ? t(['defaultDashboardName']) : d.title
+        title: d.title.includes(DefaultDashboardName) ? d.title.replace(DefaultDashboardName, t(['defaultDashboardName']))  : d.title
       }))
     );
 

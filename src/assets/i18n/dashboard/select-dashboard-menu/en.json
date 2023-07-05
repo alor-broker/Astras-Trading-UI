@@ -2,8 +2,9 @@
   "defaultDashboardName": "Default Dashboard",
   "newDashboardTitlePlaceholder": "New Dashboard Name",
   "stringLenghtError": "Enter from {{min}} to {{max}} characters",
-  "removeConfirmationTitle": "Confirm action",
+  "actionConfirmationTitle": "Confirm action",
   "removeConfirmationMessage": "Are you sure you want to remove the dashboard '{{title}}'?",
+  "copyConfirmationMessage": "Copy dashboard '{{title}}' with all widgets?",
   "confirmButtonText": "Yes",
   "cancelButtonText": "No"
 }
