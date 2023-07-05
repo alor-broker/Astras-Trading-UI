@@ -4,7 +4,7 @@
       <ats-scrollable-row *ngIf="commonSummary$ | async as commonSummary">
         <div atsScrollableItem class="item">
           <span class="label">{{t('blotterCommonSummary.portfolioLiquidationTitle')}}:</span>
-          <span>{{commonSummary.portfolioEvaluation}}</span>
+          <span>{{commonSummary.portfolioLiquidationValue}}</span>
         </div>
 
         <div atsScrollableItem class="item">
