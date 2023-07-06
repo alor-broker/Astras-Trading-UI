@@ -14,28 +14,40 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
 
   settingsFormValue: TerminalSettings | null = null;
   isVisible$: Observable<boolean> = of(false);
-  tabNames = TabNames;
   selectedTab = TabNames.usefulLinks;
   isLoading$ = new BehaviorSubject(false);
   private initialSettingsFormValue!: TerminalSettings;
 
   constructor(
     private modal: ModalService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
   ) {
   }
 
-  get isSaveDisabled(): boolean {
-    return !this.settingsFormValue ||
-      (JSON.stringify(this.getTerminalSettingsUpdates(this.settingsFormValue)) === JSON.stringify(this.getTerminalSettingsUpdates(this.initialSettingsFormValue)));
+  get isSettingsHasChanges(): boolean {
+    return !!this.settingsFormValue &&
+      (JSON.stringify(this.getTerminalSettingsUpdates(this.settingsFormValue)) !== JSON.stringify(this.getTerminalSettingsUpdates(this.initialSettingsFormValue)));
+  }
+
+  get isSaveAvailable(): boolean {
+    return this.selectedTab !== TabNames.usefulLinks;
   }
 
   ngOnInit(): void {
     this.isVisible$ = this.modal.shouldShowTerminalSettingsModal$;
   }
 
-  handleClose() {
+  closeModal() {
     this.modal.closeTerminalSettingsModal();
+  }
+
+  handleClose() {
+    if(this.isSaveAvailable && this.isSettingsHasChanges) {
+      this.saveSettingsChanges();
+      return;
+    }
+
+    this.closeModal();
   }
 
   formChange(event: { value: TerminalSettings | null, isInitial: boolean }) {
@@ -65,7 +77,7 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
             }
 
             this.isLoading$.next(false);
-            this.handleClose();
+            this.closeModal();
           }
         );
       });
