@@ -161,6 +161,9 @@ export class AuthService {
             ...user,
             jwt: response.jwt
           });
+        } else {
+          this.localStorage.removeItem(this.userStorage);
+          this.redirectToSso(false);
         }
       });
   }
