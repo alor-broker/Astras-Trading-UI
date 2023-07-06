@@ -32,13 +32,11 @@ export class TerminalSettingsHelper {
       },
       closePositionsKey: {
         key: 'Escape',
-        code: 'Escape',
-        shiftKey: true
+        code: 'Escape'
       },
       centerOrderbookKey: {
         key: ' ',
-        code: 'Space',
-        shiftKey: true
+        code: 'Space'
       },
       cancelOrderbookOrders: {
         key: 'E',
