@@ -6,7 +6,7 @@
       "searchDescription": "Поиск по Тикеру"
     },
     "shortName": {
-      "name": "Имя",
+      "name": "Название",
       "tooltip": "Наименование позиции",
       "searchDescription": "Поиск по имени"
     },
