@@ -311,7 +311,7 @@
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
-        "initialHeight": 18,
+        "initialHeight": 10,
         "initialWidth": 10
       },
       "galleryOrder": 10,
