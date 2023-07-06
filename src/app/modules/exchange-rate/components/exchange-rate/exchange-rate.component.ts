@@ -1,33 +1,25 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import { ExchangeRateService } from "../../../../shared/services/exchange-rate.service";
-import {
-  combineLatest,
-  map,
-  Observable
-} from "rxjs";
-import { ExchangeRate } from "../../models/exchange-rate.model";
-import { startWith } from "rxjs/operators";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { QuotesService } from '../../../../shared/services/quotes.service';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {ExchangeRateService} from "../../../../shared/services/exchange-rate.service";
+import {BehaviorSubject, combineLatest, map, Observable} from "rxjs";
+import {ExchangeRate} from "../../models/exchange-rate.model";
+import {startWith} from "rxjs/operators";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {QuotesService} from '../../../../shared/services/quotes.service';
+import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
   selector: 'ats-exchange-rate',
   templateUrl: './exchange-rate.component.html',
   styleUrls: ['./exchange-rate.component.less']
 })
-export class ExchangeRateComponent implements OnInit {
+export class ExchangeRateComponent implements OnInit, OnDestroy {
 
   @Input() public shouldShowSettings!: boolean;
   @Input() public guid!: string;
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
 
-  public exchangeRateData$!: Observable<{ currencies: string[], data: { [key: string]: number } }>;
+  exchangeRateData$!: Observable<{ currencies: string[], data: { [key: string]: number } }>;
+  readonly tableScroll$ = new BehaviorSubject<ContentSize | null>(null);
 
   constructor(
     private readonly exchangeRateService: ExchangeRateService,
@@ -58,7 +50,30 @@ export class ExchangeRateComponent implements OnInit {
     return (data[`${firstCode}_${secondCode}`] || 1 / data[`${secondCode}_${firstCode}`])?.toFixed(4);
   }
 
-  private getExchangeRates = (exchangeRates: ExchangeRate[]): Observable<{ firstCode: string, secondCode: string, last_price: number }[]> => {
+  updateContainerSize(entries: ResizeObserverEntry[]) {
+    entries.forEach(x => {
+      const width = Math.floor(x.contentRect.width);
+      const height = Math.floor(x.contentRect.height);
+
+      const tableHeader = x.target.querySelector('.ant-table-thead');
+      const scrollHeight = Math.floor(height - (tableHeader?.clientHeight ?? 0));
+
+      this.tableScroll$.next({
+        width: width,
+        height: scrollHeight
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.tableScroll$.complete();
+  }
+
+  private getExchangeRates = (exchangeRates: ExchangeRate[]): Observable<{
+    firstCode: string,
+    secondCode: string,
+    last_price: number
+  }[]> => {
     return combineLatest(
       exchangeRates.map(item => this.quotesService.getQuotes(
           item.symbolTom,
