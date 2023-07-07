@@ -7662,7 +7662,6 @@ export interface LibraryPineStudyConstructor<TPineStudyResult> {
 	/**
 	 * Custom Study constructor
 	 */
-	// eslint-disable-next-line @typescript-eslint/prefer-function-type
 	new (): LibraryPineStudy<TPineStudyResult>;
 }
 export interface LibrarySubsessionInfo {
