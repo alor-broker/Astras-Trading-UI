@@ -4,6 +4,23 @@ nz-form-item {
   nz-collapse {
     width: 100%;
   }
+
+  &.one-row {
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+
+    nz-form-label {
+      padding-right: 5px;
+      flex: initial;
+    }
+
+    nz-form-control {
+      align-items: flex-end;
+      padding-right: 5px;
+      flex: initial;
+    }
+  }
 }
 
 .popover-hint {
