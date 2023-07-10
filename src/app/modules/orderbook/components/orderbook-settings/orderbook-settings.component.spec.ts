@@ -23,7 +23,7 @@ describe('OrderbookSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         OrderbookSettingsComponent,
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['symbol', 'placeholder'] })
+        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] })
       ],
       imports: [
         NoopAnimationsModule,

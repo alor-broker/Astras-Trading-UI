@@ -11,10 +11,11 @@ import {
 } from '../../../../../shared/utils/testing';
 import { Instrument } from '../../../../../shared/models/instruments/instrument.model';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { shareReplay, take } from 'rxjs';
+import {shareReplay, Subject, take} from 'rxjs';
 import ruCommand from "../../../../../../assets/i18n/command/ru.json";
 import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
 import { Side } from "../../../../../shared/models/enums/side.model";
+import {InstrumentsService} from "../../../../instruments/services/instruments.service";
 
 describe('LimitOrderFormComponent', () => {
   let component: LimitOrderFormComponent;
@@ -68,7 +69,13 @@ describe('LimitOrderFormComponent', () => {
         })
       ],
       providers:[
-        ...commonTestProviders
+        ...commonTestProviders,
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrumentBoards: jasmine.createSpy('getInstrumentBoards').and.returnValue(new Subject())
+          }
+        }
       ]
     })
       .compileComponents();

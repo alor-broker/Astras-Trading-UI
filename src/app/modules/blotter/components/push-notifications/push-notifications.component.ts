@@ -13,7 +13,6 @@ import {
 } from "rxjs";
 import {filter, map, startWith, switchMap} from "rxjs/operators";
 import {defaultBadgeColor} from "../../../../shared/utils/instruments";
-import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {TableAutoHeightBehavior} from "../../utils/table-auto-height.behavior";
 import {
   OrderExecuteSubscription,
@@ -111,7 +110,6 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly blotterService: BlotterService,
-    private readonly dashboardContextService: DashboardContextService,
     private readonly pushNotificationsService: PushNotificationsService,
     private readonly translatorService: TranslatorService) {
   }

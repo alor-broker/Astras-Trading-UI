@@ -20,6 +20,8 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { LimitCommand } from "../../models/limit-command.model";
 import ruCommand from '../../../../../assets/i18n/command/ru.json';
 import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
+import {Subject} from "rxjs";
 
 describe('LimitCommandComponent', () => {
   let component: LimitCommandComponent;
@@ -90,6 +92,12 @@ describe('LimitCommandComponent', () => {
       ],
       providers: [
         { provide: CommandsService, useValue: spyCommands },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrumentBoards: jasmine.createSpy('getInstrumentBoards').and.returnValue(new Subject())
+          }
+        },
         ...commonTestProviders
       ]
     })
