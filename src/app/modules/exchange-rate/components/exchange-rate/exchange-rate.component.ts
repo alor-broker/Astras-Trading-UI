@@ -19,7 +19,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
 
   exchangeRateData$!: Observable<{ currencies: string[], data: { [key: string]: number } }>;
-  readonly tableScroll$ = new BehaviorSubject<ContentSize | null>(null);
+  readonly tableScroll$ = new BehaviorSubject<ContentSize | null>({width: 50, height: 50});
 
   constructor(
     private readonly exchangeRateService: ExchangeRateService,
