@@ -322,7 +322,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           title: currentTimezone.name
         }
       ],
-      theme: theme.theme === ThemeType.default ? 'Light' : 'Dark',
+      theme: theme.theme === ThemeType.default ? 'light' : 'dark',
       saved_data: settings.chartLayout,
       auto_save_delay: 1,
       time_frames: [
