@@ -97,6 +97,8 @@ export class LightChartWrapper {
 
   private initChartSeries(target: IChartApi): ChartSeries {
     const priceScaleId = 'right';
+    const volumeScaleId = 'volume';
+
     const candlestickSeries = target.addCandlestickSeries({
       upColor: this.config.themeColors.buyColor,
       downColor: this.config.themeColors.sellColor,
@@ -112,14 +114,22 @@ export class LightChartWrapper {
       priceFormat: {
         type: 'volume',
       },
-      priceScaleId: 'history',
+      priceScaleId: volumeScaleId,
     });
 
     target.priceScale(priceScaleId).applyOptions({
       autoScale: true,
       scaleMargins: {
         top: 0,
-        bottom: 0.2,
+        bottom: 0.25,
+      }
+    });
+
+    target.priceScale(volumeScaleId).applyOptions({
+      autoScale: true,
+      scaleMargins: {
+        top: 0.8,
+        bottom: 0,
       }
     });
 
