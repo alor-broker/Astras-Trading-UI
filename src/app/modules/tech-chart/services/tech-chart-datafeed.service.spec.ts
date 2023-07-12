@@ -22,7 +22,7 @@ import {
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
 import {
   BehaviorSubject,
-  of
+  of, Subject
 } from "rxjs";
 import { HistoryResponse } from "../../../shared/models/history/history-response.model";
 import { Candle } from "../../../shared/models/history/candle.model";
@@ -38,9 +38,10 @@ describe('TechChartDatafeedService', () => {
   let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
-    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument', 'getInstruments']);
     historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getHistory']);
+    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
+    subscriptionsDataFeedServiceSpy.subscribe.and.returnValue(new Subject());
   });
 
   beforeEach(() => {
@@ -50,7 +51,10 @@ describe('TechChartDatafeedService', () => {
       ],
       providers: [
         TechChartDatafeedService,
-        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
+        {
+          provide: SubscriptionsDataFeedService,
+          useValue: subscriptionsDataFeedServiceSpy
+        },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         { provide: HistoryService, useValue: historyServiceSpy },
         {

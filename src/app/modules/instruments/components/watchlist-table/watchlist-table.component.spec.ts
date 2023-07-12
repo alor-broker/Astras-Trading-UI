@@ -15,14 +15,12 @@ import {
 } from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
   let fixture: ComponentFixture<WatchlistTableComponent>;
 
-  let subscriptionsDataFeedServiceSpy: any;
   let watchInstrumentsServiceSpy: any;
   let watchlistCollectionServiceSpy: any;
 
@@ -31,7 +29,6 @@ describe('WatchlistTableComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
 
   beforeEach(() => {
-    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
     watchInstrumentsServiceSpy = jasmine.createSpyObj('WatchInstrumentsService', ['getWatched', 'unsubscribe']);
     watchInstrumentsServiceSpy.getWatched.and.returnValue(of([]));
 
@@ -51,7 +48,6 @@ describe('WatchlistTableComponent', () => {
         },
         { provide: WatchInstrumentsService, useValue: watchInstrumentsServiceSpy },
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
-        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
         ...commonTestProviders
       ]
     }).compileComponents();
