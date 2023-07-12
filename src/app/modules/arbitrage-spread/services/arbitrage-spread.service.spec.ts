@@ -63,13 +63,25 @@ describe('ArbitrageSpreadService', () => {
     service = TestBed.inject(ArbitrageSpreadService);
   });
 
+  beforeEach(() => {
+    localStorageSpy.getItem = jasmine.createSpy('getItem').and.returnValue([spreadItem]);
+    quotesServiceSpy.getQuotes = jasmine.createSpy('getQuotes').and.returnValue(of(quote));
+    portfolioSubscriptionsServiceSpy.getAllPositionsSubscription = jasmine.createSpy('getAllPositionsSubscription').and.returnValue(of([
+      {
+        exchange: spreadItem.firstLeg.portfolio.exchange,
+        portfolio: spreadItem.firstLeg.portfolio.portfolio,
+        symbol: spreadItem.firstLeg.instrument.symbol,
+        qtyTFutureBatch: 5
+      }
+    ]));
+  });
+
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
   it('should get spreads subscription', fakeAsync(() => {
     const expectedQuantity = 5;
-
     localStorageSpy.getItem = jasmine.createSpy('getItem').and.returnValue([spreadItem]);
     quotesServiceSpy.getQuotes = jasmine.createSpy('getQuotes').and.returnValue(of(quote));
     portfolioSubscriptionsServiceSpy.getAllPositionsSubscription = jasmine.createSpy('getAllPositionsSubscription').and.returnValue(of([
@@ -80,6 +92,7 @@ describe('ArbitrageSpreadService', () => {
         qtyTFutureBatch: expectedQuantity
       }
     ]));
+
 
     service.getSpreadsSubscription()
       .pipe(

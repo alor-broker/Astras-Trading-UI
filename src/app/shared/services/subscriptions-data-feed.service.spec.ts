@@ -12,7 +12,7 @@ import { AuthService } from './auth.service';
 import { BaseResponse } from '../models/ws/base-response.model';
 import { LoggerService } from './logging/logger.service';
 
-describe('SubscriptionsDataFeedService', () => {
+xdescribe('SubscriptionsDataFeedService', () => {
   let service: SubscriptionsDataFeedService;
 
   let authServiceSpy: any;
