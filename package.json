@@ -68,6 +68,7 @@
     "karma-coverage": "~2.2.1",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "^2.1.0",
+    "karma-spec-reporter": "^0.0.36",
     "typescript": "5.1.6"
   },
   "packageManager": "yarn@3.3.1"
