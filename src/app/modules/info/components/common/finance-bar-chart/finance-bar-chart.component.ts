@@ -1,7 +1,6 @@
 import {
-  Component,
+  Component, DestroyRef,
   Input,
-  OnDestroy,
   OnInit
 } from '@angular/core';
 import {
@@ -12,21 +11,18 @@ import {
 import { Finance } from '../../../models/finance.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { ThemeService } from '../../../../../shared/services/theme.service';
-import {
-  Subject,
-  takeUntil
-} from 'rxjs';
 import { ThemeSettings } from '../../../../../shared/models/settings/theme-settings.model';
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../../shared/services/translator.service";
 import { HashMap } from "@ngneat/transloco/lib/types";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-finance-bar-chart[finance]',
   templateUrl: './finance-bar-chart.component.html',
   styleUrls: ['./finance-bar-chart.component.less']
 })
-export class FinanceBarChartComponent implements OnInit, OnDestroy {
+export class FinanceBarChartComponent implements OnInit {
   @Input()
   finance!: Finance;
 
@@ -90,17 +86,11 @@ export class FinanceBarChartComponent implements OnInit, OnDestroy {
     datasets: []
   };
 
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
-
   constructor(
     private readonly themeService: ThemeService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly destroyRef: DestroyRef
   ) {
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   ngOnInit(): void {
@@ -109,7 +99,7 @@ export class FinanceBarChartComponent implements OnInit, OnDestroy {
         () => this.translatorService.getTranslator('info/finance'),
         (theme, translate) => ({ theme, translate })
       ),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ theme, translate }) => {
       this.yearChartData = this.getPlotData(this.finance, 'year', theme, translate);
       this.quorterChartData = this.getPlotData(this.finance, 'quorter', theme, translate);

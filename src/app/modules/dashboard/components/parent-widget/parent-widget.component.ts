@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnDestroy,} from '@angular/core';
-import {BehaviorSubject, Subject} from "rxjs";
+import {BehaviorSubject} from "rxjs";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
@@ -18,14 +18,10 @@ export class ParentWidgetComponent implements OnDestroy {
   @Input()
   isVisible: boolean = true;
 
-  private destroy$: Subject<boolean> = new Subject<boolean>();
-
   constructor() {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.isWidgetActivated$.complete();
   }
 }

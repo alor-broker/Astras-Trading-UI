@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, DestroyRef,
   ElementRef,
   Input,
   OnDestroy,
@@ -12,10 +12,8 @@ import {
   combineLatest,
   filter,
   Observable,
-  takeUntil
 } from 'rxjs';
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
-import { Destroyable } from '../../../../shared/utils/destroyable';
 import {
   ScaleLinear,
   scaleLinear
@@ -29,6 +27,7 @@ import { map } from 'rxjs/operators';
 import { AllTradesItem } from '../../../../shared/models/all-trades.model';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { TradeDisplay } from '../../models/trade-display.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 interface LayerDrawer {
   zIndex: number;
@@ -87,11 +86,12 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   };
 
-  private readonly destroyable = new Destroyable();
   private readonly contentSize$ = new BehaviorSubject<ContentSize>({ width: 0, height: 0 });
   private displayPriceItems$!: Observable<number[]>;
 
-  constructor(private readonly themeService: ThemeService) {
+  constructor(
+    private readonly themeService: ThemeService,
+    private readonly destroyRef: DestroyRef) {
   }
 
   ngAfterViewInit(): void {
@@ -102,7 +102,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getTradesStream(),
       this.themeService.getThemeSettings()
     ]).pipe(
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(([size, priceItems, trades, themeSettings]) => {
       const canvas = this.canvas?.nativeElement!;
       const context = canvas.getContext('2d')!;
@@ -125,7 +125,6 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroyable.destroy();
     this.contentSize$.complete();
   }
 

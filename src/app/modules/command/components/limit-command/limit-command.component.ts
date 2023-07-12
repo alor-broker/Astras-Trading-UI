@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   Input,
   OnDestroy,
   OnInit
@@ -12,9 +12,7 @@ import {
 import {
   BehaviorSubject,
   filter,
-  Observable,
-  Subject,
-  takeUntil
+  Observable
 } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CommandParams, TimeInForce } from 'src/app/shared/models/commands/command-params.model';
@@ -27,6 +25,7 @@ import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
 import { Side } from "../../../../shared/models/enums/side.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-limit-command',
@@ -39,9 +38,11 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
   form!: FormGroup<ControlsOf<LimitFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<CommandParams> | null>(null);
   timeInForceEnum = TimeInForce;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private service: CommandsService) {
+  constructor(
+    private readonly service: CommandsService,
+    private readonly destroyRef: DestroyRef
+  ) {
   }
 
   @Input()
@@ -66,16 +67,13 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.commandContext$.pipe(
       filter((x): x is CommandContextModel<CommandParams> => !!x),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(context => {
       this.initCommandForm(context);
     });
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-
     this.commandContext$.complete();
     this.evaluationSubject.complete();
   }
@@ -199,7 +197,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
       );
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroy$),
+      takeUntilDestroyed(this.destroyRef),
       distinctUntilChanged((prev, curr) =>
         prev?.price == curr?.price
         && prev?.quantity == curr?.quantity

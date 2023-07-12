@@ -16,8 +16,6 @@ import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item
   styleUrls: ['./ribbon-widget.component.less']
 })
 export class RibbonWidgetComponent implements OnInit {
-  shouldShowSettings: boolean = false;
-
   @Input()
   widgetInstance!: WidgetInstance;
   @Input()
@@ -52,11 +50,5 @@ export class RibbonWidgetComponent implements OnInit {
     $event.preventDefault();
     $event.stopPropagation();
     this.manageDashboardService.removeWidget(this.guid);
-  }
-
-  switchSettings($event: MouseEvent | null) {
-    $event?.preventDefault();
-    $event?.stopPropagation();
-    this.shouldShowSettings = !this.shouldShowSettings;
   }
 }

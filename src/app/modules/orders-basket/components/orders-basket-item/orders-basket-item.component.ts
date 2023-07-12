@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -27,10 +27,8 @@ import {
   Observable,
   of,
   shareReplay,
-  Subject,
   Subscription,
   switchMap,
-  takeUntil
 } from 'rxjs';
 import { map, } from 'rxjs/operators';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
@@ -39,6 +37,7 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { QuotesService } from '../../../../shared/services/quotes.service';
 import { OrdersBasketItem } from '../../models/orders-basket-form.model';
 import { AtsValidators } from '../../../../shared/utils/form-validators';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-orders-basket-item[exchange]',
@@ -90,11 +89,11 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   itemIndex$ = new BehaviorSubject<number>(0);
   private readonly onChangeSubs: Subscription[] = [];
   private totalBudget$ = new BehaviorSubject<number | null>(null);
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly instrumentsService: InstrumentsService,
-    private readonly quotesService: QuotesService
+    private readonly quotesService: QuotesService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -149,9 +148,6 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-
     for (let sub of this.onChangeSubs) {
       sub.unsubscribe();
     }
@@ -234,7 +230,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     this.instrument$.pipe(
       filter(x => !!x),
       switchMap(instrument => this.quotesService.getLastPrice(instrument!)),
-      takeUntil(this.destroy$),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(lastPrice => {
       if (lastPrice) {
         this.form.controls.price.setValue(lastPrice);

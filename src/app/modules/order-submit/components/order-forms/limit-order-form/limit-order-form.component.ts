@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   OnDestroy
 } from "@angular/core";
 import { OrderFormBaseComponent } from "../order-form-base.component";
@@ -50,6 +50,10 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
   evaluationSubject = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   evaluation$?: Observable<EvaluationBaseProperties | null>;
   timeInForceEnum = TimeInForce;
+
+  constructor(protected readonly destroyRef: DestroyRef) {
+    super(destroyRef);
+  }
 
   ngOnDestroy(): void {
     super.ngOnDestroy();

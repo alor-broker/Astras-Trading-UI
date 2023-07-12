@@ -9,7 +9,6 @@ import {
   BehaviorSubject,
   Observable,
   of,
-  Subject,
   take
 } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -54,8 +53,6 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   settings$!: Observable<BlotterSettings>;
   contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   title$!: Observable<string>;
-
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -116,8 +113,6 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.contentSize$.complete();
   }
 

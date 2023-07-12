@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   OnDestroy,
   OnInit
 } from '@angular/core';
@@ -45,9 +45,11 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
   evaluation$!: Observable<EvaluationBaseProperties | null>;
   private lastFormValue$ = new BehaviorSubject<MarketOrderFormValue | null>(null);
 
-  constructor(private readonly quoteService: QuotesService
+  constructor(
+    private readonly quoteService: QuotesService,
+    protected readonly destroyRef: DestroyRef
   ) {
-    super();
+    super(destroyRef);
   }
 
   ngOnInit(): void {

@@ -3,7 +3,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
   ViewEncapsulation
@@ -13,7 +12,6 @@ import {
   Observable,
   of,
   shareReplay,
-  Subject,
   switchMap
 } from 'rxjs';
 import { OrderbookService } from '../../services/orderbook.service';
@@ -28,7 +26,6 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
-import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import {
   ColumnsOrder,
@@ -53,7 +50,7 @@ interface SpreadDiffData {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class OrderBookComponent implements OnInit, OnDestroy {
+export class OrderBookComponent implements OnInit {
   @Input()
   guid!: string;
 
@@ -61,7 +58,6 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   shouldShowSettingsChange = new EventEmitter<boolean>();
   ob$: Observable<OrderBook | null> = of(null);
   spreadDiffData$: Observable<SpreadDiffData | null> = of(null);
-  themeSettings?: ThemeSettings;
   columnsOrderEnum = ColumnsOrder;
   settings$!: Observable<OrderbookSettings>;
   sizes: BehaviorSubject<Size> = new BehaviorSubject<Size>({
@@ -70,7 +66,6 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   });
   private minSpreadDiffPercentForColorChange = 0.3;
   private maxSpreadDiffPercentForColorChange = 1;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -139,10 +134,5 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     );
 
     this.widgetsDataProvider.addNewDataProvider<SelectedPriceData>('selectedPrice');
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 }

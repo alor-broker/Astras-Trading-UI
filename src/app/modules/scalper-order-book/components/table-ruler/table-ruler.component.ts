@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, DestroyRef,
   ElementRef,
   Inject,
   Input,
@@ -20,7 +20,6 @@ import {
   filter,
   Observable,
   Subject,
-  takeUntil
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MathHelper } from '../../../../shared/utils/math-helper';
@@ -29,7 +28,7 @@ import {
   SCALPER_ORDERBOOK_BODY_REF,
   ScalperOrderBookBodyRef
 } from '../scalper-order-book-body/scalper-order-book-body.component';
-import { Destroyable } from '../../../../shared/utils/destroyable';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 interface MarkerDisplay {
   index: number;
@@ -53,14 +52,14 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   displayMarker$!: Observable<MarkerDisplay | null>;
   markerPosition$ = new BehaviorSubject<'left' | 'right'>('left');
   settings$!: Observable<ScalperOrderBookExtendedSettings>;
-  private readonly destroyable = new Destroyable();
   private readonly activeRow$ = new Subject<{ price: number } | null>();
 
   constructor(
     @Inject(SCALPER_ORDERBOOK_BODY_REF)
     @SkipSelf()
     private readonly bodyRef: ScalperOrderBookBodyRef,
-    private readonly elementRef: ElementRef<HTMLElement>
+    private readonly elementRef: ElementRef<HTMLElement>,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -71,7 +70,7 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.markerElRef.changes.pipe(
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       const containerBounds = this.bodyRef.getElement().nativeElement.getBoundingClientRect();
       const elementBounds = this.elementRef.nativeElement.getBoundingClientRect();
@@ -92,7 +91,6 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroyable.destroy();
     this.markerPosition$.complete();
   }
 

@@ -1,17 +1,16 @@
 import {
-  AfterViewInit, Component,
+  AfterViewInit, Component, DestroyRef,
   ElementRef,
   EventEmitter,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
   ViewChild
 } from '@angular/core';
 import { NzTableComponent } from "ng-zorro-antd/table";
-import {filter, Subject, take, takeUntil} from "rxjs";
+import {filter, take} from "rxjs";
 import { ITEM_HEIGHT } from "../../../modules/all-trades/utils/all-trades.utils";
 import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
 import {debounceTime, map, startWith} from "rxjs/operators";
@@ -21,13 +20,14 @@ import { TableConfig } from '../../models/table-config.model';
 import { BaseColumnSettings, FilterData } from "../../models/settings/table-settings.model";
 import {ViewChildren} from "@angular/core";
 import {QueryList} from "@angular/core";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-infinite-scroll-table[tableConfig]',
   templateUrl: './infinite-scroll-table.component.html',
   styleUrls: ['./infinite-scroll-table.component.less']
 })
-export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, OnDestroy, OnInit {
+export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, OnInit {
   private tableData: Array<any> = [];
 
   @Input() trackByFn = (data: any) => data.id;
@@ -56,7 +56,6 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   @ViewChild('dataTable', {static: false}) public dataTable!: NzTableComponent<any>;
   @ViewChildren('headerRow') headerRowEl!: QueryList<ElementRef>;
 
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   private visibleItemsCount = 1;
   public itemHeight = ITEM_HEIGHT;
   public scrollHeight = 0;
@@ -67,7 +66,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   public selectedRow: any = null;
 
   constructor(
-    private readonly nzContextMenuService: NzContextMenuService
+    private readonly nzContextMenuService: NzContextMenuService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -75,7 +75,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
     this.filtersForm.valueChanges
       .pipe(
         debounceTime(300),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(val => {
         this.filterApplied.emit(val);
@@ -104,7 +104,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   public ngAfterViewInit(): void {
     this.dataTable?.cdkVirtualScrollViewport?.scrolledIndexChange
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((upperItemIndex: number) => {
         if (upperItemIndex >= this.data.length - this.visibleItemsCount - 1) {
           this.scrolled.emit(this.filtersForm.value);
@@ -153,11 +153,6 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   public openContextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedRow: any): void {
     this.selectedRow = selectedRow;
     this.nzContextMenuService.create($event, menu);
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   private calculateScrollHeight() {

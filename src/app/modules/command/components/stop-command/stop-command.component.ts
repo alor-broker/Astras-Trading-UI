@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   Input,
   OnDestroy,
   OnInit
@@ -12,8 +12,6 @@ import {
 import {
   BehaviorSubject,
   filter,
-  Subject,
-  takeUntil,
   withLatestFrom
 } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
@@ -35,6 +33,7 @@ import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
 import { Side } from "../../../../shared/models/enums/side.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-stop-command',
@@ -47,9 +46,11 @@ export class StopCommandComponent implements OnInit, OnDestroy {
   timeInForceEnum = TimeInForce;
   public canSelectNow = true;
   private timezoneConverter!: TimezoneConverter;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private service: CommandsService, private readonly timezoneConverterService: TimezoneConverterService) {
+  constructor(
+    private readonly service: CommandsService,
+    private readonly timezoneConverterService: TimezoneConverterService,
+    private readonly destroyRef: DestroyRef) {
   }
 
   @Input()
@@ -75,7 +76,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     this.commandContext$.pipe(
       filter((x): x is CommandContextModel<CommandParams> => !!x),
       withLatestFrom(this.timezoneConverterService.getConverter()),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(([context, converter]) => {
       this.initCommandForm(context, converter);
       this.checkNowTimeSelection(converter);
@@ -83,7 +84,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
 
     this.service.commandError$
       .pipe(
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(isErr => {
         if (isErr) {
@@ -96,8 +97,6 @@ export class StopCommandComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.commandContext$.complete();
   }
 
@@ -260,7 +259,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     this.setStopCommand(commandContext.commandParameters);
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroy$),
+      takeUntilDestroyed(this.destroyRef),
       distinctUntilChanged((prev, curr) =>
         prev?.condition == curr?.condition
         && prev?.price == curr?.price

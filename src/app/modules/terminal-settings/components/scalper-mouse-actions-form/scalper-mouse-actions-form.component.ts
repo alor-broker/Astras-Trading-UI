@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
+  Component, DestroyRef,
   OnInit
 } from '@angular/core';
 import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
@@ -12,9 +11,8 @@ import {
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import { Destroyable } from '../../../../shared/utils/destroyable';
-import { takeUntil } from 'rxjs';
 import { TerminalSettingsHelper } from '../../../../shared/utils/terminal-settings-helper';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-scalper-mouse-actions-form',
@@ -29,16 +27,13 @@ import { TerminalSettingsHelper } from '../../../../shared/utils/terminal-settin
     }
   ]
 })
-export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseComponent<ScalperOrderBookMouseActionsMap> implements OnInit, OnDestroy {
+export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseComponent<ScalperOrderBookMouseActionsMap> implements OnInit {
   form!: UntypedFormGroup;
   availableDefaultSchemes = [
     'scheme1',
     'scheme2'
   ];
-
-  private readonly destroyable = new Destroyable();
-
-  constructor() {
+  constructor(private readonly destroyRef: DestroyRef) {
     super();
   }
 
@@ -56,7 +51,7 @@ export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseCo
     });
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.checkIfTouched();
 
@@ -75,10 +70,6 @@ export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseCo
     }
 
     return TerminalSettingsHelper.getScalperOrderBookMouseActionsScheme2();
-  }
-
-  ngOnDestroy(): void {
-    this.destroyable.destroy();
   }
 
   protected needMarkTouched(): boolean {

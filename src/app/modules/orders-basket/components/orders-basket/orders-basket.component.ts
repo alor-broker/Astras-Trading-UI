@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   Input,
   OnDestroy,
   OnInit
@@ -26,7 +26,6 @@ import {
   Subscription,
   switchMap,
   take,
-  takeUntil,
   tap
 } from 'rxjs';
 import { inputNumberValidation } from '../../../../shared/utils/validation-options';
@@ -49,6 +48,7 @@ import { EvaluationService } from '../../../../shared/services/evaluation.servic
 import { GuidGenerator } from '../../../../shared/utils/guid';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { OrdersBasketSettings } from '../../models/orders-basket-settings.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-orders-basket[guid]',
@@ -69,19 +69,16 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   itemsContainerWidth$ = new Subject<number>();
 
   private readonly savedBaskets = new Map<string, OrdersBasket>();
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly orderService: OrderService,
-    private readonly evaluationService: EvaluationService
+    private readonly evaluationService: EvaluationService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-
     this.formSubscriptions?.unsubscribe();
     this.canSubmit$.complete();
     this.processing$.complete();
@@ -95,7 +92,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     );
 
     this.settings$.pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.initForm(settings);
       this.restoreFormValue(settings!);

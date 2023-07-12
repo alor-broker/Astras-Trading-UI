@@ -1,6 +1,6 @@
-﻿import {Injectable, OnDestroy} from '@angular/core';
+﻿import {DestroyRef, Injectable} from '@angular/core';
 import {NotificationsProvider} from '../../notifications/services/notifications-provider';
-import {combineLatest, Observable, shareReplay, takeUntil} from 'rxjs';
+import {combineLatest, Observable, shareReplay} from 'rxjs';
 import {NotificationMeta} from '../../notifications/models/notification.model';
 import {PushNotificationsService} from "./push-notifications.service";
 import {Store} from "@ngrx/store";
@@ -8,9 +8,9 @@ import {filter, map} from "rxjs/operators";
 import {TerminalSettingsService} from "../../terminal-settings/services/terminal-settings.service";
 import {isPortfoliosEqual} from "../../../shared/utils/portfolios";
 import {LocalStorageService} from "../../../shared/services/local-storage.service";
-import {Destroyable} from "../../../shared/utils/destroyable";
 import {PortfoliosStreams} from "../../../store/portfolios/portfolios.streams";
 import {TimezoneConverterService} from "../../../shared/services/timezone-converter.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 interface SavedPushNotification {
   id: string;
@@ -21,8 +21,7 @@ interface SavedPushNotification {
 }
 
 @Injectable()
-export class PushNotificationsProvider implements NotificationsProvider, OnDestroy {
-  private readonly destroyable = new Destroyable();
+export class PushNotificationsProvider implements NotificationsProvider {
   private readonly pushNotificationsStorageKey = 'push-notifications';
 
   private notifications$?: Observable<NotificationMeta[]>;
@@ -32,7 +31,8 @@ export class PushNotificationsProvider implements NotificationsProvider, OnDestr
     private readonly store: Store,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly localStorageService: LocalStorageService,
-    private readonly timezoneConverterService: TimezoneConverterService
+    private readonly timezoneConverterService: TimezoneConverterService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -44,10 +44,6 @@ export class PushNotificationsProvider implements NotificationsProvider, OnDestr
     }
 
     return this.notifications$;
-  }
-
-  ngOnDestroy(): void {
-    this.destroyable.destroy();
   }
 
   private getPushNotifications(): Observable<NotificationMeta[]> {
@@ -80,7 +76,7 @@ export class PushNotificationsProvider implements NotificationsProvider, OnDestr
       PortfoliosStreams.getAllPortfolios(this.store),
       this.terminalSettingsService.getSettings()
     ]).pipe(
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(([allPortfolios, terminalSettings]) => {
       const portfolios = allPortfolios.map(p => ({portfolio: p.portfolio, exchange: p.exchange}));
       const disableNotificationPortfolios = terminalSettings.instantNotificationsSettings?.hiddenPortfoliosForNotifications ?? [];
@@ -94,7 +90,7 @@ export class PushNotificationsProvider implements NotificationsProvider, OnDestr
   private initNotificationsSync() {
     this.pushNotificationsService.getMessages().pipe(
       filter(payload => !!payload?.data?.body),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(payload => {
       const messageData = JSON.parse(payload!.data!.body!).notification;
       if (!messageData) {

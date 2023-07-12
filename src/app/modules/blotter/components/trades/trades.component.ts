@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, DestroyRef,
   ElementRef,
   EventEmitter,
   Input,
@@ -17,10 +17,8 @@ import {
   distinctUntilChanged,
   Observable,
   of, shareReplay,
-  Subject,
   switchMap,
   take,
-  takeUntil
 } from 'rxjs';
 import {
   debounceTime,
@@ -49,6 +47,7 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -164,14 +163,14 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
   listOfColumns: BaseColumnSettings<DisplayTrade>[] = [];
   readonly scrollHeight$ = new BehaviorSubject<number>(100);
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<BlotterSettings>;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -185,7 +184,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     container$.pipe(
       switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       setTimeout(()=> this.scrollHeight$.next(x));
     });
@@ -203,7 +202,7 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
         () => this.translatorService.getTranslator('blotter/trades'),
         (s, t) => ({ s, t })
       ),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ s, t }) => {
       const tableSettings = s.tradesTable ?? TableSettingHelper.toTableDisplaySettings(s.tradesColumns);
 
@@ -258,8 +257,6 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.scrollHeight$.complete();
   }
 

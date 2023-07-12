@@ -1,5 +1,5 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import { BehaviorSubject, fromEvent, NEVER, Observable, of, shareReplay, switchMap, take, takeUntil } from "rxjs";
+import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import { BehaviorSubject, fromEvent, NEVER, Observable, of, shareReplay, switchMap, take } from "rxjs";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {PushNotificationsService} from "../../services/push-notifications.service";
 import {PriceSparkSubscription, PushSubscriptionType} from "../../models/push-notifications.model";
@@ -8,9 +8,9 @@ import {LessMore} from "../../../../shared/models/enums/less-more.model";
 import {FormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {inputNumberValidation} from "../../../../shared/utils/validation-options";
 import { filter, map } from "rxjs/operators";
-import {Destroyable} from "../../../../shared/utils/destroyable";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-setup-instrument-notifications',
@@ -24,13 +24,13 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   readonly isLoading$ = new BehaviorSubject(false);
   readonly availablePriceConditions = Object.values(LessMore);
   instrument$!: Observable<Instrument>;
-  private readonly destroyable = new Destroyable();
   private readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);
   private readonly refresh$ = new BehaviorSubject(null);
 
   constructor(
     private readonly pushNotificationsService: PushNotificationsService,
-    private readonly instrumentService: InstrumentsService
+    private readonly instrumentService: InstrumentsService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -59,7 +59,6 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   }
 
   ngOnDestroy(): void {
-    this.destroyable.destroy();
     this.instrumentKey$.complete();
     this.refresh$.complete();
   }
@@ -73,14 +72,14 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
 
     this.pushNotificationsService.subscriptionsUpdated$.pipe(
       filter(x => x == null || x === PushSubscriptionType.PriceSpark),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.refresh$.next(null);
     });
 
     this.pushNotificationsService.getMessages()
       .pipe(
-        takeUntil(this.destroyable)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => this.refresh$.next(null));
   }
@@ -197,7 +196,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
     fromEvent(document, 'visibilitychange')
       .pipe(
         filter(() => document.visibilityState === 'visible'),
-        takeUntil(this.destroyable)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => this.refresh$.next(null));
   }

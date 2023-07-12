@@ -1,8 +1,7 @@
 import {
-  Component,
+  Component, DestroyRef,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output
 } from '@angular/core';
@@ -14,30 +13,31 @@ import {
 import {
   Observable,
   shareReplay,
-  Subject,
   take,
-  takeUntil
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-tech-chart-settings[settingsChange][guid]',
   templateUrl: './tech-chart-settings.component.html',
   styleUrls: ['./tech-chart-settings.component.less']
 })
-export class TechChartSettingsComponent implements OnInit, OnDestroy {
+export class TechChartSettingsComponent implements OnInit {
   @Input()
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<TechChartSettings>;
 
-  constructor(private readonly settingsService: WidgetSettingsService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly destroyRef: DestroyRef
+  ) {
   }
 
   ngOnInit() {
@@ -46,7 +46,7 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
     );
 
     this.settings$.pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.form = new UntypedFormGroup({
         instrument: new UntypedFormControl({
@@ -77,11 +77,6 @@ export class TechChartSettingsComponent implements OnInit, OnDestroy {
       this.settingsService.updateSettings(this.guid, newSettings);
       this.settingsChange.emit();
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   instrumentSelected(instrument: InstrumentKey | null) {

@@ -1,15 +1,13 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import {
   BehaviorSubject,
   interval,
   Observable,
   shareReplay,
-  Subject,
   Subscription,
   switchMap,
   take,
-  takeUntil,
   tap,
   withLatestFrom
 } from "rxjs";
@@ -29,6 +27,7 @@ import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.
 import { AllInstrumentsSettings } from '../../model/all-instruments-settings.model';
 import { TableConfig } from '../../../../shared/models/table-config.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-all-instruments',
@@ -150,7 +149,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   public instrumentsDisplay$!: Observable<AllInstruments[]>;
   private instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
   private readonly loadingChunkSize = 50;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
+
   private updatesSub?: Subscription;
   private filters$ = new BehaviorSubject<AllInstrumentsFilters>({ limit: this.loadingChunkSize, offset: 0 });
   private settings$!: Observable<AllInstrumentsSettings>;
@@ -161,7 +160,8 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     private readonly dashboardContextService: DashboardContextService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -208,7 +208,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     );
 
     this.watchlistCollectionService.collectionChanged$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.initContextMenu();
       });
@@ -307,9 +307,6 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     this.filters$.complete();
     this.instrumentsList$.complete();
     this.isLoading$.complete();
-
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.contentSize$.complete();
   }
 
@@ -340,7 +337,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       withLatestFrom(this.instrumentsList$),
       map(([s, currentList]) => s.filters.offset! > 0 ? [...currentList, ...s.res] : s.res),
       tap(() => this.isLoading$.next(false)),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(instruments => {
       this.instrumentsList$.next(instruments);
       this.subscribeToUpdates();

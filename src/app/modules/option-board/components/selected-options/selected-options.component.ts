@@ -3,7 +3,6 @@ import {OptionBoardDataContext} from "../../models/option-board-data-context.mod
 import {OptionBoardService} from "../../services/option-board.service";
 import {BehaviorSubject, combineLatest, forkJoin, Observable, of, shareReplay, switchMap, take, tap, timer} from "rxjs";
 import {OptionKey, OptionSide} from "../../models/option-board.model";
-import {Destroyable} from "../../../../shared/utils/destroyable";
 import {filter, map, startWith} from "rxjs/operators";
 import {BaseColumnSettings} from "../../../../shared/models/settings/table-settings.model";
 import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
@@ -53,7 +52,6 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
 
   public tableScroll$?: Observable<ContentSize>;
   private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
-  private readonly destroyable = new Destroyable();
   private readonly columnsConfig: BaseColumnSettings<DetailsDisplay>[] = [
     {
       id: 'symbol',
@@ -142,7 +140,6 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnDestroy(): void {
-    this.destroyable.destroy();
     this.isLoading$.complete();
   }
 

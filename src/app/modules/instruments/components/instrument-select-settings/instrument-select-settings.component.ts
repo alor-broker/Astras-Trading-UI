@@ -1,8 +1,7 @@
 import {
-  Component,
+  Component, DestroyRef,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output
 } from '@angular/core';
@@ -10,37 +9,36 @@ import {
   UntypedFormControl,
   UntypedFormGroup
 } from '@angular/forms';
-import {
-  Subject,
-  takeUntil
-} from 'rxjs';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   allInstrumentsColumns,
   InstrumentSelectSettings
 } from '../../models/instrument-select-settings.model';
 import { BaseColumnId } from "../../../../shared/models/settings/table-settings.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-instrument-select-settings[guid]',
   templateUrl: './instrument-select-settings.component.html',
   styleUrls: ['./instrument-select-settings.component.less']
 })
-export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
+export class InstrumentSelectSettingsComponent implements OnInit {
   settingsForm!: UntypedFormGroup;
   allInstrumentColumns: BaseColumnId[] = allInstrumentsColumns;
   @Input()
   guid!: string;
   @Output()
   settingsChange: EventEmitter<InstrumentSelectSettings> = new EventEmitter<InstrumentSelectSettings>();
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly settingsService: WidgetSettingsService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly destroyRef: DestroyRef
+  ) {
   }
 
   ngOnInit(): void {
     this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.buildSettingsForm(settings);
     });
@@ -57,11 +55,6 @@ export class InstrumentSelectSettingsComponent implements OnInit, OnDestroy {
 
       this.settingsChange.emit();
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   private buildSettingsForm(currentSettings: InstrumentSelectSettings) {

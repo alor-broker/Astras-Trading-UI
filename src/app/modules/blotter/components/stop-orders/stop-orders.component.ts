@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, DestroyRef,
   ElementRef,
   EventEmitter,
   Input,
@@ -20,7 +20,6 @@ import {
   Subject,
   switchMap,
   take,
-  takeUntil
 } from 'rxjs';
 import {
   catchError,
@@ -59,6 +58,7 @@ import { BaseColumnSettings } from "../../../../shared/models/settings/table-set
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { DomHelper } from "../../../../shared/utils/dom-helper";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -258,7 +258,6 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   settings$!: Observable<BlotterSettings>;
   readonly scrollHeight$ = new BehaviorSubject<number>(100);
 
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   private cancelCommands = new Subject<CancelCommand>();
   private cancels$ = this.cancelCommands.asObservable();
   private orders: StopOrder[] = [];
@@ -272,7 +271,8 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly translatorService: TranslatorService,
-    private readonly ordersGroupService: OrdersGroupService
+    private readonly ordersGroupService: OrdersGroupService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -286,7 +286,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     container$.pipe(
       switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       setTimeout(()=> this.scrollHeight$.next(x));
     });
@@ -307,7 +307,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         ]),
         (s, [tStopOrders, tCommon]) => ({ s, tStopOrders, tCommon })
       ),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ s, tStopOrders, tCommon }) => {
       const tableSettings = s.stopOrdersTable ?? TableSettingHelper.toTableDisplaySettings(s.stopOrdersColumns);
 
@@ -369,13 +369,11 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cancels$.pipe(
       mergeMap((command) => this.canceller.cancelOrder(command)),
       catchError((_, caught) => caught),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.scrollHeight$.complete();
   }
 

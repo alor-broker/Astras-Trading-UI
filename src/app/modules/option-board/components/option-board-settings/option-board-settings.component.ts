@@ -1,28 +1,28 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
-import {Observable, shareReplay, take, takeUntil} from "rxjs";
+import {Observable, shareReplay, take} from "rxjs";
 import {UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
-import {Destroyable} from "../../../../shared/utils/destroyable";
 import {isInstrumentEqual} from "../../../../shared/utils/settings-helper";
 import {OptionBoardSettings} from "../../models/option-board-settings.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-option-board-settings[guid]',
   templateUrl: './option-board-settings.component.html',
   styleUrls: ['./option-board-settings.component.less']
 })
-export class OptionBoardSettingsComponent implements OnInit, OnDestroy {
+export class OptionBoardSettingsComponent implements OnInit {
   @Input()
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
-  private readonly destroyable = new Destroyable();
   private settings$!: Observable<OptionBoardSettings>;
 
   constructor(
-    private readonly widgetSettingsService: WidgetSettingsService
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -32,7 +32,7 @@ export class OptionBoardSettingsComponent implements OnInit, OnDestroy {
     );
 
     this.settings$.pipe(
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.form = new UntypedFormGroup({
         instrument: new UntypedFormControl({
@@ -49,10 +49,6 @@ export class OptionBoardSettingsComponent implements OnInit, OnDestroy {
   instrumentSelected(instrument: InstrumentKey | null) {
     this.form.controls.exchange.setValue(instrument?.exchange ?? null);
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
-  }
-
-  ngOnDestroy(): void {
-    this.destroyable.destroy();
   }
 
   submitForm(): void {

@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, DestroyRef,
   ElementRef,
   InjectionToken,
   Input,
@@ -9,7 +9,6 @@ import {
   ViewChild
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { Destroyable } from '../../../../shared/utils/destroyable';
 import {
   BehaviorSubject,
   combineLatest,
@@ -19,7 +18,6 @@ import {
   Observable,
   shareReplay,
   take,
-  takeUntil,
   withLatestFrom,
 } from 'rxjs';
 import { PriceRowsStore } from '../../utils/price-rows-store';
@@ -40,6 +38,7 @@ import {
 import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-table.helper';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { ScalperOrderBookSettings } from '../../models/scalper-order-book-settings.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -76,7 +75,6 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
 
   initialWidths$!: Observable<{ [K: string]: number }>;
   private readonly renderItemsRange$ = new BehaviorSubject<ListRange | null>(null);
-  private readonly destroyable = new Destroyable();
   private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   private readonly workingVolume$ = new BehaviorSubject<number | null>(null);
   private lastContainerHeight = 0;
@@ -86,7 +84,8 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     private readonly priceRowsStore: PriceRowsStore,
     private readonly hotkeysService: HotKeyCommandService,
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly ref: ElementRef<HTMLElement>) {
+    private readonly ref: ElementRef<HTMLElement>,
+    private readonly destroyRef: DestroyRef) {
   }
 
   @Input()
@@ -117,7 +116,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
 
   ngAfterViewInit(): void {
     this.scrollContainer.renderedRangeStream.pipe(
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => this.renderItemsRange$.next({
         start: x.start,
         end: x.end > 0 ? x.end - 1 : x.end
@@ -128,8 +127,6 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnDestroy(): void {
-    this.destroyable.destroy();
-
     this.contentSize$.complete();
     this.isLoading$.complete();
     this.renderItemsRange$.complete();
@@ -157,7 +154,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
 
   private subscribeToHotkeys() {
     this.hotkeysService.commands$.pipe(
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(command => {
       if (command.type === ScalperOrderBookCommands.centerOrderBook) {
         this.alignTable();
@@ -174,7 +171,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         })
       ),
       switchMap(s => s.enabled ? interval(s.interval * 1000) : NEVER),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.alignTable();
     });
@@ -308,7 +305,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       withLatestFrom(this.priceRowsStore.state$.pipe(map(x => x.rows))),
       filter(([, priceRows]) => priceRows.length > 0),
       map(([index, priceRows]) => ({ index, priceRows })),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       const bufferItemsCount = 10;
       const topScrollOffset = this.scrollContainer.measureScrollOffset('top');

@@ -1,8 +1,7 @@
 import {
-  Component,
+  Component, DestroyRef,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output
 } from '@angular/core';
@@ -13,33 +12,32 @@ import {
 } from "@angular/forms";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
-  Subject,
-  takeUntil
-} from "rxjs";
-import {
   allInstrumentsColumns,
   AllInstrumentsSettings
 } from '../../model/all-instruments-settings.model';
 import { BaseColumnId } from "../../../../shared/models/settings/table-settings.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-all-instruments-settings',
   templateUrl: './all-instruments-settings.component.html',
   styleUrls: ['./all-instruments-settings.component.less']
 })
-export class AllInstrumentsSettingsComponent implements OnInit, OnDestroy {
+export class AllInstrumentsSettingsComponent implements OnInit {
   @Input() guid!: string;
   @Output() settingsChange: EventEmitter<AllInstrumentsSettings> = new EventEmitter<AllInstrumentsSettings>();
   form!: UntypedFormGroup;
   allInstrumentsColumns: BaseColumnId[] = allInstrumentsColumns;
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly settingsService: WidgetSettingsService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly destroyRef: DestroyRef
+  ) {
   }
 
   ngOnInit(): void {
     this.settingsService.getSettings<AllInstrumentsSettings>(this.guid).pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef),
     ).subscribe(settings => {
       if (settings) {
         this.form = new UntypedFormGroup({
@@ -58,10 +56,5 @@ export class AllInstrumentsSettingsComponent implements OnInit, OnDestroy {
     );
 
     this.settingsChange.emit();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 }

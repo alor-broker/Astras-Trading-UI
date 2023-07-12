@@ -1,6 +1,5 @@
 import {
-  Component,
-  OnDestroy,
+  Component, DestroyRef,
   OnInit
 } from '@angular/core';
 import {
@@ -14,13 +13,12 @@ import {
   Validators
 } from '@angular/forms';
 import { HotKeysSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
-import { Destroyable } from '../../../../shared/utils/destroyable';
 import {
-  distinctUntilChanged,
-  takeUntil
+  distinctUntilChanged
 } from 'rxjs';
 import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
 import { TerminalSettingsHelper } from "../../../../shared/utils/terminal-settings-helper";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-hot-key-settings-form',
@@ -34,20 +32,15 @@ import { TerminalSettingsHelper } from "../../../../shared/utils/terminal-settin
     }
   ]
 })
-export class HotKeySettingsFormComponent extends ControlValueAccessorBaseComponent<HotKeysSettings> implements OnInit, OnDestroy {
+export class HotKeySettingsFormComponent extends ControlValueAccessorBaseComponent<HotKeysSettings> implements OnInit {
   form!: UntypedFormGroup;
-  private destroyable = new Destroyable();
 
-  constructor() {
+  constructor(private readonly destroyRef: DestroyRef) {
     super();
   }
 
   get workingVolumes(): UntypedFormArray {
     return this.form?.get('workingVolumes') as UntypedFormArray;
-  }
-
-  ngOnDestroy(): void {
-    this.destroyable.destroy();
   }
 
   writeValue(value: HotKeysSettings | null): void {
@@ -97,7 +90,7 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
     this.form.get('extraHotKeys')?.valueChanges
       .pipe(
         distinctUntilChanged(),
-        takeUntil(this.destroyable)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => {
         const defaultHotKeys: HotKeysSettings = TerminalSettingsHelper.getDefaultHotkeys();
@@ -111,7 +104,7 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
 
     this.form.valueChanges.pipe(
       distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.checkIfTouched();
       this.emitValue(

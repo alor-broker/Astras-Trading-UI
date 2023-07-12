@@ -47,10 +47,6 @@ export class FinanceComponent implements OnInit, OnDestroy {
     return formatCurrency(number, this.currency, 0);
   }
 
-  formatCurrency(number: number) {
-    return formatCurrency(number, this.currency, 0);
-  }
-
   ngOnDestroy(): void {
     this.isLoading$.complete();
     this.isActivated$.complete();

@@ -1,7 +1,6 @@
 import {
-  Component,
+  Component, DestroyRef,
   Input,
-  OnDestroy,
   OnInit
 } from '@angular/core';
 import { OrderBook } from "../../models/orderbook.model";
@@ -11,8 +10,7 @@ import {
   of,
   shareReplay,
   switchMap,
-  take,
-  takeUntil
+  take
 } from "rxjs";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
 import { CommandParams } from "../../../../shared/models/commands/command-params.model";
@@ -28,20 +26,19 @@ import { InstrumentType } from '../../../../shared/models/enums/instrument-type.
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import { ThemeService } from '../../../../shared/services/theme.service';
-import { Destroyable } from '../../../../shared/utils/destroyable';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   template: '',
 })
-export abstract class OrderbookTableBaseComponent implements OnInit, OnDestroy {
+export abstract class OrderbookTableBaseComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;
   @Input()
   guid!: string;
   @Input() ob: OrderBook | null = null;
   settings$!: Observable<OrderbookSettings>;
   shouldShowYield$: Observable<boolean> = of(false);
-  protected readonly destroyable = new Destroyable();
   private themeSettings?: ThemeSettings;
 
   constructor(
@@ -50,7 +47,8 @@ export abstract class OrderbookTableBaseComponent implements OnInit, OnDestroy {
     private readonly widgetsDataProvider: WidgetsDataProviderService,
     private readonly modal: ModalService,
     private readonly service: OrderbookService,
-    private readonly themeService: ThemeService
+    private readonly themeService: ThemeService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -77,7 +75,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit, OnDestroy {
     );
 
     this.themeService.getThemeSettings().pipe(
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(s => this.themeSettings = s);
   }
 
@@ -153,9 +151,5 @@ export abstract class OrderbookTableBaseComponent implements OnInit, OnDestroy {
 
   getTrackKey(index: number): number {
     return index;
-  }
-
-  ngOnDestroy(): void {
-    this.destroyable.destroy();
   }
 }

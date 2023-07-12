@@ -12,7 +12,6 @@ import {
   Observable,
   of,
   shareReplay,
-  Subject,
   switchMap,
   take,
   tap
@@ -83,7 +82,6 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   menuWidgets$!: Observable<string[] | null>;
 
   private selectedInstrument: InstrumentKey | null = null;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly currentDashboardService: DashboardContextService,
@@ -126,9 +124,6 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-
     this.watchInstrumentsService.unsubscribe();
   }
 

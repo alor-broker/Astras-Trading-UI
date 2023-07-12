@@ -1,7 +1,7 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  Component,
+  Component, DestroyRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -9,7 +9,7 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable} from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { TimeframesHelper } from '../../utils/timeframes-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
@@ -25,6 +25,7 @@ import {
   TimeFrameDisplayMode
 } from '../../models/light-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
@@ -47,7 +48,6 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
   activeTimeFrame$ = new BehaviorSubject('D');
   settings$!: Observable<LightChartSettingsExtended>;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   private chart?: LightChartWrapper;
 
   constructor(
@@ -56,7 +56,8 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly themeService: ThemeService,
     private readonly lightChartDatafeedFactoryService: LightChartDatafeedFactoryService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -82,8 +83,6 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     this.chart?.clear();
     this.activeTimeFrame$.complete();
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   changeTimeframe(timeframe: string) {
@@ -133,7 +132,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
               && previous.locale === current.locale
             )
         ),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(options => {
         this.chart?.clear();

@@ -1,5 +1,15 @@
-import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChildren} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, takeUntil, tap, timer} from "rxjs";
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
+import {BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap, timer} from "rxjs";
 import {OptionBoardDataContext, OptionsSelection} from "../../models/option-board-data-context.model";
 import {OptionBoardService} from "../../services/option-board.service";
 import {InstrumentOptions, Option, OptionParameters, UnderlyingAsset} from "../../models/option-board.model";
@@ -10,7 +20,7 @@ import {mapWith} from "../../../../shared/utils/observable-helper";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
-import {Destroyable} from "../../../../shared/utils/destroyable";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 interface OptionDisplay extends Option {
   displayValue: string;
@@ -56,7 +66,6 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   currentPriceYPosition$!: Observable<number | null>;
   readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   private bodyScroll$!: Observable<CdkVirtualScrollViewport>;
-  private readonly destroyable = new Destroyable();
   private readonly defaultLayoutSizes: LayoutSizes = {
     priceColumnWidth: 50,
     optionCellWidth: 50
@@ -75,7 +84,8 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private readonly optionBoardService: OptionBoardService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -105,7 +115,6 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroyable.destroy();
     this.contentSize$.complete();
     this.layoutSizes$.complete();
   }
@@ -170,7 +179,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.contentSize$
     ]).pipe(
       filter(([matrix, contentSize]) => matrix.dateIndex.length > 0 && !!matrix.meta && !!contentSize),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(([matrix, contentSize]) => {
       const fullWidth = contentSize!.width;
       const symbolMultiplier = 8;
@@ -214,7 +223,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
       mapWith(
         x => x.body.elementScrolled(),
         (source) => source),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       x.header.scrollLeft = x.body.measureScrollOffset('left');
     });

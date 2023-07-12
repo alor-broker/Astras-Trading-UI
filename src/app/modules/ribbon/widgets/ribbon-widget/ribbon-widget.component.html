@@ -5,17 +5,9 @@
       <button nz-button nzSize="small" (click)="removeWidget($event)">
         <i nz-icon nzType="close-circle" [nzTheme]="'outline'"></i>
       </button>
-
-<!--      <button nz-button nzSize="small" (click)="switchSettings($event)">
-        <i nz-icon nzType="setting" [nzTheme]="'outline'"></i>
-      </button>-->
     </div>
     <div class="content">
       <ats-ribbon [guid]="guid"></ats-ribbon>
     </div>
   </div>
-
-  <ng-container *ngIf="shouldShowSettings">
-    <ats-ribbon-settings (closed)="switchSettings(null)" [guid]="guid"></ats-ribbon-settings>
-  </ng-container>
 </ng-container>
