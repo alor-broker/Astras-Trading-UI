@@ -44,7 +44,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
 
   }
 
-  @Input()
+  @Input({required: true})
   set commandContext(value: CommandContextModel<EditParams>) {
     this.commandContext$.next(value);
   }

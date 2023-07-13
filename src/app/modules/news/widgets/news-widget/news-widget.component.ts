@@ -18,16 +18,16 @@ import {TranslatorService} from "../../../../shared/services/translator.service"
 import {WidgetsHelper} from "../../../../shared/utils/widgets";
 
 @Component({
-  selector: 'ats-news-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-news-widget',
   templateUrl: './news-widget.component.html',
   styleUrls: ['./news-widget.component.less']
 })
 export class NewsWidgetComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   settings$!: Observable<NewsSettings>;
   showBadge$!: Observable<boolean>;
   widgetTitle$: Observable<string> = of('');

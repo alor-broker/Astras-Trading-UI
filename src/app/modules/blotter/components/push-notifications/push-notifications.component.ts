@@ -53,7 +53,7 @@ interface NotificationFilter {
 type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSparkSubscription>;
 
 @Component({
-  selector: 'ats-push-notifications[guid]',
+  selector: 'ats-push-notifications',
   templateUrl: './push-notifications.component.html',
   styleUrls: ['./push-notifications.component.less']
 })
@@ -65,8 +65,10 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
   tableInnerWidth: number = 1000;
   displayNotifications$: Observable<DisplayNotification[]> = of([]);
-  @Input()
+
+  @Input({required: true})
   guid!: string;
+
   readonly scrollHeight$ = new BehaviorSubject<number>(100);
   listOfColumns: BaseColumnSettings<DisplayNotification>[] = [];
   isNotificationsAllowed$!: Observable<boolean>;

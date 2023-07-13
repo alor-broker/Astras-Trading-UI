@@ -47,7 +47,7 @@ export type StopOrderFormValue =
   };
 
 @Component({
-  selector: 'ats-stop-order-form',
+  selector: 'ats-stop-order-form[instrument]',
   templateUrl: './stop-order-form.component.html',
   styleUrls: ['./stop-order-form.component.less']
 })

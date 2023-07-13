@@ -27,14 +27,14 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-orderbook-chart[guid][chartData]',
+  selector: 'ats-orderbook-chart',
   templateUrl: './orderbook-chart.component.html',
   styleUrls: ['./orderbook-chart.component.less'],
 })
 export class OrderbookChartComponent implements OnInit, OnChanges {
-  @Input()
+  @Input({required: true})
   chartData!: ChartData;
-  @Input()
+  @Input({required: true})
   guid!: string;
   @ViewChild(BaseChartDirective)
   chart?: BaseChartDirective;

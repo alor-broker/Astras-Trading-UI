@@ -36,7 +36,7 @@ export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements On
   protected constructor(protected readonly destroyRef: DestroyRef) {
   }
 
-  @Input()
+  @Input({required: true})
   set instrument(value: Instrument) {
     this.instrument$.next(value);
   }

@@ -10,7 +10,7 @@ export class ShortNumberComponent implements OnChanges {
   @Input() allowRounding = false;
   @Input() roundPrecision = 2;
   @Input() suffixForm: 'short' | 'long' = 'short';
-  @Input() value?: number | null | undefined;
+  @Input({required: true}) value?: number | null | undefined;
 
   displayData: NumberAbbreviation | null = null;
 

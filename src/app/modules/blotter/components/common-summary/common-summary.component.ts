@@ -18,15 +18,17 @@ import {PortfolioSummaryService} from "../../../../shared/services/portfolio-sum
 import {CommonSummaryView} from "../../../../shared/models/common-summary-view.model";
 
 @Component({
-  selector: 'ats-common-summary[guid]',
+  selector: 'ats-common-summary',
   templateUrl: './common-summary.component.html',
   styleUrls: ['./common-summary.component.less']
 })
 export class CommonSummaryComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
-  @Input()
+
+  @Input({required: true})
   guid!: string;
+
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   summary$: Observable<CommonSummaryView> = of();

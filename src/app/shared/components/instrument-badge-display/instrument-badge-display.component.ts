@@ -8,12 +8,12 @@ import {DashboardContextService} from "../../services/dashboard-context.service"
 import {TerminalSettingsService} from "../../../modules/terminal-settings/services/terminal-settings.service";
 
 @Component({
-  selector: 'ats-instrument-badge-display[instrumentKey]',
+  selector: 'ats-instrument-badge-display',
   templateUrl: './instrument-badge-display.component.html',
   styleUrls: ['./instrument-badge-display.component.less']
 })
 export class InstrumentBadgeDisplayComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   instrumentKey!: InstrumentKey;
 
   selectedInstruments$!: Observable<InstrumentGroups>;

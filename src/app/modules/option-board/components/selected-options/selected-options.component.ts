@@ -36,7 +36,7 @@ interface DetailsDisplay extends OptionKey {
 }
 
 @Component({
-  selector: 'ats-selected-options[dataContext]',
+  selector: 'ats-selected-options',
   templateUrl: './selected-options.component.html',
   styleUrls: ['./selected-options.component.less']
 })
@@ -44,7 +44,7 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChildren('tableContainer')
   tableQuery!: QueryList<ElementRef<HTMLElement>>;
 
-  @Input()
+  @Input({required: true})
   dataContext!: OptionBoardDataContext;
   readonly isLoading$ = new BehaviorSubject(false);
   detailsDisplay$!: Observable<DetailsDisplay[]>;

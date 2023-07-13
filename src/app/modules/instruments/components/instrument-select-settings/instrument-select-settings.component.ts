@@ -18,14 +18,14 @@ import { BaseColumnId } from "../../../../shared/models/settings/table-settings.
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-instrument-select-settings[guid]',
+  selector: 'ats-instrument-select-settings',
   templateUrl: './instrument-select-settings.component.html',
   styleUrls: ['./instrument-select-settings.component.less']
 })
 export class InstrumentSelectSettingsComponent implements OnInit {
   settingsForm!: UntypedFormGroup;
   allInstrumentColumns: BaseColumnId[] = allInstrumentsColumns;
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<InstrumentSelectSettings> = new EventEmitter<InstrumentSelectSettings>();

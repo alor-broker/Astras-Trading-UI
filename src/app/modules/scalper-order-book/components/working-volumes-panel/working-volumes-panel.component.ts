@@ -21,14 +21,15 @@ import { ScalperOrderBookSettings } from '../../models/scalper-order-book-settin
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-working-volumes-panel[guid][isActive]',
+  selector: 'ats-working-volumes-panel',
   templateUrl: './working-volumes-panel.component.html',
   styleUrls: ['./working-volumes-panel.component.less']
 })
 export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   @Input()
   isActive: boolean = false;
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
   workingVolumes$!: Observable<number[]>;
   readonly selectedVolume$ = new BehaviorSubject<{ index: number, value: number } | null>(null);
   @Output()

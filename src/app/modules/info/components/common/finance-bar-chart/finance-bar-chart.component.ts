@@ -18,12 +18,12 @@ import { HashMap } from "@ngneat/transloco/lib/types";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-finance-bar-chart[finance]',
+  selector: 'ats-finance-bar-chart',
   templateUrl: './finance-bar-chart.component.html',
   styleUrls: ['./finance-bar-chart.component.less']
 })
 export class FinanceBarChartComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   finance!: Finance;
 
   public yearChartOptions: ChartConfiguration['options'] = {

@@ -40,7 +40,7 @@ import {NumberDisplayFormat} from "../../../../shared/models/enums/number-displa
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-trade-clusters-panel[xAxisStep][dataContext]',
+  selector: 'ats-trade-clusters-panel',
   templateUrl: './trade-clusters-panel.component.html',
   styleUrls: ['./trade-clusters-panel.component.less']
 })
@@ -48,9 +48,9 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   @ViewChildren(CdkScrollable)
   scrollContainer!: QueryList<CdkScrollable>;
 
-  @Input()
+  @Input({required: true})
   xAxisStep!: number;
-  @Input()
+  @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
 
   clusters$!: Observable<TradesCluster[]>;

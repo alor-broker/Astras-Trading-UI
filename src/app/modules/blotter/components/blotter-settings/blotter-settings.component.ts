@@ -40,13 +40,14 @@ import { DeviceService } from "../../../../shared/services/device.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-blotter-settings[guid]',
+  selector: 'ats-blotter-settings',
   templateUrl: './blotter-settings.component.html',
   styleUrls: ['./blotter-settings.component.less']
 })
 export class BlotterSettingsComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   guid!: string;
+
   @Output()
   settingsChange: EventEmitter<BlotterSettings> = new EventEmitter<BlotterSettings>();
   form!: UntypedFormGroup;

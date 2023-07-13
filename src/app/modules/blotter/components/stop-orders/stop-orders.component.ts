@@ -66,7 +66,7 @@ interface DisplayOrder extends StopOrder {
 }
 
 @Component({
-  selector: 'ats-stop-orders[shouldShowSettings][guid]',
+  selector: 'ats-stop-orders',
   templateUrl: './stop-orders.component.html',
   styleUrls: ['./stop-orders.component.less'],
 })
@@ -79,10 +79,9 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('tableContainer')
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
-  @Input()
-  shouldShowSettings!: boolean;
-  @Input()
+  @Input({required: true})
   guid!: string;
+
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   isModalOpened = DomHelper.isModalOpen;

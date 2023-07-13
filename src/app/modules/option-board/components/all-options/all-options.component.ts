@@ -45,7 +45,7 @@ interface LayoutSizes {
 }
 
 @Component({
-  selector: 'ats-all-options[dataContext]',
+  selector: 'ats-all-options',
   templateUrl: './all-options.component.html',
   styleUrls: ['./all-options.component.less']
 })
@@ -53,7 +53,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly rowHeight = 30;
   readonly isLoading$ = new BehaviorSubject(false);
 
-  @Input()
+  @Input({required: true})
   dataContext!: OptionBoardDataContext;
 
   @ViewChildren(CdkVirtualScrollViewport)

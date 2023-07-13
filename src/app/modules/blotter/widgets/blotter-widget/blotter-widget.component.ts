@@ -33,7 +33,7 @@ import {
 import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
 
 @Component({
-  selector: 'ats-blotter-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-blotter-widget',
   templateUrl: './blotter-widget.component.html',
   styleUrls: ['./blotter-widget.component.less'],
   providers: [
@@ -43,10 +43,12 @@ import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
 export class BlotterWidgetComponent implements OnInit, OnDestroy {
   readonly marketTypes = MarketType;
   shouldShowSettings: boolean = false;
-  @Input()
+
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   activeTabIndex$ = of(0);
   marketType$?: Observable<MarketType | undefined>;
   showBadge$!: Observable<boolean>;

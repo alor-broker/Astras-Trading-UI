@@ -16,16 +16,16 @@ import {
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-all-instruments-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-all-instruments-widget',
   templateUrl: './all-instruments-widget.component.html',
   styleUrls: ['./all-instruments-widget.component.less']
 })
 export class AllInstrumentsWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
-  @Input()
-  widgetInstance!: WidgetInstance;
 
-  @Input()
+  @Input({required: true})
+  widgetInstance!: WidgetInstance;
+  @Input({required: true})
   isBlockWidget!: boolean;
 
   settings$!: Observable<AllInstrumentsSettings>;

@@ -30,7 +30,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
 @Component({
-  selector: 'ats-light-chart[guid]',
+  selector: 'ats-light-chart',
   templateUrl: './light-chart.component.html',
   styleUrls: ['./light-chart.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,7 +40,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly availableTimeFrames = TimeframesHelper.timeFrames;
   timeFrameDisplayModes = TimeFrameDisplayMode;
 
-  @Input()
+  @Input({required: true})
   guid!: string;
 
   @Output()

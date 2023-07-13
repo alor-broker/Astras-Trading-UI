@@ -24,8 +24,11 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   styleUrls: ['./all-instruments-settings.component.less']
 })
 export class AllInstrumentsSettingsComponent implements OnInit {
-  @Input() guid!: string;
-  @Output() settingsChange: EventEmitter<AllInstrumentsSettings> = new EventEmitter<AllInstrumentsSettings>();
+  @Input({required: true})
+  guid!: string;
+
+  @Output()
+  settingsChange: EventEmitter<AllInstrumentsSettings> = new EventEmitter<AllInstrumentsSettings>();
   form!: UntypedFormGroup;
   allInstrumentsColumns: BaseColumnId[] = allInstrumentsColumns;
 

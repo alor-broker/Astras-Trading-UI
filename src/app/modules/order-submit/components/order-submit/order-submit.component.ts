@@ -50,7 +50,7 @@ export enum ComponentTabs {
 }
 
 @Component({
-  selector: 'ats-order-submit[guid]',
+  selector: 'ats-order-submit',
   templateUrl: './order-submit.component.html',
   styleUrls: ['./order-submit.component.less']
 })
@@ -58,7 +58,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly orderSides = Side;
   readonly componentTabs = ComponentTabs;
   readonly orderTypes = OrderType;
-  @Input()
+  @Input({required: true})
   guid!: string;
   currentInstrumentWithPortfolio$!: Observable<{ instrument: Instrument, portfolio: string }>;
   priceData$!: Observable<{ bid: number, ask: number }>;

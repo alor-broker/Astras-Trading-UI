@@ -10,7 +10,7 @@ enum ComponentTabs {
 }
 
 @Component({
-  selector: 'ats-option-board[guid]',
+  selector: 'ats-option-board',
   templateUrl: './option-board.component.html',
   styleUrls: ['./option-board.component.less'],
 })
@@ -20,7 +20,7 @@ export class OptionBoardComponent implements OnInit, OnDestroy {
   optionSides = Object.values(OptionSide);
   parameters = Object.values(OptionParameters);
 
-  @Input()
+  @Input({required: true})
   guid!: string;
 
   selectedTab$ = new BehaviorSubject(ComponentTabs.AllOptions);

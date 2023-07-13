@@ -57,7 +57,7 @@ interface DisplayOrder extends Order {
 }
 
 @Component({
-  selector: 'ats-orders[shouldShowSettings][guid]',
+  selector: 'ats-orders',
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.less'],
 })
@@ -70,9 +70,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('tableContainer')
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
-  @Input()
-  shouldShowSettings!: boolean;
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();

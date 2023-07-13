@@ -8,12 +8,12 @@ import {OptionBoardSettings} from "../../models/option-board-settings.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-option-board-settings[guid]',
+  selector: 'ats-option-board-settings',
   templateUrl: './option-board-settings.component.html',
   styleUrls: ['./option-board-settings.component.less']
 })
 export class OptionBoardSettingsComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();

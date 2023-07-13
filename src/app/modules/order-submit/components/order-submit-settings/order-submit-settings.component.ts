@@ -28,12 +28,12 @@ import { DeviceService } from "../../../../shared/services/device.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-order-submit-settings[settingsChange][guid]',
+  selector: 'ats-order-submit-settings',
   templateUrl: './order-submit-settings.component.html',
   styleUrls: ['./order-submit-settings.component.less']
 })
 export class OrderSubmitSettingsComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();

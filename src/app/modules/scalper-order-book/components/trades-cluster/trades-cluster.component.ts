@@ -20,16 +20,16 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 
 
 @Component({
-  selector: 'ats-trades-cluster[xAxisStep][dataContext]',
+  selector: 'ats-trades-cluster',
   templateUrl: './trades-cluster.component.html',
   styleUrls: ['./trades-cluster.component.less']
 })
 export class TradesClusterComponent implements OnInit, OnDestroy {
   readonly numberFormats = NumberDisplayFormat;
 
-  @Input()
+  @Input({required: true})
   xAxisStep!: number;
-  @Input()
+  @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
   displayItems$!: Observable<({ volume: number } | null)[]>;
   settings$!: Observable<ScalperOrderBookExtendedSettings>;

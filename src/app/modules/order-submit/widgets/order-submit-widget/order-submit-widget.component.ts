@@ -23,17 +23,18 @@ import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-order-submit-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-order-submit-widget',
   templateUrl: './order-submit-widget.component.html',
   styleUrls: ['./order-submit-widget.component.less']
 })
 export class OrderSubmitWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
-  @Input()
-  widgetInstance!: WidgetInstance;
 
-  @Input()
+  @Input({required: true})
+  widgetInstance!: WidgetInstance;
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   settings$!: Observable<OrderSubmitSettings>;
   showBadge$!: Observable<boolean>;
 

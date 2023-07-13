@@ -20,13 +20,16 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 
 @Component({
-  selector: 'ats-orders-group-modal[guid]',
+  selector: 'ats-orders-group-modal',
   templateUrl: './orders-group-modal.component.html',
   styleUrls: ['./orders-group-modal.component.less']
 })
 export class OrdersGroupModalComponent implements AfterViewInit {
-  @Input() guid!: string;
-  @Input() groupId?: string;
+  @Input({required: true})
+  guid!: string;
+
+  @Input()
+  groupId?: string;
 
   @ViewChildren('ordersGroupTree', {read: ElementRef})
   ordersGroupTree!: QueryList<ElementRef>;

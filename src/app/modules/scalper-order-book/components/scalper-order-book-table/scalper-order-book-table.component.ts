@@ -45,7 +45,7 @@ interface DisplayRow extends BodyRow {
 }
 
 @Component({
-  selector: 'ats-scalper-order-book-table[rowHeight][dataContext][isActive]',
+  selector: 'ats-scalper-order-book-table',
   templateUrl: './scalper-order-book-table.component.html',
   styleUrls: ['./scalper-order-book-table.component.less']
 })
@@ -53,10 +53,10 @@ export class ScalperOrderBookTableComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;
 
   ordersSides = Side;
-  @Input()
+  @Input({required: true})
   rowHeight!: number;
   displayItems$!: Observable<DisplayRow[]>;
-  @Input()
+  @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
 
   @Input()

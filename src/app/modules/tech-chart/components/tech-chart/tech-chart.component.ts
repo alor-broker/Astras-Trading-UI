@@ -127,12 +127,12 @@ interface ChartState {
 }
 
 @Component({
-  selector: 'ats-tech-chart[guid]',
+  selector: 'ats-tech-chart',
   templateUrl: './tech-chart.component.html',
   styleUrls: ['./tech-chart.component.less']
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input()
+  @Input({required: true})
   guid!: string;
 
   @ViewChild('chartContainer', { static: true })

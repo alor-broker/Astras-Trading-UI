@@ -36,7 +36,7 @@ import {DomHelper} from "../../../../shared/utils/dom-helper";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-instrument-select[guid]',
+  selector: 'ats-instrument-select',
   templateUrl: './instrument-select.component.html',
   styleUrls: ['./instrument-select.component.less']
 })
@@ -44,7 +44,7 @@ export class InstrumentSelectComponent implements OnInit {
 
   @ViewChild('inputEl') inputEl!: ElementRef<HTMLInputElement>;
 
-  @Input()
+  @Input({required: true})
   guid!: string;
 
   filteredInstruments$: Observable<Instrument[]> = of([]);

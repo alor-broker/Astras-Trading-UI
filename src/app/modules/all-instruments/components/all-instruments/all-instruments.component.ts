@@ -35,7 +35,9 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   styleUrls: ['./all-instruments.component.less']
 })
 export class AllInstrumentsComponent implements OnInit, OnDestroy {
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
+
   contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   public isLoading$ = new BehaviorSubject<boolean>(false);
   public allColumns: BaseColumnSettings<AllInstruments>[] = [

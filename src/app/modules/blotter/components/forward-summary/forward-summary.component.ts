@@ -15,15 +15,17 @@ import {PortfolioSummaryService} from "../../../../shared/services/portfolio-sum
 import {ForwardRisksView} from "../../../../shared/models/forward-risks-view.model";
 
 @Component({
-  selector: 'ats-forward-summary[guid]',
+  selector: 'ats-forward-summary',
   templateUrl: './forward-summary.component.html',
   styleUrls: ['./forward-summary.component.less']
 })
 export class ForwardSummaryComponent implements OnInit {
   @Input()
   shouldShowSettings!: boolean;
-  @Input()
+
+  @Input({required: true})
   guid!: string;
+
   summary$!: Observable<ForwardRisksView>;
   columns: number = 1;
 

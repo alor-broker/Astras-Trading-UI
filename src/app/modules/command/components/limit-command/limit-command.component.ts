@@ -45,7 +45,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  @Input()
+  @Input({required: true})
   set commandContext(value: CommandContextModel<CommandParams>) {
     this.commandContext$.next(value);
   }

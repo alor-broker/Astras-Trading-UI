@@ -34,9 +34,11 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 })
 export abstract class OrderbookTableBaseComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;
-  @Input()
+  @Input({required: true})
   guid!: string;
-  @Input() ob: OrderBook | null = null;
+
+  @Input()
+  ob: OrderBook | null = null;
   settings$!: Observable<OrderbookSettings>;
   shouldShowYield$: Observable<boolean> = of(false);
   private themeSettings?: ThemeSettings;

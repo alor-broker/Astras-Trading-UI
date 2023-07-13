@@ -12,13 +12,13 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-events-calendar[guid]',
+  selector: 'ats-events-calendar',
   templateUrl: './events-calendar.component.html',
   styleUrls: ['./events-calendar.component.less']
 })
 export class EventsCalendarComponent implements OnInit, OnDestroy {
-
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
 
   portfolios: PortfolioKey[] = [];
   selectedPortfolio$ = new BehaviorSubject<PortfolioKey | null>(null);

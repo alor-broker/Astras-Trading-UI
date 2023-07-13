@@ -51,7 +51,7 @@ interface PositionDisplay extends Position {
 }
 
 @Component({
-  selector: 'ats-positions[shouldShowSettings][guid]',
+  selector: 'ats-positions',
   templateUrl: './positions.component.html',
   styleUrls: ['./positions.component.less']
 })
@@ -60,10 +60,10 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   table?: NzTableComponent<PositionDisplay>;
   @ViewChildren('tableContainer')
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
-  @Input()
-  shouldShowSettings!: boolean;
-  @Input()
+
+  @Input({required: true})
   guid!: string;
+
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayPositions$: Observable<PositionDisplay[]> = of([]);

@@ -17,17 +17,19 @@ import {
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-instrument-select-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-instrument-select-widget',
   templateUrl: './instrument-select-widget.component.html',
   styleUrls: ['./instrument-select-widget.component.less'],
   providers: [WatchInstrumentsService]
 })
 export class InstrumentSelectWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
-  @Input()
+
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   settings$!: Observable<InstrumentSelectSettings>;
   showBadge$!: Observable<boolean>;
   constructor(

@@ -22,7 +22,7 @@ import {
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-editable-string[content]',
+  selector: 'ats-editable-string',
   templateUrl: './editable-string.component.html',
   styleUrls: ['./editable-string.component.less']
 })
@@ -30,8 +30,9 @@ export class EditableStringComponent implements OnInit, OnDestroy {
   @ViewChildren('editInput')
   editInput!: QueryList<ElementRef<HTMLInputElement>>;
 
-  @Input()
+  @Input({required: true})
   content: string | null = null;
+
   @Input()
   lenghtRestrictions?: {
     minLenght: number,

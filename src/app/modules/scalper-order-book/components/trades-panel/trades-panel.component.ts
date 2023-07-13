@@ -49,7 +49,7 @@ interface DrewItemMeta {
 }
 
 @Component({
-  selector: 'ats-trades-panel[xAxisStep][dataContext]',
+  selector: 'ats-trades-panel',
   templateUrl: './trades-panel.component.html',
   styleUrls: ['./trades-panel.component.less']
 })
@@ -57,10 +57,10 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas')
   canvas?: ElementRef<HTMLCanvasElement>;
 
-  @Input()
+  @Input({required: true})
   xAxisStep!: number;
 
-  @Input()
+  @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
 
   private readonly zIndexes = {

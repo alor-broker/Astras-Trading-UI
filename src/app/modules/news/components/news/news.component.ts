@@ -27,12 +27,13 @@ import { filter } from "rxjs/operators";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-news[guid]',
+  selector: 'ats-news',
   templateUrl: './news.component.html',
   styleUrls: ['./news.component.less']
 })
 export class NewsComponent implements OnInit, OnDestroy {
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
   @Output() sectionChange = new EventEmitter<NewsSection>();
 
   readonly contentSize$ = new BehaviorSubject<ContentSize>({ height: 0, width: 0 });

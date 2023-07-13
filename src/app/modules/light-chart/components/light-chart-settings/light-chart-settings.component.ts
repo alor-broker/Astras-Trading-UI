@@ -30,12 +30,12 @@ import { DeviceService } from "../../../../shared/services/device.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-light-chart-settings[guid]',
+  selector: 'ats-light-chart-settings',
   templateUrl: './light-chart-settings.component.html',
   styleUrls: ['./light-chart-settings.component.less']
 })
 export class LightChartSettingsComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<LightChartSettings> = new EventEmitter<LightChartSettings>();

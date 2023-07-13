@@ -37,7 +37,7 @@ interface MarkerDisplay {
 }
 
 @Component({
-  selector: 'ats-table-ruler[xAxisStep][dataContext][activeRow]',
+  selector: 'ats-table-ruler',
   templateUrl: './table-ruler.component.html',
   styleUrls: ['./table-ruler.component.less']
 })
@@ -45,9 +45,9 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('marker')
   markerElRef!: QueryList<ElementRef<HTMLElement>>;
   readonly markerDisplayFormats = MarkerDisplayFormat;
-  @Input()
+  @Input({required: true})
   xAxisStep!: number;
-  @Input()
+  @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
   displayMarker$!: Observable<MarkerDisplay | null>;
   markerPosition$ = new BehaviorSubject<'left' | 'right'>('left');

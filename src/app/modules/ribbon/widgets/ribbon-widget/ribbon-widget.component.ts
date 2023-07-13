@@ -11,14 +11,14 @@ import { RibbonSettings } from '../../models/ribbon-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-ribbon-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-ribbon-widget',
   templateUrl: './ribbon-widget.component.html',
   styleUrls: ['./ribbon-widget.component.less']
 })
 export class RibbonWidgetComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
 
   settings$!: Observable<RibbonSettings>;

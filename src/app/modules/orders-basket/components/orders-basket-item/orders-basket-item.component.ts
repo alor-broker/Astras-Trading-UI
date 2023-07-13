@@ -40,7 +40,7 @@ import { AtsValidators } from '../../../../shared/utils/form-validators';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-orders-basket-item[exchange]',
+  selector: 'ats-orders-basket-item',
   templateUrl: './orders-basket-item.component.html',
   styleUrls: ['./orders-basket-item.component.less'],
   providers: [
@@ -57,11 +57,8 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   ]
 })
 export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValueAccessor, Validator {
-  @Input()
+  @Input({required: true})
   exchange!: string;
-
-  @Input()
-  portfolio!: string;
 
   @Input()
   enableDelete: boolean = true;

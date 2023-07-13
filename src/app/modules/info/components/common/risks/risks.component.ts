@@ -5,12 +5,13 @@ import { InfoService } from "../../../services/info.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-risks[guid]',
+  selector: 'ats-risks',
   templateUrl: './risks.component.html',
   styleUrls: ['./risks.component.less']
 })
 export class RisksComponent implements OnInit, OnDestroy {
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
   private isActivated$ = new BehaviorSubject<boolean>(false);
   risksInfo$?: Observable<RisksInfo>;
 

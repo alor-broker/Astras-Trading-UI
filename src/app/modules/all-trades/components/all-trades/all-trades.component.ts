@@ -32,12 +32,13 @@ import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-all-trades[guid]',
+  selector: 'ats-all-trades',
   templateUrl: './all-trades.component.html',
   styleUrls: ['./all-trades.component.less'],
 })
 export class AllTradesComponent implements OnInit, OnDestroy {
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
 
   contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   private datePipe = new DatePipe('ru-RU');

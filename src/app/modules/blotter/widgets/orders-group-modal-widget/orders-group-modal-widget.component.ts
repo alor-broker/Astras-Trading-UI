@@ -3,12 +3,13 @@ import { Observable, of } from "rxjs";
 import { BlotterService } from "../../services/blotter.service";
 
 @Component({
-  selector: 'ats-orders-group-modal-widget[guid]',
+  selector: 'ats-orders-group-modal-widget',
   templateUrl: './orders-group-modal-widget.component.html',
   styleUrls: ['./orders-group-modal-widget.component.less']
 })
 export class OrdersGroupModalWidgetComponent implements OnInit {
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
 
   isVisible$: Observable<boolean> = of(false);
   groupId$: Observable<string | null> = of(null);

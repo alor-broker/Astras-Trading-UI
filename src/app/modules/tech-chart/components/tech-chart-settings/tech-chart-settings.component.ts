@@ -22,12 +22,12 @@ import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-tech-chart-settings[settingsChange][guid]',
+  selector: 'ats-tech-chart-settings',
   templateUrl: './tech-chart-settings.component.html',
   styleUrls: ['./tech-chart-settings.component.less']
 })
 export class TechChartSettingsComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();

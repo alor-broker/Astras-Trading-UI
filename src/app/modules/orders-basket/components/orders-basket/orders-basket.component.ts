@@ -51,12 +51,12 @@ import { OrdersBasketSettings } from '../../models/orders-basket-settings.model'
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-orders-basket[guid]',
+  selector: 'ats-orders-basket',
   templateUrl: './orders-basket.component.html',
   styleUrls: ['./orders-basket.component.less']
 })
 export class OrdersBasketComponent implements OnInit, OnDestroy {
-  @Input()
+  @Input({required: true})
   guid!: string;
   form?: UntypedFormGroup;
   formSubscriptions?: Subscription;

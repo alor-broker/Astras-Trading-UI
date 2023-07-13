@@ -8,7 +8,7 @@ import { Evaluation } from '../../../../shared/models/evaluation.model';
 type EvaluationDisplay = Evaluation & { currency: string };
 
 @Component({
-  selector: 'ats-evaluation[evaluationProperties]',
+  selector: 'ats-evaluation',
   templateUrl: './evaluation.component.html',
   styleUrls: ['./evaluation.component.less']
 })
@@ -21,7 +21,7 @@ export class EvaluationComponent implements OnInit {
   constructor(private service: EvaluationService) {
   }
 
-  @Input()
+  @Input({required: true})
   set evaluationProperties(evaluationProperties: EvaluationBaseProperties) {
     this.evaluationRequest$.next(evaluationProperties);
   }

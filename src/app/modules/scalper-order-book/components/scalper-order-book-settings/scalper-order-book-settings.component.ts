@@ -31,7 +31,7 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-scalper-order-book-settings[settingsChange][guid]',
+  selector: 'ats-scalper-order-book-settings',
   templateUrl: './scalper-order-book-settings.component.html',
   styleUrls: ['./scalper-order-book-settings.component.less']
 })
@@ -61,7 +61,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
   readonly availableMarkerFormats = Object.values(MarkerDisplayFormat);
 
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();

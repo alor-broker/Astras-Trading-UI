@@ -11,7 +11,7 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-orderbook-settings[settingsChange][guid]',
+  selector: 'ats-orderbook-settings',
   templateUrl: './orderbook-settings.component.html',
   styleUrls: ['./orderbook-settings.component.less']
 })
@@ -26,7 +26,7 @@ export class OrderbookSettingsComponent implements OnInit {
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
 
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();

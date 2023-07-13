@@ -53,7 +53,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     private readonly destroyRef: DestroyRef) {
   }
 
-  @Input()
+  @Input({required: true})
   set commandContext(value: CommandContextModel<CommandParams>) {
     this.commandContext$.next(value);
   }

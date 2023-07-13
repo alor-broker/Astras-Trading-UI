@@ -11,7 +11,7 @@ import { distinct, map } from 'rxjs/operators';
   styleUrls: ['./finance.component.less']
 })
 export class FinanceComponent implements OnInit, OnDestroy {
-  @Input()
+  @Input({required: true})
   guid!: string;
   columns = 1;
   finance$?: Observable<Finance | null>;

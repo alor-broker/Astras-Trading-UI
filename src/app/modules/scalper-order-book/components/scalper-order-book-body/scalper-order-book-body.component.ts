@@ -47,7 +47,7 @@ export interface ScalperOrderBookBodyRef {
 export const SCALPER_ORDERBOOK_BODY_REF = new InjectionToken<ScalperOrderBookBodyRef>('ScalperOrderBookBodyRef');
 
 @Component({
-  selector: 'ats-scalper-order-book-body[guid][isActive][workingVolume]',
+  selector: 'ats-scalper-order-book-body',
   templateUrl: './scalper-order-book-body.component.html',
   styleUrls: ['./scalper-order-book-body.component.less'],
   providers: [
@@ -65,7 +65,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
 
   @ViewChild(CdkVirtualScrollViewport)
   scrollContainer!: CdkVirtualScrollViewport;
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Input()
   isActive: boolean = false;
@@ -88,7 +88,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     private readonly destroyRef: DestroyRef) {
   }
 
-  @Input()
+  @Input({required: true})
   set workingVolume(value: number) {
     this.workingVolume$.next(value);
   }

@@ -9,15 +9,15 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-treemap-widget[widgetInstance]',
+  selector: 'ats-treemap-widget',
   templateUrl: './treemap-widget.component.html',
   styleUrls: ['./treemap-widget.component.less']
 })
 export class TreemapWidgetComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-
-  @Input() isBlockWidget!: boolean;
+  @Input({required: true})
+  isBlockWidget!: boolean;
 
   settings$!: Observable<TreemapSettings>;
   showBadge$!: Observable<boolean>;

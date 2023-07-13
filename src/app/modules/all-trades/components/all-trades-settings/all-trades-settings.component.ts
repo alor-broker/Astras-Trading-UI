@@ -14,11 +14,12 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   styleUrls: ['./all-trades-settings.component.less']
 })
 export class AllTradesSettingsComponent implements OnInit {
-
   form!: UntypedFormGroup;
   allTradesColumns: BaseColumnId[] = allTradesWidgetColumns;
 
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
+
   @Output() settingsChange: EventEmitter<AllTradesSettings> = new EventEmitter<AllTradesSettings>();
 
   constructor(

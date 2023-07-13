@@ -36,7 +36,7 @@ import { EvaluationBaseProperties } from '../../../../../shared/models/evaluatio
 export type MarketOrderFormValue = Omit<MarketOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
 @Component({
-  selector: 'ats-market-order-form',
+  selector: 'ats-market-order-form[instrument]',
   templateUrl: './market-order-form.component.html',
   styleUrls: ['./market-order-form.component.less'],
   providers: [QuotesService]

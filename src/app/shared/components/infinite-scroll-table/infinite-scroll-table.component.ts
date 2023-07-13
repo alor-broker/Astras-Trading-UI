@@ -23,7 +23,7 @@ import {QueryList} from "@angular/core";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-infinite-scroll-table[tableConfig]',
+  selector: 'ats-infinite-scroll-table',
   templateUrl: './infinite-scroll-table.component.html',
   styleUrls: ['./infinite-scroll-table.component.less']
 })
@@ -34,7 +34,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   @Input() tableContainerHeight = 100;
   @Input() tableContainerWidth = 100;
   @Input() isLoading = false;
-  @Input() tableConfig: TableConfig<any> | null = null;
+  @Input({required: true}) tableConfig: TableConfig<any> | null = null;
   @Input() public contextMenu: Array<ContextMenu> = [];
 
   @Input() public set data(value: Array<any> ){

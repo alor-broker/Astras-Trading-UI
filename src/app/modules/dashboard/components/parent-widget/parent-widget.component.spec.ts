@@ -19,7 +19,7 @@ describe('ParentWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ParentWidgetComponent);
     component = fixture.componentInstance;
-    component.widget = {
+    component.widgetInstance = {
       instance: {
         guid: '123',
         position: {x: 0, y: 0, rows: 1, cols: 1},

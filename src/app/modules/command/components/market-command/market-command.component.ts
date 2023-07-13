@@ -54,7 +54,7 @@ export class MarketCommandComponent implements OnInit, OnDestroy {
     this.isActivated$.next(value);
   }
 
-  @Input()
+  @Input({required: true})
   set commandContext(value: CommandContextModel<CommandParams>) {
     this.commandContext$.next(value);
   }

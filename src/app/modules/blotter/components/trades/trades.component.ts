@@ -54,7 +54,7 @@ interface DisplayTrade extends Trade {
 }
 
 @Component({
-  selector: 'ats-trades[guid]',
+  selector: 'ats-trades',
   templateUrl: './trades.component.html',
   styleUrls: ['./trades.component.less']
 })
@@ -67,10 +67,9 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('tableContainer')
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
-  @Input()
-  shouldShowSettings!: boolean;
-  @Input()
+  @Input({required: true})
   guid!: string;
+
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   tableInnerWidth: number = 1000;

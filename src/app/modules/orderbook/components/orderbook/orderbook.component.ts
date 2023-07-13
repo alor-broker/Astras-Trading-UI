@@ -44,14 +44,14 @@ interface SpreadDiffData {
 }
 
 @Component({
-  selector: 'ats-order-book[guid]',
+  selector: 'ats-order-book',
   templateUrl: './orderbook.component.html',
   styleUrls: ['./orderbook.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
 export class OrderBookComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   guid!: string;
 
   @Output()
