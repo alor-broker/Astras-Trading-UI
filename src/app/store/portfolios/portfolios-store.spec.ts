@@ -5,7 +5,6 @@ import {
   commonTestProviders,
   sharedModuleImportForTests
 } from "../../shared/utils/testing";
-import { getAllPortfolios } from "./portfolios.selectors";
 import {
   BehaviorSubject,
   of,
@@ -17,6 +16,7 @@ import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.m
 import { ErrorHandlerService } from '../../shared/services/handle-error/error-handler.service';
 import { MarketService } from "../../shared/services/market.service";
 import { PortfoliosActions } from './portfolios.actions';
+import {selectPortfoliosState} from "./portfolios.selectors";
 
 describe('Portfolios Store', () => {
   let store: Store;
@@ -97,11 +97,11 @@ describe('Portfolios Store', () => {
     store.dispatch(PortfoliosActions.initPortfolios());
 
     expect(accountServiceSpy.getLoginPortfolios).toHaveBeenCalled();
-    store.select(getAllPortfolios).pipe(
+    store.select(selectPortfoliosState).pipe(
       take(1)
-    ).subscribe(portfolios => {
+    ).subscribe(portfoliosState => {
       done();
-      expect(portfolios).toEqual(expectedPortfolios);
+      expect(Object.values(portfoliosState.entities).map(x => x!)).toEqual(expectedPortfolios);
     });
   });
 });

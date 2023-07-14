@@ -22,12 +22,12 @@ import {
   switchMap,
   take
 } from 'rxjs';
-import { getAllPortfolios } from '../../../../store/portfolios/portfolios.selectors';
 import { map } from 'rxjs/operators';
 import { MarketService } from '../../../../shared/services/market.service';
 import { ExchangeRate } from '../../../exchange-rate/models/exchange-rate.model';
 import { CurrencyInstrument } from '../../../../shared/models/enums/currencies.model';
 import { ExchangeRateService } from '../../../../shared/services/exchange-rate.service';
+import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
 
 @Component({
   selector: 'ats-portfolios-currency-form',
@@ -50,7 +50,8 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
   constructor(
     private readonly store: Store,
     private readonly marketService: MarketService,
-    private readonly exchangeRateService: ExchangeRateService
+    private readonly exchangeRateService: ExchangeRateService,
+    private readonly userPortfoliosService: UserPortfoliosService
   ) {
     super();
   }
@@ -127,7 +128,7 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
   }
 
   private getPortfolioCurrencies(currentSettings: PortfolioCurrency[]): Observable<PortfolioCurrency[]> {
-    return this.store.select(getAllPortfolios)
+    return this.userPortfoliosService.getPortfolios()
       .pipe(
         switchMap(portfolios => {
           if (portfolios.length === 0) {

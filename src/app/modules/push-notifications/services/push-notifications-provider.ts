@@ -3,14 +3,13 @@ import {NotificationsProvider} from '../../notifications/services/notifications-
 import {combineLatest, Observable, shareReplay} from 'rxjs';
 import {NotificationMeta} from '../../notifications/models/notification.model';
 import {PushNotificationsService} from "./push-notifications.service";
-import {Store} from "@ngrx/store";
 import {filter, map} from "rxjs/operators";
 import {TerminalSettingsService} from "../../terminal-settings/services/terminal-settings.service";
 import {isPortfoliosEqual} from "../../../shared/utils/portfolios";
 import {LocalStorageService} from "../../../shared/services/local-storage.service";
-import {PortfoliosStreams} from "../../../store/portfolios/portfolios.streams";
 import {TimezoneConverterService} from "../../../shared/services/timezone-converter.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {UserPortfoliosService} from "../../../shared/services/user-portfolios.service";
 
 interface SavedPushNotification {
   id: string;
@@ -28,7 +27,7 @@ export class PushNotificationsProvider implements NotificationsProvider {
 
   constructor(
     private readonly pushNotificationsService: PushNotificationsService,
-    private readonly store: Store,
+    private readonly userPortfoliosService: UserPortfoliosService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly localStorageService: LocalStorageService,
     private readonly timezoneConverterService: TimezoneConverterService,
@@ -73,7 +72,7 @@ export class PushNotificationsProvider implements NotificationsProvider {
 
   private initRequiredSubscriptions() {
     combineLatest([
-      PortfoliosStreams.getAllPortfolios(this.store),
+      this.userPortfoliosService.getPortfolios(),
       this.terminalSettingsService.getSettings()
     ]).pipe(
       takeUntilDestroyed(this.destroyRef)
