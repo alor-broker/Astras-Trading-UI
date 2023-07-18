@@ -160,6 +160,10 @@ export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
     this.hoveredRow$.next(hoveredItem);
   }
 
+  isAllOrdersHaveSide(orders: CurrentOrderDisplay[], side: Side): boolean {
+    return orders.length > 0 && orders.every(o => o.side === side);
+  }
+
   private initDisplayItems() {
     this.displayItems$ = combineLatest([
       this.dataContext.extendedSettings$,

@@ -107,8 +107,9 @@
               <span (click)="cancelOrders($event, orders.orders)"
                     [ngClass]="{
                     'orders-indicator': true,
-                    'bid': orders.orders.length === 1 && orders.orders[0].side ===ordersSides.Buy,
-                    'ask': orders.orders.length === 1 && orders.orders[0].side ===ordersSides.Sell
+                    'bid': isAllOrdersHaveSide(orders.orders, ordersSides.Buy),
+                    'ask': isAllOrdersHaveSide(orders.orders, ordersSides.Sell),
+                    'multiple': orders.orders.length > 1
                     }"
                     [nz-tooltip]="t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
                     [nzTooltipMouseEnterDelay]="1"

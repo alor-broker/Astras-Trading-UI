@@ -70,12 +70,17 @@
 
         .orders-indicator {
           &.bid {
-            color: @buy-color;
+            color: @buy-color-accent;
           }
 
           &.ask {
-            color: @sell-color;
+            color: @sell-color-accent;
           }
+
+          &.multiple::after {
+            content: "*";
+          }
+
 
           &:hover {
             text-decoration: line-through;

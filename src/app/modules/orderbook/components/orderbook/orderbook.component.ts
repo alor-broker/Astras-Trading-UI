@@ -28,7 +28,6 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
-import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import {
   ColumnsOrder,
@@ -61,7 +60,6 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   shouldShowSettingsChange = new EventEmitter<boolean>();
   ob$: Observable<OrderBook | null> = of(null);
   spreadDiffData$: Observable<SpreadDiffData | null> = of(null);
-  themeSettings?: ThemeSettings;
   columnsOrderEnum = ColumnsOrder;
   settings$!: Observable<OrderbookSettings>;
   sizes: BehaviorSubject<Size> = new BehaviorSubject<Size>({
