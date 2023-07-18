@@ -59,7 +59,7 @@ export class OrderbookService {
     return combineLatest([obData$, this.getOrders(settings)]).pipe(
       map(([ob, orders]) => {
         const withOrdersRows = ob.rows.map((row) => {
-          const askOrders = !!row.ask
+          const askOrders = row.ask != null
             ? OrderBookDataFeedHelper.getCurrentOrdersForItem(row.ask, orders)
             : [];
 
@@ -67,7 +67,7 @@ export class OrderbookService {
             .map((o) => o.volume)
             .reduce((prev, curr) => prev + curr, 0);
 
-          const bidOrders = !!row.bid
+          const bidOrders = row.bid != null
             ? OrderBookDataFeedHelper.getCurrentOrdersForItem(row.bid, orders)
             : [];
 
