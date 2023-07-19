@@ -55,8 +55,6 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
 
   searchControl = new FormControl<string | null>(null);
 
-  @Output()
-
   private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
   private touched = false;
 

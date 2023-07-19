@@ -6,14 +6,14 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-events-calendar-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-events-calendar-widget',
   templateUrl: './events-calendar-widget.component.html',
   styleUrls: ['./events-calendar-widget.component.less']
 })
 export class EventsCalendarWidgetComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
 
   shouldShowSettings: boolean = false;

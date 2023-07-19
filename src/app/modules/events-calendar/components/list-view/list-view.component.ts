@@ -1,20 +1,20 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {Component, DestroyRef, Input, OnInit} from '@angular/core';
 import { formatCurrency } from "../../../../shared/utils/formatters";
 import { CalendarEvents } from "../../models/events-calendar.model";
-import { BehaviorSubject, Observable, Subject, switchMap, takeUntil } from "rxjs";
+import { BehaviorSubject, Observable, switchMap } from "rxjs";
 import { EventsCalendarService } from "../../services/events-calendar.service";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { addYears, getISOStringDate } from "../../../../shared/utils/datetime";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-list-view',
   templateUrl: './list-view.component.html',
   styleUrls: ['./list-view.component.less']
 })
-export class ListViewComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<boolean>();
+export class ListViewComponent implements OnInit {
   private symbols$ = new BehaviorSubject<string[]>([]);
   @Input()
   set symbols(value: string[]) {
@@ -29,7 +29,8 @@ export class ListViewComponent implements OnInit, OnDestroy {
   constructor(
     private readonly service: EventsCalendarService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly destroyRef: DestroyRef
 ) {
   }
 
@@ -40,18 +41,13 @@ export class ListViewComponent implements OnInit, OnDestroy {
         dateTo: getISOStringDate(addYears(new Date(), 1)),
         symbols
       })),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     )
       .subscribe(e => {
         this.events$.next(e);
       });
 
     this.activeLang$ = this.translatorService.getLangChanges();
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   selectInstrument(symbol: string) {

@@ -28,18 +28,19 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-orderbook-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-orderbook-widget',
   templateUrl: './orderbook-widget.component.html',
   styleUrls: ['./orderbook-widget.component.less'],
   providers: [OrderbookService]
 })
 export class OrderbookWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
-  @Input()
-  widgetInstance!: WidgetInstance;
 
-  @Input()
+  @Input({required: true})
+  widgetInstance!: WidgetInstance;
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   settings$!: Observable<OrderbookSettings>;
   showBadge$!: Observable<boolean>;
   title$!: Observable<string>;

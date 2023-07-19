@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -6,10 +6,8 @@ import {
   filter,
   Observable,
   shareReplay,
-  Subject,
   switchMap,
   take,
-  takeUntil,
   tap,
   withLatestFrom
 } from "rxjs";
@@ -42,6 +40,7 @@ import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
 import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
 import { ExecutionPolicy } from "../../../../shared/models/orders/orders-group.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 export enum ComponentTabs {
   LimitOrder = 'limitOrder',
@@ -51,7 +50,7 @@ export enum ComponentTabs {
 }
 
 @Component({
-  selector: 'ats-order-submit[guid]',
+  selector: 'ats-order-submit',
   templateUrl: './order-submit.component.html',
   styleUrls: ['./order-submit.component.less']
 })
@@ -59,7 +58,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly orderSides = Side;
   readonly componentTabs = ComponentTabs;
   readonly orderTypes = OrderType;
-  @Input()
+  @Input({required: true})
   guid!: string;
   currentInstrumentWithPortfolio$!: Observable<{ instrument: Instrument, portfolio: string }>;
   priceData$!: Observable<{ bid: number, ask: number }>;
@@ -80,7 +79,6 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   settings$!: Observable<OrderSubmitSettings>;
   lastSelectedTab: ComponentTabs = ComponentTabs.LimitOrder;
 
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   private limitOrderFormValue: LimitOrderFormValue | null = null;
   private marketOrderFormValue: MarketOrderFormValue | null = null;
   private stopOrderFormValue: StopOrderFormValue | null = null;
@@ -94,6 +92,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
     private readonly widgetsDataProvider: WidgetsDataProviderService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -162,7 +161,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
 
     this.widgetsDataProvider.getDataProvider<SelectedPriceData>('selectedPrice')
       ?.pipe(
-        takeUntil(this.destroy$),
+        takeUntilDestroyed(this.destroyRef),
         withLatestFrom(this.settings$),
         filter(([priceData, settings]) => priceData.badgeColor === settings.badgeColor)
       )
@@ -251,9 +250,6 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-
     this.canSubmitOrder$.complete();
     this.buyButtonLoading$.complete();
     this.sellButtonLoading$.complete();

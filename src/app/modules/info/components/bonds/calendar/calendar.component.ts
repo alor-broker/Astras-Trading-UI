@@ -10,7 +10,7 @@ import { distinct, map } from 'rxjs/operators';
   styleUrls: ['./calendar.component.less']
 })
 export class CalendarComponent implements OnInit, OnDestroy {
-  @Input()
+  @Input({required: true})
   guid!: string;
   calendar$?: Observable<Calendar | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);

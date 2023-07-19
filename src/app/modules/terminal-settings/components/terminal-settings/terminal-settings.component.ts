@@ -1,15 +1,13 @@
 import {
-  Component,
+  Component, DestroyRef,
   EventEmitter,
-  OnDestroy,
   OnInit,
   Output
 } from '@angular/core';
 import {
   Observable,
   of,
-  take,
-  takeUntil
+  take
 } from 'rxjs';
 import { FullName } from '../../../../shared/models/user/full-name.model';
 import { TerminalSettingsService } from '../../services/terminal-settings.service';
@@ -26,17 +24,17 @@ import {
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { Destroyable } from '../../../../shared/utils/destroyable';
 import { AtsValidators } from '../../../../shared/utils/form-validators';
 import { TerminalSettingsHelper } from '../../../../shared/utils/terminal-settings-helper';
 import {AccountService} from "../../../../shared/services/account.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-terminal-settings',
   templateUrl: './terminal-settings.component.html',
   styleUrls: ['./terminal-settings.component.less']
 })
-export class TerminalSettingsComponent implements OnInit, OnDestroy {
+export class TerminalSettingsComponent implements OnInit {
   @Output() formChange = new EventEmitter<{ value: TerminalSettings | null, isInitial: boolean }>();
   @Output() tabChange = new EventEmitter<number>();
   tabNames = TabNames;
@@ -47,7 +45,6 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     secondName: ''
   });
   excludedSettings: string[] = [];
-  private readonly destroyable = new Destroyable();
 
   constructor(
     private readonly accountService: AccountService,
@@ -55,6 +52,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     private readonly dashboardService: ManageDashboardsService,
     private modal: ModalService,
     private readonly translatorService: TranslatorService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -83,10 +81,6 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy() {
-    this.destroyable.destroy();
-  }
-
   getFormControl(key: string): UntypedFormControl | null {
     return this.settingsForm?.controls[key] as UntypedFormControl ?? null;
   }
@@ -103,7 +97,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
 
       this.settingsForm.valueChanges
         .pipe(
-          takeUntil(this.destroyable)
+          takeUntilDestroyed(this.destroyRef)
         )
         .subscribe(() => {
           this.formChange.emit({

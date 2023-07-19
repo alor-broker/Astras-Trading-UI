@@ -3,7 +3,7 @@ import { ExchangeInfo } from '../../../models/exchange-info.model';
 import {NzAvatarComponent} from "ng-zorro-antd/avatar";
 
 @Component({
-  selector: 'ats-info-header[info]',
+  selector: 'ats-info-header',
   templateUrl: './info-header.component.html',
   styleUrls: ['./info-header.component.less']
 })
@@ -11,7 +11,7 @@ export class InfoHeaderComponent {
   @ViewChild('avatar')
   avatarEl?: NzAvatarComponent;
 
-  @Input()
+  @Input({required: true})
   info!: ExchangeInfo;
 
   @Input()

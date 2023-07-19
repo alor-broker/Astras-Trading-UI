@@ -1,5 +1,13 @@
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
-import { Observable, switchMap, combineLatest, map, takeUntil, Subject, filter, startWith } from "rxjs";
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  Input,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
+import { Observable, switchMap, combineLatest, map, filter, startWith } from "rxjs";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -8,26 +16,31 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { Order } from "../../../../shared/models/orders/order.model";
 import { OrdersGroupTreeNode } from "../../../../shared/models/orders/orders-group.model";
 import { StopOrder } from "../../../../shared/models/orders/stop-order.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 
 @Component({
-  selector: 'ats-orders-group-modal[guid]',
+  selector: 'ats-orders-group-modal',
   templateUrl: './orders-group-modal.component.html',
   styleUrls: ['./orders-group-modal.component.less']
 })
-export class OrdersGroupModalComponent implements AfterViewInit, OnDestroy {
-  @Input() guid!: string;
-  @Input() groupId?: string;
+export class OrdersGroupModalComponent implements AfterViewInit {
+  @Input({required: true})
+  guid!: string;
 
-  @ViewChildren('ordersGroupTree', {read: ElementRef}) ordersGroupTree!: QueryList<ElementRef>;
+  @Input()
+  groupId?: string;
 
-  private destroy$: Subject<boolean> = new Subject<boolean>();
+  @ViewChildren('ordersGroupTree', {read: ElementRef})
+  ordersGroupTree!: QueryList<ElementRef>;
+
   groups$?: Observable<OrdersGroupTreeNode[]>;
 
   constructor(
     private readonly service: OrdersGroupService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly widgetSettingsService: WidgetSettingsService
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -108,7 +121,7 @@ export class OrdersGroupModalComponent implements AfterViewInit, OnDestroy {
       map(q => q.first),
       startWith(this.ordersGroupTree.first),
       filter((el): el is ElementRef<HTMLElement> => !!el),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     )
       .subscribe(tree => {
         tree.nativeElement.querySelectorAll('nz-tree-node-title')
@@ -116,10 +129,5 @@ export class OrdersGroupModalComponent implements AfterViewInit, OnDestroy {
             node.removeAttribute('title');
           });
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 }

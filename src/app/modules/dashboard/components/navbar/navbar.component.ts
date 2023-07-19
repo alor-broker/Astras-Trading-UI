@@ -1,13 +1,11 @@
 import {
   Component,
-  OnDestroy,
   OnInit
 } from '@angular/core';
 import {
   BehaviorSubject,
   Observable,
   shareReplay,
-  Subject,
   take
 } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
@@ -45,7 +43,7 @@ import {environment} from "../../../../../environments/environment";
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.less'],
 })
-export class NavbarComponent implements OnInit, OnDestroy {
+export class NavbarComponent implements OnInit {
   readonly externalLinks = environment.externalLinks;
 
   isSideMenuVisible = false;
@@ -57,7 +55,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   searchControl = new FormControl('');
 
   isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   private activeInstrument$!: Observable<InstrumentKey | null>;
 
   constructor(
@@ -117,12 +114,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   changeDashboardSelectionMenuVisibility(value: boolean) {
     setTimeout(() => this.isDashboardSelectionMenuVisible$.next(value));
   }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-  }
-
   isFindedPortfolio(portfolio: PortfolioExtended) {
     const { value } = this.searchControl;
     return !value || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes(value.toUpperCase());
@@ -183,10 +174,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   portfoliosTrackByFn(index: number, item: PortfolioExtended) {
     return item.market + item.portfolio;
-  }
-
-  openSideMenu(): void {
-    this.isSideMenuVisible = true;
   }
 
   closeSideMenu(): void {

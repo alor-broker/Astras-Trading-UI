@@ -19,7 +19,9 @@ import { NG_VALUE_ACCESSOR, UntypedFormControl } from "@angular/forms";
 })
 export class HotKeyInputComponent extends ControlValueAccessorBaseComponent<HotKeyMeta> {
 
-  @Input() actionName?: string;
+  @Input({required: true})
+  actionName!: string;
+
   control = new UntypedFormControl(null);
 
   value: HotKeyMeta | null = null;

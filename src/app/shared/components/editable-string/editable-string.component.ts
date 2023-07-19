@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   ElementRef,
   EventEmitter,
   Input,
@@ -12,18 +12,17 @@ import {
 import {
   BehaviorSubject,
   filter,
-  Subject,
   take,
-  takeUntil
 } from 'rxjs';
 import {
   FormControl,
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-editable-string[content]',
+  selector: 'ats-editable-string',
   templateUrl: './editable-string.component.html',
   styleUrls: ['./editable-string.component.less']
 })
@@ -31,8 +30,9 @@ export class EditableStringComponent implements OnInit, OnDestroy {
   @ViewChildren('editInput')
   editInput!: QueryList<ElementRef<HTMLInputElement>>;
 
-  @Input()
+  @Input({required: true})
   content: string | null = null;
+
   @Input()
   lenghtRestrictions?: {
     minLenght: number,
@@ -47,11 +47,13 @@ export class EditableStringComponent implements OnInit, OnDestroy {
 
   isEditMode$ = new BehaviorSubject(false);
   editForm?: UntypedFormGroup;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
+
+  constructor(private readonly destroyRef: DestroyRef) {
+  }
 
   ngOnInit(): void {
     this.isEditMode$.pipe(
-      takeUntil(this.destroy$),
+      takeUntilDestroyed(this.destroyRef),
       filter(x => x)
     ).subscribe(() => {
       this.initForm();
@@ -63,9 +65,6 @@ export class EditableStringComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-
     this.isEditMode$.complete();
   }
 

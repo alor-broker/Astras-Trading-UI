@@ -1,9 +1,8 @@
 import {
-  Component,
+  Component, DestroyRef,
   ElementRef,
   Inject,
   Input,
-  OnDestroy,
   OnInit,
   ViewChild
 } from '@angular/core';
@@ -14,9 +13,7 @@ import {
   Observable,
   of,
   shareReplay,
-  Subject,
   take,
-  takeUntil
 } from 'rxjs';
 import {
   debounceTime,
@@ -36,18 +33,18 @@ import { DOCUMENT } from '@angular/common';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import {DomHelper} from "../../../../shared/utils/dom-helper";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-instrument-select[guid]',
+  selector: 'ats-instrument-select',
   templateUrl: './instrument-select.component.html',
   styleUrls: ['./instrument-select.component.less']
 })
-export class InstrumentSelectComponent implements OnInit, OnDestroy {
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
+export class InstrumentSelectComponent implements OnInit {
 
   @ViewChild('inputEl') inputEl!: ElementRef<HTMLInputElement>;
 
-  @Input()
+  @Input({required: true})
   guid!: string;
 
   filteredInstruments$: Observable<Instrument[]> = of([]);
@@ -62,7 +59,8 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
     private readonly dashboardContextService: DashboardContextService,
     private readonly settingsService: WidgetSettingsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
-    @Inject(DOCUMENT) private readonly document: Document) {
+    @Inject(DOCUMENT) private readonly document: Document,
+    private readonly destroyRef: DestroyRef) {
 
   }
 
@@ -131,7 +129,7 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
     fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
       filter(() => !DomHelper.isModalOpen()),
       filter(e => e.ctrlKey && e.code === 'KeyF' && !e.cancelBubble),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe((e) => {
       e.stopPropagation();
       e.preventDefault();
@@ -173,10 +171,5 @@ export class InstrumentSelectComponent implements OnInit, OnDestroy {
   hasDefaultTitle(list: Watchlist): boolean {
     return (list.isDefault ?? false)
       && list.title === WatchlistCollectionService.DefaultListName;
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 }

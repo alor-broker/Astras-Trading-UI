@@ -1,5 +1,5 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable, switchMap, map, Subject, takeUntil } from "rxjs";
+import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import { BehaviorSubject, Observable, switchMap, map } from "rxjs";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { Store } from "@ngrx/store";
 import { selectPortfoliosState } from "../../../../store/portfolios/portfolios.selectors";
@@ -9,16 +9,16 @@ import { PositionsService } from "../../../../shared/services/positions.service"
 import { AuthService } from "../../../../shared/services/auth.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-events-calendar[guid]',
+  selector: 'ats-events-calendar',
   templateUrl: './events-calendar.component.html',
   styleUrls: ['./events-calendar.component.less']
 })
 export class EventsCalendarComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<boolean>();
-
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
 
   portfolios: PortfolioKey[] = [];
   selectedPortfolio$ = new BehaviorSubject<PortfolioKey | null>(null);
@@ -28,7 +28,8 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
     private readonly store: Store,
     private readonly positionsService: PositionsService,
     private readonly authService: AuthService,
-    private readonly marketService: MarketService
+    private readonly marketService: MarketService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -40,7 +41,7 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
           () => this.marketService.getDefaultExchange(),
           (portfolios, exchange) => ({ portfolios, exchange })
         ),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(({ portfolios, exchange }) => {
         this.portfolios = Object.values(portfolios.entities)
@@ -66,8 +67,6 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.selectedPortfolio$.complete();
   }
 

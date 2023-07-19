@@ -1,11 +1,11 @@
 import {
+  DestroyRef,
   Directive,
   ElementRef,
   EventEmitter,
   Inject,
   Input,
   NgZone,
-  OnDestroy,
   OnInit,
   Output,
   Renderer2,
@@ -15,7 +15,6 @@ import { DOCUMENT } from '@angular/common';
 import {
   distinctUntilChanged,
   fromEvent,
-  Subject,
   switchMap,
   takeUntil
 } from 'rxjs';
@@ -25,11 +24,12 @@ import {
   tap
 } from 'rxjs/operators';
 import { NzThMeasureDirective } from 'ng-zorro-antd/table';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Directive({
   selector: 'th[atsResizeColumn]'
 })
-export class ResizeColumnDirective implements OnInit, OnDestroy {
+export class ResizeColumnDirective implements OnInit {
   @Input()
   minWidth = 0;
 
@@ -42,7 +42,6 @@ export class ResizeColumnDirective implements OnInit, OnDestroy {
   @Output()
   atsWidthChanging = new EventEmitter<{ columnWidth: number, delta: number | null }>();
 
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private readonly column: HTMLElement;
 
   constructor(
@@ -51,7 +50,8 @@ export class ResizeColumnDirective implements OnInit, OnDestroy {
     private readonly dir: NzThMeasureDirective,
     @Inject(DOCUMENT)
     private readonly documentRef: Document,
-    private readonly ngZone: NgZone) {
+    private readonly ngZone: NgZone,
+    private readonly destroyRef: DestroyRef) {
     this.column = this.el.nativeElement;
   }
 
@@ -65,7 +65,7 @@ export class ResizeColumnDirective implements OnInit, OnDestroy {
     this.renderer.appendChild(this.column, resizer);
 
     fromEvent<MouseEvent>(resizer, 'click').pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe((e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -96,7 +96,7 @@ export class ResizeColumnDirective implements OnInit, OnDestroy {
             })
           );
         }),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       ).subscribe(w => {
           this.ngZone.run(() => {
             const prev = this.dir.nzWidth;
@@ -116,10 +116,5 @@ export class ResizeColumnDirective implements OnInit, OnDestroy {
         }
       );
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 }

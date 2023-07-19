@@ -4,15 +4,10 @@ import { AllTradesService } from './all-trades.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
+import {Subject} from "rxjs";
 
 describe('AllTradesService', () => {
   let service: AllTradesService;
-
-  let subscriptionsDataFeedServiceSpy: any;
-
-  beforeEach(() => {
-    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
-  });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -27,7 +22,12 @@ describe('AllTradesService', () => {
             handleError: jasmine.createSpy('handleError').and.callThrough()
           }
         },
-        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
+        {
+          provide: SubscriptionsDataFeedService,
+          useValue: {
+            subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
+          }
+        },
       ]
     });
     service = TestBed.inject(AllTradesService);

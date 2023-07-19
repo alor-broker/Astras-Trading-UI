@@ -1,8 +1,7 @@
 import {
-  Component,
+  Component, DestroyRef,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output
 } from '@angular/core';
@@ -15,9 +14,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import {
   Observable,
   shareReplay,
-  Subject,
   take,
-  takeUntil,
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { BaseColumnId, TableDisplaySettings } from '../../../../shared/models/settings/table-settings.model';
@@ -40,15 +37,17 @@ import {
   BlotterSettings
 } from '../../models/blotter-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-blotter-settings[guid]',
+  selector: 'ats-blotter-settings',
   templateUrl: './blotter-settings.component.html',
   styleUrls: ['./blotter-settings.component.less']
 })
-export class BlotterSettingsComponent implements OnInit, OnDestroy {
-  @Input()
+export class BlotterSettingsComponent implements OnInit {
+  @Input({required: true})
   guid!: string;
+
   @Output()
   settingsChange: EventEmitter<BlotterSettings> = new EventEmitter<BlotterSettings>();
   form!: UntypedFormGroup;
@@ -63,13 +62,13 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
   availablePortfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   deviceInfo$!: Observable<any>;
 
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<BlotterSettings>;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly store: Store,
-    private readonly deviceService: DeviceService
+    private readonly deviceService: DeviceService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -84,7 +83,7 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
     );
 
     this.settings$.pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       if (settings) {
         this.prevSettings = settings;
@@ -147,11 +146,6 @@ export class BlotterSettingsComponent implements OnInit, OnDestroy {
       this.settingsService.updateSettings<BlotterSettings>(this.guid, newSettings);
       this.settingsChange.emit();
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   toPortfolioKey(portfolio: {portfolio: string, exchange: string}): string {

@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, shareReplay, Subject } from "rxjs";
+import { Component, OnInit } from '@angular/core';
+import { Observable, shareReplay } from "rxjs";
 import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
 import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
 import { FormControl, UntypedFormControl } from "@angular/forms";
@@ -20,7 +20,7 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
   templateUrl: './mobile-navbar.component.html',
   styleUrls: ['./mobile-navbar.component.less']
 })
-export class MobileNavbarComponent implements OnInit, OnDestroy {
+export class MobileNavbarComponent implements OnInit {
   isSideMenuVisible = false;
 
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
@@ -30,7 +30,6 @@ export class MobileNavbarComponent implements OnInit, OnDestroy {
 
   instrumentControl = new UntypedFormControl('');
 
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   private activeInstrument$!: Observable<InstrumentKey | null>;
 
   constructor(
@@ -72,11 +71,6 @@ export class MobileNavbarComponent implements OnInit, OnDestroy {
     this.activeInstrument$ = this.dashboardContextService.instrumentsSelection$.pipe(
       map(selection => selection[defaultBadgeColor])
     );
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   isFindedPortfolio(portfolio: PortfolioExtended) {

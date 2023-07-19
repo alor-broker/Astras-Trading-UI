@@ -29,17 +29,17 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-scalper-order-book-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-scalper-order-book-widget',
   templateUrl: './scalper-order-book-widget.component.html',
   styleUrls: ['./scalper-order-book-widget.component.less']
 })
 export class ScalperOrderBookWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
 
-  @Input()
-  isBlockWidget!: boolean;
-  @Input()
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
+  @Input({required: true})
+  isBlockWidget!: boolean;
 
   @Input()
   isActive: boolean = false;

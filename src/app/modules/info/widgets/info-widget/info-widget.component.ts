@@ -25,17 +25,15 @@ import { InfoSettings } from '../../models/info-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-info-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-info-widget',
   templateUrl: './info-widget.component.html',
   styleUrls: ['./info-widget.component.less'],
   providers: [InfoService]
 })
 export class InfoWidgetComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-
-
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
 
   @Input()

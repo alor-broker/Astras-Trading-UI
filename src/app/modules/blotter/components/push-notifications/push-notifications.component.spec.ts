@@ -8,6 +8,7 @@ import {DashboardContextService} from "../../../../shared/services/dashboard-con
 import {TerminalSettingsService} from "../../../terminal-settings/services/terminal-settings.service";
 import {PushNotificationsService} from "../../../push-notifications/services/push-notifications.service";
 import {getTranslocoModule} from "../../../../shared/utils/testing";
+import {PositionsComponent} from "../positions/positions.component";
 
 describe('PushNotificationsComponent', () => {
   let component: PushNotificationsComponent;
@@ -21,7 +22,8 @@ describe('PushNotificationsComponent', () => {
         {
           provide: WidgetSettingsService,
           useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject()),
+            updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
           }
         },
         {
@@ -29,18 +31,6 @@ describe('PushNotificationsComponent', () => {
           useValue: {
             selectNewInstrument: jasmine.createSpy('selectNewInstrument').and.callThrough(),
             getPositions: jasmine.createSpy('getPositions').and.returnValue(new Subject())
-          }
-        },
-        {
-          provide: DashboardContextService,
-          useValue: {
-            instrumentsSelection$: new Subject()
-          }
-        },
-        {
-          provide: TerminalSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
           }
         },
         {
@@ -56,7 +46,9 @@ describe('PushNotificationsComponent', () => {
       ]
     })
     .compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(PushNotificationsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

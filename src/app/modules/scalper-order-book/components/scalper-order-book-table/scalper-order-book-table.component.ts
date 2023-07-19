@@ -1,7 +1,6 @@
 import {
-  Component,
+  Component, DestroyRef,
   Input,
-  OnDestroy,
   OnInit
 } from '@angular/core';
 import {
@@ -13,8 +12,7 @@ import {
   combineLatest,
   filter,
   Observable,
-  Subject,
-  takeUntil
+  Subject
 } from 'rxjs';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { map } from 'rxjs/operators';
@@ -24,7 +22,6 @@ import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { ScalperCommandProcessorService } from '../../services/scalper-command-processor.service';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
-import { Destroyable } from '../../../../shared/utils/destroyable';
 import { ScalperOrdersService } from '../../services/scalper-orders.service';
 import {
   ScalperOrderBookSettings,
@@ -32,6 +29,7 @@ import {
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -47,18 +45,18 @@ interface DisplayRow extends BodyRow {
 }
 
 @Component({
-  selector: 'ats-scalper-order-book-table[rowHeight][dataContext][isActive]',
+  selector: 'ats-scalper-order-book-table',
   templateUrl: './scalper-order-book-table.component.html',
   styleUrls: ['./scalper-order-book-table.component.less']
 })
-export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
+export class ScalperOrderBookTableComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;
 
   ordersSides = Side;
-  @Input()
+  @Input({required: true})
   rowHeight!: number;
   displayItems$!: Observable<DisplayRow[]>;
-  @Input()
+  @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
 
   @Input()
@@ -66,13 +64,12 @@ export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
 
   readonly hoveredRow$ = new Subject<{ price: number } | null>();
 
-  private destroyable = new Destroyable();
-
   constructor(
     private readonly scalperOrdersService: ScalperOrdersService,
     private readonly themeService: ThemeService,
     private readonly commandProcessorService: ScalperCommandProcessorService,
-    private readonly hotkeysService: HotKeyCommandService
+    private readonly hotkeysService: HotKeyCommandService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -152,10 +149,6 @@ export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
     this.commandProcessorService.updateOrdersPrice(orders, row, this.dataContext);
   }
 
-  ngOnDestroy(): void {
-    this.destroyable.destroy();
-  }
-
   updateHoveredItem(hoveredItem: { price: number } | null) {
     this.hoveredRow$.next(hoveredItem);
   }
@@ -211,7 +204,7 @@ export class ScalperOrderBookTableComponent implements OnInit, OnDestroy {
         () => this.hotkeysService.commands$,
         (settings, command) => ({ settings, command })
       ),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ settings, command }) => {
       if (settings.widgetSettings.disableHotkeys) {
         return;

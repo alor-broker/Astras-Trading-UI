@@ -13,12 +13,13 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { ScalperOrderBookSettings } from '../../models/scalper-order-book-settings.model';
 
 @Component({
-  selector: 'ats-scalper-order-book[guid][isActive]',
+  selector: 'ats-scalper-order-book',
   templateUrl: './scalper-order-book.component.html',
   styleUrls: ['./scalper-order-book.component.less']
 })
 export class ScalperOrderBookComponent implements OnInit {
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
 
   @Input()
   isActive: boolean = false;

@@ -24,18 +24,19 @@ import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-tech-chart-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-tech-chart-widget',
   templateUrl: './tech-chart-widget.component.html',
   styleUrls: ['./tech-chart-widget.component.less'],
   providers: [TechChartDatafeedService]
 })
 export class TechChartWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
-  @Input()
-  widgetInstance!: WidgetInstance;
 
-  @Input()
+  @Input({required: true})
+  widgetInstance!: WidgetInstance;
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   settings$!: Observable<TechChartSettings>;
   showBadge$!: Observable<boolean>;
   title$!: Observable<string>;

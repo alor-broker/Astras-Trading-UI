@@ -4,12 +4,10 @@ import {
   filter,
   Observable,
   of,
-  Subject,
   Subscription,
-  takeUntil
 } from "rxjs";
 import {
-  Component,
+  Component, DestroyRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -21,6 +19,7 @@ import { FormGroup } from "@angular/forms";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { ControlsOf } from '../../../../shared/models/form.model';
 import { OrderFormValue, OrderFormUpdate } from '../../models/order-form.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   template: ''
@@ -31,11 +30,13 @@ export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements On
   formValueChange = new EventEmitter<OrderFormValue<T>>();
   public readonly isActivated$ = new BehaviorSubject<boolean>(false);
   public readonly instrument$ = new BehaviorSubject<Instrument | null>(null);
-  protected destroy$: Subject<boolean> = new Subject<boolean>();
   protected formValueChangeSubscription?: Subscription;
   protected readonly valueUpdate$ = new BehaviorSubject<OrderFormUpdate<T>>(null);
 
-  @Input()
+  protected constructor(protected readonly destroyRef: DestroyRef) {
+  }
+
+  @Input({required: true})
   set instrument(value: Instrument) {
     this.instrument$.next(value);
   }
@@ -51,9 +52,6 @@ export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements On
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-
     this.formValueChangeSubscription?.unsubscribe();
     this.instrument$?.complete();
     this.valueUpdate$?.complete();
@@ -64,7 +62,7 @@ export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements On
     this.instrument$.pipe(
       filter((i): i is Instrument => !!i),
       mapWith(() => this.getFormInitAdditions(), (instrument, additions) => ({ instrument, additions })),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ instrument, additions }) => {
       this.initForm(instrument, additions);
       this.emitFormValue();
@@ -101,7 +99,7 @@ export abstract class OrderFormBaseComponent<T extends {}, A = {}> implements On
       distinctUntilChanged((prev, curr) =>
         JSON.stringify(prev) === JSON.stringify(curr)
       ),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.emitFormValue();
     });

@@ -4,11 +4,10 @@ import { ArbitrageSpread } from "../../models/arbitrage-spread.model";
 import { map } from "rxjs/operators";
 import { Observable, shareReplay, Subscription } from "rxjs";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { Store } from "@ngrx/store";
-import { PortfoliosStreams } from "../../../../store/portfolios/portfolios.streams";
 import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
+import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
 
 interface SpreadFormGroup {
   id: FormControl;
@@ -87,12 +86,12 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private readonly store: Store
+    private readonly userPortfoliosService: UserPortfoliosService
   ) {
   }
 
   ngOnInit() {
-    this.portfolios$ = PortfoliosStreams.getAllPortfolios(this.store)
+    this.portfolios$ = this.userPortfoliosService.getPortfolios()
       .pipe(
         map(portfolios => portfolios.map(p => ({ portfolio: p.portfolio, exchange: p.exchange }))),
         shareReplay(1)

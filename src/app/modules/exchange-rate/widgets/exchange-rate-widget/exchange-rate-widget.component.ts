@@ -13,16 +13,16 @@ import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item
 
 
 @Component({
-  selector: 'ats-exchange-rate-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-exchange-rate-widget',
   templateUrl: './exchange-rate-widget.component.html',
   styleUrls: ['./exchange-rate-widget.component.less']
 })
 export class ExchangeRateWidgetComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<ExchangeRateSettings>;
   constructor(

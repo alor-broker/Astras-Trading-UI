@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   Input,
   OnDestroy,
   OnInit,
@@ -11,9 +11,7 @@ import {
   BehaviorSubject, combineLatest,
   Observable,
   shareReplay,
-  Subject,
   take,
-  takeUntil,
   withLatestFrom
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -31,17 +29,18 @@ import { NzTableFilterList } from "ng-zorro-antd/table";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
 import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-all-trades[guid]',
+  selector: 'ats-all-trades',
   templateUrl: './all-trades.component.html',
   styleUrls: ['./all-trades.component.less'],
 })
 export class AllTradesComponent implements OnInit, OnDestroy {
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
 
   contentSize$ = new BehaviorSubject<ContentSize | null>(null);
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private datePipe = new DatePipe('ru-RU');
   private take = 50;
   private settings$!: Observable<AllTradesSettings>;
@@ -132,7 +131,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     private readonly settingsService: WidgetSettingsService,
     private readonly translatorService: TranslatorService,
     private readonly timezoneConverterService: TimezoneConverterService,
-
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -146,7 +145,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     this.initTableConfig();
 
     this.settings$.pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.applyFilter({
         exchange: settings.exchange,
@@ -207,8 +206,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.tradesList$.complete();
     this.isLoading$.complete();
     this.filters$.complete();
@@ -316,7 +313,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         ([, settings]) => this.allTradesService.getNewTradesSubscription(settings),
         (data, res) => ({filters: data[0], res})
       ),
-      takeUntil(this.destroy$),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(data => {
       this.filterNewTrade(data);
     });

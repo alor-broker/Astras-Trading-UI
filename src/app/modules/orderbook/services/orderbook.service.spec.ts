@@ -7,13 +7,13 @@ import {
 } from '../../../shared/utils/testing';
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
+import {Subject} from "rxjs";
 
 describe('OrderbookService', () => {
   let service: OrderbookService;
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
-    const subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
     const portfolioSubscriptionsServiceSpy = jasmine.createSpyObj('PortfolioSubscriptionsService', ['getOrdersSubscription']);
     const cancellerSpy = jasmine.createSpyObj('OrderCancellerService', ['cancelOrder']);
 
@@ -21,7 +21,12 @@ describe('OrderbookService', () => {
       imports: [...sharedModuleImportForTests],
       providers: [
         OrderbookService,
-        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
+        {
+          provide: SubscriptionsDataFeedService,
+          useValue: {
+            subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
+          }
+        },
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
         { provide: OrderCancellerService, useValue: cancellerSpy },
         ...commonTestProviders,

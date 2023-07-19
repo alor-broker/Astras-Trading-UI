@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ExchangeRateService} from "../../../../shared/services/exchange-rate.service";
 import {BehaviorSubject, combineLatest, map, Observable} from "rxjs";
 import {ExchangeRate} from "../../models/exchange-rate.model";
@@ -13,13 +13,11 @@ import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.mo
   styleUrls: ['./exchange-rate.component.less']
 })
 export class ExchangeRateComponent implements OnInit, OnDestroy {
-
-  @Input() public shouldShowSettings!: boolean;
-  @Input() public guid!: string;
-  @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
+  @Input({required: true})
+  guid!: string;
 
   exchangeRateData$!: Observable<{ currencies: string[], data: { [key: string]: number } }>;
-  readonly tableScroll$ = new BehaviorSubject<ContentSize | null>(null);
+  readonly tableScroll$ = new BehaviorSubject<ContentSize | null>({width: 50, height: 50});
 
   constructor(
     private readonly exchangeRateService: ExchangeRateService,

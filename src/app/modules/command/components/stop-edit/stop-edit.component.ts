@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   Input,
   OnDestroy,
   OnInit
@@ -7,8 +7,6 @@ import {
 import {
   BehaviorSubject,
   filter,
-  Subject,
-  takeUntil,
   withLatestFrom
 } from "rxjs";
 import { CommandContextModel } from "../../models/command-context.model";
@@ -36,6 +34,7 @@ import { Side } from '../../../../shared/models/enums/side.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { TimeInForce } from "../../../../shared/models/commands/command-params.model";
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 interface StopEditFormData extends Omit<StopFormData, 'linkedOrder'> {
   side: Side;
@@ -51,16 +50,16 @@ export class StopEditComponent implements OnInit, OnDestroy {
   commandContext$ = new BehaviorSubject<CommandContextModel<EditParams> | null>(null);
   canSelectNow = false;
   timeInForceEnum = TimeInForce;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   private timezoneConverter!: TimezoneConverter;
 
   constructor(
-    private service: CommandsService,
-    private readonly timezoneConverterService: TimezoneConverterService
+    private readonly service: CommandsService,
+    private readonly timezoneConverterService: TimezoneConverterService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
-  @Input()
+  @Input({required: true})
   set commandContext(value: CommandContextModel<EditParams>) {
     this.commandContext$.next(value);
   }
@@ -76,7 +75,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
     this.commandContext$.pipe(
       filter((x): x is CommandContextModel<EditParams> => !!x),
       withLatestFrom(this.timezoneConverterService.getConverter()),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(([context, converter]) => {
       this.initCommandForm(context, converter);
       this.checkNowTimeSelection(converter);
@@ -84,8 +83,6 @@ export class StopEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.commandContext$.complete();
   }
 
@@ -137,7 +134,7 @@ export class StopEditComponent implements OnInit, OnDestroy {
     this.setStopEdit(commandContext.commandParameters);
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroy$),
+      takeUntilDestroyed(this.destroyRef),
       distinctUntilChanged((prev, curr) =>
         JSON.stringify(prev) === JSON.stringify(curr)
       ),

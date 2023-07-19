@@ -1,7 +1,6 @@
 import {
-  Component,
+  Component, DestroyRef,
   Input,
-  OnDestroy,
   OnInit
 } from '@angular/core';
 import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
@@ -15,10 +14,9 @@ import {
 } from '@angular/forms';
 import { validationSettings } from '../../utils/validation-settings';
 import { DesignSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
-import { Destroyable } from '../../../../shared/utils/destroyable';
-import { takeUntil } from 'rxjs';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { ThemeType } from '../../../../shared/models/settings/theme-settings.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-general-settings-form',
@@ -32,7 +30,7 @@ import { ThemeType } from '../../../../shared/models/settings/theme-settings.mod
     }
   ]
 })
-export class GeneralSettingsFormComponent extends ControlValueAccessorBaseComponent<GeneralSettings> implements OnInit, OnDestroy {
+export class GeneralSettingsFormComponent extends ControlValueAccessorBaseComponent<GeneralSettings> implements OnInit {
   @Input() excludedSettings: string[] = [];
 
   readonly validationSettings = validationSettings;
@@ -42,14 +40,9 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
   themeTypes = ThemeType;
 
   form!: UntypedFormGroup;
-  private readonly destroyable = new Destroyable();
 
-  constructor() {
+  constructor(private readonly destroyRef: DestroyRef) {
     super();
-  }
-
-  ngOnDestroy(): void {
-    this.destroyable.destroy();
   }
 
   writeValue(value: GeneralSettings | null): void {
@@ -94,7 +87,7 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
     );
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       {
         this.checkIfTouched();

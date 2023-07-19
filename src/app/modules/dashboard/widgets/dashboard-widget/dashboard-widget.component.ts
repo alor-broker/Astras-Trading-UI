@@ -1,9 +1,8 @@
 import {
   Component,
-  OnDestroy,
   OnInit
 } from '@angular/core';
-import { Subject, take } from 'rxjs';
+import { take } from 'rxjs';
 import { OnboardingService } from '../../services/onboarding.service';
 import { initWidgetSettings } from '../../../../store/widget-settings/widget-settings.actions';
 import { ManageDashboardsActions } from '../../../../store/dashboards/dashboards-actions';
@@ -17,9 +16,7 @@ import { Router } from "@angular/router";
   templateUrl: './dashboard-widget.component.html',
   styleUrls: ['./dashboard-widget.component.less']
 })
-export class DashboardWidgetComponent implements OnInit, OnDestroy {
-  private destroy$: Subject<boolean> = new Subject<boolean>();
-
+export class DashboardWidgetComponent implements OnInit {
   constructor(
     private readonly onboarding: OnboardingService,
     private readonly store: Store,
@@ -42,10 +39,5 @@ export class DashboardWidgetComponent implements OnInit, OnDestroy {
           this.router.navigate(['mobile']);
         }
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 }

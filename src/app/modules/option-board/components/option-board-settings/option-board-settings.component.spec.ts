@@ -14,7 +14,7 @@ describe('OptionBoardSettingsComponent', () => {
       imports: [getTranslocoModule()],
       declarations: [
         OptionBoardSettingsComponent,
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['symbol', 'placeholder'] }),
+        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] }),
         mockComponent({ selector: 'ats-instrument-search' })
       ],
       providers:[

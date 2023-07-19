@@ -18,7 +18,7 @@ import {
 
 
 @Component({
-  selector: 'ats-instrument-board-select[instrument]',
+  selector: 'ats-instrument-board-select',
   templateUrl: './instrument-board-select.component.html',
   styleUrls: ['./instrument-board-select.component.less'],
   providers: [
@@ -39,7 +39,7 @@ export class InstrumentBoardSelectComponent implements OnInit, OnDestroy, Contro
   constructor(private readonly instrumentsService: InstrumentsService) {
   }
 
-  @Input()
+  @Input({required: true})
   set instrument(value: { symbol: string, exchange: string } | null) {
     this.instrument$.next(value);
   }

@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, DestroyRef,
   Inject,
   Input,
   NgZone,
@@ -29,7 +29,6 @@ import {
   ScalperOrderBookSettings,
   TradesClusterPanelSettings
 } from '../../models/scalper-order-book-settings.model';
-import {Destroyable} from '../../../../shared/utils/destroyable';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {CdkScrollable} from '@angular/cdk/overlay';
 import {DOCUMENT} from '@angular/common';
@@ -38,9 +37,10 @@ import {TradeClustersService} from '../../services/trade-clusters.service';
 import {toUnixTime} from '../../../../shared/utils/datetime';
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {NumberDisplayFormat} from "../../../../shared/models/enums/number-display-format";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-trade-clusters-panel[xAxisStep][dataContext]',
+  selector: 'ats-trade-clusters-panel',
   templateUrl: './trade-clusters-panel.component.html',
   styleUrls: ['./trade-clusters-panel.component.less']
 })
@@ -48,9 +48,9 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   @ViewChildren(CdkScrollable)
   scrollContainer!: QueryList<CdkScrollable>;
 
-  @Input()
+  @Input({required: true})
   xAxisStep!: number;
-  @Input()
+  @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
 
   clusters$!: Observable<TradesCluster[]>;
@@ -61,7 +61,6 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
   readonly availableTimeframes: number[] = Object.values(ClusterTimeframe).filter((v): v is number => !isNaN(Number(v)));
   readonly availableIntervalsCount = [1, 2, 5];
-  private readonly destroyable = new Destroyable();
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -69,12 +68,12 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     private readonly contextMenuService: ContextMenuService,
     @Inject(DOCUMENT)
     private readonly documentRef: Document,
-    private readonly ngZone: NgZone
+    private readonly ngZone: NgZone,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
   ngOnDestroy(): void {
-    this.destroyable.destroy();
     this.hScrollOffsets$.complete();
   }
 
@@ -182,7 +181,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   ngAfterViewInit(): void {
     const initScrollWatching = () => {
       this.getScrollContainer().elementScrolled().pipe(
-        takeUntil(this.destroyable)
+        takeUntilDestroyed(this.destroyRef)
       ).subscribe(() => this.updateScrollOffsets());
     };
 

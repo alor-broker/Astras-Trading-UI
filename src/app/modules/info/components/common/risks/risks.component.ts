@@ -1,17 +1,18 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subject, takeUntil, combineLatest, filter, map, BehaviorSubject } from "rxjs";
+import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import { Observable, combineLatest, filter, map, BehaviorSubject } from "rxjs";
 import { RisksInfo } from "../../../models/risks.model";
 import { InfoService } from "../../../services/info.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-risks[guid]',
+  selector: 'ats-risks',
   templateUrl: './risks.component.html',
   styleUrls: ['./risks.component.less']
 })
 export class RisksComponent implements OnInit, OnDestroy {
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
   private isActivated$ = new BehaviorSubject<boolean>(false);
-  private destroy$ = new Subject<boolean>();
   risksInfo$?: Observable<RisksInfo>;
 
   @Input()
@@ -19,7 +20,10 @@ export class RisksComponent implements OnInit, OnDestroy {
     this.isActivated$.next(value);
   }
 
-  constructor(private service: InfoService) {
+  constructor(
+    private readonly service: InfoService,
+    private readonly destroyRef: DestroyRef
+  ) {
   }
 
   ngOnInit() {
@@ -28,15 +32,13 @@ export class RisksComponent implements OnInit, OnDestroy {
       this.isActivated$
     ])
       .pipe(
-        takeUntil(this.destroy$),
+        takeUntilDestroyed(this.destroyRef),
         filter(([, isActivated]) => isActivated),
         map(([risks]) => risks),
       );
   }
 
   ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.isActivated$.complete();
   }
 }

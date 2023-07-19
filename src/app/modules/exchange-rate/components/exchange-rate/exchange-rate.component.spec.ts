@@ -9,7 +9,6 @@ import {
   of,
   Subject
 } from "rxjs";
-import { SubscriptionsDataFeedService } from '../../../../shared/services/subscriptions-data-feed.service';
 import { QuotesService } from '../../../../shared/services/quotes.service';
 
 describe('ExchangeRateComponent', () => {

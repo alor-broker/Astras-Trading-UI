@@ -9,7 +9,6 @@ import {
   BehaviorSubject,
   Observable,
   of,
-  Subject,
   take
 } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -34,7 +33,7 @@ import {
 import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
 
 @Component({
-  selector: 'ats-blotter-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-blotter-widget',
   templateUrl: './blotter-widget.component.html',
   styleUrls: ['./blotter-widget.component.less'],
   providers: [
@@ -44,18 +43,18 @@ import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
 export class BlotterWidgetComponent implements OnInit, OnDestroy {
   readonly marketTypes = MarketType;
   shouldShowSettings: boolean = false;
-  @Input()
+
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   activeTabIndex$ = of(0);
   marketType$?: Observable<MarketType | undefined>;
   showBadge$!: Observable<boolean>;
   settings$!: Observable<BlotterSettings>;
   contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   title$!: Observable<string>;
-
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -116,8 +115,6 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.contentSize$.complete();
   }
 

@@ -3,7 +3,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
   ViewEncapsulation
@@ -13,7 +12,6 @@ import {
   Observable,
   of,
   shareReplay,
-  Subject,
   switchMap
 } from 'rxjs';
 import { OrderbookService } from '../../services/orderbook.service';
@@ -46,14 +44,14 @@ interface SpreadDiffData {
 }
 
 @Component({
-  selector: 'ats-order-book[guid]',
+  selector: 'ats-order-book',
   templateUrl: './orderbook.component.html',
   styleUrls: ['./orderbook.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class OrderBookComponent implements OnInit, OnDestroy {
-  @Input()
+export class OrderBookComponent implements OnInit {
+  @Input({required: true})
   guid!: string;
 
   @Output()
@@ -68,7 +66,6 @@ export class OrderBookComponent implements OnInit, OnDestroy {
   });
   private minSpreadDiffPercentForColorChange = 0.3;
   private maxSpreadDiffPercentForColorChange = 1;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -137,10 +134,5 @@ export class OrderBookComponent implements OnInit, OnDestroy {
     );
 
     this.widgetsDataProvider.addNewDataProvider<SelectedPriceData>('selectedPrice');
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 }

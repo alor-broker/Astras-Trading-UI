@@ -19,7 +19,7 @@ describe('ScalperOrderBookSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         ScalperOrderBookSettingsComponent,
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['symbol', 'placeholder'] })
+        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] })
       ],
       imports: [
         getTranslocoModule()

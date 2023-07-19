@@ -23,13 +23,14 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { getNumberAbbreviation } from "../../../../shared/utils/number-abbreviation";
 
 @Component({
-  selector: 'ats-treemap[guid]',
+  selector: 'ats-treemap',
   templateUrl: './treemap.component.html',
   styleUrls: ['./treemap.component.less']
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef;
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
   isCursorOnSector$ = new BehaviorSubject(false);
 
   private chart?: Chart;

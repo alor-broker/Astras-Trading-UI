@@ -6,7 +6,7 @@ import {
 } from './subscriptions-data-feed.service';
 import {
   BehaviorSubject,
-  Subject
+  Subject, take
 } from 'rxjs';
 import { AuthService } from './auth.service';
 import { BaseResponse } from '../models/ws/base-response.model';
@@ -16,26 +16,25 @@ describe('SubscriptionsDataFeedService', () => {
   let service: SubscriptionsDataFeedService;
 
   let authServiceSpy: any;
-  let loggerService: any;
+  let loggerServiceSpy: any;
   let webSocketSubjectMock: any;
   let socketConstructorSpy: any;
 
   beforeEach(() => {
-    loggerService = jasmine.createSpyObj('LoggerService', ['trace', 'info', 'warn']);
+    loggerServiceSpy = jasmine.createSpyObj('LoggerService', ['trace', 'info', 'warn']);
     authServiceSpy = {
       accessToken$: new BehaviorSubject<string>('test_token')
     };
 
-    webSocketSubjectMock = jasmine.createSpyObj('WebSocketSubject', ['multiplex']);
+    webSocketSubjectMock = jasmine.createSpyObj('WebSocketSubject', ['multiplex', 'complete'], ['closed']);
     socketConstructorSpy = jasmine.createSpy('RXJS_WEBSOCKET_CTOR').and.returnValue(webSocketSubjectMock);
   });
 
-  beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         { provide: AuthService, useValue: authServiceSpy },
-        { provide: LoggerService, useValue: loggerService },
+        { provide: LoggerService, useValue: loggerServiceSpy },
         {
           provide: RXJS_WEBSOCKET_CTOR,
           useValue: socketConstructorSpy
@@ -65,7 +64,9 @@ describe('SubscriptionsDataFeedService', () => {
     const getCode = (request: any) => `${request.key}_${request.opcode}`;
 
     requests.forEach(request => {
-      service.subscribe<any, any>(request, getCode).subscribe();
+      service.subscribe<any, any>(request, getCode)
+        .pipe(take(1))
+        .subscribe();
     });
 
     expect(webSocketSubjectMock.multiplex).toHaveBeenCalledTimes(1);
@@ -90,7 +91,9 @@ describe('SubscriptionsDataFeedService', () => {
     const getCode = (request: any) => `${request.key}_${request.opcode}`;
 
     requests.forEach(request => {
-      service.subscribe<any, any>(request, getCode).subscribe();
+      service.subscribe<any, any>(request, getCode)
+        .pipe(take(1))
+        .subscribe();
     });
 
     expect(webSocketSubjectMock.multiplex).toHaveBeenCalledTimes(requests.length);
@@ -106,7 +109,9 @@ describe('SubscriptionsDataFeedService', () => {
         opcode: 'opcode'
       },
       request => `${request.key}_${request.opcode}`
-    ).subscribe(() => {
+    )
+      .pipe(take(1))
+      .subscribe(() => {
       done();
 
       expect().nothing();

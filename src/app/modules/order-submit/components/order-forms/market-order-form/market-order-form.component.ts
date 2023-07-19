@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   OnDestroy,
   OnInit
 } from '@angular/core';
@@ -36,7 +36,7 @@ import { EvaluationBaseProperties } from '../../../../../shared/models/evaluatio
 export type MarketOrderFormValue = Omit<MarketOrder, 'instrument' | 'side'> & { instrumentGroup: string };
 
 @Component({
-  selector: 'ats-market-order-form',
+  selector: 'ats-market-order-form[instrument]',
   templateUrl: './market-order-form.component.html',
   styleUrls: ['./market-order-form.component.less'],
   providers: [QuotesService]
@@ -45,9 +45,11 @@ export class MarketOrderFormComponent extends OrderFormBaseComponent<MarketOrder
   evaluation$!: Observable<EvaluationBaseProperties | null>;
   private lastFormValue$ = new BehaviorSubject<MarketOrderFormValue | null>(null);
 
-  constructor(private readonly quoteService: QuotesService
+  constructor(
+    private readonly quoteService: QuotesService,
+    protected readonly destroyRef: DestroyRef
   ) {
-    super();
+    super(destroyRef);
   }
 
   ngOnInit(): void {

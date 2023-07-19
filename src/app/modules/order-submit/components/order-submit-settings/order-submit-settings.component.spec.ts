@@ -23,7 +23,7 @@ describe('OrderSubmitSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations:[
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['symbol', 'placeholder'] })
+        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] })
       ],
       imports: [
         OrderSubmitModule,

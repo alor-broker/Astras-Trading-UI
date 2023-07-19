@@ -14,16 +14,16 @@ import { OrdersBasketSettings } from '../../models/orders-basket-settings.model'
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-orders-basket-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-orders-basket-widget',
   templateUrl: './orders-basket-widget.component.html',
   styleUrls: ['./orders-basket-widget.component.less']
 })
 export class OrdersBasketWidgetComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   settings$!: Observable<OrdersBasketSettings>;
   showBadge$!: Observable<boolean>;
   title$!: Observable<string>;

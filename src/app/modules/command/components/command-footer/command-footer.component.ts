@@ -11,13 +11,13 @@ import { LimitCommand } from "../../models/limit-command.model";
 import { MarketCommand } from "../../models/market-command.model";
 
 @Component({
-  selector: 'ats-command-footer[activeCommandType]',
+  selector: 'ats-command-footer',
   templateUrl: './command-footer.component.html',
   styleUrls: ['./command-footer.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CommandFooterComponent implements OnChanges {
-  @Input()
+  @Input({required: true})
   activeCommandType = CommandType.Limit;
 
   isBuyButtonLoading = false;

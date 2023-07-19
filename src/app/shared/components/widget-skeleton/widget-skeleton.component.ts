@@ -5,15 +5,15 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'ats-widget-skeleton[header][content][isBlockWidget]',
+  selector: 'ats-widget-skeleton',
   templateUrl: './widget-skeleton.component.html',
   styleUrls: ['./widget-skeleton.component.less']
 })
 export class WidgetSkeletonComponent {
-  @Input()
+  @Input({required: true})
   header!: TemplateRef<any>;
 
-  @Input()
+  @Input({required: true})
   content!: TemplateRef<any>;
 
   @Input()
@@ -22,7 +22,7 @@ export class WidgetSkeletonComponent {
   @Input()
   showSettings: boolean = false;
 
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
 
   @Input()

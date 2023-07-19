@@ -1,20 +1,21 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { Observable, shareReplay, Subject, take, takeUntil } from "rxjs";
+import { Observable, shareReplay, take } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { ColumnsOrder, OrderbookSettings } from '../../models/orderbook-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-orderbook-settings[settingsChange][guid]',
+  selector: 'ats-orderbook-settings',
   templateUrl: './orderbook-settings.component.html',
   styleUrls: ['./orderbook-settings.component.less']
 })
-export class OrderbookSettingsComponent implements OnInit, OnDestroy {
+export class OrderbookSettingsComponent implements OnInit {
   readonly validationOptions = {
     depth: {
       min: 1,
@@ -25,7 +26,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
 
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
@@ -35,11 +36,10 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
 
   private settings$!: Observable<OrderbookSettings>;
 
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
-
   constructor(
     private readonly settingsService: WidgetSettingsService,
-    private readonly deviceService: DeviceService
+    private readonly deviceService: DeviceService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -54,7 +54,7 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
     );
 
     this.settings$.pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.form = new UntypedFormGroup({
         instrument: new UntypedFormControl({
@@ -99,11 +99,6 @@ export class OrderbookSettingsComponent implements OnInit, OnDestroy {
       this.settingsService.updateSettings<OrderbookSettings>(this.guid, newSettings);
       this.settingsChange.emit();
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   instrumentSelected(instrument: InstrumentKey | null) {

@@ -1,6 +1,6 @@
 import {
   ChangeDetectorRef,
-  Component,
+  Component, DestroyRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -15,26 +15,25 @@ import {
   distinctUntilChanged,
   map,
   Observable,
-  Subject,
   Subscription,
   switchMap,
-  takeUntil
 } from "rxjs";
-import { DatePipe } from "@angular/common";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { TableConfig } from '../../../../shared/models/table-config.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { NewsSettings } from "../../models/news-settings.model";
 import { filter } from "rxjs/operators";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-news[guid]',
+  selector: 'ats-news',
   templateUrl: './news.component.html',
   styleUrls: ['./news.component.less']
 })
 export class NewsComponent implements OnInit, OnDestroy {
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
   @Output() sectionChange = new EventEmitter<NewsSection>();
 
   readonly contentSize$ = new BehaviorSubject<ContentSize>({ height: 0, width: 0 });
@@ -46,10 +45,8 @@ export class NewsComponent implements OnInit, OnDestroy {
   public newsSectionEnum = NewsSection;
 
   private selectedSection = NewsSection.All;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   private newsSubscription?: Subscription;
   private newNewsSubscription?: Subscription;
-  private datePipe = new DatePipe('ru-RU');
   private limit = 50;
   private isEndOfList = false;
   private pageNumber = 1;
@@ -59,14 +56,15 @@ export class NewsComponent implements OnInit, OnDestroy {
     private modalService: ModalService,
     private readonly translatorService: TranslatorService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly widgetSettingsService: WidgetSettingsService
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
   public ngOnInit(): void {
     this.loadNews(true);
     this.contentSize$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
         this.tableContainerHeight = data.height ?? 0;
         this.tableContainerWidth = data.width ?? 0;
@@ -107,8 +105,6 @@ export class NewsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.contentSize$.complete();
   }
 
@@ -129,7 +125,7 @@ export class NewsComponent implements OnInit, OnDestroy {
 
     this.newsSubscription?.unsubscribe();
     this.newsSubscription = this.getNewsRequest()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(res => {
         if (isNewList) {
           this.newsList = res;
@@ -152,7 +148,7 @@ export class NewsComponent implements OnInit, OnDestroy {
     this.newNewsSubscription?.unsubscribe();
     this.newNewsSubscription = this.getNewNewsStream()
       .pipe(
-        takeUntil(this.destroy$),
+        takeUntilDestroyed(this.destroyRef),
         map((data: NewsListItem[]) => {
           const existingNewsItemIndex = data.findIndex(item => item.id === this.newsList[0]?.id);
           return existingNewsItemIndex === -1 ? data : data.slice(0, existingNewsItemIndex);

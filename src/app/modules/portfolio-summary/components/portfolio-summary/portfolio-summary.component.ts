@@ -11,13 +11,13 @@ import {ForwardRisksView} from "../../../../shared/models/forward-risks-view.mod
 import {Value} from "@angular/fire/compat/remote-config";
 
 @Component({
-  selector: 'ats-portfolio-summary[guid]',
+  selector: 'ats-portfolio-summary',
   templateUrl: './portfolio-summary.component.html',
   styleUrls: ['./portfolio-summary.component.less']
 })
 export class PortfolioSummaryComponent implements OnInit {
   readonly marketTypes = MarketType;
-  @Input()
+  @Input({required: true})
   guid!: string;
 
   settings$!: Observable<PortfolioSummarySettings>;

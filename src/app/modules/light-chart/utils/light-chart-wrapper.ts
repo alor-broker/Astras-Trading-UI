@@ -5,7 +5,7 @@
 } from '../models/light-chart.models';
 import {
   BusinessDay,
-  ChartOptions,
+  ChartOptions, ColorType,
   createChart,
   DeepPartial,
   HistogramData,
@@ -81,7 +81,7 @@ export class LightChartWrapper {
         borderColor: this.config.themeColors.chartGridColor,
       },
       layout: {
-        backgroundColor: this.config.themeColors.componentBackground, // '#ffffff',
+        background: {type: ColorType.Solid, color: this.config.themeColors.componentBackground}, // '#ffffff',
         textColor: this.config.themeColors.chartLabelsColor,
       },
       grid: {
@@ -96,17 +96,16 @@ export class LightChartWrapper {
   }
 
   private initChartSeries(target: IChartApi): ChartSeries {
+    const priceScaleId = 'right';
+    const volumeScaleId = 'volume';
+
     const candlestickSeries = target.addCandlestickSeries({
       upColor: this.config.themeColors.buyColor,
       downColor: this.config.themeColors.sellColor,
       wickUpColor: this.config.themeColors.buyColorBackground,
       wickDownColor: this.config.themeColors.sellColorBackground,
       borderVisible: false,
-      priceScaleId: 'right', // 'plot'
-      scaleMargins: {
-        top: 0,
-        bottom: 0.25,
-      },
+      priceScaleId,
       priceFormat: PriceFormatHelper.getPriceFormat(this.config.instrumentDetails.priceMinStep)
     });
 
@@ -115,18 +114,22 @@ export class LightChartWrapper {
       priceFormat: {
         type: 'volume',
       },
-      priceScaleId: 'history',
-      scaleMargins: {
-        top: 0.8,
-        bottom: 0,
-      },
+      priceScaleId: volumeScaleId,
     });
 
-    target.priceScale().applyOptions({
+    target.priceScale(priceScaleId).applyOptions({
       autoScale: true,
       scaleMargins: {
         top: 0,
-        bottom: 0.2,
+        bottom: 0.25,
+      }
+    });
+
+    target.priceScale(volumeScaleId).applyOptions({
+      autoScale: true,
+      scaleMargins: {
+        top: 0.8,
+        bottom: 0,
       }
     });
 

@@ -19,10 +19,11 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MarketCommandComponent } from "./market-command.component";
 import { MarketCommand } from "../../models/market-command.model";
 import { Quote } from "../../../../shared/models/quotes/quote.model";
-import { BehaviorSubject } from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import ruCommand from '../../../../../assets/i18n/command/ru.json';
 import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
 
 describe('MarketCommandComponent', () => {
   let component: MarketCommandComponent;
@@ -92,7 +93,7 @@ describe('MarketCommandComponent', () => {
         mockComponent({
           selector: 'ats-evaluation',
           inputs: ['evaluationProperties']
-        })
+        }),
       ],
       providers: [
         { provide: CommandsService, useValue: spyCommands },
@@ -101,6 +102,12 @@ describe('MarketCommandComponent', () => {
           useValue: {
             getQuotes: jasmine.createSpy('getQuotes').and.returnValue(quoteMock),
             unsubscribe: jasmine.createSpy('unsubscribe').and.callThrough()
+          }
+        },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrumentBoards: jasmine.createSpy('getInstrumentBoards').and.returnValue(new Subject())
           }
         },
         ...commonTestProviders

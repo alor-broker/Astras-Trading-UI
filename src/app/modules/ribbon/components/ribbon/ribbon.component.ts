@@ -7,12 +7,12 @@ import {InstrumentKey} from "../../../../shared/models/instruments/instrument-ke
 import {getDayChangePerPrice} from "../../../../shared/utils/price";
 
 @Component({
-  selector: 'ats-ribbon[guid]',
+  selector: 'ats-ribbon',
   templateUrl: './ribbon.component.html',
   styleUrls: ['./ribbon.component.less']
 })
 export class RibbonComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   guid!: string;
   indices$!: Observable<IndexDisplay[]>;
   private readonly displayIndices: { displayName: string, instrumentKey: InstrumentKey }[] = [

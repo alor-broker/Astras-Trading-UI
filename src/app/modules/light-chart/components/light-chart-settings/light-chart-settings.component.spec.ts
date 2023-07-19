@@ -14,33 +14,6 @@ import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzCollapseModule } from "ng-zorro-antd/collapse";
 import { Component, forwardRef, Input } from "@angular/core";
 import { NzFormModule } from "ng-zorro-antd/form";
-
-@Component({
-  selector: 'ats-instrument-board-select',
-  template: '',
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => InstrumentBoardMockComponent),
-    multi: true
-  }]
-})
-class InstrumentBoardMockComponent implements ControlValueAccessor {
-  @Input() instrument: any;
-  @Input() placeholder: any;
-
-  registerOnChange(fn: any): void {
-  }
-
-  registerOnTouched(fn: any): void {
-  }
-
-  setDisabledState(isDisabled: boolean): void {
-  }
-
-  writeValue(obj: any): void {
-  }
-}
-
 @Component({
   selector: 'ats-instrument-search',
   template: '',
@@ -87,8 +60,8 @@ describe('LightChartSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         LightChartSettingsComponent,
-        InstrumentBoardMockComponent,
-        InstrumentSearchMockComponent
+        InstrumentSearchMockComponent,
+        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] }),
       ],
       imports: [
         AppModule,
