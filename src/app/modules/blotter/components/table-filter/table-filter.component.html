@@ -1,13 +1,15 @@
-<div *transloco="let t" class="ant-table-filter-dropdown custom-filter">
-  <ng-container *ngFor='let column of columns'>
-    <div class="search-box" *ngIf='!!column.filterData && column.filterData.isOpenedFilter' [formGroup]="filtersForm">
-      <input
-        class="filter-input"
-        type="text" nz-input
-        [placeholder]="column.filterData.filterName"
-        [formControlName]="column.id"
-      />
-    </div>
-  </ng-container>
-  <button nz-button nzType="text" nzSize="small" (click)="reset()">{{t('resetBtnText')}}</button>
-</div>
+<ng-container *ngIf="filtersForm">
+  <div *transloco="let t" class="ant-table-filter-dropdown custom-filter">
+    <ng-container *ngFor='let column of columns'>
+      <div class="search-box" *ngIf='!!column.filterData && column.filterData.isOpenedFilter' [formGroup]="filtersForm">
+        <input
+          class="filter-input"
+          type="text" nz-input
+          [placeholder]="column.filterData.filterName"
+          [formControlName]="column.id"
+        />
+      </div>
+    </ng-container>
+    <button nz-button nzType="text" nzSize="small" (click)="reset()">{{t('resetBtnText')}}</button>
+  </div>
+</ng-container>
