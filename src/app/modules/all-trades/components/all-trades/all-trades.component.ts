@@ -309,6 +309,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         if ((s.filters.offset || 0) > 0) {
           this.tradesList$.next([...currentList, ...s.res]);
         } else {
+          this.newTradesBuffer = [];
           this.tradesList$.next(s.res);
         }
       }),
@@ -323,7 +324,8 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     });
 
     this.newTradesTimer$.pipe(
-      withLatestFrom(this.filters$)
+      withLatestFrom(this.filters$),
+      takeUntil(this.destroy$)
     )
       .subscribe(([, filters]) => {
         this.filterNewTrades(filters);
