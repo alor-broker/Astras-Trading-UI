@@ -10,13 +10,13 @@ import {ManageDashboardsService} from '../../shared/services/manage-dashboards.s
 import {instrumentsHistory, mobileDashboard} from './mobile-dashboard.selectors';
 import {MobileDashboardActions} from './mobile-dashboard-actions';
 import {mapWith} from "../../shared/utils/observable-helper";
-import {PortfoliosStreams} from "../portfolios/portfolios.streams";
 import {getDefaultPortfolio, isPortfoliosEqual} from "../../shared/utils/portfolios";
 import {MarketService} from "../../shared/services/market.service";
 import {InstrumentKey} from "../../shared/models/instruments/instrument-key.model";
 import {WidgetSettingsService} from "../../shared/services/widget-settings.service";
 import {TerminalSettingsService} from "../../modules/terminal-settings/services/terminal-settings.service";
 import {defaultBadgeColor} from "../../shared/utils/instruments";
+import {UserPortfoliosService} from "../../shared/services/user-portfolios.service";
 
 @Injectable()
 export class MobileDashboardEffects {
@@ -87,7 +87,7 @@ export class MobileDashboardEffects {
     return this.store.select(mobileDashboard).pipe(
       filter(d => !!d),
       mapWith(
-        () => PortfoliosStreams.getAllPortfolios(this.store),
+        () => this.userPortfoliosService.getPortfolios(),
         (dashboard, allPortfolios) => ({dashboard, allPortfolios})
       ),
       filter(({dashboard, allPortfolios}) =>
@@ -167,7 +167,8 @@ export class MobileDashboardEffects {
     private readonly dashboardService: ManageDashboardsService,
     private readonly marketService: MarketService,
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly userPortfoliosService: UserPortfoliosService
   ) {
   }
 

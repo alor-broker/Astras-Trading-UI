@@ -6,15 +6,16 @@ import { ArbitrageSpreadSettings } from "../../models/arbitrage-spread-settings.
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-arbitrage-spread-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-arbitrage-spread-widget',
   templateUrl: './arbitrage-spread-widget.component.html',
   styleUrls: ['./arbitrage-spread-widget.component.less']
 })
 export class ArbitrageSpreadWidgetComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<ArbitrageSpreadSettings>;
   constructor(

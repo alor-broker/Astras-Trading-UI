@@ -10,7 +10,7 @@ import { distinct, map } from 'rxjs/operators';
   styleUrls: ['./description.component.less']
 })
 export class DescriptionComponent implements OnInit, OnDestroy {
-  @Input()
+  @Input({required: true})
   guid!: string;
   columns: number = 1;
   description$?: Observable<Description | null>;

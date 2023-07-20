@@ -1,5 +1,7 @@
 {
   "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
   "ignorePatterns": [
     "projects/**/*"
   ],
@@ -8,12 +10,6 @@
       "files": [
         "*.ts"
       ],
-      "parserOptions": {
-        "project": [
-          "tsconfig.json"
-        ],
-        "createDefaultProgram": true
-      },
       "extends": [
         "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates"
@@ -35,17 +31,19 @@
             "style": "kebab-case"
           }
         ],
-        "@typescript-eslint/semi": ["warn"],
-        "@typescript-eslint/no-unused-vars": ["warn"]
+        "@typescript-eslint/semi": "warn",
+        "@typescript-eslint/no-unused-vars": "error"
       }
     },
     {
-      "files": ["*.spec.ts"],
+      "files": [
+        "*.spec.ts"
+      ],
       "extends": [
         "plugin:@angular-eslint/recommended"
       ],
       "rules": {
-        "@typescript-eslint/no-unused-vars": ["off"]
+        "@typescript-eslint/no-unused-vars": "off"
       }
     },
     {

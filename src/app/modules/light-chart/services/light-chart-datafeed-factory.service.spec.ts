@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { LightChartDatafeedFactoryService } from './light-chart-datafeed-factory.service';
 import { HistoryService } from '../../../shared/services/history.service';
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
+import {Subject} from "rxjs";
 
 describe('LightChartDatafeedFactoryService', () => {
   let service: LightChartDatafeedFactoryService;
@@ -18,7 +19,12 @@ describe('LightChartDatafeedFactoryService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
+        {
+          provide: SubscriptionsDataFeedService,
+          useValue: {
+            subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
+          }
+        },
         { provide: HistoryService, useValue: historyServiceSpy },
       ]
     });

@@ -16,12 +16,13 @@ import { ScalperOrderBookPositionState } from '../../models/scalper-order-book.m
 import { ScalperOrderBookDataContextService } from '../../services/scalper-order-book-data-context.service';
 
 @Component({
-  selector: 'ats-current-position-panel[guid]',
+  selector: 'ats-current-position-panel',
   templateUrl: './current-position-panel.component.html',
   styleUrls: ['./current-position-panel.component.less']
 })
 export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
 
   orderBookPosition$!: Observable<ScalperOrderBookPositionState | null>;
 

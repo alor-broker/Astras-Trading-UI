@@ -13,6 +13,7 @@ import {
   ngZorroMockComponents,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
+import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
 
 describe('PortfoliosCurrencyFormComponent', () => {
   let component: PortfoliosCurrencyFormComponent;
@@ -39,6 +40,12 @@ describe('PortfoliosCurrencyFormComponent', () => {
           provide: ExchangeRateService,
           useValue: {
             getCurrencies: jasmine.createSpy('getCurrencies').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: UserPortfoliosService,
+          useValue: {
+            getPortfolios: jasmine.createSpy('getPortfolios').and.returnValue(new Subject())
           }
         },
         ...commonTestProviders

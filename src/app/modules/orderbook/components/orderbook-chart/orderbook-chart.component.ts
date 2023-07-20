@@ -1,8 +1,7 @@
 import {
-  Component,
+  Component, DestroyRef,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   SimpleChanges,
   ViewChild
@@ -11,8 +10,6 @@ import {
   BehaviorSubject,
   map,
   Observable,
-  Subject,
-  takeUntil
 } from 'rxjs';
 import {
   ChartDataset,
@@ -27,16 +24,17 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { OrderbookSettings } from '../../models/orderbook-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-orderbook-chart[guid][chartData]',
+  selector: 'ats-orderbook-chart',
   templateUrl: './orderbook-chart.component.html',
   styleUrls: ['./orderbook-chart.component.less'],
 })
-export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
-  @Input()
+export class OrderbookChartComponent implements OnInit, OnChanges {
+  @Input({required: true})
   chartData!: ChartData;
-  @Input()
+  @Input({required: true})
   guid!: string;
   @ViewChild(BaseChartDirective)
   chart?: BaseChartDirective;
@@ -87,7 +85,6 @@ export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
       },
     },
   };
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   private initialData: ChartDataset[] = [
     {
       fill: {
@@ -114,13 +111,9 @@ export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private readonly widgetSettings: WidgetSettingsService,
     private readonly themeService: ThemeService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly destroyRef: DestroyRef
     ) {
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   ngOnInit() {
@@ -129,7 +122,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
     );
 
     this.themeService.getThemeSettings().pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(theme => {
       const buyDatasetOptions = this.initialData[0] as ScatterControllerDatasetOptions;
       (buyDatasetOptions.fill as ComplexFillTarget).above = theme.themeColors.buyColorBackground;
@@ -147,7 +140,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges, OnDestroy {
 
     this.translatorService.getTranslator('orderbook/orderbook')
       .pipe(
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(t => {
         this.chartOptions.plugins!.tooltip!.callbacks!.label = (context: any) => {

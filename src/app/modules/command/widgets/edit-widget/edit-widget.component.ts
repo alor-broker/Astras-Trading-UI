@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import { combineLatest, filter, Observable, of, Subject, switchMap, take, tap } from 'rxjs';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
@@ -16,11 +16,10 @@ import { StopEdit } from "../../models/stop-edit";
   styleUrls: ['./edit-widget.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EditWidgetComponent implements OnInit, OnDestroy {
+export class EditWidgetComponent implements OnInit {
   isVisible$: Observable<boolean> = of(false);
   commandContext$?: Observable<CommandContextModel<EditParams>>;
   isBusy = false;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   command$!: Observable<LimitEdit | StopEdit | null>;
 
   qtyChanges$ = new Subject<{ quantity: number }>();
@@ -28,7 +27,7 @@ export class EditWidgetComponent implements OnInit, OnDestroy {
   constructor(
     private command: CommandsService,
     public modal: ModalService,
-    private readonly instrumentService: InstrumentsService,
+    private readonly instrumentService: InstrumentsService
   ) {
   }
 
@@ -92,10 +91,5 @@ export class EditWidgetComponent implements OnInit, OnDestroy {
     };
 
     close();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 }

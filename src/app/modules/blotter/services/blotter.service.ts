@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject,
+  BehaviorSubject, Observable,
   tap,
 } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,6 +12,7 @@ import { OrdersNotificationsService } from 'src/app/shared/services/orders-notif
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
 import { BlotterSettings } from '../models/blotter-settings.model';
+import {Position} from "../../../shared/models/positions/position.model";
 
 @Injectable()
 export class BlotterService {
@@ -40,7 +41,7 @@ export class BlotterService {
     this.dashboardContextService.selectDashboardInstrument(instrument, badgeColor);
   }
 
-  getPositions(settings: BlotterSettings) {
+  getPositions(settings: BlotterSettings): Observable<Position[]> {
     return this.portfolioSubscriptionsService.getAllPositionsSubscription(settings.portfolio, settings.exchange).pipe(
       map(poses => settings.isSoldPositionsHidden ? poses.filter(p => p.qtyTFuture !== 0) : poses),
     );

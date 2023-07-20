@@ -28,17 +28,16 @@ import {
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-light-chart-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-light-chart-widget',
   templateUrl: './light-chart-widget.component.html',
   styleUrls: ['./light-chart-widget.component.less']
 })
 export class LightChartWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
 
-  @Input()
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
 
   settings$!: Observable<LightChartSettings>;

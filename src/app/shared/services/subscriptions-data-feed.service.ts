@@ -1,4 +1,4 @@
-import {Inject, Injectable, InjectionToken} from '@angular/core';
+import {Inject, Injectable, InjectionToken, OnDestroy} from '@angular/core';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import {AuthService} from './auth.service';
 import {
@@ -60,7 +60,7 @@ export const RXJS_WEBSOCKET_CTOR = new InjectionToken<typeof webSocket>(
 @Injectable({
   providedIn: 'root'
 })
-export class SubscriptionsDataFeedService {
+export class SubscriptionsDataFeedService implements OnDestroy {
   private socketState: SocketState | null = null;
 
   private isConnected$ = new BehaviorSubject<boolean>(false);
@@ -318,5 +318,14 @@ export class SubscriptionsDataFeedService {
 
   private toLoggerMessage(message: string): string {
     return `[SDF]: ${message}`;
+  }
+
+  ngOnDestroy(): void {
+    if(this.socketState) {
+      this.clean(this.socketState);
+    }
+
+    this.socketState = null;
+    this.isConnected$.complete();
   }
 }

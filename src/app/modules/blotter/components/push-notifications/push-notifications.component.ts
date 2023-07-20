@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -8,12 +18,10 @@ import {
   of,
   shareReplay,
   take,
-  takeUntil,
   tap
 } from "rxjs";
 import {filter, map, startWith, switchMap} from "rxjs/operators";
 import {defaultBadgeColor} from "../../../../shared/utils/instruments";
-import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {TableAutoHeightBehavior} from "../../utils/table-auto-height.behavior";
 import {
   OrderExecuteSubscription,
@@ -32,9 +40,9 @@ import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper"
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {NzTableFilterList} from "ng-zorro-antd/table/src/table.types";
 import {TranslatorService} from "../../../../shared/services/translator.service";
-import {Destroyable} from "../../../../shared/utils/destroyable";
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {BlotterTablesHelper} from "../../utils/blotter-tables.helper";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 interface NotificationFilter {
   id?: string,
@@ -45,7 +53,7 @@ interface NotificationFilter {
 type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSparkSubscription>;
 
 @Component({
-  selector: 'ats-push-notifications[guid]',
+  selector: 'ats-push-notifications',
   templateUrl: './push-notifications.component.html',
   styleUrls: ['./push-notifications.component.less']
 })
@@ -57,14 +65,15 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
   tableInnerWidth: number = 1000;
   displayNotifications$: Observable<DisplayNotification[]> = of([]);
-  @Input()
+
+  @Input({required: true})
   guid!: string;
+
   readonly scrollHeight$ = new BehaviorSubject<number>(100);
   listOfColumns: BaseColumnSettings<DisplayNotification>[] = [];
   isNotificationsAllowed$!: Observable<boolean>;
   readonly filter$ = new BehaviorSubject<NotificationFilter>({});
   private readonly columnDefaultWidth = 100;
-  private readonly destroyable = new Destroyable();
   private badgeColor = defaultBadgeColor;
   private settings$!: Observable<BlotterSettings>;
   private readonly allColumns: BaseColumnSettings<DisplayNotification>[] = [
@@ -111,9 +120,9 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly blotterService: BlotterService,
-    private readonly dashboardContextService: DashboardContextService,
     private readonly pushNotificationsService: PushNotificationsService,
-    private readonly translatorService: TranslatorService) {
+    private readonly translatorService: TranslatorService,
+    private readonly destroyRef: DestroyRef) {
   }
 
   isFilterEmpty = () => Object.keys(this.filter$.getValue()).length === 0;
@@ -128,7 +137,7 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
 
     container$.pipe(
       switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       setTimeout(()=> this.scrollHeight$.next(x));
     });
@@ -139,7 +148,6 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   ngOnDestroy(): void {
-    this.destroyable.destroy();
     this.isLoading$.complete();
     this.scrollHeight$.complete();
   }
@@ -241,7 +249,7 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
         () => this.translatorService.getTranslator('blotter/notifications'),
         (s, t) => ({s, t})
       ),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(({s, t}) => {
       const tableSettings = s.notificationsTable ?? TableSettingHelper.toTableDisplaySettings(allNotificationsColumns.filter(c => c.isDefault).map(c => c.id));
 

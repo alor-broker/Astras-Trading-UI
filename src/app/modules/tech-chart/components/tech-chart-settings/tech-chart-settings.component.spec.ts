@@ -5,7 +5,7 @@ import {
 
 import { TechChartSettingsComponent } from './tech-chart-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
+import {of, Subject} from "rxjs";
 import { TechChartModule } from "../../tech-chart.module";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import {
@@ -15,6 +15,7 @@ import {
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
 
 describe('TechChartSettingsComponent', () => {
   let component: TechChartSettingsComponent;
@@ -23,8 +24,7 @@ describe('TechChartSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
-        TechChartSettingsComponent,
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['symbol', 'placeholder'] })
+        TechChartSettingsComponent
       ],
       imports: [
         TechChartModule,
@@ -38,6 +38,12 @@ describe('TechChartSettingsComponent', () => {
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({} as TechChartSettings)),
             updateSettings: jasmine.createSpy('getSettings').and.callThrough(),
+          }
+        },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrumentBoards: jasmine.createSpy('getInstrumentBoards').and.returnValue(new Subject())
           }
         },
         ...commonTestProviders

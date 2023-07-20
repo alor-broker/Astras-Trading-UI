@@ -55,28 +55,24 @@
         <nz-tab [nzTitle]="t('blotter.ordersTab')" nzForceRender>
           <ng-template nz-tab>
             <ats-orders
-              [(shouldShowSettings)]="shouldShowSettings"
               [guid]="guid"></ats-orders>
           </ng-template>
         </nz-tab>
         <nz-tab [nzTitle]="t('blotter.stopOrdersTab')" nzForceRender>
           <ng-template nz-tab>
             <ats-stop-orders
-              [(shouldShowSettings)]="shouldShowSettings"
               [guid]="guid"></ats-stop-orders>
           </ng-template>
         </nz-tab>
         <nz-tab [nzTitle]="t('blotter.positionsTab')" nzForceRender>
           <ng-template nz-tab>
             <ats-positions
-              [(shouldShowSettings)]="shouldShowSettings"
               [guid]="guid"></ats-positions>
           </ng-template>
         </nz-tab>
         <nz-tab [nzTitle]="t('blotter.tradesTab')" nzForceRender>
           <ng-template nz-tab>
             <ats-trades
-              [(shouldShowSettings)]="shouldShowSettings"
               [guid]="guid"></ats-trades>
           </ng-template>
         </nz-tab>

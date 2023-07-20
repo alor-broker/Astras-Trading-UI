@@ -12,13 +12,13 @@ import {InstrumentKey} from "../../models/instruments/instrument-key.model";
 import {map} from "rxjs/operators";
 
 @Component({
-  selector: 'ats-widget-header[guid]',
+  selector: 'ats-widget-header',
   templateUrl: './widget-header.component.html',
   styleUrls: ['./widget-header.component.less']
 })
 export class WidgetHeaderComponent implements OnInit {
 
-  @Input()
+  @Input({required: true})
   guid!: string;
 
   @Input()

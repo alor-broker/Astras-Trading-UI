@@ -11,8 +11,10 @@ export class TableFilterComponent implements OnChanges, OnInit {
 
   filtersForm = new UntypedFormGroup({});
 
-  @Input() columns: BaseColumnSettings<any>[] = [];
-  @Output() filterChange = new EventEmitter();
+  @Input({required: true})
+  columns: BaseColumnSettings<any>[] = [];
+  @Output()
+  filterChange = new EventEmitter();
 
   constructor() {}
 

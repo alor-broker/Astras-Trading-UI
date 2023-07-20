@@ -23,7 +23,7 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 
 @Component({
-  selector: 'ats-command-header[instrument]',
+  selector: 'ats-command-header',
   templateUrl: './command-header.component.html',
   styleUrls: ['./command-header.component.less']
 })
@@ -37,7 +37,7 @@ export class CommandHeaderComponent implements OnInit, OnDestroy {
     private readonly currentDashboardService: DashboardContextService) {
   }
 
-  @Input()
+  @Input({required: true})
   set instrument(value: InstrumentKey) {
     this.commandInstrument$.next(value);
   }

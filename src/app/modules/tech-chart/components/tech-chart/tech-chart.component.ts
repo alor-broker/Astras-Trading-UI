@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, DestroyRef,
   ElementRef,
   Input,
   OnDestroy,
@@ -13,11 +13,9 @@ import {
   filter,
   Observable,
   shareReplay,
-  Subject,
   Subscription,
   switchMap,
   take,
-  takeUntil,
   withLatestFrom
 } from 'rxjs';
 import {
@@ -69,6 +67,7 @@ import {LessMore} from "../../../../shared/models/enums/less-more.model";
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
 import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
 import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-display-option";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -128,12 +127,12 @@ interface ChartState {
 }
 
 @Component({
-  selector: 'ats-tech-chart[guid]',
+  selector: 'ats-tech-chart',
   templateUrl: './tech-chart.component.html',
   styleUrls: ['./tech-chart.component.less']
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input()
+  @Input({required: true})
   guid!: string;
 
   @ViewChild('chartContainer', { static: true })
@@ -143,7 +142,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private chartState?: ChartState;
   private settings$?: Observable<ExtendedSettings>;
   private allActivePositions$?: Observable<Position[]>;
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
   private lastTheme?: ThemeSettings;
   private lastLang?: string;
@@ -162,7 +160,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly currentDashboardService: DashboardContextService,
     private readonly orderCancellerService: OrderCancellerService,
     private readonly translatorService: TranslatorService,
-    private readonly timezoneConverterService: TimezoneConverterService
+    private readonly timezoneConverterService: TimezoneConverterService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -182,9 +181,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.techChartDatafeedService.clear();
-
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   ngAfterViewInit(): void {
@@ -215,7 +211,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         ...source,
         settings
       })),
-      takeUntil(this.destroy$),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       this.translateFn = x.translator;
       this.createChart(
@@ -322,7 +318,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           title: currentTimezone.name
         }
       ],
-      theme: theme.theme === ThemeType.default ? 'Light' : 'Dark',
+      theme: theme.theme === ThemeType.default ? 'light' : 'dark',
       saved_data: settings.chartLayout,
       auto_save_delay: 1,
       time_frames: [

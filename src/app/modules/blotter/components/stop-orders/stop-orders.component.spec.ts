@@ -6,7 +6,7 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { StopOrdersComponent } from './stop-orders.component';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
-import { of } from 'rxjs';
+import {of, Subject} from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -15,6 +15,7 @@ import {
   mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
+import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -50,6 +51,12 @@ describe('StopOrdersComponent', () => {
         { provide: ModalService, useValue: modalSpy },
         { provide: OrderCancellerService, useValue: cancelSpy },
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
+        {
+          provide: OrdersGroupService,
+          useValue: {
+            getAllOrderGroups: jasmine.createSpy('getAllOrderGroups').and.returnValue(new Subject())
+          }
+        },
         ...commonTestProviders
       ],
       declarations: [

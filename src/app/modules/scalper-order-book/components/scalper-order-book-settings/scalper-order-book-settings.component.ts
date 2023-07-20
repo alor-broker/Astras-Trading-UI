@@ -1,17 +1,14 @@
 import {
-  Component,
+  Component, DestroyRef,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output
 } from '@angular/core';
 import {
   Observable,
   shareReplay,
-  Subject,
   take,
-  takeUntil
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
@@ -31,13 +28,14 @@ import {
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-scalper-order-book-settings[settingsChange][guid]',
+  selector: 'ats-scalper-order-book-settings',
   templateUrl: './scalper-order-book-settings.component.html',
   styleUrls: ['./scalper-order-book-settings.component.less']
 })
-export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
+export class ScalperOrderBookSettingsComponent implements OnInit {
   readonly volumeHighlightModes = VolumeHighlightMode;
   readonly validationOptions = {
     depth: {
@@ -63,7 +61,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
   readonly availableMarkerFormats = Object.values(MarkerDisplayFormat);
 
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
@@ -76,9 +74,11 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
   ];
 
   private settings$!: Observable<ScalperOrderBookSettings>;
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private readonly settingsService: WidgetSettingsService) {
+  constructor(
+    private readonly settingsService: WidgetSettingsService,
+    private readonly destroyRef: DestroyRef
+  ) {
   }
 
   get volumeHighlightOptions(): UntypedFormArray {
@@ -103,7 +103,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
     );
 
     this.settings$.pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.buildForm(settings);
     });
@@ -140,11 +140,6 @@ export class ScalperOrderBookSettingsComponent implements OnInit, OnDestroy {
       this.settingsService.updateSettings<ScalperOrderBookSettings>(this.guid, newSettings);
       this.settingsChange.emit();
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 
   setVolumeHighlightOptionColor(index: number, color: string) {

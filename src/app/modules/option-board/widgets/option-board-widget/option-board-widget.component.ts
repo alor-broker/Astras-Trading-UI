@@ -13,16 +13,18 @@ import {Instrument} from "../../../../shared/models/instruments/instrument.model
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-option-board-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-option-board-widget',
   templateUrl: './option-board-widget.component.html',
   styleUrls: ['./option-board-widget.component.less']
 })
 export class OptionBoardWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
-  @Input()
+
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   settings$!: Observable<OptionBoardSettings>;
   showBadge$!: Observable<boolean>;
 

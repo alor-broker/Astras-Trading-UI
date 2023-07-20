@@ -9,14 +9,14 @@ import {BlotterSettings} from "../../../blotter/models/blotter-settings.model";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 
 @Component({
-  selector: 'ats-portfolio-summary-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-portfolio-summary-widget',
   templateUrl: './portfolio-summary-widget.component.html',
   styleUrls: ['./portfolio-summary-widget.component.less']
 })
 export class PortfolioSummaryWidgetComponent implements OnInit {
-  @Input()
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
-  @Input()
+  @Input({required: true})
   isBlockWidget!: boolean;
 
   settings$!: Observable<PortfolioSummarySettings>;

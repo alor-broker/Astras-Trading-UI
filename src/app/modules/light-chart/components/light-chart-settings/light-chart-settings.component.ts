@@ -1,8 +1,7 @@
 import {
-  Component,
+  Component, DestroyRef,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output
 } from '@angular/core';
@@ -19,9 +18,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import {
   Observable,
   shareReplay,
-  Subject,
-  take,
-  takeUntil
+  take
 } from "rxjs";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
@@ -30,14 +27,15 @@ import {
   TimeFrameDisplayMode
 } from '../../models/light-chart-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-light-chart-settings[guid]',
+  selector: 'ats-light-chart-settings',
   templateUrl: './light-chart-settings.component.html',
   styleUrls: ['./light-chart-settings.component.less']
 })
-export class LightChartSettingsComponent implements OnInit, OnDestroy {
-  @Input()
+export class LightChartSettingsComponent implements OnInit {
+  @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<LightChartSettings> = new EventEmitter<LightChartSettings>();
@@ -45,12 +43,12 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   timeFrames: Timeframe[];
   timeFrameDisplayModes = TimeFrameDisplayMode;
   deviceInfo$!: Observable<any>;
-  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
   private settings$!: Observable<LightChartSettings>;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
-    private readonly deviceService: DeviceService
+    private readonly deviceService: DeviceService,
+    private readonly destroyRef: DestroyRef
   ) {
     this.timeFrames = TimeframesHelper.timeFrames;
   }
@@ -66,7 +64,7 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
     );
 
     this.settings$.pipe(
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.form = new UntypedFormGroup({
         instrument: new UntypedFormControl({
@@ -105,10 +103,5 @@ export class LightChartSettingsComponent implements OnInit, OnDestroy {
   instrumentSelected(instrument: InstrumentKey | null) {
     this.form.controls.exchange.setValue(instrument?.exchange ?? null);
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 }

@@ -12,11 +12,11 @@ import {allDashboards, getDashboardItems, selectedDashboard} from './dashboards.
 import {mapWith} from '../../shared/utils/observable-helper';
 import {MarketService} from '../../shared/services/market.service';
 import {getDefaultPortfolio, isPortfoliosEqual} from '../../shared/utils/portfolios';
-import {PortfoliosStreams} from '../portfolios/portfolios.streams';
 import {CurrentDashboardActions, InternalDashboardActions, ManageDashboardsActions} from './dashboards-actions';
 import {InstrumentKey} from '../../shared/models/instruments/instrument-key.model';
 import {instrumentsBadges} from '../../shared/utils/instruments';
 import {TerminalSettingsService} from "../../modules/terminal-settings/services/terminal-settings.service";
+import {UserPortfoliosService} from "../../shared/services/user-portfolios.service";
 
 type ObsoleteItemFormat = {
   guid: string,
@@ -115,7 +115,7 @@ export class DashboardsEffects {
       filter(d => !!d),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),
       mapWith(
-        () => PortfoliosStreams.getAllPortfolios(this.store),
+        () => this.userPortfoliosService.getPortfolios(),
         (dashboard, allPortfolios) => ({dashboard, allPortfolios})
       ),
       filter(({dashboard, allPortfolios}) =>
@@ -221,7 +221,8 @@ export class DashboardsEffects {
     private readonly store: Store,
     private readonly dashboardService: ManageDashboardsService,
     private readonly marketService: MarketService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly userPortfoliosService: UserPortfoliosService
   ) {
   }
 

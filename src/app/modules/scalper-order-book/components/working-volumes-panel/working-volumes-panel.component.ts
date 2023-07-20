@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -12,33 +12,32 @@ import {
   Observable,
   shareReplay,
   take,
-  takeUntil,
   withLatestFrom
 } from 'rxjs';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { Destroyable } from '../../../../shared/utils/destroyable';
 import { map } from 'rxjs/operators';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScalperOrderBookSettings } from '../../models/scalper-order-book-settings.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-working-volumes-panel[guid][isActive]',
+  selector: 'ats-working-volumes-panel',
   templateUrl: './working-volumes-panel.component.html',
   styleUrls: ['./working-volumes-panel.component.less']
 })
 export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   @Input()
   isActive: boolean = false;
-  @Input() guid!: string;
+  @Input({required: true})
+  guid!: string;
   workingVolumes$!: Observable<number[]>;
   readonly selectedVolume$ = new BehaviorSubject<{ index: number, value: number } | null>(null);
   @Output()
   selectedVolumeChanged = new EventEmitter<number>();
-  private readonly destroyable = new Destroyable();
-
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly hotKeyCommandService: HotKeyCommandService
+    private readonly hotKeyCommandService: HotKeyCommandService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -57,7 +56,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
 
     this.selectedVolume$.pipe(
       filter(x => !!x),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       this.selectedVolumeChanged.emit(x!.value);
     });
@@ -67,7 +66,6 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.selectedVolume$.complete();
-    this.destroyable.destroy();
   }
 
   selectVolume(index: number, value: number) {
@@ -81,7 +79,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     this.hotKeyCommandService.commands$.pipe(
       filter(x => x.type === 'workingVolumes' && x.index != null && this.isActive),
       withLatestFrom(this.workingVolumes$),
-      takeUntil(this.destroyable)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(([command, workingVolumes]) => {
       const volume = workingVolumes[command.index];
       if (!!volume) {

@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, DestroyRef,
   Input,
   OnDestroy,
   OnInit
@@ -11,9 +11,7 @@ import {
 } from '@angular/forms';
 import {
   BehaviorSubject,
-  filter,
-  Subject,
-  takeUntil
+  filter
 } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
@@ -26,6 +24,7 @@ import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
 import { TimeInForce } from "../../../../shared/models/commands/command-params.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-limit-edit',
@@ -37,12 +36,15 @@ export class LimitEditComponent implements OnInit, OnDestroy {
   form!: FormGroup<ControlsOf<LimitFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<EditParams> | null>(null);
   timeInForceEnum = TimeInForce;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private service: CommandsService) {
+  constructor(
+    private readonly service: CommandsService,
+    private readonly destroyRef: DestroyRef
+  ) {
+
   }
 
-  @Input()
+  @Input({required: true})
   set commandContext(value: CommandContextModel<EditParams>) {
     this.commandContext$.next(value);
   }
@@ -57,16 +59,13 @@ export class LimitEditComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.commandContext$.pipe(
       filter((x): x is CommandContextModel<EditParams> => !!x),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(context => {
       this.initCommandForm(context);
     });
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-
     this.commandContext$.complete();
     this.evaluation$.complete();
   }
@@ -121,7 +120,7 @@ export class LimitEditComponent implements OnInit, OnDestroy {
     this.setLimitEditCommand(commandContext);
 
     this.form.valueChanges.pipe(
-      takeUntil(this.destroy$),
+      takeUntilDestroyed(this.destroyRef),
       distinctUntilChanged((prev, curr) =>
         prev?.price == curr?.price
         && prev?.quantity == curr?.quantity

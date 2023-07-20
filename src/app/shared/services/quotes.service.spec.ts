@@ -3,23 +3,23 @@ import { QuotesService } from './quotes.service';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import {Subject} from "rxjs";
 
 describe('QuotesService', () => {
   let service: QuotesService;
 
-  let subscriptionsDataFeedServiceSpy: any;
-
   beforeAll(() => TestBed.resetTestingModule());
-
-  beforeEach(() => {
-    subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
-  });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        { provide: SubscriptionsDataFeedService, useValue: subscriptionsDataFeedServiceSpy },
+        {
+          provide: SubscriptionsDataFeedService,
+          useValue: {
+            subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
+          }
+        },
         {
           provide: ErrorHandlerService,
           useValue: {

@@ -110,10 +110,6 @@ declare enum PlotSymbolSize {
 	Large = "large",
 	Huge = "huge"
 }
-declare enum PriceAxisLastValueMode {
-	LastPriceAndPercentageValue = 0,
-	LastValueAccordingToScale = 1
-}
 declare enum StopType {
 	StopLoss = 0,
 	TrailingStop = 1
@@ -182,6 +178,7 @@ export declare const enum ActionId {
 	ChartMoveChartInLayoutBack = "Chart.MoveChartInLayout.Back",
 	ChartMoveChartInLayoutForward = "Chart.MoveChartInLayout.Forward",
 	ChartObjectTreeShow = "Chart.ObjectTree.Show",
+	ChartDataWindowShow = "Chart.DataWindow.Show",
 	ChartPaneControlsDeletePane = "Chart.PaneControls.DeletePane",
 	ChartPaneControlsMaximizePane = "Chart.PaneControls.MaximizePane",
 	ChartPaneControlsMinimizePane = "Chart.PaneControls.MinimizePane",
@@ -262,10 +259,10 @@ export declare const enum ActionId {
 	TradingCancelOrder = "Trading.CancelOrder",
 	TradingClosePosition = "Trading.ClosePosition",
 	TradingCustomActionId = "Trading.CustomActionId",
-	TradingDomePlaceLimitOrder = "Trading.DomePlaceLimitOrder",
-	TradingDomePlaceMarketOrder = "Trading.DomePlaceMarketOrder",
-	TradingDomePlaceStopLimitOrder = "Trading.DomePlaceStopLimitOrder",
-	TradingDomePlaceStopOrder = "Trading.DomePlaceStopOrder",
+	TradingDOMPlaceLimitOrder = "Trading.DOMPlaceLimitOrder",
+	TradingDOMPlaceMarketOrder = "Trading.DOMPlaceMarketOrder",
+	TradingDOMPlaceStopLimitOrder = "Trading.DOMPlaceStopLimitOrder",
+	TradingDOMPlaceStopOrder = "Trading.DOMPlaceStopOrder",
 	TradingEditOrder = "Trading.EditOrder",
 	TradingModifyPosition = "Trading.ModifyPosition",
 	TradingReversePosition = "Trading.ReversePosition",
@@ -289,7 +286,10 @@ export declare const enum ChartStyle {
 	HollowCandle = 9,
 	Baseline = 10,
 	HiLo = 12,
-	Column = 13
+	Column = 13,
+	LineWithMarkers = 14,
+	Stepline = 15,
+	HLCArea = 16
 }
 /**
  * Mode to clear the marks on the chart.
@@ -320,6 +320,16 @@ export declare const enum FilledAreaType {
 	 * Filled area type for bands.
 	 */
 	TypeHlines = "hline_hline"
+}
+/**
+ * Market status for the symbol.
+ */
+export declare const enum MarketStatus {
+	Open = "market",
+	Pre = "pre_market",
+	Post = "post_market",
+	Close = "out_of_session",
+	Holiday = "holiday"
 }
 export declare const enum MenuItemType {
 	Separator = "separator",
@@ -362,6 +372,36 @@ export declare const enum OrderType {
 	Stop = 3,
 	StopLimit = 4
 }
+/**
+ * Plot line style
+ */
+export declare const enum OverrideLineStyle {
+	/**
+	 * Solid line style.
+	 */
+	Solid = 0,
+	/**
+	 * Dotted line style.
+	 */
+	Dotted = 1,
+	/**
+	 * Dashed line style.
+	 */
+	Dashed = 2
+}
+/**
+ * Last value label mode.
+ */
+export declare const enum OverridePriceAxisLastValueMode {
+	/**
+	 * Price and % value.
+	 */
+	LastPriceAndPercentageValue = 0,
+	/**
+	 * Value according to scale.
+	 */
+	LastValueAccordingToScale = 1
+}
 export declare const enum ParentType {
 	Order = 1,
 	Position = 2,
@@ -387,6 +427,9 @@ export declare const enum SeriesType {
 	Baseline = 10,
 	HiLo = 12,
 	Column = 13,
+	LineWithMarkers = 14,
+	Stepline = 15,
+	HLCArea = 16,
 	Renko = 4,
 	Kagi = 5,
 	PointAndFigure = 6,
@@ -506,6 +549,23 @@ export declare function version(): string;
 export declare type Nominal<T, Name extends string> = T & {
 	[Symbol.species]: Name;
 };
+/**
+ * Override properties for the Abcd drawing tool.
+ */
+export interface AbcdLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolabcd.bold": boolean;
+	/** Default value: `#089981` */
+	"linetoolabcd.color": string;
+	/** Default value: `12` */
+	"linetoolabcd.fontsize": number;
+	/** Default value: `false` */
+	"linetoolabcd.italic": boolean;
+	/** Default value: `1` */
+	"linetoolabcd.linewidth": number;
+	/** Default value: `#ffffff` */
+	"linetoolabcd.textcolor": string;
+}
 /**
  * Defines a whitelist / blacklist of studies or drawing tools.
  */
@@ -869,6 +929,21 @@ export interface AdditionalSymbolInfoField {
 	/** used to look up a property from the symbol info returned from the chart's datafeed */
 	propertyName: string;
 }
+/**
+ * Override properties for the Arc drawing tool.
+ */
+export interface ArcLineToolOverrides {
+	/** Default value: `rgba(233, 30, 99, 0.2)` */
+	"linetoolarc.backgroundColor": string;
+	/** Default value: `#e91e63` */
+	"linetoolarc.color": string;
+	/** Default value: `true` */
+	"linetoolarc.fillBackground": boolean;
+	/** Default value: `1` */
+	"linetoolarc.linewidth": number;
+	/** Default value: `80` */
+	"linetoolarc.transparency": number;
+}
 export interface AreaStylePreferences {
 	/** Top color */
 	color1: string;
@@ -889,6 +964,146 @@ export interface AreaStylePreferences {
 	 */
 	transparency: number;
 }
+/**
+ * Override properties for the Arrow drawing tool.
+ */
+export interface ArrowLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolarrow.alwaysShowStats": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.bold": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.extendRight": boolean;
+	/** Default value: `14` */
+	"linetoolarrow.fontsize": number;
+	/** Default value: `center` */
+	"linetoolarrow.horzLabelsAlign": string;
+	/** Default value: `false` */
+	"linetoolarrow.italic": boolean;
+	/** Default value: `0` */
+	"linetoolarrow.leftEnd": number;
+	/** Default value: `#2962FF` */
+	"linetoolarrow.linecolor": string;
+	/** Default value: `0` */
+	"linetoolarrow.linestyle": number;
+	/** Default value: `2` */
+	"linetoolarrow.linewidth": number;
+	/** Default value: `1` */
+	"linetoolarrow.rightEnd": number;
+	/** Default value: `false` */
+	"linetoolarrow.showAngle": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.showBarsRange": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.showDateTimeRange": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.showDistance": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.showLabel": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.showMiddlePoint": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.showPercentPriceRange": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.showPipsPriceRange": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.showPriceLabels": boolean;
+	/** Default value: `false` */
+	"linetoolarrow.showPriceRange": boolean;
+	/** Default value: `2` */
+	"linetoolarrow.statsPosition": number;
+	/** Default value: `#2962FF` */
+	"linetoolarrow.textcolor": string;
+	/** Default value: `bottom` */
+	"linetoolarrow.vertLabelsAlign": string;
+}
+/**
+ * Override properties for the Arrowmarkdown drawing tool.
+ */
+export interface ArrowmarkdownLineToolOverrides {
+	/** Default value: `#CC2F3C` */
+	"linetoolarrowmarkdown.arrowColor": string;
+	/** Default value: `false` */
+	"linetoolarrowmarkdown.bold": boolean;
+	/** Default value: `#CC2F3C` */
+	"linetoolarrowmarkdown.color": string;
+	/** Default value: `14` */
+	"linetoolarrowmarkdown.fontsize": number;
+	/** Default value: `false` */
+	"linetoolarrowmarkdown.italic": boolean;
+	/** Default value: `true` */
+	"linetoolarrowmarkdown.showLabel": boolean;
+}
+/**
+ * Override properties for the Arrowmarker drawing tool.
+ */
+export interface ArrowmarkerLineToolOverrides {
+	/** Default value: `#1E53E5` */
+	"linetoolarrowmarker.backgroundColor": string;
+	/** Default value: `true` */
+	"linetoolarrowmarker.bold": boolean;
+	/** Default value: `16` */
+	"linetoolarrowmarker.fontsize": number;
+	/** Default value: `false` */
+	"linetoolarrowmarker.italic": boolean;
+	/** Default value: `true` */
+	"linetoolarrowmarker.showLabel": boolean;
+	/** Default value: `#1E53E5` */
+	"linetoolarrowmarker.textColor": string;
+}
+/**
+ * Override properties for the Arrowmarkleft drawing tool.
+ */
+export interface ArrowmarkleftLineToolOverrides {
+	/** Default value: `#2962FF` */
+	"linetoolarrowmarkleft.arrowColor": string;
+	/** Default value: `false` */
+	"linetoolarrowmarkleft.bold": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolarrowmarkleft.color": string;
+	/** Default value: `14` */
+	"linetoolarrowmarkleft.fontsize": number;
+	/** Default value: `false` */
+	"linetoolarrowmarkleft.italic": boolean;
+	/** Default value: `true` */
+	"linetoolarrowmarkleft.showLabel": boolean;
+}
+/**
+ * Override properties for the Arrowmarkright drawing tool.
+ */
+export interface ArrowmarkrightLineToolOverrides {
+	/** Default value: `#2962FF` */
+	"linetoolarrowmarkright.arrowColor": string;
+	/** Default value: `false` */
+	"linetoolarrowmarkright.bold": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolarrowmarkright.color": string;
+	/** Default value: `14` */
+	"linetoolarrowmarkright.fontsize": number;
+	/** Default value: `false` */
+	"linetoolarrowmarkright.italic": boolean;
+	/** Default value: `true` */
+	"linetoolarrowmarkright.showLabel": boolean;
+}
+/**
+ * Override properties for the Arrowmarkup drawing tool.
+ */
+export interface ArrowmarkupLineToolOverrides {
+	/** Default value: `#089981` */
+	"linetoolarrowmarkup.arrowColor": string;
+	/** Default value: `false` */
+	"linetoolarrowmarkup.bold": boolean;
+	/** Default value: `#089981` */
+	"linetoolarrowmarkup.color": string;
+	/** Default value: `14` */
+	"linetoolarrowmarkup.fontsize": number;
+	/** Default value: `false` */
+	"linetoolarrowmarkup.italic": boolean;
+	/** Default value: `true` */
+	"linetoolarrowmarkup.showLabel": boolean;
+}
 export interface AvailableZOrderOperations {
 	/** 'Bring Forward' is possible */
 	bringForwardEnabled: boolean;
@@ -900,12 +1115,27 @@ export interface AvailableZOrderOperations {
 	sendToBackEnabled: boolean;
 }
 /**
+ * Override properties for the Balloon drawing tool.
+ */
+export interface BalloonLineToolOverrides {
+	/** Default value: `rgba(156, 39, 176, 0.7)` */
+	"linetoolballoon.backgroundColor": string;
+	/** Default value: `rgba(156, 39, 176, 0)` */
+	"linetoolballoon.borderColor": string;
+	/** Default value: `#ffffff` */
+	"linetoolballoon.color": string;
+	/** Default value: `14` */
+	"linetoolballoon.fontsize": number;
+	/** Default value: `30` */
+	"linetoolballoon.transparency": number;
+}
+/**
  * Bar data point
  */
 export interface Bar {
 	/** Bar time.
 	 * Amount of **milliseconds** since Unix epoch start in **UTC** timezone.
-	 * `time` for daily bars is expected to be a trading day (not session start day) at 00:00 UTC.
+	 * `time` for daily, weekly, and monthly bars is expected to be a trading day (not session start day) at 00:00 UTC.
 	 * Charting Library adjusts time according to `session` from {@link LibrarySymbolInfo}.
 	 */
 	time: number;
@@ -931,6 +1161,19 @@ export interface BarStylePreferences {
 	dontDrawOpen: boolean;
 	/** Draw thin bars. Default - `true` */
 	thinBars: boolean;
+}
+/**
+ * Override properties for the Barspattern drawing tool.
+ */
+export interface BarspatternLineToolOverrides {
+	/** Default value: `#2962FF` */
+	"linetoolbarspattern.color": string;
+	/** Default value: `false` */
+	"linetoolbarspattern.flipped": boolean;
+	/** Default value: `false` */
+	"linetoolbarspattern.mirrored": boolean;
+	/** Default value: `0` */
+	"linetoolbarspattern.mode": number;
 }
 export interface BaseInputFieldValidatorResult {
 	/** Is the base input value valid */
@@ -965,6 +1208,56 @@ export interface BaselineStylePreferences {
 	transparency: number;
 	/** Baseline level percentage */
 	baseLevelPercentage: number;
+}
+/**
+ * Override properties for the Beziercubic drawing tool.
+ */
+export interface BeziercubicLineToolOverrides {
+	/** Default value: `rgba(103, 58, 183, 0.2)` */
+	"linetoolbeziercubic.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolbeziercubic.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetoolbeziercubic.extendRight": boolean;
+	/** Default value: `false` */
+	"linetoolbeziercubic.fillBackground": boolean;
+	/** Default value: `0` */
+	"linetoolbeziercubic.leftEnd": number;
+	/** Default value: `#673ab7` */
+	"linetoolbeziercubic.linecolor": string;
+	/** Default value: `0` */
+	"linetoolbeziercubic.linestyle": number;
+	/** Default value: `1` */
+	"linetoolbeziercubic.linewidth": number;
+	/** Default value: `0` */
+	"linetoolbeziercubic.rightEnd": number;
+	/** Default value: `80` */
+	"linetoolbeziercubic.transparency": number;
+}
+/**
+ * Override properties for the Bezierquadro drawing tool.
+ */
+export interface BezierquadroLineToolOverrides {
+	/** Default value: `rgba(41, 98, 255, 0.2)` */
+	"linetoolbezierquadro.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolbezierquadro.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetoolbezierquadro.extendRight": boolean;
+	/** Default value: `false` */
+	"linetoolbezierquadro.fillBackground": boolean;
+	/** Default value: `0` */
+	"linetoolbezierquadro.leftEnd": number;
+	/** Default value: `#2962FF` */
+	"linetoolbezierquadro.linecolor": string;
+	/** Default value: `0` */
+	"linetoolbezierquadro.linestyle": number;
+	/** Default value: `1` */
+	"linetoolbezierquadro.linewidth": number;
+	/** Default value: `0` */
+	"linetoolbezierquadro.rightEnd": number;
+	/** Default value: `50` */
+	"linetoolbezierquadro.transparency": number;
 }
 export interface BracketOrder extends BracketOrderBase, CustomFields {
 }
@@ -1293,6 +1586,54 @@ export interface BrokerCustomUI {
 	 */
 	showClosePositionDialog?: (position: Position) => Promise<boolean>;
 }
+/**
+ * Override properties for the Brush drawing tool.
+ */
+export interface BrushLineToolOverrides {
+	/** Default value: `#00bcd4` */
+	"linetoolbrush.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolbrush.fillBackground": boolean;
+	/** Default value: `0` */
+	"linetoolbrush.leftEnd": number;
+	/** Default value: `#00bcd4` */
+	"linetoolbrush.linecolor": string;
+	/** Default value: `0` */
+	"linetoolbrush.linestyle": number;
+	/** Default value: `1` */
+	"linetoolbrush.linewidth": number;
+	/** Default value: `0` */
+	"linetoolbrush.rightEnd": number;
+	/** Default value: `5` */
+	"linetoolbrush.smooth": number;
+	/** Default value: `50` */
+	"linetoolbrush.transparency": number;
+}
+/**
+ * Override properties for the Callout drawing tool.
+ */
+export interface CalloutLineToolOverrides {
+	/** Default value: `rgba(0, 151, 167, 0.7)` */
+	"linetoolcallout.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolcallout.bold": boolean;
+	/** Default value: `#0097A7` */
+	"linetoolcallout.bordercolor": string;
+	/** Default value: `#ffffff` */
+	"linetoolcallout.color": string;
+	/** Default value: `14` */
+	"linetoolcallout.fontsize": number;
+	/** Default value: `false` */
+	"linetoolcallout.italic": boolean;
+	/** Default value: `1` */
+	"linetoolcallout.linewidth": number;
+	/** Default value: `50` */
+	"linetoolcallout.transparency": number;
+	/** Default value: `false` */
+	"linetoolcallout.wordWrap": boolean;
+	/** Default value: `200` */
+	"linetoolcallout.wordWrapWidth": number;
+}
 export interface CandleStylePreferences {
 	/** Body color for an up candle */
 	upColor: string;
@@ -1376,7 +1717,7 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 */
 	"priceScaleSelectionStrategyName": "left" | "right" | "auto";
 	/**
-	 * Pane background type.
+	 * Pane background type. In the dark theme, the default value is 'gradient'.
 	 *
 	 * @default 'solid'
 	 */
@@ -1410,7 +1751,7 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 *
 	 * @default LineStyle.Solid
 	 */
-	"paneProperties.vertGridProperties.style": LineStyle;
+	"paneProperties.vertGridProperties.style": OverrideLineStyle;
 	/**
 	 * Pane horizontal grid color.
 	 *
@@ -1422,7 +1763,7 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 *
 	 * @default LineStyle.Solid
 	 */
-	"paneProperties.horzGridProperties.style": LineStyle;
+	"paneProperties.horzGridProperties.style": OverrideLineStyle;
 	/**
 	 * Crosshair color.
 	 *
@@ -1434,7 +1775,7 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 *
 	 * @default LineStyle.Dashed
 	 */
-	"crossHairProperties.style": LineStyle;
+	"crossHairProperties.style": OverrideLineStyle;
 	/**
 	 * Crosshair transparency.
 	 *
@@ -1459,6 +1800,12 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 * @default 8
 	 */
 	"paneProperties.bottomMargin": number;
+	/**
+	 * Pane separator color.
+	 *
+	 * @default '#E0E3EB'
+	 */
+	"paneProperties.separatorColor": string;
 	/**
 	 * Study legend input values visiblity.
 	 *
@@ -1514,12 +1861,6 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 */
 	"paneProperties.legendProperties.backgroundTransparency": number;
 	/**
-	 * Legend separator color.
-	 *
-	 * @default '#E0E3EB'
-	 */
-	"paneProperties.paneProperties.separatorColor": string;
-	/**
 	 * Scales (axis) border line color.
 	 *
 	 * @default 'rgba(42, 46, 57, 0)'
@@ -1548,7 +1889,7 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 *
 	 * @default PriceAxisLastValueMode.LastValueAccordingToScale
 	 */
-	"scalesProperties.seriesLastValueMode": PriceAxisLastValueMode;
+	"scalesProperties.seriesLastValueMode": OverridePriceAxisLastValueMode;
 	/**
 	 * Study label value label visibility.
 	 *
@@ -1644,7 +1985,7 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 *
 	 * @default LineStyle.Dotted
 	 */
-	"mainSeriesProperties.bidAsk.lineStyle": LineStyle;
+	"mainSeriesProperties.bidAsk.lineStyle": OverrideLineStyle;
 	/**
 	 * Width of the line for bid & ask
 	 *
@@ -1746,12 +2087,6 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 */
 	"mainSeriesProperties.priceLineColor": string;
 	/**
-	 * Main series base line color.
-	 *
-	 * @default "#B2B5BE"
-	 */
-	"mainSeriesProperties.baseLineColor": string;
-	/**
 	 * Main series previous close price line visibility.
 	 *
 	 * @default false
@@ -1788,12 +2123,6 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 * ```
 	 */
 	"mainSeriesProperties.minTick": string;
-	/**
-	 * Main series legend font size.
-	 *
-	 * @default 16
-	 */
-	"mainSeriesProperties.statusViewStyle.fontSize": number;
 	/**
 	 * Main series legend exchange visibility.
 	 *
@@ -2120,7 +2449,7 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 *
 	 * @default LineStyle.Solid
 	 */
-	"mainSeriesProperties.lineStyle.linestyle": LineStyle;
+	"mainSeriesProperties.lineStyle.linestyle": OverrideLineStyle;
 	/**
 	 * Main series line style line width.
 	 *
@@ -2156,7 +2485,7 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 *
 	 * @default LineStyle.Solid
 	 */
-	"mainSeriesProperties.areaStyle.linestyle": LineStyle;
+	"mainSeriesProperties.areaStyle.linestyle": OverrideLineStyle;
 	/**
 	 * Main series area style line width.
 	 *
@@ -2175,6 +2504,72 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 * @default 100
 	 */
 	"mainSeriesProperties.areaStyle.transparency": number;
+	/**
+	 * Main series hlc area style close line color.
+	 *
+	 * @default "#868993"
+	 */
+	"mainSeriesProperties.hlcAreaStyle.closeLineColor": string;
+	/**
+	 * Main series hlc area style close line style.
+	 *
+	 * @default LineStyle.Solid
+	 */
+	"mainSeriesProperties.hlcAreaStyle.closeLineStyle": OverrideLineStyle;
+	/**
+	 * Main series hlc area style close line width.
+	 *
+	 * @default 2
+	 */
+	"mainSeriesProperties.hlcAreaStyle.closeLineWidth": number;
+	/**
+	 * Main series hlc area style close low fill color.
+	 *
+	 * @default "rgba(242, 54, 69, 0.2)"
+	 */
+	"mainSeriesProperties.hlcAreaStyle.closeLowFillColor": string;
+	/**
+	 * Main series hlc area style high close fill color.
+	 *
+	 * @default "rgba(8, 153, 129, 0.2)"
+	 */
+	"mainSeriesProperties.hlcAreaStyle.highCloseFillColor": string;
+	/**
+	 * Main series hlc area style high line color.
+	 *
+	 * @default "#089981"
+	 */
+	"mainSeriesProperties.hlcAreaStyle.highLineColor": string;
+	/**
+	 * Main series hlc area style high line style.
+	 *
+	 * @default LineStyle.Solid
+	 */
+	"mainSeriesProperties.hlcAreaStyle.highLineStyle": OverrideLineStyle;
+	/**
+	 * Main series hlc area style high line width.
+	 *
+	 * @default 2
+	 */
+	"mainSeriesProperties.hlcAreaStyle.highLineWidth": number;
+	/**
+	 * Main series hlc area style low line color.
+	 *
+	 * @default "#F23645"
+	 */
+	"mainSeriesProperties.hlcAreaStyle.lowLineColor": string;
+	/**
+	 * Main series hlc area style low line style.
+	 *
+	 * @default LineStyle.Solid
+	 */
+	"mainSeriesProperties.hlcAreaStyle.lowLineStyle": OverrideLineStyle;
+	/**
+	 * Main series hlc area style low line width.
+	 *
+	 * @default 2
+	 */
+	"mainSeriesProperties.hlcAreaStyle.lowLineWidth": number;
 	/**
 	 * Main series price axis percentage mode.
 	 *
@@ -2433,36 +2828,42 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 * @default 50
 	 */
 	"mainSeriesProperties.baselineStyle.baseLevelPercentage": number;
+}
+/**
+ * A chart template.
+ */
+export interface ChartTemplate {
 	/**
-	 * Main series range style up color.
-	 *
-	 * @default "#089981"
+	 * The template content.
 	 */
-	"mainSeriesProperties.rangeStyle.upColor": string;
+	content?: ChartTemplateContent;
+}
+/**
+ * Chart template content. The properties of the chart that are saved/loaded when the library saves/loads a chart template.
+ */
+export interface ChartTemplateContent {
+	[key: string]: any;
 	/**
-	 * Main series range style down color.
-	 *
-	 * @default "#F23645"
+	 * Chart properties (for example color, etc).
 	 */
-	"mainSeriesProperties.rangeStyle.downColor": string;
+	chartProperties?: {
+		/**
+		 * Chart pane properties.
+		 */
+		paneProperties: any;
+		/**
+		 * Chart scales properties.
+		 */
+		scalesProperties: any;
+	};
 	/**
-	 * Main series range style thin bars behaviour.
-	 *
-	 * @default true
+	 * Series properties (for example chart style, etc).
 	 */
-	"mainSeriesProperties.rangeStyle.thinBars": boolean;
+	mainSourceProperties?: any;
 	/**
-	 * Main series range style up projection color.
-	 *
-	 * @default "#a9dcc3"
+	 * The version of the chart template.
 	 */
-	"mainSeriesProperties.rangeStyle.upColorProjection": string;
-	/**
-	 * Main series range style down projection color.
-	 *
-	 * @default "#f5a6ae"
-	 */
-	"mainSeriesProperties.rangeStyle.downColorProjection": string;
+	version?: number;
 }
 export interface ChartingLibraryWidgetConstructor {
 	/**
@@ -2489,7 +2890,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	container: HTMLElement | string;
 	/**
-	 * JavaScript object that implements the datafeed interface ({@link IBasicDataFeed}) to supply the chart with data. See [Connecting Data](https://www.tradingview.com/charting-library-docs/latest/connecting_data/) for more information on the JS API.
+	 * JavaScript object that implements the datafeed interface ({@link IBasicDataFeed}) to supply the chart with data. See [Connecting Data](https://www.tradingview.com/charting-library-docs/latest/connecting_data/connecting_data.md) for more information on the JS API.
 	 *
 	 * ```javascript
 	 * datafeed: new Datafeeds.UDFCompatibleDatafeed("https://demo_feed.tradingview.com")
@@ -2541,7 +2942,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	debug?: boolean;
 	/**
-	 * The array containing names of features that should be disabled by default. `Feature` means part of the functionality of the chart (part of the UI/UX). Supported features are listed [here](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets).
+	 * The array containing names of features that should be disabled by default. `Feature` means part of the functionality of the chart (part of the UI/UX). Supported features are listed [here](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets.md).
 	 *
 	 * Example:
 	 * ```javascript
@@ -2572,7 +2973,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	drawings_access?: AccessList;
 	/**
-	 * The array containing names of features that should be enabled by default. `Feature` means part of the functionality of the chart (part of the UI/UX). Supported features are listed [here](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets).
+	 * The array containing names of features that should be enabled by default. `Feature` means part of the functionality of the chart (part of the UI/UX). Supported features are listed [here](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets.md).
 	 *
 	 * Example:
 	 * ```javascript
@@ -2596,11 +2997,11 @@ export interface ChartingLibraryWidgetOptions {
 	 * library_path: "charting_library/",
 	 * ```
 	 *
-	 * * If you would like to host the library on a separate origin to the page containing the chart then please view the following guide: [Hosting the library on a separate origin](https://www.tradingview.com/charting-library-docs/latest/getting_started/Hosting-Library-Cross-Origin).
+	 * * If you would like to host the library on a separate origin to the page containing the chart then please view the following guide: [Hosting the library on a separate origin](https://www.tradingview.com/charting-library-docs/latest/getting_started/Hosting-Library-Cross-Origin.md).
 	 */
 	library_path?: string;
 	/**
-	 * Locale to be used by Charting Library. See [Localization](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Localization) section for details.
+	 * Locale to be used by Charting Library. See [Localization](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Localization.md) section for details.
 	 *
 	 * ```javascript
 	 * locale: 'en',
@@ -2867,10 +3268,9 @@ export interface ChartingLibraryWidgetOptions {
 	 * }
 	 * ```
 	 * This code will change the default series style to "line".
-	 * All customizable properties are listed in [separate article](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/).
-	 * You can use [Drawings-Overrides](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Drawings-Overrides).
+	 * All customizable properties are listed in [separate article](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Overrides.md).
 	 */
-	overrides?: Overrides;
+	overrides?: Partial<WidgetOverrides>;
 	/**
 	 * This URL is used to send a POST request with binary chart snapshots when a user presses the snapshot button.
 	 * This POST request contains `multipart/form-data` with the field `preparedImage` that represents binary data of the snapshot image in `image/png` format.
@@ -2883,7 +3283,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	snapshot_url?: string;
 	/**
-	 * List of visible timeframes that can be selected at the bottom of the chart. See [this topic](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Time-Frames) to learn more about timeframes. Timeframe is an object containing following properties:
+	 * List of visible timeframes that can be selected at the bottom of the chart. See [this topic](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Time-Frames.md) to learn more about timeframes. Timeframe is an object containing following properties:
 	 *
 	 * Example:
 	 *
@@ -2907,20 +3307,24 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	custom_css_url?: string;
 	/**
-	 * Change the font family used on the chart. The value should be in the same format as the `font-family` property in CSS.
-	 * If you want to use a font that is not available by default on your system, you need to first load the font in your [custom CSS](#custom_css_url).
+	 * Changes the font family used on the chart including the [time scale](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Time-Scale.md), [price scale](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Price-Scale.md), and chart's pane.
+	 * If you want to customize fonts outside the chart, for example, within [Watchlist](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/Watch-List.md) or another widget,
+	 * you should use the {@link ChartingLibraryWidgetOptions.custom_css_url} property to provide custom CSS styles.
 	 *
-	 * E.g. importing a google font in your custom CSS:
+	 * Specify `custom_font_family` in [Widget Constructor](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Widget-Constructor.md) as follows:
+	 *
+	 * ```javascript
+	 * custom_font_family: "'Inconsolata', monospace",
+	 * ```
+	 *
+	 * The `custom_font_family` value should have the same format as the `font-family` property in CSS.
+	 * To use a font that is not available by default on your system, you should first add this font to your [custom CSS](#custom_css_url).
+	 * For example, the code sample below imports a Google font into your custom CSS:
 	 *
 	 * ```css
 	 * @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@500&display=swap');
 	 * ```
 	 *
-	 * Add `custom_font_family` to your widget options:
-	 *
-	 * ```javascript
-	 * custom_font_family: "'Inconsolata', monospace",
-	 * ```
 	 */
 	custom_font_family?: string;
 	/**
@@ -2930,11 +3334,12 @@ export interface ChartingLibraryWidgetOptions {
 	 * favorites: {
 	 *     intervals: ["1D", "3D", "3W", "W", "M"],
 	 *     indicators: ["Awesome Oscillator", "Bollinger Bands"],
-	 *     drawingTools: ['LineToolBrush', 'LineToolCallout', 'LineToolCircle']
+	 *     drawingTools: ['LineToolBrush', 'LineToolCallout', 'LineToolCircle'],
+	 *     chartTypes: ['Area', 'Candles'],
 	 * },
 	 * ```
 	 */
-	favorites?: Favorites;
+	favorites?: Favorites<ChartTypeFavorites>;
 	/**
 	 * An object containing the save/load functions.
 	 * It is used to implement a custom save/load algorithm.
@@ -2968,10 +3373,10 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	settings_adapter?: ISettingsAdapter;
 	/**
-	 * Set predefined custom theme color for the chart. Supported values are: `"Light"` | `"Dark"`.
+	 * Set predefined custom theme color for the chart. Supported values are: `"light"` | `"dark"`.
 	 *
 	 * ```javascript
-	 * theme: "Light",
+	 * theme: "light",
 	 * ```
 	 */
 	theme?: ThemeName;
@@ -3117,6 +3522,48 @@ export interface CheckboxFieldMetaInfo extends CustomFieldMetaInfoBase {
 	/** Help message for the field */
 	help?: string;
 }
+/**
+ * Override properties for the Circle drawing tool.
+ */
+export interface CircleLineToolOverrides {
+	/** Default value: `rgba(255, 152, 0, 0.2)` */
+	"linetoolcircle.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolcircle.bold": boolean;
+	/** Default value: `#FF9800` */
+	"linetoolcircle.color": string;
+	/** Default value: `true` */
+	"linetoolcircle.fillBackground": boolean;
+	/** Default value: `14` */
+	"linetoolcircle.fontSize": number;
+	/** Default value: `false` */
+	"linetoolcircle.italic": boolean;
+	/** Default value: `1` */
+	"linetoolcircle.linewidth": number;
+	/** Default value: `false` */
+	"linetoolcircle.showLabel": boolean;
+	/** Default value: `#FF9800` */
+	"linetoolcircle.textColor": string;
+}
+/**
+ * Override properties for the Circlelines drawing tool.
+ */
+export interface CirclelinesLineToolOverrides {
+	/** Default value: `#80ccdb` */
+	"linetoolcirclelines.linecolor": string;
+	/** Default value: `0` */
+	"linetoolcirclelines.linestyle": number;
+	/** Default value: `1` */
+	"linetoolcirclelines.linewidth": number;
+	/** Default value: `#808080` */
+	"linetoolcirclelines.trendline.color": string;
+	/** Default value: `2` */
+	"linetoolcirclelines.trendline.linestyle": number;
+	/** Default value: `1` */
+	"linetoolcirclelines.trendline.linewidth": number;
+	/** Default value: `true` */
+	"linetoolcirclelines.trendline.visible": boolean;
+}
 export interface ClientSnapshotOptions {
 	/** Background color */
 	backgroundColor: string;
@@ -3138,6 +3585,21 @@ export interface ColumnStylePreferences {
 	downColor: string;
 	/** Color column based on previous close */
 	barColorsOnPrevClose: boolean;
+}
+/**
+ * Override properties for the Comment drawing tool.
+ */
+export interface CommentLineToolOverrides {
+	/** Default value: `#2962FF` */
+	"linetoolcomment.backgroundColor": string;
+	/** Default value: `#2962FF` */
+	"linetoolcomment.borderColor": string;
+	/** Default value: `#ffffff` */
+	"linetoolcomment.color": string;
+	/** Default value: `16` */
+	"linetoolcomment.fontsize": number;
+	/** Default value: `0` */
+	"linetoolcomment.transparency": number;
 }
 /**
  * Defines a custom compare symbol for the Compare dialog window
@@ -3187,12 +3649,13 @@ export interface ContextMenuPosition {
 	/**
 	 * Tells what side of the context menu widget should be used to "attach" to a provided x coordinate.
 	 * If the value is `undefined`, then you may treat it based on whether it is rtl or not (e.g. `'right'` for rtl and `'left'` otherwise).
+	 * The value `'auto'` behaves as `undefined` but additionally checks if there is enough space to place the menu and if it's not then the result value is inverted.
 	 */
-	attachToXBy?: "left" | "right";
+	attachToXBy?: "left" | "right" | "auto";
 	/**
 	 * Tells what side of the context menu widget should be used to "attach" to a provided y coordinate:
 	 * - `'auto'` means similar to `'top'` but the menu could be expanded above the coordinate if needed (if there is no enough space to place it below)
-	 * - `'auto-strict'` means `'top'` if the whole menu fits the space below the coordinate and `'bottom'` otherwise (see {@link boxHeight})
+	 * - `'auto-strict'` means `'top'` if the whole menu fits the space below the coordinate and `'bottom'` otherwise (see {@link box})
 	 * - `'top'` means that the menu should be placed to the bottom of y coordinate (the menu should be attached by its bottom to y coordinate)
 	 * - `'bottom'` means that the menu should be placed above y coordinate (the menu should be attached by its top to y coordinate)
 	 *
@@ -3200,11 +3663,28 @@ export interface ContextMenuPosition {
 	 */
 	attachToYBy?: "auto" | "auto-strict" | "top" | "bottom";
 	/**
-	 * The height of a box the context menu should avoid while calculating coordinates (see {@link attachToYBy}).
-	 *
-	 * You may treat `undefined` as `0`.
+	 * The optional structure that helps to more accurate calculate a position of the menu (see {@link attachToYBy}).
 	 */
-	boxHeight?: number;
+	box?: {
+		/** menu x coordinate */
+		x: number;
+		/** menu y coordinate */
+		y: number;
+		/** menu width */
+		w: number;
+		/** menu height */
+		h: number;
+		/** x coordinate overlaps */
+		overlapX?: boolean;
+	};
+	/**
+	 * Additional horizontal margin.
+	 */
+	marginX?: number;
+	/**
+	 * Additional vertical margin.
+	 */
+	marginY?: number;
 }
 /**
  * Options for creating an anchored drawing.
@@ -3271,7 +3751,7 @@ export interface CreateShapeOptions<TOverrides extends object> extends CreateSha
 	/**
 	 * A drawing to create.
 	 */
-	shape?: "arrow_up" | "arrow_down" | "flag" | "vertical_line" | "horizontal_line" | "long_position" | "short_position" | "icon" | "anchored_text" | "anchored_note";
+	shape?: "arrow_up" | "arrow_down" | "flag" | "vertical_line" | "horizontal_line" | "long_position" | "short_position" | "icon" | "emoji" | "sticker" | "anchored_text" | "anchored_note";
 	/**
 	 * An optional study ID of the owner study.
 	 */
@@ -3388,6 +3868,21 @@ export interface CrossHairMovedEventParams {
 	 */
 	price: number;
 }
+/**
+ * Override properties for the Crossline drawing tool.
+ */
+export interface CrosslineLineToolOverrides {
+	/** Default value: `#2962FF` */
+	"linetoolcrossline.linecolor": string;
+	/** Default value: `0` */
+	"linetoolcrossline.linestyle": number;
+	/** Default value: `2` */
+	"linetoolcrossline.linewidth": number;
+	/** Default value: `true` */
+	"linetoolcrossline.showPrice": boolean;
+	/** Default value: `true` */
+	"linetoolcrossline.showTime": boolean;
+}
 export interface CryptoBalance {
 	/** Symbol */
 	symbol: string;
@@ -3486,7 +3981,7 @@ export interface CustomIndicator {
 	/**
 	 * The metainfo field is designed to contain the main info about the custom study.
 	 *
-	 * See [Custom Studies Metainfo](https://www.tradingview.com/charting-library-docs/latest/custom_studies/metainfo/) for more information
+	 * See [Custom Studies Metainfo](https://www.tradingview.com/charting-library-docs/latest/custom_studies/metainfo/metainfo.md) for more information
 	 */
 	readonly metainfo: StudyMetaInfo;
 	/**
@@ -3495,7 +3990,7 @@ export interface CustomIndicator {
 	 * The library expects the constructor to create an instance of the study with one mandatory method - `main()` and one optional method - `init()`.
 	 * Once the study is created the library calls init (if exists) and main sequentially with empty context to collect information about all vars.
 	 *
-	 * See [Custom Studies Constructor](https://www.tradingview.com/charting-library-docs/latest/custom_studies/Custom-Studies-Constructor) for more information.
+	 * See [Custom Studies Constructor](https://www.tradingview.com/charting-library-docs/latest/custom_studies/Custom-Studies-Constructor.md) for more information.
 	 */
 	readonly constructor: LibraryPineStudyConstructor<IPineStudyResult> | ((this: LibraryPineStudy<IPineStudyResult>) => void);
 }
@@ -3514,6 +4009,66 @@ export interface CustomInputFieldMetaInfo extends CustomFieldMetaInfoBase {
  */
 export interface CustomInputFieldsValues {
 	[fieldId: string]: TextWithCheckboxValue | boolean | string | any;
+}
+/**
+ * Action link to be displayed at the end of the section for the
+ * status item in the pop-up tooltip.
+ */
+export interface CustomStatusDropDownAction {
+	/**
+	 * Text to be displayed as the link
+	 */
+	text: string;
+	/**
+	 * Tooltip text to be displayed when the user hovers over
+	 * the action link.
+	 */
+	tooltip?: string;
+	/**
+	 * Callback function to be executed when the user clicks
+	 * on the action.
+	 */
+	onClick: () => void;
+}
+/**
+ * Specifies the content to be displayed within a section of
+ * the pop-up tooltip which is displayed when a user clicks on
+ * the symbol status items.
+ *
+ * The pop-up tooltip should be used to display additional
+ * information related to the status item.
+ */
+export interface CustomStatusDropDownContent {
+	/**
+	 * Title to be displayed next to the icon for this section
+	 * of the pop-up tooltip.
+	 */
+	title: string;
+	/**
+	 * Color to be used for the icon and title. If unspecified
+	 * then the color from the status item will be used.
+	 */
+	color?: string;
+	/**
+	 * Icon to be displayed next to the title for this section
+	 * of the pop-up tooltip. If unspecified then the icon from
+	 * the status item will be used.
+	 */
+	icon?: string;
+	/**
+	 * Content to the displayed within this section of the
+	 * pop-up tooltip.
+	 *
+	 * **It is essential to protect the content you provide
+	 * against cross-site scripting (XSS) attacks, as these
+	 * strings will be interpreted as HTML markup.**
+	 */
+	content: string[];
+	/**
+	 * Optional action link to be displayed at the bottom of
+	 * the status section.
+	 */
+	action?: CustomStatusDropDownAction;
 }
 /**
  * Study format description used in custom study formatters.
@@ -3535,6 +4090,8 @@ export interface CustomTableElementFormatter<T extends TableFormatterInputValues
 	formatElement?: CustomTableFormatElementFunction<T>;
 	/** Formatter to generate text. Return an empty string if you don't need to display this */
 	formatText: TableFormatTextFunction<T>;
+	/** Allow usage of priceFormatter */
+	isPriceFormatterNeeded?: boolean;
 }
 export interface CustomTimezoneInfo {
 	/**
@@ -3554,6 +4111,29 @@ export interface CustomTimezoneInfo {
 	 * Display name for the timezone
 	 */
 	title: string;
+}
+/**
+ * Override properties for the Cypherpattern drawing tool.
+ */
+export interface CypherpatternLineToolOverrides {
+	/** Default value: `#2962FF` */
+	"linetoolcypherpattern.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolcypherpattern.bold": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolcypherpattern.color": string;
+	/** Default value: `true` */
+	"linetoolcypherpattern.fillBackground": boolean;
+	/** Default value: `12` */
+	"linetoolcypherpattern.fontsize": number;
+	/** Default value: `false` */
+	"linetoolcypherpattern.italic": boolean;
+	/** Default value: `1` */
+	"linetoolcypherpattern.linewidth": number;
+	/** Default value: `#ffffff` */
+	"linetoolcypherpattern.textcolor": string;
+	/** Default value: `85` */
+	"linetoolcypherpattern.transparency": number;
 }
 /**
  * Depth of Market (Order Book) Data
@@ -3645,12 +4225,6 @@ export interface DatafeedConfiguration {
 	 * It will be applied to the instruments with futures and stock as a type.
 	 */
 	symbols_grouping?: Record<string, string>;
-	/**
-	 * Supported price sources for the symbol.
-	 *
-	 * @example ['Bid', 'Ask', 'Spot Price']
-	 */
-	price_sources?: SymbolInfoPriceSource[];
 }
 /** Symbol Quote Data Value */
 export interface DatafeedQuoteValues {
@@ -3708,6 +4282,47 @@ export interface DialogParams<CallbackType> {
 	/** Callback */
 	callback: CallbackType;
 }
+/**
+ * Override properties for the Disjointangle drawing tool.
+ */
+export interface DisjointangleLineToolOverrides {
+	/** Default value: `rgba(8, 153, 129, 0.2)` */
+	"linetooldisjointangle.backgroundColor": string;
+	/** Default value: `false` */
+	"linetooldisjointangle.bold": boolean;
+	/** Default value: `false` */
+	"linetooldisjointangle.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetooldisjointangle.extendRight": boolean;
+	/** Default value: `true` */
+	"linetooldisjointangle.fillBackground": boolean;
+	/** Default value: `12` */
+	"linetooldisjointangle.fontsize": number;
+	/** Default value: `false` */
+	"linetooldisjointangle.italic": boolean;
+	/** Default value: `0` */
+	"linetooldisjointangle.leftEnd": number;
+	/** Default value: `#089981` */
+	"linetooldisjointangle.linecolor": string;
+	/** Default value: `0` */
+	"linetooldisjointangle.linestyle": number;
+	/** Default value: `2` */
+	"linetooldisjointangle.linewidth": number;
+	/** Default value: `0` */
+	"linetooldisjointangle.rightEnd": number;
+	/** Default value: `false` */
+	"linetooldisjointangle.showBarsRange": boolean;
+	/** Default value: `false` */
+	"linetooldisjointangle.showDateTimeRange": boolean;
+	/** Default value: `false` */
+	"linetooldisjointangle.showPriceRange": boolean;
+	/** Default value: `false` */
+	"linetooldisjointangle.showPrices": boolean;
+	/** Default value: `#089981` */
+	"linetooldisjointangle.textcolor": string;
+	/** Default value: `20` */
+	"linetooldisjointangle.transparency": number;
+}
 /** Item within a dropdown menu */
 export interface DropdownItem {
 	/** Title of the menu item */
@@ -3733,6 +4348,111 @@ export interface EditObjectDialogEventParams {
 	objectType: EditObjectDialogObjectType;
 	/** Title of the object described within the dialog */
 	scriptTitle: string;
+}
+/**
+ * Override properties for the Elliottcorrection drawing tool.
+ */
+export interface ElliottcorrectionLineToolOverrides {
+	/** Default value: `#3d85c6` */
+	"linetoolelliottcorrection.color": string;
+	/** Default value: `7` */
+	"linetoolelliottcorrection.degree": number;
+	/** Default value: `1` */
+	"linetoolelliottcorrection.linewidth": number;
+	/** Default value: `true` */
+	"linetoolelliottcorrection.showWave": boolean;
+}
+/**
+ * Override properties for the Elliottdoublecombo drawing tool.
+ */
+export interface ElliottdoublecomboLineToolOverrides {
+	/** Default value: `#6aa84f` */
+	"linetoolelliottdoublecombo.color": string;
+	/** Default value: `7` */
+	"linetoolelliottdoublecombo.degree": number;
+	/** Default value: `1` */
+	"linetoolelliottdoublecombo.linewidth": number;
+	/** Default value: `true` */
+	"linetoolelliottdoublecombo.showWave": boolean;
+}
+/**
+ * Override properties for the Elliottimpulse drawing tool.
+ */
+export interface ElliottimpulseLineToolOverrides {
+	/** Default value: `#3d85c6` */
+	"linetoolelliottimpulse.color": string;
+	/** Default value: `7` */
+	"linetoolelliottimpulse.degree": number;
+	/** Default value: `1` */
+	"linetoolelliottimpulse.linewidth": number;
+	/** Default value: `true` */
+	"linetoolelliottimpulse.showWave": boolean;
+}
+/**
+ * Override properties for the Elliotttriangle drawing tool.
+ */
+export interface ElliotttriangleLineToolOverrides {
+	/** Default value: `#FF9800` */
+	"linetoolelliotttriangle.color": string;
+	/** Default value: `7` */
+	"linetoolelliotttriangle.degree": number;
+	/** Default value: `1` */
+	"linetoolelliotttriangle.linewidth": number;
+	/** Default value: `true` */
+	"linetoolelliotttriangle.showWave": boolean;
+}
+/**
+ * Override properties for the Elliotttriplecombo drawing tool.
+ */
+export interface ElliotttriplecomboLineToolOverrides {
+	/** Default value: `#6aa84f` */
+	"linetoolelliotttriplecombo.color": string;
+	/** Default value: `7` */
+	"linetoolelliotttriplecombo.degree": number;
+	/** Default value: `1` */
+	"linetoolelliotttriplecombo.linewidth": number;
+	/** Default value: `true` */
+	"linetoolelliotttriplecombo.showWave": boolean;
+}
+/**
+ * Override properties for the Ellipse drawing tool.
+ */
+export interface EllipseLineToolOverrides {
+	/** Default value: `rgba(242, 54, 69, 0.2)` */
+	"linetoolellipse.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolellipse.bold": boolean;
+	/** Default value: `#F23645` */
+	"linetoolellipse.color": string;
+	/** Default value: `true` */
+	"linetoolellipse.fillBackground": boolean;
+	/** Default value: `14` */
+	"linetoolellipse.fontSize": number;
+	/** Default value: `false` */
+	"linetoolellipse.italic": boolean;
+	/** Default value: `1` */
+	"linetoolellipse.linewidth": number;
+	/** Default value: `false` */
+	"linetoolellipse.showLabel": boolean;
+	/** Default value: `#F23645` */
+	"linetoolellipse.textColor": string;
+	/** Default value: `50` */
+	"linetoolellipse.transparency": number;
+}
+/**
+ * Override properties for the Emoji drawing tool.
+ */
+export interface EmojiLineToolOverrides {
+	/** Default value: `1.5707963267948966` */
+	"linetoolemoji.angle": number;
+	/** Default value: `😀` */
+	"linetoolemoji.emoji": string;
+	/** Default value: `40` */
+	"linetoolemoji.size": number;
+}
+export interface EmojiOptions {
+	/** Emoji */
+	emoji: string;
 }
 export interface EntityInfo {
 	/** Entity id (string) */
@@ -3773,6 +4493,37 @@ export interface Execution extends CustomFields {
 	commission?: number;
 	/** Net amount for executed trade */
 	netAmount?: number;
+}
+/**
+ * Override properties for the Execution drawing tool.
+ */
+export interface ExecutionLineToolOverrides {
+	/** Default value: `#4094e8` */
+	"linetoolexecution.arrowBuyColor": string;
+	/** Default value: `8` */
+	"linetoolexecution.arrowHeight": number;
+	/** Default value: `#e75656` */
+	"linetoolexecution.arrowSellColor": string;
+	/** Default value: `1` */
+	"linetoolexecution.arrowSpacing": number;
+	/** Default value: `buy` */
+	"linetoolexecution.direction": string;
+	/** Default value: `false` */
+	"linetoolexecution.fontBold": boolean;
+	/** Default value: `Verdana` */
+	"linetoolexecution.fontFamily": string;
+	/** Default value: `false` */
+	"linetoolexecution.fontItalic": boolean;
+	/** Default value: `10` */
+	"linetoolexecution.fontSize": number;
+	/** Default value: `` */
+	"linetoolexecution.text": string;
+	/** Default value: `#000000` */
+	"linetoolexecution.textColor": string;
+	/** Default value: `0` */
+	"linetoolexecution.textTransparency": number;
+	/** Default value: `` */
+	"linetoolexecution.tooltip": string;
 }
 export interface ExportDataOptions {
 	/**
@@ -3827,7 +4578,65 @@ export interface ExportedData {
 	/** Array of strings that represents the display value of the associated field element */
 	displayedData: string[][];
 }
-export interface Favorites {
+/**
+ * Override properties for the Extended drawing tool.
+ */
+export interface ExtendedLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolextended.alwaysShowStats": boolean;
+	/** Default value: `false` */
+	"linetoolextended.bold": boolean;
+	/** Default value: `true` */
+	"linetoolextended.extendLeft": boolean;
+	/** Default value: `true` */
+	"linetoolextended.extendRight": boolean;
+	/** Default value: `14` */
+	"linetoolextended.fontsize": number;
+	/** Default value: `center` */
+	"linetoolextended.horzLabelsAlign": string;
+	/** Default value: `false` */
+	"linetoolextended.italic": boolean;
+	/** Default value: `0` */
+	"linetoolextended.leftEnd": number;
+	/** Default value: `#2962FF` */
+	"linetoolextended.linecolor": string;
+	/** Default value: `0` */
+	"linetoolextended.linestyle": number;
+	/** Default value: `2` */
+	"linetoolextended.linewidth": number;
+	/** Default value: `0` */
+	"linetoolextended.rightEnd": number;
+	/** Default value: `false` */
+	"linetoolextended.showAngle": boolean;
+	/** Default value: `false` */
+	"linetoolextended.showBarsRange": boolean;
+	/** Default value: `false` */
+	"linetoolextended.showDateTimeRange": boolean;
+	/** Default value: `false` */
+	"linetoolextended.showDistance": boolean;
+	/** Default value: `false` */
+	"linetoolextended.showLabel": boolean;
+	/** Default value: `false` */
+	"linetoolextended.showMiddlePoint": boolean;
+	/** Default value: `false` */
+	"linetoolextended.showPercentPriceRange": boolean;
+	/** Default value: `false` */
+	"linetoolextended.showPipsPriceRange": boolean;
+	/** Default value: `false` */
+	"linetoolextended.showPriceLabels": boolean;
+	/** Default value: `false` */
+	"linetoolextended.showPriceRange": boolean;
+	/** Default value: `2` */
+	"linetoolextended.statsPosition": number;
+	/** Default value: `#2962FF` */
+	"linetoolextended.textcolor": string;
+	/** Default value: `bottom` */
+	"linetoolextended.vertLabelsAlign": string;
+}
+/**
+ * Favorites which can be defined within the Widget Constructor options (see {@link ChartingLibraryWidgetOptions.favorites}).
+ */
+export interface Favorites<TChartTypeFavorites> {
 	/**
 	 * An array of time intervals that are marked as favorite.
 	 *
@@ -3844,11 +4653,11 @@ export interface Favorites {
 	indicators?: string[];
 	/**
 	 * An array of chart types that are marked as favorite.
-	 * The names of chart types are identical to chart's UI in the English version.
+	 * The names of chart types are listed within the {@link ChartTypeFavorites} or {@link TradingTerminalChartTypeFavorites} type.
 	 *
 	 * Example: `["Area", "Candles"]`.
 	 */
-	chartTypes?: string[];
+	chartTypes?: TChartTypeFavorites[];
 	/**
 	 * An array of drawing tool identifiers that should be marked as favorite. These will only
 	 * be applied if there aren't existing favorites.
@@ -3857,15 +4666,1915 @@ export interface Favorites {
 	 */
 	drawingTools?: DrawingToolIdentifier[];
 }
+/**
+ * Override properties for the Fibchannel drawing tool.
+ */
+export interface FibchannelLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolfibchannel.coeffsAsPercents": boolean;
+	/** Default value: `false` */
+	"linetoolfibchannel.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetoolfibchannel.extendRight": boolean;
+	/** Default value: `true` */
+	"linetoolfibchannel.fillBackground": boolean;
+	/** Default value: `left` */
+	"linetoolfibchannel.horzLabelsAlign": string;
+	/** Default value: `12` */
+	"linetoolfibchannel.labelFontSize": number;
+	/** Default value: `0` */
+	"linetoolfibchannel.level1.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibchannel.level1.color": string;
+	/** Default value: `true` */
+	"linetoolfibchannel.level1.visible": boolean;
+	/** Default value: `3.618` */
+	"linetoolfibchannel.level10.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetoolfibchannel.level10.color": string;
+	/** Default value: `true` */
+	"linetoolfibchannel.level10.visible": boolean;
+	/** Default value: `4.236` */
+	"linetoolfibchannel.level11.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolfibchannel.level11.color": string;
+	/** Default value: `true` */
+	"linetoolfibchannel.level11.visible": boolean;
+	/** Default value: `1.272` */
+	"linetoolfibchannel.level12.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibchannel.level12.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level12.visible": boolean;
+	/** Default value: `1.414` */
+	"linetoolfibchannel.level13.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibchannel.level13.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level13.visible": boolean;
+	/** Default value: `2.272` */
+	"linetoolfibchannel.level14.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibchannel.level14.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level14.visible": boolean;
+	/** Default value: `2.414` */
+	"linetoolfibchannel.level15.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetoolfibchannel.level15.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level15.visible": boolean;
+	/** Default value: `2` */
+	"linetoolfibchannel.level16.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolfibchannel.level16.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level16.visible": boolean;
+	/** Default value: `3` */
+	"linetoolfibchannel.level17.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolfibchannel.level17.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level17.visible": boolean;
+	/** Default value: `3.272` */
+	"linetoolfibchannel.level18.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibchannel.level18.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level18.visible": boolean;
+	/** Default value: `3.414` */
+	"linetoolfibchannel.level19.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibchannel.level19.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level19.visible": boolean;
+	/** Default value: `0.236` */
+	"linetoolfibchannel.level2.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibchannel.level2.color": string;
+	/** Default value: `true` */
+	"linetoolfibchannel.level2.visible": boolean;
+	/** Default value: `4` */
+	"linetoolfibchannel.level20.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibchannel.level20.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level20.visible": boolean;
+	/** Default value: `4.272` */
+	"linetoolfibchannel.level21.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetoolfibchannel.level21.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level21.visible": boolean;
+	/** Default value: `4.414` */
+	"linetoolfibchannel.level22.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolfibchannel.level22.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level22.visible": boolean;
+	/** Default value: `4.618` */
+	"linetoolfibchannel.level23.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibchannel.level23.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level23.visible": boolean;
+	/** Default value: `4.764` */
+	"linetoolfibchannel.level24.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolfibchannel.level24.color": string;
+	/** Default value: `false` */
+	"linetoolfibchannel.level24.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolfibchannel.level3.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibchannel.level3.color": string;
+	/** Default value: `true` */
+	"linetoolfibchannel.level3.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolfibchannel.level4.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetoolfibchannel.level4.color": string;
+	/** Default value: `true` */
+	"linetoolfibchannel.level4.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolfibchannel.level5.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolfibchannel.level5.color": string;
+	/** Default value: `true` */
+	"linetoolfibchannel.level5.visible": boolean;
+	/** Default value: `0.786` */
+	"linetoolfibchannel.level6.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolfibchannel.level6.color": string;
+	/** Default value: `true` */
+	"linetoolfibchannel.level6.visible": boolean;
+	/** Default value: `1` */
+	"linetoolfibchannel.level7.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibchannel.level7.color": string;
+	/** Default value: `true` */
+	"linetoolfibchannel.level7.visible": boolean;
+	/** Default value: `1.618` */
+	"linetoolfibchannel.level8.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibchannel.level8.color": string;
+	/** Default value: `true` */
+	"linetoolfibchannel.level8.visible": boolean;
+	/** Default value: `2.618` */
+	"linetoolfibchannel.level9.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibchannel.level9.color": string;
+	/** Default value: `true` */
+	"linetoolfibchannel.level9.visible": boolean;
+	/** Default value: `0` */
+	"linetoolfibchannel.levelsStyle.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibchannel.levelsStyle.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibchannel.showCoeffs": boolean;
+	/** Default value: `true` */
+	"linetoolfibchannel.showPrices": boolean;
+	/** Default value: `80` */
+	"linetoolfibchannel.transparency": number;
+	/** Default value: `middle` */
+	"linetoolfibchannel.vertLabelsAlign": string;
+}
+/**
+ * Override properties for the Fibcircles drawing tool.
+ */
+export interface FibcirclesLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolfibcircles.coeffsAsPercents": boolean;
+	/** Default value: `true` */
+	"linetoolfibcircles.fillBackground": boolean;
+	/** Default value: `0.236` */
+	"linetoolfibcircles.level1.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibcircles.level1.color": string;
+	/** Default value: `0` */
+	"linetoolfibcircles.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.level1.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.level1.visible": boolean;
+	/** Default value: `4.236` */
+	"linetoolfibcircles.level10.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolfibcircles.level10.color": string;
+	/** Default value: `0` */
+	"linetoolfibcircles.level10.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.level10.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.level10.visible": boolean;
+	/** Default value: `4.618` */
+	"linetoolfibcircles.level11.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibcircles.level11.color": string;
+	/** Default value: `0` */
+	"linetoolfibcircles.level11.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.level11.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.level11.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolfibcircles.level2.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibcircles.level2.color": string;
+	/** Default value: `0` */
+	"linetoolfibcircles.level2.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.level2.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.level2.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolfibcircles.level3.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolfibcircles.level3.color": string;
+	/** Default value: `0` */
+	"linetoolfibcircles.level3.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.level3.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.level3.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolfibcircles.level4.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetoolfibcircles.level4.color": string;
+	/** Default value: `0` */
+	"linetoolfibcircles.level4.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.level4.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.level4.visible": boolean;
+	/** Default value: `0.786` */
+	"linetoolfibcircles.level5.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolfibcircles.level5.color": string;
+	/** Default value: `0` */
+	"linetoolfibcircles.level5.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.level5.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.level5.visible": boolean;
+	/** Default value: `1` */
+	"linetoolfibcircles.level6.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibcircles.level6.color": string;
+	/** Default value: `0` */
+	"linetoolfibcircles.level6.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.level6.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.level6.visible": boolean;
+	/** Default value: `1.618` */
+	"linetoolfibcircles.level7.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibcircles.level7.color": string;
+	/** Default value: `0` */
+	"linetoolfibcircles.level7.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.level7.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.level7.visible": boolean;
+	/** Default value: `2.618` */
+	"linetoolfibcircles.level8.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolfibcircles.level8.color": string;
+	/** Default value: `0` */
+	"linetoolfibcircles.level8.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.level8.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.level8.visible": boolean;
+	/** Default value: `3.618` */
+	"linetoolfibcircles.level9.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibcircles.level9.color": string;
+	/** Default value: `0` */
+	"linetoolfibcircles.level9.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.level9.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.level9.visible": boolean;
+	/** Default value: `true` */
+	"linetoolfibcircles.showCoeffs": boolean;
+	/** Default value: `80` */
+	"linetoolfibcircles.transparency": number;
+	/** Default value: `#787B86` */
+	"linetoolfibcircles.trendline.color": string;
+	/** Default value: `2` */
+	"linetoolfibcircles.trendline.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibcircles.trendline.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibcircles.trendline.visible": boolean;
+}
+/**
+ * Override properties for the Fibretracement drawing tool.
+ */
+export interface FibretracementLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolfibretracement.coeffsAsPercents": boolean;
+	/** Default value: `false` */
+	"linetoolfibretracement.extendLines": boolean;
+	/** Default value: `false` */
+	"linetoolfibretracement.extendLinesLeft": boolean;
+	/** Default value: `false` */
+	"linetoolfibretracement.fibLevelsBasedOnLogScale": boolean;
+	/** Default value: `true` */
+	"linetoolfibretracement.fillBackground": boolean;
+	/** Default value: `left` */
+	"linetoolfibretracement.horzLabelsAlign": string;
+	/** Default value: `12` */
+	"linetoolfibretracement.labelFontSize": number;
+	/** Default value: `0` */
+	"linetoolfibretracement.level1.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibretracement.level1.color": string;
+	/** Default value: `true` */
+	"linetoolfibretracement.level1.visible": boolean;
+	/** Default value: `3.618` */
+	"linetoolfibretracement.level10.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetoolfibretracement.level10.color": string;
+	/** Default value: `true` */
+	"linetoolfibretracement.level10.visible": boolean;
+	/** Default value: `4.236` */
+	"linetoolfibretracement.level11.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolfibretracement.level11.color": string;
+	/** Default value: `true` */
+	"linetoolfibretracement.level11.visible": boolean;
+	/** Default value: `1.272` */
+	"linetoolfibretracement.level12.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibretracement.level12.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level12.visible": boolean;
+	/** Default value: `1.414` */
+	"linetoolfibretracement.level13.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibretracement.level13.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level13.visible": boolean;
+	/** Default value: `2.272` */
+	"linetoolfibretracement.level14.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibretracement.level14.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level14.visible": boolean;
+	/** Default value: `2.414` */
+	"linetoolfibretracement.level15.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetoolfibretracement.level15.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level15.visible": boolean;
+	/** Default value: `2` */
+	"linetoolfibretracement.level16.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolfibretracement.level16.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level16.visible": boolean;
+	/** Default value: `3` */
+	"linetoolfibretracement.level17.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolfibretracement.level17.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level17.visible": boolean;
+	/** Default value: `3.272` */
+	"linetoolfibretracement.level18.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibretracement.level18.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level18.visible": boolean;
+	/** Default value: `3.414` */
+	"linetoolfibretracement.level19.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibretracement.level19.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level19.visible": boolean;
+	/** Default value: `0.236` */
+	"linetoolfibretracement.level2.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibretracement.level2.color": string;
+	/** Default value: `true` */
+	"linetoolfibretracement.level2.visible": boolean;
+	/** Default value: `4` */
+	"linetoolfibretracement.level20.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibretracement.level20.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level20.visible": boolean;
+	/** Default value: `4.272` */
+	"linetoolfibretracement.level21.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetoolfibretracement.level21.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level21.visible": boolean;
+	/** Default value: `4.414` */
+	"linetoolfibretracement.level22.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolfibretracement.level22.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level22.visible": boolean;
+	/** Default value: `4.618` */
+	"linetoolfibretracement.level23.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibretracement.level23.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level23.visible": boolean;
+	/** Default value: `4.764` */
+	"linetoolfibretracement.level24.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolfibretracement.level24.color": string;
+	/** Default value: `false` */
+	"linetoolfibretracement.level24.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolfibretracement.level3.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibretracement.level3.color": string;
+	/** Default value: `true` */
+	"linetoolfibretracement.level3.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolfibretracement.level4.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetoolfibretracement.level4.color": string;
+	/** Default value: `true` */
+	"linetoolfibretracement.level4.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolfibretracement.level5.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolfibretracement.level5.color": string;
+	/** Default value: `true` */
+	"linetoolfibretracement.level5.visible": boolean;
+	/** Default value: `0.786` */
+	"linetoolfibretracement.level6.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolfibretracement.level6.color": string;
+	/** Default value: `true` */
+	"linetoolfibretracement.level6.visible": boolean;
+	/** Default value: `1` */
+	"linetoolfibretracement.level7.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibretracement.level7.color": string;
+	/** Default value: `true` */
+	"linetoolfibretracement.level7.visible": boolean;
+	/** Default value: `1.618` */
+	"linetoolfibretracement.level8.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibretracement.level8.color": string;
+	/** Default value: `true` */
+	"linetoolfibretracement.level8.visible": boolean;
+	/** Default value: `2.618` */
+	"linetoolfibretracement.level9.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibretracement.level9.color": string;
+	/** Default value: `true` */
+	"linetoolfibretracement.level9.visible": boolean;
+	/** Default value: `0` */
+	"linetoolfibretracement.levelsStyle.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibretracement.levelsStyle.linewidth": number;
+	/** Default value: `false` */
+	"linetoolfibretracement.reverse": boolean;
+	/** Default value: `true` */
+	"linetoolfibretracement.showCoeffs": boolean;
+	/** Default value: `true` */
+	"linetoolfibretracement.showPrices": boolean;
+	/** Default value: `80` */
+	"linetoolfibretracement.transparency": number;
+	/** Default value: `#787B86` */
+	"linetoolfibretracement.trendline.color": string;
+	/** Default value: `2` */
+	"linetoolfibretracement.trendline.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibretracement.trendline.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibretracement.trendline.visible": boolean;
+	/** Default value: `bottom` */
+	"linetoolfibretracement.vertLabelsAlign": string;
+}
+/**
+ * Override properties for the Fibspeedresistancearcs drawing tool.
+ */
+export interface FibspeedresistancearcsLineToolOverrides {
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.fillBackground": boolean;
+	/** Default value: `false` */
+	"linetoolfibspeedresistancearcs.fullCircles": boolean;
+	/** Default value: `0.236` */
+	"linetoolfibspeedresistancearcs.level1.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibspeedresistancearcs.level1.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancearcs.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level1.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.level1.visible": boolean;
+	/** Default value: `4.236` */
+	"linetoolfibspeedresistancearcs.level10.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolfibspeedresistancearcs.level10.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancearcs.level10.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level10.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.level10.visible": boolean;
+	/** Default value: `4.618` */
+	"linetoolfibspeedresistancearcs.level11.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibspeedresistancearcs.level11.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancearcs.level11.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level11.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.level11.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolfibspeedresistancearcs.level2.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibspeedresistancearcs.level2.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancearcs.level2.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level2.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.level2.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolfibspeedresistancearcs.level3.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolfibspeedresistancearcs.level3.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancearcs.level3.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level3.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.level3.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolfibspeedresistancearcs.level4.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetoolfibspeedresistancearcs.level4.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancearcs.level4.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level4.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.level4.visible": boolean;
+	/** Default value: `0.786` */
+	"linetoolfibspeedresistancearcs.level5.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolfibspeedresistancearcs.level5.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancearcs.level5.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level5.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.level5.visible": boolean;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level6.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibspeedresistancearcs.level6.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancearcs.level6.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level6.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.level6.visible": boolean;
+	/** Default value: `1.618` */
+	"linetoolfibspeedresistancearcs.level7.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibspeedresistancearcs.level7.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancearcs.level7.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level7.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.level7.visible": boolean;
+	/** Default value: `2.618` */
+	"linetoolfibspeedresistancearcs.level8.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolfibspeedresistancearcs.level8.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancearcs.level8.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level8.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.level8.visible": boolean;
+	/** Default value: `3.618` */
+	"linetoolfibspeedresistancearcs.level9.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibspeedresistancearcs.level9.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancearcs.level9.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.level9.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.level9.visible": boolean;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.showCoeffs": boolean;
+	/** Default value: `80` */
+	"linetoolfibspeedresistancearcs.transparency": number;
+	/** Default value: `#787B86` */
+	"linetoolfibspeedresistancearcs.trendline.color": string;
+	/** Default value: `2` */
+	"linetoolfibspeedresistancearcs.trendline.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancearcs.trendline.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancearcs.trendline.visible": boolean;
+}
+/**
+ * Override properties for the Fibspeedresistancefan drawing tool.
+ */
+export interface FibspeedresistancefanLineToolOverrides {
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.fillBackground": boolean;
+	/** Default value: `rgba(21, 56, 153, 0.8)` */
+	"linetoolfibspeedresistancefan.grid.color": string;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancefan.grid.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancefan.grid.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.grid.visible": boolean;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancefan.hlevel1.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibspeedresistancefan.hlevel1.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.hlevel1.visible": boolean;
+	/** Default value: `0.25` */
+	"linetoolfibspeedresistancefan.hlevel2.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibspeedresistancefan.hlevel2.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.hlevel2.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolfibspeedresistancefan.hlevel3.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolfibspeedresistancefan.hlevel3.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.hlevel3.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolfibspeedresistancefan.hlevel4.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetoolfibspeedresistancefan.hlevel4.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.hlevel4.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolfibspeedresistancefan.hlevel5.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolfibspeedresistancefan.hlevel5.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.hlevel5.visible": boolean;
+	/** Default value: `0.75` */
+	"linetoolfibspeedresistancefan.hlevel6.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibspeedresistancefan.hlevel6.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.hlevel6.visible": boolean;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancefan.hlevel7.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibspeedresistancefan.hlevel7.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.hlevel7.visible": boolean;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancefan.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancefan.linewidth": number;
+	/** Default value: `false` */
+	"linetoolfibspeedresistancefan.reverse": boolean;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.showBottomLabels": boolean;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.showLeftLabels": boolean;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.showRightLabels": boolean;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.showTopLabels": boolean;
+	/** Default value: `80` */
+	"linetoolfibspeedresistancefan.transparency": number;
+	/** Default value: `0` */
+	"linetoolfibspeedresistancefan.vlevel1.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibspeedresistancefan.vlevel1.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.vlevel1.visible": boolean;
+	/** Default value: `0.25` */
+	"linetoolfibspeedresistancefan.vlevel2.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibspeedresistancefan.vlevel2.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.vlevel2.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolfibspeedresistancefan.vlevel3.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolfibspeedresistancefan.vlevel3.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.vlevel3.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolfibspeedresistancefan.vlevel4.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetoolfibspeedresistancefan.vlevel4.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.vlevel4.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolfibspeedresistancefan.vlevel5.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolfibspeedresistancefan.vlevel5.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.vlevel5.visible": boolean;
+	/** Default value: `0.75` */
+	"linetoolfibspeedresistancefan.vlevel6.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibspeedresistancefan.vlevel6.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.vlevel6.visible": boolean;
+	/** Default value: `1` */
+	"linetoolfibspeedresistancefan.vlevel7.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibspeedresistancefan.vlevel7.color": string;
+	/** Default value: `true` */
+	"linetoolfibspeedresistancefan.vlevel7.visible": boolean;
+}
+/**
+ * Override properties for the Fibspiral drawing tool.
+ */
+export interface FibspiralLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolfibspiral.counterclockwise": boolean;
+	/** Default value: `#00bcd4` */
+	"linetoolfibspiral.linecolor": string;
+	/** Default value: `0` */
+	"linetoolfibspiral.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibspiral.linewidth": number;
+}
+/**
+ * Override properties for the Fibtimezone drawing tool.
+ */
+export interface FibtimezoneLineToolOverrides {
+	/** Default value: `#808080` */
+	"linetoolfibtimezone.baselinecolor": string;
+	/** Default value: `false` */
+	"linetoolfibtimezone.fillBackground": boolean;
+	/** Default value: `right` */
+	"linetoolfibtimezone.horzLabelsAlign": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level1.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibtimezone.level1.color": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level1.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.level1.visible": boolean;
+	/** Default value: `55` */
+	"linetoolfibtimezone.level10.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibtimezone.level10.color": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level10.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level10.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.level10.visible": boolean;
+	/** Default value: `89` */
+	"linetoolfibtimezone.level11.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibtimezone.level11.color": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level11.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level11.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.level11.visible": boolean;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level2.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibtimezone.level2.color": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level2.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level2.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.level2.visible": boolean;
+	/** Default value: `2` */
+	"linetoolfibtimezone.level3.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibtimezone.level3.color": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level3.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level3.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.level3.visible": boolean;
+	/** Default value: `3` */
+	"linetoolfibtimezone.level4.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibtimezone.level4.color": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level4.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level4.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.level4.visible": boolean;
+	/** Default value: `5` */
+	"linetoolfibtimezone.level5.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibtimezone.level5.color": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level5.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level5.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.level5.visible": boolean;
+	/** Default value: `8` */
+	"linetoolfibtimezone.level6.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibtimezone.level6.color": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level6.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level6.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.level6.visible": boolean;
+	/** Default value: `13` */
+	"linetoolfibtimezone.level7.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibtimezone.level7.color": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level7.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level7.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.level7.visible": boolean;
+	/** Default value: `21` */
+	"linetoolfibtimezone.level8.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibtimezone.level8.color": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level8.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level8.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.level8.visible": boolean;
+	/** Default value: `34` */
+	"linetoolfibtimezone.level9.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibtimezone.level9.color": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.level9.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.level9.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.level9.visible": boolean;
+	/** Default value: `#0055db` */
+	"linetoolfibtimezone.linecolor": string;
+	/** Default value: `0` */
+	"linetoolfibtimezone.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.showLabels": boolean;
+	/** Default value: `80` */
+	"linetoolfibtimezone.transparency": number;
+	/** Default value: `#808080` */
+	"linetoolfibtimezone.trendline.color": string;
+	/** Default value: `2` */
+	"linetoolfibtimezone.trendline.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibtimezone.trendline.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibtimezone.trendline.visible": boolean;
+	/** Default value: `bottom` */
+	"linetoolfibtimezone.vertLabelsAlign": string;
+}
+/**
+ * Override properties for the Fibwedge drawing tool.
+ */
+export interface FibwedgeLineToolOverrides {
+	/** Default value: `true` */
+	"linetoolfibwedge.fillBackground": boolean;
+	/** Default value: `0.236` */
+	"linetoolfibwedge.level1.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibwedge.level1.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.level1.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibwedge.level1.visible": boolean;
+	/** Default value: `4.236` */
+	"linetoolfibwedge.level10.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolfibwedge.level10.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.level10.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.level10.linewidth": number;
+	/** Default value: `false` */
+	"linetoolfibwedge.level10.visible": boolean;
+	/** Default value: `4.618` */
+	"linetoolfibwedge.level11.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolfibwedge.level11.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.level11.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.level11.linewidth": number;
+	/** Default value: `false` */
+	"linetoolfibwedge.level11.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolfibwedge.level2.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolfibwedge.level2.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.level2.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.level2.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibwedge.level2.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolfibwedge.level3.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetoolfibwedge.level3.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.level3.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.level3.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibwedge.level3.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolfibwedge.level4.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolfibwedge.level4.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.level4.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.level4.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibwedge.level4.visible": boolean;
+	/** Default value: `0.786` */
+	"linetoolfibwedge.level5.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolfibwedge.level5.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.level5.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.level5.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibwedge.level5.visible": boolean;
+	/** Default value: `1` */
+	"linetoolfibwedge.level6.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolfibwedge.level6.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.level6.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.level6.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibwedge.level6.visible": boolean;
+	/** Default value: `1.618` */
+	"linetoolfibwedge.level7.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolfibwedge.level7.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.level7.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.level7.linewidth": number;
+	/** Default value: `false` */
+	"linetoolfibwedge.level7.visible": boolean;
+	/** Default value: `2.618` */
+	"linetoolfibwedge.level8.coeff": number;
+	/** Default value: `#F23645` */
+	"linetoolfibwedge.level8.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.level8.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.level8.linewidth": number;
+	/** Default value: `false` */
+	"linetoolfibwedge.level8.visible": boolean;
+	/** Default value: `3.618` */
+	"linetoolfibwedge.level9.coeff": number;
+	/** Default value: `#673ab7` */
+	"linetoolfibwedge.level9.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.level9.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.level9.linewidth": number;
+	/** Default value: `false` */
+	"linetoolfibwedge.level9.visible": boolean;
+	/** Default value: `true` */
+	"linetoolfibwedge.showCoeffs": boolean;
+	/** Default value: `80` */
+	"linetoolfibwedge.transparency": number;
+	/** Default value: `#808080` */
+	"linetoolfibwedge.trendline.color": string;
+	/** Default value: `0` */
+	"linetoolfibwedge.trendline.linestyle": number;
+	/** Default value: `1` */
+	"linetoolfibwedge.trendline.linewidth": number;
+	/** Default value: `true` */
+	"linetoolfibwedge.trendline.visible": boolean;
+}
+/**
+ * Override properties for the Fivepointspattern drawing tool.
+ */
+export interface FivepointspatternLineToolOverrides {
+	/** Default value: `#2962FF` */
+	"linetool5pointspattern.backgroundColor": string;
+	/** Default value: `false` */
+	"linetool5pointspattern.bold": boolean;
+	/** Default value: `#2962FF` */
+	"linetool5pointspattern.color": string;
+	/** Default value: `true` */
+	"linetool5pointspattern.fillBackground": boolean;
+	/** Default value: `12` */
+	"linetool5pointspattern.fontsize": number;
+	/** Default value: `false` */
+	"linetool5pointspattern.italic": boolean;
+	/** Default value: `1` */
+	"linetool5pointspattern.linewidth": number;
+	/** Default value: `#ffffff` */
+	"linetool5pointspattern.textcolor": string;
+	/** Default value: `85` */
+	"linetool5pointspattern.transparency": number;
+}
+/**
+ * Override properties for the Flagmark drawing tool.
+ */
+export interface FlagmarkLineToolOverrides {
+	/** Default value: `#2962FF` */
+	"linetoolflagmark.flagColor": string;
+}
+/**
+ * Override properties for the Flatbottom drawing tool.
+ */
+export interface FlatbottomLineToolOverrides {
+	/** Default value: `rgba(255, 152, 0, 0.2)` */
+	"linetoolflatbottom.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolflatbottom.bold": boolean;
+	/** Default value: `false` */
+	"linetoolflatbottom.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetoolflatbottom.extendRight": boolean;
+	/** Default value: `true` */
+	"linetoolflatbottom.fillBackground": boolean;
+	/** Default value: `12` */
+	"linetoolflatbottom.fontsize": number;
+	/** Default value: `false` */
+	"linetoolflatbottom.italic": boolean;
+	/** Default value: `0` */
+	"linetoolflatbottom.leftEnd": number;
+	/** Default value: `#FF9800` */
+	"linetoolflatbottom.linecolor": string;
+	/** Default value: `0` */
+	"linetoolflatbottom.linestyle": number;
+	/** Default value: `2` */
+	"linetoolflatbottom.linewidth": number;
+	/** Default value: `0` */
+	"linetoolflatbottom.rightEnd": number;
+	/** Default value: `false` */
+	"linetoolflatbottom.showBarsRange": boolean;
+	/** Default value: `false` */
+	"linetoolflatbottom.showDateTimeRange": boolean;
+	/** Default value: `false` */
+	"linetoolflatbottom.showPriceRange": boolean;
+	/** Default value: `false` */
+	"linetoolflatbottom.showPrices": boolean;
+	/** Default value: `#FF9800` */
+	"linetoolflatbottom.textcolor": string;
+	/** Default value: `20` */
+	"linetoolflatbottom.transparency": number;
+}
 export interface FormatterParseResult {
 	/** Returns if the formatter support parsing */
 	res: boolean;
+}
+/**
+ * Override properties for the Ganncomplex drawing tool.
+ */
+export interface GanncomplexLineToolOverrides {
+	/** Default value: `#FF9800` */
+	"linetoolganncomplex.arcs.0.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcs.0.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.0.width": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.0.x": number;
+	/** Default value: `0` */
+	"linetoolganncomplex.arcs.0.y": number;
+	/** Default value: `#FF9800` */
+	"linetoolganncomplex.arcs.1.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcs.1.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.1.width": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.1.x": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.1.y": number;
+	/** Default value: `#2962FF` */
+	"linetoolganncomplex.arcs.10.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcs.10.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.10.width": number;
+	/** Default value: `5` */
+	"linetoolganncomplex.arcs.10.x": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.10.y": number;
+	/** Default value: `#FF9800` */
+	"linetoolganncomplex.arcs.2.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcs.2.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.2.width": number;
+	/** Default value: `1.5` */
+	"linetoolganncomplex.arcs.2.x": number;
+	/** Default value: `0` */
+	"linetoolganncomplex.arcs.2.y": number;
+	/** Default value: `#00bcd4` */
+	"linetoolganncomplex.arcs.3.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcs.3.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.3.width": number;
+	/** Default value: `2` */
+	"linetoolganncomplex.arcs.3.x": number;
+	/** Default value: `0` */
+	"linetoolganncomplex.arcs.3.y": number;
+	/** Default value: `#00bcd4` */
+	"linetoolganncomplex.arcs.4.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcs.4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.4.width": number;
+	/** Default value: `2` */
+	"linetoolganncomplex.arcs.4.x": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.4.y": number;
+	/** Default value: `#4caf50` */
+	"linetoolganncomplex.arcs.5.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcs.5.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.5.width": number;
+	/** Default value: `3` */
+	"linetoolganncomplex.arcs.5.x": number;
+	/** Default value: `0` */
+	"linetoolganncomplex.arcs.5.y": number;
+	/** Default value: `#4caf50` */
+	"linetoolganncomplex.arcs.6.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcs.6.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.6.width": number;
+	/** Default value: `3` */
+	"linetoolganncomplex.arcs.6.x": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.6.y": number;
+	/** Default value: `#089981` */
+	"linetoolganncomplex.arcs.7.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcs.7.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.7.width": number;
+	/** Default value: `4` */
+	"linetoolganncomplex.arcs.7.x": number;
+	/** Default value: `0` */
+	"linetoolganncomplex.arcs.7.y": number;
+	/** Default value: `#089981` */
+	"linetoolganncomplex.arcs.8.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcs.8.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.8.width": number;
+	/** Default value: `4` */
+	"linetoolganncomplex.arcs.8.x": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.8.y": number;
+	/** Default value: `#2962FF` */
+	"linetoolganncomplex.arcs.9.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcs.9.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.arcs.9.width": number;
+	/** Default value: `5` */
+	"linetoolganncomplex.arcs.9.x": number;
+	/** Default value: `0` */
+	"linetoolganncomplex.arcs.9.y": number;
+	/** Default value: `true` */
+	"linetoolganncomplex.arcsBackground.fillBackground": boolean;
+	/** Default value: `80` */
+	"linetoolganncomplex.arcsBackground.transparency": number;
+	/** Default value: `#B39DDB` */
+	"linetoolganncomplex.fanlines.0.color": string;
+	/** Default value: `false` */
+	"linetoolganncomplex.fanlines.0.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.0.width": number;
+	/** Default value: `8` */
+	"linetoolganncomplex.fanlines.0.x": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.0.y": number;
+	/** Default value: `#F23645` */
+	"linetoolganncomplex.fanlines.1.color": string;
+	/** Default value: `false` */
+	"linetoolganncomplex.fanlines.1.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.1.width": number;
+	/** Default value: `5` */
+	"linetoolganncomplex.fanlines.1.x": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.1.y": number;
+	/** Default value: `#B39DDB` */
+	"linetoolganncomplex.fanlines.10.color": string;
+	/** Default value: `false` */
+	"linetoolganncomplex.fanlines.10.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.10.width": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.10.x": number;
+	/** Default value: `8` */
+	"linetoolganncomplex.fanlines.10.y": number;
+	/** Default value: `#787B86` */
+	"linetoolganncomplex.fanlines.2.color": string;
+	/** Default value: `false` */
+	"linetoolganncomplex.fanlines.2.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.2.width": number;
+	/** Default value: `4` */
+	"linetoolganncomplex.fanlines.2.x": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.2.y": number;
+	/** Default value: `#FF9800` */
+	"linetoolganncomplex.fanlines.3.color": string;
+	/** Default value: `false` */
+	"linetoolganncomplex.fanlines.3.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.3.width": number;
+	/** Default value: `3` */
+	"linetoolganncomplex.fanlines.3.x": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.3.y": number;
+	/** Default value: `#00bcd4` */
+	"linetoolganncomplex.fanlines.4.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.fanlines.4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.4.width": number;
+	/** Default value: `2` */
+	"linetoolganncomplex.fanlines.4.x": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.4.y": number;
+	/** Default value: `#4caf50` */
+	"linetoolganncomplex.fanlines.5.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.fanlines.5.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.5.width": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.5.x": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.5.y": number;
+	/** Default value: `#089981` */
+	"linetoolganncomplex.fanlines.6.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.fanlines.6.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.6.width": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.6.x": number;
+	/** Default value: `2` */
+	"linetoolganncomplex.fanlines.6.y": number;
+	/** Default value: `#089981` */
+	"linetoolganncomplex.fanlines.7.color": string;
+	/** Default value: `false` */
+	"linetoolganncomplex.fanlines.7.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.7.width": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.7.x": number;
+	/** Default value: `3` */
+	"linetoolganncomplex.fanlines.7.y": number;
+	/** Default value: `#2962FF` */
+	"linetoolganncomplex.fanlines.8.color": string;
+	/** Default value: `false` */
+	"linetoolganncomplex.fanlines.8.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.8.width": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.8.x": number;
+	/** Default value: `4` */
+	"linetoolganncomplex.fanlines.8.y": number;
+	/** Default value: `#9575cd` */
+	"linetoolganncomplex.fanlines.9.color": string;
+	/** Default value: `false` */
+	"linetoolganncomplex.fanlines.9.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.9.width": number;
+	/** Default value: `1` */
+	"linetoolganncomplex.fanlines.9.x": number;
+	/** Default value: `5` */
+	"linetoolganncomplex.fanlines.9.y": number;
+	/** Default value: `false` */
+	"linetoolganncomplex.fillBackground": boolean;
+	/** Default value: `false` */
+	"linetoolganncomplex.labelsStyle.bold": boolean;
+	/** Default value: `12` */
+	"linetoolganncomplex.labelsStyle.fontSize": number;
+	/** Default value: `false` */
+	"linetoolganncomplex.labelsStyle.italic": boolean;
+	/** Default value: `#787B86` */
+	"linetoolganncomplex.levels.0.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.levels.0.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.levels.0.width": number;
+	/** Default value: `#FF9800` */
+	"linetoolganncomplex.levels.1.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.levels.1.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.levels.1.width": number;
+	/** Default value: `#00bcd4` */
+	"linetoolganncomplex.levels.2.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.levels.2.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.levels.2.width": number;
+	/** Default value: `#4caf50` */
+	"linetoolganncomplex.levels.3.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.levels.3.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.levels.3.width": number;
+	/** Default value: `#089981` */
+	"linetoolganncomplex.levels.4.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.levels.4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.levels.4.width": number;
+	/** Default value: `#787B86` */
+	"linetoolganncomplex.levels.5.color": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.levels.5.visible": boolean;
+	/** Default value: `1` */
+	"linetoolganncomplex.levels.5.width": number;
+	/** Default value: `false` */
+	"linetoolganncomplex.reverse": boolean;
+	/** Default value: `` */
+	"linetoolganncomplex.scaleRatio": string;
+	/** Default value: `true` */
+	"linetoolganncomplex.showLabels": boolean;
+}
+/**
+ * Override properties for the Gannfan drawing tool.
+ */
+export interface GannfanLineToolOverrides {
+	/** Default value: `true` */
+	"linetoolgannfan.fillBackground": boolean;
+	/** Default value: `1` */
+	"linetoolgannfan.level1.coeff1": number;
+	/** Default value: `8` */
+	"linetoolgannfan.level1.coeff2": number;
+	/** Default value: `#FF9800` */
+	"linetoolgannfan.level1.color": string;
+	/** Default value: `0` */
+	"linetoolgannfan.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level1.linewidth": number;
+	/** Default value: `true` */
+	"linetoolgannfan.level1.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfan.level2.coeff1": number;
+	/** Default value: `4` */
+	"linetoolgannfan.level2.coeff2": number;
+	/** Default value: `#089981` */
+	"linetoolgannfan.level2.color": string;
+	/** Default value: `0` */
+	"linetoolgannfan.level2.linestyle": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level2.linewidth": number;
+	/** Default value: `true` */
+	"linetoolgannfan.level2.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfan.level3.coeff1": number;
+	/** Default value: `3` */
+	"linetoolgannfan.level3.coeff2": number;
+	/** Default value: `#4caf50` */
+	"linetoolgannfan.level3.color": string;
+	/** Default value: `0` */
+	"linetoolgannfan.level3.linestyle": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level3.linewidth": number;
+	/** Default value: `true` */
+	"linetoolgannfan.level3.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfan.level4.coeff1": number;
+	/** Default value: `2` */
+	"linetoolgannfan.level4.coeff2": number;
+	/** Default value: `#089981` */
+	"linetoolgannfan.level4.color": string;
+	/** Default value: `0` */
+	"linetoolgannfan.level4.linestyle": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level4.linewidth": number;
+	/** Default value: `true` */
+	"linetoolgannfan.level4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfan.level5.coeff1": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level5.coeff2": number;
+	/** Default value: `#00bcd4` */
+	"linetoolgannfan.level5.color": string;
+	/** Default value: `0` */
+	"linetoolgannfan.level5.linestyle": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level5.linewidth": number;
+	/** Default value: `true` */
+	"linetoolgannfan.level5.visible": boolean;
+	/** Default value: `2` */
+	"linetoolgannfan.level6.coeff1": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level6.coeff2": number;
+	/** Default value: `#2962FF` */
+	"linetoolgannfan.level6.color": string;
+	/** Default value: `0` */
+	"linetoolgannfan.level6.linestyle": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level6.linewidth": number;
+	/** Default value: `true` */
+	"linetoolgannfan.level6.visible": boolean;
+	/** Default value: `3` */
+	"linetoolgannfan.level7.coeff1": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level7.coeff2": number;
+	/** Default value: `#9c27b0` */
+	"linetoolgannfan.level7.color": string;
+	/** Default value: `0` */
+	"linetoolgannfan.level7.linestyle": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level7.linewidth": number;
+	/** Default value: `true` */
+	"linetoolgannfan.level7.visible": boolean;
+	/** Default value: `4` */
+	"linetoolgannfan.level8.coeff1": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level8.coeff2": number;
+	/** Default value: `#e91e63` */
+	"linetoolgannfan.level8.color": string;
+	/** Default value: `0` */
+	"linetoolgannfan.level8.linestyle": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level8.linewidth": number;
+	/** Default value: `true` */
+	"linetoolgannfan.level8.visible": boolean;
+	/** Default value: `8` */
+	"linetoolgannfan.level9.coeff1": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level9.coeff2": number;
+	/** Default value: `#F23645` */
+	"linetoolgannfan.level9.color": string;
+	/** Default value: `0` */
+	"linetoolgannfan.level9.linestyle": number;
+	/** Default value: `1` */
+	"linetoolgannfan.level9.linewidth": number;
+	/** Default value: `true` */
+	"linetoolgannfan.level9.visible": boolean;
+	/** Default value: `true` */
+	"linetoolgannfan.showLabels": boolean;
+	/** Default value: `80` */
+	"linetoolgannfan.transparency": number;
+}
+/**
+ * Override properties for the Gannfixed drawing tool.
+ */
+export interface GannfixedLineToolOverrides {
+	/** Default value: `#FF9800` */
+	"linetoolgannfixed.arcs.0.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcs.0.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.0.width": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.0.x": number;
+	/** Default value: `0` */
+	"linetoolgannfixed.arcs.0.y": number;
+	/** Default value: `#FF9800` */
+	"linetoolgannfixed.arcs.1.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcs.1.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.1.width": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.1.x": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.1.y": number;
+	/** Default value: `#2962FF` */
+	"linetoolgannfixed.arcs.10.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcs.10.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.10.width": number;
+	/** Default value: `5` */
+	"linetoolgannfixed.arcs.10.x": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.10.y": number;
+	/** Default value: `#FF9800` */
+	"linetoolgannfixed.arcs.2.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcs.2.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.2.width": number;
+	/** Default value: `1.5` */
+	"linetoolgannfixed.arcs.2.x": number;
+	/** Default value: `0` */
+	"linetoolgannfixed.arcs.2.y": number;
+	/** Default value: `#00bcd4` */
+	"linetoolgannfixed.arcs.3.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcs.3.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.3.width": number;
+	/** Default value: `2` */
+	"linetoolgannfixed.arcs.3.x": number;
+	/** Default value: `0` */
+	"linetoolgannfixed.arcs.3.y": number;
+	/** Default value: `#00bcd4` */
+	"linetoolgannfixed.arcs.4.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcs.4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.4.width": number;
+	/** Default value: `2` */
+	"linetoolgannfixed.arcs.4.x": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.4.y": number;
+	/** Default value: `#4caf50` */
+	"linetoolgannfixed.arcs.5.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcs.5.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.5.width": number;
+	/** Default value: `3` */
+	"linetoolgannfixed.arcs.5.x": number;
+	/** Default value: `0` */
+	"linetoolgannfixed.arcs.5.y": number;
+	/** Default value: `#4caf50` */
+	"linetoolgannfixed.arcs.6.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcs.6.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.6.width": number;
+	/** Default value: `3` */
+	"linetoolgannfixed.arcs.6.x": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.6.y": number;
+	/** Default value: `#089981` */
+	"linetoolgannfixed.arcs.7.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcs.7.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.7.width": number;
+	/** Default value: `4` */
+	"linetoolgannfixed.arcs.7.x": number;
+	/** Default value: `0` */
+	"linetoolgannfixed.arcs.7.y": number;
+	/** Default value: `#089981` */
+	"linetoolgannfixed.arcs.8.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcs.8.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.8.width": number;
+	/** Default value: `4` */
+	"linetoolgannfixed.arcs.8.x": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.8.y": number;
+	/** Default value: `#2962FF` */
+	"linetoolgannfixed.arcs.9.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcs.9.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.arcs.9.width": number;
+	/** Default value: `5` */
+	"linetoolgannfixed.arcs.9.x": number;
+	/** Default value: `0` */
+	"linetoolgannfixed.arcs.9.y": number;
+	/** Default value: `true` */
+	"linetoolgannfixed.arcsBackground.fillBackground": boolean;
+	/** Default value: `80` */
+	"linetoolgannfixed.arcsBackground.transparency": number;
+	/** Default value: `#B39DDB` */
+	"linetoolgannfixed.fanlines.0.color": string;
+	/** Default value: `false` */
+	"linetoolgannfixed.fanlines.0.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.0.width": number;
+	/** Default value: `8` */
+	"linetoolgannfixed.fanlines.0.x": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.0.y": number;
+	/** Default value: `#F23645` */
+	"linetoolgannfixed.fanlines.1.color": string;
+	/** Default value: `false` */
+	"linetoolgannfixed.fanlines.1.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.1.width": number;
+	/** Default value: `5` */
+	"linetoolgannfixed.fanlines.1.x": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.1.y": number;
+	/** Default value: `#B39DDB` */
+	"linetoolgannfixed.fanlines.10.color": string;
+	/** Default value: `false` */
+	"linetoolgannfixed.fanlines.10.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.10.width": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.10.x": number;
+	/** Default value: `8` */
+	"linetoolgannfixed.fanlines.10.y": number;
+	/** Default value: `#787B86` */
+	"linetoolgannfixed.fanlines.2.color": string;
+	/** Default value: `false` */
+	"linetoolgannfixed.fanlines.2.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.2.width": number;
+	/** Default value: `4` */
+	"linetoolgannfixed.fanlines.2.x": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.2.y": number;
+	/** Default value: `#FF9800` */
+	"linetoolgannfixed.fanlines.3.color": string;
+	/** Default value: `false` */
+	"linetoolgannfixed.fanlines.3.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.3.width": number;
+	/** Default value: `3` */
+	"linetoolgannfixed.fanlines.3.x": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.3.y": number;
+	/** Default value: `#00bcd4` */
+	"linetoolgannfixed.fanlines.4.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.fanlines.4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.4.width": number;
+	/** Default value: `2` */
+	"linetoolgannfixed.fanlines.4.x": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.4.y": number;
+	/** Default value: `#4caf50` */
+	"linetoolgannfixed.fanlines.5.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.fanlines.5.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.5.width": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.5.x": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.5.y": number;
+	/** Default value: `#089981` */
+	"linetoolgannfixed.fanlines.6.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.fanlines.6.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.6.width": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.6.x": number;
+	/** Default value: `2` */
+	"linetoolgannfixed.fanlines.6.y": number;
+	/** Default value: `#089981` */
+	"linetoolgannfixed.fanlines.7.color": string;
+	/** Default value: `false` */
+	"linetoolgannfixed.fanlines.7.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.7.width": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.7.x": number;
+	/** Default value: `3` */
+	"linetoolgannfixed.fanlines.7.y": number;
+	/** Default value: `#2962FF` */
+	"linetoolgannfixed.fanlines.8.color": string;
+	/** Default value: `false` */
+	"linetoolgannfixed.fanlines.8.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.8.width": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.8.x": number;
+	/** Default value: `4` */
+	"linetoolgannfixed.fanlines.8.y": number;
+	/** Default value: `#9575cd` */
+	"linetoolgannfixed.fanlines.9.color": string;
+	/** Default value: `false` */
+	"linetoolgannfixed.fanlines.9.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.9.width": number;
+	/** Default value: `1` */
+	"linetoolgannfixed.fanlines.9.x": number;
+	/** Default value: `5` */
+	"linetoolgannfixed.fanlines.9.y": number;
+	/** Default value: `false` */
+	"linetoolgannfixed.fillBackground": boolean;
+	/** Default value: `#787B86` */
+	"linetoolgannfixed.levels.0.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.levels.0.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.levels.0.width": number;
+	/** Default value: `#FF9800` */
+	"linetoolgannfixed.levels.1.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.levels.1.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.levels.1.width": number;
+	/** Default value: `#00bcd4` */
+	"linetoolgannfixed.levels.2.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.levels.2.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.levels.2.width": number;
+	/** Default value: `#4caf50` */
+	"linetoolgannfixed.levels.3.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.levels.3.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.levels.3.width": number;
+	/** Default value: `#089981` */
+	"linetoolgannfixed.levels.4.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.levels.4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.levels.4.width": number;
+	/** Default value: `#787B86` */
+	"linetoolgannfixed.levels.5.color": string;
+	/** Default value: `true` */
+	"linetoolgannfixed.levels.5.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannfixed.levels.5.width": number;
+	/** Default value: `false` */
+	"linetoolgannfixed.reverse": boolean;
+}
+/**
+ * Override properties for the Gannsquare drawing tool.
+ */
+export interface GannsquareLineToolOverrides {
+	/** Default value: `rgba(21, 56, 153, 0.8)` */
+	"linetoolgannsquare.color": string;
+	/** Default value: `#9598A1` */
+	"linetoolgannsquare.fans.color": string;
+	/** Default value: `false` */
+	"linetoolgannsquare.fans.visible": boolean;
+	/** Default value: `true` */
+	"linetoolgannsquare.fillHorzBackground": boolean;
+	/** Default value: `true` */
+	"linetoolgannsquare.fillVertBackground": boolean;
+	/** Default value: `0` */
+	"linetoolgannsquare.hlevel1.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolgannsquare.hlevel1.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.hlevel1.visible": boolean;
+	/** Default value: `0.25` */
+	"linetoolgannsquare.hlevel2.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolgannsquare.hlevel2.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.hlevel2.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolgannsquare.hlevel3.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolgannsquare.hlevel3.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.hlevel3.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolgannsquare.hlevel4.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetoolgannsquare.hlevel4.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.hlevel4.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolgannsquare.hlevel5.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolgannsquare.hlevel5.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.hlevel5.visible": boolean;
+	/** Default value: `0.75` */
+	"linetoolgannsquare.hlevel6.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolgannsquare.hlevel6.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.hlevel6.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannsquare.hlevel7.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolgannsquare.hlevel7.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.hlevel7.visible": boolean;
+	/** Default value: `80` */
+	"linetoolgannsquare.horzTransparency": number;
+	/** Default value: `0` */
+	"linetoolgannsquare.linestyle": number;
+	/** Default value: `1` */
+	"linetoolgannsquare.linewidth": number;
+	/** Default value: `false` */
+	"linetoolgannsquare.reverse": boolean;
+	/** Default value: `true` */
+	"linetoolgannsquare.showBottomLabels": boolean;
+	/** Default value: `true` */
+	"linetoolgannsquare.showLeftLabels": boolean;
+	/** Default value: `true` */
+	"linetoolgannsquare.showRightLabels": boolean;
+	/** Default value: `true` */
+	"linetoolgannsquare.showTopLabels": boolean;
+	/** Default value: `80` */
+	"linetoolgannsquare.vertTransparency": number;
+	/** Default value: `0` */
+	"linetoolgannsquare.vlevel1.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolgannsquare.vlevel1.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.vlevel1.visible": boolean;
+	/** Default value: `0.25` */
+	"linetoolgannsquare.vlevel2.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetoolgannsquare.vlevel2.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.vlevel2.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolgannsquare.vlevel3.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolgannsquare.vlevel3.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.vlevel3.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolgannsquare.vlevel4.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetoolgannsquare.vlevel4.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.vlevel4.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolgannsquare.vlevel5.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolgannsquare.vlevel5.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.vlevel5.visible": boolean;
+	/** Default value: `0.75` */
+	"linetoolgannsquare.vlevel6.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolgannsquare.vlevel6.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.vlevel6.visible": boolean;
+	/** Default value: `1` */
+	"linetoolgannsquare.vlevel7.coeff": number;
+	/** Default value: `#787B86` */
+	"linetoolgannsquare.vlevel7.color": string;
+	/** Default value: `true` */
+	"linetoolgannsquare.vlevel7.visible": boolean;
 }
 export interface GetNewsResponse {
 	/** Title */
 	title?: string;
 	/** Retrieved news items */
 	newsItems: NewsItem[];
+}
+/**
+ * Override properties for the Ghostfeed drawing tool.
+ */
+export interface GhostfeedLineToolOverrides {
+	/** Default value: `20` */
+	"linetoolghostfeed.averageHL": number;
+	/** Default value: `#378658` */
+	"linetoolghostfeed.candleStyle.borderColor": string;
+	/** Default value: `#F23645` */
+	"linetoolghostfeed.candleStyle.borderDownColor": string;
+	/** Default value: `#089981` */
+	"linetoolghostfeed.candleStyle.borderUpColor": string;
+	/** Default value: `#FAA1A4` */
+	"linetoolghostfeed.candleStyle.downColor": string;
+	/** Default value: `true` */
+	"linetoolghostfeed.candleStyle.drawBorder": boolean;
+	/** Default value: `true` */
+	"linetoolghostfeed.candleStyle.drawWick": boolean;
+	/** Default value: `#ACE5DC` */
+	"linetoolghostfeed.candleStyle.upColor": string;
+	/** Default value: `#787B86` */
+	"linetoolghostfeed.candleStyle.wickColor": string;
+	/** Default value: `50` */
+	"linetoolghostfeed.transparency": number;
+	/** Default value: `50` */
+	"linetoolghostfeed.variance": number;
 }
 export interface GrayedObject {
 	/** Type for grayed object */
@@ -3898,6 +6607,53 @@ export interface HHistPreferences {
 	 * Whether the histogram will be shown on the left or right edge of the chart
 	 */
 	direction: HHistDirection;
+}
+export interface HLCAreaStylePreferences {
+	/** High line color */
+	highLineColor: string;
+	/** High line style */
+	highLineStyle: number;
+	/** High line width */
+	highLineWidth: number;
+	/** Low line color */
+	lowLineColor: string;
+	/** Low line style */
+	lowLineStyle: number;
+	/** Low line width */
+	lowLineWidth: number;
+	/** Close line color */
+	closeLineColor: string;
+	/** Close line style */
+	closeLineStyle: number;
+	/** Close line width */
+	closeLineWidth: number;
+	/** Fill color of area between high and close lines */
+	highCloseFillColor: string;
+	/** Fill color of area between close and low lines */
+	closeLowFillColor: string;
+}
+/**
+ * Override properties for the Headandshoulders drawing tool.
+ */
+export interface HeadandshouldersLineToolOverrides {
+	/** Default value: `#089981` */
+	"linetoolheadandshoulders.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolheadandshoulders.bold": boolean;
+	/** Default value: `#089981` */
+	"linetoolheadandshoulders.color": string;
+	/** Default value: `true` */
+	"linetoolheadandshoulders.fillBackground": boolean;
+	/** Default value: `12` */
+	"linetoolheadandshoulders.fontsize": number;
+	/** Default value: `false` */
+	"linetoolheadandshoulders.italic": boolean;
+	/** Default value: `1` */
+	"linetoolheadandshoulders.linewidth": number;
+	/** Default value: `#ffffff` */
+	"linetoolheadandshoulders.textcolor": string;
+	/** Default value: `85` */
+	"linetoolheadandshoulders.transparency": number;
 }
 export interface HeikinAshiStylePreferences {
 	/** Body color for an up candle */
@@ -3942,6 +6698,17 @@ export interface HiLoStylePreferences {
 	drawBody: boolean;
 }
 /**
+ * Override properties for the Highlighter drawing tool.
+ */
+export interface HighlighterLineToolOverrides {
+	/** Default value: `rgba(242, 54, 69, 0.2)` */
+	"linetoolhighlighter.linecolor": string;
+	/** Default value: `5` */
+	"linetoolhighlighter.smooth": number;
+	/** Default value: `80` */
+	"linetoolhighlighter.transparency": number;
+}
+/**
  * Information passed to `onHistoryCallback` for getBars.
  */
 export interface HistoryMetadata {
@@ -3979,6 +6746,9 @@ export interface HollowCandleStylePreferences {
 	/** Down candle wick color */
 	wickDownColor: string;
 }
+/**
+ * Horizontal Line Preferences
+ */
 export interface HorizLinePreferences {
 	/** Is visible if set to `true` */
 	visible: boolean;
@@ -3991,15 +6761,60 @@ export interface HorizLinePreferences {
 	/** Show price if set to `true` */
 	showPrice?: boolean;
 }
+
 /**
- * Horizontal Line Preferences
+ * Override properties for the Horzline drawing tool.
  */
-export interface HorizLinePreferences {
-	visible: boolean;
-	width: number;
-	color: string;
-	style: LineStyle;
-	showPrice?: boolean;
+export interface HorzlineLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolhorzline.bold": boolean;
+	/** Default value: `12` */
+	"linetoolhorzline.fontsize": number;
+	/** Default value: `center` */
+	"linetoolhorzline.horzLabelsAlign": string;
+	/** Default value: `false` */
+	"linetoolhorzline.italic": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolhorzline.linecolor": string;
+	/** Default value: `0` */
+	"linetoolhorzline.linestyle": number;
+	/** Default value: `2` */
+	"linetoolhorzline.linewidth": number;
+	/** Default value: `false` */
+	"linetoolhorzline.showLabel": boolean;
+	/** Default value: `true` */
+	"linetoolhorzline.showPrice": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolhorzline.textcolor": string;
+	/** Default value: `top` */
+	"linetoolhorzline.vertLabelsAlign": string;
+}
+/**
+ * Override properties for the Horzray drawing tool.
+ */
+export interface HorzrayLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolhorzray.bold": boolean;
+	/** Default value: `12` */
+	"linetoolhorzray.fontsize": number;
+	/** Default value: `center` */
+	"linetoolhorzray.horzLabelsAlign": string;
+	/** Default value: `false` */
+	"linetoolhorzray.italic": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolhorzray.linecolor": string;
+	/** Default value: `0` */
+	"linetoolhorzray.linestyle": number;
+	/** Default value: `2` */
+	"linetoolhorzray.linewidth": number;
+	/** Default value: `false` */
+	"linetoolhorzray.showLabel": boolean;
+	/** Default value: `true` */
+	"linetoolhorzray.showPrice": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolhorzray.textcolor": string;
+	/** Default value: `top` */
+	"linetoolhorzray.vertLabelsAlign": string;
 }
 export interface IAction extends IMenuItem {
 	/** @inheritDoc */
@@ -4286,7 +7101,7 @@ export interface IBrokerConnectionAdapterHost {
 	 * @param  {string} symbol - symbol identifier
 	 * @param  {DOMData} equity - Depth of market data
 	 */
-	domeUpdate(symbol: string, equity: DOMData): void;
+	domUpdate(symbol: string, equity: DOMData): void;
 	/**
 	 * Shows the order dialog
 	 * @param  {T extends PreOrder} order - order to show in the dialog
@@ -4400,12 +7215,12 @@ export interface IBrokerWithoutRealtime extends IBrokerCommon {
 	 * Library is requesting that realtime DOM (Depth of Market) updates should be supplied for this symbol
 	 * @param  {string} symbol - symbol identifier
 	 */
-	subscribeDOME?(symbol: string): void;
+	subscribeDOM?(symbol: string): void;
 	/**
 	 * Library is notifying that realtime DOM (Depth of Market) updates are no longer required for this symbol.
 	 * @param  {string} symbol - symbol identifier
 	 */
-	unsubscribeDOME?(symbol: string): void;
+	unsubscribeDOM?(symbol: string): void;
 	/**
 	 * Method is called when a user wants to place an order. Order is pre-filled with partial or complete information. This function returns an object with the order id.
 	 * @param  {PreOrder} order - order information
@@ -4604,17 +7419,23 @@ export interface IChartWidgetApi {
 	/**
 	 * Change the chart's symbol.
 	 *
+	 * Note: if you are attempting to change multiple charts (multi-chart layouts) at the same time with
+	 * multiple setSymbol calls then you should set `doNotActivateChart` option to `true`.
+	 *
 	 * @param symbol A symbol.
-	 * @param callback An optional callback function. Called when the data for the new symbol has loaded.
+	 * @param options Optional object of options for the new symbol or optional callback that is called when the data for the new symbol has loaded.
 	 */
-	setSymbol(symbol: string, callback?: () => void): void;
+	setSymbol(symbol: string, options?: SetSymbolOptions | (() => void)): void;
 	/**
 	 * Change the chart's interval (resolution).
 	 *
+	 * Note: if you are attempting to change multiple charts (multi-chart layouts) at the same time with
+	 * multiple setResolution calls then you should set `doNotActivateChart` option to `true`.
+	 *
 	 * @param resolution A resolution.
-	 * @param callback An optional callback function. Called when the data for the new resolution has loaded.
+	 * @param options Optional object of options for the new resolution or optional callback that is called when the data for the new resolution has loaded.
 	 */
-	setResolution(resolution: ResolutionString, callback?: () => void): void;
+	setResolution(resolution: ResolutionString, options?: SetResolutionOptions | (() => void)): void;
 	/**
 	 * Change the chart's type.
 	 *
@@ -4706,6 +7527,12 @@ export interface IChartWidgetApi {
 	 * ```
 	 */
 	maximizeChart(): void;
+	/**
+	 * Check if the chart is maximized or not.
+	 *
+	 * @returns `true` if maximized, `false` otherwise.
+	 */
+	isMaximized(): boolean;
 	/**
 	 * Restore to its initial size currently selected chart.
 	 *
@@ -4992,6 +7819,33 @@ export interface IChartWidgetApi {
 	 * Cancel any active bar selection requests.
 	 */
 	cancelSelectBar(): void;
+	/**
+	 * Load and apply a chart template.
+	 *
+	 * @param templateName The name of the template to load.
+	 */
+	loadChartTemplate(templateName: string): Promise<void>;
+	/**
+	 * Get a readonly watched value that can be used to read/subscribe to the state of the chart's market status.
+	 */
+	marketStatus(): IWatchedValueReadonly<MarketStatus | null>;
+	/**
+	 * Set the time frame for this chart.
+	 *
+	 * **Note:** This action will set this chart as active in a multi-chart layout.
+	 *
+	 * **Example**
+	 * To apply the '1Y' timeframe:
+	 * ```js
+	 * tvWidget.setTimeFrame({
+	 *   val: { type: 'period-back', value: '12M' },
+	 *   res: '1W',
+	 * });
+	 * ```
+	 *
+	 * @param timeFrame Object specifying the range and resolution to be applied
+	 */
+	setTimeFrame(timeFrame: RangeOptions): void;
 }
 /**
  * The main interface for interacting with the library.
@@ -5108,12 +7962,26 @@ export interface IChartingLibraryWidget {
 	 */
 	selectLineTool(linetool: Omit<"icon", SupportedLineTools>): void;
 	/**
+	 * Select the Icon line tool. It's the same as clicking on the corresponding button in the left toolbar.
+	 *
+	 * @param linetool Icon line tool.
+	 * @param options An optional object with options. Currently only used for the 'icon' drawing.
+	 */
+	selectLineTool(linetool: "icon", options?: IconOptions): void;
+	/**
+	 * Select the Emoji line tool. It's the same as clicking on the corresponding button in the left toolbar.
+	 *
+	 * @param linetool Emoji line tool.
+	 * @param options Options for the Emoji line tool
+	 */
+	selectLineTool(linetool: "emoji", options?: EmojiOptions): void;
+	/**
 	 * Select a drawing, icon, or a cursor. It's the same as clicking on the corresponding button in the left toolbar.
 	 *
 	 * @param linetool A drawing or cursor to select.
-	 * @param options An optional object with options. Currently only used for the 'icon' drawing.
+	 * @param options An optional object with options.
 	 */
-	selectLineTool(linetool: SupportedLineTools, options?: IconOptions): void;
+	selectLineTool(linetool: SupportedLineTools, options?: IconOptions | EmojiOptions): void;
 	/**
 	 * Get the currently selected drawing or cursor.
 	 *
@@ -5285,6 +8153,23 @@ export interface IChartingLibraryWidget {
 	 * @returns An API object for interacting with the chart.
 	 */
 	activeChart(): IChartWidgetApi;
+	/**
+	 * Get the index of the active chart in the layout.
+	 *
+	 * @returns number.
+	 */
+	activeChartIndex(): number;
+	/**
+	 * Set which chart is currently active.
+	 * It is recommended that this method is only used when linked to a user action
+	 * which should change the active chart.
+	 *
+	 * Use {@link chartsCount} to determine the number of charts currently available.
+	 * If an invalid index is supplied (less than zero, or greater than the number of charts minus 1)
+	 * then this method will not change the active chart.
+	 * @param index - index of chart to set as the active chart. Index is zero-based.
+	 */
+	setActiveChart(index: number): void;
 	/**
 	 * Get the number of charts in the current layout.
 	 *
@@ -5460,6 +8345,22 @@ export interface IChartingLibraryWidget {
 	 * documentation for `mainSeriesProperties.style`.
 	 */
 	supportedChartTypes(): IWatchedValueReadonly<ChartStyle[]>;
+	/**
+	 * Get an API object for adjusting the watermarks present on the charts.
+	 * This can only be accessed when the chart is ready to be used. ({@link onChartReady})
+	 *
+	 * @returns An API object for adjusting the watermark settings.
+	 */
+	watermark(): IWatermarkApi;
+	/**
+	 * Get an API object for creating, and adjusting, custom status items to
+	 * be displayed within the legend for the main series of each chart.
+	 *
+	 * This can only be accessed when the chart has been created. ({@link headerReady})
+	 *
+	 * @returns An API object for controlling additional custom status items within the legend area.
+	 */
+	customSymbolStatus(): ICustomSymbolStatusApi;
 }
 export interface IContext {
 	/**
@@ -5514,6 +8415,162 @@ export interface IContextMenuRenderer {
 	 * @returns `true` when the menu is currently displayed.
 	 */
 	isShown(): boolean;
+}
+/**
+ * Adapter API for reading and setting the state of a
+ * custom symbol status item.
+ *
+ * The 'set' methods return the same adapter so that you can
+ * chain multiple set functions together.
+ *
+ * **Example**
+ * ```js
+ * const adapter = widget.customSymbolStatus().symbol('ABC');
+ * adapter.setVisible(true).setColor('#336699').setTooltip('Custom Status')
+ * ```
+ */
+export interface ICustomSymbolStatusAdapter {
+	/**
+	 * Get the current visibility of the status item.
+	 * @returns the current visibility
+	 */
+	getVisible(): boolean;
+	/**
+	 * Set the visibility for the status item. @default false
+	 *
+	 * @param visible - visibility for the status item, where
+	 * `true` makes the item visible.
+	 * @returns the current symbol status adapter so you can
+	 * chain 'set' functions together.
+	 */
+	setVisible(visible: boolean): ICustomSymbolStatusAdapter;
+	/**
+	 * Get the current icon for the status item.
+	 * @returns the current icon SVG string
+	 */
+	getIcon(): string | null;
+	/**
+	 * Set the icon for the status item. @default blank
+	 * The icon should be provided as an svg markup. It is
+	 * recommended that the icon works well at small sizes.
+	 *
+	 * **Example**
+	 * ```svg
+	 * <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+	 *   <!-- Icon source: https://heroicons.com -->
+	 *   <path fill-rule="evenodd" d="M13.5 4.938a7 7 0 11-9.006 1.737c.202-.257.59-.218.793.039.278.352.594.672.943.954.332.269.786-.049.773-.476a5.977 5.977 0 01.572-2.759 6.026 6.026 0 012.486-2.665c.247-.14.55-.016.677.238A6.967 6.967 0 0013.5 4.938zM14 12a4 4 0 01-4 4c-1.913 0-3.52-1.398-3.91-3.182-.093-.429.44-.643.814-.413a4.043 4.043 0 001.601.564c.303.038.531-.24.51-.544a5.975 5.975 0 011.315-4.192.447.447 0 01.431-.16A4.001 4.001 0 0114 12z" clip-rule="evenodd" />
+	 * </svg>
+	 * ```
+	 *
+	 * @param icon - svg markup string to be used as the icon, or `null` to display no icon
+	 * @returns the current symbol status adapter so you can
+	 * chain 'set' functions together.
+	 */
+	setIcon(icon: string | null): ICustomSymbolStatusAdapter;
+	/**
+	 * Get the current color of the status item.
+	 * @returns the current color
+	 */
+	getColor(): string;
+	/**
+	 * Set the color for the status item. @default '#9598a1'
+	 *
+	 * @param color - color to be used for the status item.
+	 * It is recommended that you test that the color works well
+	 * for both light and dark themes.
+	 * @returns the current symbol status adapter so you can
+	 * chain 'set' functions together.
+	 */
+	setColor(color: string): ICustomSymbolStatusAdapter;
+	/**
+	 * Get the current tooltip text for the status item.
+	 * @returns the current tooltip text
+	 */
+	getTooltip(): string | null;
+	/**
+	 * Set the text to be displayed within the tooltip displayed
+	 * when hovering over the statuses for the symbol.
+	 * @default ''
+	 *
+	 * @param tooltip - text to be displayed within the tooltip.
+	 * @returns the current symbol status adapter so you can
+	 * chain 'set' functions together.
+	 */
+	setTooltip(tooltip: string | null): ICustomSymbolStatusAdapter;
+	/**
+	 * Get the current content of the status item displayed within
+	 * the pop-up tooltip.
+	 * @returns the current pop-up content
+	 */
+	getDropDownContent(): CustomStatusDropDownContent[] | null;
+	/**
+	 * Set the content to be displayed within the pop-up which appears
+	 * when the user clicks on the symbol statuses.
+	 * @default null
+	 *
+	 * @param content - content to be displayed, set to `null` to display
+	 * nothing. More than one section can be specified.
+	 * @returns the current symbol status adapter so you can
+	 * chain 'set' functions together.
+	 */
+	setDropDownContent(content: CustomStatusDropDownContent[] | null): ICustomSymbolStatusAdapter;
+}
+/**
+ * The custom symbol status API provides the ability to create (and adjust)
+ * additional status items to be displayed within the symbol status section
+ * of the main series legend. This section is typically used to show the
+ * market status (such as open or closed) but can additionally be used to
+ * display warnings related to the current symbol.
+ *
+ * This API allows custom status items to be added (which are tied to a
+ * specific symbol). You can customise the icon, color, tooltip, and content
+ * within the dropdown tooltip menu displayed when the user clicks on the
+ * icon.
+ *
+ * **Example**
+ * ```js
+ * widget
+ *  .customSymbolStatus()
+ *  .symbol('NASDAQNM:AAPL') // select the symbol
+ *  .setVisible(true) // make the status visible
+ *  .setColor('rgb(255, 40, 60)') // set the colour
+ *  .setIcon(myCustomIconSvgString) // string for an svg icon, i.e. '<svg> ... </svg>'
+ *  .setTooltip('Tooltip') // text to be displayed within the hover tooltip
+ *  .setDropDownContent([ // content to be displayed within the large pop-up tooltip
+ *    {
+ *      title: 'Title', // title to be displayed within the pop-up
+ *      color: 'rgb(255, 60, 70)', // optional, if you want it to be different to above
+ *      content: [
+ *        'Explanation of status',
+ *        '<br/><br/>',
+ *        'More details...',
+ *      ],
+ *      action: { // Optional action to be displayed
+ *        text: 'Read more here',
+ *        tooltip: 'opens in a new window',
+ *        onClick: () => {
+ *          window.open('https://www.tradingview.com/', '_blank');
+ *        },
+ *      },
+ *    },
+ * ]);
+ * ```
+ */
+export interface ICustomSymbolStatusApi {
+	/**
+	 * Get the custom symbol status adapter for a specific symbolId. The
+	 * symbolId should exactly match the resolved symbolId. This id can
+	 * be retrieved for a chart via the {@link IChartWidgetApi.symbol} method.
+	 *
+	 * @param symbolId - symbol id for which you would like to create / adjust
+	 * the custom status
+	 */
+	symbol(symbolId: string): ICustomSymbolStatusAdapter;
+	/**
+	 * Hide all the custom status items. This is equivalent to using
+	 * `setVisible(false)` on all of the current custom symbol status items.
+	 */
+	hideAll(): void;
 }
 export interface IDatafeedChartApi {
 	/**
@@ -5602,7 +8659,7 @@ export interface IDatafeedChartApi {
 	 * @param callback Function returning an object to update Depth Of Market (DOM) data
 	 * @returns A unique identifier that will be used to unsubscribe from the data
 	 */
-	subscribeDepth?(symbol: string, callback: DomeCallback): string;
+	subscribeDepth?(symbol: string, callback: DOMCallback): string;
 	/**
 	 * Trading Terminal calls this function when it doesn't want to receive updates for this listener anymore.
 	 *
@@ -5871,6 +8928,33 @@ export interface IExternalSaveLoadAdapter {
 	 * @param  {string} content - content of the drawing template
 	 */
 	saveDrawingTemplate(toolName: string, templateName: string, content: string): Promise<void>;
+	/**
+	 * Load a chart template from the server
+	 *
+	 * @param templateName The name of the template.
+	 *
+	 * @returns The chart template content.
+	 */
+	getChartTemplateContent(templateName: string): Promise<ChartTemplate>;
+	/**
+	 * Get names of all saved chart templates.
+	 *
+	 * @returns An array of names.
+	 */
+	getAllChartTemplates(): Promise<string[]>;
+	/**
+	 * Save a chart template.
+	 *
+	 * @param newName The name of the template.
+	 * @param theme The template content.
+	 */
+	saveChartTemplate(newName: string, theme: ChartTemplateContent): Promise<void>;
+	/**
+	 * Remove a chart template.
+	 *
+	 * @param templateName The name of the template.
+	 */
+	removeChartTemplate(templateName: string): Promise<void>;
 }
 /** Definition of a formatter */
 export interface IFormatter<T> {
@@ -5992,6 +9076,15 @@ export interface INonSeriesStudyResult {
 	nonseries: true;
 	/** Data */
 	data: object;
+}
+/** Specific formatter for number */
+export interface INumberFormatter extends IFormatter<number> {
+	/**
+	 * Formatter for a price change
+	 * @param currentPrice - current price
+	 * @param prevPrice - previous price
+	 */
+	formatChange?(currentPrice: number, prevPrice: number): string;
 }
 export interface IObservable<T> {
 	/**
@@ -6331,7 +9424,9 @@ export interface IPaneApi {
 	/** Restore the size of a previously collapsed pane */
 	restore(): void;
 }
+// tslint:disable:tv-variable-name
 export interface IPineSeries {
+	hist?: number[] | null;
 	/**
 	 * Get the value at a specific index.
 	 *
@@ -6354,6 +9449,10 @@ export interface IPineSeries {
 	 * @param  {number} time - timestamp
 	 */
 	indexOf(time: number): number;
+	/**
+	 * Create an history to the series it's attached to.
+	 */
+	add_hist?(): void;
 }
 /**
  * An API object used to control position lines.
@@ -7242,6 +10341,13 @@ export interface ISymbolInstrument {
 export interface ISymbolValueFormatter {
 	/** Default formatter function used to assign the correct sign (+ or -) to a number  */
 	format(price: number, signPositive?: boolean): string;
+	/**
+	 * Formatter for a price change
+	 * @param currentPrice - current price
+	 * @param prevPrice - previous price
+	 * @param signPositive - is the sign of the number positive
+	 */
+	formatChange?(currentPrice: number, prevPrice: number, signPositive?: boolean): string;
 }
 /**
  * API object for interacting with the timescale.
@@ -7430,6 +10536,25 @@ export interface IWatchedValueReadonly<T> extends IObservableValueReadOnly<T> {
 	when(callback: WatchedValueCallback<T>): void;
 }
 /**
+ * An API object used to change the settings of the watermark.
+ */
+export interface IWatermarkApi {
+	/**
+	 * Object that can be used to read/set/watch the color of the watermark text.
+	 */
+	color(): IWatchedValue<string>;
+	/**
+	 * Object that can be used to read/set/watch the visibility of the watermark.
+	 */
+	visibility(): IWatchedValue<boolean>;
+	/**
+	 * Set a custom content provider for the watermark content.
+	 *
+	 * @param provider - Custom watermark content provider, use `null` if you would like to revert back to the default content for the watermark.
+	 */
+	setContentProvider(provider: WatermarkContentProvider | null): void;
+}
+/**
  * Widget Bar API
  */
 export interface IWidgetbarApi extends IDestroyable {
@@ -7463,13 +10588,205 @@ export interface IWidgetbarApi extends IDestroyable {
 	 */
 	changeWidgetBarVisibility(visible: boolean): void;
 }
+/**
+ * Override properties for the Icon drawing tool.
+ */
+export interface IconLineToolOverrides {
+	/** Default value: `1.5707963267948966` */
+	"linetoolicon.angle": number;
+	/** Default value: `#2962FF` */
+	"linetoolicon.color": string;
+	/** Default value: `61720` */
+	"linetoolicon.icon": number;
+	/** Default value: `40` */
+	"linetoolicon.size": number;
+}
 export interface IconOptions {
 	/** Icon number */
 	icon: number;
 }
+/**
+ * Override properties for the Image drawing tool.
+ */
+export interface ImageLineToolOverrides {
+	/** Default value: `0` */
+	"linetoolimage.angle": number;
+	/** Default value: `0` */
+	"linetoolimage.cssHeight": number;
+	/** Default value: `0` */
+	"linetoolimage.cssWidth": number;
+	/** Default value: `0` */
+	"linetoolimage.transparency": number;
+}
+/**
+ * Override properties for the Infoline drawing tool.
+ */
+export interface InfolineLineToolOverrides {
+	/** Default value: `true` */
+	"linetoolinfoline.alwaysShowStats": boolean;
+	/** Default value: `false` */
+	"linetoolinfoline.bold": boolean;
+	/** Default value: `false` */
+	"linetoolinfoline.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetoolinfoline.extendRight": boolean;
+	/** Default value: `14` */
+	"linetoolinfoline.fontsize": number;
+	/** Default value: `center` */
+	"linetoolinfoline.horzLabelsAlign": string;
+	/** Default value: `false` */
+	"linetoolinfoline.italic": boolean;
+	/** Default value: `0` */
+	"linetoolinfoline.leftEnd": number;
+	/** Default value: `#2962FF` */
+	"linetoolinfoline.linecolor": string;
+	/** Default value: `0` */
+	"linetoolinfoline.linestyle": number;
+	/** Default value: `2` */
+	"linetoolinfoline.linewidth": number;
+	/** Default value: `0` */
+	"linetoolinfoline.rightEnd": number;
+	/** Default value: `true` */
+	"linetoolinfoline.showAngle": boolean;
+	/** Default value: `true` */
+	"linetoolinfoline.showBarsRange": boolean;
+	/** Default value: `true` */
+	"linetoolinfoline.showDateTimeRange": boolean;
+	/** Default value: `true` */
+	"linetoolinfoline.showDistance": boolean;
+	/** Default value: `false` */
+	"linetoolinfoline.showLabel": boolean;
+	/** Default value: `false` */
+	"linetoolinfoline.showMiddlePoint": boolean;
+	/** Default value: `true` */
+	"linetoolinfoline.showPercentPriceRange": boolean;
+	/** Default value: `true` */
+	"linetoolinfoline.showPipsPriceRange": boolean;
+	/** Default value: `false` */
+	"linetoolinfoline.showPriceLabels": boolean;
+	/** Default value: `true` */
+	"linetoolinfoline.showPriceRange": boolean;
+	/** Default value: `1` */
+	"linetoolinfoline.statsPosition": number;
+	/** Default value: `#2962FF` */
+	"linetoolinfoline.textcolor": string;
+	/** Default value: `bottom` */
+	"linetoolinfoline.vertLabelsAlign": string;
+}
 export interface InitialSettingsMap {
 	/** Initial Setting */
 	[key: string]: string;
+}
+/**
+ * Override properties for the Insidepitchfork drawing tool.
+ */
+export interface InsidepitchforkLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolinsidepitchfork.extendLines": boolean;
+	/** Default value: `true` */
+	"linetoolinsidepitchfork.fillBackground": boolean;
+	/** Default value: `0.25` */
+	"linetoolinsidepitchfork.level0.coeff": number;
+	/** Default value: `#ffb74d` */
+	"linetoolinsidepitchfork.level0.color": string;
+	/** Default value: `0` */
+	"linetoolinsidepitchfork.level0.linestyle": number;
+	/** Default value: `1` */
+	"linetoolinsidepitchfork.level0.linewidth": number;
+	/** Default value: `false` */
+	"linetoolinsidepitchfork.level0.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolinsidepitchfork.level1.coeff": number;
+	/** Default value: `#81c784` */
+	"linetoolinsidepitchfork.level1.color": string;
+	/** Default value: `0` */
+	"linetoolinsidepitchfork.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetoolinsidepitchfork.level1.linewidth": number;
+	/** Default value: `false` */
+	"linetoolinsidepitchfork.level1.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolinsidepitchfork.level2.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolinsidepitchfork.level2.color": string;
+	/** Default value: `0` */
+	"linetoolinsidepitchfork.level2.linestyle": number;
+	/** Default value: `1` */
+	"linetoolinsidepitchfork.level2.linewidth": number;
+	/** Default value: `true` */
+	"linetoolinsidepitchfork.level2.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolinsidepitchfork.level3.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolinsidepitchfork.level3.color": string;
+	/** Default value: `0` */
+	"linetoolinsidepitchfork.level3.linestyle": number;
+	/** Default value: `1` */
+	"linetoolinsidepitchfork.level3.linewidth": number;
+	/** Default value: `false` */
+	"linetoolinsidepitchfork.level3.visible": boolean;
+	/** Default value: `0.75` */
+	"linetoolinsidepitchfork.level4.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolinsidepitchfork.level4.color": string;
+	/** Default value: `0` */
+	"linetoolinsidepitchfork.level4.linestyle": number;
+	/** Default value: `1` */
+	"linetoolinsidepitchfork.level4.linewidth": number;
+	/** Default value: `false` */
+	"linetoolinsidepitchfork.level4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolinsidepitchfork.level5.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolinsidepitchfork.level5.color": string;
+	/** Default value: `0` */
+	"linetoolinsidepitchfork.level5.linestyle": number;
+	/** Default value: `1` */
+	"linetoolinsidepitchfork.level5.linewidth": number;
+	/** Default value: `true` */
+	"linetoolinsidepitchfork.level5.visible": boolean;
+	/** Default value: `1.5` */
+	"linetoolinsidepitchfork.level6.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetoolinsidepitchfork.level6.color": string;
+	/** Default value: `0` */
+	"linetoolinsidepitchfork.level6.linestyle": number;
+	/** Default value: `1` */
+	"linetoolinsidepitchfork.level6.linewidth": number;
+	/** Default value: `false` */
+	"linetoolinsidepitchfork.level6.visible": boolean;
+	/** Default value: `1.75` */
+	"linetoolinsidepitchfork.level7.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolinsidepitchfork.level7.color": string;
+	/** Default value: `0` */
+	"linetoolinsidepitchfork.level7.linestyle": number;
+	/** Default value: `1` */
+	"linetoolinsidepitchfork.level7.linewidth": number;
+	/** Default value: `false` */
+	"linetoolinsidepitchfork.level7.visible": boolean;
+	/** Default value: `2` */
+	"linetoolinsidepitchfork.level8.coeff": number;
+	/** Default value: `#F77C80` */
+	"linetoolinsidepitchfork.level8.color": string;
+	/** Default value: `0` */
+	"linetoolinsidepitchfork.level8.linestyle": number;
+	/** Default value: `1` */
+	"linetoolinsidepitchfork.level8.linewidth": number;
+	/** Default value: `false` */
+	"linetoolinsidepitchfork.level8.visible": boolean;
+	/** Default value: `#F23645` */
+	"linetoolinsidepitchfork.median.color": string;
+	/** Default value: `0` */
+	"linetoolinsidepitchfork.median.linestyle": number;
+	/** Default value: `1` */
+	"linetoolinsidepitchfork.median.linewidth": number;
+	/** Default value: `true` */
+	"linetoolinsidepitchfork.median.visible": boolean;
+	/** Default value: `2` */
+	"linetoolinsidepitchfork.style": number;
+	/** Default value: `80` */
+	"linetoolinsidepitchfork.transparency": number;
 }
 export interface InstrumentInfo {
 	/** Quantity field step and boundaries */
@@ -7662,7 +10979,7 @@ export interface LibraryPineStudyConstructor<TPineStudyResult> {
 	/**
 	 * Custom Study constructor
 	 */
-	// eslint-disable-next-line @typescript-eslint/prefer-function-type
+
 	new (): LibraryPineStudy<TPineStudyResult>;
 }
 export interface LibrarySubsessionInfo {
@@ -7966,9 +11283,19 @@ export interface LibrarySymbolInfo {
 	 */
 	volume_precision?: number;
 	/**
-	 * The status code of a series with this symbol. The status is shown in the upper right corner of a chart.
+	 * The status code of a series with this symbol.
+	 * This could be represented as an icon in the legend, next to the market status icon for `delayed_streaming` & `endofday` type of data.
+	 * When declaring `delayed_streaming` you also have to specify its {@link LibrarySymbolInfo.delay} in seconds.
 	 */
 	data_status?: "streaming" | "endofday" | "pulsed" | "delayed_streaming";
+	/**
+	 * Type of delay that is associated to the data or real delay for real time data.
+	 * - `0` for realtime
+	 * - `-1` for endofday
+	 * - `-2` for pulsed
+	 * - or delay in seconds (for delayed realtime)
+	 */
+	delay?: number;
 	/**
 	 * Boolean showing whether this symbol is expired futures contract or not.
 	 * @default false
@@ -8012,13 +11339,42 @@ export interface LibrarySymbolInfo {
 	 */
 	subsessions?: LibrarySubsessionInfo[];
 	/**
-	 * Optional field name describing what the bar values of this symbol represent.
+	 * Optional ID of a price source for this symbol. Should match one of the price sources from the {@link price_sources} array.
+	 */
+	price_source_id?: string;
+	/**
+	 * Supported price sources for the symbol. The source of the values that this symbol's bars represent.
 	 *
 	 * For example 'Spot Price', 'Ask', 'Bid', etc.
 	 *
-	 * @example 'Spot Price'
+	 * Mostly useful when viewing non-OHLC series types. The price source will be shown in the series legend.
+	 *
+	 * @example [{ id: '1', name: 'Spot Price' }, { id: '321', name: 'Bid' }]
 	 */
-	price_source_id?: string;
+	price_sources?: SymbolInfoPriceSource[];
+	/**
+	 * URL of image/s to be displayed as the logo/s for the symbol. The `show_symbol_logos` featureset needs to be enabled for this to be visible in the UI.
+	 *
+	 * - If a single url is returned then that url will solely be used to display the symbol logo.
+	 * - If two urls are provided then the images will be displayed as two partially overlapping
+	 * circles with the first url appearing on top. This is typically used for FOREX where you would
+	 * like to display two country flags are the symbol logo.
+	 *
+	 * The image/s should ideally be square in dimension. You can use any image type which
+	 * the browser supports natively.
+	 *
+	 * Examples:
+	 * - `https://s3-symbol-logo.tradingview.com/apple.svg`
+	 * - `/images/myImage.png`
+	 * - `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3...`
+	 * - `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4...`
+	 */
+	logo_urls?: [
+		string
+	] | [
+		string,
+		string
+	];
 }
 export interface LineBreakStylePreferences {
 	/** Up bar color */
@@ -8045,11 +11401,6 @@ export interface LineStylePreferences {
 	linestyle: number;
 	/** Line width */
 	linewidth: number;
-	/**
-	 * Line style type
-	 * 0 - Points, 1 - Stepped, 2 - Normal
-	 */
-	styleType: number;
 }
 /**
  * Color styling options for the loading screen (spinner)
@@ -8092,7 +11443,7 @@ export interface Mark {
 	 * the browser supports natively.
 	 *
 	 * Examples:
-	 * - `https://s3-symbol-logo.tradingview.com/crypto/XTVCBTC.svg`
+	 * - `https://yourserver.com/adobe.svg`
 	 * - `/images/myImage.png`
 	 * - `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3...`
 	 * - `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4...`
@@ -8154,6 +11505,52 @@ export interface NewsItem {
 	fullDescription?: string;
 }
 /**
+ * Override properties for the Note drawing tool.
+ */
+export interface NoteLineToolOverrides {
+	/** Default value: `rgba(41, 98, 255, 0.7)` */
+	"linetoolnote.backgroundColor": string;
+	/** Default value: `0` */
+	"linetoolnote.backgroundTransparency": number;
+	/** Default value: `false` */
+	"linetoolnote.bold": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolnote.borderColor": string;
+	/** Default value: `true` */
+	"linetoolnote.fixedSize": boolean;
+	/** Default value: `14` */
+	"linetoolnote.fontSize": number;
+	/** Default value: `false` */
+	"linetoolnote.italic": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolnote.markerColor": string;
+	/** Default value: `#ffffff` */
+	"linetoolnote.textColor": string;
+}
+/**
+ * Override properties for the Noteabsolute drawing tool.
+ */
+export interface NoteabsoluteLineToolOverrides {
+	/** Default value: `rgba(41, 98, 255, 0.7)` */
+	"linetoolnoteabsolute.backgroundColor": string;
+	/** Default value: `0` */
+	"linetoolnoteabsolute.backgroundTransparency": number;
+	/** Default value: `false` */
+	"linetoolnoteabsolute.bold": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolnoteabsolute.borderColor": string;
+	/** Default value: `true` */
+	"linetoolnoteabsolute.fixedSize": boolean;
+	/** Default value: `14` */
+	"linetoolnoteabsolute.fontSize": number;
+	/** Default value: `false` */
+	"linetoolnoteabsolute.italic": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolnoteabsolute.markerColor": string;
+	/** Default value: `#ffffff` */
+	"linetoolnoteabsolute.textColor": string;
+}
+/**
  * Formatting options for numbers
  */
 export interface NumericFormattingParams {
@@ -8162,6 +11559,20 @@ export interface NumericFormattingParams {
 	 * @example 123.4 or 123,4 or 123'4
 	 */
 	decimal_sign: string;
+}
+/**
+ * Interface for an URL which will be opened
+ */
+export interface OpenUrlSolution {
+	/**
+	 * Link to be opened
+	 */
+	openUrl: {
+		/** URL to be opened */
+		url: string;
+		/** text for solution button */
+		text: string;
+	};
 }
 export interface OrderDialogOptions extends TradingDialogOptions {
 	/**
@@ -8197,6 +11608,119 @@ export interface OrderDurationMetaInfo {
 	value: string;
 	/** A list of order types for which this duration type will be displayed in the Duration control of Order Ticket. Default value is `[OrderType.Limit, OrderType.Stop, OrderType.StopLimit]`. */
 	supportedOrderTypes?: OrderType[];
+}
+/**
+ * Override properties for the Order drawing tool.
+ */
+export interface OrderLineToolOverrides {
+	/** Default value: `rgba(255, 255, 255, 0.25)` */
+	"linetoolorder.bodyBackgroundColor": string;
+	/** Default value: `25` */
+	"linetoolorder.bodyBackgroundTransparency": number;
+	/** Default value: `#4094e8` */
+	"linetoolorder.bodyBorderActiveBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolorder.bodyBorderActiveSellColor": string;
+	/** Default value: `rgba(64, 148, 232, 0.5)` */
+	"linetoolorder.bodyBorderInactiveBuyColor": string;
+	/** Default value: `rgba(231, 86, 86, 0.5)` */
+	"linetoolorder.bodyBorderInactiveSellColor": string;
+	/** Default value: `true` */
+	"linetoolorder.bodyFontBold": boolean;
+	/** Default value: `Verdana` */
+	"linetoolorder.bodyFontFamily": string;
+	/** Default value: `false` */
+	"linetoolorder.bodyFontItalic": boolean;
+	/** Default value: `9` */
+	"linetoolorder.bodyFontSize": number;
+	/** Default value: `#4094e8` */
+	"linetoolorder.bodyTextActiveBuyColor": string;
+	/** Default value: `#268c02` */
+	"linetoolorder.bodyTextActiveLimitColor": string;
+	/** Default value: `#e75656` */
+	"linetoolorder.bodyTextActiveSellColor": string;
+	/** Default value: `#e75656` */
+	"linetoolorder.bodyTextActiveStopColor": string;
+	/** Default value: `rgba(64, 148, 232, 0.5)` */
+	"linetoolorder.bodyTextInactiveBuyColor": string;
+	/** Default value: `rgba(38, 140, 2, 0.5)` */
+	"linetoolorder.bodyTextInactiveLimitColor": string;
+	/** Default value: `rgba(231, 86, 86, 0.5)` */
+	"linetoolorder.bodyTextInactiveSellColor": string;
+	/** Default value: `rgba(231, 86, 86, 0.5)` */
+	"linetoolorder.bodyTextInactiveStopColor": string;
+	/** Default value: `rgba(255, 255, 255, 0.25)` */
+	"linetoolorder.cancelButtonBackgroundColor": string;
+	/** Default value: `25` */
+	"linetoolorder.cancelButtonBackgroundTransparency": number;
+	/** Default value: `#4094e8` */
+	"linetoolorder.cancelButtonBorderActiveBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolorder.cancelButtonBorderActiveSellColor": string;
+	/** Default value: `rgba(64, 148, 232, 0.5)` */
+	"linetoolorder.cancelButtonBorderInactiveBuyColor": string;
+	/** Default value: `rgba(231, 86, 86, 0.5)` */
+	"linetoolorder.cancelButtonBorderInactiveSellColor": string;
+	/** Default value: `#4094e8` */
+	"linetoolorder.cancelButtonIconActiveBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolorder.cancelButtonIconActiveSellColor": string;
+	/** Default value: `rgba(64, 148, 232, 0.5)` */
+	"linetoolorder.cancelButtonIconInactiveBuyColor": string;
+	/** Default value: `rgba(231, 86, 86, 0.5)` */
+	"linetoolorder.cancelButtonIconInactiveSellColor": string;
+	/** Default value: `` */
+	"linetoolorder.cancelTooltip": string;
+	/** Default value: `inherit` */
+	"linetoolorder.extendLeft": string;
+	/** Default value: `#4094e8` */
+	"linetoolorder.lineActiveBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolorder.lineActiveSellColor": string;
+	/** Default value: `#FF0000` */
+	"linetoolorder.lineColor": string;
+	/** Default value: `rgba(64, 148, 232, 0.5)` */
+	"linetoolorder.lineInactiveBuyColor": string;
+	/** Default value: `rgba(231, 86, 86, 0.5)` */
+	"linetoolorder.lineInactiveSellColor": string;
+	/** Default value: `inherit` */
+	"linetoolorder.lineLength": string;
+	/** Default value: `inherit` */
+	"linetoolorder.lineStyle": string;
+	/** Default value: `inherit` */
+	"linetoolorder.lineWidth": string;
+	/** Default value: `` */
+	"linetoolorder.modifyTooltip": string;
+	/** Default value: `#4094e8` */
+	"linetoolorder.quantityBackgroundActiveBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolorder.quantityBackgroundActiveSellColor": string;
+	/** Default value: `rgba(64, 148, 232, 0.5)` */
+	"linetoolorder.quantityBackgroundInactiveBuyColor": string;
+	/** Default value: `rgba(231, 86, 86, 0.5)` */
+	"linetoolorder.quantityBackgroundInactiveSellColor": string;
+	/** Default value: `#4094e8` */
+	"linetoolorder.quantityBorderActiveBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolorder.quantityBorderActiveSellColor": string;
+	/** Default value: `rgba(64, 148, 232, 0.5)` */
+	"linetoolorder.quantityBorderInactiveBuyColor": string;
+	/** Default value: `rgba(231, 86, 86, 0.5)` */
+	"linetoolorder.quantityBorderInactiveSellColor": string;
+	/** Default value: `true` */
+	"linetoolorder.quantityFontBold": boolean;
+	/** Default value: `Verdana` */
+	"linetoolorder.quantityFontFamily": string;
+	/** Default value: `false` */
+	"linetoolorder.quantityFontItalic": boolean;
+	/** Default value: `9` */
+	"linetoolorder.quantityFontSize": number;
+	/** Default value: `#ffffff` */
+	"linetoolorder.quantityTextColor": string;
+	/** Default value: `0` */
+	"linetoolorder.quantityTextTransparency": number;
+	/** Default value: `` */
+	"linetoolorder.tooltip": string;
 }
 export interface OrderOrPositionMessage {
 	/** Type of message about the order or position */
@@ -8274,6 +11798,50 @@ export interface Overrides {
 	[key: string]: string | number | boolean;
 }
 /**
+ * Override properties for the Parallelchannel drawing tool.
+ */
+export interface ParallelchannelLineToolOverrides {
+	/** Default value: `rgba(41, 98, 255, 0.2)` */
+	"linetoolparallelchannel.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolparallelchannel.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetoolparallelchannel.extendRight": boolean;
+	/** Default value: `true` */
+	"linetoolparallelchannel.fillBackground": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolparallelchannel.linecolor": string;
+	/** Default value: `0` */
+	"linetoolparallelchannel.linestyle": number;
+	/** Default value: `2` */
+	"linetoolparallelchannel.linewidth": number;
+	/** Default value: `#2962FF` */
+	"linetoolparallelchannel.midlinecolor": string;
+	/** Default value: `2` */
+	"linetoolparallelchannel.midlinestyle": number;
+	/** Default value: `1` */
+	"linetoolparallelchannel.midlinewidth": number;
+	/** Default value: `true` */
+	"linetoolparallelchannel.showMidline": boolean;
+	/** Default value: `20` */
+	"linetoolparallelchannel.transparency": number;
+}
+/**
+ * Override properties for the Path drawing tool.
+ */
+export interface PathLineToolOverrides {
+	/** Default value: `0` */
+	"linetoolpath.leftEnd": number;
+	/** Default value: `#2962FF` */
+	"linetoolpath.lineColor": string;
+	/** Default value: `0` */
+	"linetoolpath.lineStyle": number;
+	/** Default value: `2` */
+	"linetoolpath.lineWidth": number;
+	/** Default value: `1` */
+	"linetoolpath.rightEnd": number;
+}
+/**
  * Parameters passed to getBars
  */
 export interface PeriodParams {
@@ -8295,6 +11863,7 @@ export interface PeriodParams {
 	firstDataRequest: boolean;
 }
 export interface PineJS {
+	/** Standard library functions for PineJS */
 	Std: PineJSStd;
 }
 /**
@@ -8423,6 +11992,8 @@ export interface PineJSStd {
 	dayofmonth(context: IContext): number;
 	/**
 	 * Day of week for current bar time in exchange timezone.
+	 *
+	 * Sunday is 1, Monday is 2, Tuesday is 3, and so on.
 	 *
 	 * @param context - PineJS execution context.
 	 * @returns Day of week for current bar time in exchange timezone.
@@ -9139,6 +12710,224 @@ export interface PipValues {
 	/** value of 1 pip if you sell */
 	sellPipValue: number;
 }
+/**
+ * Override properties for the Pitchfan drawing tool.
+ */
+export interface PitchfanLineToolOverrides {
+	/** Default value: `true` */
+	"linetoolpitchfan.fillBackground": boolean;
+	/** Default value: `0.25` */
+	"linetoolpitchfan.level0.coeff": number;
+	/** Default value: `#ffb74d` */
+	"linetoolpitchfan.level0.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfan.level0.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfan.level0.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfan.level0.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolpitchfan.level1.coeff": number;
+	/** Default value: `#81c784` */
+	"linetoolpitchfan.level1.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfan.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfan.level1.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfan.level1.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolpitchfan.level2.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolpitchfan.level2.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfan.level2.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfan.level2.linewidth": number;
+	/** Default value: `true` */
+	"linetoolpitchfan.level2.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolpitchfan.level3.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolpitchfan.level3.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfan.level3.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfan.level3.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfan.level3.visible": boolean;
+	/** Default value: `0.75` */
+	"linetoolpitchfan.level4.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolpitchfan.level4.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfan.level4.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfan.level4.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfan.level4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolpitchfan.level5.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolpitchfan.level5.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfan.level5.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfan.level5.linewidth": number;
+	/** Default value: `true` */
+	"linetoolpitchfan.level5.visible": boolean;
+	/** Default value: `1.5` */
+	"linetoolpitchfan.level6.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetoolpitchfan.level6.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfan.level6.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfan.level6.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfan.level6.visible": boolean;
+	/** Default value: `1.75` */
+	"linetoolpitchfan.level7.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolpitchfan.level7.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfan.level7.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfan.level7.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfan.level7.visible": boolean;
+	/** Default value: `2` */
+	"linetoolpitchfan.level8.coeff": number;
+	/** Default value: `#F77C80` */
+	"linetoolpitchfan.level8.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfan.level8.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfan.level8.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfan.level8.visible": boolean;
+	/** Default value: `#F23645` */
+	"linetoolpitchfan.median.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfan.median.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfan.median.linewidth": number;
+	/** Default value: `true` */
+	"linetoolpitchfan.median.visible": boolean;
+	/** Default value: `80` */
+	"linetoolpitchfan.transparency": number;
+}
+/**
+ * Override properties for the Pitchfork drawing tool.
+ */
+export interface PitchforkLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolpitchfork.extendLines": boolean;
+	/** Default value: `true` */
+	"linetoolpitchfork.fillBackground": boolean;
+	/** Default value: `0.25` */
+	"linetoolpitchfork.level0.coeff": number;
+	/** Default value: `#ffb74d` */
+	"linetoolpitchfork.level0.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfork.level0.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfork.level0.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfork.level0.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolpitchfork.level1.coeff": number;
+	/** Default value: `#81c784` */
+	"linetoolpitchfork.level1.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfork.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfork.level1.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfork.level1.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolpitchfork.level2.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolpitchfork.level2.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfork.level2.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfork.level2.linewidth": number;
+	/** Default value: `true` */
+	"linetoolpitchfork.level2.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolpitchfork.level3.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolpitchfork.level3.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfork.level3.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfork.level3.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfork.level3.visible": boolean;
+	/** Default value: `0.75` */
+	"linetoolpitchfork.level4.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolpitchfork.level4.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfork.level4.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfork.level4.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfork.level4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolpitchfork.level5.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolpitchfork.level5.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfork.level5.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfork.level5.linewidth": number;
+	/** Default value: `true` */
+	"linetoolpitchfork.level5.visible": boolean;
+	/** Default value: `1.5` */
+	"linetoolpitchfork.level6.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetoolpitchfork.level6.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfork.level6.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfork.level6.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfork.level6.visible": boolean;
+	/** Default value: `1.75` */
+	"linetoolpitchfork.level7.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolpitchfork.level7.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfork.level7.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfork.level7.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfork.level7.visible": boolean;
+	/** Default value: `2` */
+	"linetoolpitchfork.level8.coeff": number;
+	/** Default value: `#F77C80` */
+	"linetoolpitchfork.level8.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfork.level8.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfork.level8.linewidth": number;
+	/** Default value: `false` */
+	"linetoolpitchfork.level8.visible": boolean;
+	/** Default value: `#F23645` */
+	"linetoolpitchfork.median.color": string;
+	/** Default value: `0` */
+	"linetoolpitchfork.median.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpitchfork.median.linewidth": number;
+	/** Default value: `true` */
+	"linetoolpitchfork.median.visible": boolean;
+	/** Default value: `0` */
+	"linetoolpitchfork.style": number;
+	/** Default value: `80` */
+	"linetoolpitchfork.transparency": number;
+}
 export interface PlaceOrderResult {
 	/** Order id */
 	orderId?: string;
@@ -9205,18 +12994,34 @@ export interface PnFStylePreferences {
 	/** Down projection mark color */
 	downColorProjection: string;
 }
+/**
+ * Polygon Preferences
+ */
 export interface PolygonPreferences {
 	/** Transparency of the Polygon. Value between 0 and 100, where `100` -> fully transparent */
 	transparency: number;
 	/** Color of the Polygon */
 	color: string;
 }
+
 /**
- * Polygon Preferences
+ * Override properties for the Polyline drawing tool.
  */
-export interface PolygonPreferences {
-	transparency: number;
-	color: string;
+export interface PolylineLineToolOverrides {
+	/** Default value: `rgba(0, 188, 212, 0.2)` */
+	"linetoolpolyline.backgroundColor": string;
+	/** Default value: `true` */
+	"linetoolpolyline.fillBackground": boolean;
+	/** Default value: `false` */
+	"linetoolpolyline.filled": boolean;
+	/** Default value: `#00bcd4` */
+	"linetoolpolyline.linecolor": string;
+	/** Default value: `0` */
+	"linetoolpolyline.linestyle": number;
+	/** Default value: `1` */
+	"linetoolpolyline.linewidth": number;
+	/** Default value: `80` */
+	"linetoolpolyline.transparency": number;
 }
 export interface Position extends PositionBase, CustomFields {
 }
@@ -9242,6 +13047,97 @@ export interface PositionBase {
 	message?: OrderOrPositionMessage;
 }
 export interface PositionDialogOptions extends TradingDialogOptions {
+}
+/**
+ * Override properties for the Position drawing tool.
+ */
+export interface PositionLineToolOverrides {
+	/** Default value: `rgba(255, 255, 255, 0.25)` */
+	"linetoolposition.bodyBackgroundColor": string;
+	/** Default value: `25` */
+	"linetoolposition.bodyBackgroundTransparency": number;
+	/** Default value: `#4094e8` */
+	"linetoolposition.bodyBorderBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolposition.bodyBorderSellColor": string;
+	/** Default value: `true` */
+	"linetoolposition.bodyFontBold": boolean;
+	/** Default value: `Verdana` */
+	"linetoolposition.bodyFontFamily": string;
+	/** Default value: `false` */
+	"linetoolposition.bodyFontItalic": boolean;
+	/** Default value: `9` */
+	"linetoolposition.bodyFontSize": number;
+	/** Default value: `#e75656` */
+	"linetoolposition.bodyTextNegativeColor": string;
+	/** Default value: `#646464` */
+	"linetoolposition.bodyTextNeutralColor": string;
+	/** Default value: `#268c02` */
+	"linetoolposition.bodyTextPositiveColor": string;
+	/** Default value: `rgba(255, 255, 255, 0.25)` */
+	"linetoolposition.closeButtonBackgroundColor": string;
+	/** Default value: `25` */
+	"linetoolposition.closeButtonBackgroundTransparency": number;
+	/** Default value: `#4094e8` */
+	"linetoolposition.closeButtonBorderBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolposition.closeButtonBorderSellColor": string;
+	/** Default value: `#4094e8` */
+	"linetoolposition.closeButtonIconBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolposition.closeButtonIconSellColor": string;
+	/** Default value: `` */
+	"linetoolposition.closeTooltip": string;
+	/** Default value: `inherit` */
+	"linetoolposition.extendLeft": string;
+	/** Default value: `#4094e8` */
+	"linetoolposition.lineBuyColor": string;
+	/** Default value: `inherit` */
+	"linetoolposition.lineLength": string;
+	/** Default value: `#e75656` */
+	"linetoolposition.lineSellColor": string;
+	/** Default value: `inherit` */
+	"linetoolposition.lineStyle": string;
+	/** Default value: `inherit` */
+	"linetoolposition.lineWidth": string;
+	/** Default value: `` */
+	"linetoolposition.protectTooltip": string;
+	/** Default value: `#4094e8` */
+	"linetoolposition.quantityBackgroundBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolposition.quantityBackgroundSellColor": string;
+	/** Default value: `#4094e8` */
+	"linetoolposition.quantityBorderBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolposition.quantityBorderSellColor": string;
+	/** Default value: `true` */
+	"linetoolposition.quantityFontBold": boolean;
+	/** Default value: `Verdana` */
+	"linetoolposition.quantityFontFamily": string;
+	/** Default value: `false` */
+	"linetoolposition.quantityFontItalic": boolean;
+	/** Default value: `9` */
+	"linetoolposition.quantityFontSize": number;
+	/** Default value: `#ffffff` */
+	"linetoolposition.quantityTextColor": string;
+	/** Default value: `0` */
+	"linetoolposition.quantityTextTransparency": number;
+	/** Default value: `rgba(255, 255, 255, 0.25)` */
+	"linetoolposition.reverseButtonBackgroundColor": string;
+	/** Default value: `25` */
+	"linetoolposition.reverseButtonBackgroundTransparency": number;
+	/** Default value: `#4094e8` */
+	"linetoolposition.reverseButtonBorderBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolposition.reverseButtonBorderSellColor": string;
+	/** Default value: `#4094e8` */
+	"linetoolposition.reverseButtonIconBuyColor": string;
+	/** Default value: `#e75656` */
+	"linetoolposition.reverseButtonIconSellColor": string;
+	/** Default value: `` */
+	"linetoolposition.reverseTooltip": string;
+	/** Default value: `` */
+	"linetoolposition.tooltip": string;
 }
 /**
  * Anchored (fixed) drawing point position as a percentage from the top left of a chart.
@@ -9282,11 +13178,98 @@ export interface PreOrder extends OrderTemplate {
 	isClose?: boolean;
 }
 /**
+ * Override properties for the Prediction drawing tool.
+ */
+export interface PredictionLineToolOverrides {
+	/** Default value: `#202020` */
+	"linetoolprediction.centersColor": string;
+	/** Default value: `#F23645` */
+	"linetoolprediction.failureBackground": string;
+	/** Default value: `#ffffff` */
+	"linetoolprediction.failureTextColor": string;
+	/** Default value: `#ead289` */
+	"linetoolprediction.intermediateBackColor": string;
+	/** Default value: `#6d4d22` */
+	"linetoolprediction.intermediateTextColor": string;
+	/** Default value: `#2962FF` */
+	"linetoolprediction.linecolor": string;
+	/** Default value: `1` */
+	"linetoolprediction.linewidth": number;
+	/** Default value: `#2962FF` */
+	"linetoolprediction.sourceBackColor": string;
+	/** Default value: `#2962FF` */
+	"linetoolprediction.sourceStrokeColor": string;
+	/** Default value: `#ffffff` */
+	"linetoolprediction.sourceTextColor": string;
+	/** Default value: `#4caf50` */
+	"linetoolprediction.successBackground": string;
+	/** Default value: `#ffffff` */
+	"linetoolprediction.successTextColor": string;
+	/** Default value: `#2962FF` */
+	"linetoolprediction.targetBackColor": string;
+	/** Default value: `#2962FF` */
+	"linetoolprediction.targetStrokeColor": string;
+	/** Default value: `#ffffff` */
+	"linetoolprediction.targetTextColor": string;
+	/** Default value: `10` */
+	"linetoolprediction.transparency": number;
+}
+/**
  * Position defined by a price and time.
  */
 export interface PricedPoint extends TimePoint {
 	/** Price */
 	price: number;
+}
+/**
+ * Override properties for the Pricelabel drawing tool.
+ */
+export interface PricelabelLineToolOverrides {
+	/** Default value: `#2962FF` */
+	"linetoolpricelabel.backgroundColor": string;
+	/** Default value: `#2962FF` */
+	"linetoolpricelabel.borderColor": string;
+	/** Default value: `#ffffff` */
+	"linetoolpricelabel.color": string;
+	/** Default value: `14` */
+	"linetoolpricelabel.fontsize": number;
+	/** Default value: `bold` */
+	"linetoolpricelabel.fontWeight": string;
+	/** Default value: `0` */
+	"linetoolpricelabel.transparency": number;
+}
+/**
+ * Override properties for the Projection drawing tool.
+ */
+export interface ProjectionLineToolOverrides {
+	/** Default value: `rgba(41, 98, 255, 0.2)` */
+	"linetoolprojection.color1": string;
+	/** Default value: `rgba(156, 39, 176, 0.2)` */
+	"linetoolprojection.color2": string;
+	/** Default value: `true` */
+	"linetoolprojection.fillBackground": boolean;
+	/** Default value: `1` */
+	"linetoolprojection.level1.coeff": number;
+	/** Default value: `#808080` */
+	"linetoolprojection.level1.color": string;
+	/** Default value: `0` */
+	"linetoolprojection.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetoolprojection.level1.linewidth": number;
+	/** Default value: `true` */
+	"linetoolprojection.level1.visible": boolean;
+	/** Default value: `1` */
+	"linetoolprojection.linewidth": number;
+	/** Default value: `true` */
+	"linetoolprojection.showCoeffs": boolean;
+	/** Default value: `80` */
+	"linetoolprojection.transparency": number;
+	/** Default value: `#9598A1` */
+	"linetoolprojection.trendline.color": string;
+	/** Default value: `0` */
+	"linetoolprojection.trendline.linestyle": number;
+	/** Default value: `true` */
+	"linetoolprojection.trendline.visible": boolean;
 }
 /**
  * Quantity field step and boundaries
@@ -9325,32 +13308,220 @@ export interface QuoteOkData extends QuoteDataResponse {
 	/** @inheritDoc */
 	v: DatafeedQuoteValues;
 }
+/**
+ * Options for specifying a Range which includes a resolution, and a time frame.
+ */
+export interface RangeOptions {
+	/**
+	 * Time frame for the range.
+	 */
+	val: TimeFrameValue;
+	/**
+	 * Resolution for the range.
+	 */
+	res: ResolutionString;
+}
 export interface RawStudyMetaInfo extends RawStudyMetaInfoBase {
+	/** Identifier for Study */
 	readonly id: RawStudyMetaInfoId;
 }
 export interface RawStudyMetaInfoBase {
+	/**
+	 * Description of the study. It will be displayed in the Indicators window and will be used as a name argument when calling the createStudy method
+	 */
 	readonly description: string;
+	/** Short description of the study. Will be displayed on the chart */
 	readonly shortDescription: string;
+	/** Name for the study */
 	readonly name?: string;
+	/** Metainfo version of the Charting Library, the current is 51. Default is 0. */
 	readonly _metainfoVersion?: number;
+	/** Precision of the study's output values (quantity of digits after the decimal separator) */
 	readonly precision?: number | string;
+	/** Info about the Price Scale formatting */
 	readonly format: StudyPlotValueFormat;
+	/** Whether the study should appear on the main series pane */
 	readonly is_price_study?: boolean;
+	/** should be `true` in Custom Study */
 	readonly isCustomIndicator?: boolean;
+	/** Whether the study price scale should be the same as the main series one. */
 	readonly linkedToSeries?: boolean;
+	/** Price scale to use for the study */
 	readonly priceScale?: StudyTargetPriceScale;
+	/** Whether the study should appear in Indicators list. */
 	readonly is_hidden_study?: boolean;
+	/** an object containing settings that are applied when user clicks 'Apply Defaults'. See dedicated article: [Custom Studies Defaults](https://www.tradingview.com/charting-library-docs/latest/custom_studies/metainfo/Custom-Studies-Defaults) */
 	readonly defaults: Readonly<Partial<StudyDefaults>>;
+	/** Bands */
 	readonly bands?: readonly Readonly<StudyBandInfo>[];
+	/** Filled area is a special object, which allows coloring an area between two plots or hlines. Please note, that it is impossible to fill the area between a band and a hline. */
 	readonly filledAreas?: readonly Readonly<StudyFilledAreaInfo>[];
+	/** array with inputs info depending on type. See dedicated article: [Custom Studies Inputs](https://www.tradingview.com/charting-library-docs/latest/custom_studies/metainfo/Custom-Studies-Inputs) */
 	readonly inputs?: StudyInputInfoList;
+	/** Symbol source */
 	readonly symbolSource?: SymbolSource;
+	/**
+	 * definitions of palettes that are used in plots and defaults. Palettes allows you use different styles (not only colors) for each line point.
+	 *
+	 * This object contains palette names as keys, and palette info as values: `[palette.name]: { colors, valToIndex, addDefaultColor }`, where
+	 * - `colors`* - an object `{ [color_id]: { name: 'name' }}`, where name is a string that will appear on Style tab of study properties dialog.
+	 * - `valToIndex` - an object, the mapping between the values that are returned by the script and palette colors.
+	 * - `addDefaultColor` - boolean, if true the defaults are used for colorer type plot, when its value is null or undefined.
+	 */
 	readonly palettes?: MappedObject<Readonly<StudyPalettesInfo>>;
+	/** array with study plots info. See dedicated article: [Custom Studies Plots](https://www.tradingview.com/charting-library-docs/latest/custom_studies/Custom-Studies-Plots) */
 	readonly plots?: readonly Readonly<StudyPlotInfo>[];
+	/** an object with plot id as keys and style info as values. */
 	readonly styles?: MappedObject<Readonly<StudyStylesInfo>>;
+	/** array with study plots info. See dedicated article: [Custom Studies OHLC Plots](https://www.tradingview.com/charting-library-docs/latest/custom_studies/Custom-Studies-OHLC-Plots) */
 	readonly ohlcPlots?: MappedObject<Readonly<StudyOhlcStylesInfo>>;
+	/** Financial Period */
 	readonly financialPeriod?: FinancialPeriod;
+	/** Key for grouping studies */
 	readonly groupingKey?: string;
+}
+/**
+ * Override properties for the Ray drawing tool.
+ */
+export interface RayLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolray.alwaysShowStats": boolean;
+	/** Default value: `false` */
+	"linetoolray.bold": boolean;
+	/** Default value: `false` */
+	"linetoolray.extendLeft": boolean;
+	/** Default value: `true` */
+	"linetoolray.extendRight": boolean;
+	/** Default value: `14` */
+	"linetoolray.fontsize": number;
+	/** Default value: `center` */
+	"linetoolray.horzLabelsAlign": string;
+	/** Default value: `false` */
+	"linetoolray.italic": boolean;
+	/** Default value: `0` */
+	"linetoolray.leftEnd": number;
+	/** Default value: `#2962FF` */
+	"linetoolray.linecolor": string;
+	/** Default value: `0` */
+	"linetoolray.linestyle": number;
+	/** Default value: `2` */
+	"linetoolray.linewidth": number;
+	/** Default value: `0` */
+	"linetoolray.rightEnd": number;
+	/** Default value: `false` */
+	"linetoolray.showAngle": boolean;
+	/** Default value: `false` */
+	"linetoolray.showBarsRange": boolean;
+	/** Default value: `false` */
+	"linetoolray.showDateTimeRange": boolean;
+	/** Default value: `false` */
+	"linetoolray.showDistance": boolean;
+	/** Default value: `false` */
+	"linetoolray.showLabel": boolean;
+	/** Default value: `false` */
+	"linetoolray.showMiddlePoint": boolean;
+	/** Default value: `false` */
+	"linetoolray.showPercentPriceRange": boolean;
+	/** Default value: `false` */
+	"linetoolray.showPipsPriceRange": boolean;
+	/** Default value: `false` */
+	"linetoolray.showPriceLabels": boolean;
+	/** Default value: `false` */
+	"linetoolray.showPriceRange": boolean;
+	/** Default value: `2` */
+	"linetoolray.statsPosition": number;
+	/** Default value: `#2962FF` */
+	"linetoolray.textcolor": string;
+	/** Default value: `bottom` */
+	"linetoolray.vertLabelsAlign": string;
+}
+/**
+ * Override properties for the Rectangle drawing tool.
+ */
+export interface RectangleLineToolOverrides {
+	/** Default value: `rgba(156, 39, 176, 0.2)` */
+	"linetoolrectangle.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolrectangle.bold": boolean;
+	/** Default value: `#9c27b0` */
+	"linetoolrectangle.color": string;
+	/** Default value: `false` */
+	"linetoolrectangle.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetoolrectangle.extendRight": boolean;
+	/** Default value: `true` */
+	"linetoolrectangle.fillBackground": boolean;
+	/** Default value: `14` */
+	"linetoolrectangle.fontSize": number;
+	/** Default value: `left` */
+	"linetoolrectangle.horzLabelsAlign": string;
+	/** Default value: `false` */
+	"linetoolrectangle.italic": boolean;
+	/** Default value: `1` */
+	"linetoolrectangle.linewidth": number;
+	/** Default value: `false` */
+	"linetoolrectangle.showLabel": boolean;
+	/** Default value: `#9c27b0` */
+	"linetoolrectangle.textColor": string;
+	/** Default value: `50` */
+	"linetoolrectangle.transparency": number;
+	/** Default value: `bottom` */
+	"linetoolrectangle.vertLabelsAlign": string;
+}
+/**
+ * Override properties for the Regressiontrend drawing tool.
+ */
+export interface RegressiontrendLineToolOverrides {
+	/** Default value: `0` */
+	"linetoolregressiontrend.inputs.first bar time": number;
+	/** Default value: `0` */
+	"linetoolregressiontrend.inputs.last bar time": number;
+	/** Default value: `-2` */
+	"linetoolregressiontrend.inputs.lower diviation": number;
+	/** Default value: `close` */
+	"linetoolregressiontrend.inputs.source": string;
+	/** Default value: `2` */
+	"linetoolregressiontrend.inputs.upper diviation": number;
+	/** Default value: `true` */
+	"linetoolregressiontrend.inputs.use lower diviation": boolean;
+	/** Default value: `true` */
+	"linetoolregressiontrend.inputs.use upper diviation": boolean;
+	/** Default value: `0` */
+	"linetoolregressiontrend.linestyle": number;
+	/** Default value: `1` */
+	"linetoolregressiontrend.linewidth": number;
+	/** Default value: `default` */
+	"linetoolregressiontrend.precision": string;
+	/** Default value: `rgba(242, 54, 69, 0.3)` */
+	"linetoolregressiontrend.styles.baseLine.color": string;
+	/** Default value: `15` */
+	"linetoolregressiontrend.styles.baseLine.display": number;
+	/** Default value: `2` */
+	"linetoolregressiontrend.styles.baseLine.linestyle": number;
+	/** Default value: `1` */
+	"linetoolregressiontrend.styles.baseLine.linewidth": number;
+	/** Default value: `rgba(41, 98, 255, 0.3)` */
+	"linetoolregressiontrend.styles.downLine.color": string;
+	/** Default value: `15` */
+	"linetoolregressiontrend.styles.downLine.display": number;
+	/** Default value: `0` */
+	"linetoolregressiontrend.styles.downLine.linestyle": number;
+	/** Default value: `2` */
+	"linetoolregressiontrend.styles.downLine.linewidth": number;
+	/** Default value: `false` */
+	"linetoolregressiontrend.styles.extendLines": boolean;
+	/** Default value: `true` */
+	"linetoolregressiontrend.styles.showPearsons": boolean;
+	/** Default value: `70` */
+	"linetoolregressiontrend.styles.transparency": number;
+	/** Default value: `rgba(41, 98, 255, 0.3)` */
+	"linetoolregressiontrend.styles.upLine.color": string;
+	/** Default value: `15` */
+	"linetoolregressiontrend.styles.upLine.display": number;
+	/** Default value: `0` */
+	"linetoolregressiontrend.styles.upLine.linestyle": number;
+	/** Default value: `2` */
+	"linetoolregressiontrend.styles.upLine.linewidth": number;
 }
 export interface RenkoStylePreferences {
 	/** Up bar color */
@@ -9379,6 +13550,111 @@ export interface RestBrokerConnectionInfo {
 	url: string;
 	/** Access token for the REST API */
 	access_token: string;
+}
+/**
+ * Override properties for the Riskrewardlong drawing tool.
+ */
+export interface RiskrewardlongLineToolOverrides {
+	/** Default value: `1000` */
+	"linetoolriskrewardlong.accountSize": number;
+	/** Default value: `false` */
+	"linetoolriskrewardlong.alwaysShowStats": boolean;
+	/** Default value: `#667b8b` */
+	"linetoolriskrewardlong.borderColor": string;
+	/** Default value: `false` */
+	"linetoolriskrewardlong.compact": boolean;
+	/** Default value: `false` */
+	"linetoolriskrewardlong.drawBorder": boolean;
+	/** Default value: `true` */
+	"linetoolriskrewardlong.fillBackground": boolean;
+	/** Default value: `true` */
+	"linetoolriskrewardlong.fillLabelBackground": boolean;
+	/** Default value: `12` */
+	"linetoolriskrewardlong.fontsize": number;
+	/** Default value: `#585858` */
+	"linetoolriskrewardlong.labelBackgroundColor": string;
+	/** Default value: `#787B86` */
+	"linetoolriskrewardlong.linecolor": string;
+	/** Default value: `1` */
+	"linetoolriskrewardlong.linewidth": number;
+	/** Default value: `1` */
+	"linetoolriskrewardlong.lotSize": number;
+	/** Default value: `rgba(8, 153, 129, 0.2)` */
+	"linetoolriskrewardlong.profitBackground": string;
+	/** Default value: `80` */
+	"linetoolriskrewardlong.profitBackgroundTransparency": number;
+	/** Default value: `25` */
+	"linetoolriskrewardlong.risk": number;
+	/** Default value: `percents` */
+	"linetoolriskrewardlong.riskDisplayMode": string;
+	/** Default value: `true` */
+	"linetoolriskrewardlong.showPriceLabels": boolean;
+	/** Default value: `rgba(242, 54, 69, 0.2)` */
+	"linetoolriskrewardlong.stopBackground": string;
+	/** Default value: `80` */
+	"linetoolriskrewardlong.stopBackgroundTransparency": number;
+	/** Default value: `#ffffff` */
+	"linetoolriskrewardlong.textcolor": string;
+}
+/**
+ * Override properties for the Riskrewardshort drawing tool.
+ */
+export interface RiskrewardshortLineToolOverrides {
+	/** Default value: `1000` */
+	"linetoolriskrewardshort.accountSize": number;
+	/** Default value: `false` */
+	"linetoolriskrewardshort.alwaysShowStats": boolean;
+	/** Default value: `#667b8b` */
+	"linetoolriskrewardshort.borderColor": string;
+	/** Default value: `false` */
+	"linetoolriskrewardshort.compact": boolean;
+	/** Default value: `false` */
+	"linetoolriskrewardshort.drawBorder": boolean;
+	/** Default value: `true` */
+	"linetoolriskrewardshort.fillBackground": boolean;
+	/** Default value: `true` */
+	"linetoolriskrewardshort.fillLabelBackground": boolean;
+	/** Default value: `12` */
+	"linetoolriskrewardshort.fontsize": number;
+	/** Default value: `#585858` */
+	"linetoolriskrewardshort.labelBackgroundColor": string;
+	/** Default value: `#787B86` */
+	"linetoolriskrewardshort.linecolor": string;
+	/** Default value: `1` */
+	"linetoolriskrewardshort.linewidth": number;
+	/** Default value: `1` */
+	"linetoolriskrewardshort.lotSize": number;
+	/** Default value: `rgba(8, 153, 129, 0.2)` */
+	"linetoolriskrewardshort.profitBackground": string;
+	/** Default value: `80` */
+	"linetoolriskrewardshort.profitBackgroundTransparency": number;
+	/** Default value: `25` */
+	"linetoolriskrewardshort.risk": number;
+	/** Default value: `percents` */
+	"linetoolriskrewardshort.riskDisplayMode": string;
+	/** Default value: `true` */
+	"linetoolriskrewardshort.showPriceLabels": boolean;
+	/** Default value: `rgba(242, 54, 69, 0.2)` */
+	"linetoolriskrewardshort.stopBackground": string;
+	/** Default value: `80` */
+	"linetoolriskrewardshort.stopBackgroundTransparency": number;
+	/** Default value: `#ffffff` */
+	"linetoolriskrewardshort.textcolor": string;
+}
+/**
+ * Override properties for the Rotatedrectangle drawing tool.
+ */
+export interface RotatedrectangleLineToolOverrides {
+	/** Default value: `rgba(76, 175, 80, 0.2)` */
+	"linetoolrotatedrectangle.backgroundColor": string;
+	/** Default value: `#4caf50` */
+	"linetoolrotatedrectangle.color": string;
+	/** Default value: `true` */
+	"linetoolrotatedrectangle.fillBackground": boolean;
+	/** Default value: `1` */
+	"linetoolrotatedrectangle.linewidth": number;
+	/** Default value: `50` */
+	"linetoolrotatedrectangle.transparency": number;
 }
 export interface RssNewsFeedInfo {
 	/**
@@ -9427,6 +13703,228 @@ export interface SavedStateMetaInfo {
 	description: string;
 }
 /**
+ * Override properties for the Schiffpitchfork2 drawing tool.
+ */
+export interface Schiffpitchfork2LineToolOverrides {
+	/** Default value: `false` */
+	"linetoolschiffpitchfork2.extendLines": boolean;
+	/** Default value: `true` */
+	"linetoolschiffpitchfork2.fillBackground": boolean;
+	/** Default value: `0.25` */
+	"linetoolschiffpitchfork2.level0.coeff": number;
+	/** Default value: `#ffb74d` */
+	"linetoolschiffpitchfork2.level0.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork2.level0.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork2.level0.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork2.level0.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolschiffpitchfork2.level1.coeff": number;
+	/** Default value: `#81c784` */
+	"linetoolschiffpitchfork2.level1.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork2.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork2.level1.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork2.level1.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolschiffpitchfork2.level2.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolschiffpitchfork2.level2.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork2.level2.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork2.level2.linewidth": number;
+	/** Default value: `true` */
+	"linetoolschiffpitchfork2.level2.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolschiffpitchfork2.level3.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolschiffpitchfork2.level3.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork2.level3.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork2.level3.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork2.level3.visible": boolean;
+	/** Default value: `0.75` */
+	"linetoolschiffpitchfork2.level4.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolschiffpitchfork2.level4.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork2.level4.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork2.level4.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork2.level4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork2.level5.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolschiffpitchfork2.level5.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork2.level5.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork2.level5.linewidth": number;
+	/** Default value: `true` */
+	"linetoolschiffpitchfork2.level5.visible": boolean;
+	/** Default value: `1.5` */
+	"linetoolschiffpitchfork2.level6.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetoolschiffpitchfork2.level6.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork2.level6.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork2.level6.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork2.level6.visible": boolean;
+	/** Default value: `1.75` */
+	"linetoolschiffpitchfork2.level7.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolschiffpitchfork2.level7.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork2.level7.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork2.level7.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork2.level7.visible": boolean;
+	/** Default value: `2` */
+	"linetoolschiffpitchfork2.level8.coeff": number;
+	/** Default value: `#F77C80` */
+	"linetoolschiffpitchfork2.level8.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork2.level8.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork2.level8.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork2.level8.visible": boolean;
+	/** Default value: `#F23645` */
+	"linetoolschiffpitchfork2.median.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork2.median.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork2.median.linewidth": number;
+	/** Default value: `true` */
+	"linetoolschiffpitchfork2.median.visible": boolean;
+	/** Default value: `3` */
+	"linetoolschiffpitchfork2.style": number;
+	/** Default value: `80` */
+	"linetoolschiffpitchfork2.transparency": number;
+}
+/**
+ * Override properties for the Schiffpitchfork drawing tool.
+ */
+export interface SchiffpitchforkLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolschiffpitchfork.extendLines": boolean;
+	/** Default value: `true` */
+	"linetoolschiffpitchfork.fillBackground": boolean;
+	/** Default value: `0.25` */
+	"linetoolschiffpitchfork.level0.coeff": number;
+	/** Default value: `#ffb74d` */
+	"linetoolschiffpitchfork.level0.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork.level0.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.level0.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork.level0.visible": boolean;
+	/** Default value: `0.382` */
+	"linetoolschiffpitchfork.level1.coeff": number;
+	/** Default value: `#81c784` */
+	"linetoolschiffpitchfork.level1.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.level1.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork.level1.visible": boolean;
+	/** Default value: `0.5` */
+	"linetoolschiffpitchfork.level2.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolschiffpitchfork.level2.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork.level2.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.level2.linewidth": number;
+	/** Default value: `true` */
+	"linetoolschiffpitchfork.level2.visible": boolean;
+	/** Default value: `0.618` */
+	"linetoolschiffpitchfork.level3.coeff": number;
+	/** Default value: `#089981` */
+	"linetoolschiffpitchfork.level3.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork.level3.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.level3.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork.level3.visible": boolean;
+	/** Default value: `0.75` */
+	"linetoolschiffpitchfork.level4.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetoolschiffpitchfork.level4.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork.level4.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.level4.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork.level4.visible": boolean;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.level5.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetoolschiffpitchfork.level5.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork.level5.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.level5.linewidth": number;
+	/** Default value: `true` */
+	"linetoolschiffpitchfork.level5.visible": boolean;
+	/** Default value: `1.5` */
+	"linetoolschiffpitchfork.level6.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetoolschiffpitchfork.level6.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork.level6.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.level6.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork.level6.visible": boolean;
+	/** Default value: `1.75` */
+	"linetoolschiffpitchfork.level7.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetoolschiffpitchfork.level7.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork.level7.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.level7.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork.level7.visible": boolean;
+	/** Default value: `2` */
+	"linetoolschiffpitchfork.level8.coeff": number;
+	/** Default value: `#F77C80` */
+	"linetoolschiffpitchfork.level8.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork.level8.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.level8.linewidth": number;
+	/** Default value: `false` */
+	"linetoolschiffpitchfork.level8.visible": boolean;
+	/** Default value: `#F23645` */
+	"linetoolschiffpitchfork.median.color": string;
+	/** Default value: `0` */
+	"linetoolschiffpitchfork.median.linestyle": number;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.median.linewidth": number;
+	/** Default value: `true` */
+	"linetoolschiffpitchfork.median.visible": boolean;
+	/** Default value: `1` */
+	"linetoolschiffpitchfork.style": number;
+	/** Default value: `80` */
+	"linetoolschiffpitchfork.transparency": number;
+}
+/**
  * Symbol search result item
  *
  * @example
@@ -9458,6 +13956,42 @@ export interface SearchSymbolResultItem {
 	 * 'stock' | 'futures' | 'forex' | 'index'
 	 */
 	type: string;
+	/**
+	 * URL of image/s to be displayed as the logo/s for the symbol. The `show_symbol_logos` featureset needs to be enabled for this to be visible in the UI.
+	 *
+	 * - If a single url is returned then that url will solely be used to display the symbol logo.
+	 * - If two urls are provided then the images will be displayed as two partially overlapping
+	 * circles with the first url appearing on top. This is typically used for FOREX where you would
+	 * like to display two country flags as the symbol logo.
+	 *
+	 * The image/s should ideally be square in dimension. You can use any image type which
+	 * the browser supports natively. Simple SVG images are recommended.
+	 *
+	 * Examples:
+	 * - `https://yourserver.com/symbolName.svg`
+	 * - `/images/myImage.png`
+	 * - `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3...`
+	 * - `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4...`
+	 */
+	logo_urls?: [
+		string
+	] | [
+		string,
+		string
+	];
+	/**
+	 * URL of image to be displayed as the logo for the exchange. The `show_exchange_logos` featureset needs to be enabled for this to be visible in the UI.
+	 *
+	 * The image should ideally be square in dimension. You can use any image type which
+	 * the browser supports natively. Simple SVG images are recommended.
+	 *
+	 * Examples:
+	 * - `https://yourserver.com/exchangeLogo.svg`
+	 * - `/images/myImage.png`
+	 * - `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3...`
+	 * - `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4...`
+	 */
+	exchange_logo?: string;
 }
 /**
  * Description of a series field.
@@ -9483,8 +14017,14 @@ export interface SeriesPreferencesMap {
 	[ChartStyle.Candle]: CandleStylePreferences;
 	/** Line Style Preferences */
 	[ChartStyle.Line]: LineStylePreferences;
+	/** Line With Markers Style Preferences */
+	[ChartStyle.LineWithMarkers]: LineStylePreferences;
+	/** Step Line Style Preferences */
+	[ChartStyle.Stepline]: LineStylePreferences;
 	/** Area Style Preferences */
 	[ChartStyle.Area]: AreaStylePreferences;
+	/** HLC Area Style Preferences */
+	[ChartStyle.HLCArea]: HLCAreaStylePreferences;
 	/** Renko Style Preferences */
 	[ChartStyle.Renko]: RenkoStylePreferences;
 	/** Kagi Style Preferences */
@@ -9505,6 +14045,32 @@ export interface SeriesPreferencesMap {
 	[ChartStyle.Column]: ColumnStylePreferences;
 }
 /**
+ * Options for setting a chart's resolution.
+ */
+export interface SetResolutionOptions {
+	/**
+	 * An optional callback function. Called when the data for the new resolution has loaded.
+	 */
+	dataReady?: () => void;
+	/**
+	 * A boolean flag. Allows to disable making the current chart active in the layout.
+	 */
+	doNotActivateChart?: boolean;
+}
+/**
+ * Options for setting a chart's symbol.
+ */
+export interface SetSymbolOptions {
+	/**
+	 * An optional callback function. Called when the data for the new symbol has loaded.
+	 */
+	dataReady?: () => void;
+	/**
+	 * A boolean flag. Allows to disable making the current chart active in the layout.
+	 */
+	doNotActivateChart?: boolean;
+}
+/**
  * Options for setting the visible range.
  *
  * Setting `applyDefaultRightMargin` or `percentRightMargin` will result in the `to` value
@@ -9520,6 +14086,36 @@ export interface SetVisibleRangeOptions {
 	 * Apply a percentage right offset (margin) when setting the range.
 	 */
 	percentRightMargin?: number;
+}
+/**
+ * Override properties for the Signpost drawing tool.
+ */
+export interface SignpostLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolsignpost.bold": boolean;
+	/** Default value: `🙂` */
+	"linetoolsignpost.emoji": string;
+	/** Default value: `12` */
+	"linetoolsignpost.fontSize": number;
+	/** Default value: `false` */
+	"linetoolsignpost.italic": boolean;
+	/** Default value: `1` */
+	"linetoolsignpost.itemType": number;
+	/** Default value: `#2962FF` */
+	"linetoolsignpost.plateColor": string;
+	/** Default value: `false` */
+	"linetoolsignpost.showImage": boolean;
+}
+/**
+ * Override properties for the Sineline drawing tool.
+ */
+export interface SinelineLineToolOverrides {
+	/** Default value: `#159980` */
+	"linetoolsineline.linecolor": string;
+	/** Default value: `0` */
+	"linetoolsineline.linestyle": number;
+	/** Default value: `1` */
+	"linetoolsineline.linewidth": number;
 }
 export interface SingleBrokerMetaInfo {
 	/**
@@ -9572,6 +14168,7 @@ export interface SortingParameters {
 	/** Ascending sorting order (default `true`) - If it is `false`, then initial sorting will be in descending order */
 	asc?: boolean;
 }
+
 export interface StandardFormattersDependenciesMapping {
 	[StandardFormatterName.Default]: string[];
 	[StandardFormatterName.Symbol]: [
@@ -9642,12 +14239,24 @@ export interface StandardFormattersDependenciesMapping {
 	[StandardFormatterName.Empty]: [
 	];
 }
+
 /**
  * Position defined by an OHLC price on a bar at a specified time.
  */
 export interface StickedPoint extends TimePoint {
 	/** Candle stick value to 'stick' on */
 	channel: "open" | "high" | "low" | "close";
+}
+/**
+ * Override properties for the Sticker drawing tool.
+ */
+export interface StickerLineToolOverrides {
+	/** Default value: `1.5707963267948966` */
+	"linetoolsticker.angle": number;
+	/** Default value: `110` */
+	"linetoolsticker.size": number;
+	/** Default value: `bitcoin` */
+	"linetoolsticker.sticker": string;
 }
 /**
  * A description of a study arrows plot.
@@ -9671,11 +14280,22 @@ export interface StudyArrowsPlotPreferences extends StudyPlotBasePreferences {
 	/**
 	 * Minimum arrow height.
 	 */
-	minHeight: number;
+	minHeight?: number;
 	/**
 	 * Maximum arrow height.
 	 */
-	maxHeight: number;
+	maxHeight?: number;
+}
+/**
+ * Preferences for adjusting the visual appearance of the background of a band area.
+ */
+export interface StudyBandBackgroundPreferences {
+	/** Background color for the Band area */
+	backgroundColor: string;
+	/** Transparency of the band area */
+	transparency: number;
+	/** Whether the background area should be filled with the `backgroundColor` */
+	fillBackground: boolean;
 }
 /**
  * A description of a study band.
@@ -9744,9 +14364,13 @@ export interface StudyBarColorerPlotInfo extends StudyPalettedPlotInfo {
 	readonly type: StudyPlotType.BarColorer;
 }
 export interface StudyBarTimeInputInfo extends StudyInputBaseInfo {
+	/** Input type is BarTime */
 	readonly type: StudyInputType.BarTime;
+	/** Default value */
 	readonly defval: number;
+	/** Maximum time */
 	readonly max: number;
+	/** Minimum time */
 	readonly min: number;
 }
 /**
@@ -9757,7 +14381,9 @@ export interface StudyBgColorerPlotInfo extends StudyPalettedPlotInfo {
 	readonly type: StudyPlotType.BgColorer;
 }
 export interface StudyBooleanInputInfo extends StudyInputBaseInfo {
+	/** Input type is Boolean */
 	readonly type: StudyInputType.Bool;
+	/** Default value for the input */
 	readonly defval: boolean;
 }
 /**
@@ -9783,20 +14409,18 @@ export interface StudyCharsPlotInfo extends StudyPlotBaseInfo {
 }
 export interface StudyCharsPlotPreferences extends StudyPlotBasePreferences {
 	/** Character */
-	char: string;
+	char?: string;
 	/** Location for the mark */
 	location: MarkLocation;
 	/** Color */
 	color: string;
 	/** Text color */
 	textColor: string;
-	/** Size of the symbol */
-	size?: PlotSymbolSize;
-	/** Text content */
-	text?: string;
 }
 export interface StudyColorInputInfo extends StudyInputBaseInfo {
+	/** Input type is Color */
 	readonly type: StudyInputType.Color;
+	/** Default value for the input */
 	readonly defval: string;
 }
 /**
@@ -9821,13 +14445,25 @@ export interface StudyDataPlotInfo extends StudyTargetedPlotInfo {
 	readonly type: StudyPlotType.Data;
 }
 export interface StudyDefaults {
+	/** Defaults for the area background */
+	areaBackground: StudyBandBackgroundPreferences;
+	/** Defaults for the bands background */
+	bandsBackground: StudyBandBackgroundPreferences;
+	/** Defaults for the bands */
 	bands: readonly Required<StudyBandStyle>[];
+	/** Defaults for the filled area styles */
 	filledAreasStyle: MappedObject<StudyFilledAreaStyle>;
+	/** Defaults for the study inputs */
 	inputs: StudyInputsSimple;
+	/** Defaults for the study palette styles */
 	palettes: MappedObject<StudyPaletteStyle>;
+	/** Default for the study precision */
 	precision: number | string;
+	/** Defaults for the study styles */
 	styles: MappedObject<StudyPlotPreferences>;
+	/** Defaults for the OHLC plots */
 	ohlcPlots: MappedObject<StudyOhlcPlotPreferences>;
+	/** Defaults for the study graphics */
 	graphics: StudyGraphicsDefaults;
 }
 /**
@@ -9981,26 +14617,30 @@ export interface StudyFilledAreaStyleBase {
 	transparency: number;
 }
 export interface StudyGraphicsDefaults {
+	/** Defaults for the horizontal lines study graphics */
 	horizlines?: ValueByStyleId<HorizLinePreferences>;
+	/** Defaults for the polygon study graphics */
 	polygons?: ValueByStyleId<PolygonPreferences>;
+	/** Defaults for the horizontal histogram study graphics */
 	hhists?: ValueByStyleId<HHistPreferences>;
+	/** Defaults for the vertical lines study graphics */
 	vertlines?: ValueByStyleId<VertLinePreferences>;
 }
 export interface StudyInputBaseInfo {
+	/** Id for the input */
 	readonly id: string;
+	/** Title of the input */
 	readonly name: string;
+	/** default value of the input variable. It has the specific type for a given input and can be optional. */
 	readonly defval?: StudyInputValue;
+	/** Input type */
 	readonly type: string;
+	/** if true, then user will be asked to confirm input value before indicator is added to chart. Default value is false. */
 	readonly confirm?: boolean;
+	/** Is the input hidden */
 	readonly isHidden?: boolean;
+	/** Is the input visible */
 	readonly visible?: string;
-	readonly isFake?: boolean;
-	readonly isMTFResolution?: boolean;
-	readonly groupId?: string;
-	readonly internalID?: string;
-	readonly inline?: string;
-	readonly group?: string;
-	readonly tooltip?: string;
 }
 /**
  * A description of a study input.
@@ -10074,16 +14714,20 @@ export interface StudyLinePlotPreferences extends StudyPlotBasePreferences {
 	 */
 	trackPrice: boolean;
 	/**
-	 * Histogram base price.
+	 * If defined, defines the number of bars to plot on chart.
 	 */
-	histogramBase?: number;
-	joinPoints?: boolean;
+	readonly showLast?: number;
 }
 export interface StudyNumericInputInfo extends StudyInputBaseInfo {
+	/** Input type is Numeric */
 	readonly type: StudyInputType.Integer | StudyInputType.Float | StudyInputType.Price;
+	/** Default value */
 	readonly defval: number;
+	/** Maximum value */
 	readonly max?: number;
+	/** Minimum value */
 	readonly min?: number;
+	/** Step size for value */
 	readonly step?: number;
 }
 /**
@@ -10102,6 +14746,7 @@ export interface StudyOhlcPlotBaseStylePreferences {
 	color: string;
 	/** Bitmask with values from StudyPlotDisplayTarget */
 	display: StudyPlotDisplayMode;
+	/** Visibility */
 	visible?: boolean;
 }
 export interface StudyOhlcPlotCandlesStylePreferences extends StudyOhlcPlotBaseStylePreferences {
@@ -10124,9 +14769,13 @@ export interface StudyOhlcPlotInfo extends StudyTargetedPlotInfo {
 	readonly type: StudyPlotType.OhlcOpen | StudyPlotType.OhlcHigh | StudyPlotType.OhlcLow | StudyPlotType.OhlcClose;
 }
 export interface StudyOhlcStylesInfo {
+	/** Title */
 	readonly title: string;
+	/** Is hidden */
 	readonly isHidden?: boolean;
+	/** Draw border for OHLC candles */
 	readonly drawBorder?: boolean;
+	/** Show last value */
 	readonly showLast?: number;
 }
 /**
@@ -10253,6 +14902,7 @@ export interface StudyPlotBasePreferences {
 	 * @example StudyPlotDisplayTarget.None // Do not display the plot.
 	 */
 	display: StudyPlotDisplayMode;
+	/** Visibility */
 	visible?: boolean;
 }
 export interface StudyPlotValueInheritFormat {
@@ -10266,17 +14916,27 @@ export interface StudyPlotValuePrecisionFormat {
 	precision?: number;
 }
 export interface StudyPriceInputInfo extends StudyInputBaseInfo {
+	/** Input type is Price */
 	readonly type: StudyInputType.Price;
+	/** Default value */
 	readonly defval: number;
+	/** Maximum value */
 	readonly max?: number;
+	/** Minimum value */
 	readonly min?: number;
+	/** Step size for value */
 	readonly step?: number;
 }
 export interface StudyResolutionInputInfo extends StudyInputBaseInfo {
+	/** Input type is Resolution */
 	readonly type: StudyInputType.Resolution;
+	/** Default value */
 	readonly defval: ResolutionString;
+	/** Source Input Options */
 	readonly options?: string[];
+	/** Options for Input Titles */
 	readonly optionsTitles?: StudyInputOptionsTitles;
+	/** Is Monday to Friday Resolution */
 	readonly isMTFResolution?: boolean;
 }
 export interface StudyResultValueWithOffset {
@@ -10297,9 +14957,13 @@ export interface StudyRgbaColorerPlotInfo extends StudyTargetedPlotInfo {
 	readonly type: StudyPlotType.Colorer;
 }
 export interface StudySessionInputInfo extends StudyInputBaseInfo {
+	/** Input type is Session */
 	readonly type: StudyInputType.Session;
+	/** Default value */
 	readonly defval: string;
+	/** Source Input Options */
 	readonly options?: string[];
+	/** Options for Input Titles */
 	readonly optionsTitles?: StudyInputOptionsTitles;
 }
 /**
@@ -10329,19 +14993,15 @@ export interface StudyShapesPlotPreferences extends StudyPlotBasePreferences {
 	 * Text color.
 	 */
 	textColor: string;
-	/**
-	 * Size.
-	 */
-	size?: PlotSymbolSize;
-	/**
-	 * Text content.
-	 */
-	text?: string;
 }
 export interface StudySourceInputInfo extends StudyInputBaseInfo {
+	/** Input type is Source */
 	readonly type: StudyInputType.Source;
+	/** Default value */
 	readonly defval: StudyAvailableConstSources | string;
+	/** Source Input Options */
 	readonly options?: (StudyAvailableConstSources | string)[];
+	/** Options for Input Titles */
 	readonly optionsTitles?: StudyInputOptionsTitles;
 }
 /**
@@ -10359,7 +15019,7 @@ export interface StudyStyleInfo {
 	/**
 	 * Study plot style descriptions. An object with `plot id` as keys and style info as values
 	 */
-	styles?: StudyStylesInfo;
+	styles?: Record<string, Readonly<StudyStylesInfo> | undefined>;
 	/**
 	 * Study band descriptions.
 	 */
@@ -10416,10 +15076,6 @@ export interface StudyStyleInfoDefaults {
  */
 export interface StudyStyleValues {
 	/**
-	 * Plot descriptions.
-	 */
-	plots: StudyPlotInfo[];
-	/**
 	 * OHLC plot styles.
 	 */
 	ohlcPlots: Record<string, StudyOhlcPlotPreferences | undefined>;
@@ -10472,7 +15128,7 @@ export interface StudyStylesInfo {
 	/**
 	 * Title used in the study dialog styles tab.
 	 */
-	readonly title?: string;
+	readonly title: string;
 	/**
 	 * If `true` then the styles tab will be hidden in the study dialog.
 	 */
@@ -10490,6 +15146,10 @@ export interface StudyStylesInfo {
 	 */
 	readonly size?: PlotSymbolSize;
 	/**
+	 * Char to display with the plot. Applicable only to chars plot types.
+	 */
+	readonly char?: string;
+	/**
 	 * Text to display with the plot. Applicable to `chars` and `shapes` plot types.
 	 */
 	readonly text?: string;
@@ -10501,12 +15161,13 @@ export interface StudyStylesInfo {
 	 * Used to control the zorder of the plot. Control if a plot is visually behind or in front of another.
 	 */
 	readonly zorder?: number;
-	readonly location?: MarkLocation;
-	readonly plottype?: OhlcStudyPlotStyle | PlotShapeId | LineStudyPlotStyle;
 }
 export interface StudySymbolInputInfo extends StudyInputBaseInfo {
+	/** Input type is Symbol */
 	readonly type: StudyInputType.Symbol;
+	/** Default value for the input */
 	readonly defval?: string;
+	/** Is the input optional */
 	readonly optional?: boolean;
 }
 /**
@@ -10552,19 +15213,29 @@ export interface StudyTextColorerPlotInfo extends StudyPalettedPlotInfo, StudyTa
 	readonly type: StudyPlotType.TextColorer;
 }
 export interface StudyTextInputInfo extends StudyInputBaseInfo {
+	/** Input type is Text */
 	readonly type: StudyInputType.Text;
+	/** Default value for the input */
 	readonly defval: string;
+	/** Options for the text input */
 	readonly options?: string[];
+	/** Options for the titles of the text input */
 	readonly optionsTitles?: StudyInputOptionsTitles;
 }
 export interface StudyTextareaInputInfo extends StudyInputBaseInfo {
+	/** Input type is TextArea */
 	readonly type: StudyInputType.Textarea;
+	/** Default value for the input */
 	readonly defval: string;
 }
 export interface StudyTimeInputInfo extends StudyInputBaseInfo {
+	/** Input type is Time */
 	readonly type: StudyInputType.Time;
+	/** Default value for the input */
 	readonly defval: number;
+	/** Maximum time */
 	readonly max: number;
+	/** Minimum time */
 	readonly min: number;
 }
 /**
@@ -10773,7 +15444,9 @@ export interface SymbolInfoPriceSource {
 	name: string;
 }
 export interface SymbolInputSymbolSource {
+	/** Input type is Symbol Source */
 	type: "symbolInputSymbolSource";
+	/** Input ID */
 	inputId: string;
 }
 /**
@@ -10798,6 +15471,9 @@ export interface SymbolResolveExtension {
 	 * field is set and `unit_id` is provided in the original symbol information ({@link LibrarySymbolInfo}).
 	 */
 	unitId?: string;
+	/**
+	 * Trading session string
+	 */
 	session?: string;
 }
 /**
@@ -10820,14 +15496,41 @@ export interface TableFormatterInputs<T extends TableFormatterInputValues = Tabl
 	] ? [
 		...A
 	] : never;
-	/** optional field. It is array of previous values so you can compare and format accordingly. It exists if current column has the `highlightDiff: true` key. */
+	/** Optional field. It is array of previous values so you can compare and format accordingly. It exists if current column has the `highlightDiff: true` key. */
 	prevValues?: Partial<T extends [
 		...args: infer A
 	] ? [
 		...A
 	] : never>;
-	/** standard formatter for price. You can use `format(price)` method to prepare price value. */
-	priceFormatter?: INumberFormatter;
+}
+/**
+ * Override properties for the Text drawing tool.
+ */
+export interface TextLineToolOverrides {
+	/** Default value: `rgba(91, 133, 191, 0.3)` */
+	"linetooltext.backgroundColor": string;
+	/** Default value: `70` */
+	"linetooltext.backgroundTransparency": number;
+	/** Default value: `false` */
+	"linetooltext.bold": boolean;
+	/** Default value: `#667b8b` */
+	"linetooltext.borderColor": string;
+	/** Default value: `#2962FF` */
+	"linetooltext.color": string;
+	/** Default value: `false` */
+	"linetooltext.drawBorder": boolean;
+	/** Default value: `false` */
+	"linetooltext.fillBackground": boolean;
+	/** Default value: `true` */
+	"linetooltext.fixedSize": boolean;
+	/** Default value: `14` */
+	"linetooltext.fontsize": number;
+	/** Default value: `false` */
+	"linetooltext.italic": boolean;
+	/** Default value: `false` */
+	"linetooltext.wordWrap": boolean;
+	/** Default value: `200` */
+	"linetooltext.wordWrapWidth": number;
 }
 export interface TextWithCheckboxFieldCustomInfo {
 	/** Title for the checkbox */
@@ -10853,6 +15556,58 @@ export interface TextWithCheckboxValue {
 	text: string;
 	/** Whether the checkbox is checked */
 	checked: boolean;
+}
+/**
+ * Override properties for the Textabsolute drawing tool.
+ */
+export interface TextabsoluteLineToolOverrides {
+	/** Default value: `rgba(155, 190, 213, 0.3)` */
+	"linetooltextabsolute.backgroundColor": string;
+	/** Default value: `70` */
+	"linetooltextabsolute.backgroundTransparency": number;
+	/** Default value: `false` */
+	"linetooltextabsolute.bold": boolean;
+	/** Default value: `#667b8b` */
+	"linetooltextabsolute.borderColor": string;
+	/** Default value: `#2962FF` */
+	"linetooltextabsolute.color": string;
+	/** Default value: `false` */
+	"linetooltextabsolute.drawBorder": boolean;
+	/** Default value: `false` */
+	"linetooltextabsolute.fillBackground": boolean;
+	/** Default value: `false` */
+	"linetooltextabsolute.fixedSize": boolean;
+	/** Default value: `14` */
+	"linetooltextabsolute.fontsize": number;
+	/** Default value: `false` */
+	"linetooltextabsolute.italic": boolean;
+	/** Default value: `false` */
+	"linetooltextabsolute.wordWrap": boolean;
+	/** Default value: `200` */
+	"linetooltextabsolute.wordWrapWidth": number;
+}
+/**
+ * Override properties for the Threedrivers drawing tool.
+ */
+export interface ThreedriversLineToolOverrides {
+	/** Default value: `rgba(149, 40, 204, 0.5)` */
+	"linetoolthreedrivers.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolthreedrivers.bold": boolean;
+	/** Default value: `#673ab7` */
+	"linetoolthreedrivers.color": string;
+	/** Default value: `true` */
+	"linetoolthreedrivers.fillBackground": boolean;
+	/** Default value: `12` */
+	"linetoolthreedrivers.fontsize": number;
+	/** Default value: `false` */
+	"linetoolthreedrivers.italic": boolean;
+	/** Default value: `1` */
+	"linetoolthreedrivers.linewidth": number;
+	/** Default value: `#ffffff` */
+	"linetoolthreedrivers.textcolor": string;
+	/** Default value: `50` */
+	"linetoolthreedrivers.transparency": number;
 }
 /**
  * Used in the schema defined in exportData API to describe the time field.
@@ -10883,7 +15638,7 @@ export interface TimeFrameItem {
 export interface TimeFramePeriodBack {
 	/** Time frame period is `period-back` */
 	type: TimeFrameType.PeriodBack;
-	/** A UNIX timestamp */
+	/** Time frame string. For example `'1D'` or `'6M'`. */
 	value: string;
 }
 /** Defines a time frame between 2 dates */
@@ -10910,6 +15665,23 @@ export interface TimePoint {
 export interface TimeScaleOptions {
 	/** Minimum allowed space between bars. Should be greater than 0. */
 	min_bar_spacing?: number;
+}
+/**
+ * Override properties for the Timecycles drawing tool.
+ */
+export interface TimecyclesLineToolOverrides {
+	/** Default value: `rgba(106, 168, 79, 0.5)` */
+	"linetooltimecycles.backgroundColor": string;
+	/** Default value: `true` */
+	"linetooltimecycles.fillBackground": boolean;
+	/** Default value: `#159980` */
+	"linetooltimecycles.linecolor": string;
+	/** Default value: `0` */
+	"linetooltimecycles.linestyle": number;
+	/** Default value: `1` */
+	"linetooltimecycles.linewidth": number;
+	/** Default value: `50` */
+	"linetooltimecycles.transparency": number;
 }
 export interface TimescaleMark {
 	/** ID of the timescale mark */
@@ -11035,9 +15807,29 @@ export interface TradingQuotes {
 	/** Whether quotes are can not be shorted */
 	isNotShortable?: boolean;
 }
-export interface TradingTerminalWidgetOptions extends Omit<ChartingLibraryWidgetOptions, "enabled_features" | "disabled_features"> {
+export interface TradingTerminalWidgetOptions extends Omit<ChartingLibraryWidgetOptions, "enabled_features" | "disabled_features" | "favorites"> {
+	/**
+	 * The array containing names of features that should be disabled by default. `Feature` means part of the functionality of the chart (part of the UI/UX). Supported features are listed [here](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets).
+	 *
+	 * Example:
+	 * ```javascript
+	 * disabled_features: ["header_widget", "left_toolbar"],
+	 * ```
+	 */
 	disabled_features?: TradingTerminalFeatureset[];
+	/**
+	 * The array containing names of features that should be enabled by default. `Feature` means part of the functionality of the chart (part of the UI/UX). Supported features are listed [here](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets).
+	 *
+	 * Example:
+	 * ```javascript
+	 * enabled_features: ["move_logo_to_main_pane"],
+	 * ```
+	 */
 	enabled_features?: TradingTerminalFeatureset[];
+	/**
+	 * See {@link ChartingLibraryWidgetOptions.favorites}
+	 */
+	favorites?: Favorites<TradingTerminalChartTypeFavorites>;
 	/** configuration flags for the Trading Terminal. */
 	brokerConfig?: SingleBrokerMetaInfo;
 	/** configuration flags for the Trading Terminal. */
@@ -11143,6 +15935,456 @@ export interface TranslateOptions {
 	replace?: Record<string, string>;
 }
 /**
+ * Override properties for the Trendangle drawing tool.
+ */
+export interface TrendangleLineToolOverrides {
+	/** Default value: `false` */
+	"linetooltrendangle.alwaysShowStats": boolean;
+	/** Default value: `false` */
+	"linetooltrendangle.bold": boolean;
+	/** Default value: `false` */
+	"linetooltrendangle.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetooltrendangle.extendRight": boolean;
+	/** Default value: `12` */
+	"linetooltrendangle.fontsize": number;
+	/** Default value: `false` */
+	"linetooltrendangle.italic": boolean;
+	/** Default value: `#2962FF` */
+	"linetooltrendangle.linecolor": string;
+	/** Default value: `0` */
+	"linetooltrendangle.linestyle": number;
+	/** Default value: `2` */
+	"linetooltrendangle.linewidth": number;
+	/** Default value: `false` */
+	"linetooltrendangle.showBarsRange": boolean;
+	/** Default value: `false` */
+	"linetooltrendangle.showMiddlePoint": boolean;
+	/** Default value: `false` */
+	"linetooltrendangle.showPercentPriceRange": boolean;
+	/** Default value: `false` */
+	"linetooltrendangle.showPipsPriceRange": boolean;
+	/** Default value: `false` */
+	"linetooltrendangle.showPriceLabels": boolean;
+	/** Default value: `false` */
+	"linetooltrendangle.showPriceRange": boolean;
+	/** Default value: `2` */
+	"linetooltrendangle.statsPosition": number;
+	/** Default value: `#2962FF` */
+	"linetooltrendangle.textcolor": string;
+}
+/**
+ * Override properties for the Trendbasedfibextension drawing tool.
+ */
+export interface TrendbasedfibextensionLineToolOverrides {
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.coeffsAsPercents": boolean;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.extendLines": boolean;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.extendLinesLeft": boolean;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.fibLevelsBasedOnLogScale": boolean;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.fillBackground": boolean;
+	/** Default value: `left` */
+	"linetooltrendbasedfibextension.horzLabelsAlign": string;
+	/** Default value: `12` */
+	"linetooltrendbasedfibextension.labelFontSize": number;
+	/** Default value: `0` */
+	"linetooltrendbasedfibextension.level1.coeff": number;
+	/** Default value: `#787B86` */
+	"linetooltrendbasedfibextension.level1.color": string;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.level1.visible": boolean;
+	/** Default value: `3.618` */
+	"linetooltrendbasedfibextension.level10.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetooltrendbasedfibextension.level10.color": string;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.level10.visible": boolean;
+	/** Default value: `4.236` */
+	"linetooltrendbasedfibextension.level11.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetooltrendbasedfibextension.level11.color": string;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.level11.visible": boolean;
+	/** Default value: `1.272` */
+	"linetooltrendbasedfibextension.level12.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetooltrendbasedfibextension.level12.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level12.visible": boolean;
+	/** Default value: `1.414` */
+	"linetooltrendbasedfibextension.level13.coeff": number;
+	/** Default value: `#F23645` */
+	"linetooltrendbasedfibextension.level13.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level13.visible": boolean;
+	/** Default value: `2.272` */
+	"linetooltrendbasedfibextension.level14.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetooltrendbasedfibextension.level14.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level14.visible": boolean;
+	/** Default value: `2.414` */
+	"linetooltrendbasedfibextension.level15.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetooltrendbasedfibextension.level15.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level15.visible": boolean;
+	/** Default value: `2` */
+	"linetooltrendbasedfibextension.level16.coeff": number;
+	/** Default value: `#089981` */
+	"linetooltrendbasedfibextension.level16.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level16.visible": boolean;
+	/** Default value: `3` */
+	"linetooltrendbasedfibextension.level17.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetooltrendbasedfibextension.level17.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level17.visible": boolean;
+	/** Default value: `3.272` */
+	"linetooltrendbasedfibextension.level18.coeff": number;
+	/** Default value: `#787B86` */
+	"linetooltrendbasedfibextension.level18.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level18.visible": boolean;
+	/** Default value: `3.414` */
+	"linetooltrendbasedfibextension.level19.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetooltrendbasedfibextension.level19.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level19.visible": boolean;
+	/** Default value: `0.236` */
+	"linetooltrendbasedfibextension.level2.coeff": number;
+	/** Default value: `#F23645` */
+	"linetooltrendbasedfibextension.level2.color": string;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.level2.visible": boolean;
+	/** Default value: `4` */
+	"linetooltrendbasedfibextension.level20.coeff": number;
+	/** Default value: `#F23645` */
+	"linetooltrendbasedfibextension.level20.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level20.visible": boolean;
+	/** Default value: `4.272` */
+	"linetooltrendbasedfibextension.level21.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetooltrendbasedfibextension.level21.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level21.visible": boolean;
+	/** Default value: `4.414` */
+	"linetooltrendbasedfibextension.level22.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetooltrendbasedfibextension.level22.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level22.visible": boolean;
+	/** Default value: `4.618` */
+	"linetooltrendbasedfibextension.level23.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetooltrendbasedfibextension.level23.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level23.visible": boolean;
+	/** Default value: `4.764` */
+	"linetooltrendbasedfibextension.level24.coeff": number;
+	/** Default value: `#089981` */
+	"linetooltrendbasedfibextension.level24.color": string;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.level24.visible": boolean;
+	/** Default value: `0.382` */
+	"linetooltrendbasedfibextension.level3.coeff": number;
+	/** Default value: `#FF9800` */
+	"linetooltrendbasedfibextension.level3.color": string;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.level3.visible": boolean;
+	/** Default value: `0.5` */
+	"linetooltrendbasedfibextension.level4.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetooltrendbasedfibextension.level4.color": string;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.level4.visible": boolean;
+	/** Default value: `0.618` */
+	"linetooltrendbasedfibextension.level5.coeff": number;
+	/** Default value: `#089981` */
+	"linetooltrendbasedfibextension.level5.color": string;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.level5.visible": boolean;
+	/** Default value: `0.786` */
+	"linetooltrendbasedfibextension.level6.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetooltrendbasedfibextension.level6.color": string;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.level6.visible": boolean;
+	/** Default value: `1` */
+	"linetooltrendbasedfibextension.level7.coeff": number;
+	/** Default value: `#787B86` */
+	"linetooltrendbasedfibextension.level7.color": string;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.level7.visible": boolean;
+	/** Default value: `1.618` */
+	"linetooltrendbasedfibextension.level8.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetooltrendbasedfibextension.level8.color": string;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.level8.visible": boolean;
+	/** Default value: `2.618` */
+	"linetooltrendbasedfibextension.level9.coeff": number;
+	/** Default value: `#F23645` */
+	"linetooltrendbasedfibextension.level9.color": string;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.level9.visible": boolean;
+	/** Default value: `0` */
+	"linetooltrendbasedfibextension.levelsStyle.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibextension.levelsStyle.linewidth": number;
+	/** Default value: `false` */
+	"linetooltrendbasedfibextension.reverse": boolean;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.showCoeffs": boolean;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.showPrices": boolean;
+	/** Default value: `80` */
+	"linetooltrendbasedfibextension.transparency": number;
+	/** Default value: `#787B86` */
+	"linetooltrendbasedfibextension.trendline.color": string;
+	/** Default value: `2` */
+	"linetooltrendbasedfibextension.trendline.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibextension.trendline.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibextension.trendline.visible": boolean;
+	/** Default value: `bottom` */
+	"linetooltrendbasedfibextension.vertLabelsAlign": string;
+}
+/**
+ * Override properties for the Trendbasedfibtime drawing tool.
+ */
+export interface TrendbasedfibtimeLineToolOverrides {
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.fillBackground": boolean;
+	/** Default value: `right` */
+	"linetooltrendbasedfibtime.horzLabelsAlign": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level1.coeff": number;
+	/** Default value: `#787B86` */
+	"linetooltrendbasedfibtime.level1.color": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level1.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level1.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.level1.visible": boolean;
+	/** Default value: `2.618` */
+	"linetooltrendbasedfibtime.level10.coeff": number;
+	/** Default value: `#9c27b0` */
+	"linetooltrendbasedfibtime.level10.color": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level10.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level10.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.level10.visible": boolean;
+	/** Default value: `3` */
+	"linetooltrendbasedfibtime.level11.coeff": number;
+	/** Default value: `#673ab7` */
+	"linetooltrendbasedfibtime.level11.color": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level11.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level11.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.level11.visible": boolean;
+	/** Default value: `0.382` */
+	"linetooltrendbasedfibtime.level2.coeff": number;
+	/** Default value: `#F23645` */
+	"linetooltrendbasedfibtime.level2.color": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level2.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level2.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.level2.visible": boolean;
+	/** Default value: `0.5` */
+	"linetooltrendbasedfibtime.level3.coeff": number;
+	/** Default value: `#81c784` */
+	"linetooltrendbasedfibtime.level3.color": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level3.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level3.linewidth": number;
+	/** Default value: `false` */
+	"linetooltrendbasedfibtime.level3.visible": boolean;
+	/** Default value: `0.618` */
+	"linetooltrendbasedfibtime.level4.coeff": number;
+	/** Default value: `#4caf50` */
+	"linetooltrendbasedfibtime.level4.color": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level4.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level4.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.level4.visible": boolean;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level5.coeff": number;
+	/** Default value: `#089981` */
+	"linetooltrendbasedfibtime.level5.color": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level5.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level5.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.level5.visible": boolean;
+	/** Default value: `1.382` */
+	"linetooltrendbasedfibtime.level6.coeff": number;
+	/** Default value: `#00bcd4` */
+	"linetooltrendbasedfibtime.level6.color": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level6.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level6.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.level6.visible": boolean;
+	/** Default value: `1.618` */
+	"linetooltrendbasedfibtime.level7.coeff": number;
+	/** Default value: `#787B86` */
+	"linetooltrendbasedfibtime.level7.color": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level7.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level7.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.level7.visible": boolean;
+	/** Default value: `2` */
+	"linetooltrendbasedfibtime.level8.coeff": number;
+	/** Default value: `#2962FF` */
+	"linetooltrendbasedfibtime.level8.color": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level8.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level8.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.level8.visible": boolean;
+	/** Default value: `2.382` */
+	"linetooltrendbasedfibtime.level9.coeff": number;
+	/** Default value: `#e91e63` */
+	"linetooltrendbasedfibtime.level9.color": string;
+	/** Default value: `0` */
+	"linetooltrendbasedfibtime.level9.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.level9.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.level9.visible": boolean;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.showCoeffs": boolean;
+	/** Default value: `80` */
+	"linetooltrendbasedfibtime.transparency": number;
+	/** Default value: `#787B86` */
+	"linetooltrendbasedfibtime.trendline.color": string;
+	/** Default value: `2` */
+	"linetooltrendbasedfibtime.trendline.linestyle": number;
+	/** Default value: `1` */
+	"linetooltrendbasedfibtime.trendline.linewidth": number;
+	/** Default value: `true` */
+	"linetooltrendbasedfibtime.trendline.visible": boolean;
+	/** Default value: `bottom` */
+	"linetooltrendbasedfibtime.vertLabelsAlign": string;
+}
+/**
+ * Override properties for the Trendline drawing tool.
+ */
+export interface TrendlineLineToolOverrides {
+	/** Default value: `false` */
+	"linetooltrendline.alwaysShowStats": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.bold": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.extendRight": boolean;
+	/** Default value: `14` */
+	"linetooltrendline.fontsize": number;
+	/** Default value: `center` */
+	"linetooltrendline.horzLabelsAlign": string;
+	/** Default value: `false` */
+	"linetooltrendline.italic": boolean;
+	/** Default value: `0` */
+	"linetooltrendline.leftEnd": number;
+	/** Default value: `#2962FF` */
+	"linetooltrendline.linecolor": string;
+	/** Default value: `0` */
+	"linetooltrendline.linestyle": number;
+	/** Default value: `2` */
+	"linetooltrendline.linewidth": number;
+	/** Default value: `0` */
+	"linetooltrendline.rightEnd": number;
+	/** Default value: `false` */
+	"linetooltrendline.showAngle": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.showBarsRange": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.showDateTimeRange": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.showDistance": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.showLabel": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.showMiddlePoint": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.showPercentPriceRange": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.showPipsPriceRange": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.showPriceLabels": boolean;
+	/** Default value: `false` */
+	"linetooltrendline.showPriceRange": boolean;
+	/** Default value: `2` */
+	"linetooltrendline.statsPosition": number;
+	/** Default value: `#2962FF` */
+	"linetooltrendline.textcolor": string;
+	/** Default value: `bottom` */
+	"linetooltrendline.vertLabelsAlign": string;
+}
+/**
+ * Override properties for the Triangle drawing tool.
+ */
+export interface TriangleLineToolOverrides {
+	/** Default value: `rgba(8, 153, 129, 0.2)` */
+	"linetooltriangle.backgroundColor": string;
+	/** Default value: `#089981` */
+	"linetooltriangle.color": string;
+	/** Default value: `true` */
+	"linetooltriangle.fillBackground": boolean;
+	/** Default value: `1` */
+	"linetooltriangle.linewidth": number;
+	/** Default value: `80` */
+	"linetooltriangle.transparency": number;
+}
+/**
+ * Override properties for the Trianglepattern drawing tool.
+ */
+export interface TrianglepatternLineToolOverrides {
+	/** Default value: `#673ab7` */
+	"linetooltrianglepattern.backgroundColor": string;
+	/** Default value: `false` */
+	"linetooltrianglepattern.bold": boolean;
+	/** Default value: `#673ab7` */
+	"linetooltrianglepattern.color": string;
+	/** Default value: `true` */
+	"linetooltrianglepattern.fillBackground": boolean;
+	/** Default value: `12` */
+	"linetooltrianglepattern.fontsize": number;
+	/** Default value: `false` */
+	"linetooltrianglepattern.italic": boolean;
+	/** Default value: `1` */
+	"linetooltrianglepattern.linewidth": number;
+	/** Default value: `#ffffff` */
+	"linetooltrianglepattern.textcolor": string;
+	/** Default value: `85` */
+	"linetooltrianglepattern.transparency": number;
+}
+/**
  * Undo options.
  */
 export interface UndoOptions {
@@ -11195,11 +16437,37 @@ export interface VertLinePreferences {
 	/** Line style */
 	style: LineStyle;
 }
-export interface VertLinePreferences {
-	visible: boolean;
-	width: number;
-	color: string;
-	style: LineStyle;
+
+/**
+ * Override properties for the Vertline drawing tool.
+ */
+export interface VertlineLineToolOverrides {
+	/** Default value: `false` */
+	"linetoolvertline.bold": boolean;
+	/** Default value: `true` */
+	"linetoolvertline.extendLine": boolean;
+	/** Default value: `14` */
+	"linetoolvertline.fontsize": number;
+	/** Default value: `right` */
+	"linetoolvertline.horzLabelsAlign": string;
+	/** Default value: `false` */
+	"linetoolvertline.italic": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolvertline.linecolor": string;
+	/** Default value: `0` */
+	"linetoolvertline.linestyle": number;
+	/** Default value: `2` */
+	"linetoolvertline.linewidth": number;
+	/** Default value: `false` */
+	"linetoolvertline.showLabel": boolean;
+	/** Default value: `true` */
+	"linetoolvertline.showTime": boolean;
+	/** Default value: `#2962FF` */
+	"linetoolvertline.textcolor": string;
+	/** Default value: `vertical` */
+	"linetoolvertline.textOrientation": string;
+	/** Default value: `top` */
+	"linetoolvertline.vertLabelsAlign": string;
 }
 /**
  * Boundaries of the price scale visible range in main series area
@@ -11246,6 +16514,44 @@ export interface WatchedValueSubscribeOptions {
 	once?: boolean;
 	/** if it is set to true then the callback will be executed with the previous value (if available) */
 	callWithLast?: boolean;
+}
+/**
+ * Data provided to the {@link WatermarkContentProvider}.
+ */
+export interface WatermarkContentData {
+	/**
+	 * Symbol Information.
+	 */
+	symbolInfo: LibrarySymbolInfo;
+	/**
+	 * Current interval string.
+	 */
+	interval: string;
+}
+/**
+ * Defines the text and font properties for a line of the watermark.
+ *
+ * The default values for sizing and placement are as follows:
+ * - 1st line: \{ fontSize: 96, lineHeight: 117, vertOffset: 0, \}
+ * - 2nd line: \{ fontSize: 48, lineHeight: 58, vertOffset: 5, \}
+ */
+export interface WatermarkLine {
+	/**
+	 * Text to be displayed.
+	 */
+	text: string;
+	/**
+	 * Font size to be used (defined in pixels).
+	 */
+	fontSize: number;
+	/**
+	 * Line height (defined in pixels).
+	 */
+	lineHeight: number;
+	/**
+	 * Vertical offset distance (defined in pixels).
+	 */
+	vertOffset: number;
 }
 export interface WidgetBarParams {
 	/**
@@ -11300,6 +16606,12 @@ export type CellAlignment = "left" | "right";
  * A chart action ID.
  */
 export type ChartActionId = "chartProperties" | "compareOrAdd" | "scalesProperties" | "paneObjectTree" | "insertIndicator" | "symbolSearch" | "changeInterval" | "timeScaleReset" | "chartReset" | "seriesHide" | "studyHide" | "lineToggleLock" | "lineHide" | "scaleSeriesOnly" | "drawingToolbarAction" | "stayInDrawingModeAction" | "hideAllMarks" | "showCountdown" | "showSeriesLastValue" | "showSymbolLabelsAction" | "showStudyLastValue" | "showStudyPlotNamesAction" | "undo" | "redo" | "paneRemoveAllStudiesDrawingTools" | "showSymbolInfoDialog";
+/**
+ * Chart type names for use within the `favourites` widget constructor option. This type is for Charting Library, if you are looking for the Trading Terminal type then please see {@link TradingTerminalChartTypeFavorites}.
+ *
+ * See {@link Favorites} for the widget constructor option where you can define these favorites, and {@link ChartingLibraryWidgetOptions.favorites} for the Widget Constructor option.
+ */
+export type ChartTypeFavorites = "Area" | "Bars" | "Candles" | "Heiken Ashi" | "Hollow Candles" | "Line" | "Line Break" | "Baseline" | "LineWithMarkers" | "Stepline" | "Columns" | "High-low";
 /** This is the list of all featuresets that work on Charting Library */
 export type ChartingLibraryFeatureset =
 /** Allows storing all properties (including favorites) to the localstorage @default true */
@@ -11545,7 +16857,28 @@ export type ChartingLibraryFeatureset =
 /** Enable long symbol descriptions to be shown in the main series and compare studies legends, if provided in the symbol info data. */
 "symbol_info_long_description" |
 /** Enable symbol price source to be shown in the main series and compare studies legends, if provided in the symbol info data. */
-"symbol_info_price_source";
+"symbol_info_price_source" |
+/** Enable saving/loading of chart templates. */
+"chart_template_storage" |
+/**
+ * When chart data is reset, then re-request data for just the visible range (instead of the entire range of the existing data loaded).
+ * @default true
+ */
+"request_only_visible_range_on_reset" |
+/** Clear pane price scales when the main series has an error or has no bars. @default true */
+"clear_price_scale_on_error_or_empty_bars" |
+/**
+ * Display logos for the symbols within the symbol search dialog, and the watchlist widget. The datafeed should provide the image url within the search result item, and the SymbolInfo. {@link LibrarySymbolInfo.logo_urls}, {@link SearchSymbolResultItem.logo_urls}
+ * @default false
+ */
+"show_symbol_logos" |
+/**
+ * Display logos for the exchanges within the symbol search dialog. The datafeed should provide the image url within the search result item. {@link SearchSymbolResultItem.exchange_logo}
+ * @default false
+ */
+"show_exchange_logos" |
+/** Enable studies to extend the time scale, if enabled in the study metainfo */
+"studies_extend_time_scale";
 /** These are defining the types for a background */
 export type ColorTypes = "solid" | "gradient";
 /**
@@ -11574,13 +16907,14 @@ export type CustomTableFormatElementFunction<T extends TableFormatterInputValues
  * Identifier for a custom timezone (string).
  */
 export type CustomTimezoneId = Nominal<"CustomTimezoneId", string>;
-export type CustomTimezones = "Africa/Cairo" | "Africa/Johannesburg" | "Africa/Lagos" | "Africa/Nairobi" | "Africa/Tunis" | "America/Argentina/Buenos_Aires" | "America/Bogota" | "America/Caracas" | "America/Chicago" | "America/El_Salvador" | "America/Juneau" | "America/Lima" | "America/Los_Angeles" | "America/Mexico_City" | "America/New_York" | "America/Phoenix" | "America/Santiago" | "America/Sao_Paulo" | "America/Toronto" | "America/Vancouver" | "Asia/Almaty" | "Asia/Ashkhabad" | "Asia/Bahrain" | "Asia/Bangkok" | "Asia/Chongqing" | "Asia/Colombo" | "Asia/Dubai" | "Asia/Ho_Chi_Minh" | "Asia/Hong_Kong" | "Asia/Jakarta" | "Asia/Jerusalem" | "Asia/Karachi" | "Asia/Kathmandu" | "Asia/Kolkata" | "Asia/Kuwait" | "Asia/Manila" | "Asia/Muscat" | "Asia/Nicosia" | "Asia/Qatar" | "Asia/Riyadh" | "Asia/Seoul" | "Asia/Shanghai" | "Asia/Singapore" | "Asia/Taipei" | "Asia/Tehran" | "Asia/Tokyo" | "Asia/Yangon" | "Atlantic/Reykjavik" | "Australia/Adelaide" | "Australia/Brisbane" | "Australia/Perth" | "Australia/Sydney" | "Europe/Amsterdam" | "Europe/Athens" | "Europe/Belgrade" | "Europe/Berlin" | "Europe/Bratislava" | "Europe/Brussels" | "Europe/Bucharest" | "Europe/Budapest" | "Europe/Copenhagen" | "Europe/Dublin" | "Europe/Helsinki" | "Europe/Istanbul" | "Europe/Lisbon" | "Europe/London" | "Europe/Luxembourg" | "Europe/Madrid" | "Europe/Malta" | "Europe/Moscow" | "Europe/Oslo" | "Europe/Paris" | "Europe/Riga" | "Europe/Rome" | "Europe/Stockholm" | "Europe/Tallinn" | "Europe/Vilnius" | "Europe/Warsaw" | "Europe/Zurich" | "Pacific/Auckland" | "Pacific/Chatham" | "Pacific/Fakaofo" | "Pacific/Honolulu" | "Pacific/Norfolk" | "US/Mountain";
+export type CustomTimezones = "Africa/Cairo" | "Africa/Casablanca" | "Africa/Johannesburg" | "Africa/Lagos" | "Africa/Nairobi" | "Africa/Tunis" | "America/Anchorage" | "America/Argentina/Buenos_Aires" | "America/Bogota" | "America/Caracas" | "America/Chicago" | "America/El_Salvador" | "America/Juneau" | "America/Lima" | "America/Los_Angeles" | "America/Mexico_City" | "America/New_York" | "America/Phoenix" | "America/Santiago" | "America/Sao_Paulo" | "America/Toronto" | "America/Vancouver" | "Asia/Almaty" | "Asia/Ashkhabad" | "Asia/Bahrain" | "Asia/Bangkok" | "Asia/Chongqing" | "Asia/Colombo" | "Asia/Dubai" | "Asia/Ho_Chi_Minh" | "Asia/Hong_Kong" | "Asia/Jakarta" | "Asia/Jerusalem" | "Asia/Karachi" | "Asia/Kathmandu" | "Asia/Kolkata" | "Asia/Kuwait" | "Asia/Manila" | "Asia/Muscat" | "Asia/Nicosia" | "Asia/Qatar" | "Asia/Riyadh" | "Asia/Seoul" | "Asia/Shanghai" | "Asia/Singapore" | "Asia/Taipei" | "Asia/Tehran" | "Asia/Tokyo" | "Asia/Yangon" | "Atlantic/Reykjavik" | "Australia/Adelaide" | "Australia/Brisbane" | "Australia/Perth" | "Australia/Sydney" | "Europe/Amsterdam" | "Europe/Athens" | "Europe/Belgrade" | "Europe/Berlin" | "Europe/Bratislava" | "Europe/Brussels" | "Europe/Bucharest" | "Europe/Budapest" | "Europe/Copenhagen" | "Europe/Dublin" | "Europe/Helsinki" | "Europe/Istanbul" | "Europe/Lisbon" | "Europe/London" | "Europe/Luxembourg" | "Europe/Madrid" | "Europe/Malta" | "Europe/Moscow" | "Europe/Oslo" | "Europe/Paris" | "Europe/Riga" | "Europe/Rome" | "Europe/Stockholm" | "Europe/Tallinn" | "Europe/Vilnius" | "Europe/Warsaw" | "Europe/Zurich" | "Pacific/Auckland" | "Pacific/Chatham" | "Pacific/Fakaofo" | "Pacific/Honolulu" | "Pacific/Norfolk" | "US/Mountain";
 /**
  * Custom translation function
  * @param  {string} key - key for string to be translated
  * @param  {TranslateOptions} options? - additional translation options
  */
 export type CustomTranslateFunction = (key: string, options?: TranslateOptions) => string | null;
+export type DOMCallback = (data: DOMData) => void;
 export type DateFormat = keyof typeof dateFormatFunctions;
 export type DeepWriteable<T> = {
 	-readonly [P in keyof T]: DeepWriteable<T[P]>;
@@ -11589,7 +16923,6 @@ export type DeepWriteable<T> = {
  * The direction of an execution line. Either buy or sell.
  */
 export type Direction = "buy" | "sell";
-export type DomeCallback = (data: DOMData) => void;
 /**
  * A event related to a drawing.
  *
@@ -11601,6 +16934,42 @@ export type DomeCallback = (data: DOMData) => void;
  * when `move` fires but not vice-versa.
  */
 export type DrawingEventType = "click" | "move" | "remove" | "hide" | "show" | "create" | "properties_changed" | "points_changed";
+/**
+ * **Override properties for drawing tools.**
+ *
+ * **The following constants are used within the default properties. You cannot use these names directly.**
+ *
+ * - LINESTYLE
+ *   - SOLID = 0
+ *   - DOTTED = 1
+ *   - DASHED = 2
+ *   - LARGE_DASHED = 3
+ * - LINEEND
+ *   - NORMAL = 0
+ *   - ARROW  = 1
+ *   - CIRCLE = 2
+ * - MODE
+ *   - BARS = 0
+ *   - LINE = 1
+ *   - OPENCLOSE = 2;
+ *   - LINEOPEN = 3;
+ *   - LINEHIGH = 4;
+ *   - LINELOW = 5;
+ *   - LINEHL2 = 6;
+ * - PITCHFORK_STYLE
+ *   - ORIGINAL = 0
+ *   - SCHIFF = 1
+ *   - SCHIFF2 = 2
+ *   - INSIDE = 3
+ * - STATS_POSITION
+ *   - LEFT = 0
+ *   - CENTER = 1
+ *   - RIGHT = 2
+ * - RISK_DISPLAY_MODE
+ *   - PERCENTAGE = 'percents'
+ *   - MONEY = 'money'
+ */
+export type DrawingOverrides = FivepointspatternLineToolOverrides | AbcdLineToolOverrides | ArcLineToolOverrides | ArrowLineToolOverrides | ArrowmarkdownLineToolOverrides | ArrowmarkerLineToolOverrides | ArrowmarkleftLineToolOverrides | ArrowmarkrightLineToolOverrides | ArrowmarkupLineToolOverrides | BalloonLineToolOverrides | BarspatternLineToolOverrides | BeziercubicLineToolOverrides | BezierquadroLineToolOverrides | BrushLineToolOverrides | CalloutLineToolOverrides | CircleLineToolOverrides | CirclelinesLineToolOverrides | CommentLineToolOverrides | CrosslineLineToolOverrides | CypherpatternLineToolOverrides | DisjointangleLineToolOverrides | ElliottcorrectionLineToolOverrides | ElliottdoublecomboLineToolOverrides | ElliottimpulseLineToolOverrides | ElliotttriangleLineToolOverrides | ElliotttriplecomboLineToolOverrides | EllipseLineToolOverrides | EmojiLineToolOverrides | ExecutionLineToolOverrides | ExtendedLineToolOverrides | FibchannelLineToolOverrides | FibcirclesLineToolOverrides | FibretracementLineToolOverrides | FibspeedresistancearcsLineToolOverrides | FibspeedresistancefanLineToolOverrides | FibspiralLineToolOverrides | FibtimezoneLineToolOverrides | FibwedgeLineToolOverrides | FlagmarkLineToolOverrides | FlatbottomLineToolOverrides | GanncomplexLineToolOverrides | GannfanLineToolOverrides | GannfixedLineToolOverrides | GannsquareLineToolOverrides | GhostfeedLineToolOverrides | HeadandshouldersLineToolOverrides | HighlighterLineToolOverrides | HorzlineLineToolOverrides | HorzrayLineToolOverrides | IconLineToolOverrides | ImageLineToolOverrides | InfolineLineToolOverrides | InsidepitchforkLineToolOverrides | NoteLineToolOverrides | NoteabsoluteLineToolOverrides | OrderLineToolOverrides | ParallelchannelLineToolOverrides | PathLineToolOverrides | PitchfanLineToolOverrides | PitchforkLineToolOverrides | PolylineLineToolOverrides | PositionLineToolOverrides | PredictionLineToolOverrides | PricelabelLineToolOverrides | ProjectionLineToolOverrides | RayLineToolOverrides | RectangleLineToolOverrides | RegressiontrendLineToolOverrides | RiskrewardlongLineToolOverrides | RiskrewardshortLineToolOverrides | RotatedrectangleLineToolOverrides | SchiffpitchforkLineToolOverrides | Schiffpitchfork2LineToolOverrides | SignpostLineToolOverrides | SinelineLineToolOverrides | StickerLineToolOverrides | TextLineToolOverrides | TextabsoluteLineToolOverrides | ThreedriversLineToolOverrides | TimecyclesLineToolOverrides | TrendangleLineToolOverrides | TrendbasedfibextensionLineToolOverrides | TrendbasedfibtimeLineToolOverrides | TrendlineLineToolOverrides | TriangleLineToolOverrides | TrianglepatternLineToolOverrides | VertlineLineToolOverrides;
 export type DrawingToolIdentifier = "arrow" | "cursor" | "dot" | "eraser" | "LineTool5PointsPattern" | "LineToolABCD" | "LineToolArc" | "LineToolArrow" | "LineToolArrowMarkDown" | "LineToolArrowMarker" | "LineToolArrowMarkLeft" | "LineToolArrowMarkRight" | "LineToolArrowMarkUp" | "LineToolBarsPattern" | "LineToolBezierCubic" | "LineToolBezierQuadro" | "LineToolBrush" | "LineToolCallout" | "LineToolCircle" | "LineToolCircleLines" | "LineToolComment" | "LineToolCrossLine" | "LineToolCypherPattern" | "LineToolDateAndPriceRange" | "LineToolDateRange" | "LineToolDisjointAngle" | "LineToolElliottCorrection" | "LineToolElliottDoubleCombo" | "LineToolElliottImpulse" | "LineToolElliottTriangle" | "LineToolElliottTripleCombo" | "LineToolEllipse" | "LineToolExtended" | "LineToolFibChannel" | "LineToolFibCircles" | "LineToolFibRetracement" | "LineToolFibSpeedResistanceArcs" | "LineToolFibSpeedResistanceFan" | "LineToolFibSpiral" | "LineToolFibTimeZone" | "LineToolFibWedge" | "LineToolFixedRangeVolumeProfile" | "LineToolFlagMark" | "LineToolFlatBottom" | "LineToolGannComplex" | "LineToolGannFan" | "LineToolGannFixed" | "LineToolGannSquare" | "LineToolGhostFeed" | "LineToolHeadAndShoulders" | "LineToolHighlighter" | "LineToolHorzLine" | "LineToolHorzRay" | "LineToolInfoLine" | "LineToolInsidePitchfork" | "LineToolNote" | "LineToolNoteAbsolute" | "LineToolParallelChannel" | "LineToolPath" | "LineToolPitchfan" | "LineToolPitchfork" | "LineToolPolyline" | "LineToolPrediction" | "LineToolPriceLabel" | "LineToolPriceNote" | "LineToolPriceRange" | "LineToolProjection" | "LineToolRay" | "LineToolRectangle" | "LineToolRegressionTrend" | "LineToolRiskRewardLong" | "LineToolRiskRewardShort" | "LineToolRotatedRectangle" | "LineToolSchiffPitchfork" | "LineToolSchiffPitchfork2" | "LineToolSignpost" | "LineToolSineLine" | "LineToolText" | "LineToolTextAbsolute" | "LineToolThreeDrivers" | "LineToolTimeCycles" | "LineToolTrendAngle" | "LineToolTrendBasedFibExtension" | "LineToolTrendBasedFibTime" | "LineToolTrendLine" | "LineToolTriangle" | "LineToolTrianglePattern" | "LineToolVertLine";
 /** Dropdown options which can be adjusted on an existing menu. */
 export type DropdownUpdateParams = Partial<Omit<DropdownParams, "align">>;
@@ -11648,8 +17017,6 @@ export type IBarArray = [
 	number
 ];
 export type IBasicDataFeed = IDatafeedChartApi & IExternalDatafeed;
-/** Specific formatter for number */
-export type INumberFormatter = IFormatter<number>;
 export type IPineStudyResult = IPineStudyResultTypes<IPineStudyResultSimple>;
 export type IPineStudyResultSimple = StudyPrimitiveResult | ISeriesStudyResult | INonSeriesStudyBarsResult | IProjectionStudyResult | INonSeriesStudyResult;
 export type IPineStudyResultTypes<TPineStudyResultSimple> = TPineStudyResultSimple | PineStudyResultComposite<TPineStudyResultSimple>;
@@ -11729,7 +17096,9 @@ export type QuotesCallback = (data: QuoteData[]) => void;
 export type QuotesErrorCallback = (reason: string) => void;
 export type RawStudyMetaInfoId = Nominal<string, "RawStudyMetaInfoId">;
 export type RawStudyMetaInformation = Omit<RawStudyMetaInfo, "defaults" | "plots"> & {
+	/** array with study plots info. See dedicated article: [Custom Studies Plots](https://www.tradingview.com/charting-library-docs/latest/custom_studies/Custom-Studies-Plots) */
 	readonly plots?: readonly Readonly<StudyPlotInformation>[];
+	/** an object containing settings that are applied when user clicks 'Apply Defaults'. See dedicated article: [Custom Studies Defaults](https://www.tradingview.com/charting-library-docs/latest/custom_studies/metainfo/Custom-Studies-Defaults) */
 	readonly defaults?: Readonly<DeepPartial<StudyDefaults>>;
 };
 /**
@@ -11787,6 +17156,7 @@ export type StudyInputInfoList = readonly Readonly<StudyInputInfo>[];
  */
 export type StudyInputValue = string | number | boolean;
 export type StudyMetaInfo = DeepWriteable<RawStudyMetaInformation> & {
+	/** Identifier for the Study */
 	id: string;
 };
 export type StudyOhlcPlotPreferences = StudyOhlcPlotBarsStylePreferences | StudyOhlcPlotCandlesStylePreferences;
@@ -11814,14 +17184,14 @@ export type StudyPlotValueFormat = StudyPlotValueInheritFormat | StudyPlotValueP
 export type StudyPriceScale = "new-left" | "new-right" | "no-scale" | "as-series";
 export type StudyPrimitiveResult = (number | StudyResultValueWithOffset)[];
 export type SubscribeBarsCallback = (bar: Bar) => void;
-export type SupportedLineTools = "text" | "anchored_text" | "note" | "anchored_note" | "signpost" | "double_curve" | "arc" | "icon" | "emoji" | "arrow_up" | "arrow_down" | "arrow_left" | "arrow_right" | "price_label" | "price_note" | "arrow_marker" | "flag" | "vertical_line" | "horizontal_line" | "cross_line" | "horizontal_ray" | "trend_line" | "info_line" | "trend_angle" | "arrow" | "ray" | "extended" | "parallel_channel" | "disjoint_angle" | "flat_bottom" | "pitchfork" | "schiff_pitchfork_modified" | "schiff_pitchfork" | "balloon" | "comment" | "inside_pitchfork" | "pitchfan" | "gannbox" | "gannbox_square" | "gannbox_fixed" | "gannbox_fan" | "fib_retracement" | "fib_trend_ext" | "fib_speed_resist_fan" | "fib_timezone" | "fib_trend_time" | "fib_circles" | "fib_spiral" | "fib_speed_resist_arcs" | "fib_channel" | "xabcd_pattern" | "cypher_pattern" | "abcd_pattern" | "callout" | "triangle_pattern" | "3divers_pattern" | "head_and_shoulders" | "fib_wedge" | "elliott_impulse_wave" | "elliott_triangle_wave" | "elliott_triple_combo" | "elliott_correction" | "elliott_double_combo" | "cyclic_lines" | "time_cycles" | "sine_line" | "long_position" | "short_position" | "forecast" | "date_range" | "price_range" | "date_and_price_range" | "bars_pattern" | "ghost_feed" | "projection" | "rectangle" | "rotated_rectangle" | "circle" | "ellipse" | "triangle" | "polyline" | "path" | "curve" | "cursor" | "dot" | "arrow_cursor" | "eraser" | "measure" | "zoom" | "brush" | "highlighter" | "regression_trend" | "fixed_range_volume_profile";
+export type SupportedLineTools = "text" | "anchored_text" | "note" | "anchored_note" | "signpost" | "double_curve" | "arc" | "icon" | "emoji" | "sticker" | "arrow_up" | "arrow_down" | "arrow_left" | "arrow_right" | "price_label" | "price_note" | "arrow_marker" | "flag" | "vertical_line" | "horizontal_line" | "cross_line" | "horizontal_ray" | "trend_line" | "info_line" | "trend_angle" | "arrow" | "ray" | "extended" | "parallel_channel" | "disjoint_angle" | "flat_bottom" | "anchored_vwap" | "pitchfork" | "schiff_pitchfork_modified" | "schiff_pitchfork" | "balloon" | "comment" | "inside_pitchfork" | "pitchfan" | "gannbox" | "gannbox_square" | "gannbox_fixed" | "gannbox_fan" | "fib_retracement" | "fib_trend_ext" | "fib_speed_resist_fan" | "fib_timezone" | "fib_trend_time" | "fib_circles" | "fib_spiral" | "fib_speed_resist_arcs" | "fib_channel" | "xabcd_pattern" | "cypher_pattern" | "abcd_pattern" | "callout" | "triangle_pattern" | "3divers_pattern" | "head_and_shoulders" | "fib_wedge" | "elliott_impulse_wave" | "elliott_triangle_wave" | "elliott_triple_combo" | "elliott_correction" | "elliott_double_combo" | "cyclic_lines" | "time_cycles" | "sine_line" | "long_position" | "short_position" | "forecast" | "date_range" | "price_range" | "date_and_price_range" | "bars_pattern" | "ghost_feed" | "projection" | "rectangle" | "rotated_rectangle" | "circle" | "ellipse" | "triangle" | "polyline" | "path" | "curve" | "cursor" | "dot" | "arrow_cursor" | "eraser" | "measure" | "zoom" | "brush" | "highlighter" | "regression_trend" | "fixed_range_volume_profile";
 /**
  * function to override the symbol input from symbol search dialogs
  * @param  {SymbolSearchCompleteData} symbol - input from the symbol search
  */
 export type SymbolSearchCompleteOverrideFunction = (symbol: string, searchResultItem?: SearchSymbolResultItem) => Promise<SymbolSearchCompleteData>;
 export type SymbolSource = SymbolInputSymbolSource;
-export type SymbolType = "stock" | "index" | "forex" | "futures" | "bitcoin" | "crypto" | "undefined" | "expression" | "spread" | "cfd" | "economic" | "equity" | "dr" | "bond" | "right" | "warrant" | "fund" | "structured";
+export type SymbolType = "stock" | "index" | "forex" | "futures" | "bitcoin" | "crypto" | "undefined" | "expression" | "spread" | "cfd" | "economic" | "equity" | "dr" | "bond" | "right" | "warrant" | "fund" | "structured" | "commodity" | "fundamental" | "spot";
 /**
  * A function that takes an {@link TableFormatterInputs} object and returns a `string`.
  */
@@ -11829,7 +17199,7 @@ export type TableFormatTextFunction<T extends TableFormatterInputValues = TableF
 export type TableFormatterInputValue = any;
 export type TableFormatterInputValues = TableFormatterInputValue[];
 export type TextInputFieldValidator = (value: string) => InputFieldValidatorResult;
-export type ThemeName = "Light" | "Dark";
+export type ThemeName = "light" | "dark";
 export type TickMarkType =
 /**
  * The start of the year (e.g. it's the first tick mark in a year).
@@ -11877,9 +17247,16 @@ export type TimezoneId = CustomTimezones | "Etc/UTC" | "exchange";
  * `TradableSolutions` has one of the following keys:
  * - `changeAccount` - id of a sub-account suitable for trading the symbol
  * - `changeSymbol` - the symbol suitable for trading with current sub-account
+ * - `openUrl` - the object with URL to be opened and text for solution button
  */
-export type TradableSolutions = ChangeAccountSolution | ChangeSymbolSolution;
+export type TradableSolutions = ChangeAccountSolution | ChangeSymbolSolution | OpenUrlSolution;
 export type TradingDialogCustomField = CheckboxFieldMetaInfo | TextWithCheckboxFieldMetaInfo | CustomComboBoxMetaInfo;
+/**
+ * Chart type names for use within the `favourites` widget constructor option. This type is for Trading Terminal, if you are looking for the Charting Library type then please see {@link ChartTypeFavorites}.
+ *
+ * See {@link Favorites} for the widget constructor option where you can define these favorites, and {@link TradingTerminalWidgetOptions.favorites} for the Widget Constructor option.
+ */
+export type TradingTerminalChartTypeFavorites = ChartTypeFavorites | "Renko" | "Kagi" | "Point & figure" | "Line Break";
 /** This is the list of all featuresets that work on Trading Terminal (which is an extension of Charting Library) */
 export type TradingTerminalFeatureset = ChartingLibraryFeatureset |
 /** Enables the "plus" button on the price scale for quick trading @default true */
@@ -11928,7 +17305,7 @@ export type TradingTerminalFeatureset = ChartingLibraryFeatureset |
 "watchlist_import_export" |
 /** Enables DOM widget visibility @default false */
 "dom_widget" |
-/** Keeps Object Tree widget in the right toolbar @default false */
+/** Keeps Object Tree widget in the right toolbar. If the right toolbar is not enabled this feature will have no effect. @default false */
 "keep_object_tree_widget_in_right_toolbar" |
 /** Show only the last price and change values in the main series legend @default false */
 "show_last_price_and_change_only_in_series_legend" |
@@ -11946,6 +17323,14 @@ export type WatchListSymbolListChangedCallback = (listId: string) => void;
 export type WatchListSymbolListRemovedCallback = (listId: string) => void;
 export type WatchListSymbolListRenamedCallback = (listId: string, oldName: string, newName: string) => void;
 export type WatchedValueCallback<T> = (value: T) => void;
+/**
+ * Custom watermark content provider which should return an array of watermark lines to be displayed.
+ * Return `null` if you would like to use the default content.
+ */
+export type WatermarkContentProvider = (data: WatermarkContentData) => WatermarkLine[] | null;
+export type WidgetOverrides = DrawingOverrides & {
+	[key: string]: string | number | boolean;
+};
 
 export as namespace TradingView;
 

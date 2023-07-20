@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, Input, OnDestroy, ViewChild } from '@angular/core';
-import { NzCalendarComponent } from "ng-zorro-antd/calendar";
-import { BehaviorSubject, distinctUntilChanged, Subject, switchMap, takeUntil, tap } from "rxjs";
-import { CalendarEvent, CalendarEvents } from "../../models/events-calendar.model";
-import { EventsCalendarService } from "../../services/events-calendar.service";
-import { formatCurrency } from "../../../../shared/utils/formatters";
-import { addMonths, endOfMonth, getISOStringDate, startOfDay, startOfMonth } from "../../../../shared/utils/datetime";
+import {AfterViewInit, Component, DestroyRef, Input, OnDestroy, ViewChild} from '@angular/core';
+import {NzCalendarComponent} from "ng-zorro-antd/calendar";
+import {BehaviorSubject, distinctUntilChanged, switchMap, tap} from "rxjs";
+import {CalendarEvent, CalendarEvents} from "../../models/events-calendar.model";
+import {EventsCalendarService} from "../../services/events-calendar.service";
+import {formatCurrency} from "../../../../shared/utils/formatters";
+import {addMonths, endOfMonth, getISOStringDate, startOfDay, startOfMonth} from "../../../../shared/utils/datetime";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-calendar-view',
@@ -12,8 +13,8 @@ import { addMonths, endOfMonth, getISOStringDate, startOfDay, startOfMonth } fro
   styleUrls: ['./calendar-view.component.less']
 })
 export class CalendarViewComponent implements AfterViewInit, OnDestroy {
-  private destroy$ = new Subject<boolean>();
   private symbols$ = new BehaviorSubject<string[]>([]);
+
   @Input()
   set symbols(value: string[]) {
     this.symbols$.next(value);
@@ -27,7 +28,8 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
   selectedDateEvents$ = new BehaviorSubject<CalendarEvent | null>(null);
 
   constructor(
-    private readonly service: EventsCalendarService
+    private readonly service: EventsCalendarService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -47,7 +49,7 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
             symbols
           })
         ),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(events => {
         this.events$.next(events);
@@ -55,8 +57,6 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.symbols$.complete();
     this.events$.complete();
     this.selectedDateEvents$.complete();

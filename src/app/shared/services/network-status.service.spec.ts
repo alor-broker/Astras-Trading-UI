@@ -13,7 +13,7 @@ describe('NetworkStatusService', () => {
         {
           provide: SubscriptionsDataFeedService,
           useValue: {
-            getConnectionStatus: jasmine.createSpy('getConnectionStatus').and.returnValue(of(1))
+            getConnectionStatus: jasmine.createSpy('getConnectionStatus').and.returnValue(of(true))
           }
         }
       ]

@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, DestroyRef,
   ElementRef,
   EventEmitter,
   Input,
@@ -20,7 +20,6 @@ import {
   Subject,
   switchMap,
   take,
-  takeUntil
 } from 'rxjs';
 import {catchError, debounceTime, filter, map, mergeMap, startWith, tap} from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
@@ -50,6 +49,7 @@ import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { DomHelper } from "../../../../shared/utils/dom-helper";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -57,7 +57,7 @@ interface DisplayOrder extends Order {
 }
 
 @Component({
-  selector: 'ats-orders[shouldShowSettings][guid]',
+  selector: 'ats-orders',
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.less'],
 })
@@ -70,9 +70,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('tableContainer')
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
-  @Input()
-  shouldShowSettings!: boolean;
-  @Input()
+  @Input({required: true})
   guid!: string;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
@@ -223,7 +221,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   settings$!: Observable<BlotterSettings>;
   readonly scrollHeight$ = new BehaviorSubject<number>(100);
 
-  private destroy$: Subject<boolean> = new Subject<boolean>();
   private cancelCommands = new Subject<CancelCommand>();
   private cancels$ = this.cancelCommands.asObservable();
   private orders: Order[] = [];
@@ -238,7 +235,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly translatorService: TranslatorService,
-    private readonly ordersGroupService: OrdersGroupService
+    private readonly ordersGroupService: OrdersGroupService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -257,7 +255,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         ]),
         (s, [tOrders, tCommon]) => ({s, tOrders, tCommon})
       ),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ s, tOrders, tCommon }) => {
       const tableSettings = s.ordersTable ?? TableSettingHelper.toTableDisplaySettings(s.ordersColumns);
 
@@ -319,13 +317,11 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cancels$.pipe(
       mergeMap((command) => this.canceller.cancelOrder(command)),
       catchError((_, caught) => caught),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.scrollHeight$.complete();
   }
 
@@ -541,7 +537,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     container$.pipe(
       switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       setTimeout(()=> this.scrollHeight$.next(x));
     });

@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, DestroyRef,
   ElementRef,
   EventEmitter,
   Input,
@@ -16,10 +16,8 @@ import {
   distinctUntilChanged,
   Observable,
   of, shareReplay,
-  Subject,
   switchMap,
   take,
-  takeUntil
 } from 'rxjs';
 import {
   debounceTime, filter,
@@ -46,13 +44,14 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import {NzTableFilterList} from "ng-zorro-antd/table/src/table.types";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 interface PositionDisplay extends Position {
   volume: number
 }
 
 @Component({
-  selector: 'ats-positions[shouldShowSettings][guid]',
+  selector: 'ats-positions',
   templateUrl: './positions.component.html',
   styleUrls: ['./positions.component.less']
 })
@@ -61,10 +60,10 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   table?: NzTableComponent<PositionDisplay>;
   @ViewChildren('tableContainer')
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
-  @Input()
-  shouldShowSettings!: boolean;
-  @Input()
+
+  @Input({required: true})
   guid!: string;
+
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayPositions$: Observable<PositionDisplay[]> = of([]);
@@ -165,13 +164,13 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly columnDefaultWidth = 100;
   private settings$!: Observable<BlotterSettings>;
   private badgeColor = defaultBadgeColor;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly service: BlotterService,
     private readonly settingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -191,7 +190,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     container$.pipe(
       switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       setTimeout(()=> this.scrollHeight$.next(x));
     });
@@ -209,7 +208,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
         () => this.translatorService.getTranslator('blotter/positions'),
         (s, t) => ({ s, t })
       ),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ s, t }) => {
         const tableSettings = s.positionsTable ?? TableSettingHelper.toTableDisplaySettings(s.positionsColumns);
 
@@ -258,8 +257,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
     this.scrollHeight$.complete();
   }
 

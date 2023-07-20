@@ -10,7 +10,7 @@ import { distinct } from 'rxjs/operators';
   styleUrls: ['./dividends.component.less']
 })
 export class DividendsComponent implements OnInit, OnDestroy {
-  @Input()
+  @Input({required: true})
   guid!: string;
   dividends$?: Observable<Dividend[]>;
   isLoading$ = new BehaviorSubject<boolean>(true);

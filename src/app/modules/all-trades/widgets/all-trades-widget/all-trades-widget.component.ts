@@ -26,18 +26,18 @@ import {
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-all-trades-widget[widgetInstance][isBlockWidget]',
+  selector: 'ats-all-trades-widget',
   templateUrl: './all-trades-widget.component.html',
   styleUrls: ['./all-trades-widget.component.less']
 })
 export class AllTradesWidgetComponent implements OnInit {
-
   shouldShowSettings: boolean = false;
-  @Input()
-  widgetInstance!: WidgetInstance;
 
-  @Input()
+  @Input({required: true})
+  widgetInstance!: WidgetInstance;
+  @Input({required: true})
   isBlockWidget!: boolean;
+
   settings$!: Observable<AllTradesSettings>;
   showBadge$!: Observable<boolean>;
   title$!: Observable<string>;

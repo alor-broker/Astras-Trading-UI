@@ -10,7 +10,7 @@ import { distinct, map } from 'rxjs/operators';
   styleUrls: ['./about-issue.component.less']
 })
 export class AboutIssueComponent implements OnInit, OnDestroy {
-  @Input()
+  @Input({required: true})
   guid!: string;
   issue$?: Observable<Issue | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);

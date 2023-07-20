@@ -127,7 +127,7 @@ export const ngZorroMockComponents = [
   mockComponent({selector: 'nz-collapse', inputs: ['nzBordered']}),
   mockComponent({ selector: 'nz-collapse-panel', inputs: ['nzHeader'] }),
   mockComponent({ selector: 'nz-form-item' }),
-  mockComponent({ selector: 'nz-form-label' }),
+  mockComponent({ selector: 'nz-form-label', inputs: ['nzFor'] }),
   mockComponent({ selector: 'nz-input-group' }),
   mockComponent({
     selector: 'nz-dropdown-menu',

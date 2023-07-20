@@ -14,7 +14,6 @@ import { map } from 'rxjs/operators';
 export class NotificationButtonComponent implements OnInit {
   isTableVisible = false;
   notReadNotificationsCount$!: Observable<number>;
-  deviceInfo$!: Observable<{isMobile: boolean}>;
 
   constructor(
     private readonly notificationsService: NotificationsService

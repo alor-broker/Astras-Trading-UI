@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, DestroyRef} from '@angular/core';
 import {
   StopLimitOrder,
   StopMarketOrder
@@ -17,7 +17,7 @@ import {
   startOfDay,
   toUnixTime
 } from "../../../../../shared/utils/datetime";
-import { Observable, switchMap, take, takeUntil } from "rxjs";
+import { Observable, switchMap, take } from "rxjs";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { map } from "rxjs/operators";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
@@ -33,6 +33,7 @@ import { TimeInForce } from "../../../../../shared/models/commands/command-param
 import {LessMore} from "../../../../../shared/models/enums/less-more.model";
 import { LinkedOrderFormData } from "../../../../command/models/stop-form-data.model";
 import { Side } from "../../../../../shared/models/enums/side.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'> &
@@ -46,7 +47,7 @@ export type StopOrderFormValue =
   };
 
 @Component({
-  selector: 'ats-stop-order-form',
+  selector: 'ats-stop-order-form[instrument]',
   templateUrl: './stop-order-form.component.html',
   styleUrls: ['./stop-order-form.component.less']
 })
@@ -58,9 +59,10 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
 
   constructor(
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly quotesService: QuotesService
+    private readonly quotesService: QuotesService,
+    protected readonly destroyRef: DestroyRef
   ) {
-    super();
+    super(destroyRef);
   }
 
   checkPriceAvailability() {
@@ -244,7 +246,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
   private initFormSubscriptions() {
     this.form!.get('triggerPrice')!.valueChanges
       .pipe(
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(val => {
         this.form!.get('price')!.setValue(val);
@@ -252,7 +254,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
 
     this.form!.get('price')!.valueChanges
       .pipe(
-        takeUntil(this.destroy$),
+        takeUntilDestroyed(this.destroyRef),
         mapWith(
           () => this.getCurrentPrice(),
           (value, lastPrice) => ({ value, lastPrice })

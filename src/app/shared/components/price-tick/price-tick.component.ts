@@ -1,14 +1,14 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 
 @Component({
-  selector: 'ats-price-tick[prevPrice][price]',
+  selector: 'ats-price-tick',
   templateUrl: './price-tick.component.html',
   styleUrls: ['./price-tick.component.less']
 })
 export class PriceTickComponent implements OnInit, OnChanges {
-  @Input()
+  @Input({required: true})
   prevPrice: number = 0;
-  @Input()
+  @Input({required: true})
   price: number = 0;
 
   changingColorPart: string = '';

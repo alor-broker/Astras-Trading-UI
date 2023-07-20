@@ -12,7 +12,6 @@ import {
   Observable,
   of,
   shareReplay,
-  Subject,
   switchMap,
   take,
   tap
@@ -39,12 +38,12 @@ import { BaseColumnSettings } from "../../../../shared/models/settings/table-set
 import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
 
 @Component({
-  selector: 'ats-watchlist-table[guid]',
+  selector: 'ats-watchlist-table',
   templateUrl: './watchlist-table.component.html',
   styleUrls: ['./watchlist-table.component.less']
 })
 export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input()
+  @Input({required: true})
   guid!: string;
 
   @ViewChildren('tableContainer')
@@ -83,7 +82,6 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   menuWidgets$!: Observable<string[] | null>;
 
   private selectedInstrument: InstrumentKey | null = null;
-  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly currentDashboardService: DashboardContextService,
@@ -126,9 +124,6 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-
     this.watchInstrumentsService.unsubscribe();
   }
 
