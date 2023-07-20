@@ -35,7 +35,7 @@
           </button>
           <span class="cell-value">
             <ats-short-number
-              *ngIf="settings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
+              *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
               [value]="row.bidVolume"
               [allowRounding]="true" ></ats-short-number>
             <ng-template #defaultVolumeFormat>
@@ -48,7 +48,7 @@
             (click)="newLimitOrder($event, row.bid)"
             nzAlign="right"
             [ngStyle]="getBidStyle(row.bidVolume ?? 0)">
-          {{row.bid}}
+          {{row.bid | atsPrice: getPriceDecimalSymbolsCount(settings)}}
         </td>
         <td *ngIf="(shouldShowYield$ | async) === true"
             (click)="newLimitOrder($event, row.bid)"
@@ -65,7 +65,7 @@
         <td *ngIf="(shouldShowYield$ | async) === false"
             (click)="newLimitOrder($event, row.ask)"
             [ngStyle]="getAskStyle(row.askVolume ?? 0)">
-          {{row.ask}}
+          {{row.ask | atsPrice: getPriceDecimalSymbolsCount(settings)}}
         </td>
         <td *ngIf="(shouldShowYield$ | async) === true"
             (click)="newLimitOrder($event, row.ask)"
@@ -82,7 +82,7 @@
         >
               <span class="cell-value">
                 <ats-short-number
-                  *ngIf="settings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
+                  *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
                   [value]="row.askVolume"
                   [allowRounding]="true" ></ats-short-number>
                 <ng-template #defaultVolumeFormat>

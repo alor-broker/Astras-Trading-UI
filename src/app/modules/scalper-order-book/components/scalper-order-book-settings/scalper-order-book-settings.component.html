@@ -108,6 +108,12 @@
                 </span>
               </nz-form-control>
             </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="showPriceWithZeroPadding">{{t('scalperOrderBookSettings.showPriceWithZeroPaddingLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='showPriceWithZeroPadding'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
           </nz-collapse-panel>
           <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.ordersSettingsHeader')">
             <nz-form-item class="one-row">

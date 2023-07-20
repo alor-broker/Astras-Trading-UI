@@ -27,6 +27,7 @@
   "showRulerLabel": "Show ruler",
   "rulerSettingsLabel": "Ruler settings",
   "markerDisplayFormatLabel": "Marker value",
+  "showPriceWithZeroPaddingLabel": "Display prices with the same number of decimal places",
 
 
   "tickerError": "Select ticker",

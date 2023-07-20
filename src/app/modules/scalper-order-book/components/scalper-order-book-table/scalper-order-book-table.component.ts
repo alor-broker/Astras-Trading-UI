@@ -14,7 +14,10 @@ import {
   Observable,
   Subject
 } from 'rxjs';
-import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
+import {
+  ScalperOrderBookDataContext,
+  ScalperOrderBookExtendedSettings
+} from '../../models/scalper-order-book-data-context.model';
 import { map } from 'rxjs/operators';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { Side } from '../../../../shared/models/enums/side.model';
@@ -30,6 +33,7 @@ import {
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {MathHelper} from "../../../../shared/utils/math-helper";
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -155,6 +159,12 @@ export class ScalperOrderBookTableComponent implements OnInit {
 
   isAllOrdersHaveSide(orders: CurrentOrderDisplay[], side: Side): boolean {
     return orders.length > 0 && orders.every(o => o.side === side);
+  }
+
+  getPriceDecimalSymbolsCount(settings: ScalperOrderBookExtendedSettings): number | null {
+    return settings.widgetSettings.showPriceWithZeroPadding === true
+      ? MathHelper.getPrecision(settings.instrument.minstep)
+      : null;
   }
 
   private initDisplayItems() {

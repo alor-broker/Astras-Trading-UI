@@ -244,7 +244,8 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
         markerDisplayFormat: new UntypedFormControl(
           settings.rulerSettings?.markerDisplayFormat ?? MarkerDisplayFormat.Points
         )
-      })
+      }),
+      showPriceWithZeroPadding: new UntypedFormControl(settings.showPriceWithZeroPadding ?? false),
     });
   }
 

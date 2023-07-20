@@ -53,7 +53,7 @@
         <div
           [ngClass]="getPriceCellClasses(row)"
           class="table-cell">
-          {{row.price}}
+          {{row.price | atsPrice: getPriceDecimalSymbolsCount(settings)}}
         </div>
       </div>
     </div>

@@ -74,7 +74,8 @@ export class OrderbookWidgetComponent implements OnInit {
         useOrderWidget: false,
         showVolume: false,
         columnsOrder: ColumnsOrder.volumesAtTheEdges,
-        volumeDisplayFormat: NumberDisplayFormat.Default
+        volumeDisplayFormat: NumberDisplayFormat.Default,
+        showPriceWithZeroPadding: true
       }),
       this.dashboardContextService,
       this.widgetSettingsService

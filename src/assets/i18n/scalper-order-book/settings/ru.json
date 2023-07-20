@@ -27,6 +27,7 @@
   "showRulerLabel": "Показывать линейку",
   "rulerSettingsLabel": "Настройки линейки",
   "markerDisplayFormatLabel": "Значение маркера",
+  "showPriceWithZeroPaddingLabel": "Отображать цены с одинаковым количеством знаков после запятой",
 
   "tickerError": "Выберите тикер",
   "intervalError": "Значение должно быть от {{min}} до {{max}}",
