@@ -2,6 +2,7 @@
   (nzResizeObserve)="containerSizeChanged($event)"
      nzResizeObserver>
   <ats-infinite-scroll-table
+    *ngIf="tableConfig$ | async"
     (filterApplied)="applyFilter($event)"
     (rowClick)="selectInstrument($event)"
     (scrolled)="scrolled()"

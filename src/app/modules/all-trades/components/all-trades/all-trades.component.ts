@@ -6,9 +6,11 @@ import {
 } from '@angular/core';
 import { DatePipe } from "@angular/common";
 import { startOfDay, toUnixTimestampSeconds } from "../../../../shared/utils/datetime";
-import {filter, map, tap} from "rxjs/operators";
+import { filter, map, tap, switchMap } from "rxjs/operators";
 import {
-  BehaviorSubject, combineLatest,
+  BehaviorSubject,
+  combineLatest,
+  interval,
   Observable,
   shareReplay,
   Subject,
@@ -31,6 +33,7 @@ import { NzTableFilterList } from "ng-zorro-antd/table";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
 import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
+import { Side } from "../../../../shared/models/enums/side.model";
 
 @Component({
   selector: 'ats-all-trades[guid]',
@@ -124,6 +127,9 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     }
   ];
   private timezoneConverter?: TimezoneConverter;
+  private NEW_TRADES_PERIOD = 50;
+  private newTradesBuffer: AllTradesItem[] = [];
+  private newTradesTimer$ = interval(this.NEW_TRADES_PERIOD);
 
   tableConfig$!: Observable<TableConfig<AllTradesItem>>;
 
@@ -132,7 +138,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     private readonly settingsService: WidgetSettingsService,
     private readonly translatorService: TranslatorService,
     private readonly timezoneConverterService: TimezoneConverterService,
-
   ) {
   }
 
@@ -156,7 +161,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         take: this.take
       });
     });
-
   }
 
   public scrolled(): void {
@@ -301,59 +305,69 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         (filters, res) => ({ filters, res })
       ),
       withLatestFrom(this.tradesList$),
-      map(([s, currentList]) => {
+      tap(([s, currentList]) => {
         if ((s.filters.offset || 0) > 0) {
           this.tradesList$.next([...currentList, ...s.res]);
         } else {
           this.tradesList$.next(s.res);
         }
-
-        return s.filters;
       }),
       tap(() => this.isLoading$.next(false)),
       withLatestFrom(this.settings$),
-      mapWith(
-        ([, settings]) => this.allTradesService.getNewTradesSubscription(settings),
-        (data, res) => ({filters: data[0], res})
+      switchMap(
+        ([, s]) => this.allTradesService.getNewTradesSubscription(s),
       ),
-      takeUntil(this.destroy$),
-    ).subscribe(data => {
-      this.filterNewTrade(data);
+      takeUntil(this.destroy$)
+    ).subscribe(res => {
+      this.newTradesBuffer.unshift(res);
     });
+
+    this.newTradesTimer$.pipe(
+      withLatestFrom(this.filters$)
+    )
+      .subscribe(([, filters]) => {
+        this.filterNewTrades(filters);
+      });
   }
 
-  private filterNewTrade({filters, res}: { filters: AllTradesFilters, res: AllTradesItem }) {
-    if (
-      filters.qtyFrom && res.qty < filters.qtyFrom ||
-      filters.qtyTo && res.qty > filters.qtyTo ||
-      filters.priceFrom && res.price < filters.priceFrom ||
-      filters.priceTo && res.price > filters.priceTo ||
-      filters.side && res.side !== filters.side
-    ) {
+  private filterNewTrades(filters: AllTradesFilters) {
+    const filteredNewTrades = this.newTradesBuffer.filter(trade =>
+      (!filters.qtyFrom || trade.qty > filters.qtyFrom) &&
+      (!filters.qtyTo || trade.qty < filters.qtyTo) &&
+      (!filters.priceFrom || trade.price > filters.priceFrom) &&
+      (!filters.priceTo || trade.price < filters.priceTo) &&
+      (!filters.side || trade.side === filters.side)
+    );
+    if (!filteredNewTrades.length) {
       return;
     }
 
-    const tradesListCopy = JSON.parse(JSON.stringify(this.tradesList$.getValue()));
-    let indexForPaste: number;
+    this.newTradesBuffer = [];
 
-    switch (filters.orderBy) {
-      case 'side':
-        indexForPaste = tradesListCopy.findIndex((item: AllTradesItem) => item.side === res.side);
-        break;
-      case 'price':
-        indexForPaste = tradesListCopy.findIndex((item: AllTradesItem) => filters.descending ? item.price <= res.price : item.price >= res.price);
-        break;
-      case 'qty':
-        indexForPaste = tradesListCopy.findIndex((item: AllTradesItem) => filters.descending ? item.qty <= res.qty : item.qty >= res.qty);
-        break;
-      default:
-        indexForPaste = 0;
-    }
+    let tradesListCopy: AllTradesItem[] = JSON.parse(JSON.stringify(this.tradesList$.getValue()));
 
-    if (indexForPaste !== -1) {
-      tradesListCopy.splice(indexForPaste, 0, res);
-      this.tradesList$.next(tradesListCopy);
-    }
+    tradesListCopy.unshift(...filteredNewTrades);
+    tradesListCopy.sort((a, b) => {
+      switch (filters.orderBy) {
+        case 'side':
+          if (a.side !== b.side) {
+            if (filters.descending) {
+              return a.side === Side.Buy ? 1 : -1;
+            }
+            return a.side === Side.Buy ? -1 : 1;
+          }
+          return 0;
+        case 'price':
+          return filters.descending ? b.price - a.price : a.price - b.price;
+        case 'qty':
+          return filters.descending ? b.qty - a.qty : a.qty - b.qty;
+        default:
+          return 0;
+      }
+    });
+
+    tradesListCopy = tradesListCopy.slice(0, (filters.offset ?? 0) + (filters.limit ?? 50));
+    this.tradesList$.next(tradesListCopy);
   }
 
   private getSortFn(orderBy: string): (dir: string | null) => void {
