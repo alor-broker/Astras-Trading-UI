@@ -1,5 +1,7 @@
 {
-  "advancedHeader": "Продвинутые",
+  "instrumentHeader": "Инструмент",
+  "viewSettingsHeader": "Настройки вида",
+  "ordersHeader": "Заявки",
 
   "tickerLabel": "Тикер",
   "exchangeLabel": "Биржа",

@@ -3,88 +3,107 @@
   <div *ngIf="deviceInfo$ | async as deviceInfo">
     <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
       <nz-form-item *ngIf="!deviceInfo.isMobile">
-        <nz-form-control [nzErrorTip]="t('orderbookSettings.tickerError')">
-          <nz-form-label nzRequired nzFor="instrument">{{t('orderbookSettings.tickerLabel')}}</nz-form-label>
-          <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item *ngIf="!deviceInfo.isMobile">
-        <nz-form-control>
-          <nz-form-label nzRequired nzFor="exchange">{{t('orderbookSettings.exchangeLabel')}}</nz-form-label>
-          <input formControlName='exchange' nz-input>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control [nzErrorTip]="t('orderbookSettings.intervalError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
-          <nz-form-label nzRequired nzFor="depth">{{t('orderbookSettings.depthLabel')}}</nz-form-label>
-          <ats-input-number formControlName="depth" [placeholder]="t('orderbookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"></ats-input-number>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control>
-          <nz-form-label nzRequired nzFor="columnsOrder">{{t('orderbookSettings.columnsOrderLabel')}}</nz-form-label>
-          <nz-select formControlName="columnsOrder">
-            <nz-option [nzValue]="columnsOrderEnum.volumesAtTheEdges" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheEdges')"></nz-option>
-            <nz-option [nzValue]="columnsOrderEnum.volumesAtTheMiddle" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheMiddle')"></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control>
-          <nz-form-label nzFor="volumeDisplayFormat">{{t('orderbookSettings.volumeFormatDisplayLabel')}}</nz-form-label>
-          <nz-select formControlName='volumeDisplayFormat'>
-            <nz-option
-              *ngFor='let option of availableNumberFormats'
-              [nzLabel]="t('numberDisplayFormatOptions.' + option, { fallback: option })"
-              [nzValue]="option"
-            ></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item *ngIf="!deviceInfo.isMobile">
-        <nz-form-label nzFor="useOrderWidget">
-          {{t('orderbookSettings.useOrderWidgetLabel')}}
-          <span
-            class="popover-hint"
-            nz-icon
-            nz-popover
-            [nzPopoverContent]="t('orderbookSettings.useOrderWidgetPopover')"
-            nzType="info-circle"
-            nzTheme="outline"
-          ></span>
-        </nz-form-label>
-        <nz-switch formControlName='useOrderWidget'></nz-switch>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="showChart">{{t('orderbookSettings.displayChartLabel')}}</nz-form-label>
-        <nz-switch formControlName='showChart'></nz-switch>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="showTable">{{t('orderbookSettings.displayTableLabel')}}</nz-form-label>
-        <nz-switch formControlName='showTable'></nz-switch>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="showVolume">{{t('orderbookSettings.displayVolumeLabel')}}</nz-form-label>
-        <nz-switch formControlName='showVolume'></nz-switch>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="showYieldForBonds">{{t('orderbookSettings.displayYieldForBondsLabel')}}</nz-form-label>
-        <nz-switch formControlName='showYieldForBonds'></nz-switch>
-      </nz-form-item>
-      <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-collapse [nzBordered]="false" nzGhost>
-          <nz-collapse-panel [nzHeader]="t('orderbookSettings.advancedHeader')">
-            <nz-form-control [nzErrorTip]="t('orderbookSettings.instrumentGroupError')">
-              <nz-form-label nzFor="instrumentGroup">{{t('orderbookSettings.instrumentGroupLabel')}}</nz-form-label>
-              <ats-instrument-board-select
-                [instrument]="form.value?.instrument ?? null"
-                [placeholder]="t('orderbookSettings.instrumentGroupLabel')"
-                formControlName="instrumentGroup">
-              </ats-instrument-board-select>
-            </nz-form-control>
+          <nz-collapse-panel [nzHeader]="t('orderbookSettings.instrumentHeader')" nzActive="true">
+            <nz-form-item>
+              <nz-form-control [nzErrorTip]="t('orderbookSettings.tickerError')">
+                <nz-form-label nzNoColon nzRequired nzFor="instrument">{{t('orderbookSettings.tickerLabel')}}</nz-form-label>
+                <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-control>
+                <nz-form-label nzNoColon nzRequired nzFor="exchange">{{t('orderbookSettings.exchangeLabel')}}</nz-form-label>
+                <input formControlName='exchange' nz-input>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-control [nzErrorTip]="t('orderbookSettings.instrumentGroupError')">
+                <nz-form-label nzNoColon nzFor="instrumentGroup">{{t('orderbookSettings.instrumentGroupLabel')}}</nz-form-label>
+                <ats-instrument-board-select
+                  [instrument]="form.value?.instrument ?? null"
+                  [placeholder]="t('orderbookSettings.instrumentGroupLabel')"
+                  formControlName="instrumentGroup">
+                </ats-instrument-board-select>
+              </nz-form-control>
+            </nz-form-item>
           </nz-collapse-panel>
         </nz-collapse>
       </nz-form-item>
+
+      <nz-form-item>
+        <nz-collapse [nzBordered]="false" nzGhost>
+          <nz-collapse-panel [nzHeader]="t('orderbookSettings.viewSettingsHeader')" nzActive="false">
+            <nz-form-item>
+              <nz-form-control [nzErrorTip]="t('orderbookSettings.intervalError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
+                <nz-form-label nzNoColon nzRequired nzFor="depth">{{t('orderbookSettings.depthLabel')}}</nz-form-label>
+                <ats-input-number formControlName="depth" [placeholder]="t('orderbookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"></ats-input-number>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-control>
+                <nz-form-label nzNoColon nzRequired nzFor="columnsOrder">{{t('orderbookSettings.columnsOrderLabel')}}</nz-form-label>
+                <nz-select formControlName="columnsOrder">
+                  <nz-option [nzValue]="columnsOrderEnum.volumesAtTheEdges" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheEdges')"></nz-option>
+                  <nz-option [nzValue]="columnsOrderEnum.volumesAtTheMiddle" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheMiddle')"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-control>
+                <nz-form-label nzNoColon nzFor="volumeDisplayFormat">{{t('orderbookSettings.volumeFormatDisplayLabel')}}</nz-form-label>
+                <nz-select formControlName='volumeDisplayFormat'>
+                  <nz-option
+                    *ngFor='let option of availableNumberFormats'
+                    [nzLabel]="t('numberDisplayFormatOptions.' + option, { fallback: option })"
+                    [nzValue]="option"
+                  ></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzNoColon nzFor="showChart">{{t('orderbookSettings.displayChartLabel')}}</nz-form-label>
+              <nz-switch formControlName='showChart'></nz-switch>
+            </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzNoColon nzFor="showTable">{{t('orderbookSettings.displayTableLabel')}}</nz-form-label>
+              <nz-switch formControlName='showTable'></nz-switch>
+            </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzNoColon nzFor="showVolume">{{t('orderbookSettings.displayVolumeLabel')}}</nz-form-label>
+              <nz-switch formControlName='showVolume'></nz-switch>
+            </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label
+                nzNoColon
+                nzFor="showYieldForBonds">{{t('orderbookSettings.displayYieldForBondsLabel')}}</nz-form-label>
+              <nz-switch formControlName='showYieldForBonds'></nz-switch>
+            </nz-form-item>
+          </nz-collapse-panel>
+        </nz-collapse>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-collapse [nzBordered]="false" nzGhost>
+          <nz-collapse-panel [nzHeader]="t('orderbookSettings.ordersHeader')" nzActive="false">
+            <nz-form-item *ngIf="!deviceInfo.isMobile" class="one-row">
+              <nz-form-label nzNoColon nzFor="useOrderWidget">
+                {{t('orderbookSettings.useOrderWidgetLabel')}}
+                <span
+                  class="popover-hint"
+                  nz-icon
+                  nz-popover
+                  [nzPopoverContent]="t('orderbookSettings.useOrderWidgetPopover')"
+                  nzType="info-circle"
+                  nzTheme="outline"
+                ></span>
+              </nz-form-label>
+              <nz-switch formControlName='useOrderWidget'></nz-switch>
+            </nz-form-item>
+          </nz-collapse-panel>
+        </nz-collapse>
+      </nz-form-item>
+
       <nz-form-item>
         <nz-form-control>
           <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">{{t('saveBtnText')}}</button>

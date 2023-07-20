@@ -1,5 +1,7 @@
 {
-  "advancedHeader": "Advanced",
+  "instrumentHeader": "Instrument",
+  "viewSettingsHeader": "View settings",
+  "ordersHeader": "Orders",
 
   "tickerLabel": "Ticker",
   "exchangeLabel": "Exchange",
