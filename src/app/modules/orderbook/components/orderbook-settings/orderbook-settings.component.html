@@ -100,13 +100,14 @@
               </nz-form-label>
               <nz-switch formControlName='useOrderWidget'></nz-switch>
             </nz-form-item>
-            <nz-form-item class="one-row">
-              <nz-form-control>
-                <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">{{t('saveBtnText')}}</button>
-              </nz-form-control>
-            </nz-form-item>
           </nz-collapse-panel>
         </nz-collapse>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">{{t('saveBtnText')}}</button>
+        </nz-form-control>
       </nz-form-item>
     </form>
   </div>
