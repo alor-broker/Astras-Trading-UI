@@ -6,8 +6,8 @@
         <nz-collapse [nzBordered]="false" nzGhost>
           <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.instrumentSelectionHeader')" nzActive="true">
             <nz-form-item>
+              <nz-form-label nzRequired nzFor="instrument">{{t('scalperOrderBookSettings.tickerLabel')}}</nz-form-label>
               <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.tickerError')">
-                <nz-form-label nzRequired nzFor="instrument">{{t('scalperOrderBookSettings.tickerLabel')}}</nz-form-label>
                 <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
               </nz-form-control>
             </nz-form-item>
