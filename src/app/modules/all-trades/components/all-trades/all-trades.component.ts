@@ -6,11 +6,10 @@ import {
 } from '@angular/core';
 import { DatePipe } from "@angular/common";
 import { startOfDay, toUnixTimestampSeconds } from "../../../../shared/utils/datetime";
-import { filter, map, tap, switchMap } from "rxjs/operators";
+import { filter, map, tap, bufferTime } from "rxjs/operators";
 import {
   BehaviorSubject,
   combineLatest,
-  interval,
   Observable,
   shareReplay,
   take,
@@ -127,8 +126,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   ];
   private timezoneConverter?: TimezoneConverter;
   private NEW_TRADES_PERIOD = 50;
-  private newTradesBuffer: AllTradesItem[] = [];
-  private newTradesTimer$ = interval(this.NEW_TRADES_PERIOD);
 
   tableConfig$!: Observable<TableConfig<AllTradesItem>>;
 
@@ -303,35 +300,32 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         (filters, res) => ({ filters, res })
       ),
       withLatestFrom(this.tradesList$),
-      tap(([s, currentList]) => {
+      map(([s, currentList]) => {
         if ((s.filters.offset || 0) > 0) {
           this.tradesList$.next([...currentList, ...s.res]);
         } else {
-          this.newTradesBuffer = [];
           this.tradesList$.next(s.res);
         }
+
+        return s.filters;
       }),
       tap(() => this.isLoading$.next(false)),
       withLatestFrom(this.settings$),
-      switchMap(
-        ([, s]) => this.allTradesService.getNewTradesSubscription(s),
+      mapWith(
+        ([, s]) => this.allTradesService.getNewTradesSubscription(s)
+          .pipe(
+            bufferTime(this.NEW_TRADES_PERIOD)
+          ),
+        ([filters], newTrades) => ({ filters, newTrades })
       ),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(res => {
-      this.newTradesBuffer.unshift(res);
+    ).subscribe(({ filters, newTrades }) => {
+      this.filterNewTrades(filters, newTrades);
     });
-
-    this.newTradesTimer$.pipe(
-      withLatestFrom(this.filters$),
-      takeUntilDestroyed(this.destroyRef)
-    )
-      .subscribe(([, filters]) => {
-        this.filterNewTrades(filters);
-      });
   }
 
-  private filterNewTrades(filters: AllTradesFilters) {
-    const filteredNewTrades = this.newTradesBuffer.filter(trade =>
+  private filterNewTrades(filters: AllTradesFilters, newTrades: AllTradesItem[]) {
+    const filteredNewTrades = newTrades.filter(trade =>
       (!filters.qtyFrom || trade.qty > filters.qtyFrom) &&
       (!filters.qtyTo || trade.qty < filters.qtyTo) &&
       (!filters.priceFrom || trade.price > filters.priceFrom) &&
@@ -341,8 +335,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     if (!filteredNewTrades.length) {
       return;
     }
-
-    this.newTradesBuffer = [];
 
     let tradesListCopy: AllTradesItem[] = JSON.parse(JSON.stringify(this.tradesList$.getValue()));
 
