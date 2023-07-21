@@ -14,6 +14,7 @@
   "columnsOrderLabel": "Columns order",
   "instrumentGroupLabel": "Trading mode",
   "volumeFormatDisplayLabel": "Volume display format",
+  "showPriceWithZeroPaddingLabel": "Display prices with the same number of decimal places",
 
   "tickerError": "Select ticker",
   "intervalError": "Value should be from {{min}} to {{max}}",

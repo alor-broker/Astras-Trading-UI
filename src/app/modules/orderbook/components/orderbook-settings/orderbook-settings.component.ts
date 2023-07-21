@@ -78,6 +78,7 @@ export class OrderbookSettingsComponent implements OnInit {
         showVolume: new FormControl(settings.showVolume ?? false),
         columnsOrder: new FormControl(settings.columnsOrder ?? ColumnsOrder.volumesAtTheEdges),
         volumeDisplayFormat: new UntypedFormControl(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default),
+        showPriceWithZeroPadding: new UntypedFormControl(settings.showPriceWithZeroPadding ?? false),
       });
     });
   }

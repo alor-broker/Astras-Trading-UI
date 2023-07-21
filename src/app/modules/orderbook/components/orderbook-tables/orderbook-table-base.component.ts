@@ -6,10 +6,10 @@ import {
 import { OrderBook } from "../../models/orderbook.model";
 import { OrderbookSettings } from "../../models/orderbook-settings.model";
 import {
+  filter,
   Observable,
   of,
   shareReplay,
-  switchMap,
   take
 } from "rxjs";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
@@ -28,6 +28,14 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {Instrument} from "../../../../shared/models/instruments/instrument.model";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+
+interface ExtendedOrderbookSettings {
+  widgetSettings: OrderbookSettings;
+  instrument: Instrument;
+}
 
 @Component({
   template: '',
@@ -39,7 +47,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
 
   @Input()
   ob: OrderBook | null = null;
-  settings$!: Observable<OrderbookSettings>;
+  settings$!: Observable<ExtendedOrderbookSettings>;
   shouldShowYield$: Observable<boolean> = of(false);
   private themeSettings?: ThemeSettings;
 
@@ -56,22 +64,17 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
 
   ngOnInit() {
     this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
-      shareReplay(1)
+      mapWith(
+        settings => this.instrumentsService.getInstrument(settings),
+        (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedOrderbookSettings)
+      ),
+      filter(x => !!x.instrument),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     this.shouldShowYield$ = this.settings$.pipe(
-      switchMap(settings => {
-        if (!settings.showYieldForBonds) {
-          return of(false);
-        }
-
-        return this.instrumentsService.getInstrument({
-          symbol: settings.symbol,
-          exchange: settings.exchange,
-          instrumentGroup: settings.instrumentGroup
-        }).pipe(
-          map(x => !!x && getTypeByCfi(x.cfiCode) === InstrumentType.Bond)
-        );
+      map(settings => {
+        return settings.widgetSettings.showYieldForBonds && getTypeByCfi(settings.instrument.cfiCode) === InstrumentType.Bond;
       }),
       shareReplay()
     );
@@ -86,15 +89,15 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
-      if (settings.useOrderWidget) {
+      if (settings.widgetSettings.useOrderWidget) {
         this.widgetsDataProvider.setDataProviderValue<SelectedPriceData>('selectedPrice', {
           price,
-          badgeColor: settings.badgeColor!
+          badgeColor: settings.widgetSettings.badgeColor!
         });
       }
       else {
         const params: CommandParams = {
-          instrument: { ...settings },
+          instrument: { ...settings.widgetSettings },
           price,
           quantity: quantity ?? 1,
           type: CommandType.Limit,
@@ -153,5 +156,11 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
 
   getTrackKey(index: number): number {
     return index;
+  }
+
+  getPriceDecimalSymbolsCount(settings: ExtendedOrderbookSettings): number | null {
+    return settings.widgetSettings.showPriceWithZeroPadding === true
+      ? MathHelper.getPrecision(settings.instrument.minstep)
+      : null;
   }
 }

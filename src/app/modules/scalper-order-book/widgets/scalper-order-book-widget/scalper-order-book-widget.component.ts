@@ -98,7 +98,8 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         showRuler: true,
         rulerSettings: {
           markerDisplayFormat: MarkerDisplayFormat.Points
-        }
+        },
+        showPriceWithZeroPadding: true
       }),
       this.dashboardContextService,
       this.widgetSettingsService,
