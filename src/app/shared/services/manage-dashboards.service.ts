@@ -14,6 +14,7 @@ import { GuidGenerator } from '../utils/guid';
 import { ManageDashboardsActions } from '../../store/dashboards/dashboards-actions';
 import { DashboardContextService } from './dashboard-context.service';
 import {HttpClient} from "@angular/common/http";
+import {ApplicationMetaService} from "./application-meta.service";
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,8 @@ export class ManageDashboardsService {
     private readonly httpClient: HttpClient,
     private readonly localStorage: LocalStorageService,
     private readonly store: Store,
-    private readonly dashboardContextService: DashboardContextService
+    private readonly dashboardContextService: DashboardContextService,
+    private readonly applicationMetaService: ApplicationMetaService
   ) {
   }
 
@@ -76,6 +78,8 @@ export class ManageDashboardsService {
   }
 
   resetAll() {
+    this.applicationMetaService.updateLastReset();
+
     this.localStorage.removeItem('terminalSettings');
     this.localStorage.removeItem('watchlistCollection');
     this.localStorage.removeItem('portfolio');
@@ -85,9 +89,6 @@ export class ManageDashboardsService {
     this.localStorage.removeItem('mobile-dashboard');
     this.localStorage.removeItem('instruments-history');
 
-    // obsolete keys. Used only for backward compatibility
-    this.localStorage.removeItem('instruments');
-    this.localStorage.removeItem('dashboards');
     this.store.dispatch(ManageDashboardsActions.removeAllDashboards());
     this.reloadPage();
   }

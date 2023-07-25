@@ -1,40 +1,65 @@
 import {Injectable} from '@angular/core';
-import {Actions, createEffect, ofType} from '@ngrx/effects';
+import {Actions, concatLatestFrom, createEffect, ofType} from '@ngrx/effects';
 import {LocalStorageService} from '../../shared/services/local-storage.service';
 import {Store} from '@ngrx/store';
 import {filter, map, switchMap} from 'rxjs/operators';
 import {GuidGenerator} from '../../shared/utils/guid';
-import {distinctUntilChanged, EMPTY, of, take, tap, withLatestFrom} from 'rxjs';
-import {Dashboard, DefaultDashboardName, InstrumentGroups} from '../../shared/models/dashboard/dashboard.model';
-import {DashboardItemPosition, Widget} from '../../shared/models/dashboard/widget.model';
+import {distinctUntilChanged, EMPTY, of, take, tap} from 'rxjs';
+import {Dashboard, DefaultDashboardName} from '../../shared/models/dashboard/dashboard.model';
 import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
 import {allDashboards, getDashboardItems, selectedDashboard} from './dashboards.selectors';
 import {mapWith} from '../../shared/utils/observable-helper';
 import {MarketService} from '../../shared/services/market.service';
 import {getDefaultPortfolio, isPortfoliosEqual} from '../../shared/utils/portfolios';
 import {CurrentDashboardActions, InternalDashboardActions, ManageDashboardsActions} from './dashboards-actions';
-import {InstrumentKey} from '../../shared/models/instruments/instrument-key.model';
 import {instrumentsBadges} from '../../shared/utils/instruments';
 import {TerminalSettingsService} from "../../modules/terminal-settings/services/terminal-settings.service";
 import {UserPortfoliosService} from "../../shared/services/user-portfolios.service";
 
-type ObsoleteItemFormat = {
-  guid: string,
-  gridItem: DashboardItemPosition & { type: string, label: string }
-};
 
 @Injectable()
 export class DashboardsEffects {
-  initDashboards$ = createEffect(() => {
+  initDashboards$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(ManageDashboardsActions.initDashboards),
+        tap(() => {
+          this.includeTerminalSettings();
+        })
+      );
+    },
+    {
+      dispatch: false
+    }
+  );
+
+  createDefaultDashboard$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ManageDashboardsActions.initDashboards),
-      map(() => {
-        const dashboards = this.readDashboardsFromLocalStorage();
-        this.includeTerminalSettings();
+      filter(action => action.dashboards.length === 0),
+      mapWith(
+        () => this.dashboardService.getDefaultDashboardConfig(),
+        (source, defaultConfig) => defaultConfig
+      ),
+      switchMap(defaultConfig => {
+        const newDashboardAction = ManageDashboardsActions.addDashboard({
+          guid: GuidGenerator.newGuid(),
+          title: DefaultDashboardName,
+          isSelected: true,
+          existedItems: []
+        });
 
-        return ManageDashboardsActions.initDashboardsSuccess({
-            dashboards: dashboards ?? []
-          }
+        return of(
+          newDashboardAction,
+          ManageDashboardsActions.addWidgets({
+            dashboardGuid: newDashboardAction.guid,
+            widgets: defaultConfig.desktop.widgets.map(w => ({
+              widgetType: w.widgetTypeId,
+              position: w.position,
+              initialSettings: w.initialSettings
+            }))
+          }),
+          ManageDashboardsActions.initDashboardsSuccess()
         );
       })
     );
@@ -94,21 +119,10 @@ export class DashboardsEffects {
         CurrentDashboardActions.selectPortfolio,
         CurrentDashboardActions.selectInstruments
       ),
-      map(() => ManageDashboardsActions.saveDashboards())
+      concatLatestFrom(() => this.store.select(allDashboards)),
+      map(([, dashboards]) => ManageDashboardsActions.saveDashboards({dashboards}))
     );
   });
-
-  saveDashboards$ = createEffect(() => {
-      return this.actions$.pipe(
-        ofType(ManageDashboardsActions.saveDashboards),
-        withLatestFrom(this.store.select(allDashboards)),
-        tap(([, dashboards]) => {
-          this.saveDashboardsToLocalStorage(dashboards);
-        })
-      );
-    },
-    {dispatch: false}
-  );
 
   setDefaultPortfolioForCurrentDashboard$ = createEffect(() => {
     return this.store.select(selectedDashboard).pipe(
@@ -167,54 +181,6 @@ export class DashboardsEffects {
       ));
   });
 
-  private readonly dashboardsStorageKey = 'dashboards-collection';
-  private readonly dashboardsObsoleteStorageKey = 'dashboards';
-  private readonly instrumentsObsoleteStorageKey = 'instruments';
-  convertOrCreateDefault$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(ManageDashboardsActions.initDashboardsSuccess),
-      filter(action => action.dashboards.length === 0),
-      mapWith(
-        () => this.dashboardService.getDefaultDashboardConfig(),
-        (source, defaultConfig) => defaultConfig
-      ),
-      switchMap(defaultConfig => {
-        const convertedDashboardItems = this.readObsoleteDashboardFromLocalStorage();
-        const newDashboardAction = ManageDashboardsActions.addDashboard({
-          guid: GuidGenerator.newGuid(),
-          title: DefaultDashboardName,
-          isSelected: true,
-          existedItems: []
-        });
-
-        if (convertedDashboardItems) {
-          newDashboardAction.existedItems = convertedDashboardItems;
-          this.localStorage.removeItem(this.dashboardsObsoleteStorageKey);
-
-          const convertedInstruments = this.readObsoleteInstrumentsSelection();
-          if (convertedInstruments) {
-            newDashboardAction.instrumentsSelection = convertedInstruments;
-            this.localStorage.removeItem(this.instrumentsObsoleteStorageKey);
-          }
-
-          return of(newDashboardAction);
-        }
-
-        return of(
-          newDashboardAction,
-          ManageDashboardsActions.addWidgets({
-            dashboardGuid: newDashboardAction.guid,
-            widgets: defaultConfig.desktop.widgets.map(w => ({
-              widgetType: w.widgetTypeId,
-              position: w.position,
-              initialSettings: w.initialSettings
-            }))
-          })
-        );
-      })
-    );
-  });
-
   constructor(
     private readonly actions$: Actions,
     private readonly localStorage: LocalStorageService,
@@ -224,60 +190,6 @@ export class DashboardsEffects {
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly userPortfoliosService: UserPortfoliosService
   ) {
-  }
-
-  private readDashboardsFromLocalStorage(): Dashboard[] | undefined {
-    return this.localStorage.getItem<Dashboard[]>(this.dashboardsStorageKey);
-  }
-
-  private saveDashboardsToLocalStorage(dashboards: Dashboard[]) {
-    this.localStorage.setItem(this.dashboardsStorageKey, dashboards ?? []);
-  }
-
-  private readObsoleteDashboardFromLocalStorage(): Widget[] | undefined {
-    const obsoleteDashboards = this.localStorage.getItem<[string, ObsoleteItemFormat][]>(this.dashboardsObsoleteStorageKey);
-
-    if (!obsoleteDashboards) {
-      return undefined;
-    }
-
-    return obsoleteDashboards
-      .map(x => x[1])
-      .map(x => ({
-        guid: x.gridItem.label,
-        widgetType: x.gridItem.type,
-        position: {
-          x: x.gridItem.x,
-          y: x.gridItem.y,
-          cols: x.gridItem.cols,
-          rows: x.gridItem.rows
-        }
-      }));
-  }
-
-  private readObsoleteInstrumentsSelection(): InstrumentGroups | undefined {
-    const obsoleteInstruments = this.localStorage.getItem<InstrumentGroups>(this.instrumentsObsoleteStorageKey);
-
-    if (!obsoleteInstruments) {
-      return undefined;
-    }
-
-    return Object.keys(obsoleteInstruments).reduce(
-      (p, c) => {
-        const instrument = obsoleteInstruments[c];
-
-        return {
-          ...p,
-          [c]: {
-            symbol: instrument.symbol,
-            exchange: instrument.exchange,
-            instrumentGroup: instrument.instrumentGroup,
-            isin: instrument.isin
-          } as InstrumentKey
-        };
-      },
-      {} as InstrumentGroups
-    );
   }
 
   private includeTerminalSettings() {

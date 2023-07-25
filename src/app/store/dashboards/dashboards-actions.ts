@@ -15,12 +15,12 @@ import { InstrumentKey } from '../../shared/models/instruments/instrument-key.mo
 
 export class ManageDashboardsActions {
   static initDashboards = createAction(
-    '[Dashboards] Init Dashboards'
+    '[Dashboards] Init Dashboards',
+    props<{ dashboards: Dashboard[] }>()
   );
 
   static initDashboardsSuccess = createAction(
-    '[Dashboards] Init Dashboards (SUCCESS)',
-    props<{ dashboards: Dashboard[] }>()
+    '[Dashboards] Init Dashboards (SUCCESS)'
   );
 
   static selectDashboard = createAction(
@@ -94,7 +94,10 @@ export class ManageDashboardsActions {
 
   static removeAllDashboards = createAction('[Dashboards] Remove All Dashboards');
 
-  static saveDashboards = createAction('[Dashboards] Save Dashboards');
+  static saveDashboards = createAction(
+    '[Dashboards] Save Dashboards',
+    props<{ dashboards: Dashboard[] }>()
+  );
 
   static copyDashboard = createAction(
     '[Dashboards] Copy Dashboard',
