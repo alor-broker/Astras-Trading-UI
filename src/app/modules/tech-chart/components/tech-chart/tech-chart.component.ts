@@ -423,7 +423,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       take(1)
     ).subscribe(({ widgetSettings, relatedSettings }) => {
       const submitOrderWidgetSettings = relatedSettings.filter(x => x.settingsType === 'OrderSubmitSettings');
-      const roundedPrice = MathHelper.round(price, MathHelper.getPrecision(widgetSettings.instrument.minstep));
+      const roundedPrice = MathHelper.roundPriceByMinStep(price, widgetSettings.instrument.minstep);
 
       if (submitOrderWidgetSettings.length === 0 || !widgetSettings.widgetSettings.badgeColor) {
         this.modalService.openCommandModal({
