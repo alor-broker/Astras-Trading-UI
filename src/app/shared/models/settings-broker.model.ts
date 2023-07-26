@@ -1,13 +1,8 @@
-﻿export enum SettingsType {
-  DashboardSettings= 'dashboardSettings'
-}
-
-export interface SettingsMeta {
-  settingsType: SettingsType;
+﻿export interface SettingsMeta {
   timestamp: number;
 }
 
-export interface SettingsRef {
-  id: string;
+export interface SettingsRecord<T> {
   meta: SettingsMeta;
+  value: T;
 }

@@ -1,32 +1,18 @@
 import {Injectable} from '@angular/core';
 import {LocalStorageService} from "../local-storage.service";
 import {RemoteStorageService} from "./remote-storage.service";
-import {
-  BehaviorSubject,
-  combineLatest,
-  filter,
-  forkJoin,
-  Observable,
-  of,
-  share,
-  Subject,
-  switchMap,
-  take,
-  tap
-} from "rxjs";
+import {BehaviorSubject, combineLatest, Observable, of, share, Subject, switchMap, take, tap} from "rxjs";
 import {Dashboard} from "../../models/dashboard/dashboard.model";
-import {SettingsMeta, SettingsRef, SettingsType} from "../../models/settings-broker.model";
-import {debounceTime, map} from "rxjs/operators";
-import {RemoteStorageItem} from "../../models/remote-storage.model";
+import {debounceTime, filter, map} from "rxjs/operators";
 import {ApplicationMetaService} from "../application-meta.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardSettingsBrokerService {
-  private readonly saveRequestDelay = 2000;
+  private readonly saveRequestDelay = 1000;
   private readonly dashboardsStorageKey = 'dashboards-collection';
-  private readonly saveQuery$ = new Subject<{ meta: SettingsMeta, settings: Dashboard[] }>();
+  private readonly saveQuery$ = new Subject<Dashboard[]>();
   private saveStream$?: Observable<boolean>;
 
   constructor(
@@ -36,33 +22,34 @@ export class DashboardSettingsBrokerService {
   ) {
   }
 
-  private get settingsType(): SettingsType {
-    return SettingsType.DashboardSettings;
+  private get settingsKey(): string {
+    return this.dashboardsStorageKey;
   }
 
   readSettings(): Observable<Dashboard[] | null> {
+    const settings$ = this.remoteStorageService.getRecord<Dashboard[]>(this.settingsKey).pipe(
+      take(1)
+    );
+
     return combineLatest([
       this.applicationMetaService.getMeta(),
-      this.getLatestItem()
+      settings$
     ]).pipe(
-      switchMap(([meta, lastItem]) => {
-        if (meta.lastResetTimestamp) {
-          if (!!lastItem?.lastItem && meta.lastResetTimestamp > lastItem.settingsRef.meta.timestamp) {
+      switchMap(([meta, settings]) => {
+        if (meta.lastResetTimestamp != null) {
+          if (!!settings && meta.lastResetTimestamp > settings.meta.timestamp) {
             return of(null);
           }
         }
 
-        if (!!lastItem?.lastItem) {
-          return of(lastItem.lastItem);
+        if (!!settings) {
+          return of(settings.value);
         }
 
         // move settings from local storage for backward compatibility
         const localData = this.localStorageService.getItem<Dashboard[]>(this.dashboardsStorageKey);
         if (!!localData) {
-          return this.addRemoteRecord(
-            this.getSettingsMeta(),
-            localData
-          ).pipe(
+          return this.setRemoteRecord(localData).pipe(
             tap(r => {
               if (r) {
                 this.localStorageService.removeItem(this.dashboardsStorageKey);
@@ -81,15 +68,8 @@ export class DashboardSettingsBrokerService {
   saveSettings(settings: Dashboard[]): Observable<boolean> {
     if (!this.saveStream$) {
       this.saveStream$ = this.saveQuery$.pipe(
-        tap(x => console.log('emitted: ', x)),
         debounceTime(this.saveRequestDelay),
-        tap(x => console.log(x)),
-        switchMap(query => this.addRemoteRecord(query.meta, query.settings)),
-        tap(x => {
-          if (x) {
-            this.cleanObsoleteSettings();
-          }
-        }),
+        switchMap(query => this.setRemoteRecord(query)),
         share()
       );
     }
@@ -103,91 +83,24 @@ export class DashboardSettingsBrokerService {
       result$.complete();
     });
 
-    this.saveQuery$.next({
-      meta: this.getSettingsMeta(),
-      settings
-    });
+    this.saveQuery$.next(settings);
 
     return result$.pipe(
       filter((x): x is boolean => x != null)
     );
   }
 
-  private getSettingsMeta(): SettingsMeta {
-    return {
-      settingsType: this.settingsType,
-      timestamp: this.getTimestamp()
-    };
-  }
-
-  private addRemoteRecord(meta: SettingsMeta, settings: Dashboard[]): Observable<boolean> {
-    return this.remoteStorageService.addRecord(JSON.stringify(meta), JSON.stringify(settings));
+  private setRemoteRecord(settings: Dashboard[]): Observable<boolean> {
+    return this.remoteStorageService.setRecord(
+      this.settingsKey, {
+        meta: {
+          timestamp: this.getTimestamp()
+        },
+        value: settings
+      });
   }
 
   private getTimestamp(): number {
     return Date.now();
-  }
-
-  private getExistedItems(): Observable<SettingsRef[]> {
-    return this.remoteStorageService.getExistedRecordsMeta().pipe(
-      take(1),
-      map(r => {
-        if (!r) {
-          return [];
-        }
-
-        return r.map(i => ({
-          id: i.Id,
-          meta: JSON.parse(i.Descriptions)
-        } as SettingsRef))
-          .filter(i => i.meta.settingsType === this.settingsType);
-      })
-    );
-  }
-
-  private getLatestItemRef(allItems: SettingsRef[]): SettingsRef | null {
-    return allItems
-      .sort((a, b) => b.meta.timestamp - a.meta.timestamp)[0] ?? null;
-  }
-
-  private getLatestItem(): Observable<{ settingsRef: SettingsRef, lastItem: Dashboard[] | null } | null> {
-    return this.getExistedItems().pipe(
-      switchMap(items => {
-        const latestItemRef = this.getLatestItemRef(items);
-
-        if (!!latestItemRef) {
-          return this.remoteStorageService.readSettings(latestItemRef.id).pipe(
-            map(x => ({
-              settingsRef: latestItemRef,
-              lastItem: this.toDashboardSettings(x)
-            }))
-          );
-        }
-
-        return of(null);
-      }),
-      take(1)
-    );
-  }
-
-  private toDashboardSettings(remoteStorageItem: RemoteStorageItem | null): Dashboard[] | null {
-    if (!remoteStorageItem || !remoteStorageItem.UserSettings) {
-      return null;
-    }
-
-    return JSON.parse(remoteStorageItem.UserSettings.Content) as Dashboard[];
-  }
-
-  private cleanObsoleteSettings() {
-    this.getExistedItems().pipe(
-      take(1),
-      filter(items => items.length > 1),
-      switchMap(items => {
-        const latestItem = this.getLatestItemRef(items)!;
-        const itemsToRemove = items.filter(i => i.meta.timestamp < latestItem.meta.timestamp);
-
-        return forkJoin(itemsToRemove.map(i => this.remoteStorageService.removeRecord(i.id)));
-      })
-    ).subscribe();
   }
 }

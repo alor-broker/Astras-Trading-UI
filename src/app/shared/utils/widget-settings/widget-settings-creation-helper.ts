@@ -50,6 +50,7 @@ export class WidgetSettingsCreationHelper {
       const groupKey = defaultBadgeColor;
       const settings = {
         guid: widgetInstance.instance.guid,
+        settingsType,
         linkToActive: true,
         ...toInstrumentKey(instrumentSelection[groupKey]),
         badgeColor: groupKey,
@@ -75,6 +76,7 @@ export class WidgetSettingsCreationHelper {
     ).subscribe(portfolio => {
       const settings = {
         guid: widgetInstance.instance.guid,
+        settingsType,
         linkToActive: true,
         ...portfolio,
         ...widgetInstance.instance.initialSettings

@@ -20,7 +20,7 @@ export class MobileDashboardWidgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(initWidgetSettings());
+    this.store.dispatch(initWidgetSettings({settings: []}));
     this.store.dispatch(PortfoliosActions.initPortfolios());
     this.store.dispatch(MobileDashboardActions.initMobileDashboard());
     this.screenHeight = fromEvent(window, 'resize')

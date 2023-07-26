@@ -7,7 +7,7 @@ import {GuidGenerator} from '../../shared/utils/guid';
 import {distinctUntilChanged, EMPTY, of, take, tap} from 'rxjs';
 import {Dashboard, DefaultDashboardName} from '../../shared/models/dashboard/dashboard.model';
 import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
-import {allDashboards, getDashboardItems, selectedDashboard} from './dashboards.selectors';
+import {getDashboardItems} from './dashboards.selectors';
 import {mapWith} from '../../shared/utils/observable-helper';
 import {MarketService} from '../../shared/services/market.service';
 import {getDefaultPortfolio, isPortfoliosEqual} from '../../shared/utils/portfolios';
@@ -15,6 +15,7 @@ import {CurrentDashboardActions, InternalDashboardActions, ManageDashboardsActio
 import {instrumentsBadges} from '../../shared/utils/instruments';
 import {TerminalSettingsService} from "../../modules/terminal-settings/services/terminal-settings.service";
 import {UserPortfoliosService} from "../../shared/services/user-portfolios.service";
+import {DashboardsStreams} from "./dashboards.streams";
 
 
 @Injectable()
@@ -25,11 +26,15 @@ export class DashboardsEffects {
         ofType(ManageDashboardsActions.initDashboards),
         tap(() => {
           this.includeTerminalSettings();
+        }),
+        switchMap(action => {
+          if(action.dashboards.length > 0) {
+            return of(ManageDashboardsActions.initDashboardsSuccess());
+          }
+
+          return EMPTY;
         })
       );
-    },
-    {
-      dispatch: false
     }
   );
 
@@ -119,13 +124,13 @@ export class DashboardsEffects {
         CurrentDashboardActions.selectPortfolio,
         CurrentDashboardActions.selectInstruments
       ),
-      concatLatestFrom(() => this.store.select(allDashboards)),
+      concatLatestFrom(() => DashboardsStreams.getAllDashboards(this.store)),
       map(([, dashboards]) => ManageDashboardsActions.saveDashboards({dashboards}))
     );
   });
 
   setDefaultPortfolioForCurrentDashboard$ = createEffect(() => {
-    return this.store.select(selectedDashboard).pipe(
+    return DashboardsStreams.getSelectedDashboard(this.store).pipe(
       filter(d => !!d),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),
       mapWith(
@@ -148,7 +153,7 @@ export class DashboardsEffects {
   });
 
   setDefaultInstrumentsSelectionForCurrentDashboard$ = createEffect(() => {
-    return this.store.select(selectedDashboard).pipe(
+    return DashboardsStreams.getSelectedDashboard(this.store).pipe(
       filter((d): d is Dashboard => !!d),
       filter(d => !d.instrumentsSelection),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),

@@ -4,8 +4,19 @@ import {Observable, take} from "rxjs";
 import {map} from "rxjs/operators";
 import {ErrorHandlerService} from "../handle-error/error-handler.service";
 import {catchHttpError} from "../../utils/observable-helper";
-import {RemoteStorageItem, RemoteStorageItemMeta} from "../../models/remote-storage.model";
 import {environment} from "../../../../environments/environment";
+import {SettingsMeta, SettingsRecord} from "../../models/settings-broker.model";
+
+interface UserSettings {
+  Key: string;
+  Group?: string;
+  Description: string;
+  Content: string;
+}
+
+interface RemoteStorageItem {
+  UserSettings: UserSettings | null;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -20,69 +31,108 @@ export class RemoteStorageService {
   ) {
   }
 
-  addRecord(meta: string, content: string): Observable<boolean> {
-    return this.httpClient.post(
-      this.baseUrl,
-      {
-        description: meta,
-        content
-      },
-      {
-        params: {
-          serviceName: this.serviceName
-        },
-        responseType: 'text'
-      }
-    ).pipe(
-      map(() => true),
-      catchHttpError<boolean>(false, this.errorHandlerService),
-      take(1)
-    );
-  }
-
-  removeRecord(id: string): Observable<boolean> {
-    return this.httpClient.delete(
-      this.baseUrl,
-      {
-        params: {
-          serviceName: this.serviceName,
-          id
-        },
-        responseType: 'text'
-      }
-    ).pipe(
-      map(() => true),
-      catchHttpError<boolean>(false, this.errorHandlerService),
-      take(1)
-    );
-  }
-
-  getExistedRecordsMeta(): Observable<RemoteStorageItemMeta[] | null> {
-    return this.httpClient.get<RemoteStorageItemMeta[]>(
-      `${this.baseUrl}/description`,
-      {
-        params: {
-          serviceName: this.serviceName
-        }
-      }
-    ).pipe(
-      catchHttpError<RemoteStorageItemMeta[] | null>(null, this.errorHandlerService),
-      take(1)
-    );
-  }
-
-  readSettings(id: string): Observable<RemoteStorageItem | null> {
+  getRecord<T>(key: string): Observable<SettingsRecord<T> | null> {
     return this.httpClient.get<RemoteStorageItem>(
       this.baseUrl,
       {
         params: {
           serviceName: this.serviceName,
-          id
+          key
         }
       }
     ).pipe(
       catchHttpError<RemoteStorageItem | null>(null, this.errorHandlerService),
+      map(r => {
+        if (!!r && !!r.UserSettings) {
+          return {
+            meta: <SettingsMeta>JSON.parse(r.UserSettings.Description),
+            value: <T>JSON.parse(r.UserSettings.Content)
+          } as SettingsRecord<T>;
+        }
+
+        return null;
+      }),
       take(1)
     );
   }
+
+  getGroup<T>(groupKey: string): Observable<SettingsRecord<T>[] | null> {
+    return this.httpClient.get<UserSettings[]>(
+      `${this.baseUrl}/group/${groupKey}`,
+      {
+        params: {
+          serviceName: this.serviceName
+        }
+      }
+    ).pipe(
+      catchHttpError<UserSettings[] | null>(null, this.errorHandlerService),
+      map(r => {
+        if (!r) {
+          return null;
+        }
+
+        return r.map(i => ({
+          meta: <SettingsMeta>JSON.parse(i.Description),
+          value: <T>JSON.parse(i.Content)
+        } as SettingsRecord<T>));
+      }),
+      take(1)
+    );
+  }
+
+  setRecord<T>(key: string, record: SettingsRecord<T>, groupKey?: string): Observable<boolean> {
+    return this.httpClient.put(
+      this.baseUrl,
+      {
+        description: JSON.stringify(record.meta),
+        content: JSON.stringify(record.value),
+        group: groupKey
+      },
+      {
+        params: {
+          serviceName: this.serviceName,
+          key: key
+        },
+        responseType: 'text'
+      },
+    ).pipe(
+      map(() => true),
+      catchHttpError<boolean>(false, this.errorHandlerService),
+      take(1)
+    );
+  }
+
+  removeRecord(key: string): Observable<boolean> {
+    return this.httpClient.delete(
+      this.baseUrl,
+      {
+        params: {
+          serviceName: this.serviceName,
+          key: key
+        },
+        responseType: 'text'
+      },
+    ).pipe(
+      map(() => true),
+      catchHttpError<boolean>(false, this.errorHandlerService),
+      take(1)
+    );
+  }
+
+  removeGroup(groupKey: string): Observable<boolean> {
+    return this.httpClient.delete(
+      `${this.baseUrl}/group/${groupKey}`,
+      {
+        params: {
+          serviceName: this.serviceName
+        },
+        responseType: 'text'
+      },
+    ).pipe(
+      map(() => true),
+      catchHttpError<boolean>(false, this.errorHandlerService),
+      take(1)
+    );
+  }
+
 }

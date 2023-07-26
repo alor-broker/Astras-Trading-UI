@@ -1,17 +1,11 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {take} from 'rxjs';
 import {OnboardingService} from '../../services/onboarding.service';
-import {initWidgetSettings} from '../../../../store/widget-settings/widget-settings.actions';
-import {ManageDashboardsActions} from '../../../../store/dashboards/dashboards-actions';
 import {PortfoliosActions} from '../../../../store/portfolios/portfolios.actions';
 import {Store} from '@ngrx/store';
 import {DeviceService} from "../../../../shared/services/device.service";
 import {Router} from "@angular/router";
-import {
-  DashboardSettingsBrokerService
-} from "../../../../shared/services/settings-broker/dashboard-settings-broker.service";
-import {Actions, ofType} from "@ngrx/effects";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {DesktopSettingsBrokerService} from "../../services/desktop-settings-broker.service";
 
 @Component({
   selector: 'ats-dashboard-widget',
@@ -20,13 +14,11 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 })
 export class DashboardWidgetComponent implements OnInit {
   constructor(
-    private readonly onboarding: OnboardingService,
     private readonly store: Store,
+    private readonly onboarding: OnboardingService,
     private readonly deviceService: DeviceService,
     private readonly router: Router,
-    private readonly dashboardSettingsBrokerService: DashboardSettingsBrokerService,
-    private readonly destroyRef: DestroyRef,
-    private readonly actions$: Actions
+    private readonly desktopSettingsBrokerService: DesktopSettingsBrokerService
   ) {
   }
 
@@ -45,25 +37,8 @@ export class DashboardWidgetComponent implements OnInit {
   }
 
   private initDashboard() {
-    this.store.dispatch(initWidgetSettings());
+    this.desktopSettingsBrokerService.initSettingsBrokers();
     this.store.dispatch(PortfoliosActions.initPortfolios());
-
-
-    //----------------------
-    this.actions$.pipe(
-      ofType(ManageDashboardsActions.saveDashboards),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(action => {
-      console.log('save request');
-      this.dashboardSettingsBrokerService.saveSettings(action.dashboards).subscribe();
-    });
-
-    this.dashboardSettingsBrokerService.readSettings().pipe(
-      take(1)
-    ).subscribe(dashboards => {
-      this.store.dispatch(ManageDashboardsActions.initDashboards({dashboards: dashboards ?? []}));
-    });
-
     this.onboarding.start();
   }
 }

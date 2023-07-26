@@ -7,11 +7,7 @@ import { PortfolioKey } from "../../shared/models/portfolio-key.model";
 import { WidgetSettings } from '../../shared/models/widget-settings.model';
 
 export const initWidgetSettings = createAction(
-  '[WidgetSettings] Init Settings'
-);
-
-export const initWidgetSettingsSuccess = createAction(
-  '[WidgetSettings] Init Settings (SUCCESS)',
+  '[WidgetSettings] Init Settings',
   props<{ settings: WidgetSettings[] }>()
 );
 

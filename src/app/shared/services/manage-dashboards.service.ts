@@ -9,12 +9,12 @@ import {
 } from '../models/dashboard/widget.model';
 import { Store } from '@ngrx/store';
 import {Dashboard, DefaultDashboardConfig} from '../models/dashboard/dashboard.model';
-import { allDashboards } from '../../store/dashboards/dashboards.selectors';
 import { GuidGenerator } from '../utils/guid';
 import { ManageDashboardsActions } from '../../store/dashboards/dashboards-actions';
 import { DashboardContextService } from './dashboard-context.service';
 import {HttpClient} from "@angular/common/http";
 import {ApplicationMetaService} from "./application-meta.service";
+import {DashboardsStreams} from "../../store/dashboards/dashboards.streams";
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +32,7 @@ export class ManageDashboardsService {
   }
 
   get allDashboards$(): Observable<Dashboard[]> {
-    return this.store.select(allDashboards);
+    return DashboardsStreams.getAllDashboards(this.store);
   }
 
   addWidget(widgetType: string, initialSettings?: any) {
