@@ -119,7 +119,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
 
     this.currentInstrumentWithPortfolio$ = combineLatest([currentPortfolio$, currentInstrument]).pipe(
       tap(() => {
-        this.setInitialValues(1, 1, undefined, this.stopOrderFormValue?.withLimit);
+        this.setInitialValues(undefined, 1, undefined, this.stopOrderFormValue?.withLimit);
         this.limitOrderFormValue = null;
         this.marketOrderFormValue = null;
         this.stopOrderFormValue = null;

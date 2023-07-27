@@ -75,7 +75,7 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
           ]
         ),
         price: new FormControl(
-          1,
+          null,
           [
             Validators.required,
             Validators.min(inputNumberValidation.negativeMin),

@@ -34,6 +34,7 @@ import {
 } from "ng-zorro-antd/i18n";
 import ruCommand from "../../../../../assets/i18n/command/ru.json";
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
+import { StopFormData } from "../../models/stop-form-data.model";
 
 describe('StopCommandComponent', () => {
   let component: StopCommandComponent;
@@ -195,6 +196,9 @@ describe('StopCommandComponent', () => {
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 
+      component.form!.controls[testCase.control as keyof StopFormData]!.markAsDirty();
+      component.form!.controls[testCase.control as keyof StopFormData]!.updateValueAndValidity({ onlySelf: false });
+
       fixture.detectChanges();
 
       await fixture.whenStable().then(() => {
@@ -288,6 +292,7 @@ describe('StopCommandComponent', () => {
     component.commandContext = commandContext;
 
     component.form.controls.withLimit.setValue(true);
+    component.form.controls.triggerPrice.setValue(1);
     component.form.controls.stopEndUnixTime!.setValue(stopEndUnixTimeVal);
     fixture.detectChanges();
 
@@ -319,6 +324,7 @@ describe('StopCommandComponent', () => {
     component.commandContext = commandContext;
 
     component.form.controls.withLimit.setValue(true);
+    component.form.controls.triggerPrice.setValue(1);
     component.form.controls.price!.setValue(commandContext.commandParameters.price);
     component.form.controls.stopEndUnixTime!.setValue(stopEndUnixTimeVal);
     fixture.detectChanges();
