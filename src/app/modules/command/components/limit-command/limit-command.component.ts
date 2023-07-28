@@ -144,7 +144,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           ]
         ),
         price: new FormControl(
-          commandContext.commandParameters.price ?? 1,
+          commandContext.commandParameters.price ?? null,
           [
             Validators.required,
             Validators.min(inputNumberValidation.negativeMin),

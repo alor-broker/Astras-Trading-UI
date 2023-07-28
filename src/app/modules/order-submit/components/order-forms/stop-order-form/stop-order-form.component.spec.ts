@@ -147,6 +147,9 @@ describe('StopOrderFormComponent', () => {
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 
+      component.form!.controls[testCase.control as keyof StopOrderFormValue]!.markAsDirty();
+      component.form!.controls[testCase.control as keyof StopOrderFormValue]!.updateValueAndValidity({ onlySelf: false });
+
       fixture.detectChanges();
 
       await fixture.whenStable().then(() => {
@@ -193,8 +196,8 @@ describe('StopOrderFormComponent', () => {
         withLimit: true,
         linkedOrder: {
           quantity: 1,
-          triggerPrice: 1,
-          price: 1,
+          triggerPrice: null,
+          price: null,
           stopEndUnixTime: timezoneConverter.terminalToUtc0Date(expectedDate),
           side: Side.Buy,
           withLimit: false,

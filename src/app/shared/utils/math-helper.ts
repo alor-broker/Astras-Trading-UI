@@ -43,4 +43,30 @@ export class MathHelper {
       MathHelper.getPrecision(minStep)
     );
   }
+
+  /**
+   * Rounding a price to min step precision and checks if
+   * rounded price is a multiple of the price step
+   * @param dirtyPrice Number you need to round
+   * @param minStep Instrument min step
+   * @returns Rounded number
+   */
+  static roundPriceByMinStep(dirtyPrice: number, minStep: number) {
+    const roundedPrice = this.round(
+      dirtyPrice,
+      MathHelper.getPrecision(minStep)
+    );
+    const minStepPrecision = MathHelper.getPrecision(minStep);
+    const priceMOD = this.round(roundedPrice % minStep, minStepPrecision);
+
+    if (!priceMOD) {
+      return roundedPrice;
+    }
+
+    if (priceMOD >= this.round(minStep / 2, minStepPrecision)) {
+      return this.round(roundedPrice + minStep - priceMOD, minStepPrecision);
+    }
+
+    return this.round(roundedPrice - priceMOD, minStepPrecision);
+  }
 }
