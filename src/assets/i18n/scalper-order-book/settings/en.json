@@ -5,6 +5,7 @@
   "additionalPanelsHeader": "Additional panels",
   "workingVolumesHeader": "Working volumes",
   "highlightSettingsHeader": "Highlighting",
+  "automationSettingsHeader": "Automation",
 
   "tickerLabel": "Ticker",
   "exchangeLabel": "Exchange",
@@ -28,7 +29,10 @@
   "rulerSettingsLabel": "Ruler settings",
   "markerDisplayFormatLabel": "Marker value",
   "showPriceWithZeroPaddingLabel": "Display prices with the same number of decimal places",
-
+  "useLinkedOrdersLabel": "Use linked orders",
+  "topOrderPriceRatioLabel": "Order from above (>), %",
+  "bottomOrderPriceRatioLabel": "Order from below (<), %",
+  "useLinkedOrdersWhenClosingPositionLabel": "Use bracket when closing position",
 
   "tickerError": "Select ticker",
   "intervalError": "Value should be from {{min}} to {{max}}",
@@ -36,6 +40,7 @@
   "workingVolumeMinError": "Value should be greater than zero",
   "workingVolumeRequiredError": "Input value",
   "instrumentGroupError": "Select trading mode",
+  "priceRatioStepMultiplicityError": "The value must be a multiple of the step",
 
   "intervalPlaceholder": "Value from {{min}} to {{max}}",
 

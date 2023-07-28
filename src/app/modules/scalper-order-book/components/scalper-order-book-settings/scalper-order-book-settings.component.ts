@@ -29,6 +29,7 @@ import {
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { AtsValidators } from "../../../../shared/utils/form-validators";
 
 @Component({
   selector: 'ats-scalper-order-book-settings',
@@ -45,16 +46,23 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
     volumeHighlightOption: {
       boundary: {
         min: 1,
-        max: 1000000000
+        max: 1_000_000_000
       },
       volumeHighlightFullness: {
         min: 1,
-        max: 1000000000
+        max: 1_000_000_000
       }
     },
     autoAlignIntervalSec: {
       min: 0,
       max: 600
+    },
+    linkedOrder: {
+      priceRatio: {
+        min: 0,
+        max: 1_000_000_000,
+        step: 0.01
+      }
     }
   };
 
@@ -131,7 +139,9 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
         ),
         volumeHighlightFullness: Number(formValue.volumeHighlightFullness),
         workingVolumes: formValue.workingVolumes.map((wv: string) => Number(wv)),
-        autoAlignIntervalSec: !!(+formValue.autoAlignIntervalSec) ? Number(formValue.autoAlignIntervalSec) : null
+        autoAlignIntervalSec: !!(+formValue.autoAlignIntervalSec) ? Number(formValue.autoAlignIntervalSec) : null,
+        topOrderPriceRatio: !!(+formValue.topOrderPriceRatio) ? Number(formValue.topOrderPriceRatio) : null,
+        bottomOrderPriceRatio: !!(+formValue.bottomOrderPriceRatio) ? Number(formValue.bottomOrderPriceRatio) : null
       };
 
       delete newSettings.instrument;
@@ -246,6 +256,24 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
         )
       }),
       showPriceWithZeroPadding: new UntypedFormControl(settings.showPriceWithZeroPadding ?? false),
+      useLinkedOrders: new UntypedFormControl(settings.useLinkedOrders ?? false),
+      topOrderPriceRatio: new UntypedFormControl(
+        settings.topOrderPriceRatio ?? null,
+        [
+          Validators.min(this.validationOptions.linkedOrder.priceRatio.min),
+          Validators.max(this.validationOptions.linkedOrder.priceRatio.max),
+          AtsValidators.priceStepMultiplicity(this.validationOptions.linkedOrder.priceRatio.step)
+        ]
+      ),
+      bottomOrderPriceRatio: new UntypedFormControl(
+        settings.bottomOrderPriceRatio ?? null,
+        [
+          Validators.min(this.validationOptions.linkedOrder.priceRatio.min),
+          Validators.max(this.validationOptions.linkedOrder.priceRatio.max),
+          AtsValidators.priceStepMultiplicity(this.validationOptions.linkedOrder.priceRatio.step)
+        ]
+      ),
+      useLinkedOrdersWhenClosingPosition: new UntypedFormControl(settings.useLinkedOrdersWhenClosingPosition ?? false)
     });
   }
 

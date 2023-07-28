@@ -5,6 +5,7 @@
   "additionalPanelsHeader": "Дополнительные панели",
   "workingVolumesHeader": "Рабочие объёмы",
   "highlightSettingsHeader": "Подсветка",
+  "automationSettingsHeader": "Автоматизация",
 
   "tickerLabel": "Тикер",
   "exchangeLabel": "Биржа",
@@ -28,6 +29,10 @@
   "rulerSettingsLabel": "Настройки линейки",
   "markerDisplayFormatLabel": "Значение маркера",
   "showPriceWithZeroPaddingLabel": "Отображать цены с одинаковым количеством знаков после запятой",
+  "useLinkedOrdersLabel": "Использовать связанные заявки",
+  "topOrderPriceRatioLabel": "Условная заявка сверху (>), %",
+  "bottomOrderPriceRatioLabel": "Условная заявка снизу (<), %",
+  "useLinkedOrdersWhenClosingPositionLabel": "Ставить bracket при закрытии позиции",
 
   "tickerError": "Выберите тикер",
   "intervalError": "Значение должно быть от {{min}} до {{max}}",
@@ -35,6 +40,7 @@
   "workingVolumeMinError": "Значение должно быть больше нуля",
   "workingVolumeRequiredError": "Введите значение",
   "instrumentGroupError": "Выберите режим торгов",
+  "priceRatioStepMultiplicityError": "Значение должно быть кратно шагу",
 
   "intervalPlaceholder": "Значение от {{min}} до {{max}}",
 

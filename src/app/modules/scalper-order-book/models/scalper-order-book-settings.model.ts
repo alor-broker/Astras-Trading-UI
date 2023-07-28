@@ -59,4 +59,8 @@ export interface ScalperOrderBookSettings extends WidgetSettings, InstrumentKey 
   layout?: OrderBookLayoutSettings;
   showRuler?: boolean;
   rulerSettings?: RulerSettings;
+  useLinkedOrders?: boolean;
+  topOrderPriceRatio?: number;
+  bottomOrderPriceRatio?: number;
+  useLinkedOrdersWhenClosingPosition?: boolean;
 }

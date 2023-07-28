@@ -245,6 +245,51 @@
               </nz-collapse>
             </nz-form-item>
           </nz-collapse-panel>
+
+          <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.automationSettingsHeader')">
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="useLinkedOrders">{{t('scalperOrderBookSettings.useLinkedOrdersLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='useLinkedOrders'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzFor="topOrderPriceRatio" nzRequired>{{t('scalperOrderBookSettings.topOrderPriceRatioLabel')}}</nz-form-label>
+              <nz-form-control [nzErrorTip]="topOrderPriceRatioError">
+                <ats-input-number formControlName="topOrderPriceRatio" placeholder="1" [step]="0.01"></ats-input-number>
+              </nz-form-control>
+              <ng-template #topOrderPriceRatioError>
+                <span *ngIf="form.get('topOrderPriceRatio')?.errors?.min || form.get('topOrderPriceRatio')?.errors?.max">
+                  {{t('scalperOrderBookSettings.intervalError', { min: validationOptions.linkedOrder.priceRatio.min, max: validationOptions.linkedOrder.priceRatio.max })}}
+                </span>
+                <span *ngIf="form.get('topOrderPriceRatio')?.errors?.priceStepMultiplicity">
+                  {{t('scalperOrderBookSettings.priceRatioStepMultiplicityError')}} ({{validationOptions.linkedOrder.priceRatio.step}})
+                </span>
+              </ng-template>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzFor="bottomOrderPriceRatio" nzRequired>{{t('scalperOrderBookSettings.bottomOrderPriceRatioLabel')}}</nz-form-label>
+              <nz-form-control [nzErrorTip]="bottomOrderPriceRatioError">
+                <ats-input-number formControlName="bottomOrderPriceRatio" placeholder="1" [step]="0.01"></ats-input-number>
+              </nz-form-control>
+              <ng-template #bottomOrderPriceRatioError>
+                <span *ngIf="form.get('bottomOrderPriceRatio')?.errors?.min || form.get('bottomOrderPriceRatio')?.errors?.max">
+                  {{t('scalperOrderBookSettings.intervalError', { min: validationOptions.linkedOrder.priceRatio.min, max: validationOptions.linkedOrder.priceRatio.max })}}
+                </span>
+                <span *ngIf="form.get('bottomOrderPriceRatio')?.errors?.priceStepMultiplicity">
+                  {{t('scalperOrderBookSettings.priceRatioStepMultiplicityError')}} ({{validationOptions.linkedOrder.priceRatio.step}})
+                </span>
+              </ng-template>
+            </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="useLinkedOrdersWhenClosingPosition">{{t('scalperOrderBookSettings.useLinkedOrdersWhenClosingPositionLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='useLinkedOrdersWhenClosingPosition'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-collapse-panel>
         </nz-collapse>
       </nz-form-item>
 

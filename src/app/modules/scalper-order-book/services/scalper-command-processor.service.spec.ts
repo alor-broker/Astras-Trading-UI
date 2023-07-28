@@ -254,10 +254,11 @@ describe('ScalperCommandProcessorService', () => {
         dataContextMock.workingVolume$.next(workingVolume);
 
 
-        scalperOrdersServiceSpy.placeBestOrder.and.callFake((instrument: Instrument, side: Side, quantity: number) => {
+        scalperOrdersServiceSpy.placeBestOrder.and.callFake((instrument: Instrument, settings: ScalperOrderBookSettings, side: Side, quantity: number) => {
           done();
 
           expect(instrument).toEqual(defaultInstrumentInfo);
+          expect(settings).toEqual(orderBookDefaultSettings);
           expect(side).toEqual(Side.Sell);
           expect(quantity).toEqual(workingVolume);
         });
@@ -286,10 +287,11 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.placeBestOrder.and.callFake((instrument: Instrument, side: Side, quantity: number) => {
+        scalperOrdersServiceSpy.placeBestOrder.and.callFake((instrument: Instrument, settings: ScalperOrderBookSettings, side: Side, quantity: number) => {
           done();
 
           expect(instrument).toEqual(defaultInstrumentInfo);
+          expect(settings).toEqual(orderBookDefaultSettings);
           expect(side).toEqual(Side.Buy);
           expect(quantity).toEqual(workingVolume);
         });
@@ -322,10 +324,10 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.sellBestBid.and.callFake((instrument: Instrument, quantity: number) => {
+        scalperOrdersServiceSpy.sellBestBid.and.callFake((settings: ScalperOrderBookSettings, quantity: number) => {
           done();
 
-          expect(instrument).toEqual(defaultInstrumentInfo);
+          expect(settings).toEqual(orderBookDefaultSettings);
           expect(quantity).toEqual(workingVolume);
         });
 
@@ -354,10 +356,10 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.buyBestAsk.and.callFake((instrument: Instrument, quantity: number) => {
+        scalperOrdersServiceSpy.buyBestAsk.and.callFake((settings: ScalperOrderBookSettings, quantity: number) => {
           done();
 
-          expect(instrument).toEqual(defaultInstrumentInfo);
+          expect(settings).toEqual(orderBookDefaultSettings);
           expect(quantity).toEqual(workingVolume);
         });
 
