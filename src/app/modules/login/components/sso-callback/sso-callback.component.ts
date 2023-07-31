@@ -9,18 +9,17 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 })
 export class SsoCallbackComponent implements OnInit {
 
-  constructor(private router: Router, private route: ActivatedRoute, private account: AuthService) {
+  constructor(
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly authService: AuthService) {
   }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.account.setUser({
-        refreshToken: params['refreshToken']?.trim(),
-        jwt: params['token']
-      });
+      this.authService.setRefreshToken(params['refreshToken']?.trim());
+      this.router.navigate(['/dashboard']);
     });
-
-    this.router.navigate(['/dashboard']);
   }
 
 }
