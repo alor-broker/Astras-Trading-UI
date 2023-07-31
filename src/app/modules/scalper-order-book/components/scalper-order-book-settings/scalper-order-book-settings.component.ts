@@ -1,34 +1,19 @@
-import {
-  Component, DestroyRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  Observable,
-  shareReplay,
-  take,
-} from "rxjs";
+import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Observable, shareReplay, take, } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  AbstractControl,
-  UntypedFormArray,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators
-} from "@angular/forms";
+import { AbstractControl, UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import {
   MarkerDisplayFormat,
+  OrderPriceUnits,
   ScalperOrderBookSettings,
   VolumeHighlightMode,
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 
 @Component({
@@ -57,11 +42,12 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
       min: 0,
       max: 600
     },
-    linkedOrder: {
-      priceRatio: {
+    bracket: {
+      price: {
         min: 0,
         max: 1_000_000_000,
-        step: 0.01
+        percentsStep: 0.01,
+        stepsStep: 1
       }
     }
   };
@@ -74,6 +60,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
+  orderPriceUnits = OrderPriceUnits;
   exchanges: string[] = exchangesList;
   readonly availableVolumeHighlightModes: string[] = [
     VolumeHighlightMode.Off,
@@ -210,6 +197,9 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
   }
 
   private buildForm(settings: ScalperOrderBookSettings) {
+    const stepsPriceStepValidatorFn = AtsValidators.priceStepMultiplicity(this.validationOptions.bracket.price.stepsStep);
+    const percentsPriceStepValidatorFn = AtsValidators.priceStepMultiplicity(this.validationOptions.bracket.price.percentsStep);
+
     this.form = new UntypedFormGroup({
       instrument: new UntypedFormControl({
         symbol: settings.symbol,
@@ -256,25 +246,46 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
         )
       }),
       showPriceWithZeroPadding: new UntypedFormControl(settings.showPriceWithZeroPadding ?? false),
-      useLinkedOrders: new UntypedFormControl(settings.useLinkedOrders ?? false),
+      useBrackets: new UntypedFormControl(settings.useBrackets ?? false),
+      orderPriceUnits: new UntypedFormControl(settings.orderPriceUnits ?? OrderPriceUnits.Steps),
       topOrderPriceRatio: new UntypedFormControl(
         settings.topOrderPriceRatio ?? null,
         [
-          Validators.min(this.validationOptions.linkedOrder.priceRatio.min),
-          Validators.max(this.validationOptions.linkedOrder.priceRatio.max),
-          AtsValidators.priceStepMultiplicity(this.validationOptions.linkedOrder.priceRatio.step)
+          Validators.min(this.validationOptions.bracket.price.min),
+          Validators.max(this.validationOptions.bracket.price.max),
+          settings.orderPriceUnits === OrderPriceUnits.Percents
+            ? percentsPriceStepValidatorFn
+            : stepsPriceStepValidatorFn
         ]
       ),
       bottomOrderPriceRatio: new UntypedFormControl(
         settings.bottomOrderPriceRatio ?? null,
         [
-          Validators.min(this.validationOptions.linkedOrder.priceRatio.min),
-          Validators.max(this.validationOptions.linkedOrder.priceRatio.max),
-          AtsValidators.priceStepMultiplicity(this.validationOptions.linkedOrder.priceRatio.step)
+          Validators.min(this.validationOptions.bracket.price.min),
+          Validators.max(this.validationOptions.bracket.price.max),
+          settings.orderPriceUnits === OrderPriceUnits.Percents
+            ? percentsPriceStepValidatorFn
+            : stepsPriceStepValidatorFn
         ]
       ),
-      useLinkedOrdersWhenClosingPosition: new UntypedFormControl(settings.useLinkedOrdersWhenClosingPosition ?? false)
+      useBracketsWhenClosingPosition: new UntypedFormControl(settings.useBracketsWhenClosingPosition ?? false)
     });
+
+    this.form.get('orderPriceUnits')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value: OrderPriceUnits) => {
+        const topOrderPriceRatioControl = this.form.get('topOrderPriceRatio')!;
+        const bottomOrderPriceRatioControl = this.form.get('bottomOrderPriceRatio')!;
+
+        topOrderPriceRatioControl.removeValidators([percentsPriceStepValidatorFn, stepsPriceStepValidatorFn]);
+        bottomOrderPriceRatioControl.removeValidators([percentsPriceStepValidatorFn, stepsPriceStepValidatorFn]);
+
+        topOrderPriceRatioControl.addValidators(value === OrderPriceUnits.Percents ? percentsPriceStepValidatorFn : stepsPriceStepValidatorFn);
+        bottomOrderPriceRatioControl.addValidators(value === OrderPriceUnits.Percents ? percentsPriceStepValidatorFn : stepsPriceStepValidatorFn);
+
+        topOrderPriceRatioControl.updateValueAndValidity();
+        bottomOrderPriceRatioControl.updateValueAndValidity();
+      });
   }
 
   private createVolumeHighlightOptionsControl(option?: VolumeHighlightOption): AbstractControl {

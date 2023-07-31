@@ -29,10 +29,11 @@
   "rulerSettingsLabel": "Настройки линейки",
   "markerDisplayFormatLabel": "Значение маркера",
   "showPriceWithZeroPaddingLabel": "Отображать цены с одинаковым количеством знаков после запятой",
-  "useLinkedOrdersLabel": "Использовать связанные заявки",
-  "topOrderPriceRatioLabel": "Условная заявка сверху (>), %",
-  "bottomOrderPriceRatioLabel": "Условная заявка снизу (<), %",
-  "useLinkedOrdersWhenClosingPositionLabel": "Ставить bracket при закрытии позиции",
+  "useBracketsLabel": "Использовать коридоры",
+  "orderPriceUnitsLabel": "Единицы цены",
+  "topOrderPriceRatioLabel": "Условная заявка сверху (>)",
+  "bottomOrderPriceRatioLabel": "Условная заявка снизу (<)",
+  "useBracketsWhenClosingPositionLabel": "Ставить коридор при закрытии позиции",
 
   "tickerError": "Выберите тикер",
   "intervalError": "Значение должно быть от {{min}} до {{max}}",
@@ -57,6 +58,10 @@
   },
   "markerDisplayFormatOptions": {
     "points": "Пункты",
+    "percents": "Проценты"
+  },
+  "orderPriceUnits": {
+    "steps": "Шаги",
     "percents": "Проценты"
   }
 }

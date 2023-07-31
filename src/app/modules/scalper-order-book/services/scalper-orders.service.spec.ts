@@ -26,7 +26,11 @@ import { CancelCommand } from '../../../shared/models/commands/cancel-command.mo
 import { CurrentOrderDisplay } from '../models/scalper-order-book.model';
 import { OrderbookDataRow } from '../../orderbook/models/orderbook-data.model';
 import { LessMore } from "../../../shared/models/enums/less-more.model";
-import { ScalperOrderBookSettings, VolumeHighlightMode } from "../models/scalper-order-book-settings.model";
+import {
+  OrderPriceUnits,
+  ScalperOrderBookSettings,
+  VolumeHighlightMode
+} from "../models/scalper-order-book-settings.model";
 import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
 
 describe('ScalperOrdersService', () => {
@@ -218,7 +222,15 @@ describe('ScalperOrdersService', () => {
         { p: testAsks[0].p - testInstrument.minstep * 4, v: 1, y: 0 }
       ];
 
-      service.placeBestOrder(testInstrument, testSettings, Side.Buy, quantity, { a: testAsks, b: testBids }, portfolioKey);
+      service.placeBestOrder(
+        testSettings,
+        testInstrument,
+        Side.Buy,
+        quantity,
+        { a: testAsks, b: testBids },
+        portfolioKey,
+        { qtyTFuture: 1 } as Position
+        );
       tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
@@ -235,7 +247,15 @@ describe('ScalperOrdersService', () => {
 
       orderServiceSpy.submitLimitOrder.calls.reset();
 
-      service.placeBestOrder(testInstrument, testSettings, Side.Sell, quantity, { a: testAsks, b: testBids }, portfolioKey);
+      service.placeBestOrder(
+        testSettings,
+        testInstrument,
+        Side.Sell,
+        quantity,
+        { a: testAsks, b: testBids },
+        portfolioKey,
+        { qtyTFuture: 1 } as Position
+      );
       tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
@@ -263,7 +283,15 @@ describe('ScalperOrdersService', () => {
       ];
 
       orderServiceSpy.submitLimitOrder.calls.reset();
-      service.placeBestOrder(testInstrument, testSettings, Side.Buy, quantity, { a: testAsks, b: testBids }, portfolioKey);
+      service.placeBestOrder(
+        testSettings,
+        testInstrument,
+        Side.Buy,
+        quantity,
+        { a: testAsks, b: testBids },
+        portfolioKey,
+        { qtyTFuture: 1 } as Position
+      );
       tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
@@ -279,7 +307,15 @@ describe('ScalperOrdersService', () => {
         );
 
       orderServiceSpy.submitLimitOrder.calls.reset();
-      service.placeBestOrder(testInstrument, testSettings, Side.Sell, quantity, { a: testAsks, b: testBids }, portfolioKey);
+      service.placeBestOrder(
+        testSettings,
+        testInstrument,
+        Side.Sell,
+        quantity,
+        { a: testAsks, b: testBids },
+        portfolioKey,
+        { qtyTFuture: 1 } as Position
+      );
       tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
@@ -296,8 +332,8 @@ describe('ScalperOrdersService', () => {
     })
   );
 
-  it('#placeBestOrder should create orders group', fakeAsync(() => {
-    service.placeOrdersGroup = jasmine.createSpy('placeOrdersGroup').and.callThrough();
+  it('#placeBestOrder should create bracket', fakeAsync(() => {
+    service.placeBracket = jasmine.createSpy('placeBracket').and.callThrough();
 
     const portfolioKey: PortfolioKey = {
       exchange: generateRandomString(4),
@@ -333,8 +369,8 @@ describe('ScalperOrdersService', () => {
     ];
 
     service.placeBestOrder(
-      testInstrument,
       testSettings,
+      testInstrument,
       Side.Buy,
       quantity,
       { a: testAsks, b: testBids },
@@ -343,15 +379,15 @@ describe('ScalperOrdersService', () => {
     );
     tick(10000);
 
-    expect(service.placeOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(service.placeBracket).toHaveBeenCalledOnceWith(
       {
       side: Side.Buy,
       quantity,
       price: testBids[0].p,
       instrument: testInstrument
       },
-      (100 + testSettings.topOrderPriceRatio!) * testBids[0].p * 0.01,
-      (100 - testSettings.bottomOrderPriceRatio!) * testBids[0].p * 0.01,
+      testBids[0].p + (testSettings.topOrderPriceRatio! * testInstrument.minstep),
+      testBids[0].p - (testSettings.bottomOrderPriceRatio! * testInstrument.minstep),
       portfolioKey.portfolio
     );
   }));
@@ -392,7 +428,14 @@ describe('ScalperOrdersService', () => {
         { p: testAsks[0].p - 3, v: 1, y: 0 }
       ];
 
-      service.sellBestBid(testSettings, quantity, { a: testAsks, b: testBids }, portfolioKey);
+      service.sellBestBid(
+        testSettings,
+        testInstrument,
+        quantity,
+        { a: testAsks, b: testBids },
+        portfolioKey,
+        { qtyTFuture: 1 } as Position
+      );
       tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
@@ -408,8 +451,8 @@ describe('ScalperOrdersService', () => {
     })
   );
 
-  it('#sellBestBid should create orders group', fakeAsync(() => {
-    service.placeOrdersGroup = jasmine.createSpy('placeOrdersGroup').and.callThrough();
+  it('#sellBestBid should create bracket', fakeAsync(() => {
+    service.placeBracket = jasmine.createSpy('placeBracket').and.callThrough();
 
     const portfolioKey: PortfolioKey = {
       exchange: generateRandomString(4),
@@ -449,18 +492,25 @@ describe('ScalperOrdersService', () => {
       { p: testAsks[0].p - 3, v: 1, y: 0 }
     ];
 
-    service.sellBestBid(testSettings, quantity, { a: testAsks, b: testBids }, portfolioKey, { qtyTFuture: 1 } as Position);
+    service.sellBestBid(
+      testSettings,
+      testInstrument,
+      quantity,
+      { a: testAsks, b: testBids },
+      portfolioKey,
+      { qtyTFuture: 1 } as Position
+    );
     tick(10000);
 
-    expect(service.placeOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(service.placeBracket).toHaveBeenCalledOnceWith(
       {
         side: Side.Sell,
         quantity,
         price: testBids[0].p,
         instrument: testSettings
       },
-      (100 + testSettings.topOrderPriceRatio!) * testBids[0].p * 0.01,
-      (100 - testSettings.bottomOrderPriceRatio!) * testBids[0].p * 0.01,
+      testBids[0].p + (testSettings.topOrderPriceRatio! * testInstrument.minstep),
+      testBids[0].p - (testSettings.bottomOrderPriceRatio! * testInstrument.minstep),
       portfolioKey.portfolio
     );
   }));
@@ -501,7 +551,14 @@ describe('ScalperOrdersService', () => {
         { p: testAsks[0].p - 3, v: 1, y: 0 }
       ];
 
-      service.buyBestAsk(testSettings, quantity, { a: testAsks, b: testBids }, portfolioKey);
+      service.buyBestAsk(
+        testSettings,
+        testInstrument,
+        quantity,
+        { a: testAsks, b: testBids },
+        portfolioKey,
+        { qtyTFuture: 1 } as Position
+        );
       tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
@@ -517,8 +574,8 @@ describe('ScalperOrdersService', () => {
     })
   );
 
-  it('#buyBestAsk should create orders group', fakeAsync(() => {
-    service.placeOrdersGroup = jasmine.createSpy('placeOrdersGroup').and.callThrough();
+  it('#buyBestAsk should create bracket', fakeAsync(() => {
+    service.placeBracket = jasmine.createSpy('placeBracket').and.callThrough();
 
     const portfolioKey: PortfolioKey = {
       exchange: generateRandomString(4),
@@ -558,18 +615,25 @@ describe('ScalperOrdersService', () => {
       { p: testAsks[0].p - 3, v: 1, y: 0 }
     ];
 
-    service.buyBestAsk(testSettings, quantity, { a: testAsks, b: testBids }, portfolioKey, { qtyTFuture: 1 } as Position);
+    service.buyBestAsk(
+      testSettings,
+      testInstrument,
+      quantity,
+      { a: testAsks, b: testBids },
+      portfolioKey,
+      { qtyTFuture: 1 } as Position
+    );
     tick(10000);
 
-    expect(service.placeOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(service.placeBracket).toHaveBeenCalledOnceWith(
       {
         side: Side.Buy,
         quantity,
         price: testAsks[0].p,
         instrument: testSettings
       },
-      (100 + testSettings.topOrderPriceRatio!) * testAsks[0].p * 0.01,
-      (100 - testSettings.bottomOrderPriceRatio!) * testAsks[0].p * 0.01,
+      testAsks[0].p + (testSettings.topOrderPriceRatio! * testInstrument.minstep),
+      testAsks[0].p - (testSettings.bottomOrderPriceRatio! * testInstrument.minstep),
       portfolioKey.portfolio
     );
   }));
@@ -641,6 +705,10 @@ describe('ScalperOrdersService', () => {
         exchange: portfolioKey.exchange,
         symbol: generateRandomString(4)
       };
+      const testInstrument: Instrument = {
+        ...testInstrumentKey,
+        minstep: 0.5
+      } as Instrument;
       testSettings = {
         ...testSettings,
         ...testInstrumentKey
@@ -652,11 +720,13 @@ describe('ScalperOrdersService', () => {
 
       service.placeLimitOrder(
         testSettings,
+        testInstrument,
         Side.Sell,
         quantity,
         price,
         true,
-        portfolioKey
+        portfolioKey,
+        { qtyTFuture: 1 } as Position
       );
 
       tick(10000);
@@ -674,11 +744,13 @@ describe('ScalperOrdersService', () => {
 
       service.placeLimitOrder(
         testSettings,
+        testInstrument,
         Side.Buy,
         quantity,
         price,
         false,
-        portfolioKey
+        portfolioKey,
+        { qtyTFuture: 1 } as Position
       );
 
       tick(10000);
@@ -696,8 +768,8 @@ describe('ScalperOrdersService', () => {
     })
   );
 
-  it('#placeLimitOrder should create orders group', fakeAsync(() => {
-    service.placeOrdersGroup = jasmine.createSpy('placeOrdersGroup').and.callThrough();
+  it('#placeLimitOrder should create bracket', fakeAsync(() => {
+    service.placeBracket = jasmine.createSpy('placeBracket').and.callThrough();
 
     const portfolioKey: PortfolioKey = {
       exchange: generateRandomString(4),
@@ -708,6 +780,13 @@ describe('ScalperOrdersService', () => {
       exchange: portfolioKey.exchange,
       symbol: generateRandomString(4)
     };
+
+
+    const testInstrument: Instrument = {
+      ...testInstrumentKey,
+      minstep: 0.5
+    } as Instrument;
+
     testSettings = {
       ...testSettings,
       ...testInstrumentKey,
@@ -722,6 +801,7 @@ describe('ScalperOrdersService', () => {
 
     service.placeLimitOrder(
       testSettings,
+      testInstrument,
       Side.Buy,
       quantity,
       price,
@@ -731,7 +811,7 @@ describe('ScalperOrdersService', () => {
     );
 
     tick(10000);
-    expect(service.placeOrdersGroup)
+    expect(service.placeBracket)
       .toHaveBeenCalledOnceWith(
         {
           side: Side.Buy,
@@ -739,8 +819,66 @@ describe('ScalperOrdersService', () => {
           price,
           instrument: testSettings
         },
-        (100 + testSettings.topOrderPriceRatio!) * price * 0.01,
-        (100 - testSettings.bottomOrderPriceRatio!) * price * 0.01,
+        price + (testSettings.topOrderPriceRatio! * testInstrument.minstep),
+        price - (testSettings.bottomOrderPriceRatio! * testInstrument.minstep),
+        portfolioKey.portfolio
+      );
+  }));
+
+  it('#placeLimitOrder should create bracket with percent price ratio settings', fakeAsync(() => {
+    service.placeBracket = jasmine.createSpy('placeBracket').and.callThrough();
+
+    const portfolioKey: PortfolioKey = {
+      exchange: generateRandomString(4),
+      portfolio: generateRandomString(5),
+    };
+
+    const testInstrumentKey: InstrumentKey = {
+      exchange: portfolioKey.exchange,
+      symbol: generateRandomString(4)
+    };
+
+
+    const testInstrument: Instrument = {
+      ...testInstrumentKey,
+      minstep: 0.5
+    } as Instrument;
+
+    testSettings = {
+      ...testSettings,
+      ...testInstrumentKey,
+      topOrderPriceRatio: 1,
+      bottomOrderPriceRatio: 2,
+      useLinkedOrders: true,
+      orderPriceUnits: OrderPriceUnits.Percents
+    };
+
+    orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
+    const quantity = getRandomInt(1, 100);
+    const price = getRandomInt(1, 1000);
+
+    service.placeLimitOrder(
+      testSettings,
+      testInstrument,
+      Side.Buy,
+      quantity,
+      price,
+      true,
+      portfolioKey,
+      { qtyTFuture: 1 } as Position
+    );
+
+    tick(10000);
+    expect(service.placeBracket)
+      .toHaveBeenCalledOnceWith(
+        {
+          side: Side.Buy,
+          quantity,
+          price,
+          instrument: testSettings
+        },
+        (1 + testSettings.topOrderPriceRatio! * 0.01) * price,
+        (1 - testSettings.bottomOrderPriceRatio! * 0.01) * price,
         portfolioKey.portfolio
       );
   }));
@@ -887,7 +1025,7 @@ describe('ScalperOrdersService', () => {
     })
   );
 
-  it('#placeOrdersGroup should create orders with appropriate date', fakeAsync(() => {
+  it('#placeBracket should create orders with appropriate date', fakeAsync(() => {
     orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
 
     const baseOrder: LimitOrder = {
@@ -900,7 +1038,7 @@ describe('ScalperOrdersService', () => {
     const bottomOrderPrice = getRandomInt(1, 100);
     const portfolio = generateRandomString(5);
 
-    service.placeOrdersGroup(
+    service.placeBracket(
       baseOrder,
       topOrderPrice,
       null,
@@ -930,7 +1068,7 @@ describe('ScalperOrdersService', () => {
 
     orderServiceSpy.submitOrdersGroup.calls.reset();
 
-    service.placeOrdersGroup(
+    service.placeBracket(
       baseOrder,
       null,
       bottomOrderPrice,
@@ -960,7 +1098,7 @@ describe('ScalperOrdersService', () => {
 
     orderServiceSpy.submitOrdersGroup.calls.reset();
 
-    service.placeOrdersGroup(
+    service.placeBracket(
       baseOrder,
       topOrderPrice,
       bottomOrderPrice,
@@ -1084,7 +1222,7 @@ describe('ScalperOrdersService', () => {
       expect(notificationServiceSpy.warning).toHaveBeenCalledTimes(1);
     }));
 
-    it('should should call appropriate service with appropriate data', fakeAsync(() => {
+    it('should call appropriate service with appropriate data', fakeAsync(() => {
         const portfolioKey: PortfolioKey = {
           exchange: generateRandomString(4),
           portfolio: generateRandomString(5),

@@ -16,7 +16,7 @@ import { CurrentOrderDisplay, } from '../models/scalper-order-book.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { MathHelper } from '../../../shared/utils/math-helper';
 import { LessMore } from "../../../shared/models/enums/less-more.model";
-import { ScalperOrderBookSettings } from "../models/scalper-order-book-settings.model";
+import { OrderPriceUnits, ScalperOrderBookSettings } from "../models/scalper-order-book-settings.model";
 import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
 
 @Injectable({
@@ -66,13 +66,13 @@ export class ScalperOrdersService {
   }
 
   placeBestOrder(
-    instrument: Instrument,
     settings: ScalperOrderBookSettings,
+    instrument: Instrument,
     side: Side,
     quantity: number,
     orderBook: OrderbookData,
     portfolio: PortfolioKey,
-    position?: Position | null
+    position: Position | null
   ): void {
     if (orderBook.a.length === 0 || orderBook.b.length === 0) {
       return;
@@ -105,16 +105,16 @@ export class ScalperOrdersService {
     }
 
     if (price != undefined) {
-      if (this.checkOrderGroupNeeded(settings, side, quantity, position)) {
-        this.placeOrdersGroup(
+      if (this.checkBracketNeeded(settings, side, quantity, position)) {
+        this.placeBracket(
           {
             side: side,
             price: price!,
             quantity: quantity,
             instrument: instrument
           },
-          (settings.topOrderPriceRatio && ((100 + settings.topOrderPriceRatio) * bestBid * 0.01)) || null,
-          (settings.bottomOrderPriceRatio && ((100 - settings.bottomOrderPriceRatio) * bestBid * 0.01)) || null,
+          this.getBracketOrderPrice(settings, price, instrument.minstep),
+          this.getBracketOrderPrice(settings, price, instrument.minstep, false),
           portfolio.portfolio
         );
       } else {
@@ -130,22 +130,29 @@ export class ScalperOrdersService {
     }
   }
 
-  sellBestBid(settings: ScalperOrderBookSettings, quantity: number, orderBook: OrderbookData, portfolio: PortfolioKey, position?: Position | null): void {
+  sellBestBid(
+    settings: ScalperOrderBookSettings,
+    instrument: Instrument,
+    quantity: number,
+    orderBook: OrderbookData,
+    portfolio: PortfolioKey,
+    position: Position | null
+  ): void {
     if (orderBook.b.length === 0) {
       return;
     }
 
     const bestBid = orderBook.b[0].p;
 
-    if (this.checkOrderGroupNeeded(settings, Side.Sell, quantity, position)) {
-      this.placeOrdersGroup({
+    if (this.checkBracketNeeded(settings, Side.Sell, quantity, position)) {
+      this.placeBracket({
           side: Side.Sell,
           quantity: quantity,
           price: bestBid!,
           instrument: settings
         },
-        (settings.topOrderPriceRatio && ((100 + settings.topOrderPriceRatio) * bestBid * 0.01)) || null,
-        (settings.bottomOrderPriceRatio && ((100 - settings.bottomOrderPriceRatio) * bestBid * 0.01)) || null,
+        this.getBracketOrderPrice(settings, bestBid, instrument.minstep),
+        this.getBracketOrderPrice(settings, bestBid, instrument.minstep, false),
         portfolio.portfolio
       );
     } else {
@@ -160,22 +167,29 @@ export class ScalperOrdersService {
     }
   }
 
-  buyBestAsk(settings: ScalperOrderBookSettings, quantity: number, orderBook: OrderbookData, portfolio: PortfolioKey, position?: Position | null): void {
+  buyBestAsk(
+    settings: ScalperOrderBookSettings,
+    instrument: Instrument,
+    quantity: number,
+    orderBook: OrderbookData,
+    portfolio: PortfolioKey,
+    position: Position | null
+  ): void {
     if (orderBook.a.length === 0) {
       return;
     }
 
     const bestAsk = orderBook.a[0].p;
 
-    if (this.checkOrderGroupNeeded(settings, Side.Buy, quantity, position)) {
-      this.placeOrdersGroup({
+    if (this.checkBracketNeeded(settings, Side.Buy, quantity, position)) {
+      this.placeBracket({
         side: Side.Buy,
         quantity: quantity,
         price: bestAsk!,
         instrument: settings
       },
-        (settings.topOrderPriceRatio && (100 + settings.topOrderPriceRatio) * bestAsk * 0.01) || null,
-        (settings.bottomOrderPriceRatio && (100 - settings.bottomOrderPriceRatio) * bestAsk * 0.01) || null,
+        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep),
+        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, false),
         portfolio.portfolio
         );
     } else {
@@ -208,7 +222,16 @@ export class ScalperOrdersService {
     }
   }
 
-  placeLimitOrder(settings: ScalperOrderBookSettings, side: Side, quantity: number, price: number, silent: boolean, portfolio: PortfolioKey, position?: Position | null) {
+  placeLimitOrder(
+    settings: ScalperOrderBookSettings,
+    instrument: Instrument,
+    side: Side,
+    quantity: number,
+    price: number,
+    silent: boolean,
+    portfolio: PortfolioKey,
+    position: Position | null
+  ) {
     const order: LimitOrder = {
       side: side,
       quantity: quantity,
@@ -216,21 +239,21 @@ export class ScalperOrdersService {
       instrument: settings
     };
 
-    const topOrderPrice = settings.topOrderPriceRatio ? (100 + settings.topOrderPriceRatio) * price * 0.01 : null;
-    const bottomOrderPrice = settings.bottomOrderPriceRatio ? (100 - settings.bottomOrderPriceRatio) * price * 0.01 : null;
+    const topOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep);
+    const bottomOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, false);
 
     if (silent) {
       if (
-        this.checkOrderGroupNeeded(settings, side, quantity, position)
+        this.checkBracketNeeded(settings, side, quantity, position)
       ) {
-        this.placeOrdersGroup(order, topOrderPrice, bottomOrderPrice, portfolio.portfolio);
+        this.placeBracket(order, topOrderPrice, bottomOrderPrice, portfolio.portfolio);
       } else {
         this.orderService.submitLimitOrder(order, portfolio.portfolio).subscribe();
       }
     }
     else {
       if (
-        this.checkOrderGroupNeeded(settings, side, quantity, position)
+        this.checkBracketNeeded(settings, side, quantity, position)
       ) {
         this.modal.openCommandModal({
           ...order,
@@ -380,7 +403,7 @@ export class ScalperOrdersService {
     }
   }
 
-  placeOrdersGroup(baseOrder: LimitOrder, topOrderPrice: number | null, bottomOrderPrice: number | null, portfolio: string) {
+  placeBracket(baseOrder: LimitOrder, topOrderPrice: number | null, bottomOrderPrice: number | null, portfolio: string) {
     const orders: ((LimitOrder | StopLimitOrder) & { type: 'Limit' | 'StopLimit' })[] = [{
       ...baseOrder,
       type: 'Limit',
@@ -411,7 +434,7 @@ export class ScalperOrdersService {
     this.orderService.submitOrdersGroup(orders, portfolio, ExecutionPolicy.TriggerBracketOrders).subscribe();
   }
 
-  private checkOrderGroupNeeded(settings: ScalperOrderBookSettings, side: Side, quantity: number, position?: Position | null): boolean {
+  private checkBracketNeeded(settings: ScalperOrderBookSettings, side: Side, quantity: number, position: Position | null): boolean {
     const isClosingPosition = position
       ? side === Side.Sell
         ? Math.abs(position.qtyTFuture - quantity) < Math.abs(position.qtyTFuture)
@@ -421,5 +444,25 @@ export class ScalperOrdersService {
     return !!(settings.useLinkedOrders &&
       (settings.topOrderPriceRatio || settings.bottomOrderPriceRatio) &&
       (settings.useLinkedOrdersWhenClosingPosition || !isClosingPosition));
+  }
+
+  private getBracketOrderPrice(settings: ScalperOrderBookSettings, price: number, minStep: number, isTopOrder = true): number | null {
+    if (!settings.orderPriceUnits || settings.orderPriceUnits === OrderPriceUnits.Steps) {
+      return isTopOrder
+        ? settings.topOrderPriceRatio
+          ? price + (settings.topOrderPriceRatio * minStep)
+          : null
+        : settings.bottomOrderPriceRatio
+          ? price - (settings.bottomOrderPriceRatio * minStep)
+          : null;
+    }
+
+    return isTopOrder
+      ? settings.topOrderPriceRatio
+        ? (1 + settings.topOrderPriceRatio * 0.01) * price
+        : null
+      : settings.bottomOrderPriceRatio
+        ? (1 - settings.bottomOrderPriceRatio * 0.01) * price
+        : null;
   }
 }

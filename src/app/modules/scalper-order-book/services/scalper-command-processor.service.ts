@@ -151,7 +151,7 @@ export class ScalperCommandProcessorService {
                     portfolioKey => {
                       this.callWithPosition(
                         dataContext,
-                        position => this.scalperOrdersService.sellBestBid(settings.widgetSettings, workingVolume!, orderBook, portfolioKey, position)
+                        position => this.scalperOrdersService.sellBestBid(settings.widgetSettings, settings.instrument, workingVolume!, orderBook, portfolioKey, position)
                       );
                     }
 
@@ -178,7 +178,7 @@ export class ScalperCommandProcessorService {
                     portfolioKey => {
                       this.callWithPosition(
                         dataContext,
-                        position => this.scalperOrdersService.buyBestAsk(settings.widgetSettings, workingVolume!, orderBook, portfolioKey, position)
+                        position => this.scalperOrdersService.buyBestAsk(settings.widgetSettings, settings.instrument, workingVolume!, orderBook, portfolioKey, position)
                       );
                     }
 
@@ -266,7 +266,7 @@ export class ScalperCommandProcessorService {
                   portfolioKey => {
                     this.callWithPosition(
                       dataContext,
-                      position => this.scalperOrdersService.placeBestOrder(settings.instrument, settings.widgetSettings, side, workingVolume!, orderBook, portfolioKey, position)
+                      position => this.scalperOrdersService.placeBestOrder(settings.widgetSettings, settings.instrument, side, workingVolume!, orderBook, portfolioKey, position)
                     );
                   }
 
@@ -465,6 +465,7 @@ export class ScalperCommandProcessorService {
                   position => {
                     this.scalperOrdersService.placeLimitOrder(
                       settings.widgetSettings,
+                      settings.instrument,
                       side,
                       workingVolume,
                       row.price,

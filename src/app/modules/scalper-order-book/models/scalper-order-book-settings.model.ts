@@ -34,6 +34,11 @@ export enum VolumeHighlightMode {
   VolumeBoundsWithFixedValue = 'volumeBoundsWithFixedValue'
 }
 
+export enum OrderPriceUnits {
+  Steps = 'steps',
+  Percents = 'percents'
+}
+
 export interface VolumeHighlightOption {
   boundary: number;
   color: string;
@@ -59,8 +64,9 @@ export interface ScalperOrderBookSettings extends WidgetSettings, InstrumentKey 
   layout?: OrderBookLayoutSettings;
   showRuler?: boolean;
   rulerSettings?: RulerSettings;
-  useLinkedOrders?: boolean;
+  useBrackets?: boolean;
+  orderPriceUnits?: OrderPriceUnits;
   topOrderPriceRatio?: number;
   bottomOrderPriceRatio?: number;
-  useLinkedOrdersWhenClosingPosition?: boolean;
+  useBracketsWhenClosingPosition?: boolean;
 }

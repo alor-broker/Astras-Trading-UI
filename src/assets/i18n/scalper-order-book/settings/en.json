@@ -29,10 +29,11 @@
   "rulerSettingsLabel": "Ruler settings",
   "markerDisplayFormatLabel": "Marker value",
   "showPriceWithZeroPaddingLabel": "Display prices with the same number of decimal places",
-  "useLinkedOrdersLabel": "Use linked orders",
-  "topOrderPriceRatioLabel": "Order from above (>), %",
-  "bottomOrderPriceRatioLabel": "Order from below (<), %",
-  "useLinkedOrdersWhenClosingPositionLabel": "Use bracket when closing position",
+  "useBracketsLabel": "Use brackets",
+  "orderPriceUnitsLabel": "Price units",
+  "topOrderPriceRatioLabel": "Order from above (>)",
+  "bottomOrderPriceRatioLabel": "Order from below (<)",
+  "useBracketsWhenClosingPositionLabel": "Use bracket when closing position",
 
   "tickerError": "Select ticker",
   "intervalError": "Value should be from {{min}} to {{max}}",
@@ -56,6 +57,10 @@
   },
   "markerDisplayFormatOptions": {
     "points": "Points",
+    "percents": "Percents"
+  },
+  "orderPriceUnits": {
+    "steps": "Steps",
     "percents": "Percents"
   }
 }
