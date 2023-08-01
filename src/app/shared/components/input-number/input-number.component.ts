@@ -140,9 +140,8 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     const step = (this.step ?? 1) * multiplier;
     const currentValue = this.value ?? 0;
 
-    const roundingDecimals = Math.max(MathHelper.getPrecision(step), MathHelper.getPrecision(currentValue));
 
-    let newValue = MathHelper.round(currentValue + step, roundingDecimals);
+    let newValue = MathHelper.roundPriceByMinStep(currentValue + step, this.step ?? 1);
     newValue = (newValue > 0 || this.allowNegative) ? newValue : 0;
 
     this.setDisplayValue(newValue);
