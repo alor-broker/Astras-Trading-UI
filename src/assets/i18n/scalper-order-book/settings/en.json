@@ -30,6 +30,7 @@
   "markerDisplayFormatLabel": "Marker value",
   "showPriceWithZeroPaddingLabel": "Display prices with the same number of decimal places",
   "useBracketsLabel": "Use brackets",
+  "bracketsSettingsLabel": "Bracket settings",
   "orderPriceUnitsLabel": "Price units",
   "topOrderPriceRatioLabel": "Order from above (>)",
   "bottomOrderPriceRatioLabel": "Order from below (<)",
@@ -55,12 +56,8 @@
     "biggestVolume": "Relative to the largest volume",
     "volumeBoundsWithFixedValue":  "By borders (more than volume)"
   },
-  "markerDisplayFormatOptions": {
+  "priceUnitsOptions": {
     "points": "Points",
-    "percents": "Percents"
-  },
-  "orderPriceUnits": {
-    "steps": "Steps",
     "percents": "Percents"
   }
 }

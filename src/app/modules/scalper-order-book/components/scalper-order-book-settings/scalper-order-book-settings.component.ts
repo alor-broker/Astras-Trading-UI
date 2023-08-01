@@ -6,8 +6,7 @@ import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import {
-  MarkerDisplayFormat,
-  OrderPriceUnits,
+  PriceUnits,
   ScalperOrderBookSettings,
   VolumeHighlightMode,
   VolumeHighlightOption
@@ -53,14 +52,13 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
   };
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
-  readonly availableMarkerFormats = Object.values(MarkerDisplayFormat);
 
   @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
-  orderPriceUnits = OrderPriceUnits;
+  orderPriceUnits = PriceUnits;
   exchanges: string[] = exchangesList;
   readonly availableVolumeHighlightModes: string[] = [
     VolumeHighlightMode.Off,
@@ -242,49 +240,51 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
       showRuler: new UntypedFormControl(settings.showRuler ?? false),
       rulerSettings: new UntypedFormGroup({
         markerDisplayFormat: new UntypedFormControl(
-          settings.rulerSettings?.markerDisplayFormat ?? MarkerDisplayFormat.Points
+          settings.rulerSettings?.markerDisplayFormat ?? PriceUnits.Points
         )
       }),
       showPriceWithZeroPadding: new UntypedFormControl(settings.showPriceWithZeroPadding ?? false),
       useBrackets: new UntypedFormControl(settings.useBrackets ?? false),
-      orderPriceUnits: new UntypedFormControl(settings.orderPriceUnits ?? OrderPriceUnits.Steps),
-      topOrderPriceRatio: new UntypedFormControl(
-        settings.topOrderPriceRatio ?? null,
-        [
-          Validators.min(this.validationOptions.bracket.price.min),
-          Validators.max(this.validationOptions.bracket.price.max),
-          settings.orderPriceUnits === OrderPriceUnits.Percents
-            ? percentsPriceStepValidatorFn
-            : stepsPriceStepValidatorFn
-        ]
-      ),
-      bottomOrderPriceRatio: new UntypedFormControl(
-        settings.bottomOrderPriceRatio ?? null,
-        [
-          Validators.min(this.validationOptions.bracket.price.min),
-          Validators.max(this.validationOptions.bracket.price.max),
-          settings.orderPriceUnits === OrderPriceUnits.Percents
-            ? percentsPriceStepValidatorFn
-            : stepsPriceStepValidatorFn
-        ]
-      ),
-      useBracketsWhenClosingPosition: new UntypedFormControl(settings.useBracketsWhenClosingPosition ?? false)
+      bracketsSettings: new UntypedFormGroup({
+        orderPriceUnits: new UntypedFormControl(settings.bracketsSettings?.orderPriceUnits ?? PriceUnits.Points),
+        topOrderPriceRatio: new UntypedFormControl(
+          settings.bracketsSettings?.topOrderPriceRatio ?? null,
+          [
+            Validators.min(this.validationOptions.bracket.price.min),
+            Validators.max(this.validationOptions.bracket.price.max),
+            settings.orderPriceUnits === PriceUnits.Percents
+              ? percentsPriceStepValidatorFn
+              : stepsPriceStepValidatorFn
+          ]
+        ),
+        bottomOrderPriceRatio: new UntypedFormControl(
+          settings.bracketsSettings?.bottomOrderPriceRatio ?? null,
+          [
+            Validators.min(this.validationOptions.bracket.price.min),
+            Validators.max(this.validationOptions.bracket.price.max),
+            settings.orderPriceUnits === PriceUnits.Percents
+              ? percentsPriceStepValidatorFn
+              : stepsPriceStepValidatorFn
+          ]
+        ),
+        useBracketsWhenClosingPosition: new UntypedFormControl(settings.bracketsSettings?.useBracketsWhenClosingPosition ?? false)
+      })
     });
 
-    this.form.get('orderPriceUnits')!.valueChanges
+    this.form.get('bracketsSettings')!.get('orderPriceUnits')!.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: OrderPriceUnits) => {
-        const topOrderPriceRatioControl = this.form.get('topOrderPriceRatio')!;
-        const bottomOrderPriceRatioControl = this.form.get('bottomOrderPriceRatio')!;
+      .subscribe((value: PriceUnits) => {
+        const topOrderPriceRatioControl = this.form.get('bracketsSettings')!.get('topOrderPriceRatio');
+        const bottomOrderPriceRatioControl = this.form.get('bracketsSettings')!.get('bottomOrderPriceRatio');
 
-        topOrderPriceRatioControl.removeValidators([percentsPriceStepValidatorFn, stepsPriceStepValidatorFn]);
-        bottomOrderPriceRatioControl.removeValidators([percentsPriceStepValidatorFn, stepsPriceStepValidatorFn]);
+        topOrderPriceRatioControl?.removeValidators([percentsPriceStepValidatorFn, stepsPriceStepValidatorFn]);
+        bottomOrderPriceRatioControl?.removeValidators([percentsPriceStepValidatorFn, stepsPriceStepValidatorFn]);
 
-        topOrderPriceRatioControl.addValidators(value === OrderPriceUnits.Percents ? percentsPriceStepValidatorFn : stepsPriceStepValidatorFn);
-        bottomOrderPriceRatioControl.addValidators(value === OrderPriceUnits.Percents ? percentsPriceStepValidatorFn : stepsPriceStepValidatorFn);
+        topOrderPriceRatioControl?.addValidators(value === PriceUnits.Percents ? percentsPriceStepValidatorFn : stepsPriceStepValidatorFn);
+        bottomOrderPriceRatioControl?.addValidators(value === PriceUnits.Percents ? percentsPriceStepValidatorFn : stepsPriceStepValidatorFn);
 
-        topOrderPriceRatioControl.updateValueAndValidity();
-        bottomOrderPriceRatioControl.updateValueAndValidity();
+        topOrderPriceRatioControl?.updateValueAndValidity();
+        bottomOrderPriceRatioControl?.updateValueAndValidity();
       });
   }
 

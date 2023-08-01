@@ -27,7 +27,7 @@ import { CurrentOrderDisplay } from '../models/scalper-order-book.model';
 import { OrderbookDataRow } from '../../orderbook/models/orderbook-data.model';
 import { LessMore } from "../../../shared/models/enums/less-more.model";
 import {
-  OrderPriceUnits,
+  PriceUnits,
   ScalperOrderBookSettings,
   VolumeHighlightMode
 } from "../models/scalper-order-book-settings.model";
@@ -353,9 +353,11 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrument,
-      topOrderPriceRatio: 1,
-      bottomOrderPriceRatio: 2,
-      useLinkedOrders: true
+      useBrackets: true,
+      bracketsSettings: {
+        topOrderPriceRatio: 1,
+        bottomOrderPriceRatio: 2
+      }
     };
 
     orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
@@ -386,8 +388,8 @@ describe('ScalperOrdersService', () => {
       price: testBids[0].p,
       instrument: testInstrument
       },
-      testBids[0].p + (testSettings.topOrderPriceRatio! * testInstrument.minstep),
-      testBids[0].p - (testSettings.bottomOrderPriceRatio! * testInstrument.minstep),
+      testBids[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep),
+      testBids[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep),
       portfolioKey.portfolio
     );
   }));
@@ -472,9 +474,11 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrument,
-      topOrderPriceRatio: 1,
-      bottomOrderPriceRatio: 2,
-      useLinkedOrders: true
+      useBrackets: true,
+      bracketsSettings: {
+        topOrderPriceRatio: 1,
+        bottomOrderPriceRatio: 2
+      }
     };
 
     orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
@@ -509,8 +513,8 @@ describe('ScalperOrdersService', () => {
         price: testBids[0].p,
         instrument: testSettings
       },
-      testBids[0].p + (testSettings.topOrderPriceRatio! * testInstrument.minstep),
-      testBids[0].p - (testSettings.bottomOrderPriceRatio! * testInstrument.minstep),
+      testBids[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep),
+      testBids[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep),
       portfolioKey.portfolio
     );
   }));
@@ -595,9 +599,11 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrument,
-      topOrderPriceRatio: 1,
-      bottomOrderPriceRatio: 2,
-      useLinkedOrders: true
+      useBrackets: true,
+      bracketsSettings: {
+        topOrderPriceRatio: 1,
+        bottomOrderPriceRatio: 2
+      }
     };
 
     orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
@@ -632,8 +638,8 @@ describe('ScalperOrdersService', () => {
         price: testAsks[0].p,
         instrument: testSettings
       },
-      testAsks[0].p + (testSettings.topOrderPriceRatio! * testInstrument.minstep),
-      testAsks[0].p - (testSettings.bottomOrderPriceRatio! * testInstrument.minstep),
+      testAsks[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep),
+      testAsks[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep),
       portfolioKey.portfolio
     );
   }));
@@ -790,9 +796,11 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrumentKey,
-      topOrderPriceRatio: 1,
-      bottomOrderPriceRatio: 2,
-      useLinkedOrders: true
+      useBrackets: true,
+      bracketsSettings: {
+        topOrderPriceRatio: 1,
+        bottomOrderPriceRatio: 2,
+      }
     };
 
     orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
@@ -819,8 +827,8 @@ describe('ScalperOrdersService', () => {
           price,
           instrument: testSettings
         },
-        price + (testSettings.topOrderPriceRatio! * testInstrument.minstep),
-        price - (testSettings.bottomOrderPriceRatio! * testInstrument.minstep),
+        price + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep),
+        price - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep),
         portfolioKey.portfolio
       );
   }));
@@ -847,10 +855,12 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrumentKey,
-      topOrderPriceRatio: 1,
-      bottomOrderPriceRatio: 2,
-      useLinkedOrders: true,
-      orderPriceUnits: OrderPriceUnits.Percents
+      useBrackets: true,
+      bracketsSettings: {
+        topOrderPriceRatio: 1,
+        bottomOrderPriceRatio: 2,
+        orderPriceUnits: PriceUnits.Percents
+      }
     };
 
     orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
@@ -877,8 +887,8 @@ describe('ScalperOrdersService', () => {
           price,
           instrument: testSettings
         },
-        (1 + testSettings.topOrderPriceRatio! * 0.01) * price,
-        (1 - testSettings.bottomOrderPriceRatio! * 0.01) * price,
+        (1 + testSettings.bracketsSettings!.topOrderPriceRatio! * 0.01) * price,
+        (1 - testSettings.bracketsSettings!.bottomOrderPriceRatio! * 0.01) * price,
         portfolioKey.portfolio
       );
   }));

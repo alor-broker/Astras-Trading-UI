@@ -16,8 +16,13 @@ import { CurrentOrderDisplay, } from '../models/scalper-order-book.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { MathHelper } from '../../../shared/utils/math-helper';
 import { LessMore } from "../../../shared/models/enums/less-more.model";
-import { OrderPriceUnits, ScalperOrderBookSettings } from "../models/scalper-order-book-settings.model";
+import { PriceUnits, ScalperOrderBookSettings } from "../models/scalper-order-book-settings.model";
 import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
+
+enum BracketOrderType {
+  Top = 'top',
+  Bottom = 'bottom'
+}
 
 @Injectable({
   providedIn: 'root'
@@ -113,8 +118,8 @@ export class ScalperOrdersService {
             quantity: quantity,
             instrument: instrument
           },
-          this.getBracketOrderPrice(settings, price, instrument.minstep),
-          this.getBracketOrderPrice(settings, price, instrument.minstep, false),
+          this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Top),
+          this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Bottom),
           portfolio.portfolio
         );
       } else {
@@ -151,8 +156,8 @@ export class ScalperOrdersService {
           price: bestBid!,
           instrument: settings
         },
-        this.getBracketOrderPrice(settings, bestBid, instrument.minstep),
-        this.getBracketOrderPrice(settings, bestBid, instrument.minstep, false),
+        this.getBracketOrderPrice(settings, bestBid, instrument.minstep, BracketOrderType.Top),
+        this.getBracketOrderPrice(settings, bestBid, instrument.minstep, BracketOrderType.Bottom),
         portfolio.portfolio
       );
     } else {
@@ -188,8 +193,8 @@ export class ScalperOrdersService {
         price: bestAsk!,
         instrument: settings
       },
-        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep),
-        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, false),
+        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, BracketOrderType.Top),
+        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, BracketOrderType.Bottom),
         portfolio.portfolio
         );
     } else {
@@ -239,8 +244,8 @@ export class ScalperOrdersService {
       instrument: settings
     };
 
-    const topOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep);
-    const bottomOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, false);
+    const topOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Top);
+    const bottomOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Bottom);
 
     if (silent) {
       if (
@@ -441,28 +446,32 @@ export class ScalperOrdersService {
         : Math.abs(position.qtyTFuture + quantity) < Math.abs(position.qtyTFuture)
       : false;
 
-    return !!(settings.useLinkedOrders &&
-      (settings.topOrderPriceRatio || settings.bottomOrderPriceRatio) &&
-      (settings.useLinkedOrdersWhenClosingPosition || !isClosingPosition));
+    return !!(settings.useBrackets && settings.bracketsSettings &&
+      (settings.bracketsSettings.topOrderPriceRatio || settings.bracketsSettings.bottomOrderPriceRatio) &&
+      (settings.bracketsSettings.useBracketsWhenClosingPosition || !isClosingPosition));
   }
 
-  private getBracketOrderPrice(settings: ScalperOrderBookSettings, price: number, minStep: number, isTopOrder = true): number | null {
-    if (!settings.orderPriceUnits || settings.orderPriceUnits === OrderPriceUnits.Steps) {
-      return isTopOrder
-        ? settings.topOrderPriceRatio
-          ? price + (settings.topOrderPriceRatio * minStep)
+  private getBracketOrderPrice(settings: ScalperOrderBookSettings, price: number, minStep: number, orderType: BracketOrderType): number | null {
+    if (!settings.useBrackets) {
+      return null;
+    }
+
+    if (!settings.bracketsSettings!.orderPriceUnits || settings.bracketsSettings!.orderPriceUnits === PriceUnits.Points) {
+      return orderType === BracketOrderType.Top
+        ? settings.bracketsSettings!.topOrderPriceRatio
+          ? price + (settings.bracketsSettings!.topOrderPriceRatio * minStep)
           : null
-        : settings.bottomOrderPriceRatio
-          ? price - (settings.bottomOrderPriceRatio * minStep)
+        : settings.bracketsSettings!.bottomOrderPriceRatio
+          ? price - (settings.bracketsSettings!.bottomOrderPriceRatio * minStep)
           : null;
     }
 
-    return isTopOrder
-      ? settings.topOrderPriceRatio
-        ? (1 + settings.topOrderPriceRatio * 0.01) * price
+    return orderType === BracketOrderType.Top
+      ? settings.bracketsSettings!.topOrderPriceRatio
+        ? (1 + settings.bracketsSettings!.topOrderPriceRatio * 0.01) * price
         : null
-      : settings.bottomOrderPriceRatio
-        ? (1 - settings.bottomOrderPriceRatio * 0.01) * price
+      : settings.bracketsSettings!.bottomOrderPriceRatio
+        ? (1 - settings.bracketsSettings!.bottomOrderPriceRatio * 0.01) * price
         : null;
   }
 }

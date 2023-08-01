@@ -30,6 +30,7 @@
   "markerDisplayFormatLabel": "Значение маркера",
   "showPriceWithZeroPaddingLabel": "Отображать цены с одинаковым количеством знаков после запятой",
   "useBracketsLabel": "Использовать коридоры",
+  "bracketsSettingsLabel": "Настройки коридора",
   "orderPriceUnitsLabel": "Единицы цены",
   "topOrderPriceRatioLabel": "Условная заявка сверху (>)",
   "bottomOrderPriceRatioLabel": "Условная заявка снизу (<)",
@@ -56,12 +57,8 @@
     "biggestVolume": "Относительно наибольшего объема",
     "volumeBoundsWithFixedValue":  "По границам (более объема)"
   },
-  "markerDisplayFormatOptions": {
+  "priceUnitsOptions": {
     "points": "Пункты",
-    "percents": "Проценты"
-  },
-  "orderPriceUnits": {
-    "steps": "Шаги",
     "percents": "Проценты"
   }
 }
