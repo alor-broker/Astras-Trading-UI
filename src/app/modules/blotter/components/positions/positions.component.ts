@@ -147,7 +147,7 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       id: 'currentVolume',
       displayName: 'Тек. объём',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.volume - b.volume,
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.currentVolume - b.currentVolume,
       tooltip: 'Объём по позиции расчитанный по текущей цене',
       minWidth: 60
     },
