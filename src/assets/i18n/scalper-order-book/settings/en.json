@@ -42,7 +42,8 @@
   "workingVolumeMinError": "Value should be greater than zero",
   "workingVolumeRequiredError": "Input value",
   "instrumentGroupError": "Select trading mode",
-  "priceRatioStepMultiplicityError": "The value must be a multiple of the step",
+  "priceRatioPercentsMultiplicityError": "The value must be a multiple of the step",
+  "priceRatioPointsMultiplicityError": "The value should be integer",
 
   "intervalPlaceholder": "Value from {{min}} to {{max}}",
 

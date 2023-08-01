@@ -42,7 +42,8 @@
   "workingVolumeMinError": "Значение должно быть больше нуля",
   "workingVolumeRequiredError": "Введите значение",
   "instrumentGroupError": "Выберите режим торгов",
-  "priceRatioStepMultiplicityError": "Значение должно быть кратно шагу",
+  "priceRatioPercentsMultiplicityError": "Значение должно быть кратно шагу",
+  "priceRatioPointsMultiplicityError": "Значение должно быть целочисленным",
 
   "intervalPlaceholder": "Значение от {{min}} до {{max}}",
 
