@@ -15,9 +15,12 @@
         [linkToActive]="settings.linkToActive"
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [customTitle]="title$ | async"
+        [titleTemplate]="titleTemplate"
         [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
+      <ng-template #titleTemplate>
+        <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+      </ng-template>
     </ng-template>
 
     <ng-template #contentRef>

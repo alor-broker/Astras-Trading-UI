@@ -17,7 +17,6 @@ import {
 } from 'rxjs';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { LOGGER } from '../../../../shared/services/logging/logger-base';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
@@ -68,12 +67,6 @@ describe('OrderSubmitWidgetComponent', () => {
             instrumentsSelection$: new Subject(),
             selectedPortfolio$: new Subject(),
             selectedDashboard$: new Subject()
-          }
-        },
-        {
-          provide: InstrumentsService,
-          useValue: {
-            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({})),
           }
         },
         {

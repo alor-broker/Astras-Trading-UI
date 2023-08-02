@@ -12,7 +12,6 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { of } from 'rxjs';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 
@@ -54,13 +53,7 @@ describe('ScalperOrderBookWidgetComponent', () => {
           useValue: {
             instrumentsSelection$: of({})
           }
-        },
-        {
-          provide: InstrumentsService,
-          useValue: {
-            getInstrument: of({})
-          }
-        },
+        }
       ]
     })
       .compileComponents();

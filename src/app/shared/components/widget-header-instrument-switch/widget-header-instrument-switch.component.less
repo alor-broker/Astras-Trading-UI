@@ -1,0 +1,34 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    color: @heading-color;
+  }
+});
+
+:host {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.title-text {
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+
+ats-instrument-search {
+  min-width: 300px;
+}
+
+::ng-deep {
+  .ant-dropdown-menu-item {
+    line-height: 20px;
+
+    &.ant-dropdown-menu-item:hover {
+      background-color: initial;
+    }
+  }
+}
+
+
+

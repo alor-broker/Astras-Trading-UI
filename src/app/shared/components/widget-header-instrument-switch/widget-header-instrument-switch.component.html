@@ -1,0 +1,49 @@
+<ng-container *ngIf="instrument$ | async as instrument">
+  <div #menuSource
+       (nzVisibleChange)="searchVisibilityChanged($event)"
+       [(nzVisible)]="searchVisible"
+       [nzClickHide]="false"
+       [nzDropdownMenu]="menu"
+       class="d-flex"
+       nz-dropdown
+       nzTrigger="click"
+       nzBackdrop="true"
+  >
+    <div class="title-text overflow-x-hidden">
+      <label [nzPopoverContent]="getTitle(instrument)"
+             [nzPopoverTrigger]="searchVisible ? null : 'hover'"
+             nz-popover
+             nzPopoverPlacement="bottom">
+        {{getTitle(instrument)}}
+      </label>
+    </div>
+    <div>
+      <button (mousedown)="triggerMenu($event, menuSource)" nz-button nzSize="small" nzType="text" class="search-btn">
+        <i nz-icon nzTheme="outline" nzType="down"></i>
+      </button>
+    </div>
+  </div>
+
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <ul nz-menu>
+      <li nz-menu-item>
+        <div class="w-100 d-flex justify-content-between">
+          <span nz-typography><strong>{{getTitle(instrument)}}</strong></span>
+          <button (click)="close()"
+                  nz-button
+                  nzSize='small'
+                  nzType="link"
+          >
+            <i nz-icon nzType="close"></i>
+          </button>
+        </div>
+      </li>
+      <li class="search-input" nz-menu-item>
+        <ats-instrument-search
+          [showHelpTooltip]="false"
+          (instrumentSelected)="instrumentSelected($event)"
+        ></ats-instrument-search>
+      </li>
+    </ul>
+  </nz-dropdown-menu>
+</ng-container>
