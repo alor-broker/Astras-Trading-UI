@@ -45,28 +45,28 @@ export class MathHelper {
   }
 
   /**
-   * Rounding a price to min step precision and checks if
-   * rounded price is a multiple of the price step
-   * @param dirtyPrice Number you need to round
+   * Rounding a value to minimal step precision and checks if
+   * rounded value is a multiple of the minimal step
+   * @param dirtyValue Number you need to round
    * @param minStep Instrument min step
    * @returns Rounded number
    */
-  static roundPriceByMinStep(dirtyPrice: number, minStep: number) {
-    const roundedPrice = this.round(
-      dirtyPrice,
+  static roundByMinStepMultiplicity(dirtyValue: number, minStep: number) {
+    const roundedValue = this.round(
+      dirtyValue,
       MathHelper.getPrecision(minStep)
     );
     const minStepPrecision = MathHelper.getPrecision(minStep);
-    const priceMOD = this.round(roundedPrice % minStep, minStepPrecision);
+    const valueMOD = this.round(roundedValue % minStep, minStepPrecision);
 
-    if (!priceMOD) {
-      return roundedPrice;
+    if (!valueMOD) {
+      return roundedValue;
     }
 
-    if (priceMOD >= this.round(minStep / 2, minStepPrecision)) {
-      return this.round(roundedPrice + minStep - priceMOD, minStepPrecision);
+    if (valueMOD >= this.round(minStep / 2, minStepPrecision)) {
+      return this.round(roundedValue + minStep - valueMOD, minStepPrecision);
     }
 
-    return this.round(roundedPrice - priceMOD, minStepPrecision);
+    return this.round(roundedValue - valueMOD, minStepPrecision);
   }
 }

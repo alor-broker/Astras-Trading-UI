@@ -137,11 +137,11 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   }
 
   private stepChange(multiplier: number) {
-    const step = (this.step ?? 1) * multiplier;
+    const valueStep = this.step ?? 1;
+    const move = valueStep * multiplier;
     const currentValue = this.value ?? 0;
 
-
-    let newValue = MathHelper.roundPriceByMinStep(currentValue + step, this.step ?? 1);
+    let newValue = MathHelper.roundByMinStepMultiplicity(currentValue + move, valueStep);
     newValue = (newValue > 0 || this.allowNegative) ? newValue : 0;
 
     this.setDisplayValue(newValue);
