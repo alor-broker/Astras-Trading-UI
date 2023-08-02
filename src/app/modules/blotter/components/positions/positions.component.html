@@ -73,6 +73,7 @@
               <td *ngIf='column.id === "qtyTFuture"'
                   [class]='pos.qtyTFuture < 0 ? "sell" : "buy"'>{{ round(pos.qtyTFuture) | number }}</td>
               <td *ngIf='column.id === "volume"'>{{ pos.volume | number }}</td>
+              <td *ngIf='column.id === "currentVolume"'>{{ pos.currentVolume | number }}</td>
               <td *ngIf='column.id === "unrealisedPl"'
                   [class]='pos.unrealisedPl < 0 ? "sell" : "buy"'>{{ round(pos.unrealisedPl) | number }}</td>
               <td *ngIf='column.id === "dailyUnrealisedPl"'
