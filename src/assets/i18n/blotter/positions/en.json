@@ -31,8 +31,12 @@
       "tooltip": "Positions quantity, taking into account all orders"
     },
     "volume": {
-      "name": "Value",
-      "tooltip": "Value"
+      "name": "Avg volume",
+      "tooltip": "Position volume calculated at the average price"
+    },
+    "currentVolume": {
+      "name": "Curr volume",
+      "tooltip": "Position volume calculated at the current price"
     },
     "unrealisedPl": {
       "name": "P/L total",

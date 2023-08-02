@@ -137,10 +137,18 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
     },
     {
       id: 'volume',
-      displayName: 'Объем',
+      displayName: 'Ср. объём',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => a.volume - b.volume,
-      tooltip: 'Объём',
+      tooltip: 'Объём по позиции, расчитанный по средней цене',
+      minWidth: 60
+    },
+    {
+      id: 'currentVolume',
+      displayName: 'Тек. объём',
+      sortOrder: null,
+      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.currentVolume - b.currentVolume,
+      tooltip: 'Объём по позиции расчитанный по текущей цене',
       minWidth: 60
     },
     {
@@ -246,10 +254,6 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       switchMap(settings => this.service.getPositions(settings)),
       debounceTime(100),
       startWith([]),
-      map(positions => positions.map(p => <PositionDisplay>{
-        ...p,
-        volume: this.round(Number(p.avgPrice) * Math.abs(Number(p.qtyUnits)))
-      })),
       mergeMap(positions => this.searchFilter.pipe(
         map(f => positions.filter(o => this.justifyFilter(o, f)))
       ))
