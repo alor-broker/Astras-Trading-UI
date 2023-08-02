@@ -13,11 +13,11 @@
           class="marker"
         >
           <ng-container
-            *ngIf="settings.widgetSettings.rulerSettings!.markerDisplayFormat === markerDisplayFormats.Points">
+            *ngIf="settings.widgetSettings.rulerSettings!.markerDisplayFormat === priceUnits.Points">
             {{displayMarker.points}}
           </ng-container>
           <ng-container
-            *ngIf="settings.widgetSettings.rulerSettings!.markerDisplayFormat === markerDisplayFormats.Percents">
+            *ngIf="settings.widgetSettings.rulerSettings!.markerDisplayFormat === priceUnits.Percents">
             {{displayMarker.percents}}%
           </ng-container>
         </span>

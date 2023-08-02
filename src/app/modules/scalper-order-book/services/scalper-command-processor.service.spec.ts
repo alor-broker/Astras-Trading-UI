@@ -254,10 +254,11 @@ describe('ScalperCommandProcessorService', () => {
         dataContextMock.workingVolume$.next(workingVolume);
 
 
-        scalperOrdersServiceSpy.placeBestOrder.and.callFake((instrument: Instrument, side: Side, quantity: number) => {
+        scalperOrdersServiceSpy.placeBestOrder.and.callFake((settings: ScalperOrderBookSettings, instrument: Instrument, side: Side, quantity: number) => {
           done();
 
           expect(instrument).toEqual(defaultInstrumentInfo);
+          expect(settings).toEqual(orderBookDefaultSettings);
           expect(side).toEqual(Side.Sell);
           expect(quantity).toEqual(workingVolume);
         });
@@ -286,10 +287,11 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.placeBestOrder.and.callFake((instrument: Instrument, side: Side, quantity: number) => {
+        scalperOrdersServiceSpy.placeBestOrder.and.callFake((settings: ScalperOrderBookSettings, instrument: Instrument, side: Side, quantity: number) => {
           done();
 
           expect(instrument).toEqual(defaultInstrumentInfo);
+          expect(settings).toEqual(orderBookDefaultSettings);
           expect(side).toEqual(Side.Buy);
           expect(quantity).toEqual(workingVolume);
         });
@@ -322,9 +324,10 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.sellBestBid.and.callFake((instrument: Instrument, quantity: number) => {
+        scalperOrdersServiceSpy.sellBestBid.and.callFake((settings: ScalperOrderBookSettings, instrument: Instrument, quantity: number) => {
           done();
 
+          expect(settings).toEqual(orderBookDefaultSettings);
           expect(instrument).toEqual(defaultInstrumentInfo);
           expect(quantity).toEqual(workingVolume);
         });
@@ -354,9 +357,10 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.buyBestAsk.and.callFake((instrument: Instrument, quantity: number) => {
+        scalperOrdersServiceSpy.buyBestAsk.and.callFake((settings: ScalperOrderBookSettings, instrument: Instrument, quantity: number) => {
           done();
 
+          expect(settings).toEqual(orderBookDefaultSettings);
           expect(instrument).toEqual(defaultInstrumentInfo);
           expect(quantity).toEqual(workingVolume);
         });
@@ -534,9 +538,10 @@ describe('ScalperCommandProcessorService', () => {
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as BodyRow;
 
-        scalperOrdersServiceSpy.placeLimitOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
+        scalperOrdersServiceSpy.placeLimitOrder.and.callFake((settings: ScalperOrderBookSettings, instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
           done();
-          expect(instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(settings).toEqual(orderBookDefaultSettings);
+          expect(instrumentKey).toEqual(defaultInstrumentInfo);
           expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell);
           expect(quantity).toEqual(workingVolume);
           expect(price).toEqual(testRow.price);
@@ -610,9 +615,10 @@ describe('ScalperCommandProcessorService', () => {
         rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
       } as BodyRow;
 
-      scalperOrdersServiceSpy.placeLimitOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
+      scalperOrdersServiceSpy.placeLimitOrder.and.callFake((settings: ScalperOrderBookSettings, instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
         done();
-        expect(instrumentKey).toEqual(orderBookDefaultSettings);
+        expect(settings).toEqual(orderBookDefaultSettings);
+        expect(instrumentKey).toEqual(defaultInstrumentInfo);
         expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell);
         expect(quantity).toEqual(positionQty);
         expect(price).toEqual(testRow.price);

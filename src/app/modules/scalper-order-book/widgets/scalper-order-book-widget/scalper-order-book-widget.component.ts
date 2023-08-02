@@ -21,7 +21,7 @@ import { TerminalSettingsService } from '../../../terminal-settings/services/ter
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import {
   ClusterTimeframe,
-  MarkerDisplayFormat,
+  PriceUnits,
   ScalperOrderBookSettings,
   VolumeHighlightMode
 } from '../../models/scalper-order-book-settings.model';
@@ -97,7 +97,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         volumeDisplayFormat: NumberDisplayFormat.Default,
         showRuler: true,
         rulerSettings: {
-          markerDisplayFormat: MarkerDisplayFormat.Points
+          markerDisplayFormat: PriceUnits.Points
         },
         showPriceWithZeroPadding: true
       }),

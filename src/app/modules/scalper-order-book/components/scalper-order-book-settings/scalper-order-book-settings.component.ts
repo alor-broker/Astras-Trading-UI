@@ -1,34 +1,19 @@
-import {
-  Component, DestroyRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  Observable,
-  shareReplay,
-  take,
-} from "rxjs";
+import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Observable, shareReplay, take, } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  AbstractControl,
-  UntypedFormArray,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators
-} from "@angular/forms";
+import { AbstractControl, UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import {
-  MarkerDisplayFormat,
+  PriceUnits,
   ScalperOrderBookSettings,
   VolumeHighlightMode,
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { AtsValidators } from "../../../../shared/utils/form-validators";
 
 @Component({
   selector: 'ats-scalper-order-book-settings',
@@ -45,27 +30,35 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
     volumeHighlightOption: {
       boundary: {
         min: 1,
-        max: 1000000000
+        max: 1_000_000_000
       },
       volumeHighlightFullness: {
         min: 1,
-        max: 1000000000
+        max: 1_000_000_000
       }
     },
     autoAlignIntervalSec: {
       min: 0,
       max: 600
+    },
+    bracket: {
+      price: {
+        min: 0,
+        max: 1_000_000_000,
+        percentsStep: 0.01,
+        stepsStep: 1
+      }
     }
   };
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
-  readonly availableMarkerFormats = Object.values(MarkerDisplayFormat);
 
   @Input({required: true})
   guid!: string;
   @Output()
   settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
+  orderPriceUnits = PriceUnits;
   exchanges: string[] = exchangesList;
   readonly availableVolumeHighlightModes: string[] = [
     VolumeHighlightMode.Off,
@@ -131,7 +124,9 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
         ),
         volumeHighlightFullness: Number(formValue.volumeHighlightFullness),
         workingVolumes: formValue.workingVolumes.map((wv: string) => Number(wv)),
-        autoAlignIntervalSec: !!(+formValue.autoAlignIntervalSec) ? Number(formValue.autoAlignIntervalSec) : null
+        autoAlignIntervalSec: !!(+formValue.autoAlignIntervalSec) ? Number(formValue.autoAlignIntervalSec) : null,
+        topOrderPriceRatio: !!(+formValue.topOrderPriceRatio) ? Number(formValue.topOrderPriceRatio) : null,
+        bottomOrderPriceRatio: !!(+formValue.bottomOrderPriceRatio) ? Number(formValue.bottomOrderPriceRatio) : null
       };
 
       delete newSettings.instrument;
@@ -200,6 +195,9 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
   }
 
   private buildForm(settings: ScalperOrderBookSettings) {
+    const stepsPriceStepValidatorFn = AtsValidators.priceStepMultiplicity(this.validationOptions.bracket.price.stepsStep);
+    const percentsPriceStepValidatorFn = AtsValidators.priceStepMultiplicity(this.validationOptions.bracket.price.percentsStep);
+
     this.form = new UntypedFormGroup({
       instrument: new UntypedFormControl({
         symbol: settings.symbol,
@@ -242,11 +240,52 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
       showRuler: new UntypedFormControl(settings.showRuler ?? false),
       rulerSettings: new UntypedFormGroup({
         markerDisplayFormat: new UntypedFormControl(
-          settings.rulerSettings?.markerDisplayFormat ?? MarkerDisplayFormat.Points
+          settings.rulerSettings?.markerDisplayFormat ?? PriceUnits.Points
         )
       }),
       showPriceWithZeroPadding: new UntypedFormControl(settings.showPriceWithZeroPadding ?? false),
+      useBrackets: new UntypedFormControl(settings.useBrackets ?? false),
+      bracketsSettings: new UntypedFormGroup({
+        orderPriceUnits: new UntypedFormControl(settings.bracketsSettings?.orderPriceUnits ?? PriceUnits.Points),
+        topOrderPriceRatio: new UntypedFormControl(
+          settings.bracketsSettings?.topOrderPriceRatio ?? null,
+          [
+            Validators.min(this.validationOptions.bracket.price.min),
+            Validators.max(this.validationOptions.bracket.price.max),
+            settings.bracketsSettings?.orderPriceUnits === PriceUnits.Percents
+              ? percentsPriceStepValidatorFn
+              : stepsPriceStepValidatorFn
+          ]
+        ),
+        bottomOrderPriceRatio: new UntypedFormControl(
+          settings.bracketsSettings?.bottomOrderPriceRatio ?? null,
+          [
+            Validators.min(this.validationOptions.bracket.price.min),
+            Validators.max(this.validationOptions.bracket.price.max),
+            settings.bracketsSettings?.orderPriceUnits === PriceUnits.Percents
+              ? percentsPriceStepValidatorFn
+              : stepsPriceStepValidatorFn
+          ]
+        ),
+        useBracketsWhenClosingPosition: new UntypedFormControl(settings.bracketsSettings?.useBracketsWhenClosingPosition ?? false)
+      })
     });
+
+    this.form.get('bracketsSettings')!.get('orderPriceUnits')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value: PriceUnits) => {
+        const topOrderPriceRatioControl = this.form.get('bracketsSettings')!.get('topOrderPriceRatio');
+        const bottomOrderPriceRatioControl = this.form.get('bracketsSettings')!.get('bottomOrderPriceRatio');
+
+        topOrderPriceRatioControl?.removeValidators([percentsPriceStepValidatorFn, stepsPriceStepValidatorFn]);
+        bottomOrderPriceRatioControl?.removeValidators([percentsPriceStepValidatorFn, stepsPriceStepValidatorFn]);
+
+        topOrderPriceRatioControl?.addValidators(value === PriceUnits.Percents ? percentsPriceStepValidatorFn : stepsPriceStepValidatorFn);
+        bottomOrderPriceRatioControl?.addValidators(value === PriceUnits.Percents ? percentsPriceStepValidatorFn : stepsPriceStepValidatorFn);
+
+        topOrderPriceRatioControl?.updateValueAndValidity();
+        bottomOrderPriceRatioControl?.updateValueAndValidity();
+      });
   }
 
   private createVolumeHighlightOptionsControl(option?: VolumeHighlightOption): AbstractControl {

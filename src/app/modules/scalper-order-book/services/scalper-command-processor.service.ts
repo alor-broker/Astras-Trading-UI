@@ -148,7 +148,13 @@ export class ScalperCommandProcessorService {
                 workingVolume => {
                   this.callWithPortfolioKey(
                     dataContext,
-                    portfolioKey => this.scalperOrdersService.sellBestBid(settings.instrument, workingVolume!, orderBook, portfolioKey)
+                    portfolioKey => {
+                      this.callWithPosition(
+                        dataContext,
+                        position => this.scalperOrdersService.sellBestBid(settings.widgetSettings, settings.instrument, workingVolume!, orderBook, portfolioKey, position)
+                      );
+                    }
+
                   );
                 });
             });
@@ -169,7 +175,13 @@ export class ScalperCommandProcessorService {
                 workingVolume => {
                   this.callWithPortfolioKey(
                     dataContext,
-                    portfolioKey => this.scalperOrdersService.buyBestAsk(settings.instrument, workingVolume!, orderBook, portfolioKey)
+                    portfolioKey => {
+                      this.callWithPosition(
+                        dataContext,
+                        position => this.scalperOrdersService.buyBestAsk(settings.widgetSettings, settings.instrument, workingVolume!, orderBook, portfolioKey, position)
+                      );
+                    }
+
                   );
                 });
             });
@@ -251,7 +263,13 @@ export class ScalperCommandProcessorService {
               workingVolume => {
                 this.callWithPortfolioKey(
                   dataContext,
-                  portfolioKey => this.scalperOrdersService.placeBestOrder(settings.instrument, side, workingVolume!, orderBook, portfolioKey)
+                  portfolioKey => {
+                    this.callWithPosition(
+                      dataContext,
+                      position => this.scalperOrdersService.placeBestOrder(settings.widgetSettings, settings.instrument, side, workingVolume!, orderBook, portfolioKey, position)
+                    );
+                  }
+
                 );
               });
           });
@@ -442,13 +460,20 @@ export class ScalperCommandProcessorService {
             this.callWithPortfolioKey(
               dataContext,
               portfolioKey => {
-                this.scalperOrdersService.placeLimitOrder(
-                  settings.widgetSettings,
-                  side,
-                  workingVolume,
-                  row.price,
-                  settings.widgetSettings.enableMouseClickSilentOrders,
-                  portfolioKey
+                this.callWithPosition(
+                  dataContext,
+                  position => {
+                    this.scalperOrdersService.placeLimitOrder(
+                      settings.widgetSettings,
+                      settings.instrument,
+                      side,
+                      workingVolume,
+                      row.price,
+                      settings.widgetSettings.enableMouseClickSilentOrders,
+                      portfolioKey,
+                      position
+                    );
+                  }
                 );
               }
             );

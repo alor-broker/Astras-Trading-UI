@@ -78,13 +78,14 @@
                   <nz-form-item>
                     <nz-form-label nzFor="markerDisplayFormat">{{t('scalperOrderBookSettings.markerDisplayFormatLabel')}}</nz-form-label>
                     <nz-form-control>
-                      <nz-select formControlName='markerDisplayFormat'>
-                        <nz-option
-                          *ngFor='let option of availableMarkerFormats'
-                          [nzLabel]="t('scalperOrderBookSettings.markerDisplayFormatOptions.' + option, { fallback: option })"
-                          [nzValue]="option"
-                        ></nz-option>
-                      </nz-select>
+                      <nz-radio-group formControlName="markerDisplayFormat">
+                        <label nz-radio-button [nzValue]="orderPriceUnits.Points">
+                          {{t('scalperOrderBookSettings.priceUnitsOptions.points')}}
+                        </label>
+                        <label nz-radio-button [nzValue]="orderPriceUnits.Percents">
+                          %
+                        </label>
+                      </nz-radio-group>
                     </nz-form-control>
                   </nz-form-item>
                 </nz-collapse-panel>
@@ -240,6 +241,118 @@
                     <button (click)="addVolumeHighlightOption($event)" [disabled]="!volumeHighlightOptions.valid" class="add-volume-highlight-option-btn" nz-button nzType="dashed">
                       <i nz-icon nzType="plus"></i>
                     </button>
+                  </nz-form-item>
+                </nz-collapse-panel>
+              </nz-collapse>
+            </nz-form-item>
+          </nz-collapse-panel>
+
+          <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.automationSettingsHeader')">
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="useBrackets">{{t('scalperOrderBookSettings.useBracketsLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='useBrackets'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item *ngIf="form.get('useBrackets')?.value">
+              <nz-collapse [nzBordered]="false" nzGhost>
+                <nz-collapse-panel
+                  [nzActive]="true"
+                  [nzHeader]="t('scalperOrderBookSettings.bracketsSettingsLabel')"
+                  [formGroup]="asFormGroup(form.controls.bracketsSettings)"
+                >
+                  <nz-form-item>
+                    <nz-form-label
+                      nzFor="orderPriceUnits">{{t('scalperOrderBookSettings.orderPriceUnitsLabel')}}</nz-form-label>
+                    <nz-form-control>
+                      <nz-radio-group formControlName="orderPriceUnits">
+                        <label nz-radio-button [nzValue]="orderPriceUnits.Points">
+                          {{t('scalperOrderBookSettings.priceUnitsOptions.points')}}
+                        </label>
+                        <label nz-radio-button [nzValue]="orderPriceUnits.Percents">
+                          %
+                        </label>
+                      </nz-radio-group>
+                    </nz-form-control>
+                  </nz-form-item>
+
+                  <nz-form-item>
+                    <nz-form-label
+                      nzFor="topOrderPriceRatio">{{t('scalperOrderBookSettings.topOrderPriceRatioLabel')}}</nz-form-label>
+                    <nz-form-control [nzErrorTip]="topOrderPriceRatioError">
+                      <ats-input-number
+                        formControlName="topOrderPriceRatio"
+                        placeholder="1"
+                        [step]="form.get('bracketsSettings')?.get('orderPriceUnits')!.value === orderPriceUnits.Points
+                          ? validationOptions.bracket.price.stepsStep
+                          : validationOptions.bracket.price.percentsStep"
+                      ></ats-input-number>
+                    </nz-form-control>
+                    <ng-template #topOrderPriceRatioError>
+                      <span
+                        *ngIf="form.get('bracketsSettings')?.get('topOrderPriceRatio')?.errors?.min ||
+                         form.get('bracketsSettings')?.get('topOrderPriceRatio')?.errors?.max"
+                      >
+                        {{t('scalperOrderBookSettings.intervalError', {
+                        min: validationOptions.bracket.price.min,
+                        max: validationOptions.bracket.price.max
+                      })}}
+                      </span>
+                      <span *ngIf="form.get('bracketsSettings')?.get('topOrderPriceRatio')?.errors?.priceStepMultiplicity">
+                        <ng-container *ngIf="form.get('bracketsSettings')?.get('orderPriceUnits')!.value === orderPriceUnits.Points; else percentsError">
+                          {{t('scalperOrderBookSettings.priceRatioPointsMultiplicityError')}}
+                        </ng-container>
+                        <ng-template #percentsError>
+                          {{t('scalperOrderBookSettings.priceRatioPercentsMultiplicityError')}}
+                          ({{form.get('bracketsSettings')?.get('orderPriceUnits')!.value === orderPriceUnits.Points
+                            ? validationOptions.bracket.price.stepsStep
+                            : validationOptions.bracket.price.percentsStep}})
+                          </ng-template>
+                      </span>
+                    </ng-template>
+                  </nz-form-item>
+
+                  <nz-form-item>
+                    <nz-form-label
+                      nzFor="bottomOrderPriceRatio">{{t('scalperOrderBookSettings.bottomOrderPriceRatioLabel')}}</nz-form-label>
+                    <nz-form-control [nzErrorTip]="bottomOrderPriceRatioError">
+                      <ats-input-number
+                        formControlName="bottomOrderPriceRatio"
+                        placeholder="1"
+                        [step]="form.get('bracketsSettings')?.get('orderPriceUnits')!.value === orderPriceUnits.Points
+                          ? validationOptions.bracket.price.stepsStep
+                          : validationOptions.bracket.price.percentsStep"
+                      ></ats-input-number>
+                    </nz-form-control>
+                    <ng-template #bottomOrderPriceRatioError>
+                      <span
+                        *ngIf="form.get('bracketsSettings')?.get('bottomOrderPriceRatio')?.errors?.min ||
+                         form.get('bracketsSettings')?.get('bottomOrderPriceRatio')?.errors?.max"
+                      >
+                      {{t('scalperOrderBookSettings.intervalError', {
+                        min: validationOptions.bracket.price.min,
+                        max: validationOptions.bracket.price.max
+                      })}}
+                    </span>
+                    <span *ngIf="form.get('bracketsSettings')?.get('bottomOrderPriceRatio')?.errors?.priceStepMultiplicity">
+                      <ng-container *ngIf="form.get('bracketsSettings')?.get('orderPriceUnits')!.value === orderPriceUnits.Points; else percentsError">
+                        {{t('scalperOrderBookSettings.priceRatioPointsMultiplicityError')}}
+                      </ng-container>
+                      <ng-template #percentsError>
+                        {{t('scalperOrderBookSettings.priceRatioPercentsMultiplicityError')}}
+                        ({{validationOptions.bracket.price.percentsStep}})
+                      </ng-template>
+                    </span>
+                    </ng-template>
+                  </nz-form-item>
+
+                  <nz-form-item class="one-row">
+                    <nz-form-label
+                      nzFor="useBracketsWhenClosingPosition">{{t('scalperOrderBookSettings.useBracketsWhenClosingPositionLabel')}}</nz-form-label>
+                    <nz-form-control>
+                      <nz-switch formControlName='useBracketsWhenClosingPosition'></nz-switch>
+                    </nz-form-control>
                   </nz-form-item>
                 </nz-collapse-panel>
               </nz-collapse>

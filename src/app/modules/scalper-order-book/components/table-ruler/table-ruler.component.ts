@@ -23,7 +23,7 @@ import {
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MathHelper } from '../../../../shared/utils/math-helper';
-import { MarkerDisplayFormat } from '../../models/scalper-order-book-settings.model';
+import { PriceUnits } from '../../models/scalper-order-book-settings.model';
 import {
   SCALPER_ORDERBOOK_BODY_REF,
   ScalperOrderBookBodyRef
@@ -44,7 +44,7 @@ interface MarkerDisplay {
 export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('marker')
   markerElRef!: QueryList<ElementRef<HTMLElement>>;
-  readonly markerDisplayFormats = MarkerDisplayFormat;
+  readonly priceUnits = PriceUnits;
   @Input({required: true})
   xAxisStep!: number;
   @Input({required: true})
@@ -110,7 +110,7 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
           widgetSettings: {
             ...x.widgetSettings,
             rulerSettings: {
-              markerDisplayFormat: MarkerDisplayFormat.Points
+              markerDisplayFormat: PriceUnits.Points
             }
           }
         };
