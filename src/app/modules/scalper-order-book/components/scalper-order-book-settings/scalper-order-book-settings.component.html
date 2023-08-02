@@ -78,16 +78,14 @@
                   <nz-form-item>
                     <nz-form-label nzFor="markerDisplayFormat">{{t('scalperOrderBookSettings.markerDisplayFormatLabel')}}</nz-form-label>
                     <nz-form-control>
-                      <nz-select formControlName='markerDisplayFormat'>
-                        <nz-option
-                          [nzLabel]="t('scalperOrderBookSettings.priceUnitsOptions.points')"
-                          [nzValue]="orderPriceUnits.Points"
-                        ></nz-option>
-                        <nz-option
-                          [nzLabel]="t('scalperOrderBookSettings.priceUnitsOptions.percents')"
-                          [nzValue]="orderPriceUnits.Percents"
-                        ></nz-option>
-                      </nz-select>
+                      <nz-radio-group formControlName="markerDisplayFormat">
+                        <label nz-radio-button [nzValue]="orderPriceUnits.Points">
+                          {{t('scalperOrderBookSettings.priceUnitsOptions.points')}}
+                        </label>
+                        <label nz-radio-button [nzValue]="orderPriceUnits.Percents">
+                          %
+                        </label>
+                      </nz-radio-group>
                     </nz-form-control>
                   </nz-form-item>
                 </nz-collapse-panel>
@@ -265,20 +263,17 @@
                   [formGroup]="asFormGroup(form.controls.bracketsSettings)"
                 >
                   <nz-form-item>
-                    <nz-form-label nzFor="orderPriceUnits">
-                      {{t('scalperOrderBookSettings.orderPriceUnitsLabel')}}
-                    </nz-form-label>
+                    <nz-form-label
+                      nzFor="orderPriceUnits">{{t('scalperOrderBookSettings.orderPriceUnitsLabel')}}</nz-form-label>
                     <nz-form-control>
-                      <nz-select formControlName='orderPriceUnits'>
-                        <nz-option
-                          [nzLabel]="t('scalperOrderBookSettings.priceUnitsOptions.points')"
-                          [nzValue]="orderPriceUnits.Points"
-                        ></nz-option>
-                        <nz-option
-                          [nzLabel]="t('scalperOrderBookSettings.priceUnitsOptions.percents')"
-                          [nzValue]="orderPriceUnits.Percents"
-                        ></nz-option>
-                      </nz-select>
+                      <nz-radio-group formControlName="orderPriceUnits">
+                        <label nz-radio-button [nzValue]="orderPriceUnits.Points">
+                          {{t('scalperOrderBookSettings.priceUnitsOptions.points')}}
+                        </label>
+                        <label nz-radio-button [nzValue]="orderPriceUnits.Percents">
+                          %
+                        </label>
+                      </nz-radio-group>
                     </nz-form-control>
                   </nz-form-item>
 

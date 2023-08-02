@@ -252,7 +252,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
           [
             Validators.min(this.validationOptions.bracket.price.min),
             Validators.max(this.validationOptions.bracket.price.max),
-            settings.orderPriceUnits === PriceUnits.Percents
+            settings.bracketsSettings?.orderPriceUnits === PriceUnits.Percents
               ? percentsPriceStepValidatorFn
               : stepsPriceStepValidatorFn
           ]
@@ -262,7 +262,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
           [
             Validators.min(this.validationOptions.bracket.price.min),
             Validators.max(this.validationOptions.bracket.price.max),
-            settings.orderPriceUnits === PriceUnits.Percents
+            settings.bracketsSettings?.orderPriceUnits === PriceUnits.Percents
               ? percentsPriceStepValidatorFn
               : stepsPriceStepValidatorFn
           ]

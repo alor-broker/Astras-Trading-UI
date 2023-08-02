@@ -32,6 +32,7 @@ import {
   VolumeHighlightMode
 } from "../models/scalper-order-book-settings.model";
 import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
+import { MathHelper } from "../../../shared/utils/math-helper";
 
 describe('ScalperOrdersService', () => {
   let service: ScalperOrdersService;
@@ -333,8 +334,6 @@ describe('ScalperOrdersService', () => {
   );
 
   it('#placeBestOrder should create bracket', fakeAsync(() => {
-    service.placeBracket = jasmine.createSpy('placeBracket').and.callThrough();
-
     const portfolioKey: PortfolioKey = {
       exchange: generateRandomString(4),
       portfolio: generateRandomString(5),
@@ -360,7 +359,7 @@ describe('ScalperOrdersService', () => {
       }
     };
 
-    orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
+    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = getRandomInt(1, 100);
 
     let testAsks: OrderbookDataRow[] = [
@@ -381,16 +380,38 @@ describe('ScalperOrdersService', () => {
     );
     tick(10000);
 
-    expect(service.placeBracket).toHaveBeenCalledOnceWith(
-      {
+    const expectedLimitOrder = {
       side: Side.Buy,
       quantity,
       price: testBids[0].p,
       instrument: testInstrument
-      },
-      testBids[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep),
-      testBids[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep),
-      portfolioKey.portfolio
+    };
+
+    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+      [
+        {
+          ...expectedLimitOrder,
+          type: 'Limit'
+        },
+        {
+          ...expectedLimitOrder,
+          type: 'StopLimit',
+          condition: LessMore.More,
+          triggerPrice: MathHelper.roundPrice(testBids[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
+          side: Side.Sell,
+          activate: false
+        },
+        {
+          ...expectedLimitOrder,
+          type: 'StopLimit',
+          condition: LessMore.Less,
+          triggerPrice: MathHelper.roundPrice(testBids[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
+          side: Side.Sell,
+          activate: false
+        },
+      ],
+      portfolioKey.portfolio,
+      ExecutionPolicy.TriggerBracketOrders
     );
   }));
 
@@ -454,8 +475,6 @@ describe('ScalperOrdersService', () => {
   );
 
   it('#sellBestBid should create bracket', fakeAsync(() => {
-    service.placeBracket = jasmine.createSpy('placeBracket').and.callThrough();
-
     const portfolioKey: PortfolioKey = {
       exchange: generateRandomString(4),
       portfolio: generateRandomString(5),
@@ -481,7 +500,7 @@ describe('ScalperOrdersService', () => {
       }
     };
 
-    orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
+    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = getRandomInt(1, 100);
 
     let testAsks: OrderbookDataRow[] = [
@@ -506,16 +525,38 @@ describe('ScalperOrdersService', () => {
     );
     tick(10000);
 
-    expect(service.placeBracket).toHaveBeenCalledOnceWith(
-      {
-        side: Side.Sell,
-        quantity,
-        price: testBids[0].p,
-        instrument: testSettings
-      },
-      testBids[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep),
-      testBids[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep),
-      portfolioKey.portfolio
+    const expectedLimitOrder = {
+      side: Side.Sell,
+      quantity,
+      price: testBids[0].p,
+      instrument: testSettings
+    };
+
+    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+      [
+        {
+          ...expectedLimitOrder,
+          type: 'Limit'
+        },
+        {
+          ...expectedLimitOrder,
+          type: 'StopLimit',
+          condition: LessMore.More,
+          triggerPrice: MathHelper.roundPrice(testBids[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
+          side: Side.Buy,
+          activate: false
+        },
+        {
+          ...expectedLimitOrder,
+          type: 'StopLimit',
+          condition: LessMore.Less,
+          triggerPrice: MathHelper.roundPrice(testBids[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
+          side: Side.Buy,
+          activate: false
+        },
+      ],
+      portfolioKey.portfolio,
+      ExecutionPolicy.TriggerBracketOrders
     );
   }));
 
@@ -579,8 +620,6 @@ describe('ScalperOrdersService', () => {
   );
 
   it('#buyBestAsk should create bracket', fakeAsync(() => {
-    service.placeBracket = jasmine.createSpy('placeBracket').and.callThrough();
-
     const portfolioKey: PortfolioKey = {
       exchange: generateRandomString(4),
       portfolio: generateRandomString(5),
@@ -601,12 +640,11 @@ describe('ScalperOrdersService', () => {
       ...testInstrument,
       useBrackets: true,
       bracketsSettings: {
-        topOrderPriceRatio: 1,
         bottomOrderPriceRatio: 2
       }
     };
 
-    orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
+    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = getRandomInt(1, 100);
 
     let testAsks: OrderbookDataRow[] = [
@@ -631,16 +669,30 @@ describe('ScalperOrdersService', () => {
     );
     tick(10000);
 
-    expect(service.placeBracket).toHaveBeenCalledOnceWith(
-      {
-        side: Side.Buy,
-        quantity,
-        price: testAsks[0].p,
-        instrument: testSettings
-      },
-      testAsks[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep),
-      testAsks[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep),
-      portfolioKey.portfolio
+    const expectedLimitOrder = {
+      side: Side.Buy,
+      quantity,
+      price: testAsks[0].p,
+      instrument: testSettings
+    };
+
+    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+      [
+        {
+          ...expectedLimitOrder,
+          type: 'Limit'
+        },
+        {
+          ...expectedLimitOrder,
+          type: 'StopLimit',
+          condition: LessMore.Less,
+          triggerPrice: MathHelper.roundPrice(testAsks[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
+          side: Side.Sell,
+          activate: false
+        },
+      ],
+      portfolioKey.portfolio,
+      ExecutionPolicy.TriggerBracketOrders
     );
   }));
 
@@ -775,8 +827,6 @@ describe('ScalperOrdersService', () => {
   );
 
   it('#placeLimitOrder should create bracket', fakeAsync(() => {
-    service.placeBracket = jasmine.createSpy('placeBracket').and.callThrough();
-
     const portfolioKey: PortfolioKey = {
       exchange: generateRandomString(4),
       portfolio: generateRandomString(5),
@@ -803,7 +853,7 @@ describe('ScalperOrdersService', () => {
       }
     };
 
-    orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
+    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = getRandomInt(1, 100);
     const price = getRandomInt(1, 1000);
 
@@ -819,23 +869,43 @@ describe('ScalperOrdersService', () => {
     );
 
     tick(10000);
-    expect(service.placeBracket)
-      .toHaveBeenCalledOnceWith(
+
+    const expectedLimitOrder = {
+      side: Side.Buy,
+      quantity,
+      price,
+      instrument: testSettings
+    };
+
+    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+      [
         {
-          side: Side.Buy,
-          quantity,
-          price,
-          instrument: testSettings
+          ...expectedLimitOrder,
+          type: 'Limit'
         },
-        price + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep),
-        price - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep),
-        portfolioKey.portfolio
-      );
+        {
+          ...expectedLimitOrder,
+          type: 'StopLimit',
+          condition: LessMore.More,
+          triggerPrice: MathHelper.roundPrice(price + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
+          side: Side.Sell,
+          activate: false
+        },
+        {
+          ...expectedLimitOrder,
+          type: 'StopLimit',
+          condition: LessMore.Less,
+          triggerPrice: MathHelper.roundPrice(price - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
+          side: Side.Sell,
+          activate: false
+        },
+      ],
+      portfolioKey.portfolio,
+      ExecutionPolicy.TriggerBracketOrders
+    );
   }));
 
   it('#placeLimitOrder should create bracket with percent price ratio settings', fakeAsync(() => {
-    service.placeBracket = jasmine.createSpy('placeBracket').and.callThrough();
-
     const portfolioKey: PortfolioKey = {
       exchange: generateRandomString(4),
       portfolio: generateRandomString(5),
@@ -858,12 +928,11 @@ describe('ScalperOrdersService', () => {
       useBrackets: true,
       bracketsSettings: {
         topOrderPriceRatio: 1,
-        bottomOrderPriceRatio: 2,
         orderPriceUnits: PriceUnits.Percents
       }
     };
 
-    orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
+    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = getRandomInt(1, 100);
     const price = getRandomInt(1, 1000);
 
@@ -879,18 +948,32 @@ describe('ScalperOrdersService', () => {
     );
 
     tick(10000);
-    expect(service.placeBracket)
-      .toHaveBeenCalledOnceWith(
+
+    const expectedLimitOrder = {
+      side: Side.Buy,
+      quantity,
+      price,
+      instrument: testSettings
+    };
+
+    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+      [
         {
-          side: Side.Buy,
-          quantity,
-          price,
-          instrument: testSettings
+          ...expectedLimitOrder,
+          type: 'Limit'
         },
-        (1 + testSettings.bracketsSettings!.topOrderPriceRatio! * 0.01) * price,
-        (1 - testSettings.bracketsSettings!.bottomOrderPriceRatio! * 0.01) * price,
-        portfolioKey.portfolio
-      );
+        {
+          ...expectedLimitOrder,
+          type: 'StopLimit',
+          condition: LessMore.More,
+          triggerPrice: MathHelper.roundPrice((1 + testSettings.bracketsSettings!.topOrderPriceRatio! * 0.01) * price, testInstrument.minstep),
+          side: Side.Sell,
+          activate: false
+        }
+      ],
+      portfolioKey.portfolio,
+      ExecutionPolicy.TriggerBracketOrders
+    );
   }));
 
   it('#reversePositionsByMarket should call service with appropriate data', fakeAsync(() => {
@@ -1034,116 +1117,6 @@ describe('ScalperOrdersService', () => {
         } as CommandParams));
     })
   );
-
-  it('#placeBracket should create orders with appropriate date', fakeAsync(() => {
-    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
-
-    const baseOrder: LimitOrder = {
-      side: Side.Buy,
-      quantity: getRandomInt(1, 100),
-      price: getRandomInt(1, 100),
-      instrument: testSettings
-    };
-    const topOrderPrice = getRandomInt(1, 100);
-    const bottomOrderPrice = getRandomInt(1, 100);
-    const portfolio = generateRandomString(5);
-
-    service.placeBracket(
-      baseOrder,
-      topOrderPrice,
-      null,
-      portfolio
-    );
-
-    tick();
-
-    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
-      [
-        {
-          ...baseOrder,
-          type: 'Limit'
-        },
-        {
-          ...baseOrder,
-          condition: LessMore.More,
-          triggerPrice: topOrderPrice,
-          side: Side.Sell,
-          type: 'StopLimit',
-          activate: false
-        }
-      ],
-      portfolio,
-      ExecutionPolicy.TriggerBracketOrders
-    );
-
-    orderServiceSpy.submitOrdersGroup.calls.reset();
-
-    service.placeBracket(
-      baseOrder,
-      null,
-      bottomOrderPrice,
-      portfolio
-    );
-
-    tick();
-
-    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
-      [
-        {
-          ...baseOrder,
-          type: 'Limit'
-        },
-        {
-          ...baseOrder,
-          condition: LessMore.Less,
-          triggerPrice: bottomOrderPrice,
-          side: Side.Sell,
-          type: 'StopLimit',
-          activate: false
-        }
-      ],
-      portfolio,
-      ExecutionPolicy.TriggerBracketOrders
-    );
-
-    orderServiceSpy.submitOrdersGroup.calls.reset();
-
-    service.placeBracket(
-      baseOrder,
-      topOrderPrice,
-      bottomOrderPrice,
-      portfolio
-    );
-
-    tick();
-
-    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
-      [
-        {
-          ...baseOrder,
-          type: 'Limit'
-        },
-        {
-          ...baseOrder,
-          condition: LessMore.More,
-          triggerPrice: topOrderPrice,
-          side: Side.Sell,
-          type: 'StopLimit',
-          activate: false
-        },
-        {
-          ...baseOrder,
-          condition: LessMore.Less,
-          triggerPrice: bottomOrderPrice,
-          side: Side.Sell,
-          type: 'StopLimit',
-          activate: false
-        }
-      ],
-      portfolio,
-      ExecutionPolicy.TriggerBracketOrders
-    );
-  }));
 
   describe('#setStopLoss', () => {
     it('should notify if no positions', fakeAsync(() => {
