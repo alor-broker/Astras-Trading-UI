@@ -53,7 +53,7 @@
         <td *ngIf="isVisibleColumn('openPrice')">{{ inst.openPrice }}</td>
         <td *ngIf="isVisibleColumn('closePrice')">{{ inst.closePrice }}</td>
         <td>
-          <button nzSize='small' nz-button nzType="link" (click)="remove(inst.instrument)"><i nz-icon nzType="close"></i></button>
+          <button class="d-flex h-100" nzSize='small' nz-button nzType="link" (click)="remove(inst.instrument)"><i nz-icon nzType="close"></i></button>
         </td>
       </tr>
     </tbody>
