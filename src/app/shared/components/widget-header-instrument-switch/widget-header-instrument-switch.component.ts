@@ -1,15 +1,14 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {InstrumentsService} from "../../../modules/instruments/services/instruments.service";
 import {WidgetSettingsService} from "../../services/widget-settings.service";
-import {interval, Observable, of, shareReplay, switchMap, take} from "rxjs";
+import {Observable, shareReplay, switchMap, take} from "rxjs";
 import {WidgetSettings} from "../../models/widget-settings.model";
 import {InstrumentKey} from "../../models/instruments/instrument-key.model";
 import {Instrument} from "../../models/instruments/instrument.model";
-import {filter, map} from "rxjs/operators";
-import {mapWith} from "../../utils/observable-helper";
 import {InstrumentSearchComponent} from "../instrument-search/instrument-search.component";
 import {DashboardContextService} from "../../services/dashboard-context.service";
 import {defaultBadgeColor, toInstrumentKey} from "../../utils/instruments";
+import {filter} from "rxjs/operators";
 
 @Component({
   selector: 'ats-widget-header-instrument-switch',
@@ -25,8 +24,6 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
 
   settings$!: Observable<WidgetSettings & InstrumentKey>;
   instrument$!: Observable<Instrument>;
-  interval$!: Observable<number[]>;
-
   searchVisible = false;
 
   constructor(
@@ -45,18 +42,6 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
       switchMap(s => this.instrumentService.getInstrument(s)),
       filter((x): x is Instrument => !!x)
     );
-
-    this.interval$ = of([] as number[]).pipe(
-      mapWith(
-        () => interval(2000),
-        (source, interval) => ({source, interval})
-      ),
-      map(x => {
-        x.source.push(x.interval);
-        return x.source;
-      })
-    )
-    ;
   }
 
   triggerMenu(event: MouseEvent, target: HTMLElement) {
@@ -71,7 +56,7 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
 
   searchVisibilityChanged(isVisible: boolean) {
     this.searchInput?.writeValue(null);
-    if(isVisible) {
+    if (isVisible) {
       this.searchInput?.setFocus();
     }
   }
