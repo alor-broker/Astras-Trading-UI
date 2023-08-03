@@ -1,14 +1,5 @@
 <ng-container *ngIf="instrument$ | async as instrument">
-  <div #menuSource
-       (nzVisibleChange)="searchVisibilityChanged($event)"
-       [(nzVisible)]="searchVisible"
-       [nzClickHide]="false"
-       [nzDropdownMenu]="menu"
-       class="d-flex"
-       nz-dropdown
-       nzTrigger="click"
-       nzBackdrop="true"
-  >
+  <div class="d-flex">
     <div class="title-text overflow-x-hidden">
       <label [nzPopoverContent]="getTitle(instrument)"
              [nzPopoverTrigger]="searchVisible ? null : 'hover'"
@@ -18,7 +9,21 @@
       </label>
     </div>
     <div>
-      <button (mousedown)="triggerMenu($event, menuSource)" nz-button nzSize="small" nzType="text" class="search-btn">
+      <button
+        (mousedown)="triggerMenu($event)"
+        (nzVisibleChange)="searchVisibilityChanged($event)"
+        [(nzVisible)]="searchVisible"
+        [nzClickHide]="false"
+        [nzDropdownMenu]="menu"
+        class="search-btn"
+        nz-button
+        nz-dropdown
+        nzBackdrop="true"
+        nzPlacement="bottomCenter"
+        nzSize="small"
+        nzTrigger="click"
+        nzType="text"
+      >
         <i nz-icon nzTheme="outline" nzType="down"></i>
       </button>
     </div>
@@ -40,8 +45,8 @@
       </li>
       <li class="search-input" nz-menu-item>
         <ats-instrument-search
-          [showHelpTooltip]="false"
           (instrumentSelected)="instrumentSelected($event)"
+          [showHelpTooltip]="false"
         ></ats-instrument-search>
       </li>
     </ul>

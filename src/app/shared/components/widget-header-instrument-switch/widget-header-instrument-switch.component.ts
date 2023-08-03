@@ -44,10 +44,10 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
     );
   }
 
-  triggerMenu(event: MouseEvent, target: HTMLElement) {
+  triggerMenu(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    target.dispatchEvent(new Event('click'));
+    event.target!.dispatchEvent(new Event('click'));
   }
 
   getTitle(instrument: Instrument): string {
