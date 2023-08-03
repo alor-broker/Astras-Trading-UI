@@ -66,6 +66,7 @@ import {InputNumberComponent} from "./components/input-number/input-number.compo
 import { InstrumentBadgeDisplayComponent } from './components/instrument-badge-display/instrument-badge-display.component';
 import { MergedBadgeComponent } from './components/merged-badge/merged-badge.component';
 import { AtsPricePipe } from './pipes/ats-price.pipe';
+import { WidgetHeaderInstrumentSwitchComponent } from './components/widget-header-instrument-switch/widget-header-instrument-switch.component';
 
 @NgModule({
   declarations: [
@@ -88,6 +89,7 @@ import { AtsPricePipe } from './pipes/ats-price.pipe';
     InstrumentBadgeDisplayComponent,
     MergedBadgeComponent,
     AtsPricePipe,
+    WidgetHeaderInstrumentSwitchComponent,
   ],
   imports: [
     CommonModule,
@@ -194,6 +196,7 @@ import { AtsPricePipe } from './pipes/ats-price.pipe';
         ResizableDirective,
         InstrumentBadgeDisplayComponent,
         AtsPricePipe,
+        WidgetHeaderInstrumentSwitchComponent,
     ],
   providers: [
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},
