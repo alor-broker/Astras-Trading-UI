@@ -446,8 +446,8 @@ export class ScalperOrdersService {
 
     const isClosingPosition = position
       ? side === Side.Sell
-        ? Math.abs(position.qtyTFuture - quantity) < Math.abs(position.qtyTFuture)
-        : Math.abs(position.qtyTFuture + quantity) < Math.abs(position.qtyTFuture)
+        ? Math.abs(position.qtyTFutureBatch - quantity) < Math.abs(position.qtyTFutureBatch)
+        : Math.abs(position.qtyTFutureBatch + quantity) < Math.abs(position.qtyTFutureBatch)
       : false;
 
     return settings.bracketsSettings.useBracketsWhenClosingPosition || !isClosingPosition;
