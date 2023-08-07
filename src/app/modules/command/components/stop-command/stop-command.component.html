@@ -259,7 +259,7 @@
                     <span *ngIf="form.get('linkedOrder')!.get('price')?.errors?.min">{{t('command.tooLittle')}}</span>
                     <span *ngIf="form.get('linkedOrder')!.get('price')?.errors?.max">{{t('command.tooMuch')}}</span>
                     <span *ngIf="form.get('linkedOrder')!.get('price')?.errors?.priceStepMultiplicity">
-                      {{t('command.linkedOrderPriceStepMultiplicityError')}} ({{commandContext.instrument.minstep}})
+                      {{t('command.priceStepMultiplicityError')}} ({{commandContext.instrument.minstep}})
                     </span>
                   </ng-template>
                 </nz-form-item>

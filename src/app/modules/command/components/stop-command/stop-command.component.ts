@@ -188,7 +188,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
         ]
       ),
       triggerPrice: new FormControl(
-        1,
+        null,
         [
           Validators.required,
           Validators.min(inputNumberValidation.negativeMin),
@@ -216,7 +216,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           ]
         ),
         triggerPrice: new FormControl(
-          1,
+          null,
           [
             Validators.min(inputNumberValidation.negativeMin),
             Validators.max(inputNumberValidation.max),
@@ -224,7 +224,7 @@ export class StopCommandComponent implements OnInit, OnDestroy {
           ]
         ),
         price: new FormControl(
-          1,
+          null,
           [
             Validators.min(inputNumberValidation.negativeMin),
             Validators.max(inputNumberValidation.max),

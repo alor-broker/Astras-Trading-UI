@@ -76,8 +76,8 @@ export interface StopLimitOrder extends StopMarketOrder {
 
 export interface LinkedOrder {
   quantity?: number;
-  triggerPrice?: number;
-  price?: number;
+  triggerPrice?: number | null;
+  price?: number | null;
   stopEndUnixTime?: Date;
   condition?: LessMore;
   withLimit?: boolean;

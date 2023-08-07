@@ -16,10 +16,8 @@ import {
   map,
   switchMap
 } from 'rxjs/operators';
-import { RefreshToken } from '../models/user/refresh-token.model';
 import { RefreshTokenResponse } from '../models/user/refresh-token-response.model';
 import { JwtBody } from '../models/user/jwt.model';
-import { BaseUser } from '../models/user/base-user.model';
 import { LocalStorageService } from "./local-storage.service";
 import {
   catchHttpError,
@@ -30,7 +28,13 @@ import { BroadcastService } from './broadcast.service';
 
 export const ForceLogoutMessageType = 'forceLogout';
 
+interface SsoToken {
+  refreshToken: string;
+  jwt?: string;
+}
+
 interface UserState {
+  ssoToken: SsoToken | null;
   user: User | null;
   isExited: boolean;
 }
@@ -39,7 +43,7 @@ interface UserState {
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly userStorage = 'user';
+  private readonly ssoTokenStorageKey = 'sso';
   private readonly accountUrl = environment.clientDataUrl + '/auth/actions';
   private readonly ssoUrl = environment.ssoUrl;
   private readonly currentUserSub = new BehaviorSubject<UserState | null>(null);
@@ -51,32 +55,39 @@ export class AuthService {
 
   readonly accessToken$ = this.currentUserSub.pipe(
     switchMap((userState, index) => {
-      if (this.isAuthorised(userState?.user)) {
+      if(!!userState?.ssoToken?.refreshToken && !userState.ssoToken.jwt) {
+        // refreshToken is set after login. Need to get jwt
+        this.refreshToken(userState);
+        return NEVER;
+      }
+      else if (this.isAuthorised(userState?.ssoToken)) {
+        // token is restored. Need to refresh
         if (index === 0) {
-          this.refreshToken(userState!.user!);
+          this.refreshToken(userState!);
           return NEVER;
         }
       }
       else {
-        this.localStorage.removeItem(this.userStorage);
+        // user is not authorized
+        this.localStorage.removeItem(this.ssoTokenStorageKey);
         this.redirectToSso(userState?.isExited ?? false);
         return NEVER;
       }
 
-      return of(userState?.user);
+      return of(userState);
     }),
-    mapWith(() => interval(1000), (user,) => user),
-    switchMap(user => {
-      if (this.isAuthorised(user)) {
-        return of(user);
+    mapWith(() => interval(1000), (userState,) => userState),
+    switchMap(userState => {
+      if (this.isAuthorised(userState?.ssoToken)) {
+        return of(userState);
       }
 
-      this.refreshToken(user!);
+      this.refreshToken(userState!);
       return NEVER;
     }),
     shareReplay(1),
-    filter(user => this.isAuthorised(user)),
-    map(user => user!.jwt),
+    filter(userState => this.isAuthorised(userState?.ssoToken)),
+    map(userState => userState!.ssoToken!.jwt!),
     distinct()
   );
 
@@ -88,48 +99,43 @@ export class AuthService {
     private readonly broadcastService: BroadcastService
   ) {
 
-    const user = localStorage.getItem<User>(this.userStorage);
+    const token = localStorage.getItem<SsoToken>(this.ssoTokenStorageKey);
     this.setCurrentUser({
-      user: user ?? null,
+      ssoToken: token ?? null,
+      user: null,
       isExited: false
     });
 
     broadcastService.subscribe(ForceLogoutMessageType).subscribe(() => {
       this.setCurrentUser({
+        ssoToken: null,
         user: null,
         isExited: false
       });
 
-      this.localStorage.removeItem(this.userStorage);
+      this.localStorage.removeItem(this.ssoTokenStorageKey);
     });
   }
 
-  public setUser(baseUser: BaseUser) {
-    const portfolios = this.extractPortfolios(baseUser.jwt);
-    const clientId = this.extractClientId(baseUser.jwt);
-    const login = this.extractUserLogin(baseUser.jwt);
-    const user: User = {
-      ...baseUser,
-      clientId,
-      portfolios,
-      login
-    };
-
-    this.localStorage.setItem(this.userStorage, user);
+  setRefreshToken(token: string) {
     this.setCurrentUser({
-      user: user,
+      ssoToken: {
+        refreshToken: token
+      },
+      user: null,
       isExited: false
     });
   }
 
-  public logout() {
+  logout() {
     this.setCurrentUser({
+      ssoToken: null,
       user: null,
       isExited: true
     });
   }
 
-  public isAuthRequest(url: string) {
+  isAuthRequest(url: string) {
     return url == `${this.accountUrl}/login` || url == `${this.accountUrl}/refresh`;
   }
 
@@ -137,57 +143,56 @@ export class AuthService {
     this.window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras` + (isExit ? '&exit=1' : ''));
   }
 
-  private isAuthorised(user?: User | null): boolean {
-    if (user?.jwt) {
-      return this.checkTokenTime(user.jwt);
+  private isAuthorised(ssoToken?: SsoToken | null): boolean {
+    if (ssoToken?.jwt) {
+      return this.checkTokenTime(ssoToken.jwt);
     }
+
     return false;
   }
 
-  private refreshToken(user: User) {
-    const refreshModel: RefreshToken = {
-      oldJwt: user.jwt,
-      refreshToken: user.refreshToken,
-    };
-
-    return this.http
-      .post<RefreshTokenResponse>(`${this.accountUrl}/refresh`, refreshModel).pipe(
+  private refreshToken(userState: UserState) {
+    this.http
+      .post<RefreshTokenResponse>(
+        `${this.accountUrl}/refresh`,
+        {
+          refreshToken: userState.ssoToken?.refreshToken
+        }
+      ).pipe(
         catchHttpError<RefreshTokenResponse | null>(null, this.errorHandlerService),
         take(1)
       )
       .subscribe(response => {
         if (response) {
-          this.setUser({
-            ...user,
-            jwt: response.jwt
+          const jwt =  response.jwt;
+          const jwtBody = this.decodeJwtBody(jwt);
+          const user: User = {
+            portfolios: jwtBody.portfolios?.split(' ') || [],
+            clientId: jwtBody.clientid,
+            login: jwtBody.sub
+          };
+
+          this.localStorage.setItem(
+            this.ssoTokenStorageKey,
+            {
+            refreshToken: userState.ssoToken!.refreshToken,
+            jwt: jwt
+          } as SsoToken
+          );
+
+          this.setCurrentUser({
+            ...userState,
+            ssoToken: {
+              ...userState.ssoToken!,
+              jwt
+            },
+            user
           });
         } else {
-          this.localStorage.removeItem(this.userStorage);
+          this.localStorage.removeItem(this.ssoTokenStorageKey);
           this.redirectToSso(false);
         }
       });
-  }
-
-  private extractPortfolios(jwt: string): string[] {
-    if (jwt) {
-      return this.decodeJwtBody(jwt).portfolios?.split(' ') || [];
-    }
-    return [];
-  }
-
-  private extractClientId(jwt: string | undefined): string {
-    if (jwt) {
-      let decoded = this.decodeJwtBody(jwt);
-      return decoded.clientid;
-    }
-    return '';
-  }
-
-  private extractUserLogin(jwt: string | undefined): string {
-    if (jwt) {
-      return this.decodeJwtBody(jwt).sub;
-    }
-    return '';
   }
 
   private decodeJwtBody(jwt: string): JwtBody {

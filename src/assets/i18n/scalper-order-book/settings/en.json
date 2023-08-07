@@ -5,6 +5,7 @@
   "additionalPanelsHeader": "Additional panels",
   "workingVolumesHeader": "Working volumes",
   "highlightSettingsHeader": "Highlighting",
+  "automationSettingsHeader": "Automation",
 
   "tickerLabel": "Ticker",
   "exchangeLabel": "Exchange",
@@ -27,7 +28,13 @@
   "showRulerLabel": "Show ruler",
   "rulerSettingsLabel": "Ruler settings",
   "markerDisplayFormatLabel": "Marker value",
-
+  "showPriceWithZeroPaddingLabel": "Display prices with the same number of decimal places",
+  "useBracketsLabel": "Use brackets",
+  "bracketsSettingsLabel": "Bracket settings",
+  "orderPriceUnitsLabel": "Price units",
+  "topOrderPriceRatioLabel": "Order from above (>)",
+  "bottomOrderPriceRatioLabel": "Order from below (<)",
+  "useBracketsWhenClosingPositionLabel": "Use bracket when closing position",
 
   "tickerError": "Select ticker",
   "intervalError": "Value should be from {{min}} to {{max}}",
@@ -35,6 +42,8 @@
   "workingVolumeMinError": "Value should be greater than zero",
   "workingVolumeRequiredError": "Input value",
   "instrumentGroupError": "Select trading mode",
+  "priceRatioPercentsMultiplicityError": "The value must be a multiple of the step",
+  "priceRatioPointsMultiplicityError": "The value should be integer",
 
   "intervalPlaceholder": "Value from {{min}} to {{max}}",
 
@@ -48,7 +57,7 @@
     "biggestVolume": "Relative to the largest volume",
     "volumeBoundsWithFixedValue":  "By borders (more than volume)"
   },
-  "markerDisplayFormatOptions": {
+  "priceUnitsOptions": {
     "points": "Points",
     "percents": "Percents"
   }

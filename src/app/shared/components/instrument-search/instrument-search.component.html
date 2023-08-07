@@ -16,7 +16,7 @@
     />
   </nz-input-group>
   <ng-template #suffixIcon>
-    <span [nzTooltipTitle]="searchHelp" nz-icon nz-tooltip nzType="question-circle" class="search-tooltip-icon"></span>
+    <span [nzTooltipTitle]="searchHelp" *ngIf="showHelpTooltip" nz-icon nz-tooltip nzType="question-circle" class="search-tooltip-icon"></span>
   </ng-template>
   <ng-template #searchHelp>
     <span>{{t('sharedInstrumentSearch.helpParagraph1')}}</span>

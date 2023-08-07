@@ -62,7 +62,8 @@ export const allPositionsColumns: BaseColumnId[] = [
   { id: 'qtyT1', displayName: "T1", isDefault: false },
   { id: 'qtyT2', displayName: "T2", isDefault: true },
   { id: 'qtyTFuture', displayName: "TFuture", isDefault: false },
-  { id: 'volume', displayName: "Объем", isDefault: false },
+  { id: 'volume', displayName: "Ср. объём", isDefault: false },
+  { id: 'currentVolume', displayName: "тек. объём", isDefault: false },
   { id: 'unrealisedPl', displayName: "P/L всего", isDefault: true },
   { id: 'dailyUnrealisedPl', displayName: "P/L дн.", isDefault: false },
 ];

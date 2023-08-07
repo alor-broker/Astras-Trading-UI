@@ -43,4 +43,30 @@ export class MathHelper {
       MathHelper.getPrecision(minStep)
     );
   }
+
+  /**
+   * Rounding a value to minimal step precision and checks if
+   * rounded value is a multiple of the minimal step
+   * @param dirtyValue Number you need to round
+   * @param minStep Instrument min step
+   * @returns Rounded number
+   */
+  static roundByMinStepMultiplicity(dirtyValue: number, minStep: number) {
+    const roundedValue = this.round(
+      dirtyValue,
+      MathHelper.getPrecision(minStep)
+    );
+    const minStepPrecision = MathHelper.getPrecision(minStep);
+    const valueMOD = this.round(roundedValue % minStep, minStepPrecision);
+
+    if (!valueMOD) {
+      return roundedValue;
+    }
+
+    if (valueMOD >= this.round(minStep / 2, minStepPrecision)) {
+      return this.round(roundedValue + minStep - valueMOD, minStepPrecision);
+    }
+
+    return this.round(roundedValue - valueMOD, minStepPrecision);
+  }
 }

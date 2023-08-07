@@ -112,7 +112,7 @@
                     [class]='ord.side.toString() === "sell" ? "sell" : "buy"'>{{ ord.side }}</td>
                 <td *ngIf='column.id === "residue"'>{{ ord.residue }}</td>
                 <td
-                  *ngIf='column.id === "volume"'>{{ ord.type === 'stoplimit' ? (ord.volume | number) : '≈' + ord.triggerPrice * ord.qtyUnits }}</td>
+                  *ngIf='column.id === "volume"'>{{ ord.type === 'stoplimit' ? (ord.volume | number) : '≈' + (ord.triggerPrice * ord.qtyUnits | number) }}</td>
                 <td *ngIf='column.id === "qty"'>{{ ord.qty | number }}</td>
                 <td
                   *ngIf='column.id === "price"'>{{ ord.type === 'stoplimit' ? (ord.price | number : '0.0-10') : '' }}</td>

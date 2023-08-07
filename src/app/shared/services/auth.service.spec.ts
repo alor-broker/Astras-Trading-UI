@@ -1,25 +1,14 @@
-import { HttpClient } from '@angular/common/http';
-import {
-  HttpClientTestingModule,
-  HttpTestingController
-} from '@angular/common/http/testing';
-import {
-  discardPeriodicTasks,
-  fakeAsync,
-  TestBed,
-  tick
-} from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AuthService } from './auth.service';
-import { LocalStorageService } from "./local-storage.service";
-import { environment } from "../../../environments/environment";
-import { User } from "../models/user/user.model";
-import {
-  Subject,
-  take
-} from "rxjs";
-import { ErrorHandlerService } from './handle-error/error-handler.service';
-import { BroadcastService } from './broadcast.service';
+import {HttpClient} from '@angular/common/http';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {RouterTestingModule} from '@angular/router/testing';
+import {AuthService} from './auth.service';
+import {LocalStorageService} from "./local-storage.service";
+import {environment} from "../../../environments/environment";
+import {User} from "../models/user/user.model";
+import {Subject, take} from "rxjs";
+import {ErrorHandlerService} from './handle-error/error-handler.service';
+import {BroadcastService} from './broadcast.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -37,12 +26,6 @@ describe('AuthService', () => {
   beforeEach(async () => {
     userMock = {
       login: 'login',
-      refreshToken: 'token',
-      jwt: 'login.' + btoa(JSON.stringify({
-        portfolios: 'testPortfolio',
-        clientid: '1',
-        sub: 'login'
-      })),
       clientId: '1',
       portfolios: ['testPortfolio'],
     };
@@ -99,13 +82,12 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should update local storage and user sub when setUser called', () => {
-    service.setUser(userMock);
+  it('should refresh token at start', () => {
+    service.setRefreshToken('refreshToken');
+    service.accessToken$.pipe(take(1)).subscribe();
 
-    expect(localStorageServiceSpy.setItem).toHaveBeenCalledOnceWith('user', userMock);
-    service.currentUser$.pipe(take(1)).subscribe(user => {
-      expect(user).toEqual(userMock);
-    });
+    const request = httpTestingController.expectOne(refreshUrl);
+    expect(request.request.method).toEqual('POST');
   });
 
   it('should logout when logout call', () => {
@@ -129,35 +111,21 @@ describe('AuthService', () => {
   it('should redirect to login if token expired', () => {
     let expDate = new Date();
     expDate.setDate(expDate.getDate() - 1);
-    let expTimestamp = expDate.getTime() / 1000;
 
-    userMock.jwt = 'login.' + btoa(JSON.stringify({
-      portfolios: 'testPortfolio',
-      clientid: '1',
-      exp: expTimestamp
-    }));
+    service.setRefreshToken('refreshToken');
+    service.accessToken$.pipe(take(1)).subscribe();
 
-    service.setUser(userMock);
+    const firstRefresh = httpTestingController.expectOne(refreshUrl);
+    firstRefresh.flush({
+      jwt: 'login.' + btoa(JSON.stringify({
+        portfolios: 'testPortfolio',
+        clientid: '1',
+        exp: expDate.getTime() / 1000
+      }))
+    });
+
     service.accessToken$.pipe(take(1)).subscribe();
     expect(windowAssignSpy).toHaveBeenCalled();
-  });
-
-  it('should refresh token at start', () => {
-    let expDate = new Date();
-    expDate.setDate(expDate.getDate() + 1);
-    let expTimestamp = expDate.getTime() / 1000;
-
-    userMock.jwt = 'login.' + btoa(JSON.stringify({
-      portfolios: 'testPortfolio',
-      clientid: '1',
-      exp: expTimestamp
-    }));
-
-    service.setUser(userMock);
-    service.accessToken$.pipe(take(1)).subscribe();
-
-    const request = httpTestingController.expectOne(refreshUrl);
-    expect(request.request.method).toEqual('POST');
   });
 
   it('should refresh token after expiration', fakeAsync(() => {
@@ -165,18 +133,16 @@ describe('AuthService', () => {
       expDate.setMinutes(expDate.getMinutes() + 1);
       let expTimestamp = expDate.getTime() / 1000;
 
-      userMock.jwt = 'login.' + btoa(JSON.stringify({
-        portfolios: 'testPortfolio',
-        clientid: '1',
-        exp: expTimestamp
-      }));
-
-      service.setUser(userMock);
+      service.setRefreshToken('refreshToken');
       service.accessToken$.pipe(take(1)).subscribe();
 
       const firstRefresh = httpTestingController.expectOne(refreshUrl);
       firstRefresh.flush({
-        jwt: userMock.jwt
+        jwt: 'login.' + btoa(JSON.stringify({
+          portfolios: 'testPortfolio',
+          clientid: '1',
+          exp: expTimestamp
+        }))
       });
 
       tick(5 * 60 * 1000);

@@ -53,13 +53,7 @@ describe('InfoWidgetComponent', () => {
           useValue: {
             instrumentsSelection$: of({})
           }
-        },
-        {
-          provide: InstrumentsService,
-          useValue: {
-            getInstrument: of({})
-          }
-        },
+        }
       ]
     })
       .compileComponents();

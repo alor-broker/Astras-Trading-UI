@@ -9,20 +9,20 @@ import { OrderService } from "../../../shared/services/orders/order.service";
 import { Side } from "../../../shared/models/enums/side.model";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { ModalService } from "../../../shared/services/modal.service";
-import {
-  LimitOrder,
-  MarketOrder,
-  StopLimitOrder,
-  StopMarketOrder
-} from "../../command/models/order.model";
+import { LimitOrder, MarketOrder, StopLimitOrder, StopMarketOrder } from "../../command/models/order.model";
 import { CommandType } from "../../../shared/models/enums/command-type.model";
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
-import {
-  CurrentOrderDisplay,
-} from '../models/scalper-order-book.model';
+import { CurrentOrderDisplay, } from '../models/scalper-order-book.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { MathHelper } from '../../../shared/utils/math-helper';
-import {LessMore} from "../../../shared/models/enums/less-more.model";
+import { LessMore } from "../../../shared/models/enums/less-more.model";
+import { PriceUnits, ScalperOrderBookSettings } from "../models/scalper-order-book-settings.model";
+import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
+
+enum BracketOrderType {
+  Top = 'top',
+  Bottom = 'bottom'
+}
 
 @Injectable({
   providedIn: 'root'
@@ -70,7 +70,15 @@ export class ScalperOrdersService {
     ).subscribe();
   }
 
-  placeBestOrder(instrument: Instrument, side: Side, quantity: number, orderBook: OrderbookData, portfolio: PortfolioKey): void {
+  placeBestOrder(
+    settings: ScalperOrderBookSettings,
+    instrument: Instrument,
+    side: Side,
+    quantity: number,
+    orderBook: OrderbookData,
+    portfolio: PortfolioKey,
+    position: Position | null
+  ): void {
     if (orderBook.a.length === 0 || orderBook.b.length === 0) {
       return;
     }
@@ -102,47 +110,103 @@ export class ScalperOrdersService {
     }
 
     if (price != undefined) {
-      this.orderService.submitLimitOrder({
-          side: side,
-          price: price!,
+      if (this.checkBracketNeeded(settings, side, quantity, position)) {
+        this.placeBracket(
+          {
+            side: side,
+            price: price!,
+            quantity: quantity,
+            instrument: instrument
+          },
+          this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Top),
+          this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Bottom),
+          portfolio.portfolio
+        );
+      } else {
+        this.orderService.submitLimitOrder({
+            side: side,
+            price: price!,
+            quantity: quantity,
+            instrument: instrument
+          },
+          portfolio.portfolio)
+          .subscribe();
+      }
+    }
+  }
+
+  sellBestBid(
+    settings: ScalperOrderBookSettings,
+    instrument: Instrument,
+    quantity: number,
+    orderBook: OrderbookData,
+    portfolio: PortfolioKey,
+    position: Position | null
+  ): void {
+    if (orderBook.b.length === 0) {
+      return;
+    }
+
+    const bestBid = orderBook.b[0].p;
+
+    if (this.checkBracketNeeded(settings, Side.Sell, quantity, position)) {
+      this.placeBracket({
+          side: Side.Sell,
           quantity: quantity,
-          instrument: instrument
+          price: bestBid!,
+          instrument: settings
+        },
+        this.getBracketOrderPrice(settings, bestBid, instrument.minstep, BracketOrderType.Top),
+        this.getBracketOrderPrice(settings, bestBid, instrument.minstep, BracketOrderType.Bottom),
+        portfolio.portfolio
+      );
+    } else {
+      this.orderService.submitLimitOrder({
+          side: Side.Sell,
+          price: bestBid!,
+          quantity: quantity,
+          instrument: settings
         },
         portfolio.portfolio)
         .subscribe();
     }
   }
 
-  sellBestBid(instrumentKey: InstrumentKey, quantity: number, orderBook: OrderbookData, portfolio: PortfolioKey): void {
-    if (orderBook.b.length === 0) {
-      return;
-    }
-
-    const bestBid = orderBook.b[0].p;
-    this.orderService.submitLimitOrder({
-        side: Side.Sell,
-        price: bestBid!,
-        quantity: quantity,
-        instrument: instrumentKey
-      },
-      portfolio.portfolio)
-      .subscribe();
-  }
-
-  buyBestAsk(instrumentKey: InstrumentKey, quantity: number, orderBook: OrderbookData, portfolio: PortfolioKey): void {
+  buyBestAsk(
+    settings: ScalperOrderBookSettings,
+    instrument: Instrument,
+    quantity: number,
+    orderBook: OrderbookData,
+    portfolio: PortfolioKey,
+    position: Position | null
+  ): void {
     if (orderBook.a.length === 0) {
       return;
     }
 
     const bestAsk = orderBook.a[0].p;
-    this.orderService.submitLimitOrder({
+
+    if (this.checkBracketNeeded(settings, Side.Buy, quantity, position)) {
+      this.placeBracket({
         side: Side.Buy,
-        price: bestAsk!,
         quantity: quantity,
-        instrument: instrumentKey
+        price: bestAsk!,
+        instrument: settings
       },
-      portfolio.portfolio)
-      .subscribe();
+        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, BracketOrderType.Top),
+        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, BracketOrderType.Bottom),
+        portfolio.portfolio
+        );
+    } else {
+      this.orderService.submitLimitOrder({
+          side: Side.Buy,
+          price: bestAsk!,
+          quantity: quantity,
+          instrument: settings
+        },
+        portfolio.portfolio)
+        .subscribe();
+    }
   }
 
   placeMarketOrder(instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean, portfolio: PortfolioKey): void {
@@ -163,22 +227,53 @@ export class ScalperOrdersService {
     }
   }
 
-  placeLimitOrder(instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean, portfolio: PortfolioKey) {
+  placeLimitOrder(
+    settings: ScalperOrderBookSettings,
+    instrument: Instrument,
+    side: Side,
+    quantity: number,
+    price: number,
+    silent: boolean,
+    portfolio: PortfolioKey,
+    position: Position | null
+  ) {
     const order: LimitOrder = {
       side: side,
       quantity: quantity,
       price: price,
-      instrument: instrumentKey
+      instrument: settings
     };
 
+    const topOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Top);
+    const bottomOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Bottom);
+
     if (silent) {
-      this.orderService.submitLimitOrder(order, portfolio.portfolio).subscribe();
+      if (
+        this.checkBracketNeeded(settings, side, quantity, position)
+      ) {
+        this.placeBracket(order, topOrderPrice, bottomOrderPrice, portfolio.portfolio);
+      } else {
+        this.orderService.submitLimitOrder(order, portfolio.portfolio).subscribe();
+      }
     }
     else {
-      this.modal.openCommandModal({
-        ...order,
-        type: CommandType.Limit
-      });
+      if (
+        this.checkBracketNeeded(settings, side, quantity, position)
+      ) {
+        this.modal.openCommandModal({
+          ...order,
+          topOrderPrice,
+          topOrderSide: side === Side.Buy ? Side.Sell : Side.Buy,
+          bottomOrderPrice,
+          bottomOrderSide: side === Side.Buy ? Side.Sell : Side.Buy,
+          type: CommandType.Limit
+        });
+      } else {
+        this.modal.openCommandModal({
+          ...order,
+          type: CommandType.Limit
+        });
+      }
     }
   }
 
@@ -311,5 +406,78 @@ export class ScalperOrdersService {
         side: order.side
       });
     }
+  }
+
+  private placeBracket(baseOrder: LimitOrder, topOrderPrice: number | null, bottomOrderPrice: number | null, portfolio: string) {
+    const orders: ((LimitOrder | StopLimitOrder) & { type: 'Limit' | 'StopLimit' })[] = [{
+      ...baseOrder,
+      type: 'Limit',
+    }];
+
+    if (topOrderPrice) {
+      orders.push({
+        ...baseOrder,
+        condition: LessMore.More,
+        triggerPrice: topOrderPrice!,
+        side: baseOrder.side === Side.Buy ? Side.Sell : Side.Buy,
+        type: 'StopLimit',
+        activate: false
+      } as StopLimitOrder & { type: 'StopLimit' });
+    }
+
+    if (bottomOrderPrice) {
+      orders.push({
+        ...baseOrder,
+        condition: LessMore.Less,
+        triggerPrice: bottomOrderPrice!,
+        side: baseOrder.side === Side.Buy ? Side.Sell : Side.Buy,
+        type: 'StopLimit',
+        activate: false
+      } as StopLimitOrder & { type: 'StopLimit' });
+    }
+
+    this.orderService.submitOrdersGroup(orders, portfolio, ExecutionPolicy.TriggerBracketOrders).subscribe();
+  }
+
+  private checkBracketNeeded(settings: ScalperOrderBookSettings, side: Side, quantity: number, position: Position | null): boolean {
+    if (!settings.useBrackets || (!settings.bracketsSettings?.topOrderPriceRatio && !settings.bracketsSettings?.bottomOrderPriceRatio)) {
+      return false;
+    }
+
+    const isClosingPosition = position
+      ? side === Side.Sell
+        ? Math.abs(position.qtyTFutureBatch - quantity) < Math.abs(position.qtyTFutureBatch)
+        : Math.abs(position.qtyTFutureBatch + quantity) < Math.abs(position.qtyTFutureBatch)
+      : false;
+
+    return settings.bracketsSettings.useBracketsWhenClosingPosition || !isClosingPosition;
+  }
+
+  private getBracketOrderPrice(settings: ScalperOrderBookSettings, price: number, minStep: number, orderType: BracketOrderType): number | null {
+    if (!settings.useBrackets) {
+      return null;
+    }
+
+    let dirtyPrice: number | null;
+
+    if (!settings.bracketsSettings!.orderPriceUnits || settings.bracketsSettings!.orderPriceUnits === PriceUnits.Points) {
+      dirtyPrice = orderType === BracketOrderType.Top
+        ? settings.bracketsSettings!.topOrderPriceRatio
+          ? price + (settings.bracketsSettings!.topOrderPriceRatio * minStep)
+          : null
+        : settings.bracketsSettings!.bottomOrderPriceRatio
+          ? price - (settings.bracketsSettings!.bottomOrderPriceRatio * minStep)
+          : null;
+    } else {
+      dirtyPrice = orderType === BracketOrderType.Top
+        ? settings.bracketsSettings!.topOrderPriceRatio
+          ? (1 + settings.bracketsSettings!.topOrderPriceRatio * 0.01) * price
+          : null
+        : settings.bracketsSettings!.bottomOrderPriceRatio
+          ? (1 - settings.bracketsSettings!.bottomOrderPriceRatio * 0.01) * price
+          : null;
+    }
+
+    return dirtyPrice && MathHelper.roundPrice(dirtyPrice, minStep);
   }
 }

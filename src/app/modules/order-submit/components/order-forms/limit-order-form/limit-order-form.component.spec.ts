@@ -125,6 +125,9 @@ describe('LimitOrderFormComponent', () => {
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 
+      component.form!.controls[testCase.control as keyof LimitOrderFormValue]!.markAsDirty();
+      component.form!.controls[testCase.control as keyof LimitOrderFormValue]!.updateValueAndValidity({ onlySelf: false });
+
       fixture.detectChanges();
 
       await fixture.whenStable().then(() => {
@@ -179,7 +182,7 @@ describe('LimitOrderFormComponent', () => {
         emittedValue$.pipe(
           take(1)
         ).subscribe(value => {
-          expect(value).toEqual({ value: expectedValue, isValid: true });
+          expect(value).toEqual({ value: expectedValue, isValid: false });
         });
       });
     }

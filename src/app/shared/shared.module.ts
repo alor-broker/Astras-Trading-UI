@@ -65,6 +65,8 @@ import { PushNotificationsProvider } from "../modules/push-notifications/service
 import {InputNumberComponent} from "./components/input-number/input-number.component";
 import { InstrumentBadgeDisplayComponent } from './components/instrument-badge-display/instrument-badge-display.component';
 import { MergedBadgeComponent } from './components/merged-badge/merged-badge.component';
+import { AtsPricePipe } from './pipes/ats-price.pipe';
+import { WidgetHeaderInstrumentSwitchComponent } from './components/widget-header-instrument-switch/widget-header-instrument-switch.component';
 
 @NgModule({
   declarations: [
@@ -86,6 +88,8 @@ import { MergedBadgeComponent } from './components/merged-badge/merged-badge.com
     InputNumberComponent,
     InstrumentBadgeDisplayComponent,
     MergedBadgeComponent,
+    AtsPricePipe,
+    WidgetHeaderInstrumentSwitchComponent,
   ],
   imports: [
     CommonModule,
@@ -191,6 +195,8 @@ import { MergedBadgeComponent } from './components/merged-badge/merged-badge.com
         ScrollableItemDirective,
         ResizableDirective,
         InstrumentBadgeDisplayComponent,
+        AtsPricePipe,
+        WidgetHeaderInstrumentSwitchComponent,
     ],
   providers: [
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},

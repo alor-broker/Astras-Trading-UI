@@ -1,19 +1,6 @@
-import {
-  Component, DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  Validators
-} from '@angular/forms';
-import {
-  BehaviorSubject,
-  filter,
-  Observable
-} from 'rxjs';
+import { Component, DestroyRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, filter, Observable } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CommandParams, TimeInForce } from 'src/app/shared/models/commands/command-params.model';
 import { CommandsService } from '../../services/commands.service';
@@ -25,7 +12,7 @@ import { ControlsOf } from '../../../../shared/models/form.model';
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
 import { Side } from "../../../../shared/models/enums/side.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-limit-command',
@@ -144,7 +131,7 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
           ]
         ),
         price: new FormControl(
-          commandContext.commandParameters.price ?? 1,
+          commandContext.commandParameters.price ?? null,
           [
             Validators.required,
             Validators.min(inputNumberValidation.negativeMin),
@@ -157,16 +144,16 @@ export class LimitCommandComponent implements OnInit, OnDestroy {
         isIceberg: new FormControl(false),
         icebergFixed: new FormControl(null, Validators.min(inputNumberValidation.min)),
         icebergVariance: new FormControl(null, Validators.min(inputNumberValidation.min)),
-        topOrderPrice: new FormControl(null, [
+        topOrderPrice: new FormControl(commandContext.commandParameters.topOrderPrice || null, [
           Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max)
         ]),
-        topOrderSide: new FormControl(Side.Buy),
-        bottomOrderPrice: new FormControl(null, [
+        topOrderSide: new FormControl(commandContext.commandParameters.topOrderSide || Side.Buy),
+        bottomOrderPrice: new FormControl(commandContext.commandParameters.bottomOrderPrice || null, [
           Validators.min(inputNumberValidation.negativeMin),
           Validators.max(inputNumberValidation.max)
         ]),
-        bottomOrderSide: new FormControl(Side.Buy)
+        bottomOrderSide: new FormControl(commandContext.commandParameters.bottomOrderSide || Side.Buy)
       },
       AtsValidators.notBiggerThan('icebergFixed', 'quantity', () => !!this.form?.get('isIceberg')?.value)
     );

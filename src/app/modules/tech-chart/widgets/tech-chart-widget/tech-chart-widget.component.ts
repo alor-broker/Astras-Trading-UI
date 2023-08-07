@@ -8,18 +8,8 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
-import {
-  Observable,
-  switchMap
-} from 'rxjs';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import {
-  filter,
-  map
-} from 'rxjs/operators';
-import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { Observable } from 'rxjs';
 import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
@@ -39,13 +29,10 @@ export class TechChartWidgetComponent implements OnInit {
 
   settings$!: Observable<TechChartSettings>;
   showBadge$!: Observable<boolean>;
-  title$!: Observable<string>;
-
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly instrumentService: InstrumentsService
+    private readonly terminalSettingsService: TerminalSettingsService
   ) {
   }
 
@@ -71,11 +58,5 @@ export class TechChartWidgetComponent implements OnInit {
 
     this.settings$ = this.widgetSettingsService.getSettings<TechChartSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
-
-    this.title$ = this.settings$.pipe(
-      switchMap(s => this.instrumentService.getInstrument(s as InstrumentKey)),
-      filter((x): x is Instrument => !!x),
-      map(x => `${x.symbol} ${x.instrumentGroup ? '(' + x.instrumentGroup + ')' : ''} ${x.shortName}`)
-    );
   }
 }

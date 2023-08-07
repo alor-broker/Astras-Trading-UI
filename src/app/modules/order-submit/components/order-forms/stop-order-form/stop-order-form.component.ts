@@ -103,7 +103,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
         ]
       ),
       price: new FormControl(
-        1,
+        null,
         [
           Validators.required,
           Validators.min(inputNumberValidation.negativeMin),
@@ -112,7 +112,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
         ]
       ),
       triggerPrice: new FormControl(
-        1,
+        null,
         [
           Validators.required,
           Validators.min(inputNumberValidation.negativeMin),
@@ -137,7 +137,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
             ]
           ),
           triggerPrice: new FormControl(
-            1,
+            null,
             [
               Validators.min(inputNumberValidation.negativeMin),
               Validators.max(inputNumberValidation.max),
@@ -145,7 +145,7 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
             ]
           ),
           price: new FormControl(
-            1,
+            null,
             [
               Validators.min(inputNumberValidation.negativeMin),
               Validators.max(inputNumberValidation.max),

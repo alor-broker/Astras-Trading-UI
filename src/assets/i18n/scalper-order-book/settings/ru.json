@@ -5,6 +5,7 @@
   "additionalPanelsHeader": "Дополнительные панели",
   "workingVolumesHeader": "Рабочие объёмы",
   "highlightSettingsHeader": "Подсветка",
+  "automationSettingsHeader": "Автоматизация",
 
   "tickerLabel": "Тикер",
   "exchangeLabel": "Биржа",
@@ -27,6 +28,13 @@
   "showRulerLabel": "Показывать линейку",
   "rulerSettingsLabel": "Настройки линейки",
   "markerDisplayFormatLabel": "Значение маркера",
+  "showPriceWithZeroPaddingLabel": "Отображать цены с одинаковым количеством знаков после запятой",
+  "useBracketsLabel": "Использовать коридоры",
+  "bracketsSettingsLabel": "Настройки коридора",
+  "orderPriceUnitsLabel": "Единицы цены",
+  "topOrderPriceRatioLabel": "Условная заявка сверху (>)",
+  "bottomOrderPriceRatioLabel": "Условная заявка снизу (<)",
+  "useBracketsWhenClosingPositionLabel": "Ставить коридор при закрытии позиции",
 
   "tickerError": "Выберите тикер",
   "intervalError": "Значение должно быть от {{min}} до {{max}}",
@@ -34,6 +42,8 @@
   "workingVolumeMinError": "Значение должно быть больше нуля",
   "workingVolumeRequiredError": "Введите значение",
   "instrumentGroupError": "Выберите режим торгов",
+  "priceRatioPercentsMultiplicityError": "Значение должно быть кратно шагу",
+  "priceRatioPointsMultiplicityError": "Значение должно быть целочисленным",
 
   "intervalPlaceholder": "Значение от {{min}} до {{max}}",
 
@@ -48,7 +58,7 @@
     "biggestVolume": "Относительно наибольшего объема",
     "volumeBoundsWithFixedValue":  "По границам (более объема)"
   },
-  "markerDisplayFormatOptions": {
+  "priceUnitsOptions": {
     "points": "Пункты",
     "percents": "Проценты"
   }

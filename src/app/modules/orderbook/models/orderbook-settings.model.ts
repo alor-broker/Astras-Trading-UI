@@ -17,4 +17,5 @@ export interface OrderbookSettings extends WidgetSettings, InstrumentKey {
   columnsOrder: ColumnsOrder;
 
   volumeDisplayFormat?: NumberDisplayFormat;
+  showPriceWithZeroPadding?: boolean;
 }

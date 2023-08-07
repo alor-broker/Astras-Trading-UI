@@ -1,7 +1,6 @@
-import { BaseUser } from "./base-user.model";
-
-export interface User extends BaseUser {
-  portfolios: Array<string>,
-  clientId: string
+export interface User {
+  login: string;
+  portfolios: Array<string>;
+  clientId: string;
 }
 

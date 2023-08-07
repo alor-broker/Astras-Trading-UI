@@ -9,7 +9,7 @@ export enum ClusterTimeframe {
   H1 = 3600
 }
 
-export enum MarkerDisplayFormat {
+export enum PriceUnits {
   Points = 'points',
   Percents = 'percents'
 }
@@ -25,7 +25,14 @@ export interface OrderBookLayoutSettings {
 }
 
 export interface RulerSettings {
-  markerDisplayFormat: MarkerDisplayFormat;
+  markerDisplayFormat: PriceUnits;
+}
+
+export interface BracketsSettings {
+  orderPriceUnits?: PriceUnits;
+  topOrderPriceRatio?: number;
+  bottomOrderPriceRatio?: number;
+  useBracketsWhenClosingPosition?: boolean;
 }
 
 export enum VolumeHighlightMode {
@@ -55,7 +62,10 @@ export interface ScalperOrderBookSettings extends WidgetSettings, InstrumentKey 
   showTradesClustersPanel?: boolean;
   tradesClusterPanelSettings?: TradesClusterPanelSettings;
   volumeDisplayFormat?: NumberDisplayFormat;
+  showPriceWithZeroPadding?: boolean;
   layout?: OrderBookLayoutSettings;
   showRuler?: boolean;
   rulerSettings?: RulerSettings;
+  useBrackets?: boolean;
+  bracketsSettings?: BracketsSettings;
 }

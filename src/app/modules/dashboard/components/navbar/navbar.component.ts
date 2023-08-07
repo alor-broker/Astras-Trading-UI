@@ -151,7 +151,6 @@ export class NavbarComponent implements OnInit {
 
       const params: CommandParams = {
         instrument: { ...activeInstrument },
-        price: 1,
         quantity: 1,
         type: CommandType.Limit,
       };
