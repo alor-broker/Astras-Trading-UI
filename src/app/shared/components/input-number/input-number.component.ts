@@ -34,6 +34,12 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   readonly: boolean = false;
   @Input()
   allowNegative = false;
+  @Input()
+  suffix?: string | null;
+  @Input()
+  suffixClass?: string | null;
+  @Input()
+  suffixTooltip?: string | null;
 
   @Output()
   atsBlur = new EventEmitter();

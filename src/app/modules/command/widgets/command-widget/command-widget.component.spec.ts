@@ -6,6 +6,8 @@ import { CommandWidgetComponent } from './command-widget.component';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import {getTranslocoModule, mockComponent} from "../../../../shared/utils/testing";
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 
 describe('CommandWidgetComponent', () => {
   let component: CommandWidgetComponent;
@@ -32,7 +34,19 @@ describe('CommandWidgetComponent', () => {
       ],
       providers: [
         { provide: ModalService, useValue: modalSpy },
-        { provide: InstrumentsService, useValue: instrumentServiceSpy }
+        { provide: InstrumentsService, useValue: instrumentServiceSpy },
+        {
+          provide: PortfolioSubscriptionsService,
+          useValue: {
+            getAllPositionsSubscription: jasmine.createSpy('getAllPositionsSubscription').and.returnValue(of({}))
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectedPortfolio$: jasmine.createSpy('selectedPortfolio$').and.returnValue(of([]))
+          }
+        }
       ]
     }).compileComponents();
   });

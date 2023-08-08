@@ -53,6 +53,7 @@
                                       [instrument]="currentInstrumentWithPortfolio.instrument"
                                       [initialValues]="initialValues$ | async"
                                       [activated]="limitTab.isActive"
+                                      [position]="position$ | async"
                 ></ats-limit-order-form>
               </nz-tab>
               <nz-tab #marketTab (nzSelect)="setSelectedTab(componentTabs.MarketOrder)" [nzTitle]="t('orderSubmitOrderSubmit.marketTab')">

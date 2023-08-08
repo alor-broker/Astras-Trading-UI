@@ -30,7 +30,7 @@ describe('LimitOrderFormComponent', () => {
   };
 
   const getValidationErrorElement = (element: HTMLElement) => {
-    const inputContainer = element.parentElement?.parentElement?.parentElement?.parentElement;
+    const inputContainer = element.parentElement?.parentElement?.parentElement?.parentElement?.parentElement;
     if (!inputContainer) {
       return null;
     }

@@ -68,6 +68,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly initialValues$ = new BehaviorSubject<OrderFormUpdate<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue>>(null);
 
   selectedTabIndex$!: Observable<number>;
+  position$!: Observable<Position | null>;
   positionInfo$!: Observable<{ abs: number, quantity: number }>;
   activeLimitOrders$!: Observable<Order[]>;
 
@@ -128,17 +129,20 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
       shareReplay(1)
     );
 
-    this.positionInfo$ = this.currentInstrumentWithPortfolio$.pipe(
+    this.position$ = this.currentInstrumentWithPortfolio$.pipe(
       switchMap(data =>
         this.portfolioSubscriptionsService.getAllPositionsSubscription(data.portfolio, data.instrument.exchange)
           .pipe(
             map(x => x.find(p => p.symbol === data.instrument.symbol && p.exchange === data.instrument.exchange)),
           )
       ),
-      filter((p): p is Position => !!p),
+      filter((p): p is Position => !!p)
+    );
+
+    this.positionInfo$ = this.position$.pipe(
       map(p => ({
-        abs: Math.abs(p.qtyTFutureBatch),
-        quantity: p.qtyTFutureBatch
+        abs: Math.abs(p!.qtyTFutureBatch),
+        quantity: p!.qtyTFutureBatch
       })),
       startWith(({
         abs: 0,

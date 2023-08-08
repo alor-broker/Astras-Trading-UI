@@ -23,6 +23,7 @@
               [commandContext]="commandContext"
               [price]="(priceChanges$ | async) ?? null"
               [quantity]="(qtyChanges$ | async) ?? null"
+              [position]="position$ | async"
             ></ats-limit-command>
           </nz-tab>
           <nz-tab [nzTitle]="t('command.marketTab')" #marketTab (nzSelect)="setSelectedTab(componentTabs.MarketOrder)">

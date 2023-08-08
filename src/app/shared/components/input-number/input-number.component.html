@@ -1,14 +1,22 @@
-<input
-  #inputElement
-  nz-input
-  (mousedown)="$event.stopPropagation()"
-  [placeholder]="placeholder"
-  [readOnly]="readonly"
-  (blur)="atsBlur.emit()"
-  autocomplete="off"
-  inputmode="decimal"
-  [ngModel]="displayValue"
-  (ngModelChange)="onModelChange($event)"
-  (keydown)="processKeydown($event)"
-  (wheel)="processWheel($event)"
-/>
+<nz-input-group [nzSuffix]="suffixTmp" nzCompact>
+  <input
+    #inputElement
+    nz-input
+    (mousedown)="$event.stopPropagation()"
+    [placeholder]="placeholder"
+    [readOnly]="readonly"
+    (blur)="atsBlur.emit()"
+    autocomplete="off"
+    inputmode="decimal"
+    [ngModel]="displayValue"
+    (ngModelChange)="onModelChange($event)"
+    (keydown)="processKeydown($event)"
+    (wheel)="processWheel($event)"
+  />
+</nz-input-group>
+
+<ng-template #suffixTmp>
+  <span [class]="suffixClass" nz-tooltip [nzTooltipTitle]="suffixTooltip">
+    {{suffix || ' '}}
+  </span>
+</ng-template>

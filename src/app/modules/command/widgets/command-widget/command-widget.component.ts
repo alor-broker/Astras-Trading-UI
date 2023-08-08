@@ -8,6 +8,10 @@ import {Instrument} from 'src/app/shared/models/instruments/instrument.model';
 import {InstrumentsService} from '../../../instruments/services/instruments.service';
 import {map} from 'rxjs/operators';
 import {CommandContextModel} from '../../models/command-context.model';
+import { Position } from "../../../../shared/models/positions/position.model";
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 export enum ComponentTabs {
   LimitOrder = 'limitOrder',
@@ -37,10 +41,14 @@ export class CommandWidgetComponent implements OnInit {
 
   priceChanges$ = new Subject<{ price: number }>();
   qtyChanges$ = new Subject<{ quantity: number }>();
+  position$!: Observable<Position | null>;
 
   constructor(
     private readonly modal: ModalService,
-    private readonly instrumentService: InstrumentsService) {
+    private readonly instrumentService: InstrumentsService,
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    private readonly currentDashboardService: DashboardContextService,
+    ) {
   }
 
   ngOnInit(): void {
@@ -58,6 +66,21 @@ export class CommandWidgetComponent implements OnInit {
         commandParameters: params,
         instrument: instrument
       }))
+    );
+
+    this.position$ = this.commandContext$.pipe(
+      filter(data => !!data),
+      mapWith(
+        () => this.currentDashboardService.selectedPortfolio$,
+        (commandContext, portfolio) => ({ commandContext, portfolio })
+      ),
+      switchMap(({ commandContext, portfolio }) =>
+        this.portfolioSubscriptionsService.getAllPositionsSubscription(portfolio.portfolio, commandContext!.instrument.exchange)
+          .pipe(
+            map(x => x.find(p => p.symbol === commandContext!.instrument.symbol && p.exchange === commandContext!.instrument.exchange)),
+          )
+      ),
+      filter((p): p is Position => !!p)
     );
 
     this.isVisible$ = this.modal.shouldShowCommandModal$;
