@@ -15,7 +15,6 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
-import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { filter, map } from 'rxjs/operators';
 import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
@@ -28,6 +27,7 @@ import { AllInstrumentsSettings } from '../../model/all-instruments-settings.mod
 import { TableConfig } from '../../../../shared/models/table-config.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-all-instruments',

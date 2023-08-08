@@ -34,7 +34,6 @@ import {
 } from "@ngneat/transloco";
 import { APP_HOOK } from "./shared/services/app-hook/app-hook-token";
 import { AppSessionTrackHook } from "./shared/services/session/app-session-track-hook";
-import { InitTerminalSettingsHook } from "./shared/services/app-hook/init-terminal-settings-hook";
 import { ThemeChangesHook } from "./shared/services/app-hook/theme-changes-hook";
 import { TranslationHook } from "./shared/services/app-hook/translation-hook";
 import { LOGGER } from './shared/services/logging/logger-base';
@@ -103,11 +102,6 @@ registerLocaleData(ru);
     {
       provide: APP_HOOK,
       useClass: AppSessionTrackHook,
-      multi: true
-    },
-    {
-      provide: APP_HOOK,
-      useClass: InitTerminalSettingsHook,
       multi: true
     },
     {

@@ -1,10 +1,10 @@
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { WidgetSettingsService } from '../services/widget-settings.service';
-import { TerminalSettingsService } from '../../modules/terminal-settings/services/terminal-settings.service';
 import { Observable } from 'rxjs';
 import { mapWith } from './observable-helper';
 import { map } from 'rxjs/operators';
 import { WidgetSettings } from '../models/widget-settings.model';
+import {TerminalSettingsService} from "../services/terminal-settings.service";
 
 /**
  * A type with describes settings with depends on an instrument
@@ -83,7 +83,10 @@ export function isInstrumentEqual(settings1?: InstrumentKey | null, settings2?: 
  * Class with settings related functions
  */
 export class SettingsHelper {
-  static showBadge(widgetGuid: string, widgetSettingsService: WidgetSettingsService, terminalSettingsService: TerminalSettingsService): Observable<boolean> {
+  static showBadge(
+    widgetGuid: string,
+    widgetSettingsService: WidgetSettingsService,
+    terminalSettingsService: TerminalSettingsService): Observable<boolean> {
     return widgetSettingsService.getSettings(widgetGuid).pipe(
       mapWith(() => terminalSettingsService.getSettings(), (ws, ts) => ({ ws, ts })),
       map(({ ws, ts }) => ts.badgesBind === true && (ws.linkToActive ?? true) === true && !!ws.badgeColor)

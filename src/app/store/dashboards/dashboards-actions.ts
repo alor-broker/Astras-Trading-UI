@@ -94,8 +94,8 @@ export class ManageDashboardsActions {
 
   static removeAllDashboards = createAction('[Dashboards] Remove All Dashboards');
 
-  static saveDashboards = createAction(
-    '[Dashboards] Save Dashboards',
+  static dashboardsUpdated = createAction(
+    '[Dashboards] Dashboards Updated',
     props<{ dashboards: Dashboard[] }>()
   );
 

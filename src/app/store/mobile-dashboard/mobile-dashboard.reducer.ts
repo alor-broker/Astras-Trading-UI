@@ -8,33 +8,31 @@ import { InstrumentKey } from "../../shared/models/instruments/instrument-key.mo
 export const mobileDashboardFeatureKey = 'mobile-dashboard';
 
 export interface State {
-  dashboard?: Dashboard;
+  dashboard: Dashboard | null;
   instrumentsHistory?: InstrumentKey[];
   status: EntityStatus;
 }
 
 const initialState: State = {
   status: EntityStatus.Initial,
-  dashboard: undefined,
+  dashboard: null,
   instrumentsHistory: []
 };
 
 export const reducer = createReducer(
   initialState,
 
-  on(MobileDashboardActions.initMobileDashboard, (state) => ({
-    ...state,
-    status: EntityStatus.Loading
-  })),
+  on(MobileDashboardActions.initMobileDashboard, (state, { mobileDashboard, instrumentsHistory }) => ({
+      ...state,
+      status: EntityStatus.Loading,
+      dashboard: mobileDashboard,
+      instrumentsHistory
+    })
+  ),
 
-  on(MobileDashboardActions.initMobileDashboardSuccess, (state, { mobileDashboard, instrumentsHistory }) => ({
+  on(MobileDashboardActions.initMobileDashboardSuccess, (state) => ({
       ...state,
       status: EntityStatus.Success,
-      dashboard: {
-        ...state.dashboard,
-        ...mobileDashboard!
-      },
-      instrumentsHistory
     })
   ),
 
@@ -78,7 +76,7 @@ export const reducer = createReducer(
 
     const instrumentsHistory = isInstrumentInHistory
       ? state.instrumentsHistory ?? []
-      : [props.selection.instrumentKey, ...(state.instrumentsHistory) ?? []].slice(0, 3);
+      : [toInstrumentKey(props.selection.instrumentKey), ...(state.instrumentsHistory) ?? []].slice(0, 3);
 
     return {
       ...state,

@@ -4,12 +4,12 @@ import {combineLatest, Observable, shareReplay} from 'rxjs';
 import {NotificationMeta} from '../../notifications/models/notification.model';
 import {PushNotificationsService} from "./push-notifications.service";
 import {filter, map} from "rxjs/operators";
-import {TerminalSettingsService} from "../../terminal-settings/services/terminal-settings.service";
 import {isPortfoliosEqual} from "../../../shared/utils/portfolios";
 import {LocalStorageService} from "../../../shared/services/local-storage.service";
 import {TimezoneConverterService} from "../../../shared/services/timezone-converter.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {UserPortfoliosService} from "../../../shared/services/user-portfolios.service";
+import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
 
 interface SavedPushNotification {
   id: string;

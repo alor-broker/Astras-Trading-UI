@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Actions, concatLatestFrom, createEffect, ofType} from '@ngrx/effects';
-import {LocalStorageService} from '../../shared/services/local-storage.service';
 import {Store} from '@ngrx/store';
 import {filter, map, switchMap} from 'rxjs/operators';
 import {GuidGenerator} from '../../shared/utils/guid';
-import {distinctUntilChanged, EMPTY, of, take, tap} from 'rxjs';
+import {distinctUntilChanged, EMPTY, of, take} from 'rxjs';
 import {Dashboard, DefaultDashboardName} from '../../shared/models/dashboard/dashboard.model';
 import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
 import {getDashboardItems} from './dashboards.selectors';
@@ -13,7 +12,6 @@ import {MarketService} from '../../shared/services/market.service';
 import {getDefaultPortfolio, isPortfoliosEqual} from '../../shared/utils/portfolios';
 import {CurrentDashboardActions, InternalDashboardActions, ManageDashboardsActions} from './dashboards-actions';
 import {instrumentsBadges} from '../../shared/utils/instruments';
-import {TerminalSettingsService} from "../../modules/terminal-settings/services/terminal-settings.service";
 import {UserPortfoliosService} from "../../shared/services/user-portfolios.service";
 import {DashboardsStreams} from "./dashboards.streams";
 
@@ -24,11 +22,8 @@ export class DashboardsEffects {
     () => {
       return this.actions$.pipe(
         ofType(ManageDashboardsActions.initDashboards),
-        tap(() => {
-          this.includeTerminalSettings();
-        }),
         switchMap(action => {
-          if(action.dashboards.length > 0) {
+          if (action.dashboards.length > 0) {
             return of(ManageDashboardsActions.initDashboardsSuccess());
           }
 
@@ -125,7 +120,7 @@ export class DashboardsEffects {
         CurrentDashboardActions.selectInstruments
       ),
       concatLatestFrom(() => DashboardsStreams.getAllDashboards(this.store)),
-      map(([, dashboards]) => ManageDashboardsActions.saveDashboards({dashboards}))
+      map(([, dashboards]) => ManageDashboardsActions.dashboardsUpdated({dashboards}))
     );
   });
 
@@ -188,24 +183,10 @@ export class DashboardsEffects {
 
   constructor(
     private readonly actions$: Actions,
-    private readonly localStorage: LocalStorageService,
     private readonly store: Store,
     private readonly dashboardService: ManageDashboardsService,
     private readonly marketService: MarketService,
-    private readonly terminalSettingsService: TerminalSettingsService,
     private readonly userPortfoliosService: UserPortfoliosService
   ) {
-  }
-
-  private includeTerminalSettings() {
-    this.terminalSettingsService.getSettings()
-      .pipe(
-        take(1)
-      )
-      .subscribe(s => {
-        if (s.excludedSettings?.length) {
-          this.terminalSettingsService.updateSettings({excludedSettings: []});
-        }
-      });
   }
 }

@@ -6,12 +6,12 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { OrdersBasketSettings } from '../../models/orders-basket-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-orders-basket-widget',

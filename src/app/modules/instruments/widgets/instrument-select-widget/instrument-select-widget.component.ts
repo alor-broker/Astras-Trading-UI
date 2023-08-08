@@ -9,12 +9,12 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import {
   allInstrumentsColumns,
   InstrumentSelectSettings
 } from '../../models/instrument-select-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-instrument-select-widget',

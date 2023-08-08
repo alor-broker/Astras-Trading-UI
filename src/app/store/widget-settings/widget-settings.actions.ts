@@ -45,7 +45,10 @@ export const removeAllWidgetSettings = createAction(
   '[WidgetSettings] Remove ALL Widget Settings'
 );
 
-export const saveSettings = createAction('[WidgetSettings] Save Settings');
+export const settingsUpdated = createAction(
+  '[WidgetSettings] Settings Updated',
+  props<{ settings: WidgetSettings[] }>()
+);
 
 
 

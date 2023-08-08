@@ -3,7 +3,6 @@ import {
   Observable, shareReplay,
   take,
 } from 'rxjs';
-import { LocalStorageService } from "./local-storage.service";
 import {
   DashboardItemPosition
 } from '../models/dashboard/widget.model';
@@ -13,7 +12,6 @@ import { GuidGenerator } from '../utils/guid';
 import { ManageDashboardsActions } from '../../store/dashboards/dashboards-actions';
 import { DashboardContextService } from './dashboard-context.service';
 import {HttpClient} from "@angular/common/http";
-import {ApplicationMetaService} from "./application-meta.service";
 import {DashboardsStreams} from "../../store/dashboards/dashboards.streams";
 
 @Injectable({
@@ -24,10 +22,8 @@ export class ManageDashboardsService {
 
   constructor(
     private readonly httpClient: HttpClient,
-    private readonly localStorage: LocalStorageService,
     private readonly store: Store,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly applicationMetaService: ApplicationMetaService
+    private readonly dashboardContextService: DashboardContextService
   ) {
   }
 
@@ -77,22 +73,6 @@ export class ManageDashboardsService {
     });
   }
 
-  resetAll() {
-    this.applicationMetaService.updateLastReset();
-
-    this.localStorage.removeItem('terminalSettings');
-    this.localStorage.removeItem('watchlistCollection');
-    this.localStorage.removeItem('portfolio');
-    this.localStorage.removeItem('profile');
-    this.localStorage.removeItem('feedback');
-    this.localStorage.removeItem('dashboards-collection');
-    this.localStorage.removeItem('mobile-dashboard');
-    this.localStorage.removeItem('instruments-history');
-
-    this.store.dispatch(ManageDashboardsActions.removeAllDashboards());
-    this.reloadPage();
-  }
-
   resetCurrentDashboard() {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
@@ -132,10 +112,6 @@ export class ManageDashboardsService {
     }
 
     return this.defaultConfig$!;
-  }
-
-  private reloadPage() {
-    window.location.reload();
   }
 
   private readDefaultConfig() {

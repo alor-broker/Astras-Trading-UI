@@ -13,11 +13,11 @@ import {
   withLatestFrom
 } from "rxjs";
 import { map } from "rxjs/operators";
-import { AuthService } from "../../../shared/services/auth.service";
-import { mapWith } from "../../../shared/utils/observable-helper";
+import { AuthService } from "../auth.service";
+import { mapWith } from "../../utils/observable-helper";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { NzNotificationDataOptions } from "ng-zorro-antd/notification/typings";
-import { TerminalSettingsService } from "../../../modules/terminal-settings/services/terminal-settings.service";
+import {TerminalSettingsService} from "../terminal-settings.service";
 
 @Injectable({
   providedIn: 'root'

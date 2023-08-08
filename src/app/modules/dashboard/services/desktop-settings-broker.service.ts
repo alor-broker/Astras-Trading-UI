@@ -14,6 +14,11 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {Store} from "@ngrx/store";
 import {ManageDashboardsService} from "../../../shared/services/manage-dashboards.service";
 import {mergeArrays} from "../../../shared/utils/collections";
+import {TerminalSettingsBrokerService} from "../../../shared/services/settings-broker/terminal-settings-broker.service";
+import {TerminalSettingsActions} from "../../../store/terminal-settings/terminal-settings.actions";
+import {filter} from "rxjs/operators";
+import {TerminalSettings} from "../../../shared/models/terminal-settings/terminal-settings.model";
+import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
 
 @Injectable({
   providedIn: 'root'
@@ -21,24 +26,28 @@ import {mergeArrays} from "../../../shared/utils/collections";
 export class DesktopSettingsBrokerService {
   constructor(
     private readonly store: Store,
-    private readonly destroyRef: DestroyRef,
     private readonly actions$: Actions,
     private readonly dashboardSettingsBrokerService: DashboardSettingsBrokerService,
+    private readonly manageDashboardsService: ManageDashboardsService,
     private readonly widgetsSettingsBrokerService: WidgetsSettingsBrokerService,
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly manageDashboardsService: ManageDashboardsService
+    private readonly terminalSettingsBrokerService: TerminalSettingsBrokerService,
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
   initSettingsBrokers() {
+    this.initTerminalSettingsBroker();
     this.initWidgetSettingsBroker();
     this.initDashboardSettingsBroker();
+
     this.checkDirtyWidgetSettings();
   }
 
   private initDashboardSettingsBroker() {
     this.addActionSubscription(
-      ManageDashboardsActions.saveDashboards,
+      ManageDashboardsActions.dashboardsUpdated,
       action => {
         this.dashboardSettingsBrokerService.saveSettings(action.dashboards).subscribe();
       }
@@ -89,6 +98,64 @@ export class DesktopSettingsBrokerService {
     });
   }
 
+  private initTerminalSettingsBroker() {
+    this.addActionSubscription(
+      TerminalSettingsActions.updateTerminalSettings,
+      () => {
+        this.terminalSettingsService.getSettings(true).pipe(
+          take(1),
+          filter((x): x is TerminalSettings => !!x)
+        ).subscribe(settings => {
+          this.terminalSettingsBrokerService.saveSettings(settings).pipe(
+            take(1)
+          ).subscribe(() => this.store.dispatch(TerminalSettingsActions.saveTerminalSettingsSuccess()));
+        });
+      }
+    );
+
+    this.addActionSubscription(
+      TerminalSettingsActions.reset,
+      () => {
+        this.terminalSettingsBrokerService.removeSettings().pipe(
+          take(1)
+        ).subscribe(() => {
+          this.store.dispatch(TerminalSettingsActions.resetSuccess());
+        });
+      }
+    );
+
+    this.terminalSettingsBrokerService.readSettings().pipe(
+      take(1)
+    ).subscribe(settings => {
+      this.store.dispatch(TerminalSettingsActions.initTerminalSettings({settings}));
+    });
+  }
+
+  private checkDirtyWidgetSettings() {
+    combineLatest([
+      this.manageDashboardsService.allDashboards$,
+      this.widgetSettingsService.getAllSettings()
+    ]).pipe(
+      take(1)
+    ).subscribe(([allDashboards, allSettings]) => {
+      if (allDashboards.length === 0 || allSettings.length === 0) {
+        return;
+      }
+
+      const allWidgets = new Set(mergeArrays(allDashboards.map(d => d.items)).map(w => w.guid));
+
+      const dirtySettings = allSettings
+        .filter(s => !allWidgets.has(s.guid))
+        .map(s => s.guid);
+
+      if (dirtySettings.length === 0) {
+        return;
+      }
+
+      this.widgetsSettingsBrokerService.removeSettings(dirtySettings).subscribe();
+    });
+  }
+
   private addActionSubscription<AC extends ActionCreator, U = ReturnType<AC>>(actionCreator: AC, callback: (action: U) => void) {
     this.actions$.pipe(
       ofType(actionCreator),
@@ -106,30 +173,6 @@ export class DesktopSettingsBrokerService {
       const updatedSettings = allSettings.filter(s => guids.has(s.guid));
 
       this.widgetsSettingsBrokerService.saveSettings(updatedSettings).subscribe();
-    });
-  }
-
-  private checkDirtyWidgetSettings() {
-    combineLatest([
-      this.manageDashboardsService.allDashboards$,
-      this.widgetSettingsService.getAllSettings()
-    ]).pipe(
-      take(1)
-    ).subscribe(([allDashboards, allSettings]) => {
-      if (allDashboards.length === 0 || allSettings.length === 0) {
-        return;
-      }
-
-      const allWidgets = new Set(mergeArrays(allDashboards.map(d => d.items)).map(w => w.guid));
-
-      const dirtySettings = allSettings.filter(s => !allWidgets.has(s.guid))
-        .map(s => s.guid);
-
-      if (dirtySettings.length === 0) {
-        return;
-      }
-
-      this.widgetsSettingsBrokerService.removeSettings(dirtySettings).subscribe();
     });
   }
 }

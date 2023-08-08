@@ -13,7 +13,6 @@ import {
   shareReplay,
   switchMap
 } from "rxjs";
-import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
 import {
   filter,
   startWith,
@@ -22,6 +21,7 @@ import {
 import { HotKeyMeta, HotKeysSettings } from "../models/terminal-settings/terminal-settings.model";
 import { TerminalCommand } from "../models/terminal-command";
 import { ModifierKeys } from "../models/modifier-keys.model";
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 @Injectable({ providedIn: 'root' })
 export class HotKeyCommandService {

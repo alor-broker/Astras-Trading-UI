@@ -8,7 +8,6 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { Observable } from 'rxjs';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import {
   ColumnsOrder,
@@ -16,6 +15,7 @@ import {
 } from '../../models/orderbook-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-orderbook-widget',
