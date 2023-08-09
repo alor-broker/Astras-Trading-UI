@@ -34,6 +34,7 @@ import { AtsValidators } from "../../../../shared/utils/form-validators";
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
 import { Side } from "../../../../shared/models/enums/side.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { Position } from "../../../../shared/models/positions/position.model";
 
 @Component({
   selector: 'ats-stop-command',
@@ -46,6 +47,8 @@ export class StopCommandComponent implements OnInit, OnDestroy {
   timeInForceEnum = TimeInForce;
   public canSelectNow = true;
   private timezoneConverter!: TimezoneConverter;
+
+  @Input({ required: true }) position!: Position | null;
 
   constructor(
     private readonly service: CommandsService,
@@ -104,6 +107,26 @@ export class StopCommandComponent implements OnInit, OnDestroy {
     const today = startOfDay(new Date());
     return toUnixTime(date) < toUnixTime(today);
   };
+
+  isPriceDifferenceNeeded(): boolean {
+    return !!this.position?.avgPrice && (this.form?.get('price')?.value != null);
+  }
+
+  getPriceDifferenceClass(): string | null {
+    return this.isPriceDifferenceNeeded()
+      ? this.getPriceDifference() > 0
+        ? 'profit'
+        : 'loss'
+      : null;
+  }
+
+  getAbsPriceDifference(): number {
+    return Math.abs(this.getPriceDifference());
+  }
+
+  private getPriceDifference() {
+    return ((this.form!.get('price')!.value! / this.position!.avgPrice) - 1) * 100;
+  }
 
   private checkNowTimeSelection(converter: TimezoneConverter) {
     // nz-date-picker does not support timezones changing

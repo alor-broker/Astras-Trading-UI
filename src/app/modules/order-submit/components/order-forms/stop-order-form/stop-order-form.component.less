@@ -1,3 +1,17 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .loss {
+      color: @sell-color;
+    }
+
+    .profit {
+      color: @buy-color;
+    }
+  }
+});
+
 .ant-form-item.compact {
   margin-bottom: 0;
 }

@@ -1,4 +1,4 @@
-import {Component, DestroyRef} from '@angular/core';
+import { Component, DestroyRef, Input } from '@angular/core';
 import {
   StopLimitOrder,
   StopMarketOrder
@@ -34,6 +34,7 @@ import {LessMore} from "../../../../../shared/models/enums/less-more.model";
 import { LinkedOrderFormData } from "../../../../command/models/stop-form-data.model";
 import { Side } from "../../../../../shared/models/enums/side.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { Position } from "../../../../../shared/models/positions/position.model";
 
 export type StopOrderFormValue =
   Omit<StopMarketOrder, 'instrument' | 'side'> &
@@ -56,6 +57,8 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
   public conditionType = LessMore;
   public timeInForceEnum = TimeInForce;
   private timezoneConverter!: TimezoneConverter;
+
+  @Input({required: true}) position!: Position | null;
 
   constructor(
     private readonly timezoneConverterService: TimezoneConverterService,
@@ -83,6 +86,27 @@ export class StopOrderFormComponent extends OrderFormBaseComponent<StopOrderForm
     const today = startOfDay(new Date());
     return toUnixTime(date) < toUnixTime(today);
   };
+
+  isPriceDifferenceNeeded(): boolean {
+    return !!this.position?.avgPrice && (this.form?.get('price')?.value != null);
+  }
+
+  getPriceDifferenceClass(): string | null {
+    return this.isPriceDifferenceNeeded()
+      ? this.getPriceDifference() > 0
+        ? 'profit'
+        : 'loss'
+      : null;
+  }
+
+  getAbsPriceDifference(): number {
+    return Math.abs(this.getPriceDifference());
+  }
+
+  private getPriceDifference() {
+    return ((this.form!.get('price')!.value! / this.position!.avgPrice) - 1) * 100;
+  }
+
 
   protected onFormCreated() {
     this.checkPriceAvailability();

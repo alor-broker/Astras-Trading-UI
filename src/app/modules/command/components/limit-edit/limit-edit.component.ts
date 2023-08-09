@@ -25,6 +25,7 @@ import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { EvaluationBaseProperties } from '../../../../shared/models/evaluation-base-properties.model';
 import { TimeInForce } from "../../../../shared/models/commands/command-params.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { Position } from "../../../../shared/models/positions/position.model";
 
 @Component({
   selector: 'ats-limit-edit',
@@ -36,6 +37,8 @@ export class LimitEditComponent implements OnInit, OnDestroy {
   form!: FormGroup<ControlsOf<LimitFormData>>;
   commandContext$ = new BehaviorSubject<CommandContextModel<EditParams> | null>(null);
   timeInForceEnum = TimeInForce;
+
+  @Input({ required: true }) position!: Position | null;
 
   constructor(
     private readonly service: CommandsService,
@@ -72,6 +75,26 @@ export class LimitEditComponent implements OnInit, OnDestroy {
 
   quantitySelect(qty: number) {
     this.form.get('quantity')?.setValue(qty);
+  }
+
+  isPriceDifferenceNeeded(): boolean {
+    return !!this.position?.avgPrice && (this.form?.get('price')?.value != null);
+  }
+
+  getPriceDifferenceClass(): string | null {
+    return this.isPriceDifferenceNeeded()
+      ? this.getPriceDifference() > 0
+        ? 'profit'
+        : 'loss'
+      : null;
+  }
+
+  getAbsPriceDifference(): number {
+    return Math.abs(this.getPriceDifference());
+  }
+
+  private getPriceDifference() {
+    return ((this.form!.get('price')!.value! / this.position!.avgPrice) - 1) * 100;
   }
 
   private setLimitEditCommand(commandContext: CommandContextModel<EditParams>): void {

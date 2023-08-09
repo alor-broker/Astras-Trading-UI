@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
-import {BehaviorSubject, combineLatest, filter, Observable, of, Subject, switchMap, take} from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, Observable, of, Subject, switchMap, take } from 'rxjs';
 import {CommandParams} from 'src/app/shared/models/commands/command-params.model';
 import {ModalService} from 'src/app/shared/services/modal.service';
 import {CommandType} from '../../../../shared/models/enums/command-type.model';
 import {NzTabComponent, NzTabSetComponent} from 'ng-zorro-antd/tabs';
 import {Instrument} from 'src/app/shared/models/instruments/instrument.model';
 import {InstrumentsService} from '../../../instruments/services/instruments.service';
-import {map} from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import {CommandContextModel} from '../../models/command-context.model';
 import { Position } from "../../../../shared/models/positions/position.model";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
@@ -80,7 +80,8 @@ export class CommandWidgetComponent implements OnInit {
             map(x => x.find(p => p.symbol === commandContext!.instrument.symbol && p.exchange === commandContext!.instrument.exchange)),
           )
       ),
-      filter((p): p is Position => !!p)
+      map(p => p ?? {} as Position),
+      startWith({} as Position)
     );
 
     this.isVisible$ = this.modal.shouldShowCommandModal$;

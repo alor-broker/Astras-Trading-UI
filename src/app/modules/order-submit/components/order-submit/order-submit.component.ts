@@ -68,7 +68,7 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
   readonly initialValues$ = new BehaviorSubject<OrderFormUpdate<LimitOrderFormValue & MarketOrderFormValue & StopOrderFormValue>>(null);
 
   selectedTabIndex$!: Observable<number>;
-  position$!: Observable<Position | null>;
+  position$!: Observable<Position>;
   positionInfo$!: Observable<{ abs: number, quantity: number }>;
   activeLimitOrders$!: Observable<Order[]>;
 
@@ -136,7 +136,8 @@ export class OrderSubmitComponent implements OnInit, OnDestroy {
             map(x => x.find(p => p.symbol === data.instrument.symbol && p.exchange === data.instrument.exchange)),
           )
       ),
-      filter((p): p is Position => !!p)
+      map(p => p ?? {} as Position),
+      startWith({} as Position)
     );
 
     this.positionInfo$ = this.position$.pipe(
