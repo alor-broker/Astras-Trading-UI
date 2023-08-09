@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { StopOrderFormComponent, StopOrderFormValue } from './stop-order-form.component';
 import { Instrument } from '../../../../../shared/models/instruments/instrument.model';
@@ -182,61 +182,64 @@ describe('StopOrderFormComponent', () => {
     }
   );
 
-  it('should emit new value when form updated', async () => {
-      component.instrument = getDefaultInstrument();
-      fixture.detectChanges();
-      const expectedDate = timezoneConverter.toTerminalUtcDate(addMonthsUnix(getUtcNow(), 1));
+  it('should emit new value when form updated', fakeAsync(() => {
+    component.instrument = getDefaultInstrument();
+    fixture.detectChanges();
+    const dateNow = getUtcNow();
+    const expectedDate = timezoneConverter.toTerminalUtcDate(addMonthsUnix(dateNow, 1));
 
-      const expectedValue: StopOrderFormValue = {
-        quantity: 125,
-        triggerPrice: 126,
-        condition: LessMore.Less,
-        price: 140,
+    const expectedValue: StopOrderFormValue = {
+      quantity: 125,
+      triggerPrice: 126,
+      condition: LessMore.Less,
+      price: 140,
+      stopEndUnixTime: timezoneConverter.terminalToUtc0Date(expectedDate),
+      withLimit: true,
+      linkedOrder: {
+        quantity: 1,
+        triggerPrice: null,
+        price: null,
         stopEndUnixTime: timezoneConverter.terminalToUtc0Date(expectedDate),
-        withLimit: true,
-        linkedOrder: {
-          quantity: 1,
-          triggerPrice: null,
-          price: null,
-          stopEndUnixTime: timezoneConverter.terminalToUtc0Date(expectedDate),
-          side: Side.Buy,
-          withLimit: false,
-          condition: LessMore.More
-        },
-        allowLinkedOrder: false
-      };
+        side: Side.Buy,
+        withLimit: false,
+        condition: LessMore.More
+      },
+      allowLinkedOrder: false
+    };
 
-      const emittedValue$ = component.formValueChange.pipe(
-        shareReplay(1)
-      );
-      emittedValue$.pipe(take(1)).subscribe();
+    const emittedValue$ = component.formValueChange.pipe(
+      shareReplay(1)
+    );
+    emittedValue$.pipe(take(1)).subscribe();
 
-      component.form!.controls.stopEndUnixTime?.setValue(expectedDate);
-      component.form!.controls.withLimit.setValue(expectedValue.withLimit);
-      fixture.detectChanges();
+    component.form!.controls.stopEndUnixTime?.setValue(expectedDate);
+    component.form!.controls.linkedOrder.controls.stopEndUnixTime?.setValue(expectedDate);
 
-      const inputs = getFormInputs();
+    component.form!.controls.withLimit.setValue(expectedValue.withLimit);
+    fixture.detectChanges();
 
-      inputs.quantity.value = expectedValue.quantity.toString();
-      inputs.quantity.dispatchEvent(new Event('input'));
+    const inputs = getFormInputs();
 
-      inputs.triggerPrice.value = expectedValue.triggerPrice.toString();
-      inputs.triggerPrice.dispatchEvent(new Event('input'));
+    inputs.quantity.value = expectedValue.quantity.toString();
+    inputs.quantity.dispatchEvent(new Event('input'));
 
-      // used third party control. Value cannot be changed directly
-      component.form!.controls.condition.setValue(expectedValue.condition);
-      fixture.detectChanges();
+    inputs.triggerPrice.value = expectedValue.triggerPrice.toString();
+    inputs.triggerPrice.dispatchEvent(new Event('input'));
 
-      inputs.price.value = expectedValue.price!.toString();
-      inputs.price.dispatchEvent(new Event('input'));
+    // used third party control. Value cannot be changed directly
+    component.form!.controls.condition.setValue(expectedValue.condition);
+    fixture.detectChanges();
 
-      await fixture.whenStable().then(() => {
-        emittedValue$.pipe(
-          take(1)
-        ).subscribe(value => {
-          expect(value).toEqual({value: expectedValue, isValid: true});
-        });
-      });
-    }
-  );
+    inputs.price.value = expectedValue.price!.toString();
+    inputs.price.dispatchEvent(new Event('input'));
+
+    tick();
+    fixture.detectChanges();
+
+    emittedValue$.pipe(
+      take(1)
+    ).subscribe(value => {
+      expect(value).toEqual({value: expectedValue, isValid: true});
+    });
+  }));
 });
