@@ -6,6 +6,7 @@ import {
   forwardRef,
   Input,
   Output,
+  TemplateRef,
   ViewChild
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR} from "@angular/forms";
@@ -35,11 +36,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   @Input()
   allowNegative = false;
   @Input()
-  suffix?: string | null;
-  @Input()
-  suffixClass?: string | null;
-  @Input()
-  suffixTooltip?: string | null;
+  suffix?: string | TemplateRef<any> | null;
 
   @Output()
   atsBlur = new EventEmitter();
@@ -131,6 +128,10 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     }
 
     this.stepChange(multiplier);
+  }
+
+  getSuffixTemplate(): TemplateRef<any> | null {
+    return this.suffix instanceof TemplateRef ? this.suffix : null;
   }
 
   protected needMarkTouched(): boolean {

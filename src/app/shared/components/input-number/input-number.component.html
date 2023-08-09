@@ -16,7 +16,9 @@
 </nz-input-group>
 
 <ng-template #suffixTmp>
-  <span [class]="suffixClass" nz-tooltip [nzTooltipTitle]="suffixTooltip">
-    {{suffix || ' '}}
-  </span>
+  <ng-container *ngIf="getSuffixTemplate() as suffixTmp; else textSuffix">
+    <ng-container *ngTemplateOutlet="suffixTmp"></ng-container>
+  </ng-container>
+
+  <ng-template #textSuffix> {{suffix || ' '}} </ng-template>
 </ng-template>

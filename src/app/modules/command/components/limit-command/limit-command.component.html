@@ -23,15 +23,19 @@
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="priceError" [nzValidateStatus]="form.get('price')!">
             <nz-form-label [nzNoColon]="true" nzRequired nzFor="price">{{t('command.priceLabel')}}</nz-form-label>
-              <ats-input-number
-                formControlName="price"
-                placeholder="0"
-                [step]="commandContext.instrument.minstep"
-                [allowNegative]="true"
-                [suffix]="isPriceDifferenceNeeded() ? (getAbsPriceDifference() | number) + ' %' : null"
-                [suffixClass]="getPriceDifferenceClass()"
-                [suffixTooltip]="t('command.priceDifferenceTooltip')"
-              ></ats-input-number>
+            <ats-input-number
+              formControlName="price"
+              placeholder="0"
+              [step]="commandContext.instrument.minstep"
+              [allowNegative]="true"
+              [suffix]="isPriceDifferenceNeeded() ? priceDiff : null"
+            ></ats-input-number>
+
+            <ng-template #priceDiff>
+                <span [class]="getPriceDifferenceClass()" nz-tooltip [nzTooltipTitle]="t('command.priceDifferenceTooltip')">
+                  {{(getAbsPriceDifference() | number) + ' %'}}
+                </span>
+            </ng-template>
           </nz-form-control>
           <ng-template #priceError>
             <span *ngIf="form.get('price')?.errors?.required">{{t('command.emptyPriceError')}}</span>

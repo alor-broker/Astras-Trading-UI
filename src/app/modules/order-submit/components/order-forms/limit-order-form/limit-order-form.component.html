@@ -22,13 +22,18 @@
             <nz-form-control [nzErrorTip]="priceError">
               <ats-input-number
                 [step]="instrument.minstep"
-                [suffix]="isPriceDifferenceNeeded() ? (getAbsPriceDifference() | number) + ' %' : null"
-                [suffixClass]="getPriceDifferenceClass()"
-                [suffixTooltip]="t('command.priceDifferenceTooltip')"
+                [suffix]="isPriceDifferenceNeeded() ? priceDiff : null"
                 [allowNegative]="true"
                 formControlName="price"
                 placeholder="0"
               ></ats-input-number>
+
+              <ng-template #priceDiff>
+                <span [class]="getPriceDifferenceClass()" nz-tooltip [nzTooltipTitle]="t('command.priceDifferenceTooltip')">
+                  {{(getAbsPriceDifference() | number) + ' %'}}
+                </span>
+              </ng-template>
+
               <ng-template #priceError>
                 <span *ngIf="form.get('price')?.errors?.required">{{t('command.emptyPriceError')}}</span>
                 <span *ngIf="form.get('price')?.errors?.min">{{t('command.tooLittle')}}</span>
