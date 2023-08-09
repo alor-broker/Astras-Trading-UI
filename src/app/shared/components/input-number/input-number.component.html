@@ -16,9 +16,5 @@
 </nz-input-group>
 
 <ng-template #suffixTmp>
-  <ng-container *ngIf="getSuffixTemplate() as suffixTmp; else textSuffix">
-    <ng-container *ngTemplateOutlet="suffixTmp"></ng-container>
-  </ng-container>
-
-  <ng-template #textSuffix> {{suffix || ' '}} </ng-template>
+  <ng-container *ngTemplateOutlet="suffix"></ng-container>
 </ng-template>

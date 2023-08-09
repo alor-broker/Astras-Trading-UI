@@ -36,7 +36,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   @Input()
   allowNegative = false;
   @Input()
-  suffix?: string | TemplateRef<any> | null;
+  suffix: TemplateRef<any> | null = null;
 
   @Output()
   atsBlur = new EventEmitter();
@@ -128,10 +128,6 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     }
 
     this.stepChange(multiplier);
-  }
-
-  getSuffixTemplate(): TemplateRef<any> | null {
-    return this.suffix instanceof TemplateRef ? this.suffix : null;
   }
 
   protected needMarkTouched(): boolean {
