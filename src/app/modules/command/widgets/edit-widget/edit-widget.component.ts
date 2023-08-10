@@ -3,12 +3,16 @@ import { combineLatest, filter, Observable, of, Subject, switchMap, take, tap } 
 import { EditParams } from 'src/app/shared/models/commands/edit-params.model';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { CommandsService } from '../../services/commands.service';
-import { finalize, map } from 'rxjs/operators';
+import { finalize, map, startWith } from 'rxjs/operators';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { CommandContextModel } from '../../models/command-context.model';
 import { LimitEdit } from "../../models/limit-edit.model";
 import { StopEdit } from "../../models/stop-edit";
+import { mapWith } from "../../../../shared/utils/observable-helper";
+import { Position } from "../../../../shared/models/positions/position.model";
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 
 @Component({
   selector: 'ats-edit-widget',
@@ -23,11 +27,14 @@ export class EditWidgetComponent implements OnInit {
   command$!: Observable<LimitEdit | StopEdit | null>;
 
   qtyChanges$ = new Subject<{ quantity: number }>();
+  position$!: Observable<Position | null>;
 
   constructor(
     private command: CommandsService,
     public modal: ModalService,
-    private readonly instrumentService: InstrumentsService
+    private readonly instrumentService: InstrumentsService,
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    private readonly currentDashboardService: DashboardContextService,
   ) {
   }
 
@@ -54,6 +61,23 @@ export class EditWidgetComponent implements OnInit {
         }
       })
     );
+
+    this.position$ = this.commandContext$.pipe(
+      filter(data => !!data),
+      mapWith(
+        () => this.currentDashboardService.selectedPortfolio$,
+        (commandContext, portfolio) => ({ commandContext, portfolio })
+      ),
+      switchMap(({ commandContext, portfolio }) =>
+        this.portfolioSubscriptionsService.getAllPositionsSubscription(portfolio.portfolio, commandContext!.instrument.exchange)
+          .pipe(
+            map(x => x.find(p => p.symbol === commandContext!.instrument.symbol && p.exchange === commandContext!.instrument.exchange)),
+          )
+      ),
+      map(p => p ?? {} as Position),
+      startWith({} as Position)
+    );
+
 
     this.isVisible$ = this.modal.shouldShowEditModal$;
   }
