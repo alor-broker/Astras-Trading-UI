@@ -15,7 +15,6 @@ export class TerminalSettingsBridgeEffects {
       tap(() => {
         this.applicationMetaService.updateLastReset();
 
-        this.localStorageService.removeItem('watchlistCollection');
         this.localStorageService.removeItem('profile');
         this.localStorageService.removeItem('feedback');
       }),

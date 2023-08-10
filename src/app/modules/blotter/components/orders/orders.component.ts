@@ -43,7 +43,6 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
@@ -233,7 +232,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly canceller: OrderCancellerService,
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly dashboardContextService: DashboardContextService,
     private readonly translatorService: TranslatorService,
     private readonly ordersGroupService: OrdersGroupService,
     private readonly destroyRef: DestroyRef

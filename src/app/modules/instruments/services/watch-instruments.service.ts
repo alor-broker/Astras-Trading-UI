@@ -4,7 +4,7 @@ import {
   Observable,
   Subscription,
   switchMap,
-  take
+  take, tap
 } from 'rxjs';
 import {
   filter,
@@ -13,17 +13,14 @@ import {
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { WatchedInstrument } from '../models/watched-instrument.model';
-import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from './watchlist-collection.service';
 import { InstrumentsService } from './instruments.service';
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
 import { InstrumentSelectSettings } from '../models/instrument-select-settings.model';
+import {WatchlistItem} from "../models/watchlist.model";
 
 @Injectable()
 export class WatchInstrumentsService {
-  private listId?: string;
-
-
   private watchListState: WatchedInstrument[] = [];
   private readonly watchListStateSubj = new BehaviorSubject<WatchedInstrument[]>(this.watchListState);
   private watchListUpdates$ = this.watchListStateSubj.asObservable()
@@ -31,7 +28,7 @@ export class WatchInstrumentsService {
       map(x => x.sort((a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol)))
     );
 
-  private readonly instrumentsToWatch$ = new BehaviorSubject<InstrumentKey[]>([]);
+  private readonly instrumentsToWatch$ = new BehaviorSubject<WatchlistItem[]>([]);
   private readonly quotesSubsByKey = new Map<string, Subscription>();
   private instrumentsToWatchSubscription?: Subscription;
   private collectionChangeSubscription?: Subscription;
@@ -56,36 +53,38 @@ export class WatchInstrumentsService {
   }
 
   getWatched(settings: InstrumentSelectSettings): Observable<WatchedInstrument[]> {
-    this.listId = settings.activeListId;
-    const collection = this.watchlistCollectionService.getWatchlistCollection();
-    if (!this.listId) {
-      const defaultList = collection.collection.find(x => x.isDefault);
-      this.listId = defaultList?.id;
-    }
+    return this.watchlistCollectionService.getWatchlistCollection().pipe(
+      take(1),
+      tap(collection => {
+        let displayListId = settings.activeListId;
+        if (!displayListId) {
+          const defaultList = collection.collection.find(x => x.isDefault);
+          displayListId = defaultList?.id;
+        }
 
-    if (!this.listId) {
-      throw new Error('Watchlist missing');
-    }
+        if (!displayListId) {
+          throw new Error('Watchlist missing');
+        }
 
-    this.unsubscribe();
-    this.refreshWatchItems();
-    this.collectionChangeSubscription = this.watchlistCollectionService.collectionChanged$.subscribe(() => this.refreshWatchItems());
-    this.initInstrumentsWatch();
+        this.unsubscribe();
 
-    return this.watchListUpdates$;
+        this.collectionChangeSubscription = this.watchlistCollectionService.getWatchlistCollection()
+          .subscribe(currentCollection => {
+            const targetWatchlist = currentCollection.collection.find(x => x.id === displayListId);
+            if (!targetWatchlist) {
+              return;
+            }
+            this.refreshWatchItems(targetWatchlist.items);
+          });
+
+
+        this.initInstrumentsWatch();
+      }),
+      switchMap(() => this.watchListUpdates$)
+    );
   }
 
-  private refreshWatchItems() {
-    if (!this.listId) {
-      return;
-    }
-
-    const items = this.watchlistCollectionService.getListItems(this.listId);
-
-    if (!items) {
-      return;
-    }
-
+  private refreshWatchItems(items: WatchlistItem[]) {
     const itemKeys = new Set(items.map(x => WatchlistCollectionService.getInstrumentKey(x)));
     for (let [key, sub] of this.quotesSubsByKey) {
       if (!itemKeys.has(key)) {
@@ -114,7 +113,7 @@ export class WatchInstrumentsService {
       );
   }
 
-  private initInstrumentSubscription(instrument: InstrumentKey) {
+  private initInstrumentSubscription(instrument: WatchlistItem) {
     this.instrumentSService.getInstrument(instrument).pipe(
       take(1),
       filter((x): x is Instrument => !!x),
@@ -122,6 +121,7 @@ export class WatchInstrumentsService {
         return this.history.getLastTwoCandles(i)
           .pipe(
             map(candles => <WatchedInstrument>{
+              recordId: instrument.recordId,
               instrument: i,
               closePrice: candles?.prev?.close ?? 0,
               openPrice: candles?.cur.open ?? 0,

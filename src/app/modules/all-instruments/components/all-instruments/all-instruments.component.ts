@@ -28,6 +28,7 @@ import { TableConfig } from '../../../../shared/models/table-config.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {WatchlistCollection} from "../../../instruments/models/watchlist.model";
 
 @Component({
   selector: 'ats-all-instruments',
@@ -169,7 +170,6 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initInstruments();
-    this.initContextMenu();
 
     this.instrumentsDisplay$ = this.instrumentsList$.pipe(
       mapWith(
@@ -209,10 +209,10 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.watchlistCollectionService.collectionChanged$
+    this.watchlistCollectionService.getWatchlistCollection()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.initContextMenu();
+      .subscribe(collection => {
+        this.initContextMenu(collection);
       });
   }
 
@@ -274,24 +274,26 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  initContextMenu() {
+  initContextMenu(collection: WatchlistCollection) {
     this.contextMenu = [
       {
         title: 'Добавить в список',
         clickFn: (row: AllInstruments) => {
-          if (this.watchlistCollectionService.getWatchlistCollection().collection.length > 1) {
+          if (collection.collection.length > 1) {
             return;
           }
 
-          this.watchlistCollectionService.addItemsToList(this.watchlistCollectionService.getWatchlistCollection().collection[0].id, [
+          this.watchlistCollectionService.addItemsToList(
+            collection.collection[0].id,
+            [
             { symbol: row.name, exchange: row.exchange }
-          ]);
+            ]);
         }
       }
     ];
 
-    if (this.watchlistCollectionService.getWatchlistCollection().collection.length > 1) {
-      this.contextMenu[0].subMenu = this.watchlistCollectionService.getWatchlistCollection().collection
+    if (collection.collection.length > 1) {
+      this.contextMenu[0].subMenu = collection.collection
         .map(list => ({
           title: list.title,
           clickFn: (row: AllInstruments) => {
