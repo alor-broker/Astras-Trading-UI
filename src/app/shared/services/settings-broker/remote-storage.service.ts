@@ -44,10 +44,20 @@ export class RemoteStorageService {
       catchHttpError<RemoteStorageItem | null>(null, this.errorHandlerService),
       map(r => {
         if (!!r && !!r.UserSettings) {
-          return {
-            meta: <SettingsMeta>JSON.parse(r.UserSettings.Description),
-            value: <T>JSON.parse(r.UserSettings.Content)
-          } as SettingsRecord<T>;
+          try {
+            return {
+              meta: <SettingsMeta>JSON.parse(r.UserSettings.Description),
+              value: <T>JSON.parse(r.UserSettings.Content)
+            } as SettingsRecord<T>;
+          } catch (e: any) {
+            this.errorHandlerService.handleError({
+              name: e.name,
+              message: e.message,
+              stack: e.stack
+            });
+
+            return null;
+          }
         }
 
         return null;
@@ -71,10 +81,21 @@ export class RemoteStorageService {
           return null;
         }
 
-        return r.map(i => ({
-          meta: <SettingsMeta>JSON.parse(i.Description),
-          value: <T>JSON.parse(i.Content)
-        } as SettingsRecord<T>));
+        try {
+          return r.map(i => ({
+            meta: <SettingsMeta>JSON.parse(i.Description),
+            value: <T>JSON.parse(i.Content)
+          } as SettingsRecord<T>));
+        } catch (e: any) {
+          this.errorHandlerService.handleError({
+            name: e.name,
+            message: e.message,
+            stack: e.stack
+          });
+
+          return null;
+        }
+
       }),
       take(1)
     );
