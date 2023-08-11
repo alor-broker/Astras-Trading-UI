@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Actions, concatLatestFrom, createEffect, ofType} from '@ngrx/effects';
+import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Store} from '@ngrx/store';
 import {filter, map, switchMap} from 'rxjs/operators';
 import {GuidGenerator} from '../../shared/utils/guid';
-import {distinctUntilChanged, EMPTY, of, take} from 'rxjs';
+import {distinctUntilChanged, EMPTY, of, take, withLatestFrom} from 'rxjs';
 import {Dashboard, DefaultDashboardName} from '../../shared/models/dashboard/dashboard.model';
 import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
 import {getDashboardItems} from './dashboards.selectors';
@@ -114,12 +114,12 @@ export class DashboardsEffects {
         ManageDashboardsActions.removeWidgets,
         ManageDashboardsActions.updateWidgetPositions,
         ManageDashboardsActions.selectDashboard,
-        ManageDashboardsActions.removeDashboard,
         ManageDashboardsActions.removeAllDashboards,
         CurrentDashboardActions.selectPortfolio,
-        CurrentDashboardActions.selectInstruments
+        CurrentDashboardActions.selectInstruments,
+        InternalDashboardActions.dropDashboardEntity
       ),
-      concatLatestFrom(() => DashboardsStreams.getAllDashboards(this.store)),
+      withLatestFrom(DashboardsStreams.getAllDashboards(this.store)),
       map(([, dashboards]) => ManageDashboardsActions.dashboardsUpdated({dashboards}))
     );
   });
