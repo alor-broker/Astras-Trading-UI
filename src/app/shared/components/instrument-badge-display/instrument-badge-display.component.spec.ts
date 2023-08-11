@@ -3,7 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InstrumentBadgeDisplayComponent } from './instrument-badge-display.component';
 import {DashboardContextService} from "../../services/dashboard-context.service";
 import {Subject} from "rxjs";
-import {TerminalSettingsService} from "../../../modules/terminal-settings/services/terminal-settings.service";
+import {TerminalSettingsService} from "../../services/terminal-settings.service";
+
+;
 
 describe('InstrumentBadgeDisplayComponent', () => {
   let component: InstrumentBadgeDisplayComponent;

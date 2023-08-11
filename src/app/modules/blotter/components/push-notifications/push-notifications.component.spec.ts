@@ -4,11 +4,8 @@ import { PushNotificationsComponent } from './push-notifications.component';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {Subject} from "rxjs";
 import {BlotterService} from "../../services/blotter.service";
-import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
-import {TerminalSettingsService} from "../../../terminal-settings/services/terminal-settings.service";
 import {PushNotificationsService} from "../../../push-notifications/services/push-notifications.service";
 import {getTranslocoModule} from "../../../../shared/utils/testing";
-import {PositionsComponent} from "../positions/positions.component";
 
 describe('PushNotificationsComponent', () => {
   let component: PushNotificationsComponent;

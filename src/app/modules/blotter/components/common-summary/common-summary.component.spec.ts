@@ -6,9 +6,9 @@ import { of } from 'rxjs';
 
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { CommonSummaryComponent } from './common-summary.component';
-import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { getTranslocoModule } from "../../../../shared/utils/testing";
 import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 describe('CommonSummaryComponent', () => {
   let component: CommonSummaryComponent;

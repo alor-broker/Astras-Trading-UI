@@ -16,7 +16,6 @@ import {
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
 import {ModalService} from "../../../../shared/services/modal.service";
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {AtsValidators} from '../../../../shared/utils/form-validators';
@@ -48,7 +47,6 @@ export class TerminalSettingsComponent implements OnInit {
   constructor(
     private readonly accountService: AccountService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly dashboardService: ManageDashboardsService,
     private modal: ModalService,
     private readonly translatorService: TranslatorService,
     private readonly destroyRef: DestroyRef

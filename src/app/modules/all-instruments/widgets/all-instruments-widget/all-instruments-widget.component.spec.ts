@@ -4,9 +4,9 @@ import {AllInstrumentsWidgetComponent} from './all-instruments-widget.component'
 import {mockComponent, widgetSkeletonMock} from "../../../../shared/utils/testing";
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {of} from 'rxjs';
-import {TerminalSettingsService} from '../../../terminal-settings/services/terminal-settings.service';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 describe('AllInstrumentsWidgetComponent', () => {
   let component: AllInstrumentsWidgetComponent;
