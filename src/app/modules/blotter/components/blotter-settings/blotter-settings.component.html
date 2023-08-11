@@ -44,7 +44,8 @@
             nzMode="multiple"
             [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
             formControlName="ordersColumns"
-            (nzOpenChange)="selectOpenStateChange($event)"
+            atsRemoveSelectTitles
+            [valueChanges]="form.get('ordersColumns')?.valueChanges"
           >
             <nz-option
               *ngFor="let item of allOrdersColumns"
@@ -75,7 +76,8 @@
             nzMode="multiple"
             [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
             formControlName="stopOrdersColumns"
-            (nzOpenChange)="selectOpenStateChange($event)"
+            atsRemoveSelectTitles
+            [valueChanges]="form.get('stopOrdersColumns')?.valueChanges"
           >
             <nz-option
               *ngFor="let item of allStopOrdersColumns"
@@ -106,7 +108,8 @@
             nzMode="multiple"
             [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
             formControlName="tradesColumns"
-            (nzOpenChange)="selectOpenStateChange($event)"
+            atsRemoveSelectTitles
+            [valueChanges]="form.get('tradesColumns')?.valueChanges"
           >
             <nz-option
               *ngFor="let item of allTradesColumns"
@@ -137,7 +140,8 @@
             nzMode="multiple"
             [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
             formControlName="positionsColumns"
-            (nzOpenChange)="selectOpenStateChange($event)"
+            atsRemoveSelectTitles
+            [valueChanges]="form.get('positionsColumns')?.valueChanges"
           >
             <nz-option
               *ngFor="let item of allPositionsColumns"
@@ -168,7 +172,8 @@
             nzMode="multiple"
             [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
             formControlName="notificationsColumns"
-            (nzOpenChange)="selectOpenStateChange($event)"
+            atsRemoveSelectTitles
+            [valueChanges]="form.get('notificationsColumns')?.valueChanges"
           >
             <nz-option
               *ngFor="let item of allNotificationsColumns"

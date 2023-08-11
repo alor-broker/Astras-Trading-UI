@@ -14,7 +14,8 @@
                   nzMode="multiple"
                   [nzPlaceHolder]="t('instrumentsSettings.selectColumnsPlaceholder')"
                   formControlName="instrumentColumns"
-                  (nzOpenChange)="selectOpenStateChange($event)"
+                  atsRemoveSelectTitles
+                  [valueChanges]="settingsForm.get('instrumentColumns')?.valueChanges"
                 >
                   <nz-option
                     *ngFor="let item of allInstrumentColumns"

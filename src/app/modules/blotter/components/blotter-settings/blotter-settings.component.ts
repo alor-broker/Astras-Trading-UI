@@ -1,14 +1,10 @@
 import {
-  AfterViewInit,
   Component,
   DestroyRef,
-  ElementRef,
   EventEmitter,
   Input,
   OnInit,
-  Output,
-  QueryList,
-  ViewChildren
+  Output
 } from '@angular/core';
 import {
   UntypedFormControl,
@@ -43,18 +39,15 @@ import {
 } from '../../models/blotter-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import { NzSelectComponent } from "ng-zorro-antd/select";
 
 @Component({
   selector: 'ats-blotter-settings',
   templateUrl: './blotter-settings.component.html',
   styleUrls: ['./blotter-settings.component.less']
 })
-export class BlotterSettingsComponent implements OnInit, AfterViewInit {
+export class BlotterSettingsComponent implements OnInit {
   @Input({required: true})
   guid!: string;
-
-  @ViewChildren(NzSelectComponent) selectsQueryList!: QueryList<NzSelectComponent>;
 
   @Output()
   settingsChange: EventEmitter<BlotterSettings> = new EventEmitter<BlotterSettings>();
@@ -76,8 +69,7 @@ export class BlotterSettingsComponent implements OnInit, AfterViewInit {
     private readonly settingsService: WidgetSettingsService,
     private readonly store: Store,
     private readonly deviceService: DeviceService,
-    private readonly destroyRef: DestroyRef,
-    private readonly elementRef: ElementRef
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -113,12 +105,6 @@ export class BlotterSettingsComponent implements OnInit, AfterViewInit {
           isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden ?? false),
           cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false)
         });
-
-        this.form.valueChanges
-          .pipe(
-            takeUntilDestroyed(this.destroyRef)
-          )
-          .subscribe(() => this.removeNativeTitles());
       }
     });
 
@@ -163,32 +149,8 @@ export class BlotterSettingsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
-    this.selectsQueryList.changes.subscribe(() => this.removeNativeTitles());
-  }
-
   toPortfolioKey(portfolio: {portfolio: string, exchange: string}): string {
     return `${portfolio.portfolio}:${portfolio.exchange}`;
-  }
-
-  selectOpenStateChange(isOpen: boolean) {
-    if (isOpen) {
-      setTimeout(
-        () => document.querySelectorAll('.ant-select-item-option')
-          ?.forEach(option => option.removeAttribute('title')),
-        0
-      );
-    }
-  }
-
-  removeNativeTitles() {
-    setTimeout(
-      () => {
-        this.elementRef.nativeElement.querySelectorAll('.ant-select-selection-item[title]')
-          ?.forEach((item: Element) => item.removeAttribute('title'));
-      },
-      0
-    );
   }
 
   private isPortfolioEqual(settings1: BlotterSettings, settings2: BlotterSettings) {
