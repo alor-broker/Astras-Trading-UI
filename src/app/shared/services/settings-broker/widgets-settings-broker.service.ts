@@ -2,15 +2,26 @@ import {Injectable} from '@angular/core';
 import {LocalStorageService} from "../local-storage.service";
 import {RemoteStorageService} from "./remote-storage.service";
 import {ApplicationMetaService} from "../application-meta.service";
-import {combineLatest, forkJoin, Observable, of, switchMap, take, tap} from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  forkJoin,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+  take,
+  tap
+} from "rxjs";
 import {WidgetSettings} from "../../models/widget-settings.model";
-import {map} from "rxjs/operators";
+import {finalize, map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
 })
 export class WidgetsSettingsBrokerService {
   private readonly widgetsStorageKey = 'settings';
+  private readonly saveRequests = new Map<string, { source: BehaviorSubject<WidgetSettings>, stream$: Observable<boolean> }>();
 
   constructor(
     private readonly localStorageService: LocalStorageService,
@@ -88,19 +99,42 @@ export class WidgetsSettingsBrokerService {
     }
 
     return forkJoin(
-      settings.map(s => this.remoteStorageService.setRecord(
-        s.guid,
-        {
-          meta: {
-            timestamp: this.getTimestamp()
-          },
-          value: s
-        },
-        this.groupKey))
+      settings.map(s => this.getSaveRequest(s))
     ).pipe(
       map(r => r.every(i => !!i)),
       take(1)
     );
+  }
+
+  private getSaveRequest(settings: WidgetSettings): Observable<boolean> {
+    const existedRequest = this.saveRequests.get(settings.guid);
+    if (existedRequest) {
+      existedRequest.source.next(settings);
+      return existedRequest.stream$;
+    }
+
+    const newRequestSource = new BehaviorSubject<WidgetSettings>(settings);
+    const newRequest = {
+      source: newRequestSource,
+      stream$: newRequestSource.pipe(
+        switchMap(newSettings => this.remoteStorageService.setRecord(
+          newSettings.guid,
+          {
+            meta: {
+              timestamp: this.getTimestamp()
+            },
+            value: newSettings
+          },
+          this.groupKey)),
+        take(1),
+        finalize(() => this.saveRequests.delete(settings.guid)),
+        shareReplay(1)
+      )
+    };
+
+    this.saveRequests.set(settings.guid, newRequest);
+
+    return newRequest.stream$;
   }
 
   private removeRemoteRecords(keys: string[]): Observable<boolean> {
