@@ -1,0 +1,35 @@
+{
+  "columns": {
+    "value": {
+      "name": "Volume",
+      "tooltip": "Trade volume"
+    },
+    "repoRate": {
+      "name": "% per annum",
+      "tooltip": "REPO price in percent per annum"
+    },
+    "extRef": {
+      "name": "Ext. system user",
+      "tooltip": "External system user"
+    },
+    "repoTerm": {
+      "name": "Term",
+      "tooltip": "REPO term - the period of time, expressed in calendar days, between the dates of execution of the first and second parts of the transaction"
+    },
+    "account": {
+      "name": "Trading account",
+      "tooltip": "Trading account on which the deal was made"
+    },
+    "tradeTypeInfo": {
+      "name": "Type",
+      "tooltip": "Trade type description"
+    },
+    "yield": {
+      "name": "Yield",
+      "tooltip": "Yield based on trade price"
+    }
+  },
+  "showRepoTradesLabel": "Show REPO trades",
+  "emptyTrades": "There are no REPO trades today",
+  "emptyTradesWithFilters": "Nothing found with these filters"
+}

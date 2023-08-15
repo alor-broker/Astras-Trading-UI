@@ -4,5 +4,6 @@
   "stopOrdersTab": "Stop-orders",
   "positionsTab": "Positions",
   "tradesTab": "Trades",
+  "repoTradesTab": "REPO trades",
   "notificationsTab": "Notifications"
 }

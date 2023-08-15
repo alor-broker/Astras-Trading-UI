@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject, Observable,
+  BehaviorSubject,
+  interval,
+  Observable,
+  switchMap,
   tap,
 } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import {
   CurrencyCode,
 } from 'src/app/shared/models/enums/currencies.model';
@@ -13,6 +16,11 @@ import { PortfolioSubscriptionsService } from '../../../shared/services/portfoli
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
 import { BlotterSettings } from '../models/blotter-settings.model';
 import {Position} from "../../../shared/models/positions/position.model";
+import { HttpClient } from "@angular/common/http";
+import { environment } from "../../../../environments/environment";
+import { RepoTrade } from "../../../shared/models/trades/trade.model";
+import { catchHttpError } from "../../../shared/utils/observable-helper";
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 
 @Injectable()
 export class BlotterService {
@@ -25,7 +33,9 @@ export class BlotterService {
   constructor(
     private readonly notification: OrdersNotificationsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    private readonly http: HttpClient,
+    private readonly errorHandler: ErrorHandlerService
   ) {
   }
 
@@ -49,6 +59,20 @@ export class BlotterService {
 
   getTrades(settings: BlotterSettings) {
     return this.portfolioSubscriptionsService.getTradesSubscription(settings.portfolio, settings.exchange);
+  }
+
+  getRepoTrades(settings: BlotterSettings): Observable<RepoTrade[]> {
+    return interval(10_000)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.http.get<RepoTrade[]>(`${environment.apiUrl}/md/v2/Clients/${settings.exchange}/${settings.portfolio}/trades`, {
+          params: {
+            withRepo: true
+          }
+        })),
+        map(trades => trades.filter(t => !!t.repoSpecificFields)),
+        catchHttpError<RepoTrade[]>([], this.errorHandler)
+      );
   }
 
   getOrders(settings: BlotterSettings) {

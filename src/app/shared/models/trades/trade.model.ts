@@ -2,6 +2,7 @@ export interface Trade {
   id: string, // 4205740801,
   orderno: string, //  28452595240,
   symbol: string,
+  brokerSymbol: string,
   exchange: string,
   date: Date, // 2021-12-28T06:43:23.0000000Z,
   board: string,
@@ -10,5 +11,19 @@ export interface Trade {
   qty: number, // 1,
   price: number, // 270,
   side: string, // buy,
-  existing: boolean //true
+  existing: boolean, //true
+}
+
+export interface RepoTrade extends Trade {
+  repoSpecificFields: RepoSpecificFields
+}
+
+export interface RepoSpecificFields {
+  repoRate: number,
+  extRef: string,
+  repoTerm: number,
+  account: string,
+  tradeTypeInfo: string,
+  value: number,
+  yield: number
 }

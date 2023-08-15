@@ -8,6 +8,7 @@
   "ordersColumnsLabel": "Колонки заявок",
   "stopOrdersColumnsLabel": "Колонки стоп-заявок",
   "tradesColumnsLabel": "Колонки сделок",
+  "repoTradesColumnsLabel": "Колонки сделок РЕПО",
   "positionsColumnsLabel": "Колонки позиций",
   "notificationsColumnsLabel": "Колонки уведомлений",
   "hideSoldLabel": "Скрыть проданные",
