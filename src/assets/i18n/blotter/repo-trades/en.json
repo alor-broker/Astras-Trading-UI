@@ -5,7 +5,7 @@
       "tooltip": "Trade volume"
     },
     "repoRate": {
-      "name": "% per annum",
+      "name": "REPO rate",
       "tooltip": "REPO price in percent per annum"
     },
     "extRef": {
