@@ -1,6 +1,5 @@
 {
-  "detailsText": "Detailed list of changes/fixes in the current version can be found at the ",
-  "detailsLink": "link",
+  "problemsLabel": "If app is not loading",
   "problemsWarning": "We are trying to develop our application to meet the needs of users. However, some changes may not be compatible with saved personal settings.",
   "problemsStepsTitle": "If you face any problem of loading or viewing the app, please try the following steps:",
   "problemsStep1": "1. Try to bring the dashboard to the standard view by clicking the \"Standard view\" button in the widget menu.",

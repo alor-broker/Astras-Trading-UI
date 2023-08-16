@@ -15,6 +15,8 @@ export class ApplicationUpdatedWidgetComponent implements OnInit {
   isVisible$: Observable<boolean> = of(false);
   currentVersion$: Observable<ReleaseMeta | null> = of(null);
 
+  isProblemCollapseActive = false;
+
   constructor(
     private readonly modalService: ModalService,
     private readonly applicationMetaService: ApplicationMetaService
@@ -42,5 +44,9 @@ export class ApplicationUpdatedWidgetComponent implements OnInit {
 
   getLinkToRelease(release: ReleaseMeta): string {
     return `${environment.warpUrl}/ru/releases/release/${release.id}`;
+  }
+
+  isProblemCollapseActiveChange(isActive: boolean) {
+    this.isProblemCollapseActive = isActive;
   }
 }
