@@ -29,16 +29,12 @@ export class ApplicationUpdatedWidgetComponent implements OnInit {
   }
 
   handleClose() {
-    this.modalService.closeApplicationUpdatedModal();
-  }
-
-  handleConfirmedClose() {
     this.currentVersion$.pipe(
       take(1),
       filter(x => !!x)
     ).subscribe(release => {
       this.applicationMetaService.updateCurrentVersion(release!.id);
-      this.handleClose();
+      this.modalService.closeApplicationUpdatedModal();
     });
   }
 

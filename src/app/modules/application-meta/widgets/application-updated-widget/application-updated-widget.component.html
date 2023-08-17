@@ -2,10 +2,11 @@
   <nz-modal
     *transloco="let tAppMeta; scope: 'application-meta/application-updated-widget'"
     (nzOnCancel)="handleClose()"
-    (nzOnOk)="handleClose()"
     [nzTitle]="header"
     nzClassName="application-updated-modal"
-    [nzVisible]="isVisible$ | async">
+    [nzVisible]="isVisible$ | async"
+    [nzFooter]="null"
+  >
     <ng-template #header>
       <div class="header">{{currentVersion.id}}</div>
     </ng-template>
@@ -69,15 +70,6 @@
         </span>
         </p>
       </div>
-    </ng-container>
-    <ng-container *nzModalFooter>
-      <button
-        (click)="handleConfirmedClose()"
-        nz-button
-        nzType="primary"
-      >
-        {{tAppMeta('okBtnText')}}
-      </button>
     </ng-container>
   </nz-modal>
 </ng-container>
