@@ -33,6 +33,7 @@ import {
   allNotificationsColumns,
   allOrdersColumns,
   allPositionsColumns,
+  allRepoTradesColumns,
   allStopOrdersColumns,
   allTradesColumns,
   BlotterSettings
@@ -55,6 +56,7 @@ export class BlotterSettingsComponent implements OnInit {
   allOrdersColumns: BaseColumnId[] = allOrdersColumns;
   allStopOrdersColumns: BaseColumnId[] = allStopOrdersColumns;
   allTradesColumns: BaseColumnId[] = allTradesColumns;
+  allRepoTradesColumns: BaseColumnId[] = allRepoTradesColumns;
   allPositionsColumns: BaseColumnId[] = allPositionsColumns;
   allNotificationsColumns: BaseColumnId[] = allNotificationsColumns;
   prevSettings?: BlotterSettings;
@@ -103,7 +105,9 @@ export class BlotterSettingsComponent implements OnInit {
             )?.columns?.map(c => c.columnId)
           ),
           isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden ?? false),
-          cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false)
+          cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false),
+          showRepoTrades: new UntypedFormControl(settings.showRepoTrades ?? false),
+          repoTradesColumns: new UntypedFormControl(this.toTableSettings(settings.repoTradesTable)?.columns?.map(c => c.columnId)),
         });
       }
     });
@@ -135,6 +139,8 @@ export class BlotterSettingsComponent implements OnInit {
       newSettings.stopOrdersTable = this.updateTableSettings(newSettings.stopOrdersColumns, initialSettings.stopOrdersTable);
       delete newSettings.stopOrdersColumns;
       newSettings.tradesTable = this.updateTableSettings(newSettings.tradesColumns, initialSettings.tradesTable);
+      delete newSettings.tradesColumns;
+      newSettings.repoTradesTable = this.updateTableSettings(newSettings.repoTradesColumns, initialSettings.repoTradesTable);
       delete newSettings.tradesColumns;
       newSettings.positionsTable = this.updateTableSettings(newSettings.positionsColumns, initialSettings.positionsTable);
       delete newSettings.positionsColumns;
