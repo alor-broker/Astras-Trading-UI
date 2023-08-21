@@ -10,10 +10,12 @@ export interface BlotterSettings extends WidgetSettings {
   ordersTable?: TableDisplaySettings,
   stopOrdersTable?: TableDisplaySettings,
   tradesTable?: TableDisplaySettings,
+  repoTradesTable?: TableDisplaySettings,
   positionsTable?: TableDisplaySettings,
   notificationsTable?: TableDisplaySettings,
   isSoldPositionsHidden: boolean,
   cancelOrdersWithoutConfirmation?: boolean,
+  showRepoTrades?: boolean,
 
   /**
    * @deprecated use ordersTable
@@ -85,6 +87,17 @@ export const allNotificationsColumns: BaseColumnId[] = [
   { id: 'instrument', displayName: "instrument", isDefault: true },
   { id: 'priceCondition', displayName: "priceCondition", isDefault: true },
   { id: 'price', displayName: "price", isDefault: true },
+];
+
+export const allRepoTradesColumns: BaseColumnId[] = [
+  ...allTradesColumns.filter(c => c.id !== 'volume'),
+  { id: 'value', displayName: "Объем", isDefault: true },
+  { id: 'repoRate', displayName: "% годовых", isDefault: true },
+  { id: 'extRef', displayName: "Пользователь внеш. системы", isDefault: false },
+  { id: 'repoTerm', displayName: "Срок", isDefault: true },
+  { id: 'account', displayName: "Торговый счёт", isDefault: false },
+  { id: 'tradeTypeInfo', displayName: 'Тип', isDefault: true },
+  { id: 'yield', displayName: 'Доход', isDefault: true }
 ];
 
 export enum TableNames {
