@@ -45,7 +45,7 @@
             <nz-filter-trigger
               *ngIf="column.filterData && !column.filterData.isDefaultFilter"
               [(nzVisible)]="!!column.filterData.isOpenedFilter"
-              [nzActive]="!!searchFilter"
+              [nzActive]="!!filter$"
               [nzDropdownMenu]="searchMenu"
             >
               <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon

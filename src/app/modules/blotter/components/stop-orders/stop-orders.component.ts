@@ -1,10 +1,8 @@
 import {
-  AfterViewInit,
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   ElementRef,
   EventEmitter,
-  Input,
-  OnDestroy,
   OnInit,
   Output,
   QueryList,
@@ -12,11 +10,10 @@ import {
   ViewChildren
 } from '@angular/core';
 import {
-  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   Observable,
-  of, shareReplay,
+  of,
   Subject,
   switchMap,
   take,
@@ -24,7 +21,6 @@ import {
 import {
   catchError,
   debounceTime,
-  filter,
   map,
   mergeMap,
   startWith,
@@ -40,25 +36,22 @@ import { StopOrder } from 'src/app/shared/models/orders/stop-order.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { NzTableComponent } from 'ng-zorro-antd/table';
-import { ExportHelper } from "../../utils/export-helper";
 import {
   isEqualPortfolioDependedSettings
 } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { BlotterSettings } from '../../models/blotter-settings.model';
+import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import {LessMore} from "../../../../shared/models/enums/less-more.model";
+import { LessMore } from "../../../../shared/models/enums/less-more.model";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { DomHelper } from "../../../../shared/utils/dom-helper";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { BaseTableComponent } from "../base-table/base-table.component";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -70,8 +63,9 @@ interface DisplayOrder extends StopOrder {
   templateUrl: './stop-orders.component.html',
   styleUrls: ['./stop-orders.component.less'],
 })
-export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
-  private readonly columnDefaultWidth = 100;
+export class StopOrdersComponent
+  extends BaseTableComponent<DisplayOrder, OrderFilter>
+  implements OnInit {
 
   @ViewChild('nzTable')
   table?: NzTableComponent<DisplayOrder>;
@@ -79,18 +73,11 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('tableContainer')
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
-  @Input({required: true})
-  guid!: string;
-
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   isModalOpened = DomHelper.isModalOpen;
   displayOrders$: Observable<DisplayOrder[]> = of([]);
-  filter = new BehaviorSubject<OrderFilter>({});
-  isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
 
-
-  tableInnerWidth: number = 1000;
   allColumns: BaseColumnSettings<DisplayOrder>[] = [
     {
       id: 'id',
@@ -253,46 +240,32 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       minWidth: 65
     },
   ];
-  listOfColumns: BaseColumnSettings<DisplayOrder>[] = [];
-  settings$!: Observable<BlotterSettings>;
-  readonly scrollHeight$ = new BehaviorSubject<number>(100);
 
   private cancelCommands = new Subject<CancelCommand>();
   private cancels$ = this.cancelCommands.asObservable();
   private orders: StopOrder[] = [];
-  private badgeColor = defaultBadgeColor;
+
+  settingsTableName = TableNames.StopOrdersTable;
+  settingsColumnsName = ColumnsNames.StopOrdersColumns;
+  fileSuffix = 'Стопы';
+  badgeColor = defaultBadgeColor;
 
   constructor(
-    private readonly service: BlotterService,
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly service: BlotterService,
+    protected readonly settingsService: WidgetSettingsService,
     private readonly canceller: OrderCancellerService,
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly translatorService: TranslatorService,
     private readonly ordersGroupService: OrdersGroupService,
-    private readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef
   ) {
-  }
-
-  ngAfterViewInit(): void {
-    const container$ =  this.tableContainer.changes.pipe(
-      map(x => x.first),
-      startWith(this.tableContainer.first),
-      filter((x): x is ElementRef<HTMLElement> => !!x),
-      shareReplay(1)
-    );
-
-    container$.pipe(
-      switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => {
-      setTimeout(()=> this.scrollHeight$.next(x));
-    });
+    super(service, settingsService, destroyRef);
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
+    super.ngOnInit();
 
     this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
@@ -348,7 +321,7 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.displayOrders$ = combineLatest([
       orders$,
-      this.filter,
+      this.filter$,
       this.timezoneConverterService.getConverter(),
       this.ordersGroupService.getAllOrderGroups()
     ]).pipe(
@@ -370,25 +343,6 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
       catchError((_, caught) => caught),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
-  }
-
-  ngOnDestroy(): void {
-    this.scrollHeight$.complete();
-  }
-
-  reset(): void {
-    this.filter.next({});
-  }
-
-  filterChange(newFilter: OrderFilter) {
-    this.filter.next({
-      ...this.filter.getValue(),
-      ...newFilter
-    });
-  }
-
-  defaultFilterChange(key: string, value: string[]) {
-    this.filterChange({ [key]: value });
   }
 
   cancelOrder(orderId: string) {
@@ -436,99 +390,11 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     working.forEach(order => this.cancelOrder(order));
   }
 
-  translateStatus(status: string) {
-    switch (status) {
-      case 'filled':
-        return 'Исполн';
-      case 'canceled':
-        return 'Отменен';
-      case 'working':
-        return 'Активен';
-      default:
-        return status;
-    }
-  }
-
   formatDate(date: Date) {
     if (date.toDateString() == new Date().toDateString()) {
       return date.toLocaleTimeString();
     }
     else return date.toLocaleDateString();
-  }
-
-  selectInstrument(symbol: string, exchange: string) {
-    this.service.selectNewInstrument(symbol, exchange, this.badgeColor);
-  }
-
-  isFilterApplied(column: BaseColumnSettings<DisplayOrder>) {
-    const filter = this.filter.getValue();
-    return column.id in filter && !!filter[column.id];
-  }
-
-  get canExport(): boolean {
-    return !!this.table?.data && this.table.data.length > 0;
-  }
-
-  exportToFile() {
-    const valueTranslators = new Map<string, (value: any) => string>([
-      ['status', value => this.translateStatus(value)],
-      ['transTime', value => this.formatDate(value)],
-      ['endTime', value => this.formatDate(value)],
-    ]);
-
-    this.settings$.pipe(take(1)).subscribe(settings => {
-      ExportHelper.exportToCsv(
-        'Стопы',
-        settings,
-        [...this.table?.data ?? []],
-        this.listOfColumns,
-        valueTranslators
-      );
-    });
-  }
-
-  saveColumnWidth(id: string, width: number) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      const tableSettings = settings.stopOrdersTable ?? TableSettingHelper.toTableDisplaySettings(settings.stopOrdersColumns);
-      if (tableSettings) {
-        this.settingsService.updateSettings<BlotterSettings>(
-          settings.guid,
-          {
-            stopOrdersTable: TableSettingHelper.updateColumn(
-              id,
-              tableSettings,
-              {
-                columnWidth: width
-              }
-            )
-          }
-        );
-      }
-    });
-  }
-
-  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
-    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
-    this.tableInnerWidth += delta;
-  }
-
-  changeColumnOrder(event: CdkDragDrop<any>) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      this.settingsService.updateSettings<BlotterSettings>(
-        settings.guid,
-        {
-          stopOrdersTable: BlotterTablesHelper.changeColumnOrder(
-            event,
-            settings.stopOrdersTable ?? TableSettingHelper.toTableDisplaySettings(settings.stopOrdersColumns)!,
-            this.listOfColumns
-          )
-        }
-      );
-    });
   }
 
   openOrdersGroup(groupId: string, event: MouseEvent) {
@@ -539,29 +405,6 @@ export class StopOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   trackBy(index: number, order: DisplayOrder): string {
     return order.id;
-  }
-
-  private justifyFilter(order: DisplayOrder, filter: OrderFilter): boolean {
-    let isFiltered = true;
-    for (const key of Object.keys(filter)) {
-      if (filter[key as keyof OrderFilter]) {
-        const column = this.listOfColumns.find(o => o.id == key);
-        if (
-          !column!.filterData!.isDefaultFilter && !this.searchInOrder(order, <keyof DisplayOrder>key, <string>filter[key]) ||
-          column!.filterData!.isDefaultFilter && filter[key]?.length  && !filter[key]?.includes(order[<keyof DisplayOrder>key]!.toString())
-        ) {
-          isFiltered = false;
-        }
-      }
-    }
-    return isFiltered;
-  }
-
-  private searchInOrder(order: DisplayOrder, key: keyof DisplayOrder, value?: string): boolean {
-    if (!value) {
-      return true;
-    }
-    return order[key]!.toString().toLowerCase().includes(value.toLowerCase());
   }
 
   private sortOrders(a: DisplayOrder, b: DisplayOrder) {

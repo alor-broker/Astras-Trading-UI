@@ -1,10 +1,8 @@
 import {
-  AfterViewInit,
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   ElementRef,
   EventEmitter,
-  Input,
-  OnDestroy,
   OnInit,
   Output,
   QueryList,
@@ -12,17 +10,14 @@ import {
   ViewChildren
 } from '@angular/core';
 import {
-  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   Observable,
-  of, shareReplay,
-  switchMap,
-  take,
+  of,
+  switchMap
 } from 'rxjs';
 import {
   debounceTime,
-  filter,
   map,
   mergeMap,
   startWith
@@ -34,20 +29,17 @@ import { MathHelper } from '../../../../shared/utils/math-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { NzTableComponent } from 'ng-zorro-antd/table';
-import { ExportHelper } from "../../utils/export-helper";
 import {
   isEqualPortfolioDependedSettings
 } from "../../../../shared/utils/settings-helper";
-import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { BlotterSettings } from '../../models/blotter-settings.model';
+import { BlotterSettings, ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { BaseTableComponent } from "../base-table/base-table.component";
 
 interface DisplayTrade extends Trade {
   volume: number;
@@ -58,8 +50,9 @@ interface DisplayTrade extends Trade {
   templateUrl: './trades.component.html',
   styleUrls: ['./trades.component.less']
 })
-export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
-  private readonly columnDefaultWidth = 100;
+export class TradesComponent
+  extends BaseTableComponent<DisplayTrade, TradeFilter>
+  implements OnInit {
 
   @ViewChild('nzTable')
   table?: NzTableComponent<DisplayTrade>;
@@ -67,15 +60,9 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('tableContainer')
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
-  @Input({required: true})
-  guid!: string;
-
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  tableInnerWidth: number = 1000;
   displayTrades$: Observable<DisplayTrade[]> = of([]);
-  filter = new BehaviorSubject<TradeFilter>({});
-  isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
   allColumns: BaseColumnSettings<DisplayTrade>[] = [
     {
       id: 'id',
@@ -160,37 +147,23 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
       minWidth: 60
     },
   ];
-  listOfColumns: BaseColumnSettings<DisplayTrade>[] = [];
-  readonly scrollHeight$ = new BehaviorSubject<number>(100);
-  private settings$!: Observable<BlotterSettings>;
+  settings$!: Observable<BlotterSettings>;
+
+  settingsTableName = TableNames.TradesTable;
+  settingsColumnsName = ColumnsNames.TradesColumns;
 
   constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly service: BlotterService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef
   ) {
-  }
-
-  ngAfterViewInit(): void {
-    const container$ =  this.tableContainer.changes.pipe(
-      map(x => x.first),
-      startWith(this.tableContainer.first),
-      filter((x): x is ElementRef<HTMLElement> => !!x),
-      shareReplay(1)
-    );
-
-    container$.pipe(
-      switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => {
-      setTimeout(()=> this.scrollHeight$.next(x));
-    });
+    super(service, settingsService, destroyRef);
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
+    super.ngOnInit();
 
     this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
@@ -249,128 +222,9 @@ export class TradesComponent implements OnInit, AfterViewInit, OnDestroy {
         volume: MathHelper.round(t.qtyUnits * t.price, 2),
         date: converter.toTerminalDate(t.date)
       })),
-      mergeMap(trades => this.filter.pipe(
+      mergeMap(trades => this.filter$.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))
       ))
     );
-  }
-
-  ngOnDestroy(): void {
-    this.scrollHeight$.complete();
-  }
-
-  reset(): void {
-    this.filter.next({});
-  }
-
-  filterChange(newFilter: TradeFilter) {
-    this.filter.next({
-      ...this.filter.getValue(),
-      ...newFilter
-    });
-  }
-
-  defaultFilterChange(key: string, value: string[]) {
-    this.filterChange({ [key]: value });
-  }
-
-  formatDate(date: Date) {
-    return new Date(date).toLocaleTimeString();
-  }
-
-  isFilterApplied(column: BaseColumnSettings<DisplayTrade>) {
-    const filter = this.filter.getValue();
-    return column.id in filter && !!filter[column.id];
-  }
-
-  get canExport(): boolean {
-    return !!this.table?.data && this.table.data.length > 0;
-  }
-
-  exportToFile() {
-    const valueTranslators = new Map<string, (value: any) => string>([
-      ['date', value => this.formatDate(value)]
-    ]);
-
-    this.settings$.pipe(take(1)).subscribe(settings => {
-      ExportHelper.exportToCsv(
-        'Сделки',
-        settings,
-        [...this.table?.data ?? []],
-        this.listOfColumns,
-        valueTranslators
-      );
-    });
-  }
-
-  saveColumnWidth(id: string, width: number) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      const tableSettings = settings.tradesTable ?? TableSettingHelper.toTableDisplaySettings(settings.tradesColumns);
-      if (tableSettings) {
-        this.settingsService.updateSettings<BlotterSettings>(
-          settings.guid,
-          {
-            tradesTable: TableSettingHelper.updateColumn(
-              id,
-              tableSettings,
-              {
-                columnWidth: width
-              }
-            )
-          }
-        );
-      }
-    });
-  }
-
-  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
-    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
-    this.tableInnerWidth += delta;
-  }
-
-  changeColumnOrder(event: CdkDragDrop<any>) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      this.settingsService.updateSettings<BlotterSettings>(
-        settings.guid,
-        {
-          tradesTable: BlotterTablesHelper.changeColumnOrder(
-            event,
-            settings.tradesTable ?? TableSettingHelper.toTableDisplaySettings(settings.tradesColumns)!,
-            this.listOfColumns
-          )
-        }
-      );
-    });
-  }
-
-  trackBy(index: number, trade: DisplayTrade): string {
-    return trade.id;
-  }
-
-  private justifyFilter(trade: DisplayTrade, filter: TradeFilter): boolean {
-    let isFiltered = true;
-    for (const key of Object.keys(filter)) {
-      if (filter[key as keyof TradeFilter]) {
-        const column = this.listOfColumns.find(o => o.id == key);
-        if (
-          !column!.filterData!.isDefaultFilter && !this.searchInTrade(trade, <keyof DisplayTrade>key, <string>filter[key]) ||
-          column!.filterData!.isDefaultFilter && filter[key]?.length  && !filter[key]?.includes(trade[<keyof DisplayTrade>key]!.toString())
-        ) {
-          isFiltered = false;
-        }
-      }
-    }
-    return isFiltered;
-  }
-
-  private searchInTrade(order: DisplayTrade, key: keyof DisplayTrade, value?: string): boolean {
-    if (!value) {
-      return true;
-    }
-    return order[key]!.toString().toLowerCase().includes(value.toLowerCase());
   }
 }

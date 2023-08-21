@@ -86,3 +86,17 @@ export const allNotificationsColumns: BaseColumnId[] = [
   { id: 'priceCondition', displayName: "priceCondition", isDefault: true },
   { id: 'price', displayName: "price", isDefault: true },
 ];
+
+export enum TableNames {
+  OrdersTable = 'ordersTable',
+  StopOrdersTable = 'stopOrdersTable',
+  TradesTable = 'tradesTable',
+  PositionsTable = 'positionsTable'
+}
+
+export enum ColumnsNames {
+  OrdersColumns = 'ordersColumns',
+  StopOrdersColumns = 'stopOrdersColumns',
+  PositionsColumns = 'positionsColumns',
+  TradesColumns = 'tradesColumns'
+}
