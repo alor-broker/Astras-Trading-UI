@@ -104,6 +104,7 @@ export enum TableNames {
   OrdersTable = 'ordersTable',
   StopOrdersTable = 'stopOrdersTable',
   TradesTable = 'tradesTable',
+  RepoTradesTable = 'repoTradesTable',
   PositionsTable = 'positionsTable'
 }
 

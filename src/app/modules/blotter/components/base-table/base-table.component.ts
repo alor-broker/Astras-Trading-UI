@@ -2,8 +2,10 @@ import {
   AfterViewInit,
   Component,
   DestroyRef,
-  ElementRef, Input,
-  OnDestroy, OnInit,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
   QueryList,
 } from '@angular/core';
 import { filter, map, startWith } from "rxjs/operators";
@@ -211,6 +213,4 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
     }
     return item[key]!.toString().toLowerCase().includes(value.toLowerCase());
   }
-
-
 }
