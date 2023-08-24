@@ -257,11 +257,11 @@ export class StopOrdersComponent
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService,
+    protected readonly translatorService: TranslatorService,
     private readonly ordersGroupService: OrdersGroupService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, destroyRef);
+    super(service, settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
@@ -390,21 +390,10 @@ export class StopOrdersComponent
     working.forEach(order => this.cancelOrder(order));
   }
 
-  formatDate(date: Date) {
-    if (date.toDateString() == new Date().toDateString()) {
-      return date.toLocaleTimeString();
-    }
-    else return date.toLocaleDateString();
-  }
-
   openOrdersGroup(groupId: string, event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
     this.service.openOrderGroupModal(groupId);
-  }
-
-  trackBy(index: number, order: DisplayOrder): string {
-    return order.id;
   }
 
   private sortOrders(a: DisplayOrder, b: DisplayOrder) {

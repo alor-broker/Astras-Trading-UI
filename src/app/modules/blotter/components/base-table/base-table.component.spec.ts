@@ -8,10 +8,11 @@ import { Component, DestroyRef, ElementRef, QueryList, ViewChild, ViewChildren }
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterService } from "../../services/blotter.service";
 import { NzTableComponent } from "ng-zorro-antd/table";
-import { getRandomInt, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { getRandomInt, getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { By } from "@angular/platform-browser";
 import { BehaviorSubject, take } from "rxjs";
 import { TableNames } from "../../models/blotter-settings.model";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 @Component({
   selector: 'ats-test-comp',
@@ -36,9 +37,10 @@ class TestComponent extends BaseTableComponent<{ id: string }, {}> {
   constructor(
     protected readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
+    protected readonly translatorService: TranslatorService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, destroyRef);
+    super(service, settingsService, translatorService, destroyRef);
   }
 }
 
@@ -67,6 +69,9 @@ describe('BaseTableComponent', () => {
         TestComponent,
         TestWrapperComponent,
         ...ngZorroMockComponents
+      ],
+      imports: [
+        getTranslocoModule(),
       ],
       providers: [
         { provide: BlotterService, useValue: blotterServiceSpy },

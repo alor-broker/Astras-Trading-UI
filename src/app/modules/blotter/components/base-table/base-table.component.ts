@@ -9,7 +9,7 @@ import {
   QueryList,
 } from '@angular/core';
 import { filter, map, startWith } from "rxjs/operators";
-import { BehaviorSubject, Observable, shareReplay, switchMap, take } from "rxjs";
+import { BehaviorSubject, Observable, shareReplay, switchMap, take, tap } from "rxjs";
 import { TableAutoHeightBehavior } from "../../utils/table-auto-height.behavior";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
@@ -22,6 +22,7 @@ import { NzTableComponent } from "ng-zorro-antd/table";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterService } from "../../services/blotter.service";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 @Component({
   template: ''
@@ -51,6 +52,7 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
   protected constructor(
     protected readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
+    protected readonly translatorService: TranslatorService,
     protected readonly destroyRef: DestroyRef
   ) {
   }
@@ -94,21 +96,11 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
     this.filterChange(<F>{ [key]: value });
   }
 
-  protected translateStatus(status: string) {
-    switch (status) {
-      case 'filled':
-        return 'Исполн';
-      case 'canceled':
-        return 'Отменен';
-      case 'working':
-        return 'Активен';
-      default:
-        return status;
+  formatDate(date: Date) {
+    if (date.toDateString() == new Date().toDateString()) {
+      return date.toLocaleTimeString();
     }
-  }
-
-  protected formatDate(date: Date) {
-    return new Date(date).toLocaleTimeString();
+    else return date.toLocaleDateString();
   }
 
   protected selectInstrument(symbol: string, exchange: string) {
@@ -126,21 +118,28 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
 
   protected exportToFile() {
     const valueTranslators = new Map<string, (value: any) => string>([
-      ['status', value => this.translateStatus(value)],
       ['transTime', value => this.formatDate(value)],
       ['endTime', value => this.formatDate(value)],
       ['date', value => this.formatDate(value)]
     ]);
 
-    this.settings$.pipe(take(1)).subscribe(settings => {
-      ExportHelper.exportToCsv(
-        this.fileSuffix,
-        settings,
-        [...this.table?.data ?? []],
-        this.listOfColumns,
-        valueTranslators
-      );
-    });
+    this.translatorService.getTranslator('blotter/blotter-common')
+      .pipe(
+        take(1),
+        tap(t => {
+          valueTranslators.set('status', value => t(['orderStatus', value]));
+        }),
+        switchMap(() => this.settings$.pipe(take(1)))
+      )
+      .subscribe(settings => {
+        ExportHelper.exportToCsv(
+          this.fileSuffix,
+          settings,
+          [...this.table?.data ?? []],
+          this.listOfColumns,
+          valueTranslators
+        );
+      });
   }
 
   protected saveColumnWidth(id: string, width: number) {

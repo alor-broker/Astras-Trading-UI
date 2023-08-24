@@ -19,7 +19,7 @@ import {
 } from "rxjs";
 import { TradeFilter } from "../../models/trade-filter.model";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import { BlotterSettings, TableNames } from "../../models/blotter-settings.model";
+import { TableNames } from "../../models/blotter-settings.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterService } from "../../services/blotter.service";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
@@ -211,7 +211,6 @@ export class RepoTradesComponent
       minWidth: 50
     },
   ];
-  settings$!: Observable<BlotterSettings>;
 
   settingsTableName = TableNames.RepoTradesTable;
 
@@ -219,10 +218,10 @@ export class RepoTradesComponent
     protected readonly settingsService: WidgetSettingsService,
     protected readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly translatorService: TranslatorService,
+    protected readonly translatorService: TranslatorService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, destroyRef);
+    super(service, settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {

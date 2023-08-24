@@ -32,8 +32,7 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { BlotterSettings, ColumnsNames, TableNames } from '../../models/blotter-settings.model';
+import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -160,8 +159,6 @@ export class PositionsComponent
     },
   ];
 
-  settings$!: Observable<BlotterSettings>;
-
   settingsTableName = TableNames.PositionsTable;
   settingsColumnsName = ColumnsNames.PositionsColumns;
   badgeColor = defaultBadgeColor;
@@ -169,14 +166,11 @@ export class PositionsComponent
   constructor(
     protected readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService,
+    protected readonly translatorService: TranslatorService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, destroyRef);
+    super(service, settingsService, translatorService, destroyRef);
   }
-
-  isFilterDisabled = () => Object.keys(this.filter$.getValue()).length === 0;
 
   ngOnInit(): void {
     super.ngOnInit();

@@ -225,11 +225,11 @@ export class OrdersComponent
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService,
+    protected readonly translatorService: TranslatorService,
     private readonly ordersGroupService: OrdersGroupService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, destroyRef);
+    super(service, settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
@@ -355,30 +355,12 @@ export class OrdersComponent
     working.forEach(order => this.cancelOrder(order));
   }
 
-  translateStatus(status: string) {
-    switch (status) {
-      case 'filled':
-        return 'Исполн';
-      case 'canceled':
-        return 'Отменен';
-      case 'working':
-        return 'Активен';
-      default:
-        return status;
-    }
-  }
-
   formatDate(date: Date) {
     return new Date(date).toLocaleTimeString();
   }
 
   isMarketOrder(order: DisplayOrder): boolean {
     return order.type === 'market';
-  }
-
-  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
-    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
-    this.tableInnerWidth += delta;
   }
 
   openOrdersGroup(groupId: string, event: MouseEvent) {

@@ -35,7 +35,7 @@ import {
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { BlotterSettings, ColumnsNames, TableNames } from '../../models/blotter-settings.model';
+import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -147,7 +147,6 @@ export class TradesComponent
       minWidth: 60
     },
   ];
-  settings$!: Observable<BlotterSettings>;
 
   settingsTableName = TableNames.TradesTable;
   settingsColumnsName = ColumnsNames.TradesColumns;
@@ -156,10 +155,10 @@ export class TradesComponent
     protected readonly settingsService: WidgetSettingsService,
     protected readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly translatorService: TranslatorService,
+    protected readonly translatorService: TranslatorService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, destroyRef);
+    super(service, settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
