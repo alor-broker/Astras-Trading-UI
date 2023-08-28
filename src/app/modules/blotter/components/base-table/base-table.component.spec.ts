@@ -1,6 +1,9 @@
 import {
-  ComponentFixture, fakeAsync,
-  TestBed, tick
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+  waitForAsync
 } from '@angular/core/testing';
 
 import { BaseTableComponent } from "./base-table.component";
@@ -17,9 +20,8 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 @Component({
   selector: 'ats-test-comp',
   template: `
-    <div #tableContainer class="table-container" [style]="{ height: containerHeight + 'px', display: 'block'}">
-      <nz-table #nzTable  [style]="{display: 'block'}"></nz-table>
-      <div class="table" [style]="{display: 'block'}"></div>
+    <div #tableContainer class="table-container" [style]="{ height: '100%'}">
+      <nz-table #nzTable></nz-table>
     </div>
   `
 })
@@ -94,24 +96,21 @@ describe('BaseTableComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // it('should detect table container height change', fakeAsync(() => {
-  //   const expectedHeight = getRandomInt(150, 200);
-  //
-  //   const container = hostFixture.debugElement.query(By.css('.table-container'));
-  //   container.nativeElement.style.height = expectedHeight + 'px';
-  //   hostFixture.detectChanges();
-  //   tick();
-  //
-  //   container.nativeElement.dispatchEvent(new Event('resize'));
-  //
-  //   tick();
-  //
-  //   component.scrollHeight$
-  //     .subscribe((x: number) =>{
-  //       expect(x).toBe(expectedHeight);
-  //     });
-  //
-  // }));
+  it('should detect table container height change', waitForAsync(() => {
+    const expectedHeight = getRandomInt(150, 200);
+
+    hostFixture.debugElement.nativeElement.style.height = expectedHeight + 'px';
+    hostFixture.detectChanges();
+
+    setTimeout(() => {
+      hostFixture.whenStable().then(() => {
+        component.scrollHeight$
+          .subscribe((x: number) => {
+            expect(x).toBe(expectedHeight);
+          });
+      });
+    }, 1000);
+  }));
 
   it('should change filter', fakeAsync(() => {
     const expectedFilter: any = { key1: 'val1', key2: ['val2'] };
