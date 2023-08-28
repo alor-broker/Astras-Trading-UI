@@ -44,7 +44,7 @@ export class ThemeService {
   private readonly lightThemeColors: ThemeColors = {
     sellColor: 'rgba(250, 79, 56, 1)',
     sellColorBackground: 'rgba(250, 79, 56, 0.4)',
-    buyColor: 'rgba(0, 219, 139, 1)',
+    buyColor: '#388E3C',
     buyColorBackground: 'rgba(0, 219, 139, 0.4)',
     componentBackground: '#ffffff',
     primaryColor: '#177ddc',
