@@ -291,7 +291,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       context.fillStyle = item.color === 'green' ? themeColors.buyColor : themeColors.sellColor;
       this.drawRoundedRect(xLeft, yTop, itemWidth, itemHeight, 2, context);
       context.fill();
-      context.fillStyle = themeColors.chartPrimaryTextColor;
+      context.fillStyle = themeColors.buySellLabelColor;
       context.textAlign = 'center';
       context.textBaseline = 'middle';
       context.fillText(itemText, xCenter, yCenter);
