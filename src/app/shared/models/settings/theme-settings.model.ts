@@ -8,6 +8,8 @@ export interface ThemeColors {
   sellColorBackground: string;
   buyColor: string;
   buyColorBackground: string;
+  buyColorBackgroundLight: string;
+  buySellLabelColor: string;
   componentBackground: string;
   primaryColor: string;
   purpleColor: string;
