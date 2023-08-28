@@ -9,7 +9,7 @@ import {
   QueryList,
 } from '@angular/core';
 import { filter, map, startWith } from "rxjs/operators";
-import { BehaviorSubject, Observable, shareReplay, switchMap, take, tap, zip } from "rxjs";
+import { BehaviorSubject, Observable, shareReplay, switchMap, take, tap, combineLatest } from "rxjs";
 import { TableAutoHeightBehavior } from "../../utils/table-auto-height.behavior";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
@@ -124,23 +124,23 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
       ['date', value => this.formatDate(value)]
     ]);
 
-    this.translatorService.getTranslator('blotter/blotter-common')
+    const blotterCommonTranslator$ = this.translatorService.getTranslator('blotter/blotter-common');
+    const blotterTranslator$ = this.translatorService.getTranslator('blotter');
+
+    combineLatest({
+      tBlotter: blotterTranslator$,
+      tBlotterCommon: blotterCommonTranslator$,
+      settings: this.settings$
+    })
       .pipe(
         take(1),
-        tap((t: (path: string[]) => string) => {
-          valueTranslators.set('status', value => t(['orderStatus', value]));
-        }),
-        switchMap(() => zip([
-          this.translatorService.getTranslator('blotter'),
-          this.settings$
-        ])
-          .pipe(
-            take(1)
-          ))
+        tap(({ tBlotterCommon }) => {
+          valueTranslators.set('status', value => tBlotterCommon(['orderStatus', value]));
+        })
       )
-      .subscribe(([t, settings]) => {
+      .subscribe(({tBlotter, settings}) => {
         ExportHelper.exportToCsv(
-          t([this.fileSuffix + 'Tab']),
+          tBlotter([this.fileSuffix + 'Tab']),
           settings,
           [...this.table?.data ?? []],
           this.listOfColumns,
