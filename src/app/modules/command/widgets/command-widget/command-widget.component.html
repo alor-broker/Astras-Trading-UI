@@ -17,12 +17,13 @@
 
         </ats-command-header>
 
-        <nz-tabset nzTabPosition="top" nzSize="small" class="command-parameters" #commandTabs>
+        <nz-tabset nzTabPosition="top" nzSize="small" class="command-parameters" #commandTabs *ngIf="position$ | async as position">
           <nz-tab [nzTitle]="t('command.limitTab')" #limitTab (nzSelect)="setSelectedTab(componentTabs.LimitOrder)">
             <ats-limit-command
               [commandContext]="commandContext"
               [price]="(priceChanges$ | async) ?? null"
               [quantity]="(qtyChanges$ | async) ?? null"
+              [position]="position.avgPrice ? position : null"
             ></ats-limit-command>
           </nz-tab>
           <nz-tab [nzTitle]="t('command.marketTab')" #marketTab (nzSelect)="setSelectedTab(componentTabs.MarketOrder)">
@@ -38,6 +39,7 @@
               [commandContext]="commandContext"
               [price]="(priceChanges$ | async) ?? null"
               [quantity]="(qtyChanges$ | async) ?? null"
+              [position]="position.avgPrice ? position : null"
             >
             </ats-stop-command>
           </nz-tab>

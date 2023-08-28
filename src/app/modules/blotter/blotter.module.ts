@@ -19,6 +19,7 @@ import {
 } from './widgets/orders-group-modal-widget/orders-group-modal-widget.component';
 import { OrdersGroupModalComponent } from './components/orders-group-modal/orders-group-modal.component';
 import { NzTreeModule } from "ng-zorro-antd/tree";
+import { RepoTradesComponent } from './components/repo-trades/repo-trades.component';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import { NzTreeModule } from "ng-zorro-antd/tree";
     TableFilterComponent,
     PushNotificationsComponent,
     OrdersGroupModalWidgetComponent,
-    OrdersGroupModalComponent
+    OrdersGroupModalComponent,
+    RepoTradesComponent
   ],
   imports: [
     SharedModule,

@@ -25,6 +25,7 @@ import {
   allNotificationsColumns,
   allOrdersColumns,
   allPositionsColumns,
+  allRepoTradesColumns,
   allStopOrdersColumns,
   allTradesColumns,
   BlotterSettings
@@ -78,6 +79,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
         ordersTable: TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.id)),
         stopOrdersTable: TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.id)),
         notificationsTable: TableSettingHelper.toTableDisplaySettings(allNotificationsColumns.filter(c => c.isDefault).map(c => c.id)),
+        repoTradesTable: TableSettingHelper.toTableDisplaySettings(allRepoTradesColumns.filter(c => c.isDefault).map(c => c.id)),
 
         badgeColor: defaultBadgeColor,
         isSoldPositionsHidden: true,

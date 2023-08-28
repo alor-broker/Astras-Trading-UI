@@ -38,7 +38,7 @@
           </div>
         </div>
         <div class="body">
-            <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async">
+            <nz-tabset nzSize="small" nzTabPosition="top" [nzSelectedIndex]="selectedTabIndex$ | async" *ngIf="position$ | async as position">
               <nz-tab #limitTab (nzSelect)="setSelectedTab(componentTabs.LimitOrder)" [nzTitle]="t('orderSubmitOrderSubmit.limitTab')">
                 <div *ngIf="settings.showVolumePanel" class="working-volumes-panel">
                   <ats-working-volumes
@@ -53,6 +53,7 @@
                                       [instrument]="currentInstrumentWithPortfolio.instrument"
                                       [initialValues]="initialValues$ | async"
                                       [activated]="limitTab.isActive"
+                                      [position]="position"
                 ></ats-limit-order-form>
               </nz-tab>
               <nz-tab #marketTab (nzSelect)="setSelectedTab(componentTabs.MarketOrder)" [nzTitle]="t('orderSubmitOrderSubmit.marketTab')">
@@ -67,6 +68,7 @@
                                      [instrument]="currentInstrumentWithPortfolio.instrument"
                                      [initialValues]="initialValues$ | async"
                                      [activated]="stopTab.isActive"
+                                     [position]="position"
                 ></ats-stop-order-form>
               </nz-tab>
               <nz-tab #notificationsTab [nzTitle]="titleTemplate" (nzClick)="setSelectedTab(componentTabs.Notifications)">

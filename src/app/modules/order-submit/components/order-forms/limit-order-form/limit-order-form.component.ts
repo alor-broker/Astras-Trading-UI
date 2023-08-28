@@ -1,5 +1,5 @@
 import {
-  Component, DestroyRef,
+  Component, DestroyRef, Input,
   OnDestroy
 } from "@angular/core";
 import { OrderFormBaseComponent } from "../order-form-base.component";
@@ -28,6 +28,7 @@ import {
 import { EvaluationBaseProperties } from '../../../../../shared/models/evaluation-base-properties.model';
 import { TimeInForce } from "../../../../../shared/models/commands/command-params.model";
 import { Side } from "../../../../../shared/models/enums/side.model";
+import { Position } from "../../../../../shared/models/positions/position.model";
 
 export type LimitOrderFormValue = Omit<LimitOrder, 'instrument' | 'side'> & {
   instrumentGroup: string;
@@ -51,6 +52,8 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
   evaluation$?: Observable<EvaluationBaseProperties | null>;
   timeInForceEnum = TimeInForce;
 
+  @Input({required: true}) position!: Position | null;
+
   constructor(protected readonly destroyRef: DestroyRef) {
     super(destroyRef);
   }
@@ -62,6 +65,26 @@ export class LimitOrderFormComponent extends OrderFormBaseComponent<LimitOrderFo
 
   quantitySelect(qty: number) {
     this.form?.get('quantity')?.setValue(qty);
+  }
+
+  isPriceDifferenceNeeded(): boolean {
+    return !!this.position?.avgPrice && (this.form?.get('price')?.value != null);
+  }
+
+  getPriceDifferenceClass(): string | null {
+    return this.isPriceDifferenceNeeded()
+      ? this.getPriceDifference() > 0
+        ? 'profit'
+        : 'loss'
+      : null;
+  }
+
+  getAbsPriceDifference(): number {
+    return Math.abs(this.getPriceDifference());
+  }
+
+  private getPriceDifference() {
+    return ((this.form!.get('price')!.value! / this.position!.avgPrice) - 1) * 100;
   }
 
   protected buildForm(instrument: Instrument): FormGroup<ControlsOf<LimitOrderFormValue>> {

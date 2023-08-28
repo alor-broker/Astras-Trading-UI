@@ -35,6 +35,7 @@ import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { TimeInForce } from "../../../../shared/models/commands/command-params.model";
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { Position } from "../../../../shared/models/positions/position.model";
 
 interface StopEditFormData extends Omit<StopFormData, 'linkedOrder'> {
   side: Side;
@@ -51,6 +52,8 @@ export class StopEditComponent implements OnInit, OnDestroy {
   canSelectNow = false;
   timeInForceEnum = TimeInForce;
   private timezoneConverter!: TimezoneConverter;
+
+  @Input({ required: true }) position!: Position | null;
 
   constructor(
     private readonly service: CommandsService,
@@ -90,6 +93,26 @@ export class StopEditComponent implements OnInit, OnDestroy {
     const today = startOfDay(new Date());
     return toUnixTime(date) < toUnixTime(today);
   };
+
+  isPriceDifferenceNeeded(): boolean {
+    return !!this.position?.avgPrice && (this.form?.get('price')?.value != null);
+  }
+
+  getPriceDifferenceClass(): string | null {
+    return this.isPriceDifferenceNeeded()
+      ? this.getPriceDifference() > 0
+        ? 'profit'
+        : 'loss'
+      : null;
+  }
+
+  getAbsPriceDifference(): number {
+    return Math.abs(this.getPriceDifference());
+  }
+
+  private getPriceDifference() {
+    return ((this.form!.get('price')!.value! / this.position!.avgPrice) - 1) * 100;
+  }
 
   private setStopEdit(initialParameters: EditParams): void {
     if (!this.form.valid) {

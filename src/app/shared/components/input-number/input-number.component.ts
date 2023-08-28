@@ -6,6 +6,7 @@ import {
   forwardRef,
   Input,
   Output,
+  TemplateRef,
   ViewChild
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR} from "@angular/forms";
@@ -34,6 +35,8 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   readonly: boolean = false;
   @Input()
   allowNegative = false;
+  @Input()
+  suffix: TemplateRef<any> | null = null;
 
   @Output()
   atsBlur = new EventEmitter();

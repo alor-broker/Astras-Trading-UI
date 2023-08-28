@@ -7,6 +7,8 @@ import { EditWidgetComponent } from './edit-widget.component';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { getTranslocoModule } from "../../../../shared/utils/testing";
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 
 describe('EditWidgetComponent', () => {
   let component: EditWidgetComponent;
@@ -30,6 +32,18 @@ describe('EditWidgetComponent', () => {
         { provide: ModalService, useValue: modalSpy },
         { provide: CommandsService, useValue: commandSpy },
         { provide: InstrumentsService, useValue: instrumentServiceSpy },
+        {
+          provide: PortfolioSubscriptionsService,
+          useValue: {
+            getAllPositionsSubscription: jasmine.createSpy('getAllPositionsSubscription').and.returnValue(of({}))
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectedPortfolio$: jasmine.createSpy('selectedPortfolio$').and.returnValue(of([]))
+          }
+        }
       ]
     }).compileComponents();
   });

@@ -80,7 +80,20 @@
           <nz-form-item class="compact">
             <nz-form-label nzFor="price" nzRequired>{{t('command.priceLabel')}}</nz-form-label>
             <nz-form-control [nzErrorTip]="priceError">
-              <ats-input-number [step]="instrument.minstep" [allowNegative]="true" formControlName="price" placeholder="0"></ats-input-number>
+              <ats-input-number
+                [step]="instrument.minstep"
+                [allowNegative]="true"
+                formControlName="price"
+                placeholder="0"
+                [suffix]="isPriceDifferenceNeeded() ? priceDiff : null"
+              ></ats-input-number>
+
+              <ng-template #priceDiff>
+                <span [class]="getPriceDifferenceClass()" nz-tooltip [nzTooltipTitle]="t('command.priceDifferenceTooltip')">
+                  {{(getAbsPriceDifference() | number) + ' %'}}
+                </span>
+              </ng-template>
+
               <ng-template #priceError>
                 <span *ngIf="form.get('price')?.errors?.required">{{t('command.emptyPriceError')}}</span>
                 <span *ngIf="form.get('price')?.errors?.min">{{t('command.tooLittle')}}</span>
