@@ -9,7 +9,7 @@ import {
   QueryList,
 } from '@angular/core';
 import { filter, map, startWith } from "rxjs/operators";
-import { BehaviorSubject, Observable, shareReplay, switchMap, take, tap, combineLatest } from "rxjs";
+import { BehaviorSubject, Observable, shareReplay, switchMap, take, combineLatest } from "rxjs";
 import { TableAutoHeightBehavior } from "../../utils/table-auto-height.behavior";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
@@ -118,27 +118,22 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
   }
 
   protected exportToFile() {
-    const valueTranslators = new Map<string, (value: any) => string>([
-      ['transTime', value => this.formatDate(value)],
-      ['endTime', value => this.formatDate(value)],
-      ['date', value => this.formatDate(value)]
-    ]);
-
-    const blotterCommonTranslator$ = this.translatorService.getTranslator('blotter/blotter-common');
-    const blotterTranslator$ = this.translatorService.getTranslator('blotter');
-
     combineLatest({
-      tBlotter: blotterTranslator$,
-      tBlotterCommon: blotterCommonTranslator$,
+      tBlotterCommon: this.translatorService.getTranslator('blotter/blotter-common'),
+      tBlotter: this.translatorService.getTranslator('blotter'),
       settings: this.settings$
     })
       .pipe(
         take(1),
-        tap(({ tBlotterCommon }) => {
-          valueTranslators.set('status', value => tBlotterCommon(['orderStatus', value]));
-        })
       )
-      .subscribe(({tBlotter, settings}) => {
+      .subscribe(({tBlotter, tBlotterCommon, settings}) => {
+        const valueTranslators = new Map<string, (value: any) => string>([
+          ['status', value => tBlotterCommon(['orderStatus', value])],
+          ['transTime', value => this.formatDate(value)],
+          ['endTime', value => this.formatDate(value)],
+          ['date', value => this.formatDate(value)]
+        ]);
+
         ExportHelper.exportToCsv(
           tBlotter([this.fileSuffix + 'Tab']),
           settings,
