@@ -53,8 +53,7 @@
 
           <ng-template #collapseHeader>
             <span class="problem-title">
-              <span nz-icon nzType="exclamation" nzTheme="outline"></span>
-              {{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsLabel')}}
+              ! {{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsLabel')}}
               <span *ngIf="isProblemCollapseActive; else collapseOpenedIcon" nz-icon nzType="caret-up" nzTheme="outline"></span>
 
               <ng-template #collapseOpenedIcon>

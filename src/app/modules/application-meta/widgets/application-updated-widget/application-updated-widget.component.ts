@@ -4,7 +4,6 @@ import { Observable, of, take } from 'rxjs';
 import { ApplicationMetaService } from '../../services/application-meta.service';
 import { filter } from 'rxjs/operators';
 import { ReleaseMeta } from '../../models/application-release.model';
-import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'ats-application-updated-widget',
@@ -36,13 +35,5 @@ export class ApplicationUpdatedWidgetComponent implements OnInit {
       this.applicationMetaService.updateCurrentVersion(release!.id);
       this.modalService.closeApplicationUpdatedModal();
     });
-  }
-
-  getLinkToRelease(release: ReleaseMeta): string {
-    return `${environment.warpUrl}/ru/releases/release/${release.id}`;
-  }
-
-  isProblemCollapseActiveChange(isActive: boolean) {
-    this.isProblemCollapseActive = isActive;
   }
 }
