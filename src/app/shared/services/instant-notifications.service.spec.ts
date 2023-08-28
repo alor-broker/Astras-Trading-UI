@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 
 import { InstantNotificationsService } from './instant-notifications.service';
-import { TerminalSettingsService } from '../../modules/terminal-settings/services/terminal-settings.service';
 import { Subject } from 'rxjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 describe('InstantNotificationsService', () => {
   let service: InstantNotificationsService;

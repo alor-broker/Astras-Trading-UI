@@ -1,26 +1,20 @@
-import {
-  createAction,
-  props
-} from '@ngrx/store';
-import { Widget } from '../../shared/models/dashboard/widget.model';
-import {
-  Dashboard,
-  InstrumentGroups
-} from '../../shared/models/dashboard/dashboard.model';
-import { PortfolioKey } from "../../shared/models/portfolio-key.model";
-import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
+import {createAction, props} from '@ngrx/store';
+import {Widget} from '../../shared/models/dashboard/widget.model';
+import {Dashboard, InstrumentGroups} from '../../shared/models/dashboard/dashboard.model';
+import {PortfolioKey} from "../../shared/models/portfolio-key.model";
+import {InstrumentKey} from "../../shared/models/instruments/instrument-key.model";
 
 export class MobileDashboardActions {
   static initMobileDashboard = createAction(
-    '[Mobile Dashboard] Init Mobile Dashboard'
+    '[Mobile Dashboard] Init Mobile Dashboard',
+    props<{
+      mobileDashboard: Dashboard | null,
+      instrumentsHistory: InstrumentKey[]
+    }>()
   );
 
   static initMobileDashboardSuccess = createAction(
-    '[Mobile Dashboard] Init Mobile Dashboard (SUCCESS)',
-    props<{
-      mobileDashboard?: Dashboard,
-      instrumentsHistory: InstrumentKey[]
-    }>()
+    '[Mobile Dashboard] Init Mobile Dashboard (SUCCESS)'
   );
 
   static addMobileDashboard = createAction(
@@ -47,8 +41,14 @@ export class MobileDashboardActions {
     }>()
   );
 
-  static saveMobileDashboard = createAction('[Mobile Dashboard] Save Mobile Dashboard');
+  static mobileDashboardUpdated = createAction(
+    '[Mobile Dashboard] Mobile Dashboard Updated',
+    props<{ dashboard: Dashboard }>()
+  );
 
-  static saveInstrumentsHistory = createAction('[Mobile Dashboard] Save Instruments History');
+  static instrumentsHistoryUpdated = createAction(
+    '[Mobile Dashboard] Instruments History Updated',
+    props<{ instruments: InstrumentKey[] }>()
+  );
 }
 

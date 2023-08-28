@@ -12,7 +12,7 @@
       <nz-tab (nzSelect)="tabChange.emit(tabNames.main)" *ngIf="settingsForm"
               [nzTitle]="t('terminalSettings.generalSettingsTabTitle')">
         <ng-container *ngIf="getFormControl('generalSettings') as generalSettings">
-          <ats-general-settings-form [excludedSettings]="excludedSettings" [formControl]="generalSettings"></ats-general-settings-form>
+          <ats-general-settings-form [excludedSettings]="hiddenSections" [formControl]="generalSettings"></ats-general-settings-form>
         </ng-container>
         <ng-container *ngIf="getFormControl('portfoliosCurrency') as portfoliosCurrency">
           <h3>{{t('terminalSettings.defaultCurrencyHeader')}}</h3>
@@ -27,7 +27,7 @@
 
       <nz-tab
         (nzSelect)="tabChange.emit(tabNames.hotKeys)"
-        *ngIf="!excludedSettings.includes('hotKeysSettings') && getFormControl('hotKeysSettings') as hotKeysSettings"
+        *ngIf="!hiddenSections.includes('hotKeysSettings') && getFormControl('hotKeysSettings') as hotKeysSettings"
         [nzTitle]="t('terminalSettings.hotkeysTabTitle')">
         <ats-hot-key-settings-form [formControl]="hotKeysSettings"></ats-hot-key-settings-form>
 

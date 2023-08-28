@@ -8,12 +8,12 @@ import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-se
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { Observable } from 'rxjs';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import {
   AllTradesSettings,
   allTradesWidgetColumns
 } from '../../models/all-trades-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-all-trades-widget',

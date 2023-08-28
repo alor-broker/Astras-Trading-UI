@@ -30,8 +30,8 @@ import { InstrumentKey } from '../../../shared/models/instruments/instrument-key
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { Position } from '../../../shared/models/positions/position.model';
-import { TerminalSettingsService } from '../../terminal-settings/services/terminal-settings.service';
 import { TerminalSettings } from '../../../shared/models/terminal-settings/terminal-settings.model';
+import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
 
 describe('ScalperCommandProcessorService', () => {
   let service: ScalperCommandProcessorService;

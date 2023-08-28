@@ -1,3 +1,14 @@
+@import "theme-mixin";
+::ng-deep {
+  .themeMixin({
+    .application-updated-modal {
+      .problem-title {
+        color: @info-color;
+      }
+    }
+  });
+}
+
 .button-example {
   font-size: 20px;
 }
@@ -6,3 +17,7 @@
   margin-right: 20px;
 }
 
+.scrollable {
+  max-height: 350px;
+  overflow: auto;
+}

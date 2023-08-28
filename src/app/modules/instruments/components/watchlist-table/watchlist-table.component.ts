@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, DestroyRef,
   ElementRef,
   Input,
   OnDestroy,
@@ -9,6 +9,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import {
+  BehaviorSubject,
   Observable,
   of,
   shareReplay,
@@ -22,7 +23,7 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
   filter,
-  map
+  map, startWith
 } from 'rxjs/operators';
 import { getPropertyFromPath } from "../../../../shared/utils/object-helper";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -36,6 +37,7 @@ import {
 } from '../../models/instrument-select-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-watchlist-table',
@@ -51,7 +53,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
 
   watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
 
-  scrollHeight$: Observable<number> = of(100);
+  readonly scrollHeight$ = new BehaviorSubject<number>(100);
   allColumns: BaseColumnSettings<WatchedInstrument>[] = [
     { id: 'symbol', displayName: "Тикер", tooltip: 'Биржевой идентификатор ценной бумаги', minWidth: 55 },
     { id: 'shortName', displayName: "Назв.", tooltip: 'Название тикера', minWidth: 60 },
@@ -90,7 +92,8 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly nzContextMenuService: NzContextMenuService,
     private readonly dashboardService: ManageDashboardsService,
-    private readonly widgetsMetaService: WidgetsMetaService
+    private readonly widgetsMetaService: WidgetsMetaService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -111,33 +114,37 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngAfterViewInit(): void {
-    const initHeightWatching = (ref: ElementRef<HTMLElement>) => this.scrollHeight$ = TableAutoHeightBehavior.getScrollHeight(ref);
+    const container$ =  this.tableContainer.changes.pipe(
+      map(x => x.first),
+      startWith(this.tableContainer.first),
+      filter((x): x is ElementRef<HTMLElement> => !!x),
+      shareReplay(1)
+    );
 
-    if (this.tableContainer.length > 0) {
-      initHeightWatching(this.tableContainer!.first);
-    }
-    else {
-      this.tableContainer?.changes.pipe(
-        take(1)
-      ).subscribe((x: QueryList<ElementRef<HTMLElement>>) => initHeightWatching(x.first));
-    }
+    container$.pipe(
+      switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(x => {
+      setTimeout(()=> this.scrollHeight$.next(x));
+    });
   }
 
   ngOnDestroy(): void {
     this.watchInstrumentsService.unsubscribe();
+    this.scrollHeight$.complete();
   }
 
-  makeActive(instrumentKey: InstrumentKey) {
-    this.currentDashboardService.selectDashboardInstrument(instrumentKey, this.badgeColor);
+  makeActive(item: InstrumentKey) {
+    this.currentDashboardService.selectDashboardInstrument(item, this.badgeColor);
   }
 
-  remove(instr: InstrumentKey) {
+  remove(itemId: string) {
     this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
       map(s => s.activeListId),
       filter((id): id is string => !!id),
       take(1)
     ).subscribe(activeListId => {
-      this.watchlistCollectionService.removeItemsFromList(activeListId, [instr]);
+      this.watchlistCollectionService.removeItemsFromList(activeListId, [itemId]);
     });
   }
 

@@ -2,49 +2,73 @@
   <nz-modal
     *transloco="let tAppMeta; scope: 'application-meta/application-updated-widget'"
     (nzOnCancel)="handleClose()"
-    (nzOnOk)="handleClose()"
     [nzTitle]="header"
-    [nzVisible]="isVisible$ | async">
+    nzClassName="application-updated-modal"
+    [nzVisible]="isVisible$ | async"
+    [nzFooter]="null"
+  >
     <ng-template #header>
-      <div class="header">{{currentVersion.summary}}</div>
+      <div class="header">{{currentVersion.id}}</div>
     </ng-template>
     <ng-container *nzModalContent>
       <p>
       <span>
-        {{tAppMeta('applicationMetaApplicationUpdatedWidget.detailsText')}}
-        <ats-external-link [href]="getLinkToRelease(currentVersion)">{{tAppMeta('applicationMetaApplicationUpdatedWidget.detailsLink')}}</ats-external-link>.</span>
-      </p>
-      <p>
-      <span [nzType]="'warning'" nz-typography>
-        {{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsWarning')}}
-      </span>
-        <br/>
-        <span [nzType]="'warning'" nz-typography>
-        {{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStepsTitle')}}
+        {{currentVersion.summary}}
       </span>
       </p>
-      <div>
-        <span>{{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStep1')}}</span>
-      </div>
-      <div>
-        <span>{{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStep2')}}</span>
-      </div>
-      <div>
-        <span>{{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStep3')}}</span>
-        <br/>
-        <span [nzType]="'secondary'" nz-typography>
-          {{tAppMeta('applicationMetaApplicationUpdatedWidget.clearSiteDataText')}}
+
+      <nz-divider class="mb-5 mt-10"></nz-divider>
+
+      <div class="scrollable show-scroll">
+
+        <nz-collapse nzGhost nzExpandIconPosition="right">
+          <nz-collapse-panel
+            [nzHeader]="collapseHeader"
+            [(nzActive)]="isProblemCollapseActive"
+            [nzShowArrow]="false"
+          >
+            <p>
+              <span [nzType]="'warning'" nz-typography>
+                {{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsWarning')}}
+              </span>
+              <br/>
+              <span [nzType]="'warning'" nz-typography>
+                {{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStepsTitle')}}
+              </span>
+            </p>
+            <div>
+              <span>{{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStep1')}}</span>
+            </div>
+            <div>
+              <span>{{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStep2')}}</span>
+            </div>
+            <div>
+              <span>{{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsStep3')}}</span>
+              <br/>
+              <span [nzType]="'secondary'" nz-typography>
+            {{tAppMeta('applicationMetaApplicationUpdatedWidget.clearSiteDataText')}}
+          </span>
+            </div>
+          </nz-collapse-panel>
+
+          <ng-template #collapseHeader>
+            <span class="problem-title">
+              ! {{tAppMeta('applicationMetaApplicationUpdatedWidget.problemsLabel')}}
+              <span *ngIf="isProblemCollapseActive; else collapseOpenedIcon" nz-icon nzType="caret-up" nzTheme="outline"></span>
+
+              <ng-template #collapseOpenedIcon>
+                <span nz-icon nzType="caret-down" nzTheme="outline"></span>
+              </ng-template>
+            </span>
+          </ng-template>
+        </nz-collapse>
+
+        <p *ngFor="let line of currentVersion.description.split('\n')">
+        <span>
+          {{line}}
         </span>
+        </p>
       </div>
-    </ng-container>
-    <ng-container *nzModalFooter>
-      <button
-        (click)="handleConfirmedClose()"
-        nz-button
-        nzType="primary"
-      >
-        {{tAppMeta('okBtnText')}}
-      </button>
     </ng-container>
   </nz-modal>
 </ng-container>

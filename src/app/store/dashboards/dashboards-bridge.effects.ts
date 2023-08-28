@@ -8,12 +8,12 @@ import {
 } from '../widget-settings/widget-settings.actions';
 import {ManageDashboardsActions} from './dashboards-actions';
 import {Store} from "@ngrx/store";
-import {allDashboards} from "./dashboards.selectors";
-import {getAllSettings} from "../widget-settings/widget-settings.selectors";
 import {EMPTY} from "rxjs";
 import {Widget} from "../../shared/models/dashboard/widget.model";
 import {WidgetSettings} from "../../shared/models/widget-settings.model";
 import {GuidGenerator} from "../../shared/utils/guid";
+import {WidgetSettingsStreams} from "../widget-settings/widget-settings.streams";
+import {DashboardsStreams} from "./dashboards.streams";
 
 @Injectable()
 export class DashboardsBridgeEffects {
@@ -34,13 +34,13 @@ export class DashboardsBridgeEffects {
   copyDashboard$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ManageDashboardsActions.copyDashboard),
-      concatLatestFrom(() => this.store.select(allDashboards)),
+      concatLatestFrom(() => DashboardsStreams.getAllDashboards(this.store)),
       map(([action, allDashboards]) => ({
           action,
           allDashboards
         })
       ),
-      concatLatestFrom(() => this.store.select(getAllSettings)),
+      concatLatestFrom(() => WidgetSettingsStreams.getAllSettings(this.store)),
       map(([source, widgetSettings]) => ({
           ...source,
           widgetSettings

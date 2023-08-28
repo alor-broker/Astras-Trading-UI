@@ -21,7 +21,7 @@ describe('MobileDashboardWidgetComponent', () => {
         mockComponent({ selector: 'ats-mobile-instruments-history' }),
         mockComponent({ selector: 'ats-mobile-dashboard' }),
         mockComponent({ selector: 'ats-help-widget' }),
-        mockComponent({ selector: 'ats-terminal-settings-widget' }),
+        mockComponent({ selector: 'ats-terminal-settings-widget', inputs:['hiddenSections'] }),
         mockComponent({ selector: 'ats-news-modal-widget' }),
         mockComponent({ selector: 'ats-feedback-widget' }),
         mockComponent({ selector: 'ats-application-updated-widget' }),

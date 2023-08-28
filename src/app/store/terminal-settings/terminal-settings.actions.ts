@@ -1,23 +1,41 @@
-import { createAction, props } from '@ngrx/store';
-import { TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
+import {createAction, props} from '@ngrx/store';
+import {TerminalSettings} from '../../shared/models/terminal-settings/terminal-settings.model';
 
-export const initTerminalSettings = createAction(
-  '[TerminalSettings] Init Settings'
-);
+export class TerminalSettingsActions {
+  static initTerminalSettings = createAction(
+    '[TerminalSettings] Init Settings',
+    props<{ settings: TerminalSettings | null }>()
+  );
 
-export const initTerminalSettingsSuccess = createAction(
-  '[TerminalSettings] Init Settings (SUCCESS)',
-  props<{ settings: TerminalSettings }>()
-);
+  static updateTerminalSettings = createAction(
+    '[TerminalSettings] Update Settings',
+    props<{ updates: Partial<TerminalSettings>, freezeChanges: boolean }>()
+  );
 
-export const updateTerminalSettings = createAction(
-  '[TerminalSettings] Update Settings',
-  props<{ updates: Partial<TerminalSettings>, freezeChanges: boolean }>()
-);
+  static saveTerminalSettingsSuccess = createAction(
+    '[TerminalSettings] Save Settings (SUCCESS)'
+  );
 
-export const saveTerminalSettingsSuccess = createAction(
-  '[TerminalSettings] Save Settings (SUCCESS)'
-);
+  static reset = createAction(
+    '[TerminalSettings] Reset'
+  );
+
+  static resetSuccess = createAction(
+    '[TerminalSettings] Reset (SUCCESS)'
+  );
+}
+
+/**
+ These actions can be dispatched only from store effects
+ */
+export class InternalTerminalSettingsActions {
+  static initTerminalSettingsSuccess = createAction(
+    '[TerminalSettings] Init Settings (SUCCESS)',
+    props<{ settings: TerminalSettings }>()
+  );
+}
+
+
 
 
 

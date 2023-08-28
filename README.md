@@ -108,6 +108,7 @@
  - clientDataUrl: - Api для получения данных по клиенту, 'https://lk-api.alor.ru',
  - ssoUrl: - адрес редиректа для sso 'https://login.alor.ru',
  - warpUrl: -  Api для получения данных о релизах 'https://warp.alor.dev',
+ - remoteSettingsStorageUrl: -  Api для хранения настроек пользователя 'https://astras-dev.alor.ru/identity/v5/UserSettings',
  - logging: настройки логгирования (опциональные)
    - console: настройки логов, записываемых в консоль браузера (опциональные - если данная секция отсутствует, то логи в консоль не записываются)
      - minLevel: минимальный уровень записываемых логов (доступные значения в порядке повышения уровня: 'trace', 'info', 'warn', 'error')

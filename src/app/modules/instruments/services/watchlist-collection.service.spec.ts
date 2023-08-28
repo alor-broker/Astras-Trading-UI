@@ -1,48 +1,43 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { WatchlistCollectionService } from './watchlist-collection.service';
-import { TestData } from '../../../shared/utils/testing';
-import { WatchlistCollection } from '../models/watchlist.model';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
-import { LocalStorageService } from "../../../shared/services/local-storage.service";
-import { TranslocoTestingModule } from "@ngneat/transloco";
+import {WatchlistCollectionService} from './watchlist-collection.service';
+import {TestData} from '../../../shared/utils/testing';
+import {WatchlistCollection} from '../models/watchlist.model';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {ErrorHandlerService} from '../../../shared/services/handle-error/error-handler.service';
+import {TranslocoTestingModule} from "@ngneat/transloco";
+import {GuidGenerator} from "../../../shared/utils/guid";
+import {WatchlistCollectionBrokerService} from "./watchlist-collection-broker.service";
+import {BehaviorSubject, Subject, take} from "rxjs";
 
 describe('WatchListCollectionService', () => {
   const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
-  let localStorageServiceSpy: any;
+  let watchlistCollectionBrokerServiceSpy: any;
 
   let service: WatchlistCollectionService;
-  const watchlistCollectionStorage = 'watchlistCollection';
 
   const testCollection = {
     collection: [{
       id: '123',
       title: 'Test List',
       isDefault: false,
-      items: TestData.instruments.map(x => ({ ...x }))
+      items: TestData.instruments.map(x => ({...x, recordId: GuidGenerator.newGuid()}))
     },
       {
         id: '321',
         title: 'Test List',
         isDefault: true,
-        items: TestData.instruments.map(x => ({ ...x }))
+        items: TestData.instruments.map(x => ({...x, recordId: GuidGenerator.newGuid()}))
       }]
   } as WatchlistCollection;
 
   const setupGetItemMock = (returnValue: WatchlistCollection | null = null) => {
-    localStorageServiceSpy.getItem.and.callFake((key: string) => {
-      if (key !== watchlistCollectionStorage) {
-        return null;
-      }
-
-      return JSON.parse(JSON.stringify(returnValue)) as WatchlistCollection;
-    });
+    watchlistCollectionBrokerServiceSpy.getCollection.and.returnValue(new BehaviorSubject(JSON.parse(JSON.stringify(returnValue?.collection))));
   };
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
-    localStorageServiceSpy = jasmine.createSpyObj('LocalStorageService', ['getItem', 'setItem']);
+    watchlistCollectionBrokerServiceSpy = jasmine.createSpyObj('WatchlistCollectionBrokerService', ['addOrUpdateLists', 'removeList', 'getCollection']);
 
     TestBed.configureTestingModule({
       imports: [
@@ -51,8 +46,8 @@ describe('WatchListCollectionService', () => {
       ],
       providers: [
         WatchlistCollectionService,
-        { provide: LocalStorageService, useValue: localStorageServiceSpy },
-        { provide: ErrorHandlerService, useValue: errorHandlerSpy }
+        {provide: WatchlistCollectionBrokerService, useValue: watchlistCollectionBrokerServiceSpy},
+        {provide: ErrorHandlerService, useValue: errorHandlerSpy}
       ]
     });
 
@@ -63,131 +58,71 @@ describe('WatchListCollectionService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('#getWatchlistCollection should read value from localStorage', () => {
+  it('#getWatchlistCollection should read value from broker', () => {
     setupGetItemMock(testCollection);
 
-    const value = service.getWatchlistCollection();
-    expect(value).toEqual(testCollection);
+    service.getWatchlistCollection().pipe(
+      take(1)
+    ).subscribe(collection => {
+      expect(collection).toEqual(testCollection);
+    });
   });
 
-  it('#getWatchlistCollection should return default collection if missing', () => {
-    setupGetItemMock(null);
+  it('#getWatchlistCollection should create default collection if missing', () => {
+    setupGetItemMock({collection: []});
+    watchlistCollectionBrokerServiceSpy.addOrUpdateLists.and.returnValue(new Subject());
 
-    const value = service.getWatchlistCollection();
-    expect(value.collection.find(x => x.isDefault)).toBeDefined();
+    service.getWatchlistCollection()
+      .pipe(
+        take(1)
+      ).subscribe();
+
+    expect(watchlistCollectionBrokerServiceSpy.addOrUpdateLists).toHaveBeenCalled();
   });
 
-  it('#getListItems should return list for correct listId', () => {
-    setupGetItemMock(testCollection);
+  it('#createNewList should call broker', () => {
+    watchlistCollectionBrokerServiceSpy.addOrUpdateLists.and.returnValue(new Subject());
 
-    const targetListId = testCollection.collection[0].id;
-    const value = service.getListItems(targetListId);
-
-    expect(value).toEqual(testCollection.collection[0].items);
-  });
-
-  it('#getListItems should return undefined for incorrect listId', () => {
-    setupGetItemMock(testCollection);
-
-    const value = service.getListItems('-1');
-
-    expect(value).toBeUndefined();
-  });
-
-  it('#createNewList should update localStorage', () => {
     service.createNewList('test list', []);
 
-    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(watchlistCollectionStorage, jasmine.anything());
+    expect(watchlistCollectionBrokerServiceSpy.addOrUpdateLists).toHaveBeenCalled();
   });
 
-  it('#createNewList should notify about changes', (done) => {
-    service.collectionChanged$.subscribe(() => {
-      expect().nothing();
-      done();
-    });
-
-    service.createNewList('test list', []);
-  });
-
-  it('#removeList should update localStorage', () => {
+  it('#removeList should call broker', () => {
     setupGetItemMock(testCollection);
-
+    watchlistCollectionBrokerServiceSpy.removeList.and.returnValue(new Subject());
     service.removeList(testCollection.collection[0].id);
 
-    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(watchlistCollectionStorage, jasmine.anything());
+    expect(watchlistCollectionBrokerServiceSpy.removeList).toHaveBeenCalled();
   });
 
-  it('#removeList should notify about changes', (done) => {
+  it('#updateListMeta should call broker', () => {
     setupGetItemMock(testCollection);
+    watchlistCollectionBrokerServiceSpy.addOrUpdateLists.and.returnValue(new Subject());
 
-    service.collectionChanged$.subscribe(() => {
-      expect().nothing();
-      done();
-    });
+    service.updateListMeta(testCollection.collection[0].id, {title: 'new title'});
 
-    service.removeList(testCollection.collection[0].id);
+    expect(watchlistCollectionBrokerServiceSpy.addOrUpdateLists).toHaveBeenCalled();
   });
 
-  it('#updateListMeta should update localStorage', () => {
+  it('#addItemsToList should call broker', () => {
     setupGetItemMock(testCollection);
-
-    service.updateListMeta(testCollection.collection[0].id, { title: 'new title' });
-
-    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(watchlistCollectionStorage, jasmine.anything());
-  });
-
-  it('#updateListMeta should notify about changes', (done) => {
-    setupGetItemMock(testCollection);
-
-    service.collectionChanged$.subscribe(() => {
-      expect().nothing();
-      done();
-    });
-
-    service.updateListMeta(testCollection.collection[0].id, { title: 'new title' });
-  });
-
-  it('#addItemsToList should update localStorage', () => {
-    setupGetItemMock(testCollection);
+    watchlistCollectionBrokerServiceSpy.addOrUpdateLists.and.returnValue(new Subject());
 
     service.addItemsToList(testCollection.collection[0].id, [{
       symbol: 'symbol',
       exchange: 'SPB'
     }]);
 
-    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(watchlistCollectionStorage, jasmine.anything());
+    expect(watchlistCollectionBrokerServiceSpy.addOrUpdateLists).toHaveBeenCalled();
   });
 
-  it('#addItemsToList should notify about changes', (done) => {
+  it('#removeItemsFromList should call broker', () => {
     setupGetItemMock(testCollection);
+    watchlistCollectionBrokerServiceSpy.addOrUpdateLists.and.returnValue(new Subject());
 
-    service.collectionChanged$.subscribe(() => {
-      expect().nothing();
-      done();
-    });
+    service.removeItemsFromList(testCollection.collection[0].id, testCollection.collection[0].items.map(x => x.recordId));
 
-    service.addItemsToList(testCollection.collection[0].id, [{
-      symbol: 'symbol',
-      exchange: 'SPB'
-    }]);
-  });
-
-  it('#removeItemsFromList should update localStorage', () => {
-    setupGetItemMock(testCollection);
-
-    service.removeItemsFromList(testCollection.collection[0].id, testCollection.collection[0].items);
-
-    expect(localStorageServiceSpy.setItem).toHaveBeenCalledWith(watchlistCollectionStorage, jasmine.anything());
-  });
-
-  it('#removeItemsFromList should notify about changes', (done) => {
-    setupGetItemMock(testCollection);
-
-    service.collectionChanged$.subscribe(() => {
-      expect().nothing();
-      done();
-    });
-
-    service.removeItemsFromList(testCollection.collection[0].id, testCollection.collection[0].items);
+    expect(watchlistCollectionBrokerServiceSpy.addOrUpdateLists).toHaveBeenCalled();
   });
 });

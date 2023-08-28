@@ -8,7 +8,7 @@ import {
 } from '../../../../shared/utils/testing';
 import {Subject} from 'rxjs';
 import {AccountService} from "../../../../shared/services/account.service";
-import {TerminalSettingsService} from "../../services/terminal-settings.service";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 describe('TerminalSettingsComponent', () => {
   let component: TerminalSettingsComponent;

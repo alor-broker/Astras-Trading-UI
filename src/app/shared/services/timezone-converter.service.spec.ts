@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { TimezoneConverterService } from './timezone-converter.service';
-import { TerminalSettingsService } from '../../modules/terminal-settings/services/terminal-settings.service';
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 describe('TimezoneConverterService', () => {
   let service: TimezoneConverterService;

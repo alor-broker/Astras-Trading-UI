@@ -3,8 +3,9 @@ import {
   Input,
   OnInit
 } from '@angular/core';
-import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
-import { GeneralSettings } from '../../models/terminal-settings.model';
+import {
+  ControlValueAccessorBaseComponent
+} from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
 import {
   AbstractControl,
   NG_VALUE_ACCESSOR,
@@ -12,11 +13,12 @@ import {
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import { validationSettings } from '../../utils/validation-settings';
-import { DesignSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
-import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
-import { ThemeType } from '../../../../shared/models/settings/theme-settings.model';
+import {validationSettings} from '../../utils/validation-settings';
+import {DesignSettings} from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import {TimezoneDisplayOption} from '../../../../shared/models/enums/timezone-display-option';
+import {ThemeType} from '../../../../shared/models/settings/theme-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {GeneralSettings} from "../../models/terminal-settings.model";
 
 @Component({
   selector: 'ats-general-settings-form',

@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
 import {
-  BehaviorSubject,
+  BehaviorSubject, combineLatest,
   fromEvent,
   Observable,
   of,
@@ -18,8 +18,6 @@ import {
 import {
   debounceTime,
   filter,
-  map,
-  startWith,
   switchMap
 } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
@@ -49,7 +47,7 @@ export class InstrumentSelectComponent implements OnInit {
 
   filteredInstruments$: Observable<Instrument[]> = of([]);
   inputValue?: string;
-  collection$?: Observable<WatchlistCollection>;
+  collection$!: Observable<WatchlistCollection>;
   settings$!: Observable<InstrumentSelectSettings>;
 
   private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
@@ -119,12 +117,11 @@ export class InstrumentSelectComponent implements OnInit {
       switchMap(filter => this.service.getInstruments(filter))
     );
 
-    this.setDefaultWatchList();
-
-    this.collection$ = this.watchlistCollectionService.collectionChanged$.pipe(
-      startWith(null),
-      map(() => this.watchlistCollectionService.getWatchlistCollection()),
+    this.collection$ = this.watchlistCollectionService.getWatchlistCollection().pipe(
+      shareReplay(1)
     );
+
+    this.setDefaultWatchList();
 
     fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
       filter(() => !DomHelper.isModalOpen()),
@@ -153,14 +150,19 @@ export class InstrumentSelectComponent implements OnInit {
   }
 
   private setDefaultWatchList() {
-    this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
+    combineLatest([
+      this.settings$,
+      this.collection$
+    ]
+    ).pipe(
       take(1)
-    ).subscribe(settings => {
+    ).subscribe(([settings, collection]) => {
       if (!!settings.activeListId) {
-        return;
+        if(collection.collection.find(w => w.id === settings.activeListId)) {
+          return;
+        }
       }
 
-      const collection = this.watchlistCollectionService.getWatchlistCollection();
       const defaultList = collection.collection.find(x => x.isDefault);
       if (defaultList) {
         this.settingsService.updateSettings(this.guid, { activeListId: defaultList.id });

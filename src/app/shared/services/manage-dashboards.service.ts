@@ -3,17 +3,16 @@ import {
   Observable, shareReplay,
   take,
 } from 'rxjs';
-import { LocalStorageService } from "./local-storage.service";
 import {
   DashboardItemPosition
 } from '../models/dashboard/widget.model';
 import { Store } from '@ngrx/store';
 import {Dashboard, DefaultDashboardConfig} from '../models/dashboard/dashboard.model';
-import { allDashboards } from '../../store/dashboards/dashboards.selectors';
 import { GuidGenerator } from '../utils/guid';
 import { ManageDashboardsActions } from '../../store/dashboards/dashboards-actions';
 import { DashboardContextService } from './dashboard-context.service';
 import {HttpClient} from "@angular/common/http";
+import {DashboardsStreams} from "../../store/dashboards/dashboards.streams";
 
 @Injectable({
   providedIn: 'root',
@@ -23,14 +22,13 @@ export class ManageDashboardsService {
 
   constructor(
     private readonly httpClient: HttpClient,
-    private readonly localStorage: LocalStorageService,
     private readonly store: Store,
     private readonly dashboardContextService: DashboardContextService
   ) {
   }
 
   get allDashboards$(): Observable<Dashboard[]> {
-    return this.store.select(allDashboards);
+    return DashboardsStreams.getAllDashboards(this.store);
   }
 
   addWidget(widgetType: string, initialSettings?: any) {
@@ -75,23 +73,6 @@ export class ManageDashboardsService {
     });
   }
 
-  resetAll() {
-    this.localStorage.removeItem('terminalSettings');
-    this.localStorage.removeItem('watchlistCollection');
-    this.localStorage.removeItem('portfolio');
-    this.localStorage.removeItem('profile');
-    this.localStorage.removeItem('feedback');
-    this.localStorage.removeItem('dashboards-collection');
-    this.localStorage.removeItem('mobile-dashboard');
-    this.localStorage.removeItem('instruments-history');
-
-    // obsolete keys. Used only for backward compatibility
-    this.localStorage.removeItem('instruments');
-    this.localStorage.removeItem('dashboards');
-    this.store.dispatch(ManageDashboardsActions.removeAllDashboards());
-    this.reloadPage();
-  }
-
   resetCurrentDashboard() {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
@@ -131,10 +112,6 @@ export class ManageDashboardsService {
     }
 
     return this.defaultConfig$!;
-  }
-
-  private reloadPage() {
-    window.location.reload();
   }
 
   private readDefaultConfig() {

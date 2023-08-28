@@ -8,9 +8,9 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { Observable } from 'rxjs';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-order-submit-widget',

@@ -10,7 +10,6 @@ import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import {
   Observable
 } from 'rxjs';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import {
   ClusterTimeframe,
   PriceUnits,
@@ -19,6 +18,7 @@ import {
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-scalper-order-book-widget',
