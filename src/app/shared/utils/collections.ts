@@ -91,3 +91,18 @@ export function isArrayEqual<T>(a: readonly T[] | null, b: readonly T[] | null, 
 
   return !a.some((item, index) => !equalityTester(item, b[index]));
 }
+
+/**
+ * Return array with valued from input arrays
+ */
+export function mergeArrays<T>(arrays: T[][]): T[] {
+  return arrays.reduce(
+    (acc, curr) => {
+      return [
+        ...acc,
+        ...curr
+      ];
+    },
+    []
+  );
+}

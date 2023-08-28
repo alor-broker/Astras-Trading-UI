@@ -27,7 +27,7 @@ describe('DashboardWidgetComponent', () => {
         mockComponent({ selector: 'ats-command-widget' }),
         mockComponent({ selector: 'ats-edit-widget' }),
         mockComponent({ selector: 'ats-help-widget' }),
-        mockComponent({ selector: 'ats-terminal-settings-widget' }),
+        mockComponent({ selector: 'ats-terminal-settings-widget', inputs:['hiddenSections'] }),
         mockComponent({ selector: 'ats-news-modal-widget' }),
         mockComponent({ selector: 'ats-feedback-widget' }),
         mockComponent({ selector: 'ats-application-updated-widget' })

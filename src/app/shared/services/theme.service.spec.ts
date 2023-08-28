@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ThemeService } from './theme.service';
-import { TerminalSettingsService } from '../../modules/terminal-settings/services/terminal-settings.service';
 import { TerminalSettings } from '../models/terminal-settings/terminal-settings.model';
 import { of } from 'rxjs';
 import { ThemeType } from '../models/settings/theme-settings.model';
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 describe('ThemeService', () => {
   let service: ThemeService;

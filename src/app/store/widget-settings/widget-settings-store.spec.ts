@@ -46,11 +46,7 @@ describe('Widget Settings Store', () => {
   };
 
   const initSettings = (settings: WidgetSettings[]) => {
-    localStorageServiceSpy.getItem.and.callFake(() => {
-      return settings.map(x => [x.guid, x]);
-    });
-
-    store.dispatch(initWidgetSettings());
+    store.dispatch(initWidgetSettings({settings}));
   };
 
   beforeAll(() => TestBed.resetTestingModule());

@@ -36,7 +36,6 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
@@ -224,7 +223,6 @@ export class OrdersComponent
     private readonly canceller: OrderCancellerService,
     private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly dashboardContextService: DashboardContextService,
     protected readonly translatorService: TranslatorService,
     private readonly ordersGroupService: OrdersGroupService,
     protected readonly destroyRef: DestroyRef

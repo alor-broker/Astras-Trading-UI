@@ -13,6 +13,7 @@ import { PortfoliosEffects } from './portfolios/portfolios.effects';
 import { DashboardsEffects } from './dashboards/dashboards.effects';
 import { DashboardsBridgeEffects } from './dashboards/dashboards-bridge.effects';
 import { MobileDashboardEffects } from "./mobile-dashboard/mobile-dashboard.effects";
+import {TerminalSettingsBridgeEffects} from "./terminal-settings/terminal-settings-bridge.effects";
 
 @NgModule({
   declarations: [],
@@ -25,6 +26,7 @@ import { MobileDashboardEffects } from "./mobile-dashboard/mobile-dashboard.effe
     EffectsModule.forFeature([
       PortfoliosEffects,
       TerminalSettingsEffects,
+      TerminalSettingsBridgeEffects,
       WidgetSettingsEffects,
       WidgetSettingsBridgeEffects,
       DashboardsEffects,

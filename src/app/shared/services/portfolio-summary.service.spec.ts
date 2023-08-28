@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { PortfolioSummaryService } from './portfolio-summary.service';
 import {PortfolioSubscriptionsService} from "./portfolio-subscriptions.service";
 import {Subject} from "rxjs";
-import {TerminalSettingsService} from "../../modules/terminal-settings/services/terminal-settings.service";
 import {MarketService} from "./market.service";
 import {QuotesService} from "./quotes.service";
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 describe('PortfolioSummaryService', () => {
   let service: PortfolioSummaryService;

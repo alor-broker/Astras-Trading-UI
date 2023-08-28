@@ -1,10 +1,7 @@
-import {
-  createReducer,
-  on
-} from '@ngrx/store';
-import * as TerminalSettingsActions from './terminal-settings.actions';
-import { EntityStatus } from '../../shared/models/enums/entity-status';
-import { TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
+import {createReducer, on} from '@ngrx/store';
+import {EntityStatus} from '../../shared/models/enums/entity-status';
+import {TerminalSettings} from '../../shared/models/terminal-settings/terminal-settings.model';
+import {InternalTerminalSettingsActions, TerminalSettingsActions} from "./terminal-settings.actions";
 
 export const terminalSettingsFeatureKey = 'terminalSettings';
 
@@ -32,7 +29,7 @@ export const reducer = createReducer(
     status: EntityStatus.Loading
   })),
 
-  on(TerminalSettingsActions.initTerminalSettingsSuccess, (state, { settings }) => ({
+  on(InternalTerminalSettingsActions.initTerminalSettingsSuccess, (state, {settings}) => ({
     ...state,
     status: EntityStatus.Success,
     settings: {
@@ -41,12 +38,17 @@ export const reducer = createReducer(
 
   })),
 
-  on(TerminalSettingsActions.updateTerminalSettings, (state, { updates, freezeChanges }) => ({
+  on(TerminalSettingsActions.updateTerminalSettings, (state, {updates, freezeChanges}) => ({
     ...state,
     status: freezeChanges ? FrozenStatus.Frozen : EntityStatus.Success,
     settings: {
       ...state.settings,
       ...updates
     }
+  })),
+
+  on(TerminalSettingsActions.reset, (state) => ({
+    ...state,
+    status: FrozenStatus.Frozen
   }))
 );

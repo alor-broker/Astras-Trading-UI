@@ -6,10 +6,10 @@ import {TerminalSettings} from "../../shared/models/terminal-settings/terminal-s
 import {selectTerminalSettingsState} from "./terminal-settings.selectors";
 
 export class TerminalSettingsStreams {
-  static getSettings(store: Store): Observable<TerminalSettings> {
+  static getSettings(store: Store, ignoreStatus = false): Observable<TerminalSettings> {
     return store.select(selectTerminalSettingsState)
       .pipe(
-        filter(x => x.status === EntityStatus.Success),
+        filter(x => x.status === EntityStatus.Success || ignoreStatus),
         map(settings => settings.settings),
         filter((settings): settings is TerminalSettings => !!settings)
       );

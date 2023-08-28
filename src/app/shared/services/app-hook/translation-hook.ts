@@ -4,8 +4,8 @@ import {filter, map} from "rxjs/operators";
 import {rusLangLocales} from "../../utils/translation-helper";
 import {en_US, NzI18nService, ru_RU} from "ng-zorro-antd/i18n";
 import {Subscription, tap} from "rxjs";
-import {TerminalSettingsService} from "../../../modules/terminal-settings/services/terminal-settings.service";
 import {TranslatorService} from "../translator.service";
+import {TerminalSettingsService} from "../terminal-settings.service";
 
 @Injectable()
 export class TranslationHook implements AppHook {

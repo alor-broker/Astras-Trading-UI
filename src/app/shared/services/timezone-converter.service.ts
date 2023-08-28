@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { TerminalSettingsService } from '../../modules/terminal-settings/services/terminal-settings.service';
 import { distinctUntilChanged, Observable } from 'rxjs';
 import { TimezoneConverter } from '../utils/timezone-converter';
 import { map } from 'rxjs/operators';
 import { TimezoneDisplayOption } from '../models/enums/timezone-display-option';
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 @Injectable({
   providedIn: 'root'

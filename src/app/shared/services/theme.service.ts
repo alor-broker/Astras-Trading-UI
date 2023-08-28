@@ -11,14 +11,14 @@ import {
 } from 'rxjs';
 import {
   filter,
-  map
+  map, startWith
 } from 'rxjs/operators';
-import { TerminalSettingsService } from '../../modules/terminal-settings/services/terminal-settings.service';
 import {
   ThemeColors,
   ThemeSettings,
   ThemeType
 } from '../models/settings/theme-settings.model';
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 @Injectable({
   providedIn: 'root',
@@ -62,8 +62,11 @@ export class ThemeService {
   }
 
   subscribeToThemeChanges(): Subscription {
-    return this.getThemeSettings()
-      .subscribe(settings => this.setTheme(settings.theme));
+    return this.getThemeSettings().pipe(
+      map(s => s.theme),
+      startWith(ThemeType.dark)
+    )
+      .subscribe(theme => this.setTheme(theme));
   }
 
   getThemeSettings(): Observable<ThemeSettings> {

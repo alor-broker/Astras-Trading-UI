@@ -9,13 +9,13 @@ import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-se
 import { TimeframesHelper } from '../../utils/timeframes-helper';
 import { TimeframeValue } from '../../models/light-chart.models';
 import { Observable } from 'rxjs';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import {
   LightChartSettings,
   TimeFrameDisplayMode
 } from '../../models/light-chart-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-light-chart-widget',

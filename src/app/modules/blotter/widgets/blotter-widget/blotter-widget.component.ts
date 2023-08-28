@@ -19,7 +19,6 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import {ContentSize, WidgetInstance} from '../../../../shared/models/dashboard/dashboard-item.model';
 import {
@@ -32,6 +31,7 @@ import {
   BlotterSettings
 } from '../../models/blotter-settings.model';
 import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-blotter-widget',

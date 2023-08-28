@@ -25,13 +25,13 @@
         </nz-auto-option>
       </nz-autocomplete>
     </div>
-    <div *ngIf="(collection$ | async)!.collection as collection" class="watch-list-collection-select">
-      <button *ngIf="collection.length > 0" [nzDropdownMenu]="menu" nz-button nz-dropdown>
+    <div *ngIf="(collection$ | async)as collection" class="watch-list-collection-select">
+      <button *ngIf="collection.collection.length > 0" [nzDropdownMenu]="menu" nz-button nz-dropdown>
         <span nz-icon nzTheme="outline" nzType="menu"></span>
       </button>
       <nz-dropdown-menu #menu="nzDropdownMenu">
         <ul nz-menu nzSelectable>
-          <li (click)="selectCollection(list.id)" *ngFor="let list of collection" nz-menu-item [nzSelected]="settings.activeListId === list.id">
+          <li (click)="selectCollection(list.id)" *ngFor="let list of collection.collection" nz-menu-item [nzSelected]="settings.activeListId === list.id">
             <span *transloco="let tSettings; scope: 'instruments/settings'">{{ hasDefaultTitle(list) ? tSettings('instrumentsSettings.defaultWatchlist') : list.title}}</span>
           </li>
         </ul>

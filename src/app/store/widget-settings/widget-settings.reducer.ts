@@ -31,12 +31,7 @@ const initialState: State = adapter.getInitialState({
 export const reducer = createReducer(
   initialState,
 
-  on(WidgetSettingsActions.initWidgetSettings, (state) => ({
-    ...state,
-    status: EntityStatus.Loading
-  })),
-
-  on(WidgetSettingsActions.initWidgetSettingsSuccess, (state, { settings }) => {
+  on(WidgetSettingsActions.initWidgetSettings, (state, { settings }) => {
     return adapter.addMany(
       settings,
       {

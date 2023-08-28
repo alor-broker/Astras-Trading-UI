@@ -3,10 +3,10 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
 import { TreemapSettings } from "../../models/treemap.model";
 import { SettingsHelper } from "../../../../shared/utils/settings-helper";
-import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { Observable } from "rxjs";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-treemap-widget',
