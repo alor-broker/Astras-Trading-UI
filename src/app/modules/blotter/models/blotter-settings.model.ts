@@ -99,3 +99,18 @@ export const allRepoTradesColumns: BaseColumnId[] = [
   { id: 'tradeTypeInfo', displayName: 'Тип', isDefault: true },
   { id: 'yield', displayName: 'Доход', isDefault: true }
 ];
+
+export enum TableNames {
+  OrdersTable = 'ordersTable',
+  StopOrdersTable = 'stopOrdersTable',
+  TradesTable = 'tradesTable',
+  RepoTradesTable = 'repoTradesTable',
+  PositionsTable = 'positionsTable'
+}
+
+export enum ColumnsNames {
+  OrdersColumns = 'ordersColumns',
+  StopOrdersColumns = 'stopOrdersColumns',
+  PositionsColumns = 'positionsColumns',
+  TradesColumns = 'tradesColumns'
+}
