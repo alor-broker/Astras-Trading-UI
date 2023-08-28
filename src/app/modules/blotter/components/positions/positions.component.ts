@@ -1,10 +1,8 @@
 import {
-  AfterViewInit,
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   ElementRef,
   EventEmitter,
-  Input,
-  OnDestroy,
   OnInit,
   Output,
   QueryList,
@@ -12,15 +10,13 @@ import {
   ViewChildren
 } from '@angular/core';
 import {
-  BehaviorSubject,
   distinctUntilChanged,
   Observable,
-  of, shareReplay,
-  switchMap,
-  take,
+  of,
+  switchMap
 } from 'rxjs';
 import {
-  debounceTime, filter,
+  debounceTime,
   map,
   mergeMap,
   startWith
@@ -31,23 +27,20 @@ import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { NzTableComponent } from 'ng-zorro-antd/table';
-import { ExportHelper } from "../../utils/export-helper";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { TableAutoHeightBehavior } from '../../utils/table-auto-height.behavior';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { BlotterTablesHelper } from '../../utils/blotter-tables.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { BlotterSettings } from '../../models/blotter-settings.model';
+import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import {NzTableFilterList} from "ng-zorro-antd/table/src/table.types";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { BaseTableComponent } from "../base-table/base-table.component";
 
 interface PositionDisplay extends Position {
-  volume: number
+  id: string;
+  volume: number;
 }
 
 @Component({
@@ -55,21 +48,18 @@ interface PositionDisplay extends Position {
   templateUrl: './positions.component.html',
   styleUrls: ['./positions.component.less']
 })
-export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PositionsComponent
+  extends BaseTableComponent<PositionDisplay, PositionFilter>
+  implements OnInit {
+
   @ViewChild('nzTable')
   table?: NzTableComponent<PositionDisplay>;
   @ViewChildren('tableContainer')
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
-  @Input({required: true})
-  guid!: string;
-
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayPositions$: Observable<PositionDisplay[]> = of([]);
-  searchFilter = new BehaviorSubject<PositionFilter>({});
-  readonly scrollHeight$ = new BehaviorSubject<number>(100);
-  tableInnerWidth: number = 1000;
   allColumns: BaseColumnSettings<PositionDisplay>[] = [
     {
       id: 'symbol',
@@ -168,44 +158,23 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
       minWidth: 60
     },
   ];
-  listOfColumns: BaseColumnSettings<PositionDisplay>[] = [];
-  private readonly columnDefaultWidth = 100;
-  private settings$!: Observable<BlotterSettings>;
-  private badgeColor = defaultBadgeColor;
+
+  settingsTableName = TableNames.PositionsTable;
+  settingsColumnsName = ColumnsNames.PositionsColumns;
+  fileSuffix = 'positions';
+  badgeColor = defaultBadgeColor;
 
   constructor(
-    private readonly service: BlotterService,
-    private readonly settingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
+    protected readonly service: BlotterService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly translatorService: TranslatorService,
+    protected readonly destroyRef: DestroyRef
   ) {
-  }
-
-  get canExport(): boolean {
-    return !!this.table?.data && this.table.data.length > 0;
-  }
-
-  isFilterDisabled = () => Object.keys(this.searchFilter.getValue()).length === 0;
-
-  ngAfterViewInit(): void {
-    const container$ =  this.tableContainer.changes.pipe(
-      map(x => x.first),
-      startWith(this.tableContainer.first),
-      filter((x): x is ElementRef<HTMLElement> => !!x),
-      shareReplay(1)
-    );
-
-    container$.pipe(
-      switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => {
-      setTimeout(()=> this.scrollHeight$.next(x));
-    });
+    super(service, settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
+    super.ngOnInit();
 
     this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
@@ -251,21 +220,18 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.displayPositions$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
-      switchMap(settings => this.service.getPositions(settings)),
+      switchMap(
+        settings => this.service.getPositions(settings)
+          .pipe(
+            map((positions) => positions.map(p => ({ ...p, id: `${p.symbol}_${p.exchange}` })))
+          )
+      ),
       debounceTime(100),
       startWith([]),
-      mergeMap(positions => this.searchFilter.pipe(
+      mergeMap(positions => this.filter$.pipe(
         map(f => positions.filter(o => this.justifyFilter(o, f)))
       ))
     );
-  }
-
-  ngOnDestroy(): void {
-    this.scrollHeight$.complete();
-  }
-
-  filterChange(newFilter: PositionFilter) {
-    this.searchFilter.next(newFilter);
   }
 
   round(number: number) {
@@ -276,85 +242,5 @@ export class PositionsComponent implements OnInit, AfterViewInit, OnDestroy {
     return price > 10
       ? MathHelper.round(price, 2)
       : MathHelper.round(price, 6);
-  }
-
-  selectInstrument(symbol: string, exchange: string) {
-    this.service.selectNewInstrument(symbol, exchange, this.badgeColor);
-  }
-
-  isFilterApplied(column: BaseColumnSettings<PositionDisplay>) {
-    const filter = this.searchFilter.getValue();
-    return column.id in filter && !!filter[column.id];
-  }
-
-  exportToFile() {
-    this.settings$.pipe(take(1)).subscribe(settings => {
-      ExportHelper.exportToCsv(
-        'Позиции',
-        settings,
-        [...this.table?.data ?? []],
-        this.listOfColumns
-      );
-    });
-  }
-
-  saveColumnWidth(id: string, width: number) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      const tableSettings = settings.positionsTable ?? TableSettingHelper.toTableDisplaySettings(settings.positionsColumns);
-      if (tableSettings) {
-        this.settingsService.updateSettings<BlotterSettings>(
-          settings.guid,
-          {
-            positionsTable: TableSettingHelper.updateColumn(
-              id,
-              tableSettings,
-              {
-                columnWidth: width
-              }
-            )
-          }
-        );
-      }
-    });
-  }
-
-  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
-    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
-    this.tableInnerWidth += delta;
-  }
-
-  changeColumnOrder(event: CdkDragDrop<any>) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      this.settingsService.updateSettings<BlotterSettings>(
-        settings.guid,
-        {
-          positionsTable: BlotterTablesHelper.changeColumnOrder(
-            event,
-            settings.positionsTable ?? TableSettingHelper.toTableDisplaySettings(settings.positionsColumns)!,
-            this.listOfColumns
-          )
-        }
-      );
-    });
-  }
-
-  trackBy(index: number, position: PositionDisplay): string {
-    return `${position.symbol}_${position.exchange}`;
-  }
-
-  private justifyFilter(position: PositionDisplay, filter: PositionFilter): boolean {
-    let isFiltered = true;
-    for (const key of Object.keys(filter)) {
-      if (filter[key as keyof PositionFilter]) {
-        if (filter[key] && !position[<keyof PositionDisplay>key].toString().toLowerCase().includes(filter[key]!.toLowerCase())) {
-          isFiltered = false;
-        }
-      }
-    }
-    return isFiltered;
   }
 }

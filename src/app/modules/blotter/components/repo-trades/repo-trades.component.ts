@@ -1,10 +1,9 @@
 import {
-  AfterViewInit,
   Component,
   DestroyRef,
   ElementRef,
   EventEmitter,
-  Input, OnDestroy, OnInit,
+  OnInit,
   Output,
   QueryList,
   ViewChild,
@@ -12,42 +11,36 @@ import {
 } from '@angular/core';
 import { NzTableComponent } from "ng-zorro-antd/table";
 import {
-  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   Observable,
   of,
-  shareReplay,
-  switchMap,
-  take,
-  filter
+  switchMap
 } from "rxjs";
 import { TradeFilter } from "../../models/trade-filter.model";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import { BlotterSettings } from "../../models/blotter-settings.model";
+import { TableNames } from "../../models/blotter-settings.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterService } from "../../services/blotter.service";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { debounceTime, map, mergeMap, startWith } from "rxjs/operators";
-import { TableAutoHeightBehavior } from "../../utils/table-auto-height.behavior";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
-import { ExportHelper } from "../../utils/export-helper";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { BlotterTablesHelper } from "../../utils/blotter-tables.helper";
 import { RepoTrade } from "../../../../shared/models/trades/trade.model";
+import { BaseTableComponent } from "../base-table/base-table.component";
 
 @Component({
   selector: 'ats-repo-trades',
   templateUrl: './repo-trades.component.html',
   styleUrls: ['./repo-trades.component.less']
 })
-export class RepoTradesComponent implements OnInit, AfterViewInit, OnDestroy {
-  private readonly columnDefaultWidth = 100;
+export class RepoTradesComponent
+  extends BaseTableComponent<RepoTrade, TradeFilter>
+  implements OnInit {
 
   @ViewChild('nzTable')
   table?: NzTableComponent<RepoTrade>;
@@ -55,15 +48,9 @@ export class RepoTradesComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('tableContainer')
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
-  @Input({required: true})
-  guid!: string;
-
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  tableInnerWidth: number = 1000;
   displayRepoTrades$: Observable<RepoTrade[]> = of([]);
-  filter = new BehaviorSubject<TradeFilter>({});
-  isFilterDisabled = () => Object.keys(this.filter.getValue()).length === 0;
   allColumns: BaseColumnSettings<RepoTrade>[] = [
     {
       id: 'id',
@@ -224,37 +211,22 @@ export class RepoTradesComponent implements OnInit, AfterViewInit, OnDestroy {
       minWidth: 50
     },
   ];
-  listOfColumns: BaseColumnSettings<RepoTrade>[] = [];
-  readonly scrollHeight$ = new BehaviorSubject<number>(100);
-  private settings$!: Observable<BlotterSettings>;
+
+  settingsTableName = TableNames.RepoTradesTable;
+  fileSuffix = 'repoTrades';
 
   constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly service: BlotterService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
+    protected readonly translatorService: TranslatorService,
+    protected readonly destroyRef: DestroyRef
   ) {
-  }
-
-  ngAfterViewInit(): void {
-    const container$ =  this.tableContainer.changes.pipe(
-      map(x => x.first),
-      startWith(this.tableContainer.first),
-      filter((x): x is ElementRef<HTMLElement> => !!x),
-      shareReplay(1)
-    );
-
-    container$.pipe(
-      switchMap((x) => TableAutoHeightBehavior.getScrollHeight(x)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => {
-      setTimeout(()=> this.scrollHeight$.next(x));
-    });
+    super(service, settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
+    super.ngOnInit();
 
     this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
@@ -331,125 +303,13 @@ export class RepoTradesComponent implements OnInit, AfterViewInit, OnDestroy {
         ...t,
         date: converter.toTerminalDate(t.date)
       })),
-      mergeMap(trades => this.filter.pipe(
+      mergeMap(trades => this.filter$.pipe(
         map(f => trades.filter((t: RepoTrade) => this.justifyFilter(t, f)))
       ))
     );
   }
 
-  ngOnDestroy(): void {
-    this.scrollHeight$.complete();
-  }
-
-  reset(): void {
-    this.filter.next({});
-  }
-
-  filterChange(newFilter: TradeFilter) {
-    this.filter.next({
-      ...this.filter.getValue(),
-      ...newFilter
-    });
-  }
-
-  defaultFilterChange(key: string, value: string[]) {
-    this.filterChange({ [key]: value });
-  }
-
-  formatDate(date: Date) {
-    return new Date(date).toLocaleTimeString();
-  }
-
-  isFilterApplied(column: BaseColumnSettings<RepoTrade>) {
-    const filter = this.filter.getValue();
-    return column.id in filter && !!filter[column.id];
-  }
-
-  get canExport(): boolean {
-    return !!this.table?.data && this.table.data.length > 0;
-  }
-
-  exportToFile() {
-    const valueTranslators = new Map<string, (value: any) => string>([
-      ['date', value => this.formatDate(value)]
-    ]);
-
-    this.settings$.pipe(take(1)).subscribe(settings => {
-      ExportHelper.exportToCsv(
-        'Сделки РЕПО',
-        settings,
-        [...this.table?.data ?? []],
-        this.listOfColumns,
-        valueTranslators
-      );
-    });
-  }
-
-  saveColumnWidth(id: string, width: number) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      const tableSettings = settings.repoTradesTable!;
-      if (tableSettings) {
-        this.settingsService.updateSettings<BlotterSettings>(
-          settings.guid,
-          {
-            repoTradesTable: TableSettingHelper.updateColumn(
-              id,
-              tableSettings,
-              {
-                columnWidth: width
-              }
-            )
-          }
-        );
-      }
-    });
-  }
-
-  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
-    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
-    this.tableInnerWidth += delta;
-  }
-
-  changeColumnOrder(event: CdkDragDrop<any>) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      this.settingsService.updateSettings<BlotterSettings>(
-        settings.guid,
-        {
-          repoTradesTable: BlotterTablesHelper.changeColumnOrder(
-            event,
-            settings.repoTradesTable!,
-            this.listOfColumns
-          )
-        }
-      );
-    });
-  }
-
-  trackBy(index: number, trade: RepoTrade): string {
-    return trade.id;
-  }
-
-  private justifyFilter(trade: RepoTrade, filter: TradeFilter): boolean {
-    let isFiltered = true;
-    for (const key of Object.keys(filter)) {
-      if (filter[key as keyof TradeFilter]) {
-        const column = this.listOfColumns.find(o => o.id == key);
-        if (
-          !column!.filterData!.isDefaultFilter && !this.searchInTrade(trade, <keyof RepoTrade>key, <string>filter[key]) ||
-          column!.filterData!.isDefaultFilter && filter[key]?.length  && !filter[key]?.includes(trade[<keyof RepoTrade>key]!.toString())
-        ) {
-          isFiltered = false;
-        }
-      }
-    }
-    return isFiltered;
-  }
-
-  private searchInTrade(trade: RepoTrade, key: keyof RepoTrade, value?: string): boolean {
+  searchInItem(trade: RepoTrade, key: keyof RepoTrade, value?: string): boolean {
     if (!value) {
       return true;
     }
