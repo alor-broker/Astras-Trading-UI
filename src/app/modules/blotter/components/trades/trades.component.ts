@@ -150,6 +150,7 @@ export class TradesComponent
 
   settingsTableName = TableNames.TradesTable;
   settingsColumnsName = ColumnsNames.TradesColumns;
+  fileSuffix = 'trades';
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,

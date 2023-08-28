@@ -215,7 +215,7 @@ export class OrdersComponent
 
   settingsTableName = TableNames.OrdersTable;
   settingsColumnsName = ColumnsNames.OrdersColumns;
-  fileSuffix = 'Заявки';
+  fileSuffix = 'orders';
   badgeColor = defaultBadgeColor;
 
   constructor(

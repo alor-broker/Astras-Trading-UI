@@ -247,7 +247,7 @@ export class StopOrdersComponent
 
   settingsTableName = TableNames.StopOrdersTable;
   settingsColumnsName = ColumnsNames.StopOrdersColumns;
-  fileSuffix = 'Стопы';
+  fileSuffix = 'stopOrders';
   badgeColor = defaultBadgeColor;
 
   constructor(

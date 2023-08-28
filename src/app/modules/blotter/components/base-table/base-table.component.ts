@@ -9,7 +9,7 @@ import {
   QueryList,
 } from '@angular/core';
 import { filter, map, startWith } from "rxjs/operators";
-import { BehaviorSubject, Observable, shareReplay, switchMap, take, tap } from "rxjs";
+import { BehaviorSubject, Observable, shareReplay, switchMap, take, tap, zip } from "rxjs";
 import { TableAutoHeightBehavior } from "../../utils/table-auto-height.behavior";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
@@ -79,6 +79,7 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
 
   ngOnDestroy(): void {
     this.scrollHeight$.complete();
+    this.filter$.complete();
   }
 
   protected reset(): void {
@@ -126,14 +127,20 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
     this.translatorService.getTranslator('blotter/blotter-common')
       .pipe(
         take(1),
-        tap(t => {
+        tap((t: (path: string[]) => string) => {
           valueTranslators.set('status', value => t(['orderStatus', value]));
         }),
-        switchMap(() => this.settings$.pipe(take(1)))
+        switchMap(() => zip([
+          this.translatorService.getTranslator('blotter'),
+          this.settings$
+        ])
+          .pipe(
+            take(1)
+          ))
       )
-      .subscribe(settings => {
+      .subscribe(([t, settings]) => {
         ExportHelper.exportToCsv(
-          this.fileSuffix,
+          t([this.fileSuffix + 'Tab']),
           settings,
           [...this.table?.data ?? []],
           this.listOfColumns,

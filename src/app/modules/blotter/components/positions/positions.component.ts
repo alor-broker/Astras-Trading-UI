@@ -161,6 +161,7 @@ export class PositionsComponent
 
   settingsTableName = TableNames.PositionsTable;
   settingsColumnsName = ColumnsNames.PositionsColumns;
+  fileSuffix = 'positions';
   badgeColor = defaultBadgeColor;
 
   constructor(

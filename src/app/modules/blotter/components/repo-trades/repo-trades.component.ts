@@ -213,6 +213,7 @@ export class RepoTradesComponent
   ];
 
   settingsTableName = TableNames.RepoTradesTable;
+  fileSuffix = 'repoTrades';
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
