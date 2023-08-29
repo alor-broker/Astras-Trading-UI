@@ -14,12 +14,23 @@
                   nzMode="multiple"
                   [nzPlaceHolder]="t('instrumentsSettings.selectColumnsPlaceholder')"
                   formControlName="instrumentColumns"
+                  atsRemoveSelectTitles
+                  [valueChanges]="settingsForm.get('instrumentColumns')?.valueChanges"
                 >
                   <nz-option
                     *ngFor="let item of allInstrumentColumns"
+                    nzCustomContent
                     [nzLabel]="tSelect('instrumentsSelect.columns.' + item.id + '.name')"
                     [nzValue]="item.id"
-                  ></nz-option>
+                  >
+                    <div
+                      nz-tooltip
+                      [nzTooltipPlacement]="['topLeft', 'top', 'topRight']"
+                      [nzTooltipTitle]="tSelect('instrumentsSelect.columns.' + item.id + '.tooltip')"
+                    >
+                      {{tSelect('instrumentsSelect.columns.' + item.id + '.name')}}
+                    </div>
+                  </nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>

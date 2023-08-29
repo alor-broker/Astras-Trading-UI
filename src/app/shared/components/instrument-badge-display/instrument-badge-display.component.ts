@@ -5,7 +5,7 @@ import {InstrumentGroups} from "../../models/dashboard/dashboard.model";
 import {map} from "rxjs/operators";
 import {defaultBadgeColor} from "../../utils/instruments";
 import {DashboardContextService} from "../../services/dashboard-context.service";
-import {TerminalSettingsService} from "../../../modules/terminal-settings/services/terminal-settings.service";
+import {TerminalSettingsService} from "../../services/terminal-settings.service";
 
 @Component({
   selector: 'ats-instrument-badge-display',

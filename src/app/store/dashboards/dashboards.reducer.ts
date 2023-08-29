@@ -24,19 +24,19 @@ const initialState: State = adapter.getInitialState({
 export const reducer = createReducer(
   initialState,
 
-  on(ManageDashboardsActions.initDashboards, (state) => ({
-    ...state,
-    status: EntityStatus.Loading
-  })),
-
-  on(ManageDashboardsActions.initDashboardsSuccess, (state, {dashboards}) => {
+  on(ManageDashboardsActions.initDashboards, (state, {dashboards}) => {
     return adapter.addMany(
       dashboards,
       {
         ...state,
-        status: EntityStatus.Success
+        status: EntityStatus.Loading
       });
   }),
+
+  on(ManageDashboardsActions.initDashboardsSuccess, (state) => ({
+    ...state,
+    status: EntityStatus.Success
+  })),
 
   on(
     ManageDashboardsActions.addDashboard,

@@ -1,33 +1,13 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
-import { SearchFilter } from '../../../modules/instruments/models/search-filter.model';
-import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
-import { InstrumentsService } from '../../../modules/instruments/services/instruments.service';
-import {
-  BehaviorSubject,
-  Observable,
-  of
-} from 'rxjs';
-import {
-  debounceTime,
-  filter,
-  map,
-  switchMap
-} from 'rxjs/operators';
-import {
-  ControlValueAccessor,
-  FormControl,
-  NG_VALUE_ACCESSOR
-} from '@angular/forms';
-import { InstrumentKey } from '../../models/instruments/instrument-key.model';
-import { Instrument } from '../../models/instruments/instrument.model';
-import { DeviceService } from "../../services/device.service";
+import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
+import {SearchFilter} from '../../../modules/instruments/models/search-filter.model';
+import {NzOptionSelectionChange} from 'ng-zorro-antd/auto-complete';
+import {InstrumentsService} from '../../../modules/instruments/services/instruments.service';
+import {BehaviorSubject, Observable, of} from 'rxjs';
+import {debounceTime, map, switchMap} from 'rxjs/operators';
+import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {InstrumentKey} from '../../models/instruments/instrument-key.model';
+import {Instrument} from '../../models/instruments/instrument.model';
+import {DeviceService} from "../../services/device.service";
 
 @Component({
   selector: 'ats-instrument-search',
@@ -42,19 +22,23 @@ import { DeviceService } from "../../services/device.service";
   ]
 })
 export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValueAccessor {
-  @Input()
-  optionsBoxWidth?: number;
+  @ViewChild('searchInput')
+  searchInput?: ElementRef<HTMLInputElement>;
 
   @Input()
+  optionsBoxWidth?: number;
+  @Input()
   exchange?: string;
+  @Input()
+  showHelpTooltip = true;
+
+
   filteredInstruments$: Observable<Instrument[]> = of([]);
   selectedValue?: InstrumentKey | null;
   @Output()
   instrumentSelected = new EventEmitter<InstrumentKey | null>();
   isMobile$!: Observable<boolean>;
-
   searchControl = new FormControl<string | null>(null);
-
   private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
   private touched = false;
 
@@ -64,6 +48,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   ) {
   }
 
+
   ngOnInit(): void {
     this.isMobile$ = this.deviceService.deviceInfo$
       .pipe(
@@ -71,9 +56,14 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
       );
 
     this.filteredInstruments$ = this.filter$.pipe(
-      filter((f): f is SearchFilter => !!f),
       debounceTime(200),
-      switchMap(filter => this.instrumentsService.getInstruments(filter))
+      switchMap(filter => {
+          if (!filter) {
+            return of([]);
+          }
+          return this.instrumentsService.getInstruments(filter);
+        }
+      )
     );
   }
 
@@ -90,7 +80,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
       const parts = value.split(':');
 
       let nextPartIndex = 0;
-      if(!this.exchange) {
+      if (!this.exchange) {
         filter.exchange = parts[nextPartIndex].toUpperCase();
         nextPartIndex++;
       }
@@ -98,8 +88,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
       filter.query = parts[nextPartIndex];
       nextPartIndex++;
       filter.instrumentGroup = parts[nextPartIndex]?.toUpperCase() ?? '';
-    }
-    else {
+    } else {
       filter.query = value;
     }
 
@@ -124,15 +113,24 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     this.onTouched = fn;
   }
 
-  writeValue(value: InstrumentKey): void {
-    this.searchControl.setValue(value?.symbol);
+  writeValue(value: InstrumentKey | null): void {
+    this.searchControl.setValue(value?.symbol ?? null);
     this.selectedValue = value;
+
+    if (!value) {
+      this.filter$.next(null);
+      this.touched = false;
+    }
   }
 
   checkInstrumentSelection() {
     if (this.touched && !this.selectedValue) {
       this.emitValue(null);
     }
+  }
+
+  setFocus(){
+    setTimeout(() => this.searchInput?.nativeElement.focus());
   }
 
   private emitValue(value: InstrumentKey | null) {

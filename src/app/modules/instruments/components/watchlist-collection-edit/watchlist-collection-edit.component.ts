@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
-import { map, startWith } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { filter, Observable, shareReplay } from 'rxjs';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { PresetWatchlist, PresetWatchlistCollection, Watchlist } from '../../models/watchlist.model';
@@ -21,9 +21,7 @@ export class WatchlistCollectionEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.collection$ = this.watchlistCollectionService.collectionChanged$.pipe(
-      startWith(null),
-      map(() => this.watchlistCollectionService.getWatchlistCollection()),
+    this.collection$ = this.watchlistCollectionService.getWatchlistCollection().pipe(
       map(x => x.collection)
     );
 

@@ -3,7 +3,6 @@ import {
   InstantNotificationsSettings,
   InstantNotificationType
 } from '../models/terminal-settings/terminal-settings.model';
-import { TerminalSettingsService } from '../../modules/terminal-settings/services/terminal-settings.service';
 import {
   Observable,
   shareReplay,
@@ -11,6 +10,7 @@ import {
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 @Injectable({
   providedIn: 'root'

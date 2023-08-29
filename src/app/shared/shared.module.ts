@@ -62,10 +62,16 @@ import { ScrollableItemDirective } from "./directives/scrollable-item.directive"
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { ResizableDirective } from './directives/resizable.directive';
 import { PushNotificationsProvider } from "../modules/push-notifications/services/push-notifications-provider";
-import {InputNumberComponent} from "./components/input-number/input-number.component";
-import { InstrumentBadgeDisplayComponent } from './components/instrument-badge-display/instrument-badge-display.component';
+import { InputNumberComponent } from "./components/input-number/input-number.component";
+import {
+  InstrumentBadgeDisplayComponent
+} from './components/instrument-badge-display/instrument-badge-display.component';
 import { MergedBadgeComponent } from './components/merged-badge/merged-badge.component';
 import { AtsPricePipe } from './pipes/ats-price.pipe';
+import {
+  WidgetHeaderInstrumentSwitchComponent
+} from './components/widget-header-instrument-switch/widget-header-instrument-switch.component';
+import { RemoveSelectTitlesDirective } from './directives/remove-select-titles.directive';
 
 @NgModule({
   declarations: [
@@ -88,6 +94,8 @@ import { AtsPricePipe } from './pipes/ats-price.pipe';
     InstrumentBadgeDisplayComponent,
     MergedBadgeComponent,
     AtsPricePipe,
+    WidgetHeaderInstrumentSwitchComponent,
+    RemoveSelectTitlesDirective,
   ],
   imports: [
     CommonModule,
@@ -135,66 +143,69 @@ import { AtsPricePipe } from './pipes/ats-price.pipe';
     JoyrideModule,
     NzResizeObserverModule,
   ],
-    exports: [
-        // Ng zorro
-        NzTableModule,
-        NzButtonModule,
-        NzIconModule,
-        NzLayoutModule,
-        NzFormModule,
-        NzSelectModule,
-        NzCollapseModule,
-        NzAutocompleteModule,
-        NzTagModule,
-        NzCardModule,
-        NzTabsModule,
-        NzMenuModule,
-        NzDropDownModule,
-        NzModalModule,
-        NzToolTipModule,
-        NzSwitchModule,
-        NzImageModule,
-        NzAvatarModule,
-        NzBadgeModule,
-        NzNotificationModule,
-        NzPopconfirmModule,
-        NzDescriptionsModule,
-        NzEmptyModule,
-        NzCheckboxModule,
-        ScrollingModule,
-        NzDatePickerModule,
-        NzTypographyModule,
-        NzRadioModule,
-        NzPopoverModule,
-        NzSpaceModule,
-        // modules
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        GridsterModule,
-        NgChartsModule,
-        TranslocoModule,
-        // components
-        PriceTickComponent,
-        LoadingIndicatorComponent,
-        InfiniteScrollTableComponent,
-        WidgetMenuComponent,
-        ColorPickerInputComponent,
-        InstrumentSearchComponent,
-        InstrumentBoardSelectComponent,
-        WidgetHeaderComponent,
-        WidgetSkeletonComponent,
-        EditableStringComponent,
-        ShortNumberComponent,
-        ScrollableRowComponent,
-        InputNumberComponent,
-        // directives
-        ResizeColumnDirective,
-        ScrollableItemDirective,
-        ResizableDirective,
-        InstrumentBadgeDisplayComponent,
-        AtsPricePipe,
-    ],
+  exports: [
+    // Ng zorro
+    NzTableModule,
+    NzButtonModule,
+    NzIconModule,
+    NzLayoutModule,
+    NzFormModule,
+    NzSelectModule,
+    NzCollapseModule,
+    NzAutocompleteModule,
+    NzTagModule,
+    NzCardModule,
+    NzTabsModule,
+    NzMenuModule,
+    NzDropDownModule,
+    NzModalModule,
+    NzToolTipModule,
+    NzSwitchModule,
+    NzImageModule,
+    NzAvatarModule,
+    NzBadgeModule,
+    NzNotificationModule,
+    NzPopconfirmModule,
+    NzDescriptionsModule,
+    NzEmptyModule,
+    NzCheckboxModule,
+    ScrollingModule,
+    NzDatePickerModule,
+    NzTypographyModule,
+    NzRadioModule,
+    NzPopoverModule,
+    NzSpaceModule,
+    // modules
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    GridsterModule,
+    NgChartsModule,
+    TranslocoModule,
+    // components
+    PriceTickComponent,
+    LoadingIndicatorComponent,
+    InfiniteScrollTableComponent,
+    WidgetMenuComponent,
+    ColorPickerInputComponent,
+    InstrumentSearchComponent,
+    InstrumentBoardSelectComponent,
+    WidgetHeaderComponent,
+    WidgetSkeletonComponent,
+    EditableStringComponent,
+    ShortNumberComponent,
+    ScrollableRowComponent,
+    InputNumberComponent,
+    InstrumentBadgeDisplayComponent,
+    WidgetHeaderInstrumentSwitchComponent,
+    // directives
+    ResizeColumnDirective,
+    ScrollableItemDirective,
+    ResizableDirective,
+    RemoveSelectTitlesDirective,
+    // pipes
+    AtsPricePipe
+  ],
   providers: [
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},
     {provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true},

@@ -13,11 +13,11 @@ import {
   widgetSkeletonMock
 } from "../../../../shared/utils/testing";
 import { Store } from "@ngrx/store";
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 describe('BlotterWidgetComponent', () => {
   let component: BlotterWidgetComponent;

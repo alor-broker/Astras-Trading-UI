@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { WorkingVolumesPanelComponent } from './working-volumes-panel.component';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { Subject } from 'rxjs';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 
 describe('WorkingVolumesPanelComponent', () => {

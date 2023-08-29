@@ -9,13 +9,13 @@ import { NewsSettings } from '../../models/news-settings.model';
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { Observable, of, switchMap } from "rxjs";
 import { SettingsHelper } from "../../../../shared/utils/settings-helper";
-import { TerminalSettingsService } from "../../../terminal-settings/services/terminal-settings.service";
 import { NewsSection } from "../../models/news.model";
 import { map } from "rxjs/operators";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {WidgetsHelper} from "../../../../shared/utils/widgets";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-news-widget',

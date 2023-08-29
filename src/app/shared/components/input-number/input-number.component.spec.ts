@@ -3,6 +3,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {InputNumberComponent} from './input-number.component';
 import {FormsModule} from "@angular/forms";
 import {MathHelper} from "../../utils/math-helper";
+import { mockComponent } from "../../utils/testing";
 
 describe('InputNumberComponent', () => {
   let component: InputNumberComponent;
@@ -27,7 +28,7 @@ describe('InputNumberComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [FormsModule],
-      declarations: [InputNumberComponent]
+      declarations: [InputNumberComponent, mockComponent({ selector: 'nz-input-group', inputs: ['nzSuffix', 'nzCompact'] })]
     })
       .compileComponents();
 

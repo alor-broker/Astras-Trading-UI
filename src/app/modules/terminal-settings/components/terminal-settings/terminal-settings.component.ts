@@ -1,6 +1,6 @@
 import {
   Component, DestroyRef,
-  EventEmitter,
+  EventEmitter, Input,
   OnInit,
   Output
 } from '@angular/core';
@@ -9,25 +9,21 @@ import {
   of,
   take
 } from 'rxjs';
-import { FullName } from '../../../../shared/models/user/full-name.model';
-import { TerminalSettingsService } from '../../services/terminal-settings.service';
-import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import {FullName} from '../../../../shared/models/user/full-name.model';
+import {TerminalSettings} from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import {
   UntypedFormControl,
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import {
-  GeneralSettings,
-  TabNames
-} from "../../models/terminal-settings.model";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { ModalService } from "../../../../shared/services/modal.service";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { AtsValidators } from '../../../../shared/utils/form-validators';
-import { TerminalSettingsHelper } from '../../../../shared/utils/terminal-settings-helper';
+import {ModalService} from "../../../../shared/services/modal.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {AtsValidators} from '../../../../shared/utils/form-validators';
+import {TerminalSettingsHelper} from '../../../../shared/utils/terminal-settings-helper';
 import {AccountService} from "../../../../shared/services/account.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {GeneralSettings, TabNames} from "../../models/terminal-settings.model";
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -35,6 +31,9 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   styleUrls: ['./terminal-settings.component.less']
 })
 export class TerminalSettingsComponent implements OnInit {
+  @Input()
+  hiddenSections: string[] = [];
+
   @Output() formChange = new EventEmitter<{ value: TerminalSettings | null, isInitial: boolean }>();
   @Output() tabChange = new EventEmitter<number>();
   tabNames = TabNames;
@@ -44,12 +43,10 @@ export class TerminalSettingsComponent implements OnInit {
     lastName: '',
     secondName: ''
   });
-  excludedSettings: string[] = [];
 
   constructor(
     private readonly accountService: AccountService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly dashboardService: ManageDashboardsService,
     private modal: ModalService,
     private readonly translatorService: TranslatorService,
     private readonly destroyRef: DestroyRef
@@ -73,7 +70,7 @@ export class TerminalSettingsComponent implements OnInit {
           nzOkText: t(['yesBtnText']),
           nzOkType: 'primary',
           nzOkDanger: true,
-          nzOnOk: () => this.dashboardService.resetAll(),
+          nzOnOk: () => this.terminalSettingsService.reset(),
           nzCancelText: t(['noBtnText']),
           nzOnCancel: () => {
           }
@@ -91,9 +88,8 @@ export class TerminalSettingsComponent implements OnInit {
         take(1)
       ).subscribe(settings => {
       this.settingsForm = this.buildForm(settings);
-      this.excludedSettings = settings.excludedSettings ?? [];
 
-      this.formChange.emit({ value: this.formToModel(), isInitial: true });
+      this.formChange.emit({value: this.formToModel(), isInitial: true});
 
       this.settingsForm.valueChanges
         .pipe(

@@ -31,7 +31,7 @@ import {
   ScalperOrderBookMouseActionsMap
 } from '../../../shared/models/terminal-settings/terminal-settings.model';
 import { TerminalSettingsHelper } from '../../../shared/utils/terminal-settings-helper';
-import { TerminalSettingsService } from '../../terminal-settings/services/terminal-settings.service';
+import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
 
 @Injectable({
   providedIn: 'root'

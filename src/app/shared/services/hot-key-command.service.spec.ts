@@ -5,13 +5,13 @@ import {
 } from '@angular/core/testing';
 
 import { HotKeyCommandService } from './hot-key-command.service';
-import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
 import {
   BehaviorSubject,
   take,
 } from "rxjs";
 import { TerminalSettings } from "../models/terminal-settings/terminal-settings.model";
 import { DOCUMENT } from "@angular/common";
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 describe('HotKeyCommandService', () => {
   let service: HotKeyCommandService;

@@ -1,37 +1,28 @@
-import { Injectable } from '@angular/core';
-import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
-import { GuidGenerator } from '../../../shared/utils/guid';
-import {
-  Observable,
-  Subject
-} from 'rxjs';
-import {
-  PresetWatchlistCollection,
-  Watchlist,
-  WatchlistCollection
-} from '../models/watchlist.model';
-import { environment } from '../../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
-import { catchHttpError } from '../../../shared/utils/observable-helper';
-import { LocalStorageService } from "../../../shared/services/local-storage.service";
-import { toInstrumentKey } from '../../../shared/utils/instruments';
+import {Injectable} from '@angular/core';
+import {InstrumentKey} from '../../../shared/models/instruments/instrument-key.model';
+import {GuidGenerator} from '../../../shared/utils/guid';
+import {Observable, shareReplay, take, tap} from 'rxjs';
+import {PresetWatchlistCollection, Watchlist, WatchlistCollection, WatchlistItem} from '../models/watchlist.model';
+import {environment} from '../../../../environments/environment';
+import {HttpClient} from '@angular/common/http';
+import {ErrorHandlerService} from '../../../shared/services/handle-error/error-handler.service';
+import {catchHttpError} from '../../../shared/utils/observable-helper';
+import {toInstrumentKey} from '../../../shared/utils/instruments';
+import {WatchlistCollectionBrokerService} from "./watchlist-collection-broker.service";
+import {filter, map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
 })
 export class WatchlistCollectionService {
-  private readonly url = environment.apiUrl + '/astras/watchlist';
-  private readonly watchlistStorage = 'watchlist';
-  private readonly watchlistCollectionStorage = 'watchlistCollection';
-  private readonly collectionChangedSub = new Subject();
-  public readonly collectionChanged$ = this.collectionChangedSub.asObservable();
-
   public static DefaultListName = 'Список по умолчанию';
+  private readonly url = environment.apiUrl + '/astras/watchlist';
+  private collection$: Observable<WatchlistCollection> | null = null;
+
   constructor(
     private readonly http: HttpClient,
-    private readonly localStorage: LocalStorageService,
-    private readonly errorHandlerService: ErrorHandlerService
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService
   ) {
   }
 
@@ -39,99 +30,89 @@ export class WatchlistCollectionService {
     return `${instrument.exchange}.${instrument.instrumentGroup}.${instrument.symbol}`;
   }
 
-  public getWatchlistCollection(): WatchlistCollection {
-    const existedCollection = this.localStorage.getItem<WatchlistCollection>(this.watchlistCollectionStorage);
-    if (!existedCollection) {
-      const defaultCollection = this.createDefaultCollection();
-      this.saveCollection(defaultCollection);
-      return defaultCollection;
-    }
-
-    return existedCollection;
+  public getWatchlistCollection(): Observable<WatchlistCollection> {
+    return this.getCollection().pipe(
+      filter(c=> c.collection.length > 0)
+    );
   }
 
-  public createNewList(title: string, items: InstrumentKey[] | null = null): string {
+  public createNewList(title: string, items: InstrumentKey[] | null = null) {
     const newList = {
       id: GuidGenerator.newGuid(),
       title: title,
-      items: items ?? []
+      items: (items ?? []).map(x=> ({
+        ...x,
+        recordId: GuidGenerator.newGuid()
+      }) as WatchlistItem)
     } as Watchlist;
 
-    const collection = this.getWatchlistCollection();
-    collection.collection.unshift(newList);
-
-    this.saveCollection(collection);
-    this.collectionChangedSub.next(null);
-
-    return newList.id;
+    this.watchlistCollectionBrokerService.addOrUpdateLists([newList]).subscribe();
   }
 
   public removeList(listId: string) {
-    const collection = this.getWatchlistCollection();
-    const list = collection.collection.find(x => x.id === listId);
-
-    if (!list) {
-      return;
-    }
-
-    collection.collection = collection.collection.filter(x => x.id !== listId);
-    this.saveCollection(collection);
-    this.collectionChangedSub.next(null);
+    this.watchlistCollectionBrokerService.removeList(listId).subscribe();
   }
 
   public updateListMeta(listId: string, meta: Partial<{ title: string }>) {
-    const collection = this.getWatchlistCollection();
-    const listIndex = collection.collection.findIndex(x => x.id === listId);
-    if (listIndex < 0) {
-      return;
-    }
+    this.getCollection().pipe(
+      take(1)
+    ).subscribe(collection => {
+      const listIndex = collection.collection.findIndex(x => x.id === listId);
+      if (listIndex < 0) {
+        return;
+      }
 
-    collection.collection[listIndex] = {
-      ...collection.collection[listIndex],
-      ...meta
-    } as Watchlist;
+      const updatedList = {
+        ...collection.collection[listIndex],
+        ...meta
+      } as Watchlist;
 
-    this.saveCollection(collection);
-    this.collectionChangedSub.next(null);
+      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+    });
   }
 
   public addItemsToList(listId: string, items: InstrumentKey[]) {
-    const collection = this.getWatchlistCollection();
-    const list = collection.collection.find(x => x.id === listId);
-    if (!list) {
-      return;
-    }
+    this.getCollection().pipe(
+      take(1)
+    ).subscribe(collection => {
+      const list = collection.collection.find(x => x.id === listId);
+      if (!list) {
+        return;
+      }
 
-    list.items.push(...items.map(x => toInstrumentKey(x)));
+      const allItems = [
+        ...list.items,
+        ...items.map(x => ({
+          ...toInstrumentKey(x),
+          recordId: GuidGenerator.newGuid()
+        } as WatchlistItem))
+      ];
 
-    const uniqueItems = new Map(list.items.map(x => [WatchlistCollectionService.getInstrumentKey(x), x])).values();
-    list.items = Array.from(uniqueItems);
+      const updatedList = {
+        ...list,
+        items: Array.from(new Map(allItems.map(x => [WatchlistCollectionService.getInstrumentKey(x), x])).values())
+      } as Watchlist;
 
-    this.saveCollection(collection);
-    this.collectionChangedSub.next(null);
+      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+    });
   }
 
-  public removeItemsFromList(listId: string, items: InstrumentKey[]) {
-    const collection = this.getWatchlistCollection();
-    const list = collection.collection.find(x => x.id === listId);
-    if (!list) {
-      return;
-    }
+  public removeItemsFromList(listId: string, itemsToRemove: string[]) {
+    this.getCollection().pipe(
+      take(1)
+    ).subscribe(collection => {
+      const list = collection.collection.find(x => x.id === listId);
+      if (!list) {
+        return;
+      }
 
-    list.items = list.items.filter(item => !items.find(x => WatchlistCollectionService.getInstrumentKey(x) === WatchlistCollectionService.getInstrumentKey(item)));
+      const updatedList = {
+        ...list,
+        items: list.items.filter(item => !itemsToRemove.includes(item.recordId))
+      } as Watchlist;
 
-    this.saveCollection(collection);
-    this.collectionChangedSub.next(null);
-  }
-
-  public getListItems(listId: string): InstrumentKey[] | undefined {
-    const collection = this.getWatchlistCollection();
-    const list = collection.collection.find(x => x.id === listId);
-    if (!list) {
-      return undefined;
-    }
-
-    return list.items;
+      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+    });
   }
 
   public getPresetCollection(): Observable<PresetWatchlistCollection | null> {
@@ -141,21 +122,30 @@ export class WatchlistCollectionService {
       );
   }
 
-  private saveCollection(collection: WatchlistCollection) {
-    this.localStorage.setItem(this.watchlistCollectionStorage, collection);
+  private getCollection(): Observable<WatchlistCollection> {
+    if (!this.collection$) {
+      this.collection$ = this.watchlistCollectionBrokerService.getCollection().pipe(
+        tap(x => {
+          if (x.length === 0) {
+            this.watchlistCollectionBrokerService.addOrUpdateLists([this.createDefaultList()]).subscribe();
+          }
+        }),
+        map(x => ({
+          collection: x
+        })),
+        shareReplay(1)
+      );
+    }
+
+    return this.collection$;
   }
 
-  private createDefaultCollection(): WatchlistCollection {
-    const oldWatchlist = this.localStorage.getItem<InstrumentKey[]>(this.watchlistStorage) ?? [];
+  private createDefaultList(): Watchlist {
     return {
-      collection: [
-        {
-          id: GuidGenerator.newGuid(),
-          title: WatchlistCollectionService.DefaultListName,
-          isDefault: true,
-          items: oldWatchlist
-        } as Watchlist
-      ]
-    } as WatchlistCollection;
+      id: GuidGenerator.newGuid(),
+      title: WatchlistCollectionService.DefaultListName,
+      isDefault: true,
+      items: []
+    } as Watchlist;
   }
 }

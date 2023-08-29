@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
 import {WidgetSettingsService} from '../../services/widget-settings.service';
 import {ManageDashboardsService} from '../../services/manage-dashboards.service';
 import {ModalService} from '../../services/modal.service';
@@ -44,6 +44,9 @@ export class WidgetHeaderComponent implements OnInit {
 
   @Input()
   hasHelp: boolean = false;
+
+  @Input()
+  titleTemplate: TemplateRef<any> | null = null;
 
   @Output()
   switchSettings = new EventEmitter();

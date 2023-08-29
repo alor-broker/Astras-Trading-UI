@@ -18,15 +18,19 @@
             (qtySelected)="qtyChanges$.next({ quantity: $event })"
           >
           </ats-command-header>
-          <ats-limit-edit *ngIf='commandContext.commandParameters.type === "limit"'
-                          [commandContext]="commandContext"
-                          [quantity]="(qtyChanges$ | async) ?? null"
-          ></ats-limit-edit>
-          <ats-stop-edit
-            *ngIf='commandContext.commandParameters.type === "stop" || commandContext.commandParameters.type === "stoplimit"'
-            [commandContext]="commandContext"
-            [quantity]="(qtyChanges$ | async) ?? null"
-          ></ats-stop-edit>
+          <ng-container *ngIf="position$ | async as position">
+            <ats-limit-edit *ngIf='commandContext.commandParameters.type === "limit"'
+                            [commandContext]="commandContext"
+                            [quantity]="(qtyChanges$ | async) ?? null"
+                            [position]="position.avgPrice ? position : null"
+            ></ats-limit-edit>
+            <ats-stop-edit
+              *ngIf='commandContext.commandParameters.type === "stop" || commandContext.commandParameters.type === "stoplimit"'
+              [commandContext]="commandContext"
+              [quantity]="(qtyChanges$ | async) ?? null"
+              [position]="position.avgPrice ? position : null"
+            ></ats-stop-edit>
+          </ng-container>
         </ng-container>
       </nz-modal>
 

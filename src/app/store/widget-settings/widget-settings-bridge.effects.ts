@@ -13,9 +13,6 @@ import {
 import { Store } from "@ngrx/store";
 import { map } from "rxjs/operators";
 import {
-  getAllSettings,
-  getInstrumentLinkedSettings,
-  getPortfolioLinkedSettings,
   selectWidgetSettingsState
 } from "./widget-settings.selectors";
 import {
@@ -34,6 +31,7 @@ import { InstrumentKey } from '../../shared/models/instruments/instrument-key.mo
 import { DashboardContextService } from "../../shared/services/dashboard-context.service";
 import {TerminalSettingsStreams} from "../terminal-settings/terminal-settings.streams";
 import {TerminalSettings} from "../../shared/models/terminal-settings/terminal-settings.model";
+import {WidgetSettingsStreams} from "./widget-settings.streams";
 
 @Injectable()
 export class WidgetSettingsBridgeEffects {
@@ -45,7 +43,7 @@ export class WidgetSettingsBridgeEffects {
         && previous.items.length === current.items.length
         && JSON.stringify(previous?.instrumentsSelection) === JSON.stringify(current.instrumentsSelection)
       ),
-      mapWith(() => this.store.select(getInstrumentLinkedSettings), (d, settings) => ({ d, settings })),
+      mapWith(() => WidgetSettingsStreams.getInstrumentLinkedSettings(this.store), (d, settings) => ({ d, settings })),
       map(({ d, settings }) => {
         const dashboardWidgetGuids = d.items.map(x => x.guid);
         const settingsToUpdate = settings
@@ -78,7 +76,7 @@ export class WidgetSettingsBridgeEffects {
     const dashboardSettingsUpdate$ = this.dashboardContextService.selectedDashboard$.pipe(
       filter(d => !!d.selectedPortfolio),
       distinctUntilChanged((previous, current) => PortfolioKeyEqualityComparer.equals(previous?.selectedPortfolio, current?.selectedPortfolio)),
-      mapWith(() => this.store.select(getPortfolioLinkedSettings), (d, settings) => ({ d, settings })),
+      mapWith(() => WidgetSettingsStreams.getPortfolioLinkedSettings(this.store), (d, settings) => ({ d, settings })),
       map(({ d, settings }) => {
         const dashboardWidgetGuids = d.items.map(x => x.guid);
         const settingsToUpdate = settings
@@ -107,8 +105,8 @@ export class WidgetSettingsBridgeEffects {
   terminalSettingsChange$ = createEffect(() => {
     return TerminalSettingsStreams.getSettings(this.store)
       .pipe(
-        withLatestFrom(this.store.select(getAllSettings)
-          .pipe(
+        withLatestFrom(
+          WidgetSettingsStreams.getAllSettings(this.store).pipe(
             map(ws => ws.filter(s => !!s.badgeColor).map(s => s.guid))
           )
         ),

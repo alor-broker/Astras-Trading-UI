@@ -7,12 +7,12 @@ import {CurrencyInstrument} from "../models/enums/currencies.model";
 import {CommonSummaryModel} from "../../modules/blotter/models/common-summary.model";
 import {formatCurrency} from "../utils/formatters";
 import {ForwardRisks} from "../../modules/blotter/models/forward-risks.model";
-import {TerminalSettingsService} from "../../modules/terminal-settings/services/terminal-settings.service";
 import {MarketService} from "./market.service";
 import {PortfolioSubscriptionsService} from "./portfolio-subscriptions.service";
 import {QuotesService} from "./quotes.service";
 import {CommonSummaryView} from "../models/common-summary-view.model";
 import {ForwardRisksView} from "../models/forward-risks-view.model";
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 @Injectable({
   providedIn: 'root'

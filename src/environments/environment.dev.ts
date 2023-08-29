@@ -5,6 +5,7 @@ export const environment = {
   clientDataUrl: 'https://lk-api-dev.alorbroker.ru',
   ssoUrl: 'https://login-dev.alor.ru',
   warpUrl: 'https://warp.alor.dev',
+  remoteSettingsStorageUrl: 'https://astras-dev.alor.ru/identity/v5/UserSettings',
   logging: {
     console: {
       minLevel: 'trace'

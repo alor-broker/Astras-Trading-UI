@@ -5,10 +5,10 @@ import { BehaviorSubject } from "rxjs";
 import { TerminalSettings } from "../../models/terminal-settings/terminal-settings.model";
 import { map } from "rxjs/operators";
 import { ActivityTrackerService } from "./activity-tracker.service";
-import { TerminalSettingsService } from "../../../modules/terminal-settings/services/terminal-settings.service";
 import { AuthService } from "../auth.service";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { NzNotificationRef } from "ng-zorro-antd/notification/typings";
+import {TerminalSettingsService} from "../terminal-settings.service";
 
 describe('SessionTrackService', () => {
   let service: SessionTrackService;

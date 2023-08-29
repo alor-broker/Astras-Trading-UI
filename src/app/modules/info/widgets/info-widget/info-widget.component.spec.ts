@@ -11,11 +11,10 @@ import {
 } from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { of } from 'rxjs';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 describe('InfoWidgetComponent', () => {
   let component: InfoWidgetComponent;
@@ -53,13 +52,7 @@ describe('InfoWidgetComponent', () => {
           useValue: {
             instrumentsSelection$: of({})
           }
-        },
-        {
-          provide: InstrumentsService,
-          useValue: {
-            getInstrument: of({})
-          }
-        },
+        }
       ]
     })
       .compileComponents();

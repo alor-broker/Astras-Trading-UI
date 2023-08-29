@@ -4,11 +4,15 @@ export interface WatchlistCollection {
   collection: Watchlist[]
 }
 
+export interface WatchlistItem extends InstrumentKey {
+  recordId: string;
+}
+
 export interface Watchlist {
   id: string,
   title: string,
   isDefault?: boolean,
-  items: InstrumentKey[]
+  items: WatchlistItem[]
 }
 
 export interface PresetWatchlistCollection {

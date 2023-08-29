@@ -11,14 +11,14 @@ import {
 } from 'rxjs';
 import {
   filter,
-  map
+  map, startWith
 } from 'rxjs/operators';
-import { TerminalSettingsService } from '../../modules/terminal-settings/services/terminal-settings.service';
 import {
   ThemeColors,
   ThemeSettings,
   ThemeType
 } from '../models/settings/theme-settings.model';
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +31,8 @@ export class ThemeService {
     sellColorBackground: 'rgba(209, 38, 27, 0.4)',
     buyColor: 'rgba(0, 155, 99, 1)',
     buyColorBackground: 'rgba(0, 155, 99, 0.4)',
+    buyColorBackgroundLight: 'rgba(0, 155, 99, 1)',
+    buySellLabelColor: '#ffffff',
     componentBackground: '#141922',
     primaryColor: '#177ddc',
     purpleColor: '#51258f',
@@ -44,8 +46,10 @@ export class ThemeService {
   private readonly lightThemeColors: ThemeColors = {
     sellColor: 'rgba(250, 79, 56, 1)',
     sellColorBackground: 'rgba(250, 79, 56, 0.4)',
-    buyColor: 'rgba(0, 219, 139, 1)',
+    buyColor: '#388E3C',
     buyColorBackground: 'rgba(0, 219, 139, 0.4)',
+    buyColorBackgroundLight: 'rgba(0, 219, 139, 1)',
+    buySellLabelColor: '#ffffff',
     componentBackground: '#ffffff',
     primaryColor: '#177ddc',
     purpleColor: '#51258f',
@@ -62,8 +66,11 @@ export class ThemeService {
   }
 
   subscribeToThemeChanges(): Subscription {
-    return this.getThemeSettings()
-      .subscribe(settings => this.setTheme(settings.theme));
+    return this.getThemeSettings().pipe(
+      map(s => s.theme),
+      startWith(ThemeType.dark)
+    )
+      .subscribe(theme => this.setTheme(theme));
   }
 
   getThemeSettings(): Observable<ThemeSettings> {

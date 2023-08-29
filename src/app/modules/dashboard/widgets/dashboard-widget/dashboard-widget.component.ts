@@ -1,15 +1,11 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
-import { take } from 'rxjs';
-import { OnboardingService } from '../../services/onboarding.service';
-import { initWidgetSettings } from '../../../../store/widget-settings/widget-settings.actions';
-import { ManageDashboardsActions } from '../../../../store/dashboards/dashboards-actions';
-import { PortfoliosActions } from '../../../../store/portfolios/portfolios.actions';
-import { Store } from '@ngrx/store';
-import { DeviceService } from "../../../../shared/services/device.service";
-import { Router } from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {take} from 'rxjs';
+import {OnboardingService} from '../../services/onboarding.service';
+import {PortfoliosActions} from '../../../../store/portfolios/portfolios.actions';
+import {Store} from '@ngrx/store';
+import {DeviceService} from "../../../../shared/services/device.service";
+import {Router} from "@angular/router";
+import {DesktopSettingsBrokerService} from "../../services/desktop-settings-broker.service";
 
 @Component({
   selector: 'ats-dashboard-widget',
@@ -18,26 +14,31 @@ import { Router } from "@angular/router";
 })
 export class DashboardWidgetComponent implements OnInit {
   constructor(
-    private readonly onboarding: OnboardingService,
     private readonly store: Store,
+    private readonly onboarding: OnboardingService,
     private readonly deviceService: DeviceService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly desktopSettingsBrokerService: DesktopSettingsBrokerService
   ) {
   }
 
   ngOnInit(): void {
-    this.onboarding.start();
-
-    this.store.dispatch(initWidgetSettings());
-    this.store.dispatch(PortfoliosActions.initPortfolios());
-    this.store.dispatch(ManageDashboardsActions.initDashboards());
-
     this.deviceService.deviceInfo$
       .pipe(take(1))
       .subscribe(info => {
         if (info.isMobile) {
           this.router.navigate(['mobile']);
+          return;
         }
+
+        this.initDashboard();
       });
+
+  }
+
+  private initDashboard() {
+    this.desktopSettingsBrokerService.initSettingsBrokers();
+    this.store.dispatch(PortfoliosActions.initPortfolios());
+    this.onboarding.start();
   }
 }

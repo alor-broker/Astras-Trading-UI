@@ -1,10 +1,9 @@
 {
-  "detailsText": "Detailed list of changes/fixes in the current version can be found at the ",
-  "detailsLink": "link",
+  "problemsLabel": "If there is problems after app updated",
   "problemsWarning": "We are trying to develop our application to meet the needs of users. However, some changes may not be compatible with saved personal settings.",
   "problemsStepsTitle": "If you face any problem of loading or viewing the app, please try the following steps:",
   "problemsStep1": "1. Try to bring the dashboard to the standard view by clicking the \"Standard view\" button in the widget menu.",
-  "problemsStep2": "2. If step 1 doesn't solve the problem, try to do a hard reset by clicking the \"Hard reset\" button in the profile menu.",
+  "problemsStep2": "2. If step 1 doesn't solve the problem, try to do a hard reset by clicking the \"Reset all settings\" button in the profile menu.",
   "problemsStep3": "3. If step 2 doesn't solve the problem, try to clear site data.",
   "clearSiteDataText": "In the Google Chrome browser, this can be done using the following sequence of actions: press F12, go to the \"Application\" tab, select Application->Local Storage on the left, click the \"Clear\" button."
 }

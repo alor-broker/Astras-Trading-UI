@@ -6,24 +6,14 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import {
-  Observable,
-  switchMap
-} from 'rxjs';
+import { Observable } from 'rxjs';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import {
-  filter,
-  map
-} from 'rxjs/operators';
-import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import {
   AllTradesSettings,
   allTradesWidgetColumns
 } from '../../models/all-trades-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-all-trades-widget',
@@ -40,13 +30,10 @@ export class AllTradesWidgetComponent implements OnInit {
 
   settings$!: Observable<AllTradesSettings>;
   showBadge$!: Observable<boolean>;
-  title$!: Observable<string>;
-
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly instrumentService: InstrumentsService) {
+    private readonly terminalSettingsService: TerminalSettingsService) {
   }
 
   get guid(): string {
@@ -72,11 +59,5 @@ export class AllTradesWidgetComponent implements OnInit {
 
     this.settings$ = this.widgetSettingsService.getSettings<AllTradesSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
-
-    this.title$ = this.settings$.pipe(
-      switchMap(s => this.instrumentService.getInstrument(s as InstrumentKey)),
-      filter((x): x is Instrument => !!x),
-      map(x => `${x.symbol} ${x.instrumentGroup ? '(' + x.instrumentGroup + ')' : ''} ${x.shortName}`)
-    );
   }
 }

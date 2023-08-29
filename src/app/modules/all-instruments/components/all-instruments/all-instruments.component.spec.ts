@@ -2,17 +2,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AllInstrumentsComponent } from './all-instruments.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of, Subject } from "rxjs";
+import {BehaviorSubject, of, Subject} from "rxjs";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import {
   commonTestProviders,
-  mockComponent,
-  sharedModuleImportForTests
+  mockComponent
 } from "../../../../shared/utils/testing";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { TranslatorService } from '../../../../shared/services/translator.service';
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -58,7 +57,7 @@ describe('AllInstrumentsComponent', () => {
           provide: WatchlistCollectionService,
           useValue: {
             collectionChanged$: new Subject(),
-            getWatchlistCollection: jasmine.createSpy('getWatchlistCollection').and.returnValue({collection: []}),
+            getWatchlistCollection: jasmine.createSpy('getWatchlistCollection').and.returnValue(new BehaviorSubject({collection: []})),
             addItemsToList: jasmine.createSpy('addItemsToList').and.callThrough()
           }
         },

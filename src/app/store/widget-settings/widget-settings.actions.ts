@@ -7,11 +7,7 @@ import { PortfolioKey } from "../../shared/models/portfolio-key.model";
 import { WidgetSettings } from '../../shared/models/widget-settings.model';
 
 export const initWidgetSettings = createAction(
-  '[WidgetSettings] Init Settings'
-);
-
-export const initWidgetSettingsSuccess = createAction(
-  '[WidgetSettings] Init Settings (SUCCESS)',
+  '[WidgetSettings] Init Settings',
   props<{ settings: WidgetSettings[] }>()
 );
 
@@ -49,7 +45,10 @@ export const removeAllWidgetSettings = createAction(
   '[WidgetSettings] Remove ALL Widget Settings'
 );
 
-export const saveSettings = createAction('[WidgetSettings] Save Settings');
+export const settingsUpdated = createAction(
+  '[WidgetSettings] Settings Updated',
+  props<{ settings: WidgetSettings[] }>()
+);
 
 
 

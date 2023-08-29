@@ -13,7 +13,6 @@ import {
   shareReplay,
   switchMap
 } from "rxjs";
-import { TerminalSettingsService } from "../../modules/terminal-settings/services/terminal-settings.service";
 import {
   filter,
   startWith,
@@ -22,6 +21,7 @@ import {
 import { HotKeyMeta, HotKeysSettings } from "../models/terminal-settings/terminal-settings.model";
 import { TerminalCommand } from "../models/terminal-command";
 import { ModifierKeys } from "../models/modifier-keys.model";
+import {TerminalSettingsService} from "./terminal-settings.service";
 
 @Injectable({ providedIn: 'root' })
 export class HotKeyCommandService {
@@ -150,22 +150,38 @@ export class HotKeyCommandService {
   }
 
   private getModifierKeysStream() {
+    const keyDownStream$ = fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
+      filter(e => !this.isUserInputTarget(e.target as HTMLElement)),
+      filter((e: KeyboardEvent) => e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Meta'),
+      tap((e: KeyboardEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }),
+      map((e: KeyboardEvent) => ({
+        shiftKey: e.shiftKey,
+        ctrlKey: e.ctrlKey || e.metaKey,
+        altKey: e.altKey,
+      })),
+    );
+
+    const keyUpStream$ = fromEvent<KeyboardEvent>(this.document.body, 'keyup').pipe(
+      filter((e: KeyboardEvent) => e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Meta'),
+      map((e: KeyboardEvent) => ({
+        shiftKey: e.shiftKey,
+        ctrlKey: e.ctrlKey || e.metaKey,
+        altKey: e.altKey,
+      })),
+    );
+
+    const focusLostStream$ = fromEvent<KeyboardEvent>(window, 'blur').pipe(
+      map(() => ({ shiftKey: false, ctrlKey: false, altKey: false }))
+    );
+
     return merge(
-      fromEvent<KeyboardEvent>(this.document.body, 'keydown'),
-      fromEvent<KeyboardEvent>(this.document.body, 'keyup')
-    )
-      .pipe(
-        filter(e => !this.isUserInputTarget(e.target as HTMLElement)),
-        filter((e: KeyboardEvent) => e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Meta'),
-        tap((e: KeyboardEvent) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }),
-        map((e: KeyboardEvent) => ({
-          shiftKey: e.shiftKey,
-          ctrlKey: e.ctrlKey || e.metaKey,
-          altKey: e.altKey,
-        })),
+      keyDownStream$,
+      keyUpStream$,
+      focusLostStream$
+    ).pipe(
         distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
         startWith({ shiftKey: false, ctrlKey: false, altKey: false }),
         shareReplay(1)

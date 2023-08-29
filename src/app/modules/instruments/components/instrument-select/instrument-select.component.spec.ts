@@ -25,7 +25,7 @@ describe('InstrumentSelectComponent', () => {
   const spyInstrs = jasmine.createSpyObj('InstrumentsService', ['getInstruments']);
   const watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['addItemsToList', 'collectionChanged$', 'getWatchlistCollection']);
   watchlistCollectionServiceSpy.collectionChanged$ = of({});
-  watchlistCollectionServiceSpy.getWatchlistCollection.and.returnValue({ collection: [] } as WatchlistCollection);
+  watchlistCollectionServiceSpy.getWatchlistCollection.and.returnValue(new BehaviorSubject({ collection: [] } as WatchlistCollection));
 
   const getSettingsMock = new BehaviorSubject({} as InstrumentSelectSettings);
 

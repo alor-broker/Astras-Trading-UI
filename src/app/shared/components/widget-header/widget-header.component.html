@@ -1,5 +1,5 @@
 <div class='panel'>
-  <div class="buttons-group title-wrapper">
+  <div class="buttons-group overflow-x-hidden">
     <nz-badge
       *ngIf="showBadgesMenu"
       nz-dropdown
@@ -7,6 +7,7 @@
       [nzColor]="selectedBadgeColor!"
       [class.square-badge]="badgeShape === 'square'"
       nzSize="small"
+      class="header-badge"
     ></nz-badge>
 
     <nz-dropdown-menu #badgesMenu="nzDropdownMenu">
@@ -23,25 +24,28 @@
     </nz-dropdown-menu>
 
     <div class="title" *ngIf="widgetMeta">
-      <ng-container>
-        <div class="title-with-icon" *ngIf="widgetMeta.desktopMeta?.headerIcon">
-          <i nz-icon
-             class="title-icon"
-             [nzType]="widgetMeta.desktopMeta!.headerIcon"
-             nzTheme="outline"
-             nz-popover
-             nzPopoverPlacement="bottom"
-             [nzPopoverContent]="getIconTooltip()"
-          ></i>
-          <label
-            class="title-text"
-            nz-popover
-            nzPopoverPlacement="bottom"
-            [nzPopoverContent]="title">
-            {{title}}
-          </label>
-        </div>
+      <i
+        *ngIf="widgetMeta.desktopMeta?.headerIcon"
+        nz-icon
+        class="title-icon"
+        [nzType]="widgetMeta.desktopMeta!.headerIcon"
+        nzTheme="outline"
+        nz-popover
+        nzPopoverPlacement="bottom"
+        [nzPopoverContent]="getIconTooltip()"
+      ></i>
+      <ng-container *ngIf="!!titleTemplate;else defaultHeader">
+        <ng-container *ngTemplateOutlet="titleTemplate"></ng-container>
       </ng-container>
+      <ng-template #defaultHeader>
+        <label
+          class="title-text"
+          nz-popover
+          nzPopoverPlacement="bottom"
+          [nzPopoverContent]="title">
+          {{title}}
+        </label>
+      </ng-template>
     </div>
   </div>
 

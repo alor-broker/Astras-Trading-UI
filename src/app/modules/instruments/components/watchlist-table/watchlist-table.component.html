@@ -53,7 +53,9 @@
         <td *ngIf="isVisibleColumn('openPrice')">{{ inst.openPrice }}</td>
         <td *ngIf="isVisibleColumn('closePrice')">{{ inst.closePrice }}</td>
         <td>
-          <button nzSize='small' nz-button nzType="link" (click)="remove(inst.instrument)"><i nz-icon nzType="close"></i></button>
+          <a (click)="remove(inst.recordId)">
+            <i nz-icon nzTheme="outline" nzType="close"></i>
+          </a>
         </td>
       </tr>
     </tbody>

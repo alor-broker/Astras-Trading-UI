@@ -19,18 +19,19 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
-import { TerminalSettingsService } from '../../../terminal-settings/services/terminal-settings.service';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import {ContentSize, WidgetInstance} from '../../../../shared/models/dashboard/dashboard-item.model';
 import {
   allNotificationsColumns,
   allOrdersColumns,
   allPositionsColumns,
+  allRepoTradesColumns,
   allStopOrdersColumns,
   allTradesColumns,
   BlotterSettings
 } from '../../models/blotter-settings.model';
 import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 
 @Component({
   selector: 'ats-blotter-widget',
@@ -78,6 +79,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
         ordersTable: TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.id)),
         stopOrdersTable: TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.id)),
         notificationsTable: TableSettingHelper.toTableDisplaySettings(allNotificationsColumns.filter(c => c.isDefault).map(c => c.id)),
+        repoTradesTable: TableSettingHelper.toTableDisplaySettings(allRepoTradesColumns.filter(c => c.isDefault).map(c => c.id)),
 
         badgeColor: defaultBadgeColor,
         isSoldPositionsHidden: true,

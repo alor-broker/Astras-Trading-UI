@@ -93,5 +93,4 @@ export interface TerminalSettings {
   designSettings?: DesignSettings;
   portfoliosCurrency?: PortfolioCurrency[];
   instantNotificationsSettings?: InstantNotificationsSettings;
-  excludedSettings?: string[];
 }

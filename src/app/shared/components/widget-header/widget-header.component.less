@@ -12,10 +12,9 @@
       .title-text {
         color: @heading-color;
       }
-      .title-with-icon {
-        .title-icon {
-          color: @title-icon-color;
-        }
+
+      .title-icon {
+        color: @title-icon-color;
       }
     }
   }
@@ -33,6 +32,9 @@
 
 .title {
   overflow: hidden;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
   text-overflow: ellipsis;
   white-space: nowrap;
 
@@ -49,16 +51,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     font-weight: 600;
-  }
-
-  .title-with-icon {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-
-    .title-text {
-      padding-left: 8px;
-    }
+    padding-left: 8px;
   }
 }
 
@@ -82,11 +75,13 @@ button {
   width: fit-content;
 }
 
-::ng-deep {
-  .title .ant-badge-status-text {
-    margin-left: 3px;
+.header-badge ::ng-deep  {
+  .ant-badge-status-text {
+    display: none;
   }
+}
 
+::ng-deep {
   .ant-badge-status-dot {
     width: 10px;
     height: 10px;
@@ -96,13 +91,10 @@ button {
   .square-badge .ant-badge-status-dot {
     border-radius: 0;
   }
+
 }
 
 .buttons-group {
   display: flex;
   align-items: center;
-}
-
-.title-wrapper {
-  max-width: calc(100% - 70px);
 }

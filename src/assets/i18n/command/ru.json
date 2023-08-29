@@ -27,6 +27,7 @@
   "tooLittle": "Слишком мало",
   "tooMuch": "Слишком много",
   "priceLabel": "Цена",
+  "priceDifferenceTooltip": "Разница между указанной ценой и средней ценой позиции",
   "emptyPriceError": "Введите цену",
   "triggerPriceLabel": "Сигнальная цена",
   "priceStepMultiplicityError": "Значение должно быть кратно шагу цены",

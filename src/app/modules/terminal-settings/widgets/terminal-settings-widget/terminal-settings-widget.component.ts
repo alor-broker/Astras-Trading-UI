@@ -1,9 +1,9 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, Observable, of, take} from 'rxjs';
 import {ModalService} from 'src/app/shared/services/modal.service';
 import {TerminalSettings} from "../../../../shared/models/terminal-settings/terminal-settings.model";
-import {TabNames} from "../../models/terminal-settings.model";
-import {TerminalSettingsService} from "../../services/terminal-settings.service";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { TabNames } from '../../models/terminal-settings.model';
 
 @Component({
   selector: 'ats-terminal-settings-widget',
@@ -11,6 +11,8 @@ import {TerminalSettingsService} from "../../services/terminal-settings.service"
   styleUrls: ['./terminal-settings-widget.component.less']
 })
 export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
+  @Input()
+  hiddenSections: string[] = [];
 
   settingsFormValue: TerminalSettings | null = null;
   isVisible$: Observable<boolean> = of(false);
@@ -42,7 +44,7 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
   }
 
   handleClose() {
-    if(this.isSaveAvailable && this.isSettingsHasChanges) {
+    if (this.isSaveAvailable && this.isSettingsHasChanges) {
       this.saveSettingsChanges();
       return;
     }
