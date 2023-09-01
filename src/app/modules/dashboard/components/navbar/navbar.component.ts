@@ -1,14 +1,11 @@
 import {
-  Component, DestroyRef, OnDestroy,
+  Component,
   OnInit
 } from '@angular/core';
 import {
-  BehaviorSubject,
-  delay,
   Observable,
   shareReplay,
-  take,
-  tap
+  take
 } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { CommandParams } from 'src/app/shared/models/commands/command-params.model';
@@ -39,20 +36,13 @@ import { mapWith } from '../../../../shared/utils/observable-helper';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { environment } from "../../../../../environments/environment";
-import { NzSegmentedOption } from "ng-zorro-antd/segmented/types";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
-
-interface DashboardSegmentedOption extends NzSegmentedOption {
-  value: string;
-}
 
 @Component({
   selector: 'ats-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.less'],
 })
-export class NavbarComponent implements OnInit, OnDestroy {
+export class NavbarComponent implements OnInit {
   readonly externalLinks = environment.externalLinks;
 
   isSideMenuVisible = false;
@@ -60,13 +50,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
   selectedDashboard$!: Observable<Dashboard>;
-  favoriteDashboards$!: Observable<DashboardSegmentedOption[]>;
-  selectedDashboardIndex$ = new BehaviorSubject<number>(0);
 
   themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
 
-  isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
   private activeInstrument$!: Observable<InstrumentKey | null>;
 
   constructor(
@@ -77,7 +64,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private readonly modal: ModalService,
     private readonly themeService: ThemeService,
     private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -90,44 +76,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       })),
       shareReplay(1)
     );
-
-    this.favoriteDashboards$ = this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
-      mapWith(() => this.manageDashboardsService.allDashboards$, (t, dashboards) => ({ t, dashboards })),
-      tap(data => {
-        const favDashboardsLength = data.dashboards.filter(d => d.isFavorite).length;
-
-        if (this.selectedDashboardIndex$.getValue() > favDashboardsLength) {
-          this.selectedDashboardIndex$.next(favDashboardsLength);
-        }
-      }),
-      delay(50), // used to prevent animation error
-      map(({t, dashboards}) => {
-          const options: DashboardSegmentedOption[] = dashboards
-            .filter(d => d.isFavorite)
-            .sort((a, b) => (a.favoritesOrder ?? 0) - (b.favoritesOrder ?? 0))
-            .map(d => ({
-              value: d.guid,
-              label: d.title.includes(DefaultDashboardName) ? d.title.replace(DefaultDashboardName, t(['defaultDashboardName'])) : d.title,
-              useTemplate: true
-            }));
-          options.push({ value: 'dashboardsDropdown', label: 'dashboards dropdown', useTemplate: true, disabled: true });
-
-          return options;
-        }
-      ),
-      shareReplay(1)
-    );
-
-    this.selectedDashboard$
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        mapWith(
-          () => this.favoriteDashboards$,
-          (sd, fd) => ({ sd, fd })
-        ),
-        map(({sd, fd}) => fd.findIndex((d, i) => i === fd.length - 1 ? true : d.value === sd.guid)),
-      )
-      .subscribe(i => this.selectedDashboardIndex$.next(i));
 
     this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
       filter(p => p.status === EntityStatus.Success),
@@ -163,24 +111,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
-    this.selectedDashboardIndex$.complete();
-  }
-
-  changeDashboardSelectionMenuVisibility(value: boolean) {
-    setTimeout(() => this.isDashboardSelectionMenuVisible$.next(value));
-  }
   isFindedPortfolio(portfolio: PortfolioExtended) {
     const { value } = this.searchControl;
     return !value || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes(value.toUpperCase());
-  }
-
-  selectDashboard(guid: string) {
-    this.manageDashboardsService.selectDashboard(<string>guid);
-  }
-
-  changeDashboardsOrder(e: CdkDragDrop<any>) {
-    this.manageDashboardsService.changeFavoriteDashboardsOrder(e.previousIndex, e.currentIndex);
   }
 
   resetDashboard() {

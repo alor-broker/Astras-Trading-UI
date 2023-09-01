@@ -1,0 +1,59 @@
+<div
+  class="favorite-dashboards-wrapper"
+  cdkDropList
+  cdkDropListOrientation="horizontal"
+  (cdkDropListDropped)="changeDashboardsOrder($event)"
+>
+  <ng-container *ngIf="favoriteDashboards$ | async as favDashboards">
+    <nz-segmented
+      nzSize="large"
+      nzBlock
+      class="favorite-dashboards"
+      [ngModel]="selectedDashboardIndex$ | async"
+      [nzLabelTemplate]="dashboardLabels"
+      [nzOptions]="favDashboards"
+      (nzValueChange)="$event === favDashboards.length ? null : selectDashboard(favDashboards[$event].value)"
+    ></nz-segmented>
+
+    <ng-template #dashboardLabels let-index="index">
+      <ng-container *ngIf="index !== (favDashboards.length - 1); else dashboardsDropdown">
+        <div
+          class="dashboard-label"
+          nz-tooltip
+          [nzTooltipTitle]="favDashboards[index].label"
+          [nzTooltipPlacement]="['bottom', 'bottomLeft', 'bottomRight']"
+          cdkDrag
+          cdkDragLockAxis="x"
+        >
+          {{ favDashboards[index].label }}
+        </div>
+      </ng-container>
+
+      <ng-template #dashboardsDropdown>
+        <button
+          *ngIf="selectedDashboard"
+          class="dropdown-btn"
+          id="dashboard-select-btn"
+          nz-button
+          nz-dropdown
+          nzSize="small"
+          nzType="text"
+          [nzClickHide]="false"
+          [nzDropdownMenu]="dashboardsMenu"
+          (nzVisibleChange)="changeDashboardSelectionMenuVisibility($event)"
+          [nzVisible]="(isDashboardSelectionMenuVisible$ | async) ?? false"
+        >
+          <span nz-typography nzEllipsis *ngIf="!selectedDashboard.isFavorite">{{selectedDashboard.title}}&nbsp;</span>
+          <span><i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i></span>
+
+          <nz-dropdown-menu #dashboardsMenu="nzDropdownMenu">
+            <ats-select-dashboard-menu
+              (hideMenu)="changeDashboardSelectionMenuVisibility(false)"
+              [visibilityChange]="(isDashboardSelectionMenuVisible$ | async) ?? false"
+            ></ats-select-dashboard-menu>
+          </nz-dropdown-menu>
+        </button>
+      </ng-template>
+    </ng-template>
+  </ng-container>
+</div>

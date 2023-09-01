@@ -45,6 +45,7 @@ import { ArbitrageSpreadModule } from "../arbitrage-spread/arbitrage-spread.modu
 import {PortfolioSummaryModule} from "../portfolio-summary/portfolio-summary.module";
 import { NzSegmentedModule } from "ng-zorro-antd/segmented";
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { DashboardsPanelComponent } from './components/dashboards-panel/dashboards-panel.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     MobileNavbarComponent,
     MobileDashboardComponent,
     MobileInstrumentsHistoryComponent,
-    NetworkIndicatorComponent
+    NetworkIndicatorComponent,
+    DashboardsPanelComponent
   ],
     imports: [
         DashboardRoutingModule,

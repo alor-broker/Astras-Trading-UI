@@ -106,18 +106,24 @@ export class ManageDashboardsActions {
     }>()
   );
 
-  static changeFavoriteDashboard = createAction(
-    '[Dashboards] Change Favorite Dashboard',
+  static addDashboardToFavorites = createAction(
+    '[Dashboards] Add Dashboard To Favorites',
     props<{
       dashboardGuid: string;
-      isFavorite: boolean;
+    }>()
+  );
+
+  static removeDashboardFromFavorites = createAction(
+    '[Dashboards] Remove Dashboard From Favorites',
+    props<{
+      dashboardGuid: string;
     }>()
   );
 
   static changeFavoriteDashboardsOrder = createAction(
     '[Dashboards] Change Favorite Dashboards Order',
     props<{
-      oldIndex: number;
+      dashboardGuid: string;
       newIndex: number;
     }>()
   );

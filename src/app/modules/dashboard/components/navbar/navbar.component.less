@@ -98,6 +98,10 @@ nz-header {
     }
   }
 
+  .dashboards-panel-wrapper {
+    min-width: 0;
+  }
+
   .dropdown-btn {
     .arrow-icon {
       font-size: 10px;
@@ -121,14 +125,6 @@ nz-header {
     outline: none;
     box-shadow: none;
   }
-}
-
-#dashboard-select-btn {
-  max-width: 200px;
-}
-
-.favorite-dashboards, .favorite-dashboards-wrapper {
-  min-width: 0;
 }
 
 ::ng-deep {
@@ -170,29 +166,4 @@ nz-header {
       border-right: 0;
     }
   }
-}
-
-:host ::ng-deep {
-  .ant-segmented-item {
-    z-index: 2;
-
-    &-disabled {
-      flex: none !important;
-    }
-
-    &-label {
-      cursor: default;
-      overflow: inherit;
-    }
-
-    &-selected {
-      z-index: 1;
-    }
-  }
-}
-
-.dashboard-label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }

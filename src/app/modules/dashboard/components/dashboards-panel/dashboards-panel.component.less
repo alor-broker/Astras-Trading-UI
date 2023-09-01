@@ -1,0 +1,58 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .ant-layout-header {
+      ::ng-deep {
+        .ant-segmented-group {
+          background-color: @body-background;
+
+          &:hover {
+            background-color: @body-background;
+          }
+
+          .ant-segmented-thumb, .ant-segmented-item-selected {
+            background-color: @tag-background;
+          }
+        }
+      }
+    }
+  }
+});
+
+.favorite-dashboards, .favorite-dashboards-wrapper {
+  min-width: 0;
+}
+
+.dashboard-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#dashboard-select-btn {
+  max-width: 200px;
+}
+
+:host {
+  min-width: 0;
+
+  ::ng-deep {
+    .ant-segmented-item {
+      z-index: 2;
+
+      &-disabled {
+        flex: none !important;
+      }
+
+      &-label {
+        cursor: default;
+        overflow: inherit;
+      }
+
+      &-selected {
+        z-index: 1;
+      }
+    }
+  }
+}

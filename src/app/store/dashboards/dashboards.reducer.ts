@@ -76,14 +76,25 @@ export const reducer = createReducer(
       state);
   }),
 
-  on(ManageDashboardsActions.changeFavoriteDashboard, (state, props) => {
+  on(ManageDashboardsActions.addDashboardToFavorites, (state, props) => {
     const favoritesOrder = Object.values(state.entities).filter(d => d!.isFavorite).length;
 
     return adapter.updateOne({
         id: props.dashboardGuid,
         changes: {
-          isFavorite: props.isFavorite,
-          favoritesOrder: props.isFavorite ? favoritesOrder : undefined
+          isFavorite: true,
+          favoritesOrder: favoritesOrder
+        }
+      },
+      state);
+  }),
+
+  on(ManageDashboardsActions.removeDashboardFromFavorites, (state, props) => {
+    return adapter.updateOne({
+        id: props.dashboardGuid,
+        changes: {
+          isFavorite: false,
+          favoritesOrder: undefined
         }
       },
       state);
@@ -96,10 +107,14 @@ export const reducer = createReducer(
 
     dashboards.sort((a, b) => a.order - b.order);
 
-    const currentDashboard = dashboards[props.oldIndex];
+    const oldIndex = dashboards.findIndex(d => d.id === props.dashboardGuid);
 
-    dashboards.splice(props.oldIndex, 1);
-    dashboards.splice(props.newIndex, 0, currentDashboard);
+    if (oldIndex == null) {
+      return state;
+    }
+
+    dashboards.splice(oldIndex, 1);
+    dashboards.splice(props.newIndex, 0, { id: props.dashboardGuid, order: 0 });
 
     return adapter.updateMany(
       dashboards.map((d, i) => ({

@@ -6,7 +6,7 @@ import {GuidGenerator} from '../../shared/utils/guid';
 import {distinctUntilChanged, EMPTY, of, take, withLatestFrom} from 'rxjs';
 import {Dashboard, DefaultDashboardName} from '../../shared/models/dashboard/dashboard.model';
 import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
-import {getDashboardItems} from './dashboards.selectors';
+import { getDashboardItems, selectDashboardsState } from './dashboards.selectors';
 import {mapWith} from '../../shared/utils/observable-helper';
 import {MarketService} from '../../shared/services/market.service';
 import {getDefaultPortfolio, isPortfoliosEqual} from '../../shared/utils/portfolios';
@@ -115,7 +115,8 @@ export class DashboardsEffects {
         ManageDashboardsActions.updateWidgetPositions,
         ManageDashboardsActions.selectDashboard,
         ManageDashboardsActions.removeAllDashboards,
-        ManageDashboardsActions.changeFavoriteDashboard,
+        ManageDashboardsActions.addDashboardToFavorites,
+        ManageDashboardsActions.removeDashboardFromFavorites,
         ManageDashboardsActions.changeFavoriteDashboardsOrder,
         CurrentDashboardActions.selectPortfolio,
         CurrentDashboardActions.selectInstruments,
@@ -128,9 +129,19 @@ export class DashboardsEffects {
 
   setFavoriteDashboardsOrder$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ManageDashboardsActions.changeFavoriteDashboard),
-      filter(props => !props.isFavorite),
-      map(() => ManageDashboardsActions.changeFavoriteDashboardsOrder({oldIndex: 0, newIndex: 0}))
+      ofType(ManageDashboardsActions.removeDashboardFromFavorites),
+      switchMap(action => this.store.select(selectDashboardsState)
+        .pipe(
+          take(1),
+          map(state => Object.values(state.entities)
+            .filter(d => d!.isFavorite && d!.guid !== action.dashboardGuid)
+            .sort((a, b) => a!.favoritesOrder! - b!.favoritesOrder!)
+            [0]
+          )
+        )
+      ),
+      filter(d => !!d),
+      map(d => ManageDashboardsActions.changeFavoriteDashboardsOrder({dashboardGuid: d!.guid, newIndex: 0}))
     );
   });
 
