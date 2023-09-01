@@ -102,6 +102,14 @@ export class ManageDashboardsService {
     this.store.dispatch(ManageDashboardsActions.renameDashboard({ dashboardGuid: guid, title }));
   }
 
+  changeFavoriteDashboard(dashboardGuid: string, isFavorite: boolean) {
+    this.store.dispatch(ManageDashboardsActions.changeFavoriteDashboard({ dashboardGuid, isFavorite }));
+  }
+
+  changeFavoriteDashboardsOrder(oldIndex: number, newIndex: number) {
+    this.store.dispatch(ManageDashboardsActions.changeFavoriteDashboardsOrder({ oldIndex, newIndex }));
+  }
+
   selectDashboard(guid: string) {
     this.store.dispatch(ManageDashboardsActions.selectDashboard({ dashboardGuid: guid }));
   }

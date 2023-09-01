@@ -76,6 +76,42 @@ export const reducer = createReducer(
       state);
   }),
 
+  on(ManageDashboardsActions.changeFavoriteDashboard, (state, props) => {
+    const favoritesOrder = Object.values(state.entities).filter(d => d!.isFavorite).length;
+
+    return adapter.updateOne({
+        id: props.dashboardGuid,
+        changes: {
+          isFavorite: props.isFavorite,
+          favoritesOrder: props.isFavorite ? favoritesOrder : undefined
+        }
+      },
+      state);
+  }),
+
+  on(ManageDashboardsActions.changeFavoriteDashboardsOrder, (state, props) => {
+    const dashboards: {id: string, order: number}[] = Object.values(state.entities)
+      .filter(d => d!.isFavorite)
+      .map(d => ({ id: d!.guid, order: d!.favoritesOrder ?? 0 }));
+
+    dashboards.sort((a, b) => a.order - b.order);
+
+    const currentDashboard = dashboards[props.oldIndex];
+
+    dashboards.splice(props.oldIndex, 1);
+    dashboards.splice(props.newIndex, 0, currentDashboard);
+
+    return adapter.updateMany(
+      dashboards.map((d, i) => ({
+          id: d.id,
+          changes: {
+            favoritesOrder: i
+          }
+        })
+      ),
+      state);
+  }),
+
   on(ManageDashboardsActions.addWidgets, (state, props) => {
     const targetItem = state.entities[props.dashboardGuid];
     if (!targetItem) {

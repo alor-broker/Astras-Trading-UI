@@ -43,6 +43,8 @@ import { EventsCalendarModule } from "../events-calendar/events-calendar.module"
 import { OptionBoardModule } from "../option-board/option-board.module";
 import { ArbitrageSpreadModule } from "../arbitrage-spread/arbitrage-spread.module";
 import {PortfolioSummaryModule} from "../portfolio-summary/portfolio-summary.module";
+import { NzSegmentedModule } from "ng-zorro-antd/segmented";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
   declarations: [
@@ -89,6 +91,8 @@ import {PortfolioSummaryModule} from "../portfolio-summary/portfolio-summary.mod
         OptionBoardModule,
         ArbitrageSpreadModule,
         PortfolioSummaryModule,
+        NzSegmentedModule,
+        DragDropModule,
         // components
     ],
   providers: [

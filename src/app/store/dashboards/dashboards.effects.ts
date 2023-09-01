@@ -115,12 +115,22 @@ export class DashboardsEffects {
         ManageDashboardsActions.updateWidgetPositions,
         ManageDashboardsActions.selectDashboard,
         ManageDashboardsActions.removeAllDashboards,
+        ManageDashboardsActions.changeFavoriteDashboard,
+        ManageDashboardsActions.changeFavoriteDashboardsOrder,
         CurrentDashboardActions.selectPortfolio,
         CurrentDashboardActions.selectInstruments,
         InternalDashboardActions.dropDashboardEntity
       ),
       withLatestFrom(DashboardsStreams.getAllDashboards(this.store)),
       map(([, dashboards]) => ManageDashboardsActions.dashboardsUpdated({dashboards}))
+    );
+  });
+
+  setFavoriteDashboardsOrder$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ManageDashboardsActions.changeFavoriteDashboard),
+      filter(props => !props.isFavorite),
+      map(() => ManageDashboardsActions.changeFavoriteDashboardsOrder({oldIndex: 0, newIndex: 0}))
     );
   });
 

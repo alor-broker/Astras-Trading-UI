@@ -15,6 +15,18 @@
             color: @error-color;
           }
         }
+
+        .ant-segmented-group {
+          background-color: @body-background;
+
+          &:hover {
+            background-color: @body-background;
+          }
+
+          .ant-segmented-thumb, .ant-segmented-item-selected {
+            background-color: @tag-background;
+          }
+        }
       }
     }
   }
@@ -115,41 +127,72 @@ nz-header {
   max-width: 200px;
 }
 
-::ng-deep .side-menu {
-  .actions-menu {
-    border-right: none;
+.favorite-dashboards, .favorite-dashboards-wrapper {
+  min-width: 0;
+}
 
-    .ant-menu-submenu-title {
-      .anticon {
-        font-size: 16px;
+::ng-deep {
+  .side-menu {
+    .actions-menu {
+      border-right: none;
+
+      .ant-menu-submenu-title {
+        .anticon {
+          font-size: 16px;
+        }
+      }
+
+      .menu-item {
+        padding-left: 0;
       }
     }
 
-    .menu-item {
-      padding-left: 0;
+    .menu-header {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 15px;
+
+      .close-btn {
+        font-size: 16px;
+
+      }
     }
-  }
 
-  .menu-header {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 15px;
-
-    .close-btn {
+    .side-menu-item {
       font-size: 16px;
+    }
 
+    .ant-menu-submenu-arrow {
+      display: none;
+    }
+
+    .ant-menu {
+      border-right: 0;
     }
   }
+}
 
-  .side-menu-item {
-    font-size: 16px;
-  }
+:host ::ng-deep {
+  .ant-segmented-item {
+    z-index: 2;
 
-  .ant-menu-submenu-arrow {
-    display: none;
-  }
+    &-disabled {
+      flex: none !important;
+    }
 
-  .ant-menu {
-    border-right: 0;
+    &-label {
+      cursor: default;
+      overflow: inherit;
+    }
+
+    &-selected {
+      z-index: 1;
+    }
   }
+}
+
+.dashboard-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
