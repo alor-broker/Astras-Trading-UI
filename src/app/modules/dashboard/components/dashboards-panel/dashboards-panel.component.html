@@ -6,7 +6,6 @@
 >
   <ng-container *ngIf="favoriteDashboards$ | async as favDashboards">
     <nz-segmented
-      nzSize="large"
       nzBlock
       class="favorite-dashboards"
       [ngModel]="selectedDashboardIndex$ | async"

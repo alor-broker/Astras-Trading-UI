@@ -90,13 +90,28 @@ export const reducer = createReducer(
   }),
 
   on(ManageDashboardsActions.removeDashboardFromFavorites, (state, props) => {
-    return adapter.updateOne({
-        id: props.dashboardGuid,
-        changes: {
-          isFavorite: false,
-          favoritesOrder: undefined
+    const cahnges = Object.values(state.entities)
+      .filter(d => d!.isFavorite && d!.guid !== props.dashboardGuid)
+      .sort((a, b) => a!.favoritesOrder! - b!.favoritesOrder!)
+      .map((d, i) => ({ id: d!.guid, order: i }));
+
+    return adapter.updateMany([
+        ...cahnges.map(
+          d => ({
+            id: d.id,
+            changes: {
+              favoritesOrder: d.order
+            }
+          })
+        ),
+        {
+          id: props.dashboardGuid,
+          changes: {
+            isFavorite: false,
+            favoritesOrder: undefined
+          }
         }
-      },
+      ],
       state);
   }),
 

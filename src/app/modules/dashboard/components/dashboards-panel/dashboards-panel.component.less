@@ -1,21 +1,26 @@
 @import "theme-mixin";
 
 .themeMixin({
-  :host {
-    .ant-layout-header {
-      ::ng-deep {
-        .ant-segmented-group {
-          background-color: @body-background;
+  :host ::ng-deep {
+    .ant-segmented-group {
+      background-color: @dashboards-panel-background;
 
-          &:hover {
-            background-color: @body-background;
-          }
-
-          .ant-segmented-thumb, .ant-segmented-item-selected {
-            background-color: @tag-background;
-          }
-        }
+      &:hover {
+        background-color: @dashboards-panel-background;
       }
+
+      .ant-segmented-item {
+        color: @dashboards-panel-color;
+      }
+
+      .ant-segmented-thumb, .ant-segmented-item-selected {
+        color: @dashboards-panel-color;
+        background-color: @active-dashboard-background;
+      }
+    }
+
+    .dropdown-btn .arrow-icon {
+      font-size: 10px;
     }
   }
 });
@@ -38,20 +43,29 @@
   min-width: 0;
 
   ::ng-deep {
-    .ant-segmented-item {
-      z-index: 2;
+    .ant-segmented {
+      border-radius: 4px;
 
-      &-disabled {
-        flex: none !important;
+      &-group {
+        border-radius: 4px;
       }
 
-      &-label {
-        cursor: default;
-        overflow: inherit;
-      }
+      &-item {
+        z-index: 2;
 
-      &-selected {
-        z-index: 1;
+        &-disabled {
+          flex: none !important;
+        }
+
+        &-label {
+          cursor: default;
+          overflow: inherit;
+        }
+
+        &-selected {
+          border-radius: 4px;
+          z-index: 1;
+        }
       }
     }
   }
