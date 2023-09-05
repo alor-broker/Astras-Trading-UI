@@ -76,6 +76,72 @@ export const reducer = createReducer(
       state);
   }),
 
+  on(ManageDashboardsActions.addDashboardToFavorites, (state, props) => {
+    const favoritesOrder = Object.values(state.entities).filter(d => d!.isFavorite).length;
+
+    return adapter.updateOne({
+        id: props.dashboardGuid,
+        changes: {
+          isFavorite: true,
+          favoritesOrder: favoritesOrder
+        }
+      },
+      state);
+  }),
+
+  on(ManageDashboardsActions.removeDashboardFromFavorites, (state, props) => {
+    const cahnges = Object.values(state.entities)
+      .filter(d => d!.isFavorite && d!.guid !== props.dashboardGuid)
+      .sort((a, b) => a!.favoritesOrder! - b!.favoritesOrder!)
+      .map((d, i) => ({ id: d!.guid, order: i }));
+
+    return adapter.updateMany([
+        ...cahnges.map(
+          d => ({
+            id: d.id,
+            changes: {
+              favoritesOrder: d.order
+            }
+          })
+        ),
+        {
+          id: props.dashboardGuid,
+          changes: {
+            isFavorite: false,
+            favoritesOrder: undefined
+          }
+        }
+      ],
+      state);
+  }),
+
+  on(ManageDashboardsActions.changeFavoriteDashboardsOrder, (state, props) => {
+    const dashboards: {id: string, order: number}[] = Object.values(state.entities)
+      .filter(d => d!.isFavorite)
+      .map(d => ({ id: d!.guid, order: d!.favoritesOrder ?? 0 }));
+
+    dashboards.sort((a, b) => a.order - b.order);
+
+    const oldIndex = dashboards.findIndex(d => d.id === props.dashboardGuid);
+
+    if (oldIndex == null) {
+      return state;
+    }
+
+    dashboards.splice(oldIndex, 1);
+    dashboards.splice(props.newIndex, 0, { id: props.dashboardGuid, order: 0 });
+
+    return adapter.updateMany(
+      dashboards.map((d, i) => ({
+          id: d.id,
+          changes: {
+            favoritesOrder: i
+          }
+        })
+      ),
+      state);
+  }),
+
   on(ManageDashboardsActions.addWidgets, (state, props) => {
     const targetItem = state.entities[props.dashboardGuid];
     if (!targetItem) {

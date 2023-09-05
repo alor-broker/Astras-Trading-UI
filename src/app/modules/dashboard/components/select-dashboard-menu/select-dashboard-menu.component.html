@@ -14,13 +14,19 @@
           ></ats-editable-string>
         </div>
         <span class="actions">
-              <button (click)="copyDashboard(dashboard); $event.stopPropagation();"
-                      nz-button
-                      nzSize='small'
-                      nzType="link">
+          <button (click)="copyDashboard(dashboard); $event.stopPropagation();"
+                  nz-button
+                  nzSize='small'
+                  nzType="link">
                 <i nz-icon nzType="copy"></i>
-              </button>
-              <button (click)="removeDashboard(dashboard); $event.stopPropagation();" *ngIf="allDashboards.length > 1"
+          </button>
+          <button (click)="changeFavoriteDashboard(dashboard);$event.stopPropagation(); "
+                  nz-button
+                  nzSize='small'
+                  nzType="link">
+                <i nz-icon nzType="star" [nzTheme]="dashboard.isFavorite ? 'fill' : 'outline'"></i>
+          </button>
+          <button (click)="removeDashboard(dashboard); $event.stopPropagation();" *ngIf="allDashboards.length > 1"
                   nz-button
                   nzSize='small'
                   nzType="link">

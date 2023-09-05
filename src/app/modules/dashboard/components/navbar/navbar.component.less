@@ -86,10 +86,8 @@ nz-header {
     }
   }
 
-  .dropdown-btn {
-    .arrow-icon {
-      font-size: 10px;
-    }
+  .dashboards-panel-wrapper {
+    min-width: 0;
   }
 }
 
@@ -111,45 +109,43 @@ nz-header {
   }
 }
 
-#dashboard-select-btn {
-  max-width: 200px;
-}
+::ng-deep {
+  .side-menu {
+    .actions-menu {
+      border-right: none;
 
-::ng-deep .side-menu {
-  .actions-menu {
-    border-right: none;
+      .ant-menu-submenu-title {
+        .anticon {
+          font-size: 16px;
+        }
+      }
 
-    .ant-menu-submenu-title {
-      .anticon {
-        font-size: 16px;
+      .menu-item {
+        padding-left: 0;
       }
     }
 
-    .menu-item {
-      padding-left: 0;
+    .menu-header {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 15px;
+
+      .close-btn {
+        font-size: 16px;
+
+      }
     }
-  }
 
-  .menu-header {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 15px;
-
-    .close-btn {
+    .side-menu-item {
       font-size: 16px;
-
     }
-  }
 
-  .side-menu-item {
-    font-size: 16px;
-  }
+    .ant-menu-submenu-arrow {
+      display: none;
+    }
 
-  .ant-menu-submenu-arrow {
-    display: none;
-  }
-
-  .ant-menu {
-    border-right: 0;
+    .ant-menu {
+      border-right: 0;
+    }
   }
 }

@@ -102,6 +102,18 @@ export class ManageDashboardsService {
     this.store.dispatch(ManageDashboardsActions.renameDashboard({ dashboardGuid: guid, title }));
   }
 
+  addDashboardToFavorites(dashboardGuid: string) {
+    this.store.dispatch(ManageDashboardsActions.addDashboardToFavorites({ dashboardGuid }));
+  }
+
+  removeDashboardFromFavorites(dashboardGuid: string) {
+    this.store.dispatch(ManageDashboardsActions.removeDashboardFromFavorites({ dashboardGuid }));
+  }
+
+  changeFavoriteDashboardsOrder(dashboardGuid: string, newIndex: number) {
+    this.store.dispatch(ManageDashboardsActions.changeFavoriteDashboardsOrder({ dashboardGuid, newIndex }));
+  }
+
   selectDashboard(guid: string) {
     this.store.dispatch(ManageDashboardsActions.selectDashboard({ dashboardGuid: guid }));
   }

@@ -19,6 +19,8 @@ export interface Dashboard {
   instrumentsSelection?: InstrumentGroups | null;
 
   sourceGuid?: string;
+  isFavorite?: boolean;
+  favoritesOrder?: number;
 }
 
 export interface InstrumentGroups {

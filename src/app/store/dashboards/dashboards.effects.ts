@@ -6,7 +6,7 @@ import {GuidGenerator} from '../../shared/utils/guid';
 import {distinctUntilChanged, EMPTY, of, take, withLatestFrom} from 'rxjs';
 import {Dashboard, DefaultDashboardName} from '../../shared/models/dashboard/dashboard.model';
 import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
-import {getDashboardItems} from './dashboards.selectors';
+import { getDashboardItems } from './dashboards.selectors';
 import {mapWith} from '../../shared/utils/observable-helper';
 import {MarketService} from '../../shared/services/market.service';
 import {getDefaultPortfolio, isPortfoliosEqual} from '../../shared/utils/portfolios';
@@ -115,6 +115,9 @@ export class DashboardsEffects {
         ManageDashboardsActions.updateWidgetPositions,
         ManageDashboardsActions.selectDashboard,
         ManageDashboardsActions.removeAllDashboards,
+        ManageDashboardsActions.addDashboardToFavorites,
+        ManageDashboardsActions.removeDashboardFromFavorites,
+        ManageDashboardsActions.changeFavoriteDashboardsOrder,
         CurrentDashboardActions.selectPortfolio,
         CurrentDashboardActions.selectInstruments,
         InternalDashboardActions.dropDashboardEntity

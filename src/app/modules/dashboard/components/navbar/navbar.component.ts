@@ -3,7 +3,6 @@ import {
   OnInit
 } from '@angular/core';
 import {
-  BehaviorSubject,
   Observable,
   shareReplay,
   take
@@ -36,7 +35,7 @@ import {
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import {environment} from "../../../../../environments/environment";
+import { environment } from "../../../../../environments/environment";
 
 @Component({
   selector: 'ats-navbar',
@@ -51,10 +50,10 @@ export class NavbarComponent implements OnInit {
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
   selectedDashboard$!: Observable<Dashboard>;
+
   themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
 
-  isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
   private activeInstrument$!: Observable<InstrumentKey | null>;
 
   constructor(
@@ -64,7 +63,7 @@ export class NavbarComponent implements OnInit {
     private readonly auth: AuthService,
     private readonly modal: ModalService,
     private readonly themeService: ThemeService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
   ) {
   }
 
@@ -74,7 +73,8 @@ export class NavbarComponent implements OnInit {
       map(({ t, d }) => ({
         ...d,
         title: d.title.includes(DefaultDashboardName) ? d.title.replace(DefaultDashboardName, t(['defaultDashboardName']))  : d.title
-      }))
+      })),
+      shareReplay(1)
     );
 
     this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
@@ -111,9 +111,6 @@ export class NavbarComponent implements OnInit {
     );
   }
 
-  changeDashboardSelectionMenuVisibility(value: boolean) {
-    setTimeout(() => this.isDashboardSelectionMenuVisible$.next(value));
-  }
   isFindedPortfolio(portfolio: PortfolioExtended) {
     const { value } = this.searchControl;
     return !value || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes(value.toUpperCase());
