@@ -51,7 +51,7 @@ import { getNumberAbbreviation } from "../../../../shared/utils/number-abbreviat
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef;
-  @Input({required: true})
+  @Input({ required: true })
   guid!: string;
   isCursorOnSector$ = new BehaviorSubject(false);
   // this widget works  with MOEX exchange only
@@ -104,7 +104,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
           themeColors: theme.themeColors
         })),
       )
-      .subscribe(({treemap, themeColors}) => {
+      .subscribe(({ treemap, themeColors }) => {
         const ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d')!;
 
         if (!ctx) {
@@ -127,14 +127,14 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                 captions: {
                   display: true,
                   color: themeColors.chartLabelsColor,
-                  font: {weight: '500'}
+                  font: { weight: '500' }
                 },
                 labels: {
                   display: true,
                   formatter: (t: any) => [t.raw._data.symbol, t.raw._data.children[0]?.dayChange + '%'],
                   overflow: 'fit',
                   color: themeColors.textColor,
-                  font: [{weight: '600'}, {weight: '400'}]
+                  font: [{ weight: '600' }, { weight: '400' }]
                 },
                 backgroundColor: (t: any) => {
                   if (t.raw?._data.label === t.raw?._data.sector) {
@@ -150,7 +150,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
             ],
           },
           options: {
-            onResize: (chart: Chart, {width, height}) => {
+            onResize: (chart: Chart, { width, height }) => {
               this.tilesCount$.next(Math.floor(width * height / this.averageTileSize));
             },
             onHover: (event: ChartEvent, elements: ActiveElement[]) => {
@@ -236,7 +236,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         withLatestFrom(
           this.translatorService.getTranslator('treemap'),
           this.translatorService.getTranslator('shared/short-number'),
-          this.instrumentsService.getInstrument({exchange: this.defaultExchange, symbol: treemapNode.symbol})
+          this.instrumentsService.getInstrument({ exchange: this.defaultExchange, symbol: treemapNode.symbol })
         ),
         map(([quote, tTreemap, tShortNumber, instrument]) => {
           const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
@@ -259,7 +259,11 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         take(1),
       )
       .subscribe(s => {
-        this.dashboardContextService.selectDashboardInstrument({exchange: this.defaultExchange, symbol}, s.badgeColor!);
+        this.dashboardContextService.selectDashboardInstrument({
+            exchange: this.defaultExchange,
+            symbol
+          },
+          s.badgeColor!);
       });
   }
 }

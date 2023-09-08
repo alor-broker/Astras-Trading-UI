@@ -2,7 +2,7 @@ import {
   Inject,
   Injectable
 } from '@angular/core';
-import {DOCUMENT} from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -11,14 +11,15 @@ import {
 } from 'rxjs';
 import {
   filter,
-  map, startWith
+  map,
+  startWith
 } from 'rxjs/operators';
 import {
   ThemeColors,
   ThemeSettings,
   ThemeType
 } from '../models/settings/theme-settings.model';
-import {TerminalSettingsService} from "./terminal-settings.service";
+import { TerminalSettingsService } from "./terminal-settings.service";
 
 @Injectable({
   providedIn: 'root',
