@@ -34,6 +34,7 @@ export const environment = {
   externalLinks: {
     reports: 'https://lk.alor.ru/reports/broker',
     releases: 'https://warp.alor.dev/ru/releases/astras',
+    help: 'https://alor.gitbook.io/astras',
     support: 'https://t.me/+oM0i9QbtD4cwMzNi',
     officialSite: 'https://www.alorbroker.ru',
     riskRate: 'https://www.alorbroker.ru/trading/leverage',
