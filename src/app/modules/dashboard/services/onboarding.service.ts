@@ -1,8 +1,6 @@
-import { Injectable } from '@angular/core';
-import { JoyrideService } from 'ngx-joyride';
-import { LocalStorageService } from "../../../shared/services/local-storage.service";
-import { ThemeService } from '../../../shared/services/theme.service';
-import { take } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {JoyrideService} from 'ngx-joyride';
+import {LocalStorageService} from "../../../shared/services/local-storage.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +11,7 @@ export class OnboardingService {
 
   constructor(
     private readonly joyride: JoyrideService,
-    private readonly localStorage: LocalStorageService,
-    private readonly themeService: ThemeService
+    private readonly localStorage: LocalStorageService
   ) {
     this.isCompleted = this.getIsCompleted();
   }
@@ -22,15 +19,11 @@ export class OnboardingService {
   start() {
     if (!this.isCompleted) {
       const interval = setInterval(() => {
-        this.themeService.getThemeSettings().pipe(
-          take(1)
-        ).subscribe(theme => {
-          this.joyride.startTour({
-            steps: Array(7).fill(1).map((_, i) => `step${i + 1}`),
-            themeColor: theme.themeColors.buyColor
-          });
-          this.setIsCompleted(true);
+        this.joyride.startTour({
+          steps: Array(7).fill(1).map((_, i) => `step${i + 1}`),
+          themeColor: 'rgba(0, 155, 99, 1)'
         });
+        this.setIsCompleted(true);
 
         clearInterval(interval);
       }, 5000);
