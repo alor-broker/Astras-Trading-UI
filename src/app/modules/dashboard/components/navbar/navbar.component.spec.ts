@@ -24,6 +24,7 @@ import {
   ThemeType
 } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
+import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -69,6 +70,12 @@ describe('NavbarComponent', () => {
           }
         },
         { provide: ThemeService, useValue: themeServiceSpy },
+        {
+          provide: OrdersDialogService,
+          useValue: {
+            openNewOrderDialog: jasmine.createSpy('openNewOrderDialog').and.callThrough()
+          }
+        }
       ],
       imports: [
         NoopAnimationsModule,

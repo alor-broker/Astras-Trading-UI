@@ -1,8 +1,8 @@
 import { Side } from "../enums/side.model";
 import { InstrumentKey } from "../instruments/instrument-key.model";
 import { PortfolioKey } from "../portfolio-key.model";
-import { TimeInForce } from "./command-params.model";
 import {LessMore} from "../enums/less-more.model";
+import {TimeInForce} from "../orders/order.model";
 
 export interface EditParams {
   type: string,

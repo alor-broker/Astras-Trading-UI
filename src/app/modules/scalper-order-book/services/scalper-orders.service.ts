@@ -1,23 +1,29 @@
-import { Injectable } from '@angular/core';
-import { OrderCancellerService } from "../../../shared/services/order-canceller.service";
-import { CancelCommand } from "../../../shared/models/commands/cancel-command.model";
-import { take } from "rxjs";
-import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
-import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import { Position } from "../../../shared/models/positions/position.model";
-import { OrderService } from "../../../shared/services/orders/order.service";
-import { Side } from "../../../shared/models/enums/side.model";
-import { NzNotificationService } from "ng-zorro-antd/notification";
-import { ModalService } from "../../../shared/services/modal.service";
-import { LimitOrder, MarketOrder, StopLimitOrder, StopMarketOrder } from "../../command/models/order.model";
-import { CommandType } from "../../../shared/models/enums/command-type.model";
-import { Instrument } from '../../../shared/models/instruments/instrument.model';
-import { CurrentOrderDisplay, } from '../models/scalper-order-book.model';
-import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
-import { MathHelper } from '../../../shared/utils/math-helper';
-import { LessMore } from "../../../shared/models/enums/less-more.model";
-import { PriceUnits, ScalperOrderBookSettings } from "../models/scalper-order-book-settings.model";
-import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
+import {Injectable} from '@angular/core';
+import {OrderCancellerService} from "../../../shared/services/order-canceller.service";
+import {CancelCommand} from "../../../shared/models/commands/cancel-command.model";
+import {take} from "rxjs";
+import {InstrumentKey} from "../../../shared/models/instruments/instrument-key.model";
+import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
+import {Position} from "../../../shared/models/positions/position.model";
+import {OrderService} from "../../../shared/services/orders/order.service";
+import {Side} from "../../../shared/models/enums/side.model";
+import {NzNotificationService} from "ng-zorro-antd/notification";
+import {Instrument} from '../../../shared/models/instruments/instrument.model';
+import {CurrentOrderDisplay,} from '../models/scalper-order-book.model';
+import {OrderbookData} from '../../orderbook/models/orderbook-data.model';
+import {MathHelper} from '../../../shared/utils/math-helper';
+import {LessMore} from "../../../shared/models/enums/less-more.model";
+import {PriceUnits, ScalperOrderBookSettings} from "../models/scalper-order-book-settings.model";
+import {ExecutionPolicy} from "../../../shared/models/orders/orders-group.model";
+import {OrdersDialogService} from "../../../shared/services/orders/orders-dialog.service";
+import {OrderType} from "../../../shared/models/orders/orders-dialog.model";
+import {toInstrumentKey} from "../../../shared/utils/instruments";
+import {
+  NewLimitOrder,
+  NewMarketOrder,
+  NewStopLimitOrder,
+  NewStopMarketOrder
+} from "../../../shared/models/orders/new-order.model";
 
 enum BracketOrderType {
   Top = 'top',
@@ -33,7 +39,7 @@ export class ScalperOrdersService {
     private readonly orderCancellerService: OrderCancellerService,
     private readonly orderService: OrderService,
     private readonly notification: NzNotificationService,
-    private readonly modal: ModalService
+    private readonly ordersDialogService: OrdersDialogService,
   ) {
   }
 
@@ -210,7 +216,7 @@ export class ScalperOrdersService {
   }
 
   placeMarketOrder(instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean, portfolio: PortfolioKey): void {
-    const order: MarketOrder = {
+    const order: NewMarketOrder = {
       side: side,
       quantity: quantity,
       instrument: instrumentKey
@@ -220,9 +226,12 @@ export class ScalperOrdersService {
       this.orderService.submitMarketOrder(order, portfolio.portfolio).subscribe();
     }
     else {
-      this.modal.openCommandModal({
-        ...order,
-        type: CommandType.Market
+      this.ordersDialogService.openNewOrderDialog({
+        instrumentKey: order.instrument,
+        initialValues: {
+          orderType: OrderType.Market,
+          quantity: order.quantity
+        }
       });
     }
   }
@@ -237,17 +246,17 @@ export class ScalperOrdersService {
     portfolio: PortfolioKey,
     position: Position | null
   ) {
-    const order: LimitOrder = {
-      side: side,
-      quantity: quantity,
-      price: price,
-      instrument: settings
-    };
-
     const topOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Top);
     const bottomOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Bottom);
 
     if (silent) {
+      const order: NewLimitOrder = {
+        side: side,
+        quantity: quantity,
+        price: price,
+        instrument: settings
+      };
+
       if (
         this.checkBracketNeeded(settings, side, quantity, position)
       ) {
@@ -257,21 +266,38 @@ export class ScalperOrdersService {
       }
     }
     else {
-      if (
-        this.checkBracketNeeded(settings, side, quantity, position)
-      ) {
-        this.modal.openCommandModal({
-          ...order,
-          topOrderPrice,
-          topOrderSide: side === Side.Buy ? Side.Sell : Side.Buy,
-          bottomOrderPrice,
-          bottomOrderSide: side === Side.Buy ? Side.Sell : Side.Buy,
-          type: CommandType.Limit
+      if (this.checkBracketNeeded(settings, side, quantity, position)) {
+        this.ordersDialogService.openNewOrderDialog({
+          instrumentKey: toInstrumentKey(settings),
+          initialValues: {
+            orderType: OrderType.Limit,
+            quantity,
+            price
+          }
+        });
+        const bracketSide = Side.Buy ? Side.Sell : Side.Buy;
+        this.ordersDialogService.openNewOrderDialog({
+          instrumentKey: toInstrumentKey(settings),
+          initialValues: {
+            orderType: OrderType.Limit,
+            quantity,
+            price,
+            bracket: {
+              topOrderPrice,
+              topOrderSide: bracketSide,
+              bottomOrderPrice,
+              bottomOrderSide: bracketSide
+            }
+          }
         });
       } else {
-        this.modal.openCommandModal({
-          ...order,
-          type: CommandType.Limit
+        this.ordersDialogService.openNewOrderDialog({
+          instrumentKey: toInstrumentKey(settings),
+          initialValues: {
+            orderType: OrderType.Limit,
+            quantity,
+            price
+          }
         });
       }
     }
@@ -303,23 +329,30 @@ export class ScalperOrdersService {
     silent: boolean,
     portfolio: PortfolioKey): void {
 
-    const order: StopLimitOrder = {
+    const order: NewStopLimitOrder = {
       side: side,
       quantity: quantity,
       price: price,
       instrument: instrumentKey,
       triggerPrice: price,
       condition: side === Side.Sell ? LessMore.More : LessMore.Less
-    } as StopLimitOrder;
+    };
 
     if (silent) {
       this.orderService.submitStopLimitOrder(order, portfolio.portfolio).subscribe();
     }
     else {
-      this.modal.openCommandModal({
-        ...order,
-        type: CommandType.Stop,
-        stopEndUnixTime: undefined
+      this.ordersDialogService.openNewOrderDialog({
+        instrumentKey: order.instrument,
+        initialValues: {
+          orderType: OrderType.Stop,
+          price: order.price,
+          quantity: order.quantity,
+          stopOrder: {
+            condition: order.condition,
+            limit: true
+          }
+        }
       });
     }
   }
@@ -342,7 +375,7 @@ export class ScalperOrdersService {
       return;
     }
 
-    const order: StopMarketOrder = {
+    const order: NewStopMarketOrder = {
       side: side,
       quantity: Math.abs(position.qtyTFutureBatch),
       instrument: {
@@ -352,16 +385,22 @@ export class ScalperOrdersService {
       },
       triggerPrice: price,
       condition: side === Side.Sell ? LessMore.Less : LessMore.More
-    } as StopMarketOrder;
+    };
 
     if (silent) {
       this.orderService.submitStopMarketOrder(order, portfolio.portfolio).subscribe();
     }
     else {
-      this.modal.openCommandModal({
-        ...order,
-        type: CommandType.Stop,
-        stopEndUnixTime: undefined
+      this.ordersDialogService.openNewOrderDialog({
+        instrumentKey: order.instrument,
+        initialValues: {
+          orderType: OrderType.Stop,
+          quantity: order.quantity,
+          price: order.triggerPrice,
+          stopOrder: {
+            condition: order.condition
+          }
+        }
       });
     }
   }
@@ -389,27 +428,31 @@ export class ScalperOrdersService {
       }
     } else {
       const order = currentOrders[0];
+      if(order.type !== 'stop' && order.type !== 'stoplimit') {
+        return;
+      }
 
-      this.modal.openEditModal({
-        type: order.type,
-        quantity: order.displayVolume,
-        orderId: order.orderId,
-        price: updates.price,
-        instrument: {
+      this.ordersDialogService.openEditOrderDialog({
+        instrumentKey: {
           symbol: order.symbol,
           exchange: order.exchange
         },
-        user: {
+        portfolioKey: {
           portfolio: order.portfolio,
           exchange: order.exchange
         },
-        side: order.side
+        orderId: order.orderId,
+        orderType: OrderType.Stop,
+        initialValues: {
+          quantity: order.displayVolume,
+          price: updates.price
+        }
       });
     }
   }
 
-  private placeBracket(baseOrder: LimitOrder, topOrderPrice: number | null, bottomOrderPrice: number | null, portfolio: string) {
-    const orders: ((LimitOrder | StopLimitOrder) & { type: 'Limit' | 'StopLimit' })[] = [{
+  private placeBracket(baseOrder: NewLimitOrder, topOrderPrice: number | null, bottomOrderPrice: number | null, portfolio: string) {
+    const orders: ((NewLimitOrder | NewStopLimitOrder) & { type: 'Limit' | 'StopLimit' })[] = [{
       ...baseOrder,
       type: 'Limit',
     }];
@@ -422,7 +465,7 @@ export class ScalperOrdersService {
         side: baseOrder.side === Side.Buy ? Side.Sell : Side.Buy,
         type: 'StopLimit',
         activate: false
-      } as StopLimitOrder & { type: 'StopLimit' });
+      } as NewStopLimitOrder & { type: 'StopLimit' });
     }
 
     if (bottomOrderPrice) {
@@ -433,7 +476,7 @@ export class ScalperOrdersService {
         side: baseOrder.side === Side.Buy ? Side.Sell : Side.Buy,
         type: 'StopLimit',
         activate: false
-      } as StopLimitOrder & { type: 'StopLimit' });
+      } as NewStopLimitOrder & { type: 'StopLimit' });
     }
 
     this.orderService.submitOrdersGroup(orders, portfolio, ExecutionPolicy.TriggerBracketOrders).subscribe();

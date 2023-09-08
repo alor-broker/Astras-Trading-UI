@@ -1,0 +1,33 @@
+<ng-container *transloco="let t; scope: 'order-commands/limit-order-price-change'">
+  <div *ngIf="activeLimitOrders$ | async as activeLimitOrders" class="w-100 d-flex flex-gap-6">
+    <div class="buy">
+      <ng-container *ngTemplateOutlet="buttonsGroup context: {
+            disabledTooltip:  t('orderCommandsLimitOrderPriceChange.noBuyOrdersTooltip'),
+            disabled: !hasOrdersWithSide(activeLimitOrders, orderSides.Buy),
+            side:orderSides.Buy
+            }"></ng-container>
+    </div>
+    <div class="sell">
+      <ng-container *ngTemplateOutlet="buttonsGroup context: {
+            disabledTooltip:  t('orderCommandsLimitOrderPriceChange.noSellOrdersTooltip'),
+            disabled: !hasOrdersWithSide(activeLimitOrders, orderSides.Sell),
+            side:orderSides.Sell
+            }"></ng-container>
+    </div>
+  </div>
+
+  <ng-template #buttonsGroup let-disabled="disabled" let-disabledTooltip="disabledTooltip" let-side="side">
+    <div [nzTooltipPlacement]="['left', 'right', 'bottom']"
+         [nzTooltipTitle]="disabledTooltip"
+         [nzTooltipTrigger]="disabled ? 'hover' : null"
+         class="buttons-container"
+         nz-tooltip
+    >
+      <div *ngFor="let step of sortedSteps" class="step-btn">
+        <button (click)="updateLimitOrdersPrice(step, side)" [disabled]="disabled" nz-button>+{{step}}</button>
+        <button (click)="updateLimitOrdersPrice(-step, side)" [disabled]="disabled" nz-button>-{{step}}</button>
+      </div>
+    </div>
+  </ng-template>
+</ng-container>
+

@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, of, switchMap, take, tap } from "rxjs";
-import { LocalStorageService } from "../../../shared/services/local-storage.service";
-import { ArbitrageSpread } from "../models/arbitrage-spread.model";
-import { GuidGenerator } from "../../../shared/utils/guid";
-import { QuotesService } from "../../../shared/services/quotes.service";
-import { OrderService } from "../../../shared/services/orders/order.service";
-import { Side } from "../../../shared/models/enums/side.model";
-import { SubmitOrderResult } from "../../command/models/order.model";
-import { PortfolioSubscriptionsService } from "../../../shared/services/portfolio-subscriptions.service";
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, combineLatest, map, Observable, of, switchMap, take, tap} from "rxjs";
+import {LocalStorageService} from "../../../shared/services/local-storage.service";
+import {ArbitrageSpread} from "../models/arbitrage-spread.model";
+import {GuidGenerator} from "../../../shared/utils/guid";
+import {QuotesService} from "../../../shared/services/quotes.service";
+import {OrderService} from "../../../shared/services/orders/order.service";
+import {Side} from "../../../shared/models/enums/side.model";
+import {PortfolioSubscriptionsService} from "../../../shared/services/portfolio-subscriptions.service";
+import {SubmitOrderResult} from "../../../shared/models/orders/new-order.model";
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +26,8 @@ export class ArbitrageSpreadService {
     private readonly quotesService: QuotesService,
     private readonly orderService: OrderService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
-  ) { }
+  ) {
+  }
 
   getSpreadsSubscription(): Observable<ArbitrageSpread[]> {
     const localStorageSpreads = this.localStorage.getItem(this.spreadsKey) as ArbitrageSpread[];
@@ -138,10 +139,10 @@ export class ArbitrageSpreadService {
 
   buySpread(spread: ArbitrageSpread, volume = 1, side: Side = Side.Buy): Observable<SubmitOrderResult | null> {
     return this.orderService.submitMarketOrder({
-            instrument: spread.firstLeg.instrument,
-            side: side,
-            quantity: spread.firstLeg.quantity * volume
-          }, spread.firstLeg.portfolio.portfolio)
+      instrument: spread.firstLeg.instrument,
+      side: side,
+      quantity: spread.firstLeg.quantity * volume
+    }, spread.firstLeg.portfolio.portfolio)
       .pipe(
         switchMap((order) => {
           if (!order) {

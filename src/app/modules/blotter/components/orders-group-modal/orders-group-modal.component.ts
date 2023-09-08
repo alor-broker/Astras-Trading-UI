@@ -13,9 +13,8 @@ import { PortfolioSubscriptionsService } from "../../../../shared/services/portf
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterSettings } from "../../models/blotter-settings.model";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { Order } from "../../../../shared/models/orders/order.model";
+import {Order, StopOrder} from "../../../../shared/models/orders/order.model";
 import { OrdersGroupTreeNode } from "../../../../shared/models/orders/orders-group.model";
-import { StopOrder } from "../../../../shared/models/orders/stop-order.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 

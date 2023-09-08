@@ -1,6 +1,7 @@
 import { NzTreeNodeOptions } from "ng-zorro-antd/core/tree/nz-tree-base-node";
-import { Order } from "./order.model";
-import { StopOrder } from "./stop-order.model";
+import {Order, StopOrder} from "./order.model";
+
+
 
 export enum ExecutionPolicy {
   OnExecuteOrCancel = 'OnExecuteOrCancel',
@@ -41,4 +42,10 @@ export interface OrdersGroupTreeNode extends NzTreeNodeOptions {
   };
   status?: 'Active' | 'Canceled' | 'Filled';
   children?: OrdersGroupTreeNode[]
+}
+
+
+export interface SubmitGroupResult {
+  isSuccess: boolean;
+  groupNumber?: string;
 }

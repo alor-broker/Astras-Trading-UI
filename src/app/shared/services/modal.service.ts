@@ -68,17 +68,6 @@ export class ModalService {
     });
   }
 
-  openCommandModal(data: CommandParams) {
-    this.shouldShowCommandModal.next(true);
-    const portfolio = this.selectedPortfolio;
-    if (portfolio) {
-      this.commandParams.next({
-        ...data,
-        user: portfolio
-      });
-    }
-  }
-
   openEditModal(data: EditParams) {
     this.shouldShowEditModal.next(true);
     this.editParams.next(data);

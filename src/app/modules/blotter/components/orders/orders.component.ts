@@ -25,7 +25,6 @@ import { OrderFilter } from '../../models/order-filter.model';
 import { Order } from '../../../../shared/models/orders/order.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { BlotterService } from '../../services/blotter.service';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { NzTableComponent } from 'ng-zorro-antd/table';
@@ -43,6 +42,8 @@ import { OrdersGroupService } from "../../../../shared/services/orders/orders-gr
 import { DomHelper } from "../../../../shared/utils/dom-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BaseTableComponent } from "../base-table/base-table.component";
+import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import {OrderType} from "../../../../shared/models/orders/orders-dialog.model";
 
 interface DisplayOrder extends Order {
   residue: string,
@@ -221,10 +222,10 @@ export class OrdersComponent
     protected readonly settingsService: WidgetSettingsService,
     protected readonly service: BlotterService,
     private readonly canceller: OrderCancellerService,
-    private readonly modal: ModalService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     private readonly ordersGroupService: OrdersGroupService,
+    private readonly ordersDialogService: OrdersDialogService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(service, settingsService, translatorService, destroyRef);
@@ -328,23 +329,29 @@ export class OrdersComponent
     event.preventDefault();
     event.stopPropagation();
 
-    this.modal.openEditModal({
-      type: order.type,
-      quantity: order.qty - (order.filledQtyBatch ?? 0),
-      orderId: order.id,
-      price: order.price,
-      instrument: {
-        symbol: order.symbol,
-        exchange: order.exchange
-      },
-      user: {
-        portfolio: order.portfolio,
-        exchange: order.exchange
-      },
-      side: order.side,
-      timeInForce: order.timeInForce,
-      icebergFixed: order.icebergFixed,
-      icebergVariance: order.icebergVariance
+    if(order.type !== OrderType.Limit) {
+      return;
+    }
+
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.ordersDialogService.openEditOrderDialog({
+        instrumentKey: {
+          symbol: order.symbol,
+          exchange: order.exchange
+        },
+        portfolioKey: {
+          portfolio: s.portfolio,
+          exchange: s.exchange
+        },
+        orderId: order.id,
+        orderType: OrderType.Limit,
+        initialValues: {
+          price: order.price,
+          quantity: order.qty - (order.filledQtyBatch ?? 0)
+        }
+      });
     });
   }
 

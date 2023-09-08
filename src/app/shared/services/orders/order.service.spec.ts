@@ -7,17 +7,6 @@ import {
 import { TestBed } from "@angular/core/testing";
 import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import {
-  LimitOrder,
-  LimitOrderEdit,
-  MarketOrder,
-  StopLimitOrder,
-  StopLimitOrderEdit,
-  StopMarketOrder,
-  StopMarketOrderEdit,
-  SubmitOrderResponse,
-  SubmitOrderResult
-} from "../../../modules/command/models/order.model";
-import {
   of,
   throwError
 } from "rxjs";
@@ -25,6 +14,13 @@ import { Side } from "../../models/enums/side.model";
 import { toUnixTimestampSeconds } from "../../utils/datetime";
 import { InstantNotificationsService } from '../instant-notifications.service';
 import {LessMore} from "../../models/enums/less-more.model";
+import {
+  NewLimitOrder,
+  NewMarketOrder, NewStopLimitOrder, NewStopMarketOrder,
+  SubmitOrderResponse,
+  SubmitOrderResult
+} from "../../models/orders/new-order.model";
+import {LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit} from "../../models/orders/edit-order.model";
 
 
 describe('OrderService', () => {
@@ -78,7 +74,7 @@ describe('OrderService', () => {
   });
 
   describe('#submitMarketOrder', () => {
-    const submitOrder = (order: MarketOrder, onResult?: (result: SubmitOrderResult) => void) => {
+    const submitOrder = (order: NewMarketOrder, onResult?: (result: SubmitOrderResult) => void) => {
       service.submitMarketOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
@@ -96,7 +92,7 @@ describe('OrderService', () => {
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
 
-      submitOrder({} as MarketOrder);
+      submitOrder({} as NewMarketOrder);
     });
 
     it('should send correct headers', (done) => {
@@ -108,11 +104,11 @@ describe('OrderService', () => {
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
 
-      submitOrder({} as MarketOrder);
+      submitOrder({} as NewMarketOrder);
     });
 
     it('all parameters should be provided', (done) => {
-      const order: MarketOrder = {
+      const order: NewMarketOrder = {
         instrument: {
           symbol: 'ABC',
           exchange: 'MOEX'
@@ -140,7 +136,7 @@ describe('OrderService', () => {
       httpSpy.post.and.returnValue(of({ orderNumber: '1' } as SubmitOrderResponse));
 
       submitOrder(
-        {} as MarketOrder,
+        {} as NewMarketOrder,
         result => {
           done();
 
@@ -164,7 +160,7 @@ describe('OrderService', () => {
       );
 
       submitOrder(
-        {} as MarketOrder,
+        {} as NewMarketOrder,
         result => {
           done();
 
@@ -179,7 +175,7 @@ describe('OrderService', () => {
       httpSpy.post.and.returnValue(throwError(() => Error()));
 
       submitOrder(
-        {} as MarketOrder,
+        {} as NewMarketOrder,
         result => {
           done();
 
@@ -192,7 +188,7 @@ describe('OrderService', () => {
   });
 
   describe('#submitLimitOrder', () => {
-    const submitOrder = (order: LimitOrder, onResult?: (result: SubmitOrderResult) => void) => {
+    const submitOrder = (order: NewLimitOrder, onResult?: (result: SubmitOrderResult) => void) => {
       service.submitLimitOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
@@ -210,7 +206,7 @@ describe('OrderService', () => {
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
 
-      submitOrder({} as LimitOrder);
+      submitOrder({} as NewLimitOrder);
     });
 
     it('should send correct headers', (done) => {
@@ -222,11 +218,11 @@ describe('OrderService', () => {
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
 
-      submitOrder({} as LimitOrder);
+      submitOrder({} as NewLimitOrder);
     });
 
     it('all parameters should be provided', (done) => {
-      const order: LimitOrder = {
+      const order: NewLimitOrder = {
         instrument: {
           symbol: 'ABC',
           exchange: 'MOEX'
@@ -256,7 +252,7 @@ describe('OrderService', () => {
       httpSpy.post.and.returnValue(of({ orderNumber: '1' } as SubmitOrderResponse));
 
       submitOrder(
-        {} as LimitOrder,
+        {} as NewLimitOrder,
         result => {
           done();
 
@@ -280,7 +276,7 @@ describe('OrderService', () => {
       );
 
       submitOrder(
-        {} as LimitOrder,
+        {} as NewLimitOrder,
         result => {
           done();
 
@@ -295,7 +291,7 @@ describe('OrderService', () => {
       httpSpy.post.and.returnValue(throwError(() => Error()));
 
       submitOrder(
-        {} as LimitOrder,
+        {} as NewLimitOrder,
         result => {
           done();
 
@@ -308,7 +304,7 @@ describe('OrderService', () => {
   });
 
   describe('#submitStopMarketOrder', () => {
-    const submitOrder = (order: StopMarketOrder, onResult?: (result: SubmitOrderResult) => void) => {
+    const submitOrder = (order: NewStopMarketOrder, onResult?: (result: SubmitOrderResult) => void) => {
       service.submitStopMarketOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
@@ -326,7 +322,7 @@ describe('OrderService', () => {
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
 
-      submitOrder({} as StopMarketOrder);
+      submitOrder({} as NewStopMarketOrder);
     });
 
     it('should send correct headers', (done) => {
@@ -338,11 +334,11 @@ describe('OrderService', () => {
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
 
-      submitOrder({} as StopMarketOrder);
+      submitOrder({} as NewStopMarketOrder);
     });
 
     it('all parameters should be provided', (done) => {
-      const order: StopMarketOrder = {
+      const order: NewStopMarketOrder = {
         instrument: {
           symbol: 'ABC',
           exchange: 'MOEX'
@@ -352,7 +348,7 @@ describe('OrderService', () => {
         condition: LessMore.Less,
         triggerPrice: 50,
         stopEndUnixTime: new Date()
-      } as StopMarketOrder;
+      } as NewStopMarketOrder;
 
       httpSpy.post.and.callFake((url: string, body: any) => {
         done();
@@ -376,7 +372,7 @@ describe('OrderService', () => {
       httpSpy.post.and.returnValue(of({ orderNumber: '1' } as SubmitOrderResponse));
 
       submitOrder(
-        {} as StopMarketOrder,
+        {} as NewStopMarketOrder,
         result => {
           done();
 
@@ -400,7 +396,7 @@ describe('OrderService', () => {
       );
 
       submitOrder(
-        {} as StopMarketOrder,
+        {} as NewStopMarketOrder,
         result => {
           done();
 
@@ -415,7 +411,7 @@ describe('OrderService', () => {
       httpSpy.post.and.returnValue(throwError(() => Error()));
 
       submitOrder(
-        {} as StopMarketOrder,
+        {} as NewStopMarketOrder,
         result => {
           done();
 
@@ -428,7 +424,7 @@ describe('OrderService', () => {
   });
 
   describe('#submitStopLimitOrder', () => {
-    const submitOrder = (order: StopLimitOrder, onResult?: (result: SubmitOrderResult) => void) => {
+    const submitOrder = (order: NewStopLimitOrder, onResult?: (result: SubmitOrderResult) => void) => {
       service.submitStopLimitOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
@@ -446,7 +442,7 @@ describe('OrderService', () => {
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
 
-      submitOrder({} as StopLimitOrder);
+      submitOrder({} as NewStopLimitOrder);
     });
 
     it('should send correct headers', (done) => {
@@ -458,11 +454,11 @@ describe('OrderService', () => {
         return of({ orderNumber: '1' } as SubmitOrderResponse);
       });
 
-      submitOrder({} as StopLimitOrder);
+      submitOrder({} as NewStopLimitOrder);
     });
 
     it('all parameters should be provided', (done) => {
-      const order: StopLimitOrder = {
+      const order: NewStopLimitOrder = {
         instrument: {
           symbol: 'ABC',
           exchange: 'MOEX'
@@ -473,7 +469,7 @@ describe('OrderService', () => {
         triggerPrice: 50,
         stopEndUnixTime: new Date(),
         price: 100
-      } as StopLimitOrder;
+      } as NewStopLimitOrder;
 
       httpSpy.post.and.callFake((url: string, body: any) => {
         done();
@@ -498,7 +494,7 @@ describe('OrderService', () => {
       httpSpy.post.and.returnValue(of({ orderNumber: '1' } as SubmitOrderResponse));
 
       submitOrder(
-        {} as StopLimitOrder,
+        {} as NewStopLimitOrder,
         result => {
           done();
 
@@ -522,7 +518,7 @@ describe('OrderService', () => {
       );
 
       submitOrder(
-        {} as StopLimitOrder,
+        {} as NewStopLimitOrder,
         result => {
           done();
 
@@ -538,7 +534,7 @@ describe('OrderService', () => {
       httpSpy.post.and.returnValue(throwError(() => Error()));
 
       submitOrder(
-        {} as StopLimitOrder,
+        {} as NewStopLimitOrder,
         result => {
           done();
 
@@ -717,6 +713,7 @@ describe('OrderService', () => {
     });
 
     it('all parameters should be provided', (done) => {
+      const orderStopTime = new Date();
       const order: StopMarketOrderEdit = {
         instrument: {
           symbol: 'ABC',
@@ -724,10 +721,10 @@ describe('OrderService', () => {
         },
         quantity: 100,
         id: '123',
-        conditionType: LessMore.Less,
+        condition: LessMore.Less,
         triggerPrice: 100,
         side: Side.Buy,
-        endTime: 123
+        stopEndUnixTime:orderStopTime
       };
 
       httpSpy.put.and.callFake((url: string, body: any) => {
@@ -738,9 +735,9 @@ describe('OrderService', () => {
         expect(body.instrument.exchange).toBe(order.instrument.exchange);
         expect(body.quantity).toBe(order.quantity);
         expect(body.side).toBe(order.side);
-        expect(body.conditionType).toBe(order.conditionType);
+        expect(body.condition).toBe(order.condition);
         expect(body.triggerPrice).toBe(order.triggerPrice);
-        expect(body.endTime).toBe(order.endTime);
+        expect(body.stopEndUnixTime).toBe(toUnixTimestampSeconds(orderStopTime));
 
         return of({ orderNumber: order.id } as SubmitOrderResponse);
       });
@@ -846,6 +843,8 @@ describe('OrderService', () => {
     });
 
     it('all parameters should be provided', (done) => {
+      const orderStopTime = new Date();
+
       const order: StopLimitOrderEdit = {
         instrument: {
           symbol: 'ABC',
@@ -853,11 +852,11 @@ describe('OrderService', () => {
         },
         quantity: 100,
         id: '123',
-        conditionType: LessMore.Less,
+        condition: LessMore.Less,
         triggerPrice: 100,
         price: 100,
         side: Side.Buy,
-        endTime: 123
+        stopEndUnixTime: orderStopTime
       };
 
       httpSpy.put.and.callFake((url: string, body: any) => {
@@ -868,9 +867,9 @@ describe('OrderService', () => {
         expect(body.instrument.exchange).toBe(order.instrument.exchange);
         expect(body.quantity).toBe(order.quantity);
         expect(body.side).toBe(order.side);
-        expect(body.conditionType).toBe(order.conditionType);
+        expect(body.condition).toBe(order.condition);
         expect(body.triggerPrice).toBe(order.triggerPrice);
-        expect(body.endTime).toBe(order.endTime);
+        expect(body.stopEndUnixTime).toBe(toUnixTimestampSeconds(orderStopTime));
         expect(body.price).toBe(order.price);
 
         return of({ orderNumber: order.id } as SubmitOrderResponse);

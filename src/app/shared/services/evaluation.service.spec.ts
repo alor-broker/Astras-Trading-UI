@@ -20,12 +20,6 @@ describe('EvaluationService', () => {
         HttpClientTestingModule
       ],
       providers: [
-        {
-          provide: DashboardContextService,
-          useValue: {
-            selectedPortfolio$: new Subject()
-          }
-        },
         EvaluationService,
         ...commonTestProviders
       ]

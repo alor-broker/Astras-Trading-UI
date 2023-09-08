@@ -9,7 +9,6 @@ import { DashboardWidgetComponent } from './widgets/dashboard-widget/dashboard-w
 import { LightChartModule } from '../light-chart/light-chart.module';
 import { InstrumentsModule } from '../instruments/instruments.module';
 import { BlotterModule } from '../blotter/blotter.module';
-import { CommandModule } from '../command/command.module';
 import { HelpModule } from '../help/help.module';
 import { InfoModule } from '../info/info.module';
 import { TerminalSettingsModule } from '../terminal-settings/terminal-settings.module';
@@ -20,7 +19,6 @@ import { NewsModule } from "../news/news.module";
 import { ExchangeRateModule } from "../exchange-rate/exchange-rate.module";
 import { TechChartModule } from "../tech-chart/tech-chart.module";
 import { AllInstrumentsModule } from "../all-instruments/all-instruments.module";
-import { OrderSubmitModule } from "../order-submit/order-submit.module";
 import { NotificationsModule } from '../notifications/notifications.module';
 import { FeedbackModule } from '../feedback/feedback.module';
 import { ApplicationMetaModule } from '../application-meta/application-meta.module';
@@ -43,6 +41,7 @@ import { EventsCalendarModule } from "../events-calendar/events-calendar.module"
 import { OptionBoardModule } from "../option-board/option-board.module";
 import { ArbitrageSpreadModule } from "../arbitrage-spread/arbitrage-spread.module";
 import {PortfolioSummaryModule} from "../portfolio-summary/portfolio-summary.module";
+import {OrderCommandsModule} from "../order-commands/order-commands.module";
 
 @NgModule({
   declarations: [
@@ -64,7 +63,6 @@ import {PortfolioSummaryModule} from "../portfolio-summary/portfolio-summary.mod
         LightChartModule,
         InstrumentsModule,
         BlotterModule,
-        CommandModule,
         HelpModule,
         InfoModule,
         TerminalSettingsModule,
@@ -74,7 +72,6 @@ import {PortfolioSummaryModule} from "../portfolio-summary/portfolio-summary.mod
         ExchangeRateModule,
         TechChartModule,
         AllInstrumentsModule,
-        OrderSubmitModule,
         NotificationsModule,
         FeedbackModule,
         ApplicationMetaModule,
@@ -89,6 +86,7 @@ import {PortfolioSummaryModule} from "../portfolio-summary/portfolio-summary.mod
         OptionBoardModule,
         ArbitrageSpreadModule,
         PortfolioSummaryModule,
+        OrderCommandsModule,
         // components
     ],
   providers: [

@@ -2,6 +2,7 @@ import { CommandType } from "../enums/command-type.model";
 import { InstrumentKey } from "../instruments/instrument-key.model";
 import { PortfolioKey } from "../portfolio-key.model";
 import { Side } from "../enums/side.model";
+import {TimeInForce} from "../orders/order.model";
 
 export interface CommandParams {
   instrument: InstrumentKey;
@@ -20,10 +21,4 @@ export interface CommandParams {
   bottomOrderSide?: Side;
 }
 
-export enum TimeInForce {
-  OneDay = 'oneday',
-  ImmediateOrCancel = 'immediateorcancel',
-  FillOrKill = 'fillorkill',
-  AtTheClose = 'attheclose',
-  GoodTillCancelled = 'goodtillcancelled'
-}
+

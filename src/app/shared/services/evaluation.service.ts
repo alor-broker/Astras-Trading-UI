@@ -1,23 +1,12 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import {
-  filter,
-  Observable,
-  of,
-  switchMap,
-  take
-} from 'rxjs';
-import { PortfolioKey } from 'src/app/shared/models/portfolio-key.model';
-import { environment } from 'src/environments/environment';
-import {
-  EvaluationBaseProperties,
-  QuantityEvaluationProperties
-} from '../models/evaluation-base-properties.model';
-import { EvaluationRequest } from '../models/evaluation-request.model';
-import { Evaluation } from '../models/evaluation.model';
-import { ErrorHandlerService } from './handle-error/error-handler.service';
-import { catchHttpError } from '../utils/observable-helper';
-import { DashboardContextService } from './dashboard-context.service';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Observable, of, take} from 'rxjs';
+import {environment} from 'src/environments/environment';
+import {EvaluationBaseProperties, QuantityEvaluationProperties} from '../models/evaluation-base-properties.model';
+import {EvaluationRequest} from '../models/evaluation-request.model';
+import {Evaluation} from '../models/evaluation.model';
+import {ErrorHandlerService} from './handle-error/error-handler.service';
+import {catchHttpError} from '../utils/observable-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -27,29 +16,25 @@ export class EvaluationService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly currentDashboardService: DashboardContextService,
     private readonly errorHandlerService: ErrorHandlerService
   ) {
   }
 
   evaluateOrder(baseRequest: EvaluationBaseProperties): Observable<Evaluation | null> {
-    return this.currentDashboardService.selectedPortfolio$.pipe(
-      filter((pk): pk is PortfolioKey => !!pk),
-      switchMap(portfolio => {
-        return this.http.post<Evaluation>(this.url, {
-          portfolio: portfolio.portfolio,
-          ticker: baseRequest.instrument.symbol,
-          exchange: baseRequest.instrument.exchange,
-          board: baseRequest.instrument.instrumentGroup,
-          price: baseRequest.price,
-          lotQuantity: baseRequest.lotQuantity,
-        } as EvaluationRequest);
-      }),
+    return this.http.post<Evaluation>(this.url, {
+      portfolio: baseRequest.portfolio,
+      ticker: baseRequest.instrument.symbol,
+      exchange: baseRequest.instrument.exchange,
+      board: baseRequest.instrument.instrumentGroup,
+      price: baseRequest.price,
+      lotQuantity: baseRequest.lotQuantity,
+    } as EvaluationRequest).pipe(
       catchHttpError<Evaluation | null>(null, this.errorHandlerService)
     );
   }
 
-  evaluateQuantity(portfolio: string, items: QuantityEvaluationProperties[]): Observable<Evaluation[] | null> {
+
+  evaluateBatch(portfolio: string, items: QuantityEvaluationProperties[]): Observable<Evaluation[] | null> {
     if (items.length === 0) {
       return of([]);
     }

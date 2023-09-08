@@ -4,6 +4,7 @@ export interface EvaluationBaseProperties {
   price: number,
   lotQuantity: number,
   instrument: InstrumentKey,
+  portfolio: string,
   instrumentCurrency?: string
 }
 

@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
@@ -16,6 +15,7 @@ import {
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
+import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -30,7 +30,6 @@ describe('StopOrdersComponent', () => {
   };
 
   beforeEach(async () => {
-    const modalSpy = jasmine.createSpyObj('ModalService', ['closeCommandModal']);
     const cancelSpy = jasmine.createSpyObj('OrderCancellerService', ['cancelOrder']);
     const timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)));
@@ -48,13 +47,18 @@ describe('StopOrdersComponent', () => {
           }
         },
         { provide: BlotterService, useClass: MockServiceBlotter },
-        { provide: ModalService, useValue: modalSpy },
         { provide: OrderCancellerService, useValue: cancelSpy },
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
         {
           provide: OrdersGroupService,
           useValue: {
             getAllOrderGroups: jasmine.createSpy('getAllOrderGroups').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: OrdersDialogService,
+          useValue: {
+            openEditOrderDialog: jasmine.createSpy('openEditOrderDialog').and.callThrough()
           }
         },
         ...commonTestProviders

@@ -1,36 +1,25 @@
-import {
-  Component, DestroyRef,
-  Input,
-  OnInit
-} from '@angular/core';
-import { OrderBook } from "../../models/orderbook.model";
-import { OrderbookSettings } from "../../models/orderbook-settings.model";
-import {
-  filter,
-  Observable,
-  of,
-  shareReplay,
-  take
-} from "rxjs";
-import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
-import { CommandParams } from "../../../../shared/models/commands/command-params.model";
-import { CommandType } from "../../../../shared/models/enums/command-type.model";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
-import { ModalService } from "../../../../shared/services/modal.service";
-import { CurrentOrder } from "../../models/orderbook-view-row.model";
-import { OrderbookService } from "../../services/orderbook.service";
-import { map } from 'rxjs/operators';
-import { getTypeByCfi } from '../../../../shared/utils/instruments';
-import { InstrumentType } from '../../../../shared/models/enums/instrument-type.model';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
-import { ThemeService } from '../../../../shared/services/theme.service';
-import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
+import {Component, DestroyRef, Input, OnInit} from '@angular/core';
+import {OrderBook} from "../../models/orderbook.model";
+import {OrderbookSettings} from "../../models/orderbook-settings.model";
+import {filter, Observable, of, shareReplay, take} from "rxjs";
+import {SelectedPriceData} from "../../../../shared/models/orders/selected-order-price.model";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {WidgetsDataProviderService} from "../../../../shared/services/widgets-data-provider.service";
+import {CurrentOrder} from "../../models/orderbook-view-row.model";
+import {OrderbookService} from "../../services/orderbook.service";
+import {map} from 'rxjs/operators';
+import {getTypeByCfi, toInstrumentKey} from '../../../../shared/utils/instruments';
+import {InstrumentType} from '../../../../shared/models/enums/instrument-type.model';
+import {InstrumentsService} from '../../../instruments/services/instruments.service';
+import {NumberDisplayFormat} from '../../../../shared/models/enums/number-display-format';
+import {ThemeService} from '../../../../shared/services/theme.service';
+import {ThemeSettings} from '../../../../shared/models/settings/theme-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {MathHelper} from "../../../../shared/utils/math-helper";
+import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import {OrderType} from "../../../../shared/models/orders/orders-dialog.model";
 
 interface ExtendedOrderbookSettings {
   widgetSettings: OrderbookSettings;
@@ -55,7 +44,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     private readonly settingsService: WidgetSettingsService,
     private readonly instrumentsService: InstrumentsService,
     private readonly widgetsDataProvider: WidgetsDataProviderService,
-    private readonly modal: ModalService,
+    private readonly ordersDialogService: OrdersDialogService,
     private readonly service: OrderbookService,
     private readonly themeService: ThemeService,
     private readonly destroyRef: DestroyRef
@@ -96,32 +85,38 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
         });
       }
       else {
-        const params: CommandParams = {
-          instrument: { ...settings.widgetSettings },
-          price,
-          quantity: quantity ?? 1,
-          type: CommandType.Limit,
-        };
-        this.modal.openCommandModal(params);
+        this.ordersDialogService.openNewOrderDialog({
+          instrumentKey: toInstrumentKey(settings.widgetSettings),
+          initialValues: {
+            orderType:OrderType.Limit,
+            price,
+            quantity: quantity ?? 1
+          }
+        });
       }
     });
   }
 
   updateOrderPrice(order: CurrentOrder, price: number) {
-    this.modal.openEditModal({
-      type: order.type,
-      quantity: order.volume,
-      orderId: order.orderId,
-      price: price,
-      instrument: {
+    if(order.type !== 'limit' && order.type !== 'stop' &&  order.type !== 'stoplimit') {
+      return;
+    }
+
+    this.ordersDialogService.openEditOrderDialog({
+      instrumentKey: {
         symbol: order.symbol,
         exchange: order.exchange
       },
-      user: {
+      portfolioKey: {
         portfolio: order.portfolio,
         exchange: order.exchange
       },
-      side: order.side
+      orderId: order.orderId,
+      orderType: order.type === 'limit' ? OrderType.Limit : OrderType.Stop,
+      initialValues: {
+        quantity: order.volume,
+        price
+      }
     });
   }
 

@@ -1,0 +1,44 @@
+@import "theme-mixin";
+@import "buy-sell-button-mixin";
+
+.themeMixin({
+  :host {
+    .sell {
+      color: @sell-color;
+    }
+
+    .buy {
+      color: @buy-color;
+    }
+
+    label {
+      color: @heading-color;
+    }
+
+    .position-badge {
+      cursor: pointer;
+      padding: 0 5px;
+      border-radius: .5em;
+      font-weight: 600;
+      color: @layout-header-color;
+
+      &.long {
+        background: @buy-color;
+      }
+
+      &.short {
+        background: @sell-color;
+      }
+    }
+  }
+});
+
+.selectable {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.instrument-info {
+  justify-content: space-between;
+}
+

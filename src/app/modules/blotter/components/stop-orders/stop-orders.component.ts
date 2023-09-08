@@ -31,8 +31,6 @@ import { OrderCancellerService } from 'src/app/shared/services/order-canceller.s
 import { OrderFilter } from '../../models/order-filter.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { BlotterService } from '../../services/blotter.service';
-import { ModalService } from 'src/app/shared/services/modal.service';
-import { StopOrder } from 'src/app/shared/models/orders/stop-order.model';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { NzTableComponent } from 'ng-zorro-antd/table';
@@ -43,15 +41,16 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import { LessMore } from "../../../../shared/models/enums/less-more.model";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { DomHelper } from "../../../../shared/utils/dom-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BaseTableComponent } from "../base-table/base-table.component";
+import {StopOrder} from "../../../../shared/models/orders/order.model";
+import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import {OrderType} from "../../../../shared/models/orders/orders-dialog.model";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -254,9 +253,8 @@ export class StopOrdersComponent
     protected readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
     private readonly canceller: OrderCancellerService,
-    private readonly modal: ModalService,
+    private readonly ordersDialogService: OrdersDialogService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly dashboardContextService: DashboardContextService,
     protected readonly translatorService: TranslatorService,
     private readonly ordersGroupService: OrdersGroupService,
     protected readonly destroyRef: DestroyRef
@@ -362,26 +360,22 @@ export class StopOrdersComponent
     event.preventDefault();
     event.stopPropagation();
 
-    this.modal.openEditModal({
-      type: order.type,
-      quantity: order.qty,
-      orderId: order.id,
-      price: order.price,
-      instrument: {
-        symbol: order.symbol,
-        exchange: order.exchange
-      },
-      user: {
-        portfolio: order.portfolio,
-        exchange: order.exchange
-      },
-      side: order.side,
-      triggerPrice: order.triggerPrice,
-      stopEndUnixTime: order.endTime,
-      condition: order.conditionType === 'less' ? LessMore.Less : LessMore.More,
-      timeInForce: order.timeInForce,
-      icebergFixed: order.icebergFixed,
-      icebergVariance: order.icebergVariance
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.ordersDialogService.openEditOrderDialog({
+        instrumentKey: {
+          symbol: order.symbol,
+          exchange: order.exchange
+        },
+        portfolioKey: {
+          portfolio: s.portfolio,
+          exchange: s.exchange
+        },
+        orderId: order.id,
+        orderType: OrderType.Stop,
+        initialValues: {}
+      });
     });
   }
 

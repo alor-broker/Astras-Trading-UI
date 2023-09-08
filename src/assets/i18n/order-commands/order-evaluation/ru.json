@@ -1,0 +1,8 @@
+﻿{
+  "evaluationCost": "Стоимость",
+  "evaluationCommission": "Комиссия",
+  "quantityToBuy": "К покупке",
+  "quantityToSell": "К продаже",
+  "quantityToBuyTooltip": "Маржинальная покупка / Покупка на свои",
+  "quantityToSellTooltip": "Маржинальная продажа / Продажа на свои"
+}

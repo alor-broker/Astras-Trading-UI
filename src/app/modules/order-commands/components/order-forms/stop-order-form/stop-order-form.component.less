@@ -1,0 +1,32 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .loss {
+      color: @sell-color;
+    }
+
+    .profit {
+      color: @buy-color;
+    }
+  }
+});
+
+.ant-form-item.compact {
+  margin-bottom: 0;
+}
+
+:host ::ng-deep {
+  nz-form-label {
+    label {
+      display: inherit;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .ant-picker {
+    width: 100%;
+  }
+}

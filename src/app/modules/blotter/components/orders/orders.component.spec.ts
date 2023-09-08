@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ModalService } from 'src/app/shared/services/modal.service';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
@@ -16,6 +15,7 @@ import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
+import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 
 describe('OrdersComponent', () => {
   let component: OrdersComponent;
@@ -23,7 +23,6 @@ describe('OrdersComponent', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    const modalSpy = jasmine.createSpyObj('ModalService', ['closeCommandModal']);
     const cancelSpy = jasmine.createSpyObj('OrderCancellerService', ['cancelOrder']);
     const timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)));
@@ -47,13 +46,18 @@ describe('OrdersComponent', () => {
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
         },
         { provide: BlotterService, useClass: MockServiceBlotter },
-        { provide: ModalService, useValue: modalSpy },
         { provide: OrderCancellerService, useValue: cancelSpy },
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
         {
           provide: OrdersGroupService,
           useValue: {
             getAllOrderGroups: jasmine.createSpy('getAllOrderGroups').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: OrdersDialogService,
+          useValue: {
+            openEditOrderDialog: jasmine.createSpy('openEditOrderDialog').and.callThrough()
           }
         },
         ...commonTestProviders

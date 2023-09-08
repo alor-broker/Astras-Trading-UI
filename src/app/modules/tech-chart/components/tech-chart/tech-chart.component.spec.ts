@@ -23,7 +23,6 @@ import {
   TestData
 } from '../../../../shared/utils/testing';
 import { WidgetsDataProviderService } from '../../../../shared/services/widgets-data-provider.service';
-import { ModalService } from '../../../../shared/services/modal.service';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
@@ -31,6 +30,7 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
 import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
 import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-display-option";
+import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -90,8 +90,6 @@ describe('TechChartComponent', () => {
 
     widgetsDataProviderServiceSpy = jasmine.createSpyObj('WidgetsDataProviderService', ['addNewDataProvider', 'setDataProviderValue']);
 
-    modalServiceSpy = jasmine.createSpyObj('ModalService', ['openCommandModal']);
-
     portfolioSubscriptionsServiceSpy = jasmine.createSpyObj(
       'PortfolioSubscriptionsService',
       [
@@ -115,7 +113,12 @@ describe('TechChartComponent', () => {
         { provide: ThemeService, useValue: themeServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         { provide: WidgetsDataProviderService, useValue: widgetsDataProviderServiceSpy },
-        { provide: ModalService, useValue: modalServiceSpy },
+        {
+          provide: OrdersDialogService,
+          useValue: {
+            openNewOrderDialog: jasmine.createSpy('openNewOrderDialog').and.callThrough()
+          }
+        },
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
         {
           provide: OrderCancellerService,
