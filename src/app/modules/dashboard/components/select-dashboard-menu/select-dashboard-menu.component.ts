@@ -126,6 +126,12 @@ export class SelectDashboardMenuComponent implements OnInit {
     this.dashboardService.renameDashboard(guid, newTitle);
   }
 
+  changeFavoriteDashboard(dashboard: Dashboard) {
+    dashboard.isFavorite
+      ? this.dashboardService.removeDashboardFromFavorites(dashboard.guid)
+      : this.dashboardService.addDashboardToFavorites(dashboard.guid);
+  }
+
   private buildNewDashboardForm() {
     this.newDashboardForm = new FormGroup({
       title: new FormControl(

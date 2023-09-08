@@ -41,6 +41,9 @@ import { EventsCalendarModule } from "../events-calendar/events-calendar.module"
 import { OptionBoardModule } from "../option-board/option-board.module";
 import { ArbitrageSpreadModule } from "../arbitrage-spread/arbitrage-spread.module";
 import {PortfolioSummaryModule} from "../portfolio-summary/portfolio-summary.module";
+import { NzSegmentedModule } from "ng-zorro-antd/segmented";
+import { DragDropModule } from "@angular/cdk/drag-drop";
+import { DashboardsPanelComponent } from './components/dashboards-panel/dashboards-panel.component';
 import {OrderCommandsModule} from "../order-commands/order-commands.module";
 
 @NgModule({
@@ -54,7 +57,8 @@ import {OrderCommandsModule} from "../order-commands/order-commands.module";
     MobileNavbarComponent,
     MobileDashboardComponent,
     MobileInstrumentsHistoryComponent,
-    NetworkIndicatorComponent
+    NetworkIndicatorComponent,
+    DashboardsPanelComponent
   ],
     imports: [
         DashboardRoutingModule,
@@ -86,6 +90,8 @@ import {OrderCommandsModule} from "../order-commands/order-commands.module";
         OptionBoardModule,
         ArbitrageSpreadModule,
         PortfolioSummaryModule,
+        NzSegmentedModule,
+        DragDropModule,
         OrderCommandsModule,
         // components
     ],

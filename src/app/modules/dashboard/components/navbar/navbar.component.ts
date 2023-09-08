@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {BehaviorSubject, Observable, shareReplay, take} from 'rxjs';
+import {Observable, shareReplay, take} from 'rxjs';
 import {AuthService} from 'src/app/shared/services/auth.service';
 import {ModalService} from 'src/app/shared/services/modal.service';
 import {Store} from '@ngrx/store';
@@ -35,10 +35,10 @@ export class NavbarComponent implements OnInit {
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
   selectedDashboard$!: Observable<Dashboard>;
+
   themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
 
-  isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
   private activeInstrument$!: Observable<InstrumentKey | null>;
 
   constructor(
@@ -47,9 +47,9 @@ export class NavbarComponent implements OnInit {
     private readonly store: Store,
     private readonly auth: AuthService,
     private readonly modal: ModalService,
+    private readonly ordersDialogService: OrdersDialogService,
     private readonly themeService: ThemeService,
     private readonly translatorService: TranslatorService,
-    private readonly ordersDialogService: OrdersDialogService
   ) {
   }
 
@@ -59,7 +59,8 @@ export class NavbarComponent implements OnInit {
       map(({ t, d }) => ({
         ...d,
         title: d.title.includes(DefaultDashboardName) ? d.title.replace(DefaultDashboardName, t(['defaultDashboardName']))  : d.title
-      }))
+      })),
+      shareReplay(1)
     );
 
     this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
@@ -96,9 +97,6 @@ export class NavbarComponent implements OnInit {
     );
   }
 
-  changeDashboardSelectionMenuVisibility(value: boolean) {
-    setTimeout(() => this.isDashboardSelectionMenuVisible$.next(value));
-  }
   isFindedPortfolio(portfolio: PortfolioExtended) {
     const { value } = this.searchControl;
     return !value || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes(value.toUpperCase());
