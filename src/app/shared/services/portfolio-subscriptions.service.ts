@@ -15,11 +15,9 @@ import {
 } from 'rxjs/operators';
 import { mapWith } from '../utils/observable-helper';
 import { Position } from '../models/positions/position.model';
-import { Order } from '../models/orders/order.model';
-import {
-  StopOrder,
-  StopOrderData
-} from '../models/orders/stop-order.model';
+import {Order, StopOrder, StopOrderResponse} from '../models/orders/order.model';
+import {PortfolioKey} from "../models/portfolio-key.model";
+import {InstrumentKey} from "../models/instruments/instrument-key.model";
 
 interface PortfolioRequestBase {
   opcode: string;
@@ -102,6 +100,13 @@ export class PortfolioSubscriptionsService {
     );
   }
 
+  getInstrumentPositionSubscription(portfolioKey: PortfolioKey, instrumentKey: InstrumentKey): Observable<Position | null> {
+    return this.getAllPositionsSubscription(portfolioKey.portfolio, portfolioKey.exchange).pipe(
+      map(p => p.find(p => p.symbol === instrumentKey.symbol && p.exchange === instrumentKey.exchange)),
+      map(p => (!p || !p.avgPrice ? null as any : p)),
+    );
+  }
+
   getOrdersSubscription(portfolio: string, exchange: string): Observable<{ allOrders: Order[], existingOrder?: Order, lastOrder?: Order }> {
     return this.getOrCreateSubscription(
       {
@@ -145,7 +150,7 @@ export class PortfolioSubscriptionsService {
       },
       request => of(new Map<string, StopOrder>()).pipe(
         mapWith(
-          () => this.subscriptionsDataFeedService.subscribe<any, StopOrderData>(request, this.getSubscriptionKey),
+          () => this.subscriptionsDataFeedService.subscribe<any, StopOrderResponse>(request, this.getSubscriptionKey),
           (allOrders, order) => ({ allOrders, order })),
         map(({ allOrders, order }) => {
           order.transTime = new Date(order.transTime);

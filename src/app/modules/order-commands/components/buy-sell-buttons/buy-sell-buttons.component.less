@@ -1,0 +1,28 @@
+@import "theme-mixin";
+@import "buy-sell-button-mixin";
+
+.themeMixin({
+  :host {
+    .buy-button {
+      .buySellButton(@buy-color, white, @buy-color-disabled, @buy-color-background-disabled);
+    }
+
+    .sell-button {
+      .buySellButton(@sell-color, white, @sell-color-disabled, @sell-color-background-disabled);
+    }
+  }
+});
+
+.buttons-wrapper {
+  width: 100%;
+
+  display: flex;
+  gap: 6px;
+
+  .ant-btn {
+    width: 50%;
+    flex-grow: 1;
+  }
+}
+
+

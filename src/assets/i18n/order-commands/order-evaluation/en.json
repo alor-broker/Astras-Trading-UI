@@ -1,0 +1,8 @@
+﻿{
+  "evaluationCost": "Cost",
+  "evaluationCommission": "Commission",
+  "quantityToBuy": "For purchase",
+  "quantityToSell": "For sale",
+  "quantityToBuyTooltip": "Margin buy /  Buy on your own",
+  "quantityToSellTooltip": "Margin sell / Sell on your own"
+}

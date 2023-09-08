@@ -1,0 +1,19 @@
+<div
+  *transloco="let t; scope: 'order-commands/working-volumes'"
+  [nzTooltipMouseEnterDelay]="1"
+  [nzTooltipTitle]="t('orderCommandsWorkingVolumes.workingVolumeTooltip')"
+  class="container"
+  nz-tooltip>
+  <ng-container *ngFor="let item of sortedVolumes">
+    <span (click)="emitItemSelected(item)" class="item">{{item}}</span>
+  </ng-container>
+  <ng-container *ngIf="currentAskBid$ | async as currentAskBid">
+    <ng-container>
+      <span (click)="emitItemSelected(currentAskBid.bid.volume, currentAskBid.bid.price)" *ngIf="currentAskBid.bid"
+            class="item bid">Bid</span>
+      <span (click)="emitItemSelected(currentAskBid.ask.volume, currentAskBid.ask.price)" *ngIf="currentAskBid.ask"
+            class="item ask">Ask</span>
+    </ng-container>
+  </ng-container>
+
+</div>

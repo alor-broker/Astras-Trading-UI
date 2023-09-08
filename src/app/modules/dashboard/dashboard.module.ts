@@ -9,7 +9,6 @@ import { DashboardWidgetComponent } from './widgets/dashboard-widget/dashboard-w
 import { LightChartModule } from '../light-chart/light-chart.module';
 import { InstrumentsModule } from '../instruments/instruments.module';
 import { BlotterModule } from '../blotter/blotter.module';
-import { CommandModule } from '../command/command.module';
 import { HelpModule } from '../help/help.module';
 import { InfoModule } from '../info/info.module';
 import { TerminalSettingsModule } from '../terminal-settings/terminal-settings.module';
@@ -20,7 +19,6 @@ import { NewsModule } from "../news/news.module";
 import { ExchangeRateModule } from "../exchange-rate/exchange-rate.module";
 import { TechChartModule } from "../tech-chart/tech-chart.module";
 import { AllInstrumentsModule } from "../all-instruments/all-instruments.module";
-import { OrderSubmitModule } from "../order-submit/order-submit.module";
 import { NotificationsModule } from '../notifications/notifications.module';
 import { FeedbackModule } from '../feedback/feedback.module';
 import { ApplicationMetaModule } from '../application-meta/application-meta.module';
@@ -46,6 +44,7 @@ import {PortfolioSummaryModule} from "../portfolio-summary/portfolio-summary.mod
 import { NzSegmentedModule } from "ng-zorro-antd/segmented";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { DashboardsPanelComponent } from './components/dashboards-panel/dashboards-panel.component';
+import {OrderCommandsModule} from "../order-commands/order-commands.module";
 
 @NgModule({
   declarations: [
@@ -68,7 +67,6 @@ import { DashboardsPanelComponent } from './components/dashboards-panel/dashboar
         LightChartModule,
         InstrumentsModule,
         BlotterModule,
-        CommandModule,
         HelpModule,
         InfoModule,
         TerminalSettingsModule,
@@ -78,7 +76,6 @@ import { DashboardsPanelComponent } from './components/dashboards-panel/dashboar
         ExchangeRateModule,
         TechChartModule,
         AllInstrumentsModule,
-        OrderSubmitModule,
         NotificationsModule,
         FeedbackModule,
         ApplicationMetaModule,
@@ -95,6 +92,7 @@ import { DashboardsPanelComponent } from './components/dashboards-panel/dashboar
         PortfolioSummaryModule,
         NzSegmentedModule,
         DragDropModule,
+        OrderCommandsModule,
         // components
     ],
   providers: [

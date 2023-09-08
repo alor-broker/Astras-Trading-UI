@@ -40,7 +40,6 @@ import {
   map
 } from 'rxjs/operators';
 import { OrderService } from '../../../../shared/services/orders/order.service';
-import { LimitOrder } from '../../../command/models/order.model';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { MathHelper } from '../../../../shared/utils/math-helper';
@@ -49,6 +48,7 @@ import { GuidGenerator } from '../../../../shared/utils/guid';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { OrdersBasketSettings } from '../../models/orders-basket-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {NewLimitOrder} from "../../../../shared/models/orders/new-order.model";
 
 @Component({
   selector: 'ats-orders-basket',
@@ -120,7 +120,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       filter(() => !!this.form?.valid),
       tap(() => this.processing$.next(true)),
       switchMap(settings => {
-        const orders: LimitOrder[] = [];
+        const orders: NewLimitOrder[] = [];
 
         this.form?.value.items.forEach((item: any) => {
           orders.push({
@@ -266,7 +266,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
         };
       }),
       mapWith(
-        items => this.evaluationService.evaluateQuantity(settings.portfolio, items.itemsToEvaluate.map(x => x.evaluationParams!)),
+        items => this.evaluationService.evaluateBatch(settings.portfolio, items.itemsToEvaluate.map(x => x.evaluationParams!)),
         (items, evaluation) => ({ items, evaluation: evaluation ?? [] })
       )
     ).subscribe(({ items, evaluation }) => {

@@ -1,5 +1,21 @@
-import { Side } from "src/app/shared/models/enums/side.model";
-import { TimeInForce } from "../commands/command-params.model";
+import {Side} from "src/app/shared/models/enums/side.model";
+
+export enum TimeInForce {
+  OneDay = 'oneday',
+  ImmediateOrCancel = 'immediateorcancel',
+  FillOrKill = 'fillorkill',
+  AtTheClose = 'attheclose',
+  GoodTillCancelled = 'goodtillcancelled'
+}
+
+export interface IcebergParameters {
+  creationFixedQuantity?: number | null;
+  creationVarianceQuantity?: number | null;
+  visibleQuantity?: number | null;
+  visibleQuantityBatch?: number | null;
+  visibleFilledQuantity?: number | null;
+  visibleFilledQuantityBatch?: number | null;
+}
 
 export interface Order {
   id: string, // 28452595240,
@@ -20,6 +36,16 @@ export interface Order {
   price: number, // 270,
   existing: boolean, // true
   timeInForce?: TimeInForce,
-  icebergFixed?: number,
-  icebergVariance?: number
+  iceberg?: IcebergParameters | null
+}
+
+export interface StopOrder extends Order {
+  triggerPrice: number,
+  conditionType: string,
+  endTime: Date
+}
+
+export interface StopOrderResponse extends Omit<StopOrder, ('conditionType' | 'triggerPrice')> {
+  stopPrice: number,
+  condition: string
 }

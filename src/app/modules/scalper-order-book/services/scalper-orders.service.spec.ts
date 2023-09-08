@@ -1,38 +1,39 @@
-import { fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 
-import { ScalperOrdersService } from './scalper-orders.service';
+import {ScalperOrdersService} from './scalper-orders.service';
 import {
   commonTestProviders,
   generateRandomString,
   getRandomInt,
   sharedModuleImportForTests
 } from "../../../shared/utils/testing";
-import { OrderCancellerService } from "../../../shared/services/order-canceller.service";
-import { OrderService } from "../../../shared/services/orders/order.service";
-import { NzNotificationService } from "ng-zorro-antd/notification";
-import { ModalService } from "../../../shared/services/modal.service";
-import { of } from "rxjs";
-import { Store } from "@ngrx/store";
-import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
-import { Position } from "../../../shared/models/positions/position.model";
-import { LimitOrder, MarketOrder, StopLimitOrder, StopMarketOrder } from "../../command/models/order.model";
-import { Side } from "../../../shared/models/enums/side.model";
-import { CommandParams } from "../../../shared/models/commands/command-params.model";
-import { CommandType } from "../../../shared/models/enums/command-type.model";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { Instrument } from '../../../shared/models/instruments/instrument.model';
-import { CancelCommand } from '../../../shared/models/commands/cancel-command.model';
-import { CurrentOrderDisplay } from '../models/scalper-order-book.model';
-import { OrderbookDataRow } from '../../orderbook/models/orderbook-data.model';
-import { LessMore } from "../../../shared/models/enums/less-more.model";
+import {OrderCancellerService} from "../../../shared/services/order-canceller.service";
+import {OrderService} from "../../../shared/services/orders/order.service";
+import {NzNotificationService} from "ng-zorro-antd/notification";
+import {of} from "rxjs";
+import {Store} from "@ngrx/store";
+import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
+import {InstrumentKey} from "../../../shared/models/instruments/instrument-key.model";
+import {Position} from "../../../shared/models/positions/position.model";
+import {Side} from "../../../shared/models/enums/side.model";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {Instrument} from '../../../shared/models/instruments/instrument.model';
+import {CancelCommand} from '../../../shared/models/commands/cancel-command.model';
+import {CurrentOrderDisplay} from '../models/scalper-order-book.model';
+import {OrderbookDataRow} from '../../orderbook/models/orderbook-data.model';
+import {LessMore} from "../../../shared/models/enums/less-more.model";
+import {PriceUnits, ScalperOrderBookSettings, VolumeHighlightMode} from "../models/scalper-order-book-settings.model";
+import {ExecutionPolicy} from "../../../shared/models/orders/orders-group.model";
+import {MathHelper} from "../../../shared/utils/math-helper";
+import {OrdersDialogService} from "../../../shared/services/orders/orders-dialog.service";
+import {OrderDialogParams, OrderType} from "../../../shared/models/orders/orders-dialog.model";
 import {
-  PriceUnits,
-  ScalperOrderBookSettings,
-  VolumeHighlightMode
-} from "../models/scalper-order-book-settings.model";
-import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
-import { MathHelper } from "../../../shared/utils/math-helper";
+  NewLimitOrder,
+  NewMarketOrder,
+  NewStopLimitOrder,
+  NewStopMarketOrder
+} from "../../../shared/models/orders/new-order.model";
+import {toInstrumentKey} from "../../../shared/utils/instruments";
 
 describe('ScalperOrdersService', () => {
   let service: ScalperOrdersService;
@@ -41,7 +42,7 @@ describe('ScalperOrdersService', () => {
   let orderCancellerServiceSpy: any;
   let orderServiceSpy: any;
   let notificationServiceSpy: any;
-  let modalServiceSpy: any;
+  let ordersDialogServiceSpy: any;
 
   let testSettings: ScalperOrderBookSettings;
 
@@ -60,7 +61,7 @@ describe('ScalperOrdersService', () => {
     );
 
     notificationServiceSpy = jasmine.createSpyObj('NzNotificationService', ['error', 'warning']);
-    modalServiceSpy = jasmine.createSpyObj('ModalService', ['openCommandModal']);
+    ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog', 'openEditOrderDialog']);
 
     testSettings = {
       guid: generateRandomString(10),
@@ -88,7 +89,7 @@ describe('ScalperOrdersService', () => {
         { provide: OrderCancellerService, useValue: orderCancellerServiceSpy },
         { provide: OrderService, useValue: orderServiceSpy },
         { provide: NzNotificationService, useValue: notificationServiceSpy },
-        { provide: ModalService, useValue: modalServiceSpy },
+        { provide: OrdersDialogService, useValue: ordersDialogServiceSpy },
         ...commonTestProviders
       ]
     });
@@ -173,7 +174,7 @@ describe('ScalperOrdersService', () => {
           side: Side.Sell,
           quantity: position1.qtyTFutureBatch,
           instrument: testInstrumentKey1
-        } as MarketOrder,
+        } as NewMarketOrder,
         portfolioKey.portfolio
       );
 
@@ -186,7 +187,7 @@ describe('ScalperOrdersService', () => {
           side: Side.Buy,
           quantity: Math.abs(position2.qtyTFutureBatch),
           instrument: testInstrumentKey2
-        } as MarketOrder,
+        } as NewMarketOrder,
         portfolioKey.portfolio
       );
     })
@@ -242,7 +243,7 @@ describe('ScalperOrdersService', () => {
             price: testBids[0].p + testInstrument.minstep,
             quantity: quantity,
             instrument: testInstrument
-          } as LimitOrder,
+          } as NewLimitOrder,
           portfolioKey.portfolio
         );
 
@@ -267,7 +268,7 @@ describe('ScalperOrdersService', () => {
             price: testAsks[0].p - testInstrument.minstep,
             quantity: quantity,
             instrument: testInstrument
-          } as LimitOrder,
+          } as NewLimitOrder,
           portfolioKey.portfolio
         );
 
@@ -303,7 +304,7 @@ describe('ScalperOrdersService', () => {
             price: testBids[0].p,
             quantity: quantity,
             instrument: testInstrument
-          } as LimitOrder,
+          } as NewLimitOrder,
           portfolioKey.portfolio
         );
 
@@ -327,7 +328,7 @@ describe('ScalperOrdersService', () => {
             price: testAsks[0].p,
             quantity: quantity,
             instrument: testInstrument
-          } as LimitOrder,
+          } as NewLimitOrder,
           portfolioKey.portfolio
         );
     })
@@ -468,7 +469,7 @@ describe('ScalperOrdersService', () => {
             price: testBids[0].p,
             quantity: quantity,
             instrument: testSettings
-          } as LimitOrder,
+          } as NewLimitOrder,
           portfolioKey.portfolio
         );
     })
@@ -613,7 +614,7 @@ describe('ScalperOrdersService', () => {
             price: testAsks[0].p,
             quantity: quantity,
             instrument: testSettings
-          } as LimitOrder,
+          } as NewLimitOrder,
           portfolioKey.portfolio
         );
     })
@@ -726,7 +727,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Sell,
             quantity,
             instrument: testInstrumentKey
-          } as MarketOrder,
+          } as NewMarketOrder,
           portfolioKey.portfolio
         );
 
@@ -740,15 +741,16 @@ describe('ScalperOrdersService', () => {
       );
 
       tick(10000);
-      expect(modalServiceSpy.openCommandModal)
+      expect(ordersDialogServiceSpy.openNewOrderDialog)
         .withContext('Buy')
         .toHaveBeenCalledOnceWith(
           {
-            side: Side.Buy,
-            quantity,
-            instrument: testInstrumentKey,
-            type: CommandType.Market
-          } as CommandParams
+            instrumentKey: testInstrumentKey,
+            initialValues: {
+              orderType: OrderType.Market,
+              quantity
+            }
+          } as OrderDialogParams
         );
     })
   );
@@ -796,7 +798,7 @@ describe('ScalperOrdersService', () => {
             quantity,
             price: price,
             instrument: testSettings
-          } as LimitOrder,
+          } as NewLimitOrder,
           portfolioKey.portfolio
         );
 
@@ -812,16 +814,17 @@ describe('ScalperOrdersService', () => {
       );
 
       tick(10000);
-      expect(modalServiceSpy.openCommandModal)
+      expect(ordersDialogServiceSpy.openNewOrderDialog)
         .withContext('Buy')
         .toHaveBeenCalledOnceWith(
           {
-            side: Side.Buy,
-            quantity,
-            instrument: testSettings,
-            price: price,
-            type: CommandType.Limit
-          } as CommandParams
+            instrumentKey: toInstrumentKey(testSettings),
+            initialValues: {
+              orderType: OrderType.Limit,
+              quantity,
+              price: price
+            }
+          } as OrderDialogParams
         );
     })
   );
@@ -1007,7 +1010,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Sell,
             quantity: position.qtyTFutureBatch * 2,
             instrument: testInstrumentKey
-          } as MarketOrder,
+          } as NewMarketOrder,
           portfolioKey.portfolio
         );
 
@@ -1023,7 +1026,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Buy,
             quantity: Math.abs(position.qtyTFutureBatch) * 2,
             instrument: testInstrumentKey
-          } as MarketOrder,
+          } as NewMarketOrder,
           portfolioKey.portfolio
         );
     })
@@ -1066,7 +1069,7 @@ describe('ScalperOrdersService', () => {
             instrument: testInstrumentKey,
             triggerPrice: price,
             condition: LessMore.More
-          } as StopLimitOrder,
+          } as NewStopLimitOrder,
           portfolioKey.portfolio
         );
 
@@ -1091,7 +1094,7 @@ describe('ScalperOrdersService', () => {
             instrument: testInstrumentKey,
             triggerPrice: price,
             condition: LessMore.Less
-          } as StopLimitOrder,
+          } as NewStopLimitOrder,
           portfolioKey.portfolio
         );
 
@@ -1106,15 +1109,21 @@ describe('ScalperOrdersService', () => {
       );
 
       tick(10000);
-      expect(modalServiceSpy.openCommandModal)
+      expect(ordersDialogServiceSpy.openNewOrderDialog)
         .withContext('Show dialog')
         .toHaveBeenCalledOnceWith(jasmine.objectContaining({
-          side: Side.Buy,
-          quantity,
-          instrument: testInstrumentKey,
-          price: price,
-          type: CommandType.Stop
-        } as CommandParams));
+          instrumentKey: testInstrumentKey,
+          initialValues: {
+            orderType: OrderType.Stop,
+            quantity,
+            price: price,
+            stopOrder:{
+              condition: LessMore.Less,
+              limit: true
+            }
+          }
+        } as OrderDialogParams)
+        );
     })
   );
 
@@ -1147,7 +1156,7 @@ describe('ScalperOrdersService', () => {
 
       tick(10000);
       expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
-      expect(modalServiceSpy.openCommandModal).not.toHaveBeenCalled();
+      expect(ordersDialogServiceSpy.openNewOrderDialog).not.toHaveBeenCalled();
       expect(notificationServiceSpy.error).toHaveBeenCalledTimes(1);
     }));
 
@@ -1181,7 +1190,7 @@ describe('ScalperOrdersService', () => {
 
       tick(10000);
       expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
-      expect(modalServiceSpy.openCommandModal).not.toHaveBeenCalled();
+      expect(ordersDialogServiceSpy.openNewOrderDialog).not.toHaveBeenCalled();
       expect(notificationServiceSpy.warning).toHaveBeenCalledTimes(1);
 
       position = {
@@ -1201,7 +1210,7 @@ describe('ScalperOrdersService', () => {
 
       tick(10000);
       expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
-      expect(modalServiceSpy.openCommandModal).not.toHaveBeenCalled();
+      expect(ordersDialogServiceSpy.openNewOrderDialog).not.toHaveBeenCalled();
       expect(notificationServiceSpy.warning).toHaveBeenCalledTimes(1);
     }));
 
@@ -1239,7 +1248,7 @@ describe('ScalperOrdersService', () => {
             triggerPrice: expectedPrice,
             condition: LessMore.Less,
             instrument: testInstrumentKey
-          } as StopMarketOrder,
+          } as NewStopMarketOrder,
           portfolioKey.portfolio
         );
 
@@ -1256,7 +1265,7 @@ describe('ScalperOrdersService', () => {
             triggerPrice: expectedPrice,
             condition: LessMore.More,
             instrument: testInstrumentKey
-          } as StopMarketOrder,
+          } as NewStopMarketOrder,
           portfolioKey.portfolio
         );
       })

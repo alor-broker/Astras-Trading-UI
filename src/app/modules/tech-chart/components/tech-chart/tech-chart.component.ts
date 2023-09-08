@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  Component, DestroyRef,
-  ElementRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, DestroyRef, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -20,7 +12,9 @@ import {
 } from 'rxjs';
 import {
   ChartingLibraryFeatureset,
-  ChartingLibraryWidgetOptions, CustomTimezoneId, GmtTimezoneId,
+  ChartingLibraryWidgetOptions,
+  CustomTimezoneId,
+  GmtTimezoneId,
   IChartingLibraryWidget,
   IOrderLineAdapter,
   IPositionLineAdapter,
@@ -30,44 +24,35 @@ import {
   SubscribeEventsMap,
   widget
 } from '../../../../../assets/charting_library';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
-import { ThemeService } from '../../../../shared/services/theme.service';
-import {
-  ThemeColors,
-  ThemeSettings,
-  ThemeType
-} from '../../../../shared/models/settings/theme-settings.model';
-import { ModalService } from '../../../../shared/services/modal.service';
-import { mapWith } from '../../../../shared/utils/observable-helper';
-import { CommandType } from '../../../../shared/models/enums/command-type.model';
-import { WidgetsDataProviderService } from '../../../../shared/services/widgets-data-provider.service';
-import { SelectedPriceData } from '../../../../shared/models/orders/selected-order-price.model';
-import { Instrument } from '../../../../shared/models/instruments/instrument.model';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { MathHelper } from '../../../../shared/utils/math-helper';
-import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
-import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
-import { Position } from '../../../../shared/models/positions/position.model';
-import {
-  debounceTime,
-  map,
-  startWith
-} from 'rxjs/operators';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { Order } from '../../../../shared/models/orders/order.model';
-import { StopOrder } from '../../../../shared/models/orders/stop-order.model';
-import { Side } from '../../../../shared/models/enums/side.model';
-import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { TechChartSettings } from '../../models/tech-chart-settings.model';
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { HashMap } from "@ngneat/transloco/lib/types";
-import {LessMore} from "../../../../shared/models/enums/less-more.model";
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {TechChartDatafeedService} from '../../services/tech-chart-datafeed.service';
+import {ThemeService} from '../../../../shared/services/theme.service';
+import {ThemeColors, ThemeSettings, ThemeType} from '../../../../shared/models/settings/theme-settings.model';
+import {mapWith} from '../../../../shared/utils/observable-helper';
+import {WidgetsDataProviderService} from '../../../../shared/services/widgets-data-provider.service';
+import {SelectedPriceData} from '../../../../shared/models/orders/selected-order-price.model';
+import {Instrument} from '../../../../shared/models/instruments/instrument.model';
+import {InstrumentsService} from '../../../instruments/services/instruments.service';
+import {MathHelper} from '../../../../shared/utils/math-helper';
+import {PortfolioSubscriptionsService} from '../../../../shared/services/portfolio-subscriptions.service';
+import {PortfolioKey} from '../../../../shared/models/portfolio-key.model';
+import {Position} from '../../../../shared/models/positions/position.model';
+import {debounceTime, map, startWith} from 'rxjs/operators';
+import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
+import {Order, StopOrder} from '../../../../shared/models/orders/order.model';
+import {Side} from '../../../../shared/models/enums/side.model';
+import {OrderCancellerService} from '../../../../shared/services/order-canceller.service';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {TechChartSettings} from '../../models/tech-chart-settings.model';
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {HashMap} from "@ngneat/transloco/lib/types";
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
 import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
 import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-display-option";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import {toInstrumentKey} from "../../../../shared/utils/instruments";
+import {EditOrderDialogParams, OrderType} from "../../../../shared/models/orders/orders-dialog.model";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -154,9 +139,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly themeService: ThemeService,
     private readonly instrumentsService: InstrumentsService,
     private readonly widgetsDataProvider: WidgetsDataProviderService,
-    private readonly modalService: ModalService,
+    private readonly ordersDialogService: OrdersDialogService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-
     private readonly currentDashboardService: DashboardContextService,
     private readonly orderCancellerService: OrderCancellerService,
     private readonly translatorService: TranslatorService,
@@ -426,11 +410,13 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       const roundedPrice = MathHelper.roundByMinStepMultiplicity(price, widgetSettings.instrument.minstep);
 
       if (submitOrderWidgetSettings.length === 0 || !widgetSettings.widgetSettings.badgeColor) {
-        this.modalService.openCommandModal({
-          instrument: widgetSettings.widgetSettings,
-          type: CommandType.Limit,
-          price: roundedPrice,
-          quantity: 1
+        this.ordersDialogService.openNewOrderDialog({
+          instrumentKey: toInstrumentKey(widgetSettings.widgetSettings),
+          initialValues: {
+            orderType: OrderType.Limit,
+            price: roundedPrice,
+            quantity: 1
+          }
         });
       }
       else {
@@ -601,20 +587,18 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private fillLimitOrder(order: Order, orderLineAdapter: IOrderLineAdapter) {
     const getEditCommand = () => ({
-      type: order.type,
-      quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
       orderId: order.id,
-      price: order.price,
-      instrument: {
+      orderType: OrderType.Limit,
+      instrumentKey: {
         symbol: order.symbol,
         exchange: order.exchange
       },
-      user: {
+      portfolioKey: {
         portfolio: order.portfolio,
         exchange: order.exchange
       },
-      side: order.side
-    });
+      initialValues: {}
+    } as EditOrderDialogParams);
 
     orderLineAdapter.setText('L')
       .setTooltip(`${this.translateFn([order.side === Side.Buy ? 'buy' : 'sell'])} ${this.translateFn(['limit'])}`)
@@ -626,12 +610,19 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           stop: false
         }).subscribe()
       )
-      .onModify(() => this.modalService.openEditModal(getEditCommand()))
-      .onMove(() => this.modalService.openEditModal({
-          ...getEditCommand(),
-          price: orderLineAdapter.getPrice(),
-          cancelled: () => orderLineAdapter.setPrice(order.price)
-        })
+      .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
+      .onMove(() => {
+          const params = {
+            ...getEditCommand(),
+            cancelCallback: () => orderLineAdapter.setPrice(order.price)
+          };
+
+          params.initialValues = {
+            ...params.initialValues,
+            price: orderLineAdapter.getPrice()
+          };
+          this.ordersDialogService.openEditOrderDialog(params);
+        }
       );
   }
 
@@ -649,23 +640,18 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       + ')';
 
     const getEditCommand = () => ({
-      type: order.type,
-      quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
       orderId: order.id,
-      price: order.price,
-      instrument: {
+      orderType: OrderType.Stop,
+      instrumentKey: {
         symbol: order.symbol,
         exchange: order.exchange
       },
-      user: {
+      portfolioKey: {
         portfolio: order.portfolio,
         exchange: order.exchange
       },
-      side: order.side,
-      triggerPrice: order.triggerPrice,
-      stopEndUnixTime: order.endTime,
-      condition: order.conditionType === 'less' ? LessMore.Less : LessMore.More
-    });
+      initialValues: {}
+    } as EditOrderDialogParams);
 
     orderLineAdapter
       .setText(orderText)
@@ -678,12 +664,19 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           stop: true
         }).subscribe()
       )
-      .onModify(() => this.modalService.openEditModal(getEditCommand()))
-      .onMove(() => this.modalService.openEditModal({
+      .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
+      .onMove(() => {
+        const params = {
           ...getEditCommand(),
-          triggerPrice: orderLineAdapter.getPrice(),
-          cancelled: () => orderLineAdapter.setPrice(order.triggerPrice)
-        })
-      );
+          cancelCallback: () => orderLineAdapter.setPrice(order.triggerPrice)
+        };
+
+        params.initialValues = {
+          ...params.initialValues,
+          price: orderLineAdapter.getPrice()
+        };
+        this.ordersDialogService.openEditOrderDialog(params);
+      }
+    );
   }
 }

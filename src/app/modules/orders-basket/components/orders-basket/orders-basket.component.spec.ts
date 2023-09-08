@@ -39,7 +39,7 @@ describe('OrdersBasketComponent', () => {
         {
           provide: EvaluationService,
           useValue: {
-            getSettings: jasmine.createSpy('evaluateQuantity').and.returnValue(new Subject())
+            evaluateBatch: jasmine.createSpy('evaluateBatch').and.returnValue(new Subject())
           }
         }
       ]

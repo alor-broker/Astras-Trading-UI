@@ -1,20 +1,14 @@
-import { defer } from 'rxjs';
-import { Instrument } from '../models/instruments/instrument.model';
-import {
-  Component,
-  Directive,
-  EventEmitter,
-  ModuleWithProviders,
-  Type
-} from '@angular/core';
-import { SharedModule } from '../shared.module';
-import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
-import { HttpClientModule } from '@angular/common/http';
-import { TranslocoTestingModule, TranslocoTestingOptions } from "@ngneat/transloco";
+import {defer} from 'rxjs';
+import {Instrument} from '../models/instruments/instrument.model';
+import {Component, Directive, EventEmitter, ModuleWithProviders, Type} from '@angular/core';
+import {SharedModule} from '../shared.module';
+import {StoreModule} from '@ngrx/store';
+import {EffectsModule} from '@ngrx/effects';
+import {HttpClientModule} from '@angular/common/http';
+import {TranslocoTestingModule, TranslocoTestingOptions} from "@ngneat/transloco";
 import ru from '../../../assets/i18n/ru.json';
-import { ErrorHandlerService } from '../services/handle-error/error-handler.service';
-import { LOGGER } from '../services/logging/logger-base';
+import {ErrorHandlerService} from '../services/handle-error/error-handler.service';
+import {LOGGER} from '../services/logging/logger-base';
 
 /**
  * Create async observable that emits-once and completes  after a JS engine turn
@@ -112,10 +106,10 @@ export const ngZorroMockComponents = [
     selector: 'nz-tabset',
     inputs: ['nzSelectedIndex', 'nzAnimated']
   }),
-  mockComponent({ selector: 'nz-tab', inputs: ['nzTitle'] }),
-  mockComponent({ selector: 'nz-layout' }),
-  mockComponent({ selector: 'nz-empty' }),
-  mockComponent({ selector: 'nz-content' }),
+  mockComponent({selector: 'nz-tab', inputs: ['nzTitle']}),
+  mockComponent({selector: 'nz-layout'}),
+  mockComponent({selector: 'nz-empty'}),
+  mockComponent({selector: 'nz-content'}),
   mockComponent({
     selector: 'nz-spin',
     inputs: ['nzSpinning', 'nzIndicator', 'nzTip']
@@ -125,10 +119,10 @@ export const ngZorroMockComponents = [
     inputs: ['nzErrorTip', 'nzValidateStatus']
   }),
   mockComponent({selector: 'nz-collapse', inputs: ['nzBordered']}),
-  mockComponent({ selector: 'nz-collapse-panel', inputs: ['nzHeader'] }),
-  mockComponent({ selector: 'nz-form-item' }),
-  mockComponent({ selector: 'nz-form-label', inputs: ['nzFor'] }),
-  mockComponent({ selector: 'nz-input-group' }),
+  mockComponent({selector: 'nz-collapse-panel', inputs: ['nzHeader']}),
+  mockComponent({selector: 'nz-form-item'}),
+  mockComponent({selector: 'nz-form-label', inputs: ['nzFor']}),
+  mockComponent({selector: 'nz-input-group'}),
   mockComponent({
     selector: 'nz-dropdown-menu',
     exportAs: 'nzDropdownMenu',
@@ -149,14 +143,15 @@ export const ngZorroMockComponents = [
     selector: 'nz-calendar',
     inputs: ['nzDateFullCell', 'nzFullscreen', 'nzDisabledDate']
   }, class NzCalendarComponent {
-    onMonthSelect() {}
+    onMonthSelect() {
+    }
   }),
-  mockComponent({ selector: 'nz-tag', inputs: ['nzColor', 'nz-tooltip', 'nzTooltipMouseEnterDelay']}),
-  mockComponent({ selector: 'nz-select', inputs: ['ngModel'] }),
-  mockComponent({ selector: 'nz-option', inputs: ['nzValue', 'nzLabel'] }),
-  mockComponent({ selector: 'nz-divider'}),
-  mockComponent({ selector: 'nz-tree', inputs: ['nzData', 'nzTreeTemplate'] }),
-  mockDirective({ selector: '[nzGutter]', inputs: ['nzGutter']}),
+  mockComponent({selector: 'nz-tag', inputs: ['nzColor', 'nz-tooltip', 'nzTooltipMouseEnterDelay']}),
+  mockComponent({selector: 'nz-select', inputs: ['ngModel']}),
+  mockComponent({selector: 'nz-option', inputs: ['nzValue', 'nzLabel']}),
+  mockComponent({selector: 'nz-divider'}),
+  mockComponent({selector: 'nz-tree', inputs: ['nzData', 'nzTreeTemplate']}),
+  mockDirective({selector: '[nzGutter]', inputs: ['nzGutter']}),
   mockDirective({selector: '[text]', inputs: ['text']}),
   mockDirective({selector: '[nzLayout]', inputs: ['nzLayout']}),
   mockDirective({selector: '[nzPopoverContent]', inputs: ['nzPopoverContent']}),
@@ -217,14 +212,16 @@ export const commonTestProviders: any[] = [
 /**
  *  function helper for mock components create
  */
-export function mockComponent(options: Component, klass= (class {})) {
-  let metadata: Component = { template: '<ng-content></ng-content>', ...options };
+export function mockComponent(options: Component, klass = (class {
+})) {
+  let metadata: Component = {template: '<ng-content></ng-content>', ...options};
   const classWithOutputs = classWithOutputEmittersFactory(klass, options.outputs || []);
 
   return Component(metadata)(classWithOutputs);
 }
 
-export function mockDirective(options: Directive, klass = (class {})) {
+export function mockDirective(options: Directive, klass = (class {
+})) {
   return Directive(options)(klass);
 }
 
@@ -273,10 +270,10 @@ export function getRandomInt(min: number, max: number) {
  * @returns the value is no lower than min (or the next integer greater than min if min isn't an integer), and is less than (but not equal to) max
  */
 export function getTranslocoModule(options: TranslocoTestingOptions = {}) {
-  const { langs } = options;
+  const {langs} = options;
 
   return TranslocoTestingModule.forRoot({
-    langs: { ru, ...langs },
+    langs: {ru, ...langs},
     translocoConfig: {
       availableLangs: ['ru'],
       defaultLang: 'ru',

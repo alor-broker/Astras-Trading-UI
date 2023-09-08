@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse
@@ -15,27 +15,27 @@ import {
   catchError,
   map
 } from "rxjs/operators";
-import { environment } from "../../../../environments/environment";
-import { ErrorHandlerService } from "../handle-error/error-handler.service";
+import {environment} from "../../../../environments/environment";
+import {ErrorHandlerService} from "../handle-error/error-handler.service";
+import {toUnixTimestampSeconds} from "../../utils/datetime";
+import {GuidGenerator} from "../../utils/guid";
+import {httpLinkRegexp} from "../../utils/regexps";
+import {InstantNotificationsService} from '../instant-notifications.service';
+import {OrdersInstantNotificationType} from '../../models/terminal-settings/terminal-settings.model';
+import {OrdersGroupService} from "./orders-group.service";
+import {OrderCancellerService} from "../order-canceller.service";
+import {ExecutionPolicy} from "../../models/orders/orders-group.model";
 import {
-  LimitOrder,
-  LimitOrderEdit,
-  MarketOrder,
-  StopLimitOrder,
-  StopLimitOrderEdit,
-  StopMarketOrder,
-  StopMarketOrderEdit,
-  SubmitOrderResponse,
-  SubmitOrderResult
-} from "../../../modules/command/models/order.model";
-import { toUnixTimestampSeconds } from "../../utils/datetime";
-import { GuidGenerator } from "../../utils/guid";
-import { httpLinkRegexp } from "../../utils/regexps";
-import { InstantNotificationsService } from '../instant-notifications.service';
-import { OrdersInstantNotificationType } from '../../models/terminal-settings/terminal-settings.model';
-import { OrdersGroupService } from "./orders-group.service";
-import { OrderCancellerService } from "../order-canceller.service";
-import { ExecutionPolicy } from "../../models/orders/orders-group.model";
+  NewLimitOrder,
+  NewMarketOrder,
+  NewStopLimitOrder,
+  NewStopMarketOrder, SubmitOrderResponse, SubmitOrderResult
+} from "../../models/orders/new-order.model";
+import {LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit} from "../../models/orders/edit-order.model";
+
+export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketOrder) & {
+  type: 'Limit' | 'StopLimit' | 'Stop'
+};
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +52,7 @@ export class OrderService {
   ) {
   }
 
-  submitMarketOrder(order: MarketOrder, portfolio: string): Observable<SubmitOrderResult> {
+  submitMarketOrder(order: NewMarketOrder, portfolio: string): Observable<SubmitOrderResult> {
     return this.submitOrder(
       portfolio,
       () => ({
@@ -64,7 +64,7 @@ export class OrderService {
     );
   }
 
-  submitLimitOrder(order: LimitOrder, portfolio: string): Observable<SubmitOrderResult> {
+  submitLimitOrder(order: NewLimitOrder, portfolio: string): Observable<SubmitOrderResult> {
     return this.submitOrder(
       portfolio,
       () => ({
@@ -76,27 +76,27 @@ export class OrderService {
     );
   }
 
-  submitStopMarketOrder(order: StopMarketOrder, portfolio: string): Observable<SubmitOrderResult> {
+  submitStopMarketOrder(order: NewStopMarketOrder, portfolio: string): Observable<SubmitOrderResult> {
     return this.submitOrder(
       portfolio,
       () => ({
         url: `${this.baseApiUrl}/stop`,
         body: {
           ...order,
-          stopEndUnixTime: this.prepareStopEndUnixTimeValue(order)
+          stopEndUnixTime: this.prepareStopEndUnixTimeValue(order.stopEndUnixTime)
         }
       })
     );
   }
 
-  submitStopLimitOrder(order: StopLimitOrder, portfolio: string): Observable<SubmitOrderResult> {
+  submitStopLimitOrder(order: NewStopLimitOrder, portfolio: string): Observable<SubmitOrderResult> {
     return this.submitOrder(
       portfolio,
       () => ({
         url: `${this.baseApiUrl}/stopLimit`,
         body: {
           ...order,
-          stopEndUnixTime: this.prepareStopEndUnixTimeValue(order)
+          stopEndUnixTime: this.prepareStopEndUnixTimeValue(order.stopEndUnixTime)
         }
       })
     );
@@ -121,7 +121,7 @@ export class OrderService {
         url: `${this.baseApiUrl}/stop/${orderEdit.id}`,
         body: {
           ...orderEdit,
-          stopEndUnixTime: orderEdit.endTime,
+          stopEndUnixTime: this.prepareStopEndUnixTimeValue(orderEdit.stopEndUnixTime),
         }
       })
     );
@@ -134,14 +134,14 @@ export class OrderService {
         url: `${this.baseApiUrl}/stopLimit/${orderEdit.id}`,
         body: {
           ...orderEdit,
-          stopEndUnixTime: orderEdit.endTime,
+          stopEndUnixTime: this.prepareStopEndUnixTimeValue(orderEdit.stopEndUnixTime),
         }
       })
     );
   }
 
   submitOrdersGroup(
-    orders: ((LimitOrder | StopLimitOrder | StopMarketOrder) & { type: 'Limit' | 'StopLimit' | 'Stop' })[],
+    orders: NewLinkedOrder[],
     portfolio: string,
     executionPolicy: ExecutionPolicy
   ): Observable<SubmitOrderResult> {
@@ -149,13 +149,13 @@ export class OrderService {
     return forkJoin(orders.map(o => {
       switch (o.type) {
         case 'Limit':
-          return this.submitLimitOrder(o as LimitOrder, portfolio);
+          return this.submitLimitOrder(o as NewLimitOrder, portfolio);
         case 'Stop':
-          return this.submitStopMarketOrder(o as StopMarketOrder, portfolio);
+          return this.submitStopMarketOrder(o as NewStopMarketOrder, portfolio);
         case 'StopLimit':
-          return this.submitStopLimitOrder(o as StopLimitOrder, portfolio);
+          return this.submitStopLimitOrder(o as NewStopLimitOrder, portfolio);
         default:
-          return this.submitLimitOrder(o as LimitOrder, portfolio);
+          return this.submitLimitOrder(o as NewLimitOrder, portfolio);
       }
     }))
       .pipe(
@@ -171,13 +171,13 @@ export class OrderService {
 
           if (orderIds.length !== orders.length) {
             return forkJoin(ordersRes.map((ord, i) => ord.orderNumber
-              ? this.canceller.cancelOrder({
+                ? this.canceller.cancelOrder({
                   orderid: ord.orderNumber!,
                   portfolio,
                   exchange: orders[i].instrument.exchange,
                   stop: orders[i].type !== 'Limit'
                 })
-              : of(null)
+                : of(null)
               )
             )
               .pipe(
@@ -198,19 +198,18 @@ export class OrderService {
       );
   }
 
-  private prepareStopEndUnixTimeValue(order: StopMarketOrder): number | null {
-    if (!order.stopEndUnixTime) {
+  private prepareStopEndUnixTimeValue(stopEndUnixTime?: Date): number | null {
+    if (!stopEndUnixTime) {
       return 0;
     }
 
-    if (typeof order.stopEndUnixTime === 'number') {
-      return Number((order.stopEndUnixTime / 1000).toFixed(0));
-    } else {
-      return toUnixTimestampSeconds(order.stopEndUnixTime);
-    }
+    return toUnixTimestampSeconds(stopEndUnixTime);
   }
 
-  private submitOrder(portfolio: string, prepareOrderRequest: () => { url: string, body: any }): Observable<SubmitOrderResult> {
+  private submitOrder(portfolio: string, prepareOrderRequest: () => {
+    url: string,
+    body: any
+  }): Observable<SubmitOrderResult> {
     return this.submitRequest(
       portfolio,
       'post',
@@ -236,7 +235,10 @@ export class OrderService {
     );
   }
 
-  private submitOrderEdit(portfolio: string, prepareOrderRequest: () => { url: string, body: any }): Observable<SubmitOrderResult> {
+  private submitOrderEdit(portfolio: string, prepareOrderRequest: () => {
+    url: string,
+    body: any
+  }): Observable<SubmitOrderResult> {
     return this.submitRequest(
       portfolio,
       'put',

@@ -1,0 +1,67 @@
+<ng-container *ngIf="evaluation$ | async as evaluation">
+  <ng-container *transloco="let t; scope: 'order-commands/order-evaluation'">
+    <nz-descriptions *ngIf="!!evaluation" nzBordered nzSize="small">
+      <nz-descriptions-item
+        [nzSpan]="2"
+        [nzTitle]="t('orderCommandsOrderEvaluation.evaluationCost')"
+      >
+        {{evaluation.orderEvaluation  | currency: evaluation.currency:'symbol-narrow'}}
+      </nz-descriptions-item>
+      <nz-descriptions-item
+        [nzSpan]="2"
+        [nzTitle]="t('orderCommandsOrderEvaluation.evaluationCommission')"
+      >
+        {{evaluation.commission | currency: evaluation.currency:'symbol-narrow'}}
+      </nz-descriptions-item>
+      <nz-descriptions-item
+        [nzSpan]="2"
+        [nzTitle]="quantityToBuyTitle"
+      >
+        <div
+          [nzTooltipTitle]="t('orderCommandsOrderEvaluation.quantityToBuyTooltip')"
+          class="clickable"
+          nz-tooltip
+        >
+          <span (click)="quantitySelect.emit(evaluation.quantityToBuy)">
+            {{evaluation.quantityToBuy}}
+          </span>
+          /
+          <span (click)="quantitySelect.emit(evaluation.notMarginQuantityToBuy)">
+            {{evaluation.notMarginQuantityToBuy}}
+          </span>
+        </div>
+      </nz-descriptions-item>
+      <nz-descriptions-item
+        [nzSpan]="2"
+        [nzTitle]="quantityToSellTitle"
+      >
+        <div
+          [nzTooltipTitle]="t('orderCommandsOrderEvaluation.quantityToSellTooltip')"
+          class="clickable"
+          nz-tooltip
+        >
+          <span (click)="quantitySelect.emit(evaluation.quantityToSell)">
+            {{evaluation.quantityToSell}}
+          </span>
+          /
+          <span (click)="quantitySelect.emit(evaluation.notMarginQuantityToSell)">
+            {{evaluation.notMarginQuantityToSell}}
+          </span>
+        </div>
+      </nz-descriptions-item>
+    </nz-descriptions>
+
+    <ng-template #quantityToBuyTitle>
+      <div (click)="quantitySelect.emit(evaluation.quantityToBuy)" class="clickable">
+        {{t('orderCommandsOrderEvaluation.quantityToBuy')}}
+      </div>
+    </ng-template>
+
+    <ng-template #quantityToSellTitle>
+      <div (click)="quantitySelect.emit(evaluation.quantityToSell)" class="clickable">
+        {{t('orderCommandsOrderEvaluation.quantityToSell')}}
+      </div>
+    </ng-template>
+  </ng-container>
+</ng-container>
+
