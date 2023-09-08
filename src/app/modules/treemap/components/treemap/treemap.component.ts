@@ -7,17 +7,39 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import { ActiveElement, Chart, ChartEvent, TooltipItem } from "chart.js";
-import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
+import {
+  ActiveElement,
+  Chart,
+  ChartEvent,
+  TooltipItem
+} from "chart.js";
+import {
+  TreemapController,
+  TreemapElement
+} from "chartjs-chart-treemap";
 import { TreemapService } from "../../services/treemap.service";
-import { debounceTime, map, switchMap } from "rxjs/operators";
+import {
+  debounceTime,
+  map,
+  switchMap
+} from "rxjs/operators";
 import { ThemeService } from "../../../../shared/services/theme.service";
 import { TreemapNode } from "../../models/treemap.model";
-import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, take, withLatestFrom } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  Observable,
+  take,
+  withLatestFrom
+} from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { formatCurrency, getCurrencySign } from "../../../../shared/utils/formatters";
+import {
+  formatCurrency,
+  getCurrencySign
+} from "../../../../shared/utils/formatters";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { getNumberAbbreviation } from "../../../../shared/utils/number-abbreviation";
@@ -32,7 +54,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   @Input({required: true})
   guid!: string;
   isCursorOnSector$ = new BehaviorSubject(false);
-
+  // this widget works  with MOEX exchange only
+  private readonly defaultExchange = 'MOEX';
   private chart?: Chart;
   private selectedSector$ = new BehaviorSubject('');
   private tilesCount$ = new BehaviorSubject(0);
@@ -81,7 +104,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
           themeColors: theme.themeColors
         })),
       )
-      .subscribe(({ treemap, themeColors }) => {
+      .subscribe(({treemap, themeColors}) => {
         const ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d')!;
 
         if (!ctx) {
@@ -104,14 +127,14 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                 captions: {
                   display: true,
                   color: themeColors.chartLabelsColor,
-                  font: { weight: '500' }
+                  font: {weight: '500'}
                 },
                 labels: {
                   display: true,
-                  formatter: (t: any) => [ t.raw._data.symbol, t.raw._data.children[0]?.dayChange + '%' ],
+                  formatter: (t: any) => [t.raw._data.symbol, t.raw._data.children[0]?.dayChange + '%'],
                   overflow: 'fit',
-                  color: themeColors.chartLabelsColor,
-                  font: [{ weight: '600' }, { weight: '400' }]
+                  color: themeColors.textColor,
+                  font: [{weight: '600'}, {weight: '400'}]
                 },
                 backgroundColor: (t: any) => {
                   if (t.raw?._data.label === t.raw?._data.sector) {
@@ -127,7 +150,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
             ],
           },
           options: {
-            onResize: (chart: Chart, { width, height }) => {
+            onResize: (chart: Chart, {width, height}) => {
               this.tilesCount$.next(Math.floor(width * height / this.averageTileSize));
             },
             onHover: (event: ChartEvent, elements: ActiveElement[]) => {
@@ -208,12 +231,12 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   };
 
   private getTooltipData(treemapNode: TreemapNode): Observable<string[]> {
-    return this.quotesService.getLastQuoteInfo(treemapNode.symbol, 'MOEX')
+    return this.quotesService.getLastQuoteInfo(treemapNode.symbol, this.defaultExchange)
       .pipe(
         withLatestFrom(
           this.translatorService.getTranslator('treemap'),
           this.translatorService.getTranslator('shared/short-number'),
-          this.instrumentsService.getInstrument({ exchange: 'MOEX', symbol: treemapNode.symbol })
+          this.instrumentsService.getInstrument({exchange: this.defaultExchange, symbol: treemapNode.symbol})
         ),
         map(([quote, tTreemap, tShortNumber, instrument]) => {
           const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
@@ -236,7 +259,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         take(1),
       )
       .subscribe(s => {
-        this.dashboardContextService.selectDashboardInstrument({ exchange: 'MOEX', symbol }, s.badgeColor!);
+        this.dashboardContextService.selectDashboardInstrument({exchange: this.defaultExchange, symbol}, s.badgeColor!);
       });
   }
 }

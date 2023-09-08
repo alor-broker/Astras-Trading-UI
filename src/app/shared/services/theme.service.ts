@@ -2,7 +2,7 @@ import {
   Inject,
   Injectable
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import {DOCUMENT} from '@angular/common';
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -40,13 +40,14 @@ export class ThemeService {
     chartGridColor: '#272E3B',
     chartLabelsColor: '#97A4BB',
     chartPrimaryTextColor: '#ffffff',
-    chartBackground: '#1F2530'
+    chartBackground: '#1F2530',
+    textColor: '#97A4BB'
   };
 
   private readonly lightThemeColors: ThemeColors = {
     sellColor: 'rgba(250, 79, 56, 1)',
     sellColorBackground: 'rgba(250, 79, 56, 0.4)',
-    buyColor: '#388E3C',
+    buyColor: 'rgba(56, 142, 60, 1)',
     buyColorBackground: 'rgba(0, 219, 139, 0.4)',
     buyColorBackgroundLight: 'rgba(0, 219, 139, 1)',
     buySellLabelColor: '#ffffff',
@@ -57,7 +58,8 @@ export class ThemeService {
     chartGridColor: '#D8E3F5',
     chartLabelsColor: '#647188',
     chartPrimaryTextColor: '#000000',
-    chartBackground: '#F1F4F9'
+    chartBackground: '#F1F4F9',
+    textColor: '#31363F'
   };
 
   constructor(
