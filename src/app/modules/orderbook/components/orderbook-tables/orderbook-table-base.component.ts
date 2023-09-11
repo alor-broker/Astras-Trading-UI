@@ -4,7 +4,6 @@ import {OrderbookSettings} from "../../models/orderbook-settings.model";
 import {filter, Observable, of, shareReplay, take} from "rxjs";
 import {SelectedPriceData} from "../../../../shared/models/orders/selected-order-price.model";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
-import {WidgetsDataProviderService} from "../../../../shared/services/widgets-data-provider.service";
 import {CurrentOrder} from "../../models/orderbook-view-row.model";
 import {OrderbookService} from "../../services/orderbook.service";
 import {map} from 'rxjs/operators';
@@ -20,6 +19,7 @@ import {mapWith} from "../../../../shared/utils/observable-helper";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {OrderType} from "../../../../shared/models/orders/orders-dialog.model";
+import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 
 interface ExtendedOrderbookSettings {
   widgetSettings: OrderbookSettings;
@@ -43,7 +43,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly instrumentsService: InstrumentsService,
-    private readonly widgetsDataProvider: WidgetsDataProviderService,
+    private readonly widgetsSharedDataService: WidgetsSharedDataService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly service: OrderbookService,
     private readonly themeService: ThemeService,
@@ -79,7 +79,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
       take(1)
     ).subscribe(settings => {
       if (settings.widgetSettings.useOrderWidget) {
-        this.widgetsDataProvider.setDataProviderValue<SelectedPriceData>('selectedPrice', {
+        this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>('selectedPrice', {
           price,
           badgeColor: settings.widgetSettings.badgeColor!
         });

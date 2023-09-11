@@ -24,8 +24,6 @@ import {
   startWith
 } from 'rxjs/operators';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { WidgetsDataProviderService } from "../../../../shared/services/widgets-data-provider.service";
-import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import {
   ColumnsOrder,
@@ -69,8 +67,7 @@ export class OrderBookComponent implements OnInit {
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
-    private readonly service: OrderbookService,
-    private readonly widgetsDataProvider: WidgetsDataProviderService
+    private readonly service: OrderbookService
   ) {
   }
 
@@ -132,7 +129,5 @@ export class OrderBookComponent implements OnInit {
         };
       })
     );
-
-    this.widgetsDataProvider.addNewDataProvider<SelectedPriceData>('selectedPrice');
   }
 }

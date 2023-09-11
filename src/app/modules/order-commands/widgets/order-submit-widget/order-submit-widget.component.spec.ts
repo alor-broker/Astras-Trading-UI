@@ -1,17 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OrderSubmitWidgetComponent } from './order-submit-widget.component';
-import {QuotesService} from "../../../../shared/services/quotes.service";
 import {Subject} from "rxjs";
-import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {CommonParametersService} from "../../services/common-parameters.service";
-import {WidgetsDataProviderService} from "../../../../shared/services/widgets-data-provider.service";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 
 describe('OrderSubmitWidgetComponent', () => {
   let component: OrderSubmitWidgetComponent;
@@ -53,9 +51,9 @@ describe('OrderSubmitWidgetComponent', () => {
           }
         },
         {
-          provide: WidgetsDataProviderService,
+          provide: WidgetsSharedDataService,
           useValue: {
-            getDataProvider: jasmine.createSpy('getDataProvider').and.returnValue(new Subject())
+            getDataProvideValues: jasmine.createSpy('getDataProvideValues').and.returnValue(new Subject())
           }
         }
       ]

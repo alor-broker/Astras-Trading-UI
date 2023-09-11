@@ -1,21 +1,36 @@
-import {Component, DestroyRef, Input, OnInit} from '@angular/core';
-import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
-import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
-import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import {SettingsHelper} from '../../../../shared/utils/settings-helper';
-import {distinctUntilChanged, filter, Observable, shareReplay, switchMap, withLatestFrom} from 'rxjs';
-import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
-import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import {OrderSubmitSettings} from "../../models/order-submit-settings.model";
-import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
-import {Instrument} from "../../../../shared/models/instruments/instrument.model";
-import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
-import {InstrumentsService} from "../../../instruments/services/instruments.service";
-import {isArrayEqual} from "../../../../shared/utils/collections";
-import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
-import {WidgetsDataProviderService} from "../../../../shared/services/widgets-data-provider.service";
-import {SelectedPriceData} from "../../../../shared/models/orders/selected-order-price.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {
+  Component,
+  DestroyRef,
+  Input,
+  OnInit
+} from '@angular/core';
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import { SettingsHelper } from '../../../../shared/utils/settings-helper';
+import {
+  distinctUntilChanged,
+  filter,
+  Observable,
+  shareReplay,
+  switchMap,
+  withLatestFrom
+} from 'rxjs';
+import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import { OrderSubmitSettings } from "../../models/order-submit-settings.model";
+import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
+import { Instrument } from "../../../../shared/models/instruments/instrument.model";
+import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { isArrayEqual } from "../../../../shared/utils/collections";
+import {
+  CommonParameters,
+  CommonParametersService
+} from "../../services/common-parameters.service";
+import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 
 @Component({
   selector: 'ats-order-submit-widget',
@@ -29,9 +44,9 @@ export class OrderSubmitWidgetComponent implements OnInit {
 
   shouldShowSettings: boolean = false;
 
-  @Input({required: true})
+  @Input({ required: true })
   widgetInstance!: WidgetInstance;
-  @Input({required: true})
+  @Input({ required: true })
   isBlockWidget!: boolean;
 
   settings$!: Observable<OrderSubmitSettings>;
@@ -44,7 +59,7 @@ export class OrderSubmitWidgetComponent implements OnInit {
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
-    private readonly widgetsDataProvider: WidgetsDataProviderService,
+    private readonly widgetsSharedDataService: WidgetsSharedDataService,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -90,15 +105,13 @@ export class OrderSubmitWidgetComponent implements OnInit {
       shareReplay(1)
     );
 
-    this.widgetsDataProvider.getDataProvider<SelectedPriceData>('selectedPrice')
-      ?.pipe(
-        takeUntilDestroyed(this.destroyRef),
-        withLatestFrom(this.settings$),
-        filter(([priceData, settings]) => priceData.badgeColor === settings.badgeColor)
-      )
-      .subscribe(([priceData]) => this.setCommonParameters({
-        price: priceData.price
-      }));
+    this.widgetsSharedDataService.getDataProvideValues<SelectedPriceData>('selectedPrice').pipe(
+      withLatestFrom(this.settings$),
+      filter(([priceData, settings]) => priceData.badgeColor === settings.badgeColor),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(([priceData,]) => this.setCommonParameters({
+      price: priceData.price
+    }));
   }
 
   setCommonParameters(params: Partial<CommonParameters>) {
