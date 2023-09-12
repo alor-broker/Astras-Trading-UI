@@ -1,12 +1,18 @@
 ﻿{
   "langLabel": "Language",
   "themeLabel": "Theme",
+  "gridTypeLabel": "Widgets grid behavior",
   "timezoneLabel": "Displaying time timezone",
   "userIdleDurationLabel": "User idle duration, min.",
   "badgesBindLabel": "Enable linking instruments to labels",
 
   "darkThemeOption": "Dark",
   "lightThemeOption": "Light",
+
+  "gridTypeFitOption": "Fit into window",
+  "gridTypeVerticalFixedOption": "Increase down",
+  "gridTypeHorizontalFixedOption": "Increase right",
+
   "mskTimezoneOption": "Moscow (MSK)",
   "localTimezoneOption": "Local time",
   "notSelectedOption": "Not selected",
