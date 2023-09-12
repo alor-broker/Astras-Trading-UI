@@ -130,7 +130,7 @@ export class PositionsComponent
       displayName: 'Ср. объём',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => a.volume - b.volume,
-      tooltip: 'Объём по позиции, расчитанный по средней цене',
+      tooltip: 'Объём по позиции, рассчитанный по средней цене',
       minWidth: 60
     },
     {
@@ -138,7 +138,7 @@ export class PositionsComponent
       displayName: 'Тек. объём',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay) => a.currentVolume - b.currentVolume,
-      tooltip: 'Объём по позиции расчитанный по текущей цене',
+      tooltip: 'Объём по позиции рассчитанный по текущей цене',
       minWidth: 60
     },
     {
