@@ -1,10 +1,10 @@
 <ng-template #docsLink>
-  <ats-external-link href="{{externalLinks.help}}"
+  <ats-external-link [href]="externalLinks.help"
     *transloco="let t; scope: 'help'">{{t('help.docsHubLink')}}
   </ats-external-link>
 </ng-template>
 <div class="help show-scroll" *ngIf="help$ | async as help">
-  <nz-alert *transloco="let t; scope: 'help'" nzType="info" [nzMessage]="t('help.docsHub')" nzShowIcon
+  <nz-alert class="help-info" *transloco="let t; scope: 'help'" nzType="info" [nzMessage]="t('help.docsHub')" nzShowIcon
     [nzAction]="docsLink">
   </nz-alert>
   <markdown [data]="help.markdown"></markdown>
