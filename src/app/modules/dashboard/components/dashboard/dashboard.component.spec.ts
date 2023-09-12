@@ -9,6 +9,7 @@ import { DashboardComponent } from './dashboard.component';
 import { mockComponent } from "../../../../shared/utils/testing";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -43,6 +44,12 @@ describe('DashboardComponent', () => {
             getWidgetsMeta: jasmine.createSpy('getWidgetsMeta').and.returnValue(new Subject())
           }
         },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+          }
+        }
       ]
     }).compileComponents();
   });

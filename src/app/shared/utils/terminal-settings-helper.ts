@@ -1,4 +1,5 @@
 ﻿import {
+  GridType,
   HotKeysSettings,
   InstantNotificationsSettings,
   ScalperOrderBookMouseAction,
@@ -17,7 +18,8 @@ export class TerminalSettingsHelper {
       hotKeysSettings: this.getDefaultHotkeys(),
       scalperOrderBookMouseActions: this.getScalperOrderBookMouseActionsScheme1(),
       designSettings: {
-        theme: ThemeType.dark
+        theme: ThemeType.dark,
+        gridType: GridType.Fit
       },
       instantNotificationsSettings: this.getDefaultInstantNotificationsSettings()
     } as TerminalSettings;
