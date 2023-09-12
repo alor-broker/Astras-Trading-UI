@@ -1,7 +1,7 @@
 ﻿{
   "langLabel": "Язык",
   "themeLabel": "Тема",
-  "gridTypeLabel": "Поведение сетки",
+  "gridTypeLabel": "Поведение сетки виджетов",
   "timezoneLabel": "Часовой пояс отображения времени",
   "userIdleDurationLabel": "Время бездействия до приостановки сеанса, мин.",
   "badgesBindLabel": "Включить привязку инструментов к лейблам",
