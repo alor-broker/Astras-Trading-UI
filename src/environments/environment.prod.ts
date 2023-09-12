@@ -32,6 +32,7 @@ export const environment = {
     reports: 'https://lk.alor.ru/reports/broker',
     releases: 'https://warp.alor.dev/ru/releases/astras',
     support: 'https://t.me/+oM0i9QbtD4cwMzNi',
+    help: 'https://alor.gitbook.io/astras',
     officialSite: 'https://www.alorbroker.ru',
     riskRate: 'https://www.alorbroker.ru/trading/leverage',
     personalAccount: 'https://lk.alor.ru/main',
