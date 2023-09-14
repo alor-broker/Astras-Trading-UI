@@ -49,8 +49,7 @@ export class TechChartWidgetComponent implements OnInit {
       this.widgetInstance,
       'TechChartSettings',
       settings => ({
-        ...settings,
-        chartSettings: {}
+        ...settings
       }),
       this.dashboardContextService,
       this.widgetSettingsService

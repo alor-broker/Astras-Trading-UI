@@ -16,6 +16,7 @@ import {
 } from '../../../../shared/utils/testing';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 describe('TechChartSettingsComponent', () => {
   let component: TechChartSettingsComponent;
@@ -24,7 +25,11 @@ describe('TechChartSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
-        TechChartSettingsComponent
+        TechChartSettingsComponent,
+        mockComponent({
+          selector: 'ats-widget-settings',
+          inputs: ['canSave', 'canCopy', 'showCopy']
+        })
       ],
       imports: [
         TechChartModule,
@@ -44,6 +49,12 @@ describe('TechChartSettingsComponent', () => {
           provide: InstrumentsService,
           useValue: {
             getInstrumentBoards: jasmine.createSpy('getInstrumentBoards').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: ManageDashboardsService,
+          useValue: {
+            copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
           }
         },
         ...commonTestProviders

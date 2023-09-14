@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditOrderDialogWidgetComponent } from './edit-order-dialog-widget.component';
+import { getTranslocoModule } from "../../../../shared/utils/testing";
 
 describe('EditOrderDialogWidgetComponent', () => {
   let component: EditOrderDialogWidgetComponent;
@@ -8,6 +9,7 @@ describe('EditOrderDialogWidgetComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [getTranslocoModule()],
       declarations: [EditOrderDialogWidgetComponent]
     });
     fixture = TestBed.createComponent(EditOrderDialogWidgetComponent);

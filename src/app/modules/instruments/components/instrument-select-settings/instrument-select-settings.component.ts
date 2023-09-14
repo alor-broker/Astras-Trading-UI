@@ -1,10 +1,7 @@
 import {
   Component,
   DestroyRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import {
   UntypedFormControl,
@@ -17,45 +14,52 @@ import {
 } from '../../models/instrument-select-settings.model';
 import { BaseColumnId } from "../../../../shared/models/settings/table-settings.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import {
+  Observable
+} from "rxjs";
 
 @Component({
   selector: 'ats-instrument-select-settings',
   templateUrl: './instrument-select-settings.component.html',
   styleUrls: ['./instrument-select-settings.component.less']
 })
-export class InstrumentSelectSettingsComponent implements OnInit {
+export class InstrumentSelectSettingsComponent extends WidgetSettingsBaseComponent<InstrumentSelectSettings> implements OnInit {
   settingsForm!: UntypedFormGroup;
   allInstrumentColumns: BaseColumnId[] = allInstrumentsColumns;
-  @Input({required: true})
-  guid!: string;
-  @Output()
-  settingsChange: EventEmitter<InstrumentSelectSettings> = new EventEmitter<InstrumentSelectSettings>();
+  protected settings$!: Observable<InstrumentSelectSettings>;
+
+  get showCopy(): boolean {
+    return true;
+  }
+
+  get canSave(): boolean {
+    return this.settingsForm?.valid ?? false;
+  }
 
   constructor(
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly manageDashboardsService: ManageDashboardsService,
     private readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, manageDashboardsService);
   }
 
   ngOnInit(): void {
-    this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
+    this.initSettingsStream();
+
+    this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.buildSettingsForm(settings);
     });
   }
 
-  saveSettings() {
-    if (this.settingsForm?.valid) {
-      this.settingsService.updateSettings<InstrumentSelectSettings>(
-        this.guid,
-        {
-          ...this.settingsForm.value
-        }
-      );
-
-      this.settingsChange.emit();
-    }
+  protected getUpdatedSettings(): Partial<InstrumentSelectSettings> {
+    return {
+      ...this.settingsForm.value
+    };
   }
 
   private buildSettingsForm(currentSettings: InstrumentSelectSettings) {

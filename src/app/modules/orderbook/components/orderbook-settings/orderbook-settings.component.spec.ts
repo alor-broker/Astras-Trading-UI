@@ -14,6 +14,7 @@ import {
 } from "../../../../shared/utils/testing";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import {DeviceService} from "../../../../shared/services/device.service";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 describe('OrderbookSettingsComponent', () => {
   let component: OrderbookSettingsComponent;
@@ -46,6 +47,12 @@ describe('OrderbookSettingsComponent', () => {
           provide: DeviceService,
           useValue: {
             deviceInfo$: new Subject()
+          }
+        },
+        {
+          provide: ManageDashboardsService,
+          useValue: {
+            copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
           }
         },
         ...commonTestProviders

@@ -7,6 +7,8 @@ import { NzSelectModule } from "ng-zorro-antd/select";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { NzFormModule } from "ng-zorro-antd/form";
 import { ReactiveFormsModule } from "@angular/forms";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { mockComponent } from "../../../../shared/utils/testing";
 
 describe('AllInstrumentsSettingsComponent', () => {
   let component: AllInstrumentsSettingsComponent;
@@ -16,6 +18,10 @@ describe('AllInstrumentsSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         AllInstrumentsSettingsComponent,
+        mockComponent({
+          selector: 'ats-widget-settings',
+          inputs: ['canSave', 'canCopy', 'showCopy']
+        })
       ],
       imports: [
         NoopAnimationsModule,
@@ -29,6 +35,12 @@ describe('AllInstrumentsSettingsComponent', () => {
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
             updateSettings: jasmine.createSpy('getSettings').and.callThrough()
+          }
+        },
+        {
+          provide: ManageDashboardsService,
+          useValue: {
+            copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
           }
         }
       ]
