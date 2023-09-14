@@ -1,0 +1,253 @@
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+
+import { SyntheticInstrumentsService } from './synthetic-instruments.service';
+import { InstrumentsService } from "../../instruments/services/instruments.service";
+import { HistoryService } from "../../../shared/services/history.service";
+import { of } from "rxjs";
+import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
+import { generateRandomString, getRandomInt } from "../../../shared/utils/testing";
+import { Instrument } from "../../../shared/models/instruments/instrument.model";
+
+describe('SyntheticInstrumentsService', () => {
+  let service: SyntheticInstrumentsService;
+
+  let instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
+  let historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getHistory']);
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: InstrumentsService,
+          useValue: instrumentsServiceSpy
+        },
+        {
+          provide: HistoryService,
+          useValue: historyServiceSpy
+        }
+      ]
+    });
+    service = TestBed.inject(SyntheticInstrumentsService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  describe('getInstrument', () => {
+    it('should return null observable if instruments are empty', fakeAsync(() => {
+      service.getInstrument(['invalid', 'instruments'])
+        .subscribe(res => expect(res).toBeNull());
+
+      tick();
+    }));
+
+    it('should return null observable if some of instruments response invalid', fakeAsync(() => {
+      instrumentsServiceSpy.getInstrument.and.callFake((i: InstrumentKey) => i.symbol === 'SYM1' ? of(i) : of(null));
+
+      service.getInstrument([{ exchange: 'EXCH', symbol: 'SYM1' }, '+', { exchange: 'EXCH', symbol: 'SYM2' }])
+        .subscribe(res => expect(res).toBeNull());
+
+      tick();
+    }));
+
+    it('should correctly assemble synthetic instrument info', fakeAsync(() => {
+      const instrumentKey1: InstrumentKey = {
+        symbol: generateRandomString(5),
+        exchange: generateRandomString(5),
+        instrumentGroup: generateRandomString(5)
+      };
+
+      const instrument1: Instrument = {
+        symbol: instrumentKey1.symbol,
+        description: generateRandomString(10),
+        exchange: instrumentKey1.exchange,
+        instrumentGroup: instrumentKey1.instrumentGroup,
+        currency: 'RUB',
+        type: generateRandomString(5),
+        shortName: generateRandomString(5),
+        minstep: getRandomInt(1, 10),
+      };
+
+      const instrumentKey2: InstrumentKey = {
+        symbol: generateRandomString(5),
+        exchange: generateRandomString(5),
+        instrumentGroup: generateRandomString(5)
+      };
+
+      const instrument2: Instrument = {
+        symbol: instrumentKey2.symbol,
+        description: generateRandomString(10),
+        exchange: instrumentKey2.exchange,
+        instrumentGroup: instrumentKey2.instrumentGroup,
+        currency: 'RUB',
+        type: generateRandomString(5),
+        shortName: generateRandomString(5),
+        minstep: getRandomInt(1, 10),
+      };
+
+      instrumentsServiceSpy.getInstrument.and.callFake((i: InstrumentKey) =>  of(i.symbol === instrumentKey1.symbol ? instrument1 : instrument2));
+
+      service.getInstrument(['(', instrumentKey1, '+', instrumentKey2, ')'])
+        .subscribe(instrument => {
+          expect(instrument).toEqual({
+            symbol: `(${instrumentKey1.exchange}:${instrumentKey1.symbol}:${instrumentKey1.instrumentGroup}+${instrumentKey2.exchange}:${instrumentKey2.symbol}:${instrumentKey2.instrumentGroup})`,
+            description: `(${instrumentKey1.symbol}+${instrumentKey2.symbol})`,
+            exchange: `(${instrumentKey1.exchange}+${instrumentKey2.exchange})`,
+            currency: 'RUB',
+            type: `(${instrument1.type}+${instrument2.type})`,
+            shortName: `(${instrumentKey1.exchange}:${instrumentKey1.symbol}:${instrumentKey1.instrumentGroup}+${instrumentKey2.exchange}:${instrumentKey2.symbol}:${instrumentKey2.instrumentGroup})`,
+            minstep: Math.min(instrument1.minstep, instrument2.minstep),
+          });
+        });
+
+      tick();
+    }));
+  });
+
+  describe('getHistory', () => {
+    it('should return null observable if instruments are empty', fakeAsync(() => {
+      service.getHistory({
+        syntheticInstruments: ['invalid', 'instruments'],
+        to: Date.now(),
+        from: Date.now(),
+        tf: '60'
+      })
+        .subscribe(res => expect(res).toBeNull());
+
+      tick();
+    }));
+
+    it('should return null observable if some of history responses is invalid', fakeAsync(() => {
+      historyServiceSpy.getHistory.and.callFake((i: InstrumentKey) => i.symbol === 'SYM2' ? of({}) : of(null));
+
+      service.getHistory({
+        syntheticInstruments: [{ exchange: 'EXCH', symbol: 'SYM1' }, '+', { exchange: 'EXCH', symbol: 'SYM2' }],
+        to: Date.now(),
+        from: Date.now(),
+        tf: '60'
+      })
+        .subscribe(res => expect(res).toBeNull());
+
+      tick();
+    }));
+
+    it('Should correctly assemble history info', fakeAsync(() => {
+      const candles1 = [
+        {
+          close: getRandomInt(1, 50),
+          open: getRandomInt(1, 50),
+          high: getRandomInt(1, 50),
+          low: getRandomInt(1, 50),
+          time: 1,
+          volume: getRandomInt(1, 50),
+        },
+        {
+          close: getRandomInt(1, 50),
+          open: getRandomInt(1, 50),
+          high: getRandomInt(1, 50),
+          low: getRandomInt(1, 50),
+          time: 3,
+          volume: getRandomInt(1, 50),
+        },
+        {
+          close: getRandomInt(1, 50),
+          open: getRandomInt(1, 50),
+          high: getRandomInt(1, 50),
+          low: getRandomInt(1, 50),
+          time: 4,
+          volume: getRandomInt(1, 50),
+        },
+
+      ];
+
+      const candles2 = [
+        {
+          close: getRandomInt(1, 50),
+          open: getRandomInt(1, 50),
+          high: getRandomInt(1, 50),
+          low: getRandomInt(1, 50),
+          time: 2,
+          volume: getRandomInt(1, 50),
+        },
+        {
+          close: getRandomInt(1, 50),
+          open: getRandomInt(1, 50),
+          high: getRandomInt(1, 50),
+          low: getRandomInt(1, 50),
+          time: 4,
+          volume: getRandomInt(1, 50),
+        },
+        {
+          close: getRandomInt(1, 50),
+          open: getRandomInt(1, 50),
+          high: getRandomInt(1, 50),
+          low: getRandomInt(1, 50),
+          time: 5,
+          volume: getRandomInt(1, 50),
+        }
+      ];
+      historyServiceSpy.getHistory.and.returnValue(of({ next: 2, prev:1, history: candles1 }));
+
+      service.getHistory({ syntheticInstruments: [{ symbol: 'SYM1', exchange: 'EXCH'}], from: Date.now(), to: Date.now(), tf: '60' })
+        .subscribe(h => expect(h).toEqual({ next: 2, prev:1, history: candles1 }));
+
+      tick();
+
+      historyServiceSpy.getHistory.and.callFake((i: InstrumentKey) => of({
+        next: 1,
+        prev: 1,
+        history: i.symbol === 'SYM1' ? candles1 : candles2
+      }));
+
+      service.getHistory({
+        syntheticInstruments: [
+          { symbol: 'SYM1', exchange: 'EXCH'},
+          '-',
+          { symbol: 'SYM2', exchange: 'EXCH'},
+        ],
+        from: Date.now(),
+        to: Date.now(),
+        tf: '60'
+      })
+        .subscribe(h => {
+          expect(h?.history).toEqual([
+            {
+              close: candles1[0].close - candles2[0].close,
+              open: candles1[0].open - candles2[0].open,
+              high: candles1[0].high - candles2[0].high,
+              low: candles1[0].low - candles2[0].low,
+              time: 1,
+              volume: 0
+            },
+            {
+              close: candles1[1].close - candles2[0].close,
+              open: candles1[1].open - candles2[0].open,
+              high: candles1[1].high - candles2[0].high,
+              low: candles1[1].low - candles2[0].low,
+              time: 2,
+              volume: 0
+            },
+            {
+              close: candles1[1].close - candles2[1].close,
+              open: candles1[1].open - candles2[1].open,
+              high: candles1[1].high - candles2[1].high,
+              low: candles1[1].low - candles2[1].low,
+              time: 3,
+              volume: 0
+            },
+            {
+              close: candles1[2].close - candles2[1].close,
+              open: candles1[2].open - candles2[1].open,
+              high: candles1[2].high - candles2[1].high,
+              low: candles1[2].low - candles2[1].low,
+              time: 4,
+              volume: 0
+            }
+          ]);
+        });
+
+      tick();
+    }));
+  });
+});
