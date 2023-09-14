@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import {OptionBoardDataContext} from "../../models/option-board-data-context.model";
 import {OptionBoardService} from "../../services/option-board.service";
 import {BehaviorSubject, combineLatest, forkJoin, Observable, of, shareReplay, switchMap, take, tap, timer} from "rxjs";
@@ -12,6 +22,7 @@ import {MathHelper} from "../../../../shared/utils/math-helper";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface DetailsDisplay extends OptionKey {
   underlyingAssetSymbol: string;
@@ -131,6 +142,7 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
     private readonly translatorService: TranslatorService,
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -215,8 +227,14 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   private initDetailsDisplay() {
+    const refreshTimer$ = timer(0, 60000).pipe(
+      // for some reasons timer pipe is not completed in detailsDisplay$ when component destroyed (https://github.com/alor-broker/Astras-Trading-UI/issues/1176)
+      // so we need to add takeUntil condition for this stream separately
+      takeUntilDestroyed(this.destroyRef)
+    );
+
     this.detailsDisplay$ = this.dataContext.currentSelection$.pipe(
-      mapWith(() => timer(0, 60000), source => source),
+      mapWith(() => refreshTimer$, source => source),
       tap(() => this.isLoading$.next(true)),
       switchMap(selection => {
         if (!selection || selection.selectedOptions.length === 0) {
