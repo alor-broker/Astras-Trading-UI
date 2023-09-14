@@ -19,6 +19,7 @@ import {
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-scalper-order-book-widget',
@@ -60,35 +61,43 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
       settings => ({
         ...settings,
         title: `Скальперский стакан`,
-        titleIcon: 'ordered-list',
-        depth: 10,
-        showZeroVolumeItems: true,
-        showSpreadItems: true,
-        volumeHighlightMode: VolumeHighlightMode.BiggestVolume,
-        volumeHighlightFullness: 10000,
-        volumeHighlightOptions: [
-          { boundary: 1000, color: '#71DB20' },
-          { boundary: 5000, color: '#ff0000' },
-          { boundary: 10000, color: '#ff00ff' }
-        ],
-        workingVolumes: [1, 10, 100, 1000],
-        disableHotkeys: true,
-        enableMouseClickSilentOrders: false,
-        autoAlignIntervalSec: 15,
-        enableAutoAlign: true,
-        showTradesPanel: true,
-        showTradesClustersPanel: true,
-        tradesClusterPanelSettings: {
-          timeframe: ClusterTimeframe.M1,
-          displayIntervalsCount: 5,
-          volumeDisplayFormat: NumberDisplayFormat.LetterSuffix
-        },
-        volumeDisplayFormat: NumberDisplayFormat.Default,
-        showRuler: true,
-        rulerSettings: {
-          markerDisplayFormat: PriceUnits.Points
-        },
-        showPriceWithZeroPadding: true
+        depth: getValueOrDefault(settings.depth, 10),
+        showZeroVolumeItems: getValueOrDefault(settings.showZeroVolumeItems, true),
+        showSpreadItems: getValueOrDefault(settings.showSpreadItems, true),
+        volumeHighlightMode: getValueOrDefault(settings.volumeHighlightMode, VolumeHighlightMode.BiggestVolume),
+        volumeHighlightFullness: getValueOrDefault(settings.volumeHighlightFullness, 10000),
+        volumeHighlightOptions: getValueOrDefault(
+          settings.volumeHighlightOptions,
+          [
+            { boundary: 1000, color: '#71DB20' },
+            { boundary: 5000, color: '#ff0000' },
+            { boundary: 10000, color: '#ff00ff' }
+          ]
+          ),
+        workingVolumes: getValueOrDefault(settings.workingVolumes, [1, 10, 100, 1000]),
+        disableHotkeys: getValueOrDefault(settings.disableHotkeys, true),
+        enableMouseClickSilentOrders: getValueOrDefault(settings.enableMouseClickSilentOrders, false),
+        autoAlignIntervalSec: getValueOrDefault(settings.autoAlignIntervalSec, 15),
+        enableAutoAlign: getValueOrDefault(settings.enableAutoAlign, true),
+        showTradesPanel: getValueOrDefault(settings.showTradesPanel, true),
+        showTradesClustersPanel: getValueOrDefault(settings.showTradesClustersPanel, true),
+        tradesClusterPanelSettings: getValueOrDefault(
+          settings.tradesClusterPanelSettings,
+          {
+            timeframe: ClusterTimeframe.M1,
+            displayIntervalsCount: 5,
+            volumeDisplayFormat: NumberDisplayFormat.LetterSuffix
+          }
+        ),
+        volumeDisplayFormat: getValueOrDefault(settings.volumeDisplayFormat, NumberDisplayFormat.Default),
+        showRuler: getValueOrDefault(settings.showRuler, true),
+        rulerSettings: getValueOrDefault(
+          settings.rulerSettings,
+          {
+            markerDisplayFormat: PriceUnits.Points
+          }
+        ),
+        showPriceWithZeroPadding: getValueOrDefault(settings.showPriceWithZeroPadding, true),
       }),
       this.dashboardContextService,
       this.widgetSettingsService,

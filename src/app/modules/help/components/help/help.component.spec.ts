@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HelpComponent } from './help.component';
 import { HelpService } from '../../services/help.service';
 import { of } from 'rxjs';
+import { getTranslocoModule } from "../../../../shared/utils/testing";
 
 describe('HelpComponent', () => {
   let component: HelpComponent;
@@ -15,6 +16,7 @@ describe('HelpComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [getTranslocoModule()],
       declarations: [HelpComponent],
       providers: [
         { provide: HelpService, useValue: helpSpy }

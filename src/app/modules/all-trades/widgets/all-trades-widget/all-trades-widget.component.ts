@@ -14,6 +14,7 @@ import {
 } from '../../models/all-trades-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-all-trades-widget',
@@ -50,8 +51,11 @@ export class AllTradesWidgetComponent implements OnInit {
       'AllTradesSettings',
       settings => ({
         ...settings,
-        allTradesColumns: allTradesWidgetColumns.filter(c => c.isDefault).map(col => col.id),
-        highlightRowsBySide: false
+        allTradesColumns: getValueOrDefault(
+          settings.allTradesColumns,
+          allTradesWidgetColumns.filter(c => c.isDefault).map(col => col.id)
+        ),
+        highlightRowsBySide: getValueOrDefault(settings.highlightRowsBySide, false)
       }),
       this.dashboardContextService,
       this.widgetSettingsService

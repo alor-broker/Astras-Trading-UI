@@ -9,12 +9,14 @@ import { of } from "rxjs";
 import {
   commonTestProviders,
   getTranslocoModule,
+  mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { ReactiveFormsModule } from "@angular/forms";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzSwitchModule } from "ng-zorro-antd/switch";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 describe('BlotterSettingsComponent', () => {
   let component: BlotterSettingsComponent;
@@ -48,6 +50,12 @@ describe('BlotterSettingsComponent', () => {
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)),
             updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
+          }
+        },
+        {
+          provide: ManageDashboardsService,
+          useValue: {
+            copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
           }
         },
         ...commonTestProviders

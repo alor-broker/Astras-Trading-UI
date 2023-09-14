@@ -32,6 +32,7 @@ import {
 } from '../../models/blotter-settings.model';
 import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-blotter-widget',
@@ -74,16 +75,33 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
       'BlotterSettings',
       settings => ({
         ...settings,
-        tradesTable: TableSettingHelper.toTableDisplaySettings(allTradesColumns.filter(c => c.isDefault).map(c => c.id)),
-        positionsTable: TableSettingHelper.toTableDisplaySettings(allPositionsColumns.filter(c => c.isDefault).map(c => c.id)),
-        ordersTable: TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.id)),
-        stopOrdersTable: TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.id)),
-        notificationsTable: TableSettingHelper.toTableDisplaySettings(allNotificationsColumns.filter(c => c.isDefault).map(c => c.id)),
-        repoTradesTable: TableSettingHelper.toTableDisplaySettings(allRepoTradesColumns.filter(c => c.isDefault).map(c => c.id)),
-
-        badgeColor: defaultBadgeColor,
-        isSoldPositionsHidden: true,
-        cancelOrdersWithoutConfirmation: false
+        tradesTable: getValueOrDefault(
+          settings.tradesTable,
+          TableSettingHelper.toTableDisplaySettings(allTradesColumns.filter(c => c.isDefault).map(c => c.id))
+        ),
+        positionsTable: getValueOrDefault(
+          settings.positionsTable,
+          TableSettingHelper.toTableDisplaySettings(allPositionsColumns.filter(c => c.isDefault).map(c => c.id))
+        ),
+        ordersTable: getValueOrDefault(
+          settings.ordersTable,
+          TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.id))
+        ),
+        stopOrdersTable: getValueOrDefault(
+          settings.stopOrdersTable,
+          TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.id))
+        ) ,
+        notificationsTable: getValueOrDefault(
+          settings.notificationsTable,
+          TableSettingHelper.toTableDisplaySettings(allNotificationsColumns.filter(c => c.isDefault).map(c => c.id))
+        ),
+        repoTradesTable: getValueOrDefault(
+          settings.repoTradesTable,
+          TableSettingHelper.toTableDisplaySettings(allRepoTradesColumns.filter(c => c.isDefault).map(c => c.id))
+        ),
+        badgeColor: getValueOrDefault(settings.badgeColor, defaultBadgeColor),
+        isSoldPositionsHidden: getValueOrDefault(settings.isSoldPositionsHidden, true),
+        cancelOrdersWithoutConfirmation: getValueOrDefault(settings.cancelOrdersWithoutConfirmation, false)
       }),
       this.dashboardContextService,
       this.widgetSettingsService

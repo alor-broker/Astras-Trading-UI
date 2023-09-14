@@ -31,6 +31,7 @@ import {
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-order-submit-widget',
@@ -78,10 +79,10 @@ export class OrderSubmitWidgetComponent implements OnInit {
       'OrderSubmitSettings',
       settings => ({
         ...settings,
-        enableLimitOrdersFastEditing: false,
-        limitOrderPriceMoveSteps: [1, 2, 5, 10],
-        showVolumePanel: false,
-        workingVolumes: [1, 5, 10, 20, 30, 40, 50, 100, 200]
+        enableLimitOrdersFastEditing: getValueOrDefault(settings.enableLimitOrdersFastEditing, false),
+        limitOrderPriceMoveSteps: getValueOrDefault(settings.limitOrderPriceMoveSteps, [1, 2, 5, 10]),
+        showVolumePanel: getValueOrDefault(settings.showVolumePanel, false),
+        workingVolumes: getValueOrDefault(settings.workingVolumes, [1, 5, 10, 20, 30, 40, 50, 100, 200])
       }),
       this.dashboardContextService,
       this.widgetSettingsService

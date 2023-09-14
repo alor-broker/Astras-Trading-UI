@@ -7,7 +7,11 @@ import { BlotterService } from "../../services/blotter.service";
 import { MockServiceBlotter } from "../../utils/mock-blotter-service";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { mockComponent, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import {
+  getTranslocoModule,
+  mockComponent,
+  ngZorroMockComponents
+} from "../../../../shared/utils/testing";
 
 describe('RepoTradesComponent', () => {
   let component: RepoTradesComponent;
@@ -15,6 +19,7 @@ describe('RepoTradesComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [getTranslocoModule()],
       declarations: [
         RepoTradesComponent,
         ...ngZorroMockComponents,

@@ -56,7 +56,8 @@ describe('NavbarComponent', () => {
         mockComponent({ selector: 'ats-widget-menu', inputs: ['showResetItem'] }),
         mockComponent({ selector: 'ats-notification-button' }),
         mockComponent({ selector: 'ats-select-dashboard-menu', inputs: ['visibilityChange']}),
-        mockComponent({ selector: 'ats-network-indicator'})
+        mockComponent({ selector: 'ats-network-indicator'}),
+        mockComponent({ selector: 'ats-dashboards-panel', inputs: ['selectedDashboard'] })
       ],
       providers: [
         { provide: ManageDashboardsService, useValue: spyDashboard },

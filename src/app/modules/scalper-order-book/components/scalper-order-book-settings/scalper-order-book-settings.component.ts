@@ -1,5 +1,5 @@
-import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable, shareReplay, take, } from "rxjs";
+import { Component, DestroyRef, OnInit } from '@angular/core';
+import { Observable } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { AbstractControl, UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
@@ -14,13 +14,16 @@ import {
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { AtsValidators } from "../../../../shared/utils/form-validators";
+import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 @Component({
   selector: 'ats-scalper-order-book-settings',
   templateUrl: './scalper-order-book-settings.component.html',
   styleUrls: ['./scalper-order-book-settings.component.less']
 })
-export class ScalperOrderBookSettingsComponent implements OnInit {
+export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseComponent<ScalperOrderBookSettings> implements OnInit {
   readonly volumeHighlightModes = VolumeHighlightMode;
   readonly validationOptions = {
     depth: {
@@ -53,10 +56,6 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
 
-  @Input({required: true})
-  guid!: string;
-  @Output()
-  settingsChange: EventEmitter<void> = new EventEmitter();
   form!: UntypedFormGroup;
   orderPriceUnits = PriceUnits;
   exchanges: string[] = exchangesList;
@@ -66,12 +65,22 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
     VolumeHighlightMode.VolumeBoundsWithFixedValue,
   ];
 
-  private settings$!: Observable<ScalperOrderBookSettings>;
+  protected settings$!: Observable<ScalperOrderBookSettings>;
 
   constructor(
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly manageDashboardsService: ManageDashboardsService,
     private readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, manageDashboardsService);
+  }
+
+  get showCopy(): boolean {
+    return true;
+  }
+
+  get canSave(): boolean {
+    return this.form?.valid ?? false;
   }
 
   get volumeHighlightOptions(): UntypedFormArray {
@@ -91,9 +100,7 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.settings$ = this.settingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(
-      shareReplay(1)
-    );
+    this.initSettingsStream();
 
     this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
@@ -104,37 +111,6 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
 
   asFormGroup(control: AbstractControl): UntypedFormGroup {
     return control as UntypedFormGroup;
-  }
-
-  submitForm(): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(initialSettings => {
-      const formValue = this.form.value;
-
-      const newSettings = {
-        ...formValue,
-        symbol: formValue.instrument.symbol,
-        exchange: formValue.instrument.exchange,
-        depth: Number(formValue.depth),
-        volumeHighlightOptions: formValue.volumeHighlightOptions.map((x: VolumeHighlightOption) => ({
-            ...x,
-            boundary: Number(x.boundary)
-          } as VolumeHighlightOption)
-        ),
-        volumeHighlightFullness: Number(formValue.volumeHighlightFullness),
-        workingVolumes: formValue.workingVolumes.map((wv: string) => Number(wv)),
-        autoAlignIntervalSec: !!(+formValue.autoAlignIntervalSec) ? Number(formValue.autoAlignIntervalSec) : null,
-        topOrderPriceRatio: !!(+formValue.topOrderPriceRatio) ? Number(formValue.topOrderPriceRatio) : null,
-        bottomOrderPriceRatio: !!(+formValue.bottomOrderPriceRatio) ? Number(formValue.bottomOrderPriceRatio) : null
-      };
-
-      delete newSettings.instrument;
-      newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
-
-      this.settingsService.updateSettings<ScalperOrderBookSettings>(this.guid, newSettings);
-      this.settingsChange.emit();
-    });
   }
 
   setVolumeHighlightOptionColor(index: number, color: string) {
@@ -192,6 +168,32 @@ export class ScalperOrderBookSettingsComponent implements OnInit {
 
   asFormArray(control: AbstractControl): UntypedFormArray {
     return control as UntypedFormArray;
+  }
+
+  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<ScalperOrderBookSettings> {
+    const formValue = this.form.value;
+
+    const newSettings = {
+      ...formValue,
+      symbol: formValue.instrument.symbol,
+      exchange: formValue.instrument.exchange,
+      depth: Number(formValue.depth),
+      volumeHighlightOptions: formValue.volumeHighlightOptions.map((x: VolumeHighlightOption) => ({
+          ...x,
+          boundary: Number(x.boundary)
+        } as VolumeHighlightOption)
+      ),
+      volumeHighlightFullness: Number(formValue.volumeHighlightFullness),
+      workingVolumes: formValue.workingVolumes.map((wv: string) => Number(wv)),
+      autoAlignIntervalSec: !!(+formValue.autoAlignIntervalSec) ? Number(formValue.autoAlignIntervalSec) : null,
+      topOrderPriceRatio: !!(+formValue.topOrderPriceRatio) ? Number(formValue.topOrderPriceRatio) : null,
+      bottomOrderPriceRatio: !!(+formValue.bottomOrderPriceRatio) ? Number(formValue.bottomOrderPriceRatio) : null
+    };
+
+    delete newSettings.instrument;
+    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+
+    return newSettings;
   }
 
   private buildForm(settings: ScalperOrderBookSettings) {

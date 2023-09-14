@@ -14,6 +14,7 @@ import {
 } from '../../model/all-instruments-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-all-instruments-widget',
@@ -51,8 +52,11 @@ export class AllInstrumentsWidgetComponent implements OnInit {
       'AllInstrumentsSettings',
       settings => ({
         ...settings,
-        badgeColor: defaultBadgeColor,
-        allInstrumentsColumns: allInstrumentsColumns.filter(c => c.isDefault).map(col => col.id)
+        badgeColor: getValueOrDefault(settings.badgeColor, defaultBadgeColor),
+        allInstrumentsColumns: getValueOrDefault(
+          settings.allInstrumentsColumns,
+          allInstrumentsColumns.filter(c => c.isDefault).map(col => col.id)
+        )
       }),
       this.widgetSettingsService
     );

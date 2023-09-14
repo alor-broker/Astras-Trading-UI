@@ -16,6 +16,7 @@ import {
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-orderbook-widget',
@@ -55,15 +56,15 @@ export class OrderbookWidgetComponent implements OnInit {
       'OrderbookSettings',
       settings => ({
         ...settings,
-        depth: 17,
-        showChart: true,
-        showTable: true,
-        showYieldForBonds: false,
-        useOrderWidget: false,
-        showVolume: false,
-        columnsOrder: ColumnsOrder.volumesAtTheEdges,
-        volumeDisplayFormat: NumberDisplayFormat.Default,
-        showPriceWithZeroPadding: true
+        depth: getValueOrDefault(settings.depth, 17),
+        showChart: getValueOrDefault(settings.showChart, true),
+        showTable: getValueOrDefault(settings.showTable, true),
+        showYieldForBonds: getValueOrDefault(settings.showYieldForBonds, false),
+        useOrderWidget: getValueOrDefault(settings.useOrderWidget, false),
+        showVolume: getValueOrDefault(settings.showVolume, false),
+        columnsOrder: getValueOrDefault(settings.columnsOrder, ColumnsOrder.volumesAtTheEdges),
+        volumeDisplayFormat: getValueOrDefault(settings.volumeDisplayFormat, NumberDisplayFormat.Default),
+        showPriceWithZeroPadding: getValueOrDefault(settings.showPriceWithZeroPadding, true),
       }),
       this.dashboardContextService,
       this.widgetSettingsService
@@ -72,4 +73,5 @@ export class OrderbookWidgetComponent implements OnInit {
     this.settings$ = this.widgetSettingsService.getSettings<OrderbookSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
   }
+
 }

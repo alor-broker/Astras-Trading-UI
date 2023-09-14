@@ -15,6 +15,7 @@ import {
 } from '../../models/instrument-select-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-instrument-select-widget',
@@ -54,7 +55,7 @@ export class InstrumentSelectWidgetComponent implements OnInit {
         ...settings,
         title: `Выбор инструмента`,
         titleIcon: 'eye',
-        instrumentColumns: allInstrumentsColumns.filter(c => c.isDefault).map(c => c.id),
+        instrumentColumns: getValueOrDefault(settings.instrumentColumns, allInstrumentsColumns.filter(c => c.isDefault).map(c => c.id)),
         badgeColor: defaultBadgeColor
       }),
       this.widgetSettingsService

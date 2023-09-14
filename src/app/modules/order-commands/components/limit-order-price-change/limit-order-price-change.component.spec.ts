@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LimitOrderPriceChangeComponent } from './limit-order-price-change.component';
-import { ngZorroMockComponents } from '../../../../shared/utils/testing';
-import {QuotesService} from "../../../../shared/services/quotes.service";
+import {
+  getTranslocoModule,
+  ngZorroMockComponents
+} from '../../../../shared/utils/testing';
 import {Subject} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {OrderService} from "../../../../shared/services/orders/order.service";
@@ -13,6 +15,7 @@ describe('LimitOrderPriceChangeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [getTranslocoModule()],
       declarations: [
         LimitOrderPriceChangeComponent,
         ...ngZorroMockComponents
