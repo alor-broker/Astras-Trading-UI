@@ -1,9 +1,7 @@
 import {
-  Component, DestroyRef,
-  EventEmitter,
-  Input,
+  Component,
+  DestroyRef,
   OnInit,
-  Output
 } from '@angular/core';
 import {
   UntypedFormControl,
@@ -17,29 +15,41 @@ import {
 } from '../../model/all-instruments-settings.model';
 import { BaseColumnId } from "../../../../shared/models/settings/table-settings.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import { Observable } from "rxjs";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 @Component({
   selector: 'ats-all-instruments-settings',
   templateUrl: './all-instruments-settings.component.html',
   styleUrls: ['./all-instruments-settings.component.less']
 })
-export class AllInstrumentsSettingsComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
-
-  @Output()
-  settingsChange: EventEmitter<AllInstrumentsSettings> = new EventEmitter<AllInstrumentsSettings>();
+export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent<AllInstrumentsSettings> implements OnInit {
   form!: UntypedFormGroup;
   allInstrumentsColumns: BaseColumnId[] = allInstrumentsColumns;
 
+  protected settings$!: Observable<AllInstrumentsSettings>;
+
   constructor(
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly manageDashboardsService: ManageDashboardsService,
     private readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, manageDashboardsService);
+  }
+
+  get showCopy(): boolean {
+    return true;
+  }
+
+  get canSave(): boolean {
+    return this.form?.valid ?? false;
   }
 
   ngOnInit(): void {
-    this.settingsService.getSettings<AllInstrumentsSettings>(this.guid).pipe(
+    this.initSettingsStream();
+
+    this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(settings => {
       if (settings) {
@@ -50,14 +60,9 @@ export class AllInstrumentsSettingsComponent implements OnInit {
     });
   }
 
-  submitForm(): void {
-    this.settingsService.updateSettings<AllInstrumentsSettings>(
-      this.guid,
-      {
-        ...this.form.value,
-      }
-    );
-
-    this.settingsChange.emit();
+  protected getUpdatedSettings(): Partial<AllInstrumentsSettings> {
+    return {
+      ...this.form.value,
+    };
   }
 }

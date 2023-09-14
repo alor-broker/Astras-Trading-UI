@@ -25,7 +25,7 @@ describe('MobileDashboardWidgetComponent', () => {
         mockComponent({ selector: 'ats-news-modal-widget' }),
         mockComponent({ selector: 'ats-feedback-widget' }),
         mockComponent({ selector: 'ats-application-updated-widget' }),
-        mockComponent({ selector: 'ats-edit-widget' }),
+        mockComponent({ selector: 'ats-edit-order-dialog-widget' }),
       ],
       providers: [
         { provide: OnboardingService, useValue: { start: jasmine.createSpy('start').and.callThrough() } },

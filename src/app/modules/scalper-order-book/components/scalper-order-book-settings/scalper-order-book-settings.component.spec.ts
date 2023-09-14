@@ -10,6 +10,7 @@ import {
   getTranslocoModule,
   mockComponent
 } from "../../../../shared/utils/testing";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 describe('ScalperOrderBookSettingsComponent', () => {
   let component: ScalperOrderBookSettingsComponent;
@@ -19,7 +20,11 @@ describe('ScalperOrderBookSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         ScalperOrderBookSettingsComponent,
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] })
+        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] }),
+        mockComponent({
+          selector: 'ats-widget-settings',
+          inputs: ['canSave', 'canCopy', 'showCopy']
+        })
       ],
       imports: [
         getTranslocoModule()
@@ -33,6 +38,12 @@ describe('ScalperOrderBookSettingsComponent', () => {
               exchange: 'MOEX'
             })),
             updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
+          }
+        },
+        {
+          provide: ManageDashboardsService,
+          useValue: {
+            copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
           }
         }
       ]

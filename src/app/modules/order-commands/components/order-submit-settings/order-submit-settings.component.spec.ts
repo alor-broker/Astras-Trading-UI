@@ -15,6 +15,7 @@ import {
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { OrderSubmitSettings } from '../../models/order-submit-settings.model';
 import {OrderCommandsModule} from "../../order-commands.module";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 describe('OrderSubmitSettingsComponent', () => {
   let component: OrderSubmitSettingsComponent;
@@ -23,7 +24,11 @@ describe('OrderSubmitSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations:[
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] })
+        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] }),
+        mockComponent({
+          selector: 'ats-widget-settings',
+          inputs: ['canSave', 'canCopy', 'showCopy']
+        })
       ],
       imports: [
         OrderCommandsModule,
@@ -37,6 +42,12 @@ describe('OrderSubmitSettingsComponent', () => {
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({} as OrderSubmitSettings)),
             updateSettings: jasmine.createSpy('getSettings').and.callThrough(),
+          }
+        },
+        {
+          provide: ManageDashboardsService,
+          useValue: {
+            copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
           }
         },
         ...commonTestProviders

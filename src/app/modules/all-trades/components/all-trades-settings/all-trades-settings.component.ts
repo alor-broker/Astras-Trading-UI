@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import { Component, DestroyRef, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
@@ -7,28 +7,41 @@ import {
 } from '../../models/all-trades-settings.model';
 import { BaseColumnId } from "../../../../shared/models/settings/table-settings.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import { Observable } from "rxjs";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
 
 @Component({
   selector: 'ats-all-trades-settings',
   templateUrl: './all-trades-settings.component.html',
   styleUrls: ['./all-trades-settings.component.less']
 })
-export class AllTradesSettingsComponent implements OnInit {
+export class AllTradesSettingsComponent extends WidgetSettingsBaseComponent<AllTradesSettings> implements OnInit {
   form!: UntypedFormGroup;
   allTradesColumns: BaseColumnId[] = allTradesWidgetColumns;
 
-  @Input({required: true})
-  guid!: string;
-
-  @Output() settingsChange: EventEmitter<AllTradesSettings> = new EventEmitter<AllTradesSettings>();
-
+  protected settings$!: Observable<AllTradesSettings>;
   constructor(
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly manageDashboardsService: ManageDashboardsService,
     private readonly destroyRef: DestroyRef
-  ) {}
+  ) {
+    super(settingsService, manageDashboardsService);
+  }
+
+  get showCopy(): boolean {
+    return true;
+  }
+
+  get canSave(): boolean {
+    return this.form?.valid ?? false;
+  }
 
   ngOnInit(): void {
-    this.settingsService.getSettings<AllTradesSettings>(this.guid).pipe(
+    this.initSettingsStream();
+
+    this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       if (settings) {
@@ -40,14 +53,9 @@ export class AllTradesSettingsComponent implements OnInit {
     });
   }
 
-  submitForm(): void {
-    this.settingsService.updateSettings<AllTradesSettings>(
-      this.guid,
-      {
-        ...this.form.value,
-      }
-    );
-
-    this.settingsChange.emit();
+  protected getUpdatedSettings(): Partial<TechChartSettings> {
+    return {
+      ...this.form.value,
+    };
   }
 }

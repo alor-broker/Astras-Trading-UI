@@ -1,7 +1,13 @@
-<ng-container *transloco="let t; scope: 'blotter/settings'">
-  <p>{{t('settingsHeader')}}</p>
+<ats-widget-settings
+  [canSave]="canSave"
+  [canCopy]="canCopy"
+  [showCopy]="showCopy"
+  (saveClick)="updateSettings()"
+  (copyClick)="createWidgetCopy()"
+>
+  <ng-container *transloco="let t; scope: 'blotter/settings'">
   <div *ngIf="deviceInfo$ | async as deviceInfo">
-    <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()">
+    <form nz-form [nzLayout]="'horizontal'" [formGroup]="form">
       <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-form-control [nzErrorTip]="t('blotterSettings.portfolioError')">
           <nz-form-label nzRequired nzFor="portfolio">{{t('blotterSettings.portfolioLabel')}}</nz-form-label>
@@ -254,13 +260,9 @@
         <nz-form-label nzFor="cancelOrdersWithoutConfirmation">{{t('blotterSettings.cancelWithoutConfirmLabel')}}</nz-form-label>
         <nz-switch formControlName='cancelOrdersWithoutConfirmation'></nz-switch>
       </nz-form-item>
-      <nz-form-item>
-        <nz-form-control>
-          <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">{{t('saveBtnText')}}</button>
-        </nz-form-control>
-      </nz-form-item>
     </form>
   </div>
 
   <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
 </ng-container>
+</ats-widget-settings>

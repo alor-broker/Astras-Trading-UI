@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from "@angular/core";
+import {Component, DestroyRef, OnInit} from "@angular/core";
 import {
   AbstractControl,
   FormArray,
@@ -16,17 +16,15 @@ import {DeviceService} from "../../../../shared/services/device.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {isInstrumentEqual} from "../../../../shared/utils/settings-helper";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 
 @Component({
   selector: 'ats-order-submit-settings',
   templateUrl: './order-submit-settings.component.html',
   styleUrls: ['./order-submit-settings.component.less']
 })
-export class OrderSubmitSettingsComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
-  @Output()
-  settingsChange: EventEmitter<void> = new EventEmitter();
+export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<OrderSubmitSettings> implements OnInit {
   form!: UntypedFormGroup;
   deviceInfo$!: Observable<any>;
 
@@ -41,13 +39,23 @@ export class OrderSubmitSettingsComponent implements OnInit {
     }
   };
 
-  private settings$!: Observable<OrderSubmitSettings>;
+  protected settings$!: Observable<OrderSubmitSettings>;
 
   constructor(
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly manageDashboardsService: ManageDashboardsService,
     private readonly deviceService: DeviceService,
     private readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, manageDashboardsService);
+  }
+
+  get showCopy(): boolean {
+    return true;
+  }
+
+  get canSave(): boolean {
+    return this.form?.valid ?? false;
   }
 
   ngOnInit() {
@@ -86,28 +94,6 @@ export class OrderSubmitSettingsComponent implements OnInit {
             )
         )
       });
-    });
-  }
-
-  submitForm(): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(initialSettings => {
-      const formValue = this.form.value;
-
-      const newSettings = {
-        ...formValue,
-        symbol: formValue.instrument.symbol,
-        exchange: formValue.instrument.exchange,
-        limitOrderPriceMoveSteps: formValue.limitOrderPriceMoveSteps.map((x: number) => Number(x)),
-        workingVolumes: formValue.workingVolumes.map((x: number) => Number(x)),
-      };
-
-      delete newSettings.instrument;
-      newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
-
-      this.settingsService.updateSettings<OrderSubmitSettings>(this.guid, newSettings);
-      this.settingsChange.emit();
     });
   }
 
@@ -154,6 +140,23 @@ export class OrderSubmitSettingsComponent implements OnInit {
     const workingVolumeControl = this.asFormArray(this.form.controls.workingVolumes);
     const defaultValue = workingVolumeControl?.controls[workingVolumeControl.length - 1]?.value as number;
     workingVolumeControl.push(this.createWorkingVolumeControl(defaultValue ?? 1));
+  }
+
+  protected getUpdatedSettings(initialSettings: OrderSubmitSettings): Partial<OrderSubmitSettings> {
+    const formValue = this.form.value;
+
+    const newSettings = {
+      ...formValue,
+      symbol: formValue.instrument.symbol,
+      exchange: formValue.instrument.exchange,
+      limitOrderPriceMoveSteps: formValue.limitOrderPriceMoveSteps.map((x: number) => Number(x)),
+      workingVolumes: formValue.workingVolumes.map((x: number) => Number(x)),
+    };
+
+    delete newSettings.instrument;
+    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+
+    return newSettings;
   }
 
   private createLimitOrderPriceMoveStepControl(defaultValue: number): FormControl<number | null> {

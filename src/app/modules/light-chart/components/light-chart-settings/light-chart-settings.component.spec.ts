@@ -14,6 +14,7 @@ import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzCollapseModule } from "ng-zorro-antd/collapse";
 import { Component, forwardRef, Input } from "@angular/core";
 import { NzFormModule } from "ng-zorro-antd/form";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 @Component({
   selector: 'ats-instrument-search',
   template: '',
@@ -62,6 +63,10 @@ describe('LightChartSettingsComponent', () => {
         LightChartSettingsComponent,
         InstrumentSearchMockComponent,
         mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] }),
+        mockComponent({
+          selector: 'ats-widget-settings',
+          inputs: ['canSave', 'canCopy', 'showCopy']
+        })
       ],
       imports: [
         AppModule,
@@ -77,6 +82,12 @@ describe('LightChartSettingsComponent', () => {
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settings)),
             updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
+          }
+        },
+        {
+          provide: ManageDashboardsService,
+          useValue: {
+            copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
           }
         }
       ]

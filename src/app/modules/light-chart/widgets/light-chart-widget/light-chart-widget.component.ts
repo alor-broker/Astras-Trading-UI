@@ -16,6 +16,7 @@ import {
 } from '../../models/light-chart-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-light-chart-widget',
@@ -54,8 +55,8 @@ export class LightChartWidgetComponent implements OnInit {
       'LightChartSettings',
       settings => ({
         ...settings,
-        timeFrame: TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value,
-        timeFrameDisplayMode: TimeFrameDisplayMode.Buttons,
+        timeFrame: getValueOrDefault(settings.timeFrame, TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value),
+        timeFrameDisplayMode: getValueOrDefault(settings.timeFrameDisplayMode, TimeFrameDisplayMode.Buttons),
         width: 300,
         height: 300
       }),

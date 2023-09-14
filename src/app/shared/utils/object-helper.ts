@@ -19,3 +19,15 @@ export function getPropertyFromPath(obj: any, path: string): any {
     return obj[pathArr[0]];
   }
 }
+
+/**
+ * @param value value to check
+ * @param defaultValue default value
+ *
+ * @returns source value if not null or default value
+ */
+export function getValueOrDefault<T>(value: T | null, defaultValue: T): T {
+  return value != null
+    ? value
+    : defaultValue;
+}

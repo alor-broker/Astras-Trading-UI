@@ -5,7 +5,10 @@ import {BehaviorSubject, Subject} from "rxjs";
 import {ModalService} from "../../../../shared/services/modal.service";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
-import {mockComponent} from "../../../../shared/utils/testing";
+import {
+  getTranslocoModule,
+  mockComponent
+} from "../../../../shared/utils/testing";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 
 describe('OrdersDialogWidgetComponent', () => {
@@ -14,6 +17,7 @@ describe('OrdersDialogWidgetComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports:[getTranslocoModule()],
       declarations: [
         OrdersDialogWidgetComponent,
         mockComponent({

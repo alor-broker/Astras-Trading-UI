@@ -1,7 +1,7 @@
 import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { Observable, shareReplay, take } from "rxjs";
+import { Observable, take } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
@@ -9,13 +9,16 @@ import { ColumnsOrder, OrderbookSettings } from '../../models/orderbook-settings
 import { DeviceService } from "../../../../shared/services/device.service";
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
 
 @Component({
   selector: 'ats-orderbook-settings',
   templateUrl: './orderbook-settings.component.html',
   styleUrls: ['./orderbook-settings.component.less']
 })
-export class OrderbookSettingsComponent implements OnInit {
+export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<OrderbookSettings> implements OnInit {
   readonly validationOptions = {
     depth: {
       min: 1,
@@ -34,24 +37,32 @@ export class OrderbookSettingsComponent implements OnInit {
   exchanges: string[] = exchangesList;
   deviceInfo$!: Observable<any>;
 
-  private settings$!: Observable<OrderbookSettings>;
+  protected settings$!: Observable<OrderbookSettings>;
+
+  get showCopy(): boolean {
+    return true;
+  }
+
+  get canSave(): boolean {
+    return this.form?.valid ?? false;
+  }
 
   constructor(
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly manageDashboardsService: ManageDashboardsService,
     private readonly deviceService: DeviceService,
     private readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, manageDashboardsService);
   }
 
   ngOnInit() {
+    this.initSettingsStream();
+
     this.deviceInfo$ = this.deviceService.deviceInfo$
       .pipe(
         take(1)
       );
-
-    this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
-      shareReplay(1)
-    );
 
     this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
@@ -105,5 +116,20 @@ export class OrderbookSettingsComponent implements OnInit {
   instrumentSelected(instrument: InstrumentKey | null) {
     this.form.controls.exchange.setValue(instrument?.exchange ?? null);
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+  }
+
+  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<TechChartSettings> {
+    const formValue = this.form.getRawValue();
+
+    const newSettings = {
+      ...formValue,
+      depth: Number(this.form.value.depth!),
+      symbol: formValue.instrument.symbol,
+      exchange: formValue.instrument.exchange
+    } as OrderbookSettings;
+
+    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+
+    return newSettings;
   }
 }
