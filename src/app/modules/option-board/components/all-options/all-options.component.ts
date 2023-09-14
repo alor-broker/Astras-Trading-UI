@@ -142,6 +142,12 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   private initMatrixStream() {
     const afterRefreshActions: ((matrix: OptionsMatrix) => void)[] = [];
 
+    const refreshTimer$ = timer(0, 60000).pipe(
+      // for some reasons timer pipe is not completed in optionsMatrix$ when component destroyed (https://github.com/alor-broker/Astras-Trading-UI/issues/1176)
+      // so we need to add takeUntil condition for this stream separately
+      takeUntilDestroyed(this.destroyRef)
+    );
+
     this.optionsMatrix$ = combineLatest([
       this.dataContext.settings$,
       this.dataContext.selectedSide$
@@ -149,7 +155,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
       tap(() => {
         afterRefreshActions.push((x) => this.scrollToPrice(x));
       }),
-      mapWith(() => timer(0, 60000), source => source),
+      mapWith(() => refreshTimer$, source => source),
       tap(() => this.isLoading$.next(true)),
       switchMap(([settings, optionSide]) =>
         this.optionBoardService.getInstrumentOptions(settings.symbol, settings.exchange, optionSide)
