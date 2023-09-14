@@ -14,7 +14,10 @@ import {
   Validators
 } from '@angular/forms';
 import {validationSettings} from '../../utils/validation-settings';
-import {DesignSettings} from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import {
+  DesignSettings,
+  GridType
+} from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import {TimezoneDisplayOption} from '../../../../shared/models/enums/timezone-display-option';
 import {ThemeType} from '../../../../shared/models/settings/theme-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -40,6 +43,8 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
   timezoneDisplayOption = TimezoneDisplayOption;
 
   themeTypes = ThemeType;
+
+  gridTypes = GridType;
 
   form!: UntypedFormGroup;
 
@@ -73,7 +78,8 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
     this.form = new UntypedFormGroup(
       {
         designSettings: new UntypedFormGroup({
-          theme: new UntypedFormControl(null)
+          theme: new UntypedFormControl(null),
+          gridType: new UntypedFormControl(null),
         }),
         timezoneDisplayOption: new UntypedFormControl(null, Validators.required),
         userIdleDurationMin: new UntypedFormControl(

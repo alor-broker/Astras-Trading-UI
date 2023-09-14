@@ -1,4 +1,4 @@
-<div class='inner-content'>
+<div class='inner-content' *ngIf="options$ | async as options">
   <gridster [options]="options" *ngIf="items$ | async as items">
     <div>
       <gridster-item [item]="item.gridsterItem" *ngFor="let item of items; trackBy: getItemTrackKey">

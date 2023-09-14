@@ -20,6 +20,16 @@
           </nz-select>
         </nz-form-control>
       </nz-form-item>
+      <nz-form-item *ngIf="!excludedSettings.includes('gridType')">
+        <nz-form-label nzFor="gridType">{{t('terminalSettingsGeneralSettingsForm.gridTypeLabel')}}</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName='gridType'>
+            <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeFitOption')" [nzValue]="gridTypes.Fit"></nz-option>
+            <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeVerticalFixedOption')" [nzValue]="gridTypes.VerticalFixed"></nz-option>
+            <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeHorizontalFixedOption')" [nzValue]="gridTypes.HorizontalFixed"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
     </ng-container>
     <nz-form-item>
       <nz-form-label nzFor="timezoneDisplayOption" nzRequired>{{t('terminalSettingsGeneralSettingsForm.timezoneLabel')}}</nz-form-label>

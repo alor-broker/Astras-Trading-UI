@@ -29,7 +29,6 @@ import {TechChartDatafeedService} from '../../services/tech-chart-datafeed.servi
 import {ThemeService} from '../../../../shared/services/theme.service';
 import {ThemeColors, ThemeSettings, ThemeType} from '../../../../shared/models/settings/theme-settings.model';
 import {mapWith} from '../../../../shared/utils/observable-helper';
-import {WidgetsDataProviderService} from '../../../../shared/services/widgets-data-provider.service';
 import {SelectedPriceData} from '../../../../shared/models/orders/selected-order-price.model';
 import {Instrument} from '../../../../shared/models/instruments/instrument.model';
 import {InstrumentsService} from '../../../instruments/services/instruments.service';
@@ -53,6 +52,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {toInstrumentKey} from "../../../../shared/utils/instruments";
 import {EditOrderDialogParams, OrderType} from "../../../../shared/models/orders/orders-dialog.model";
+import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -138,7 +138,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly techChartDatafeedService: TechChartDatafeedService,
     private readonly themeService: ThemeService,
     private readonly instrumentsService: InstrumentsService,
-    private readonly widgetsDataProvider: WidgetsDataProviderService,
+    private readonly widgetsSharedDataService: WidgetsSharedDataService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly currentDashboardService: DashboardContextService,
@@ -152,8 +152,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.initSettingsStream();
     this.initPositionStream();
-
-    this.widgetsDataProvider.addNewDataProvider<SelectedPriceData>(this.selectedPriceProviderName);
   }
 
   ngOnDestroy() {
@@ -432,7 +430,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         });
       }
       else {
-        this.widgetsDataProvider.setDataProviderValue<SelectedPriceData>(this.selectedPriceProviderName, {
+        this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>(this.selectedPriceProviderName, {
           price: roundedPrice,
           badgeColor: widgetSettings.widgetSettings.badgeColor
         });

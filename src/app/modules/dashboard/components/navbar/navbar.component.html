@@ -148,11 +148,16 @@
             <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.support')}"></ng-container>
           </span>
         </li>
+        <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks.help)">
+          <span>
+            <i nz-icon nzType="question-circle" nzTheme="outline"></i>
+            <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.help')}"></ng-container>
+          </span>
+        </li>
         <li nz-menu-item (click)="logout()" class='menu-item' >
           <span><i nz-icon nzType="logout" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbarCommon.exit')}}</span></span>
         </li>
       </ul>
-
       <ng-template #externalLink let-name='name'>
         <span class="link-label"><label>&nbsp;{{name}} </label><span nz-icon nzType="ats-external-link" nzTheme="outline"></span></span>
       </ng-template>

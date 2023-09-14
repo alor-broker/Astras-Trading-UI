@@ -51,8 +51,15 @@ export interface ScalperOrderBookMouseActionsMap {
   actions: ScalperOrderBookMouseActionsMapItem[];
 }
 
+export enum GridType {
+  Fit = 'fit',
+  VerticalFixed = 'verticalFixed',
+  HorizontalFixed = 'horizontalFixed'
+}
+
 export interface DesignSettings {
   theme?: ThemeType;
+  gridType?: GridType;
 }
 
 export interface PortfolioCurrency {
@@ -81,7 +88,6 @@ export interface InstantNotificationsSettings {
   hiddenNotifications?: InstantNotificationType[];
   hiddenPortfoliosForNotifications?: PortfolioKey[];
 }
-
 
 export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;

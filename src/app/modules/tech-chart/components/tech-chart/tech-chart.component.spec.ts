@@ -22,7 +22,6 @@ import {
   sharedModuleImportForTests,
   TestData
 } from '../../../../shared/utils/testing';
-import { WidgetsDataProviderService } from '../../../../shared/services/widgets-data-provider.service';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
@@ -31,6 +30,7 @@ import {TimezoneConverterService} from "../../../../shared/services/timezone-con
 import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
 import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-display-option";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -40,8 +40,7 @@ describe('TechChartComponent', () => {
   let techChartDatafeedServiceSpy: any;
   let themeServiceSpy:any;
   let instrumentsServiceSpy: any;
-  let widgetsDataProviderServiceSpy: any;
-  let modalServiceSpy: any;
+  let widgetsSharedDataServiceSpy: any;
   let portfolioSubscriptionsServiceSpy: any;
 
   beforeEach(() => {
@@ -88,7 +87,7 @@ describe('TechChartComponent', () => {
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
     instrumentsServiceSpy.getInstrument.and.returnValue(of(TestData.instruments[0]));
 
-    widgetsDataProviderServiceSpy = jasmine.createSpyObj('WidgetsDataProviderService', ['addNewDataProvider', 'setDataProviderValue']);
+    widgetsSharedDataServiceSpy = jasmine.createSpyObj('WidgetsSharedDataService', ['setDataProviderValue']);
 
     portfolioSubscriptionsServiceSpy = jasmine.createSpyObj(
       'PortfolioSubscriptionsService',
@@ -112,7 +111,7 @@ describe('TechChartComponent', () => {
         { provide: TechChartDatafeedService, useValue: techChartDatafeedServiceSpy },
         { provide: ThemeService, useValue: themeServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
-        { provide: WidgetsDataProviderService, useValue: widgetsDataProviderServiceSpy },
+        { provide: WidgetsSharedDataService, useValue: widgetsSharedDataServiceSpy },
         {
           provide: OrdersDialogService,
           useValue: {

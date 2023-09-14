@@ -18,6 +18,7 @@ export interface ThemeColors {
   chartLabelsColor: string;
   chartPrimaryTextColor: string;
   chartBackground: string;
+  textColor: string;
 }
 
 export interface ThemeSettings {

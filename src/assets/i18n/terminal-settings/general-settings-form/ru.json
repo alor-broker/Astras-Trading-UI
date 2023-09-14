@@ -1,12 +1,18 @@
 ﻿{
   "langLabel": "Язык",
   "themeLabel": "Тема",
+  "gridTypeLabel": "Поведение сетки виджетов",
   "timezoneLabel": "Часовой пояс отображения времени",
   "userIdleDurationLabel": "Время бездействия до приостановки сеанса, мин.",
   "badgesBindLabel": "Включить привязку инструментов к лейблам",
 
   "darkThemeOption": "Тёмная",
   "lightThemeOption": "Светлая",
+
+  "gridTypeFitOption": "Масштабировать по размерам окна",
+  "gridTypeVerticalFixedOption": "Увеличивать вниз",
+  "gridTypeHorizontalFixedOption": "Увеличивать вправо",
+
   "mskTimezoneOption": "Москва (MSK)",
   "localTimezoneOption": "Локальное время",
   "notSelectedOption": "Не выбрано",
