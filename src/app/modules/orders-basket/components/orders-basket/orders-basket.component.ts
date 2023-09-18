@@ -46,7 +46,10 @@ import { MathHelper } from '../../../../shared/utils/math-helper';
 import { EvaluationService } from '../../../../shared/services/evaluation.service';
 import { GuidGenerator } from '../../../../shared/utils/guid';
 import { mapWith } from '../../../../shared/utils/observable-helper';
-import { OrdersBasketSettings } from '../../models/orders-basket-settings.model';
+import {
+  DataPreset,
+  OrdersBasketSettings
+} from '../../models/orders-basket-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {NewLimitOrder} from "../../../../shared/models/orders/new-order.model";
 
@@ -65,6 +68,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   processing$ = new BehaviorSubject(false);
 
   submitResult$ = new BehaviorSubject<'success' | 'failed' | null>(null);
+  currentPresets$!: Observable<DataPreset[]>;
 
   itemsContainerWidth$ = new Subject<number>();
 
@@ -86,7 +90,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<OrdersBasketSettings>(this.guid).pipe(
+    this.settings$ = this.getWidgetSettings().pipe(
       distinctUntilChanged((previous, current) => this.isEqualSettings(previous, current)),
       shareReplay(1)
     );
@@ -95,9 +99,22 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.initForm(settings);
-      this.restoreFormValue(settings!);
+
+      const savedValue = this.savedBaskets.get(this.getSavedBasketKey(settings));
+      if (savedValue) {
+        this.restoreFormValue(savedValue);
+      }
+
       this.submitResult$.next(null);
     });
+
+    this.currentPresets$ = this.getWidgetSettings().pipe(
+      map(s => {
+        const allPresets = s.presets ?? [];
+        return allPresets.filter(p => p.portfolioKey.exchange === s.exchange && p.portfolioKey.portfolio === s.portfolio);
+      }),
+      shareReplay(1)
+    );
   }
 
   asFormArray(control: AbstractControl): FormArray {
@@ -153,6 +170,58 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     });
   }
 
+  savePreset(title: string) {
+    this.getWidgetSettings().pipe(
+      take(1)
+    ).subscribe(s => {
+      const currentBasket = this.getCurrentBasket(false);
+      if(!currentBasket) {
+        return;
+      }
+
+      const newPreset: DataPreset = {
+        ...currentBasket,
+        id: GuidGenerator.newGuid(),
+        title: title,
+        portfolioKey: {
+          exchange: s.exchange,
+          portfolio: s.portfolio
+        }
+        };
+
+      this.widgetSettingsService.updateSettings<OrdersBasketSettings>(
+        this.guid,
+        {
+          presets: [
+            ...s.presets ?? [],
+            newPreset
+          ]
+        }
+      );
+    });
+  }
+
+  removePreset(presetId: string) {
+    this.getWidgetSettings().pipe(
+      take(1)
+    ).subscribe(s => {
+      this.widgetSettingsService.updateSettings<OrdersBasketSettings>(
+        this.guid,
+        {
+          presets: (s.presets ?? []).filter(p => p.id !== presetId)
+        }
+      );
+    });
+  }
+
+  applyPreset(preset: DataPreset) {
+    this.restoreFormValue(preset);
+  }
+
+  private getWidgetSettings(){
+    return this.widgetSettingsService.getSettings<OrdersBasketSettings>(this.guid);
+  }
+
   private isEqualSettings(settings1?: OrdersBasketSettings, settings2?: OrdersBasketSettings): boolean {
     if (!settings1 || !settings2) {
       return false;
@@ -163,32 +232,43 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   }
 
   private saveBasket(settings: OrdersBasketSettings | null) {
-    if (!settings || !this.form) {
+    if (!settings) {
       return;
     }
 
+    const currentBasket = this.getCurrentBasket(true);
+    if(!currentBasket) {
+      return;
+    }
+
+    this.savedBaskets.set(this.getSavedBasketKey(settings), currentBasket);
+  }
+
+  private getCurrentBasket(allowPartial: boolean): OrdersBasket | null {
+    if (!this.form) {
+      return null;
+    }
+
+    if(!this.form.valid && !allowPartial) {
+      return null;
+    }
+
     const formValue = this.form.value;
-    const basket = {
+    return  {
       ...formValue,
       budget: Number(formValue.budget),
       items: formValue.items
     } as OrdersBasket;
-
-    this.savedBaskets.set(this.getSavedBasketKey(settings), basket);
   }
 
-  private restoreFormValue(settings: OrdersBasketSettings) {
-    const savedValue = this.savedBaskets.get(this.getSavedBasketKey(settings));
-    if (!savedValue) {
-      return;
-    }
+  private restoreFormValue(savedBasket: OrdersBasket) {
 
-    this.form?.controls.budget.setValue(savedValue.budget);
+    this.form?.controls.budget.setValue(savedBasket.budget);
 
     const items = this.asFormArray(this.form?.controls.items!);
     items.clear();
 
-    savedValue.items.forEach(savedItem => {
+    savedBasket.items.forEach(savedItem => {
       const item = { ...savedItem } as Partial<OrdersBasketItem>;
       delete item.quantity;
 

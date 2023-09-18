@@ -1,6 +1,17 @@
 <div *ngIf="settings$ | async as settings">
   <ng-container *ngIf="form">
     <ng-container *transloco="let t; scope: 'orders-basket/orders-basket'">
+      <div *ngIf="settings.showPresetsPanel" class="mb-5">
+        <ats-presets
+          [guid]="guid"
+          [presets]="(currentPresets$ | async) ?? []"
+          [canAddPreset]="form.valid"
+          (addPreset)="savePreset($event.title)"
+          (removePreset)="removePreset($event.id)"
+          (presetSelected)="applyPreset($event)"
+        >
+        </ats-presets>
+      </div>
       <form [formGroup]="form" nz-form nzLayout="vertical">
         <div class="basket-items-container" nzResizeObserver (nzResizeObserve)="itemsContainerWidthChanged($event)">
           <div *ngFor="let itemControl of asFormArray(form.controls.items).controls; index as i" class="basket-item">
