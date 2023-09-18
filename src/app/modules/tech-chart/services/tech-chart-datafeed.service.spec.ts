@@ -179,7 +179,7 @@ describe('TechChartDatafeedService', () => {
       ]
     } as LibrarySymbolInfo;
 
-    syntheticInstrumentsServiceSpy.getInstrument.and.returnValue(of(instrumentDetails));
+    instrumentsServiceSpy.getInstrument.and.returnValue(of(instrumentDetails));
 
     service.resolveSymbol(
       expectedSymbol.ticker!,
@@ -195,7 +195,7 @@ describe('TechChartDatafeedService', () => {
   }));
 
   it('#resolveSymbol should pass error to onError callback', fakeAsync(() => {
-    syntheticInstrumentsServiceSpy.getInstrument.and.returnValue(of(null));
+    instrumentsServiceSpy.getInstrument.and.returnValue(of(null));
 
     service.resolveSymbol(
       'SBER:MOEX',
@@ -227,7 +227,7 @@ describe('TechChartDatafeedService', () => {
         exchange: instrumentDetails.exchange,
         ticker: `${instrumentDetails.exchange}:${instrumentDetails.symbol}`,
         description: instrumentDetails.description,
-        full_name: instrumentDetails.symbol,
+        full_name: `${instrumentDetails.exchange}:${instrumentDetails.symbol}`,
         type: ''
       }
     ];
@@ -257,7 +257,7 @@ describe('TechChartDatafeedService', () => {
       next: 0
     };
 
-    syntheticInstrumentsServiceSpy.getHistory.and.returnValue(of(historyResponse));
+    historyServiceSpy.getHistory.and.returnValue(of(historyResponse));
 
     service.getBars(
       { ticker: 'MOEX:SBER' } as LibrarySymbolInfo,
@@ -278,7 +278,7 @@ describe('TechChartDatafeedService', () => {
   }));
 
   it('#getBars should pass error to onError callback', fakeAsync(() => {
-    syntheticInstrumentsServiceSpy.getHistory.and.returnValue(of(null));
+    historyServiceSpy.getHistory.and.returnValue(of(null));
 
     service.getBars(
       { ticker: 'MOEX:SBER' } as LibrarySymbolInfo,

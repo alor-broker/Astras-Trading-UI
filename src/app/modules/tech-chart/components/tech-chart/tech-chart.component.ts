@@ -361,9 +361,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         takeUntilDestroyed(this.destroyRef),
         mapWith(
           () => this.settings$!.pipe(take(1)),
-          (symbolName, settings) =>
-            symbolName === `${settings.instrument.exchange}:${settings.instrument.symbol}:${settings.instrument.instrumentGroup}`
-        ),
+          (symbolName, settings) => symbolName === this.toTvSymbol(settings.instrument)),
         filter(a => !a)
       )
         .subscribe(() => this.settingsService.updateIsLinked(this.guid, false));

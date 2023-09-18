@@ -7,6 +7,8 @@ import { Instrument } from "../../../shared/models/instruments/instrument.model"
 import { map } from "rxjs/operators";
 import { HistoryResponse } from "../../../shared/models/history/history-response.model";
 import { Candle } from "../../../shared/models/history/candle.model";
+import { InstrumentDataPart, OperatorPart, SyntheticInstrumentPart } from "../models/synthetic-instruments.model";
+import { SyntheticInstrumentsHelper } from "../utils/synthetic-instruments.helper";
 
 @Injectable({
   providedIn: 'root'
@@ -18,201 +20,137 @@ export class SyntheticInstrumentsService {
     private readonly historyService: HistoryService
   ) { }
 
-  getInstrument(syntheticInstruments: Array<InstrumentKey | string>): Observable<Instrument | null> {
-    const instruments: InstrumentKey[] = <InstrumentKey[]>syntheticInstruments.filter(i => typeof i !== 'string');
+  getInstrument(syntheticInstruments: SyntheticInstrumentPart[]): Observable<Instrument | null> {
+    const instrumentKeys: InstrumentKey[] = <InstrumentKey[]>syntheticInstruments.filter(p => !p.isSpreadOperator).map(p => p.value);
 
-    if (
-      !instruments.length ||
-      !instruments.every(i => (<InstrumentKey>i).symbol && (<InstrumentKey>i).exchange) ||
-      syntheticInstruments.filter(i => typeof i === 'string').some(i => (<string>i).match(/[a-zA-Z]/))
-    ) {
+    if (!instrumentKeys.length) {
       return of(null);
     }
 
     return forkJoin(
-      syntheticInstruments.map(i => typeof i === "string" ? of(i) : this.instrumentsService.getInstrument(<InstrumentKey>i))
+      syntheticInstruments.map(p => p.isSpreadOperator
+        ? of(p)
+        : this.instrumentsService.getInstrument(p.value)
+          .pipe(map(value => ({ isSpreadOperator: false, value} as InstrumentDataPart<Instrument>)))
+      )
     )
       .pipe(
-        map(instruments => instruments.some(i => i == null) ? null : instruments),
+        map(instruments => instruments.some(i => i.value == null) ? null : instruments),
         map(instruments => {
           if (!instruments) {
             return null;
           }
 
-          const instrument: Instrument = {
-            symbol: '',
-            description: '',
-            exchange: '',
-            currency: '',
-            minstep: Infinity,
-            type: '',
-            shortName: ''
-          };
-
-          instruments.forEach(i => {
-            if (typeof i === 'string') {
-              instrument.symbol += i;
-              instrument.description += i;
-              instrument.exchange += i;
-              instrument.type += i;
-              instrument.shortName += i;
-            } else {
-              instrument.symbol += `${i!.exchange}:${i!.symbol}${i!.instrumentGroup ? ':' + i!.instrumentGroup : ''}`;
-              instrument.description += i!.symbol;
-              instrument.exchange += i!.exchange;
-              instrument.currency = i!.currency;
-              instrument.type += i!.type ?? '';
-              instrument.shortName += `${i!.exchange}:${i!.symbol}${i!.instrumentGroup ? ':' + i!.instrumentGroup : ''}`;
-              instrument.minstep = Math.min(instrument.minstep, i!.minstep);
-            }
-          });
-
-          return instrument;
+          return SyntheticInstrumentsHelper.assembleInstrument(instruments);
         })
       );
   }
 
   getHistory(data: {
-    syntheticInstruments: Array<InstrumentKey | string>;
+    syntheticInstruments: SyntheticInstrumentPart[];
     from?: number;
     to: number;
     tf?: string;
   }): Observable<HistoryResponse | null> {
-    const instruments: InstrumentKey[] = <InstrumentKey[]>data.syntheticInstruments.filter(i => typeof i !== 'string');
+    const instruments: InstrumentKey[] = <InstrumentKey[]>data.syntheticInstruments
+      .filter(p => !p.isSpreadOperator)
+      .map(p => p.value);
 
-    if (
-      !instruments.length ||
-      !instruments.every(i => (<InstrumentKey>i).symbol && (<InstrumentKey>i).exchange)
-    ) {
+    if (!instruments.length) {
       return of(null);
     }
 
-    if (data.syntheticInstruments.length === 1 && typeof data.syntheticInstruments[0] !== 'string') {
-      return this.historyService.getHistory({
-        symbol: (<InstrumentKey>data.syntheticInstruments[0]).symbol,
-        exchange: (<InstrumentKey>data.syntheticInstruments[0]).exchange,
-        instrumentGroup: (<InstrumentKey>data.syntheticInstruments[0]).instrumentGroup,
-        from: data.from,
-        to: data.to,
-        tf: data.tf
-      });
-    }
-
     return forkJoin(
-      data.syntheticInstruments.map(i => typeof i === "string" ? of(i) : this.historyService.getHistory({
-        symbol: i.symbol,
-        exchange: i.exchange,
-        instrumentGroup: i.instrumentGroup,
-        from: data.from,
-        to: data.to,
-        tf: data.tf
-      }))
+      data.syntheticInstruments.map(p => p.isSpreadOperator
+        ? of(p)
+        : this.historyService.getHistory({
+          symbol: p.value.symbol,
+          exchange: p.value.exchange,
+          instrumentGroup: p.value.instrumentGroup,
+          from: data.from,
+          to: data.to,
+          tf: data.tf
+        })
+          .pipe(map(value => ({isSpreadOperator: false, value})))
+      )
     )
       .pipe(
-        map((histories: any) => histories.some((h: HistoryResponse | string | null) => h == null) ? null : histories),
-        map((histories: Array<string | HistoryResponse> | null) => {
+        map(histories => histories.some(h => h.value == null) ? null : histories),
+        map(histories => {
           if (!histories) {
             return null;
           }
 
-          let instrumentsHistories: HistoryResponse[] = JSON.parse(JSON.stringify(histories.filter(h => typeof h !== 'string')));
+          // Собираются свечи таким образом, чтоб если по одному из инструментов свечка есть, а по другому - нет,
+          // будет браться предыдущая свечка
+          let instrumentsHistories: HistoryResponse[] = JSON.parse(JSON.stringify(histories
+            .filter(h => !h.isSpreadOperator)
+            .map(h => h.value)));
           instrumentsHistories = instrumentsHistories.map((history, i) => {
             let historyCopy: Candle[] = JSON.parse(JSON.stringify(history.history));
 
+            // Перебираются свечи по каждому инструменту, кроме текущего
             for (let j = 0; j < instrumentsHistories.length; j++) {
               if (j === i) {
                 continue;
               }
               instrumentsHistories[j].history.forEach((h) => {
+                // Если в истории по текущему инструменту нет свечки, которая есть в инстроиях других инструментов
                 if (!historyCopy.map(sh => sh.time).includes(h.time)) {
+                  // Ищем следующую свечку
                   const nextCandleIndex = historyCopy.findIndex(sh => sh.time > h.time);
-                  if (nextCandleIndex !== -1) {
-                    historyCopy.splice(nextCandleIndex, 0, { ...historyCopy[nextCandleIndex], time: h.time });
+                  // Если эта свечка не первая в массиве (в этом случае нельзя взять предыдущую")
+                  if (nextCandleIndex !== 0) {
+                    historyCopy.splice(
+                      // Берём предыдущую свечку, либо последнюю в истории (если "следующая" свечка не нашлась)
+                      nextCandleIndex === -1 ? historyCopy.length : nextCandleIndex,
+                      0,
+                      { ...historyCopy[(nextCandleIndex === -1 ? historyCopy.length : nextCandleIndex) - 1], time: h.time }
+                    );
                   }
                 }
               });
             }
 
-
             return { ...history, history: historyCopy };
           });
+
+          // После цикла в истории каждого инструмента концы списка будут одинаковые и нужно каждый конец обрезать,
+          // чтоб не брались свечи, которых нет в историях по некоторым инструментам
           const lastHistoryIndex = Math.min(...instrumentsHistories.map(h => h.history.length));
 
           for (let i = 0; i < instrumentsHistories.length; i++) {
-            instrumentsHistories[i].history.splice(lastHistoryIndex);
+            instrumentsHistories[i].history = instrumentsHistories[i].history.slice(-lastHistoryIndex);
           }
 
           let historyIndex = 0;
 
           return histories.map(h => {
-            if (typeof h === 'string') {
-              return h;
+            if (h.isSpreadOperator) {
+              return h as OperatorPart;
             }
 
-            return instrumentsHistories[historyIndex++];
+            return { isSpreadOperator: false, value: instrumentsHistories[historyIndex++] } as InstrumentDataPart<HistoryResponse>;
           });
         }),
-        map((histories: Array<HistoryResponse | string> | null) => {
+        map((histories: SyntheticInstrumentPart<HistoryResponse>[] | null) => {
           if (!histories) {
             return null;
           }
 
+          const defaultHistory = (<HistoryResponse>histories.find(h => !h.isSpreadOperator)!.value).history;
+
           const history: any = {
-            history: []
+            history: new Array(defaultHistory.length).fill(null),
+            prev: defaultHistory[0]?.time - 60,
+            next: defaultHistory[defaultHistory.length - 1]?.time + 60
           };
 
-          let spreadOperatorsBuffer = '';
+          history.history = history.history.map((item: any, i: number) => SyntheticInstrumentsHelper.assembleCandle(
+            histories.map(h => h.isSpreadOperator ? h : { isSpreadOperator: false, value: h.value!.history[i] }))
+          );
 
-          histories.forEach((h: string | HistoryResponse, i) => {
-            if (typeof h === 'string') {
-              if (i === histories.length - 1) {
-                history.history = history.history.map((c: any) => ({
-                  ...c,
-                  close: c.close + spreadOperatorsBuffer + h,
-                  open: c.open + spreadOperatorsBuffer + h,
-                  high: c.high + spreadOperatorsBuffer + h,
-                  low: c.low + spreadOperatorsBuffer + h
-                }));
-              } else {
-                spreadOperatorsBuffer += h;
-              }
-            } else {
-              h!.history.forEach(c => {
-                const candle = history.history.find((hc: any) => hc.time === c.time);
-
-                if (candle) {
-                  candle.close += spreadOperatorsBuffer + c.close.toString();
-                  candle.open += spreadOperatorsBuffer + c.open.toString();
-                  candle.high += spreadOperatorsBuffer + c.high.toString();
-                  candle.low += spreadOperatorsBuffer + c.low.toString();
-                } else {
-                  history.history.push({
-                    close: spreadOperatorsBuffer + c.close.toString(),
-                    open: spreadOperatorsBuffer + c.open.toString(),
-                    high: spreadOperatorsBuffer + c.high.toString(),
-                    low: spreadOperatorsBuffer + c.low.toString(),
-                    time: c.time,
-                    volume: 0
-                  });
-                }
-              });
-
-              history.prev = h.prev;
-              history.next = h.next;
-
-              spreadOperatorsBuffer = '';
-            }
-          });
-
-          history.history = history.history.map((c: any) => ({
-              ...c,
-              close: eval(c.close),
-              open: eval(c.open),
-              high: eval(c.high),
-              low: eval(c.low)
-          }));
-
-          return history;
+          return history as HistoryResponse;
         })
       );
   }

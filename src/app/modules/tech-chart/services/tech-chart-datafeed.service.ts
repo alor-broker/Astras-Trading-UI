@@ -19,7 +19,7 @@ import {
   Observable,
   Subscription,
   take,
-  combineLatest, switchMap, BehaviorSubject
+  combineLatest, switchMap, BehaviorSubject, of
 } from "rxjs";
 import { HistoryService } from "../../../shared/services/history.service";
 import { BarsRequest } from "../../light-chart/models/bars-request.model";
@@ -34,8 +34,16 @@ import { TranslatorService } from "../../../shared/services/translator.service";
 import { SyntheticInstrumentsService } from "./synthetic-instruments.service";
 import { map, startWith } from "rxjs/operators";
 import { addDaysUnix } from "../../../shared/utils/datetime";
+import {
+  InstrumentDataPart, OperatorPart,
+  RegularOrSyntheticInstrumentKey,
+  SyntheticInstrumentPart
+} from "../models/synthetic-instruments.model";
+import { Instrument } from "../../../shared/models/instruments/instrument.model";
+import { HistoryResponse } from "../../../shared/models/history/history-response.model";
+import { SYNTHETIC_INSTRUMENT_REGEX, SyntheticInstrumentsHelper } from "../utils/synthetic-instruments.helper";
 
-const SYNTHETIC_INSTRUMENT_REGEX = /[\^+*\/()-]|[\w:.]+(?:-\d+\.\d+)?[\w:.]*/g;
+const DEFAULT_EXCHANGE = 'MOEX';
 
 @Injectable()
 export class TechChartDatafeedService implements IBasicDataFeed {
@@ -58,7 +66,6 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   }
 
   onReady(callback: OnReadyCallback): void {
-
     this.translatorService.getTranslator('tech-chart/tech-chart')
       .subscribe(t => {
         const config: DatafeedConfiguration = {
@@ -98,16 +105,24 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         exchange: x.exchange,
         ticker: `${x.exchange}:${x.symbol}`,
         description: x.description,
-        full_name: x.symbol,
+        full_name: `${x.exchange}:${x.symbol}`,
         type: ''
       })));
     });
   }
 
   resolveSymbol(symbolName: string, onResolve: ResolveCallback, onError: ErrorCallback): void {
-    const syntheticInstruments = this.getSyntheticInstrumentKeys(symbolName);
+    const instrumentsData = this.getSyntheticInstrumentKeys(symbolName);
 
-    this.syntheticInstrumentsService.getInstrument(syntheticInstruments).pipe(
+    let request: Observable<Instrument | null>;
+
+    if (instrumentsData.isSynthetic) {
+      request = this.syntheticInstrumentsService.getInstrument(instrumentsData.parts);
+    } else {
+      request = this.instrumentService.getInstrument(instrumentsData.instrument);
+    }
+
+    request.pipe(
       take(1)
     ).subscribe(instrumentDetails => {
       if (!instrumentDetails) {
@@ -143,18 +158,32 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   }
 
   getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParams, onResult: HistoryCallback, onError: ErrorCallback): void {
-    const syntheticInstruments = this.getSyntheticInstrumentKeys(symbolInfo.ticker!);
+    const instrumentsData = this.getSyntheticInstrumentKeys(symbolInfo.ticker!);
     const lastBarPointKey = this.getLastBarPointKey(symbolInfo.ticker!, resolution);
     if (periodParams.firstDataRequest) {
       this.lastBarPoint.delete(lastBarPointKey);
     }
 
-    this.syntheticInstrumentsService.getHistory({
-      syntheticInstruments,
-      from: periodParams.from,
-      to: periodParams.to,
-      tf: this.parseTimeframe(resolution)
-    }).pipe(
+    let request: Observable<HistoryResponse | null>;
+
+    if (instrumentsData.isSynthetic) {
+      request = this.syntheticInstrumentsService.getHistory({
+        syntheticInstruments: instrumentsData.parts,
+        from: periodParams.from,
+        to: periodParams.to,
+        tf: this.parseTimeframe(resolution)
+      });
+    } else {
+      request = this.historyService.getHistory({
+        symbol: instrumentsData.instrument.symbol,
+        exchange: instrumentsData.instrument.exchange,
+        from: periodParams.from,
+        to: periodParams.to,
+        tf: this.parseTimeframe(resolution)
+      });
+    }
+
+    request.pipe(
       take(1)
     ).subscribe(history => {
       if (!history) {
@@ -173,6 +202,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         );
       }
 
+
       const nextTime = periodParams.firstDataRequest ? history.next : history.prev;
       onResult(
         history.history.map(x => ({
@@ -188,109 +218,89 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   }
 
   subscribeBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, onTick: SubscribeBarsCallback, listenerGuid: string): void {
-    const syntheticInstruments = this.getSyntheticInstrumentKeys(symbolInfo.ticker!);
+    const instrumentsData = this.getSyntheticInstrumentKeys(symbolInfo.ticker!);
 
-    const requests: Observable<Candle>[] = syntheticInstruments
-      .filter(i => typeof i !== 'string')
-      .map(i => {
-        return this.historyService.getHistory({
-          symbol: (<InstrumentKey>i).symbol,
-          exchange: (<InstrumentKey>i).exchange,
-          instrumentGroup: (<InstrumentKey>i).instrumentGroup ?? '',
-          tf: this.parseTimeframe(resolution),
-          from: addDaysUnix(new Date(), -30),
-          to: Math.round(Date.now() / 1000)
-        })
-          .pipe(
-            map(history => history!.history.slice(-1)[0]!),
-            switchMap(
-              c => this.getBarsStream(
-                {
-                symbol: (<InstrumentKey>i).symbol,
-                exchange: (<InstrumentKey>i).exchange,
-                instrumentGroup: (<InstrumentKey>i).instrumentGroup ?? ''
-              },
-                resolution,
-                symbolInfo.ticker!
-              )
-                .pipe(
-                  startWith(c)
-                )
+    let request: Observable<Candle | null>;
+
+    if (instrumentsData.isSynthetic) {
+      const instruments: InstrumentDataPart[] = <InstrumentDataPart[]>instrumentsData.parts
+        .filter(p => !p.isSpreadOperator);
+
+      request = combineLatest(instrumentsData.parts
+        .filter(p => !p.isSpreadOperator)
+        .map(p =>
+          this.getBarsStream((<InstrumentDataPart>p).value, resolution, symbolInfo.ticker!)
+            .pipe(
+              startWith(null)
             )
-          );
-      });
-
-    const sub = combineLatest(requests)
-      .subscribe((res: Candle[]) => {
-        const lastBarPointKey = this.getLastBarPointKey(symbolInfo.ticker!, resolution);
-        const lastBarPoint = this.lastBarPoint.get(lastBarPointKey);
-        const lastCandleTime = Math.max(...res.map(c => c.time));
-
-        if (!lastBarPoint || lastCandleTime < lastBarPoint) {
-          return;
-        }
-
-        this.lastBarPoint.set(lastBarPointKey, lastCandleTime);
-
-        if (syntheticInstruments.length === 1) {
-          onTick({ ...res[0], time: lastCandleTime * 1000 });
-          return;
-        }
-
-        let spreadOperatorsBuffer = '';
-
-        const candleExpressions: any = syntheticInstruments.reduce((acc, curr, i) => {
-          if (typeof curr === 'string') {
-            spreadOperatorsBuffer += curr;
-
-            if (i === syntheticInstruments.length - 1) {
-              return {
-                close: acc.close + spreadOperatorsBuffer,
-                open: acc.open + spreadOperatorsBuffer,
-                high: acc.high + spreadOperatorsBuffer,
-                low: acc.low + spreadOperatorsBuffer
-              };
+        )
+      )
+        .pipe(
+          switchMap(candles => {
+            if (candles.every(c => c == null)) {
+              return of(null);
             }
 
-            return acc;
-          } else {
-            const barIndex = syntheticInstruments
-              .filter(si => typeof si !== 'string')
-              .findIndex(si =>
-                (<InstrumentKey>si).symbol === curr.symbol &&
-                (<InstrumentKey>si).exchange === curr.exchange &&
-                (<InstrumentKey>si).instrumentGroup === curr.instrumentGroup);
+            // Если по одной из новых свечей есть данные, и хотя бы по одной другой - нет,
+            // нужно взять последнюю существующую свечку по этому инструменту
+            if (candles.some(c => c == null)) {
+              return combineLatest(candles.map((c, i) => c == null
+                ? this.historyService.getHistory({
+                  symbol: instruments[i].value.symbol,
+                  exchange: instruments[i].value.exchange,
+                  instrumentGroup: instruments[i].value.instrumentGroup ?? '',
+                  tf: this.parseTimeframe(resolution),
+                  from: addDaysUnix(new Date(), -30),
+                  to: Math.round(Date.now() / 1000)
+                })
+                  .pipe(map(history => history!.history[history!.history.length - 1]!))
+                : of(c)
+              ));
+            }
 
-            const newAcc = {
-              close: acc.close + spreadOperatorsBuffer + res[barIndex]!.close,
-              open: acc.open + spreadOperatorsBuffer + res[barIndex]!.open,
-              high: acc.high + spreadOperatorsBuffer + res[barIndex]!.high,
-              low: acc.low + spreadOperatorsBuffer + res[barIndex]!.low
-            };
+            return of(candles);
+          }),
+          map(candles => {
+            if (!candles) {
+              return null;
+            }
 
-            spreadOperatorsBuffer = '';
+            let candleIndex = 0;
 
-            return newAcc;
-          }
-        }, {
-          close: '',
-          open: '',
-          high: '',
-          low: '',
-        });
+            return SyntheticInstrumentsHelper.assembleCandle(
+              instrumentsData.parts.map((item) => {
+                if (item.isSpreadOperator) {
+                  return item;
+                }
 
-        onTick({
-          close: eval(candleExpressions.close),
-          open: eval(candleExpressions.open),
-          high: eval(candleExpressions.high),
-          low: eval(candleExpressions.low),
-          volume: 0,
-          time: lastCandleTime * 1000
-        });
+                return { isSpreadOperator: false, value: candles[candleIndex++] } as InstrumentDataPart<Candle>;
+              })
+            );
+          })
+        );
+    } else {
+      request = this.getBarsStream(instrumentsData.instrument, resolution, symbolInfo.ticker!);
+    }
+
+    const sub = request
+      .subscribe(res => {
+        if (!res) {
+          return;
+        }
+
+        const lastBarPointKey = this.getLastBarPointKey(symbolInfo.ticker!, resolution);
+        const lastBarPoint = this.lastBarPoint.get(lastBarPointKey);
+
+        if (!lastBarPoint || res.time < lastBarPoint) {
+          return;
+        }
+
+        this.lastBarPoint.set(lastBarPointKey, res.time);
+
+        onTick({ ...res, time: res.time * 1000});
       });
 
     this.barsSubscriptions.set(listenerGuid, sub);
-
   }
 
   getBarsStream(instrument: InstrumentKey, resolution: ResolutionString, ticker: string) {
@@ -335,25 +345,36 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     });
   }
 
-  private getSyntheticInstrumentKeys(searchString: string): Array<InstrumentKey | string> {
+  private getSyntheticInstrumentKeys(searchString: string): RegularOrSyntheticInstrumentKey {
     if (!searchString) {
-      return [{ symbol: '', exchange: '' }];
+      return { isSynthetic: false, instrument: { symbol: '', exchange: '' }};
     }
 
-    return searchString
-      .match(SYNTHETIC_INSTRUMENT_REGEX)
-      ?.map(s => {
-        if (s.includes(':')) {
-          return this.getSymbolAndExchangeFromTicker(s);
-        }
+    const parts: SyntheticInstrumentPart[] = searchString
+        .match(SYNTHETIC_INSTRUMENT_REGEX)
+        ?.map(s => {
+          if (s.match(/[a-zA-Z]/)) {
+            if (s.includes(':')) {
+              return { isSpreadOperator: false, value: this.getSymbolAndExchangeFromTicker(s) } as InstrumentDataPart;
+            }
+            return { isSpreadOperator: false, value: this.getSymbolAndExchangeFromTicker(DEFAULT_EXCHANGE + ':' + s) } as InstrumentDataPart;
+          }
 
-        if (s === '^') {
-          return '**';
-        }
-
-        return s;
-      })
+          if (s === '^') {
+            return { isSpreadOperator: true, value: '**' } as OperatorPart;
+          }
+          return { isSpreadOperator: true, value: s } as OperatorPart;
+        })
       ?? [];
+
+    if (parts.length < 2) {
+      if ((<InstrumentDataPart>parts[0])?.value.symbol) {
+        return { isSynthetic: false, instrument: (<InstrumentDataPart>parts[0]).value };
+      }
+      return { isSynthetic: false, instrument: { symbol: '', exchange: '' }};
+    }
+
+    return { isSynthetic: true, parts };
   }
 
   private getSymbolAndExchangeFromTicker(symbolName: string): InstrumentKey {
