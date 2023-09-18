@@ -41,7 +41,7 @@ describe('OrderSubmitSettingsComponent', () => {
           provide: WidgetSettingsService,
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({} as OrderSubmitSettings)),
-            updateSettings: jasmine.createSpy('getSettings').and.callThrough(),
+            updateSettings: jasmine.createSpy('updateSettings').and.callThrough(),
           }
         },
         {

@@ -12,6 +12,7 @@ import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { OrdersBasketSettings } from '../../models/orders-basket-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-orders-basket-widget',
@@ -27,6 +28,8 @@ export class OrdersBasketWidgetComponent implements OnInit {
   settings$!: Observable<OrdersBasketSettings>;
   showBadge$!: Observable<boolean>;
   title$!: Observable<string>;
+
+  shouldShowSettings: boolean = false;
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -44,7 +47,9 @@ export class OrdersBasketWidgetComponent implements OnInit {
       this.widgetInstance,
       'OrdersBasketSettings',
       settings => ({
-        ...settings
+        ...settings,
+        showPresetsPanel: getValueOrDefault(settings.showPresetsPanel, false),
+        presets: getValueOrDefault(settings.presets, [])
       }),
       this.dashboardContextService,
       this.widgetSettingsService
@@ -57,5 +62,9 @@ export class OrdersBasketWidgetComponent implements OnInit {
     );
 
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
+  }
+
+  onSettingsChange() {
+    this.shouldShowSettings = !this.shouldShowSettings;
   }
 }

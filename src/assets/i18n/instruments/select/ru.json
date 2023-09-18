@@ -1,5 +1,5 @@
 {
-  "searchPlaceHolder": "Поиск...",
+  "searchPlaceHolder": "Поиск (Ctrl+F/Cmd+F)...",
   "columns": {
     "symbol": {
       "name": "Тикер",

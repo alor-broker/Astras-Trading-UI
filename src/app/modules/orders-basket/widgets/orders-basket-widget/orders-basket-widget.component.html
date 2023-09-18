@@ -5,20 +5,27 @@
     [header]="headerRef"
     [showContentScroll]="true"
     [isBlockWidget]="isBlockWidget"
+    [settings]="settingsRef"
+    [showSettings]="shouldShowSettings"
   >
     <ng-template #headerRef>
       <ats-widget-header
         [guid]="guid"
         [hasHelp]="true"
-        [hasSettings]="false"
+        [hasSettings]="true"
         [showBadgesMenu]="false"
         [customTitle]="title$ | async"
         [widgetMeta]="widgetInstance.widgetMeta"
+        (switchSettings)="onSettingsChange()"
       ></ats-widget-header>
     </ng-template>
 
     <ng-template #contentRef>
       <ats-orders-basket [guid]="guid"></ats-orders-basket>
+    </ng-template>
+
+    <ng-template #settingsRef>
+      <ats-orders-basket-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-orders-basket-settings>
     </ng-template>
   </ats-widget-skeleton>
 
