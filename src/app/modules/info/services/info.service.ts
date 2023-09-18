@@ -160,9 +160,6 @@ export class InfoService {
       .pipe(
         switchMap(exchangeSettings => {
           let identifier = exchangeInfo.symbol;
-          if (exchangeSettings.usesIsin && exchangeInfo.isin) {
-            identifier = exchangeInfo.isin;
-          }
           return this.http.get<T>(
             this.instrumentUrl +
             (exchangeSettings.isInternational ? "/international/" : "/") +
