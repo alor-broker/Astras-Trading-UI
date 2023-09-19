@@ -119,7 +119,10 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     if (instrumentsData.isSynthetic) {
       request = this.syntheticInstrumentsService.getInstrument(instrumentsData.parts);
     } else {
-      request = this.instrumentService.getInstrument(instrumentsData.instrument);
+      request = this.instrumentService.getInstrument(instrumentsData.instrument)
+        .pipe(
+          map(i => !!i ? { ...i, symbol: i.exchange + ':' + i.symbol } : i)
+        );
     }
 
     request.pipe(
@@ -159,6 +162,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
 
   getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParams, onResult: HistoryCallback, onError: ErrorCallback): void {
     const instrumentsData = this.getSyntheticInstrumentKeys(symbolInfo.ticker!);
+    console.log(symbolInfo);
     const lastBarPointKey = this.getLastBarPointKey(symbolInfo.ticker!, resolution);
     if (periodParams.firstDataRequest) {
       this.lastBarPoint.delete(lastBarPointKey);
