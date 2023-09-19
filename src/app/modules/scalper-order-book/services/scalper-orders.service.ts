@@ -24,6 +24,7 @@ import {
   NewStopLimitOrder,
   NewStopMarketOrder
 } from "../../../shared/models/orders/new-order.model";
+import { CommonOrderCommands } from "../../../shared/utils/common-order-commands";
 
 enum BracketOrderType {
   Top = 'top',
@@ -58,22 +59,16 @@ export class ScalperOrdersService {
     }
   }
 
-  closePositionsByMarket(position: Position | null, instrumentGroup: string | undefined, portfolio: PortfolioKey): void {
+  closePositionsByMarket(position: Position | null, instrumentGroup: string | undefined): void {
     if (!position || !position.qtyTFutureBatch) {
       return;
     }
 
-    this.orderService.submitMarketOrder({
-        side: position.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
-        quantity: Math.abs(position.qtyTFutureBatch),
-        instrument: {
-          symbol: position.symbol,
-          exchange: position.exchange,
-          instrumentGroup: instrumentGroup
-        },
-      },
-      portfolio.portfolio
-    ).subscribe();
+    CommonOrderCommands.closePositionByMarket(
+      position,
+      instrumentGroup,
+      this.orderService
+    );
   }
 
   placeBestOrder(
@@ -303,22 +298,12 @@ export class ScalperOrdersService {
     }
   }
 
-  reversePositionsByMarket(position: Position | null, instrumentGroup: string | undefined, portfolio: PortfolioKey): void {
+  reversePositionsByMarket(position: Position | null, instrumentGroup: string | undefined): void {
     if (!position || !position.qtyTFutureBatch) {
       return;
     }
 
-    this.orderService.submitMarketOrder({
-        side: position.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
-        quantity: Math.abs(position.qtyTFutureBatch * 2),
-        instrument: {
-          symbol: position.symbol,
-          exchange: position.exchange,
-          instrumentGroup: instrumentGroup
-        },
-      },
-      portfolio.portfolio
-    ).subscribe();
+    CommonOrderCommands.reversePositionsByMarket(position, instrumentGroup, this.orderService);
   }
 
   setStopLimit(

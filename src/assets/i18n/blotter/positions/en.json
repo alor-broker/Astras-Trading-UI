@@ -48,5 +48,8 @@
     }
   },
   "emptyPositions": "There are no positions",
-  "emptyPositionsWithFilters": "Nothing found with these filters"
+  "emptyPositionsWithFilters": "Nothing found with these filters",
+
+  "confirmClose": "Do you want to CLOSE the position?",
+  "confirmReverse": "Do you want to REVERSE the position?"
 }
