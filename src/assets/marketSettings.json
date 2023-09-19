@@ -2,7 +2,6 @@
   {
     "exchange": "MOEX",
     "settings": {
-      "usesIsin": true,
       "hasIssue": true,
       "hasPayments": true,
       "currencyInstrument": "RUB",

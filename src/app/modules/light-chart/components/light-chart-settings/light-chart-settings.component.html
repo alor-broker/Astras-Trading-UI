@@ -1,6 +1,12 @@
-<ng-container *transloco="let t; scope: 'light-chart/settings'">
-  <p>{{t('settingsHeader')}}</p>
-  <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" (ngSubmit)="submitForm()" *ngIf="deviceInfo$ | async as deviceInfo">
+<ats-widget-settings
+  [canSave]="canSave"
+  [canCopy]="canCopy"
+  [showCopy]="showCopy"
+  (saveClick)="updateSettings()"
+  (copyClick)="createWidgetCopy()"
+>
+  <ng-container *transloco="let t; scope: 'light-chart/settings'">
+  <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" *ngIf="deviceInfo$ | async as deviceInfo">
     <nz-form-item *ngIf="!deviceInfo.isMobile">
       <nz-form-control [nzErrorTip]="t('lightChartSettings.tickerError')">
         <nz-form-label nzRequired nzFor="instrument">{{t('lightChartSettings.tickerLabel')}}</nz-form-label>
@@ -45,10 +51,6 @@
         </nz-collapse-panel>
       </nz-collapse>
     </nz-form-item>
-    <nz-form-item>
-      <nz-form-control>
-        <button type='submit' nz-button nzType="primary" [disabled]="!form.valid">{{t('saveBtnText')}}</button>
-      </nz-form-control>
-    </nz-form-item>
   </form>
 </ng-container>
+</ats-widget-settings>

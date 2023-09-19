@@ -15,6 +15,7 @@ import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { ReactiveFormsModule } from "@angular/forms";
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 describe('InstrumentSelectSettingsComponent', () => {
   let component: InstrumentSelectSettingsComponent;
@@ -30,6 +31,10 @@ describe('InstrumentSelectSettingsComponent', () => {
         ...ngZorroMockComponents,
         mockComponent({
           selector: 'ats-watchlist-collection-edit'
+        }),
+        mockComponent({
+          selector: 'ats-widget-settings',
+          inputs: ['canSave', 'canCopy', 'showCopy']
         })
       ],
       imports: [
@@ -44,6 +49,12 @@ describe('InstrumentSelectSettingsComponent', () => {
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(getSettingsMock),
             updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
+          }
+        },
+        {
+          provide: ManageDashboardsService,
+          useValue: {
+            copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
           }
         }
       ]

@@ -1,35 +1,50 @@
-import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
-import {Observable, shareReplay, take} from "rxjs";
-import {UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
-import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
-import {isInstrumentEqual} from "../../../../shared/utils/settings-helper";
-import {OptionBoardSettings} from "../../models/option-board-settings.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {
+  Component,
+  DestroyRef,
+  OnInit
+} from '@angular/core';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { Observable } from "rxjs";
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from "@angular/forms";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
+import { OptionBoardSettings } from "../../models/option-board-settings.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 @Component({
   selector: 'ats-option-board-settings',
   templateUrl: './option-board-settings.component.html',
   styleUrls: ['./option-board-settings.component.less']
 })
-export class OptionBoardSettingsComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
-  @Output()
-  settingsChange: EventEmitter<void> = new EventEmitter();
+export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<OptionBoardSettings> implements OnInit {
   form!: UntypedFormGroup;
-  private settings$!: Observable<OptionBoardSettings>;
+  protected settings$!: Observable<OptionBoardSettings>;
 
   constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly manageDashboardsService: ManageDashboardsService,
     private readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, manageDashboardsService);
+  }
+
+  get showCopy(): boolean {
+    return true;
+  }
+
+  get canSave(): boolean {
+    return this.form?.valid ?? false;
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<OptionBoardSettings>(this.guid).pipe(
-      shareReplay(1)
-    );
+    this.initSettingsStream();
 
     this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
@@ -40,7 +55,7 @@ export class OptionBoardSettingsComponent implements OnInit {
           exchange: settings.exchange,
           instrumentGroup: settings.instrumentGroup
         } as InstrumentKey, Validators.required),
-        exchange: new UntypedFormControl({value: settings.exchange, disabled: true}, Validators.required),
+        exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
         instrumentGroup: new UntypedFormControl(settings.instrumentGroup)
       });
     });
@@ -51,23 +66,18 @@ export class OptionBoardSettingsComponent implements OnInit {
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
-  submitForm(): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(initialSettings => {
-      const formValue = this.form.value;
+  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<TechChartSettings> {
+    const formValue = this.form.value;
 
-      const newSettings = {
-        ...formValue,
-        symbol: formValue.instrument.symbol,
-        exchange: formValue.instrument.exchange,
-      };
+    const newSettings = {
+      ...formValue,
+      symbol: formValue.instrument.symbol,
+      exchange: formValue.instrument.exchange,
+    };
 
-      delete newSettings.instrument;
-      newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+    delete newSettings.instrument;
+    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
 
-      this.widgetSettingsService.updateSettings<OptionBoardSettings>(this.guid, newSettings);
-      this.settingsChange.emit();
-    });
+    return newSettings;
   }
 }

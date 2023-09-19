@@ -2,6 +2,7 @@ import { InstrumentKey } from '../../../shared/models/instruments/instrument-key
 
 export interface OrdersBasketItem {
   instrumentKey: InstrumentKey;
+
   quota: number;
 
   quantity: number;

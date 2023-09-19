@@ -1,9 +1,7 @@
 import {
-  Component, DestroyRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
+  Component,
+  DestroyRef,
+  OnInit
 } from '@angular/core';
 import {
   UntypedFormControl,
@@ -17,7 +15,6 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   Observable,
-  shareReplay,
   take
 } from "rxjs";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
@@ -28,40 +25,47 @@ import {
 } from '../../models/light-chart-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
 
 @Component({
   selector: 'ats-light-chart-settings',
   templateUrl: './light-chart-settings.component.html',
   styleUrls: ['./light-chart-settings.component.less']
 })
-export class LightChartSettingsComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
-  @Output()
-  settingsChange: EventEmitter<LightChartSettings> = new EventEmitter<LightChartSettings>();
+export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<LightChartSettings> implements OnInit {
   form!: UntypedFormGroup;
   timeFrames: Timeframe[];
   timeFrameDisplayModes = TimeFrameDisplayMode;
   deviceInfo$!: Observable<any>;
-  private settings$!: Observable<LightChartSettings>;
+  protected settings$!: Observable<LightChartSettings>;
 
   constructor(
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly manageDashboardsService: ManageDashboardsService,
     private readonly deviceService: DeviceService,
     private readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, manageDashboardsService);
     this.timeFrames = TimeframesHelper.timeFrames;
   }
 
+  get showCopy(): boolean {
+    return true;
+  }
+
+  get canSave(): boolean {
+    return this.form?.valid ?? false;
+  }
+
   ngOnInit() {
+    this.initSettingsStream();
+
     this.deviceInfo$ = this.deviceService.deviceInfo$
       .pipe(
         take(1)
       );
-
-    this.settings$ = this.settingsService.getSettings<LightChartSettings>(this.guid).pipe(
-      shareReplay(1)
-    );
 
     this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
@@ -80,28 +84,23 @@ export class LightChartSettingsComponent implements OnInit {
     });
   }
 
-  submitForm(): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(initialSettings => {
-      const formValue = this.form.value;
-      const newSettings = {
-        ...formValue,
-        symbol: formValue.instrument.symbol,
-        exchange: formValue.instrument.exchange,
-      };
-
-      delete newSettings.instrument;
-
-      newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
-
-      this.settingsService.updateSettings<LightChartSettings>(this.guid, newSettings);
-      this.settingsChange.emit();
-    });
-  }
-
   instrumentSelected(instrument: InstrumentKey | null) {
     this.form.controls.exchange.setValue(instrument?.exchange ?? null);
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+  }
+
+  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<TechChartSettings> {
+    const formValue = this.form.value;
+    const newSettings = {
+      ...formValue,
+      symbol: formValue.instrument.symbol,
+      exchange: formValue.instrument.exchange,
+    };
+
+    delete newSettings.instrument;
+
+    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+
+    return newSettings;
   }
 }

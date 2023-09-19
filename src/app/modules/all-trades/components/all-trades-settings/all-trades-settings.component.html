@@ -1,8 +1,14 @@
-<ng-container *transloco="let t">
+<ats-widget-settings
+  [canSave]="canSave"
+  [canCopy]="canCopy"
+  [showCopy]="showCopy"
+  (saveClick)="updateSettings()"
+  (copyClick)="createWidgetCopy()"
+>
+  <ng-container *transloco="let t">
   <ng-container *transloco="let tSettings; scope: 'all-trades/all-trades-settings'">
-    <p>{{t('settingsHeader')}}</p>
     <div >
-      <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="submitForm()">
+      <form nz-form [nzLayout]="'vertical'" [formGroup]="form">
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="tSettings('allTradesAllTradesSettings.selectColumnsError')">
             <nz-form-label nzRequired nzFor="allTradesColumns">{{tSettings('allTradesAllTradesSettings.selectColumnLabel')}}</nz-form-label>
@@ -33,15 +39,10 @@
             <nz-switch formControlName='highlightRowsBySide'></nz-switch>
           </nz-form-control>
         </nz-form-item>
-
-        <nz-form-item class="compact">
-          <nz-form-control>
-            <button type="submit" nz-button nzType="primary" [disabled]="!form.valid">{{t('saveBtnText')}}</button>
-          </nz-form-control>
-        </nz-form-item>
       </form>
     </div>
 
     <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
   </ng-container>
 </ng-container>
+</ats-widget-settings>

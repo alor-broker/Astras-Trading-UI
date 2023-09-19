@@ -38,6 +38,7 @@ import { QuotesService } from '../../../../shared/services/quotes.service';
 import { OrdersBasketItem } from '../../models/orders-basket-form.model';
 import { AtsValidators } from '../../../../shared/utils/form-validators';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { toInstrumentKey } from "../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-orders-basket-item',
@@ -158,6 +159,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     const sub = this.form.valueChanges.pipe(
       map(x => ({
         ...x,
+        instrumentKey: toInstrumentKey(x.instrumentKey),
         quota: Number(x.quota),
         price: Number(x.price),
         quantity: Number(x.quantity)
@@ -209,8 +211,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   }
 
   private initInstrumentUpdate() {
-    this.instrument$ = this.form.valueChanges.pipe(
-      map(formValue => formValue.instrumentKey),
+    this.instrument$ = this.form.controls.instrumentKey.valueChanges.pipe(
       distinctUntilChanged((previous, current) => isInstrumentEqual(previous, current)),
       switchMap(instrument => {
         if (!!instrument) {
@@ -225,7 +226,18 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
 
   private initPriceUpdate() {
     this.instrument$.pipe(
-      filter(x => !!x),
+      filter((x, index) => {
+        if(!x) {
+          return false;
+        }
+
+        if(index===0 && this.form.controls.price.value != null) {
+          return false;
+        }
+
+        return true;
+      }
+      ),
       switchMap(instrument => this.quotesService.getLastPrice(instrument!)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(lastPrice => {

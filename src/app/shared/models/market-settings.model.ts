@@ -9,7 +9,6 @@ export interface ExchangeSettings {
   hasDividends?: boolean;
   isInternational?: boolean;
   isDefault?: boolean;
-  usesIsin?: boolean;
   defaultInstrument: {
     symbol: string;
     instrumentGroup?: string;

@@ -162,7 +162,6 @@ export class TechChartDatafeedService implements IBasicDataFeed {
 
   getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParams, onResult: HistoryCallback, onError: ErrorCallback): void {
     const instrumentsData = this.getSyntheticInstrumentKeys(symbolInfo.ticker!);
-    console.log(symbolInfo);
     const lastBarPointKey = this.getLastBarPointKey(symbolInfo.ticker!, resolution);
     if (periodParams.firstDataRequest) {
       this.lastBarPoint.delete(lastBarPointKey);

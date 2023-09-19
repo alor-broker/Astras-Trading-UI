@@ -37,6 +37,8 @@ import { BaseColumnSettings } from "../../../../shared/models/settings/table-set
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BaseTableComponent } from "../base-table/base-table.component";
+import { OrderService } from "../../../../shared/services/orders/order.service";
+import { CommonOrderCommands } from "../../../../shared/utils/common-order-commands";
 
 interface PositionDisplay extends Position {
   id: string;
@@ -164,10 +166,12 @@ export class PositionsComponent
   fileSuffix = 'positions';
   badgeColor = defaultBadgeColor;
 
+  readonly abs = Math.abs;
   constructor(
     protected readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
+    protected readonly ordersService: OrderService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(service, settingsService, translatorService, destroyRef);
@@ -242,5 +246,13 @@ export class PositionsComponent
     return price > 10
       ? MathHelper.round(price, 2)
       : MathHelper.round(price, 6);
+  }
+
+  closePosition(position: PositionDisplay) {
+    CommonOrderCommands.closePositionByMarket(position, undefined, this.ordersService);
+  }
+
+  reversePosition(position: PositionDisplay) {
+    CommonOrderCommands.reversePositionsByMarket(position, undefined, this.ordersService);
   }
 }

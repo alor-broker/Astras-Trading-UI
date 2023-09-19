@@ -1,10 +1,7 @@
 import {
   Component,
   DestroyRef,
-  EventEmitter,
-  Input,
   OnInit,
-  Output
 } from '@angular/core';
 import {
   UntypedFormControl,
@@ -14,8 +11,7 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   Observable,
-  shareReplay,
-  take,
+  take
 } from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { BaseColumnId, TableDisplaySettings } from '../../../../shared/models/settings/table-settings.model';
@@ -40,18 +36,15 @@ import {
 } from '../../models/blotter-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 @Component({
   selector: 'ats-blotter-settings',
   templateUrl: './blotter-settings.component.html',
   styleUrls: ['./blotter-settings.component.less']
 })
-export class BlotterSettingsComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
-
-  @Output()
-  settingsChange: EventEmitter<BlotterSettings> = new EventEmitter<BlotterSettings>();
+export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<BlotterSettings> implements OnInit {
   form!: UntypedFormGroup;
   allOrdersColumns: BaseColumnId[] = allOrdersColumns;
   allStopOrdersColumns: BaseColumnId[] = allStopOrdersColumns;
@@ -65,25 +58,33 @@ export class BlotterSettingsComponent implements OnInit {
   availablePortfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   deviceInfo$!: Observable<any>;
 
-  private settings$!: Observable<BlotterSettings>;
+  protected settings$!: Observable<BlotterSettings>;
 
   constructor(
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly manageDashboardsService: ManageDashboardsService,
     private readonly store: Store,
     private readonly deviceService: DeviceService,
     private readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, manageDashboardsService);
+  }
+
+  get showCopy(): boolean {
+    return true;
+  }
+
+  get canSave(): boolean {
+    return this.form?.valid ?? false;
   }
 
   ngOnInit() {
+    this.initSettingsStream();
+
     this.deviceInfo$ = this.deviceService.deviceInfo$
       .pipe(
         take(1)
       );
-
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      shareReplay(1)
-    );
 
     this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
@@ -122,41 +123,36 @@ export class BlotterSettingsComponent implements OnInit {
     this.form.controls.exchange.setValue(this.getPortfolioKey(portfolio).exchange);
   }
 
-  submitForm(): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(initialSettings => {
-      const portfolio = this.getPortfolioKey(this.form.value.portfolio);
-
-      const newSettings = {
-        ...this.form.value,
-        portfolio: portfolio.portfolio,
-        exchange: portfolio.exchange
-      };
-
-      newSettings.ordersTable = this.updateTableSettings(newSettings.ordersColumns, initialSettings.ordersTable);
-      delete newSettings.ordersColumns;
-      newSettings.stopOrdersTable = this.updateTableSettings(newSettings.stopOrdersColumns, initialSettings.stopOrdersTable);
-      delete newSettings.stopOrdersColumns;
-      newSettings.tradesTable = this.updateTableSettings(newSettings.tradesColumns, initialSettings.tradesTable);
-      delete newSettings.tradesColumns;
-      newSettings.repoTradesTable = this.updateTableSettings(newSettings.repoTradesColumns, initialSettings.repoTradesTable);
-      delete newSettings.tradesColumns;
-      newSettings.positionsTable = this.updateTableSettings(newSettings.positionsColumns, initialSettings.positionsTable);
-      delete newSettings.positionsColumns;
-
-      newSettings.notificationsTable = this.updateTableSettings(newSettings.notificationsColumns, initialSettings.notificationsTable);
-      delete newSettings.notificationsColumns;
-
-      newSettings.linkToActive = initialSettings.linkToActive && this.isPortfolioEqual(initialSettings, newSettings);
-
-      this.settingsService.updateSettings<BlotterSettings>(this.guid, newSettings);
-      this.settingsChange.emit();
-    });
-  }
-
   toPortfolioKey(portfolio: {portfolio: string, exchange: string}): string {
     return `${portfolio.portfolio}:${portfolio.exchange}`;
+  }
+
+  protected getUpdatedSettings(initialSettings: BlotterSettings): Partial<BlotterSettings> {
+    const portfolio = this.getPortfolioKey(this.form.value.portfolio);
+
+    const newSettings = {
+      ...this.form.value,
+      portfolio: portfolio.portfolio,
+      exchange: portfolio.exchange
+    };
+
+    newSettings.ordersTable = this.updateTableSettings(newSettings.ordersColumns, initialSettings.ordersTable);
+    delete newSettings.ordersColumns;
+    newSettings.stopOrdersTable = this.updateTableSettings(newSettings.stopOrdersColumns, initialSettings.stopOrdersTable);
+    delete newSettings.stopOrdersColumns;
+    newSettings.tradesTable = this.updateTableSettings(newSettings.tradesColumns, initialSettings.tradesTable);
+    delete newSettings.tradesColumns;
+    newSettings.repoTradesTable = this.updateTableSettings(newSettings.repoTradesColumns, initialSettings.repoTradesTable);
+    delete newSettings.tradesColumns;
+    newSettings.positionsTable = this.updateTableSettings(newSettings.positionsColumns, initialSettings.positionsTable);
+    delete newSettings.positionsColumns;
+
+    newSettings.notificationsTable = this.updateTableSettings(newSettings.notificationsColumns, initialSettings.notificationsTable);
+    delete newSettings.notificationsColumns;
+
+    newSettings.linkToActive = initialSettings.linkToActive && this.isPortfolioEqual(initialSettings, newSettings);
+
+    return newSettings;
   }
 
   private isPortfolioEqual(settings1: BlotterSettings, settings2: BlotterSettings) {
