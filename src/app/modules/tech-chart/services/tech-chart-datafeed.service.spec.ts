@@ -150,8 +150,8 @@ describe('TechChartDatafeedService', () => {
 
     const expectedSymbol = {
       name: instrumentDetails.shortName,
-      full_name: instrumentDetails.symbol,
-      ticker: instrumentDetails.symbol,
+      full_name: instrumentDetails.exchange + ':' + instrumentDetails.symbol,
+      ticker: instrumentDetails.exchange + ':' + instrumentDetails.symbol,
       exchange: instrumentDetails.exchange,
       listed_exchange: instrumentDetails.exchange,
       description: instrumentDetails.description,

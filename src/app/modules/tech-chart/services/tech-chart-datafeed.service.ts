@@ -119,7 +119,10 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     if (instrumentsData.isSynthetic) {
       request = this.syntheticInstrumentsService.getInstrument(instrumentsData.parts);
     } else {
-      request = this.instrumentService.getInstrument(instrumentsData.instrument);
+      request = this.instrumentService.getInstrument(instrumentsData.instrument)
+        .pipe(
+          map(i => !!i ? { ...i, symbol: i.exchange + ':' + i.symbol } : i)
+        );
     }
 
     request.pipe(
