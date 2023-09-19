@@ -204,15 +204,10 @@ export class ScalperCommandProcessorService {
       this.callWithSettings(
         dataContext,
         settings => {
-          this.callWithPortfolioKey(
+          this.callWithPosition(
             dataContext,
-            portfolioKey => {
-              this.callWithPosition(
-                dataContext,
-                position => {
-                  this.scalperOrdersService.reversePositionsByMarket(position, settings.widgetSettings.instrumentGroup, portfolioKey);
-                }
-              );
+            position => {
+              this.scalperOrdersService.reversePositionsByMarket(position, settings.widgetSettings.instrumentGroup);
             }
           );
         }
@@ -238,14 +233,9 @@ export class ScalperCommandProcessorService {
     this.callWithSettings(
       dataContext,
       settings => {
-        this.callWithPortfolioKey(
+        this.callWithPosition(
           dataContext,
-          portfolioKey => {
-            this.callWithPosition(
-              dataContext,
-              position => this.scalperOrdersService.closePositionsByMarket(position, settings.widgetSettings.instrumentGroup, portfolioKey)
-            );
-          }
+          position => this.scalperOrdersService.closePositionsByMarket(position, settings.widgetSettings.instrumentGroup)
         );
       }
     );

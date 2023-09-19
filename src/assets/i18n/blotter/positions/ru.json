@@ -48,5 +48,8 @@
     }
   },
   "emptyPositions": "Позиций нет",
-  "emptyPositionsWithFilters": "С такими фильтрами ничего не найдено"
+  "emptyPositionsWithFilters": "С такими фильтрами ничего не найдено",
+
+  "confirmClose": "Закрыть позицию?",
+  "confirmReverse": "Перевернуть позицию?"
 }

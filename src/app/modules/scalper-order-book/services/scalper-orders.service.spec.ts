@@ -153,6 +153,7 @@ describe('ScalperOrdersService', () => {
       const position1 = {
         symbol: testInstrumentKey1.symbol,
         exchange: testInstrumentKey1.exchange,
+        portfolio: portfolioKey.portfolio,
         qtyTFuture: getRandomInt(1, 100),
         qtyTFutureBatch: getRandomInt(1, 10)
       } as Position;
@@ -160,13 +161,14 @@ describe('ScalperOrdersService', () => {
       const position2 = {
         symbol: testInstrumentKey2.symbol,
         exchange: testInstrumentKey1.exchange,
+        portfolio: portfolioKey.portfolio,
         qtyTFuture: getRandomInt(1, 100) * -1,
         qtyTFutureBatch: getRandomInt(1, 10) * -1
       } as Position;
 
       orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
 
-      service.closePositionsByMarket(position1, testInstrumentKey1.instrumentGroup, portfolioKey);
+      service.closePositionsByMarket(position1, testInstrumentKey1.instrumentGroup);
       tick(10000);
 
       expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
@@ -179,7 +181,7 @@ describe('ScalperOrdersService', () => {
       );
 
       orderServiceSpy.submitMarketOrder.calls.reset();
-      service.closePositionsByMarket(position2, testInstrumentKey2.instrumentGroup, portfolioKey);
+      service.closePositionsByMarket(position2, testInstrumentKey2.instrumentGroup);
       tick(10000);
 
       expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
@@ -995,12 +997,13 @@ describe('ScalperOrdersService', () => {
         symbol: testInstrumentKey.symbol,
         exchange: testInstrumentKey.exchange,
         qtyTFuture: getRandomInt(1, 100),
-        qtyTFutureBatch: getRandomInt(1, 10)
+        qtyTFutureBatch: getRandomInt(1, 10),
+        portfolio: portfolioKey.portfolio
       } as Position;
 
       orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
 
-      service.reversePositionsByMarket(position, testInstrumentKey.instrumentGroup, portfolioKey);
+      service.reversePositionsByMarket(position, testInstrumentKey.instrumentGroup);
 
       tick(10000);
       expect(orderServiceSpy.submitMarketOrder)
@@ -1017,7 +1020,7 @@ describe('ScalperOrdersService', () => {
       orderServiceSpy.submitMarketOrder.calls.reset();
       position.qtyTFutureBatch = position.qtyTFutureBatch * -1;
 
-      service.reversePositionsByMarket(position, testInstrumentKey.instrumentGroup, portfolioKey);
+      service.reversePositionsByMarket(position, testInstrumentKey.instrumentGroup);
       tick(10000);
       expect(orderServiceSpy.submitMarketOrder)
         .withContext('qtyTFutureBatch < 0')

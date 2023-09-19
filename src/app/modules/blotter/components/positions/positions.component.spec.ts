@@ -10,6 +10,7 @@ import {
   mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
+import { OrderService } from "../../../../shared/services/orders/order.service";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -36,6 +37,12 @@ describe('PositionsComponent', () => {
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
         },
         { provide: BlotterService, useClass: MockServiceBlotter },
+        {
+          provide: OrderService,
+          useValue: {
+            submitMarketOrder: jasmine.createSpy('submitMarketOrder').and.callThrough()
+          }
+        },
         ...commonTestProviders
       ],
       declarations: [
