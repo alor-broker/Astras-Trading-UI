@@ -317,15 +317,16 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       symbol_search_request_delay: 2000,
       //features
       disabled_features: [
-        'header_symbol_search',
         'symbol_info',
         'display_market_status',
         'symbol_search_hot_key',
         'save_shortcut'
       ],
       enabled_features: [
+        'header_symbol_search',
         'side_toolbar_in_fullscreen_mode',
-        'chart_crosshair_menu'
+        'chart_crosshair_menu',
+        'show_spread_operators'
       ] as unknown as ChartingLibraryFeatureset[]
     };
 
@@ -355,6 +356,15 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           this.initOrdersDisplay(settings, theme.themeColors);
         }
       );
+
+      this.techChartDatafeedService.onSymbolChange.pipe(
+        takeUntilDestroyed(this.destroyRef),
+        mapWith(
+          () => this.settings$!.pipe(take(1)),
+          (symbolName, settings) => symbolName === this.toTvSymbol(settings.instrument)),
+        filter(a => !a)
+      )
+        .subscribe(() => this.settingsService.updateIsLinked(this.guid, false));
     });
   }
 

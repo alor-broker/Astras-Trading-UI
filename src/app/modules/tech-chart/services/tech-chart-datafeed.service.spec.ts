@@ -28,17 +28,22 @@ import { HistoryResponse } from "../../../shared/models/history/history-response
 import { Candle } from "../../../shared/models/history/candle.model";
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 import { TranslatorService } from "../../../shared/services/translator.service";
+import { SyntheticInstrumentsService } from "./synthetic-instruments.service";
+import { getRandomInt } from "../../../shared/utils/testing";
+import { BarsRequest } from "../../light-chart/models/bars-request.model";
 
 describe('TechChartDatafeedService', () => {
   let service: TechChartDatafeedService;
 
   let subscriptionsDataFeedServiceSpy: any;
   let instrumentsServiceSpy: any;
+  let syntheticInstrumentsServiceSpy: any;
   let historyServiceSpy: any;
   let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument', 'getInstruments']);
+    syntheticInstrumentsServiceSpy = jasmine.createSpyObj('SyntheticInstrumentsService', ['getInstrument', 'getHistory']);
     historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getHistory']);
     subscriptionsDataFeedServiceSpy = jasmine.createSpyObj('SubscriptionsDataFeedService', ['subscribe']);
     subscriptionsDataFeedServiceSpy.subscribe.and.returnValue(new Subject());
@@ -62,6 +67,10 @@ describe('TechChartDatafeedService', () => {
           useValue: {
             getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => 'Московская Биржа'))
           }
+        },
+        {
+          provide: SyntheticInstrumentsService,
+          useValue: syntheticInstrumentsServiceSpy
         }
       ]
     });
@@ -127,7 +136,7 @@ describe('TechChartDatafeedService', () => {
     request.flush(expectedTime);
   });
 
-  it('#resolveSymbol should pass value to onResolve callback', (done) => {
+  it('#resolveSymbol should pass value to onResolve callback', fakeAsync(() => {
     const instrumentDetails = {
       symbol: 'SBER',
       exchange: 'MOEX',
@@ -135,13 +144,14 @@ describe('TechChartDatafeedService', () => {
       description: 'description',
       currency: 'RUB',
       minstep: 0.01,
-      type: 'type'
+      type: 'type',
+      shortName: 'SBER'
     } as Instrument;
 
     const expectedSymbol = {
-      name: instrumentDetails.symbol,
+      name: instrumentDetails.shortName,
       full_name: instrumentDetails.symbol,
-      ticker: `${instrumentDetails.exchange}:${instrumentDetails.symbol}:${instrumentDetails.instrumentGroup}`,
+      ticker: instrumentDetails.symbol,
       exchange: instrumentDetails.exchange,
       listed_exchange: instrumentDetails.exchange,
       description: instrumentDetails.description,
@@ -174,35 +184,17 @@ describe('TechChartDatafeedService', () => {
     service.resolveSymbol(
       expectedSymbol.ticker!,
       symbolInfo => {
-        done();
         expect(symbolInfo).toEqual(expectedSymbol);
       },
       () => {
-        done();
         throw new Error();
       }
     );
-  });
 
-  it('#resolveSymbol should pass error to onError callback', (done) => {
-    const wrongSymbols = [
-      '',
-      'SBER',
-      'SBER:'
-    ];
+    tick();
+  }));
 
-    wrongSymbols.forEach(wrongSymbol => {
-      service.resolveSymbol(
-        wrongSymbol,
-        () => {
-          throw new Error();
-        },
-        reason => {
-          expect(reason).toBe('Unknown symbol');
-        }
-      );
-    });
-
+  it('#resolveSymbol should pass error to onError callback', fakeAsync(() => {
     instrumentsServiceSpy.getInstrument.and.returnValue(of(null));
 
     service.resolveSymbol(
@@ -211,11 +203,12 @@ describe('TechChartDatafeedService', () => {
         throw new Error();
       },
       reason => {
-        done();
         expect(reason).toBe('Unknown symbol');
       }
     );
-  });
+
+    tick();
+  }));
 
   it('#searchSymbols should pass value to onResult callback', (done) => {
     const instrumentDetails = {
@@ -234,7 +227,7 @@ describe('TechChartDatafeedService', () => {
         exchange: instrumentDetails.exchange,
         ticker: `${instrumentDetails.exchange}:${instrumentDetails.symbol}`,
         description: instrumentDetails.description,
-        full_name: instrumentDetails.symbol,
+        full_name: `${instrumentDetails.exchange}:${instrumentDetails.symbol}`,
         type: ''
       }
     ];
@@ -248,7 +241,7 @@ describe('TechChartDatafeedService', () => {
     });
   });
 
-  it('#getBars should pass value to onResult callback', (done) => {
+  it('#getBars should pass value to onResult callback', fakeAsync(() => {
     const historyResponse: HistoryResponse = {
       history: [
         {
@@ -271,8 +264,6 @@ describe('TechChartDatafeedService', () => {
       '1' as ResolutionString,
       { firstDataRequest: true, from: 0 } as PeriodParams,
       (bars) => {
-        done();
-
         expect(bars).toEqual(historyResponse.history.map(x => ({
           ...x,
           time: x.time * 1000
@@ -282,9 +273,11 @@ describe('TechChartDatafeedService', () => {
         throw new Error();
       }
     );
-  });
 
-  it('#getBars should pass error to onError callback', (done) => {
+    tick();
+  }));
+
+  it('#getBars should pass error to onError callback', fakeAsync(() => {
     historyServiceSpy.getHistory.and.returnValue(of(null));
 
     service.getBars(
@@ -295,13 +288,14 @@ describe('TechChartDatafeedService', () => {
         throw new Error();
       },
       reason => {
-        done();
         expect(reason).toBe('Unable to load history');
       }
     );
-  });
 
-  it('#subscribeBars should pass value to onTick callback', (done) => {
+    tick();
+  }));
+
+  it('#subscribeBars should pass value to onTick callback', fakeAsync(() => {
     const symbolInfo = { ticker: 'MOEX:SBER:TQBR' } as LibrarySymbolInfo;
     const resolution = '1' as ResolutionString;
     const historyResponse: HistoryResponse = {
@@ -319,7 +313,9 @@ describe('TechChartDatafeedService', () => {
       next: 0
     };
 
+    syntheticInstrumentsServiceSpy.getHistory.and.returnValue(of(historyResponse));
     historyServiceSpy.getHistory.and.returnValue(of(historyResponse));
+
     service.getBars(
       symbolInfo,
       resolution,
@@ -344,11 +340,9 @@ describe('TechChartDatafeedService', () => {
     subscriptionsDataFeedServiceSpy.subscribe.and.returnValue(messages$);
 
     service.subscribeBars(
-      { ticker: 'MOEX:SBER:TQBR' } as LibrarySymbolInfo,
-      '1' as ResolutionString,
+      symbolInfo,
+      resolution,
       bar => {
-        done();
-
         expect(subscriptionsDataFeedServiceSpy.subscribe).toHaveBeenCalledWith(jasmine.objectContaining({
             opcode: 'BarsGetAndSubscribe',
             code: 'SBER',
@@ -366,6 +360,107 @@ describe('TechChartDatafeedService', () => {
       },
       'guid'
     );
-  });
+
+    tick();
+  }));
+
+  it('#subscribeBars should correctly assemble bar info', fakeAsync(() => {
+    const symbolInfo = { ticker: 'MOEX:SBER:TQBR-MOEX:SBERP:TQBR' } as LibrarySymbolInfo;
+    const resolution = '1' as ResolutionString;
+    const historyResponse: HistoryResponse = {
+      history: [
+        {
+          time: Math.round(Date.now() / 1000),
+          open: getRandomInt(100, 150),
+          close: getRandomInt(100, 150),
+          low: getRandomInt(100, 150),
+          high: getRandomInt(100, 150),
+          volume: getRandomInt(500, 1000)
+        }
+      ],
+      prev: 0,
+      next: 0
+    };
+
+    const sberNewBar = {
+      time: Math.round(Date.now() / 1000),
+      open: getRandomInt(100, 150),
+      close: getRandomInt(100, 150),
+      low: getRandomInt(100, 150),
+      high: getRandomInt(100, 150),
+      volume: getRandomInt(500, 1000)
+    };
+
+    const sberpNewBar = {
+      time: Math.round(Date.now() / 1000),
+      open: getRandomInt(100, 150),
+      close: getRandomInt(100, 150),
+      low: getRandomInt(100, 150),
+      high: getRandomInt(100, 150),
+      volume: getRandomInt(500, 1000)
+    };
+
+    syntheticInstrumentsServiceSpy.getHistory.and.returnValue(of(historyResponse));
+    historyServiceSpy.getHistory.and.callFake(() => {
+      return of(historyResponse);
+    });
+
+    service.getBars(
+      symbolInfo,
+      resolution,
+      { firstDataRequest: true, from: 0 } as PeriodParams,
+      () => {},
+      () => {}
+    );
+
+    const expectedBar = {
+      time: Math.round(Date.now() / 1000),
+      open: sberNewBar.open - sberpNewBar.open,
+      close: sberNewBar.close - sberpNewBar.close,
+      low: sberNewBar.low - sberpNewBar.low,
+      high: sberNewBar.high - sberpNewBar.high,
+      volume: 0
+    };
+
+    subscriptionsDataFeedServiceSpy.subscribe.and.callFake((r: BarsRequest) => {
+      return new BehaviorSubject(r.code === 'SBER' ? sberNewBar : sberpNewBar);
+    });
+
+    const onTickSpy = jasmine.createSpy('onTickSpy');
+
+    service.subscribeBars(
+      symbolInfo,
+      resolution,
+      onTickSpy,
+      'guid'
+    );
+
+    expect(subscriptionsDataFeedServiceSpy.subscribe).toHaveBeenCalledWith(jasmine.objectContaining({
+        opcode: 'BarsGetAndSubscribe',
+        code: 'SBER',
+        exchange: 'MOEX',
+        instrumentGroup: 'TQBR',
+        format: 'simple',
+        tf: '60',
+      }) as any,
+      jasmine.anything() as any);
+
+    expect(subscriptionsDataFeedServiceSpy.subscribe).toHaveBeenCalledWith(jasmine.objectContaining({
+        opcode: 'BarsGetAndSubscribe',
+        code: 'SBERP',
+        exchange: 'MOEX',
+        instrumentGroup: 'TQBR',
+        format: 'simple',
+        tf: '60',
+      }) as any,
+      jasmine.anything() as any);
+
+    tick();
+
+    expect(onTickSpy).toHaveBeenCalledWith({
+      ...expectedBar,
+      time: expectedBar.time * 1000
+    } as any);
+  }));
 });
 
