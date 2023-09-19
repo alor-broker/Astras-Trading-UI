@@ -1,15 +1,18 @@
 <div *ngIf="viewData$ | async as data" class="content">
-  <div class='badge'>
-    <nz-badge
-      (click)="selectQuantity(data.position.abs)"
-      [class]="data.position.quantity > 0 ? 'long' : 'short'"
-      [nzCount]="data.position.abs"
-      [nzOverflowCount]='1000000000'
-    >
+  <div class='instrument-logo'>
       <nz-avatar [nzSize]="64" [nzSrc]="'https://storage.alorbroker.ru/icon/' + data.instrumentKey.symbol + '.png'"
                  [nzText]="data.instrumentKey.symbol"
-                 nzGap='4'></nz-avatar>
-    </nz-badge>
+                 nzGap='4'>
+      </nz-avatar>
+      <span
+        *ngIf="data.position.abs > 0"
+        class="badge"
+        [class]="data.position.quantity > 0 ? 'long' : 'short'"
+        (click)="selectQuantity(data.position.abs)"
+        [title]="data.position.abs"
+      >
+        {{data.position.abs}}
+      </span>
   </div>
 
   <div class='description'>

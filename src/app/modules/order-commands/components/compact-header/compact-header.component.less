@@ -17,10 +17,19 @@
 
     .position-badge {
       cursor: pointer;
-      padding: 0 5px;
-      border-radius: .5em;
-      font-weight: 600;
-      color: @layout-header-color;
+      padding: 0 6px;
+      z-index: @zindex-badge;
+      min-width: @badge-height;
+      height: @badge-height;
+      color: @badge-text-color;
+      font-weight: @badge-font-weight;
+      font-size: @badge-font-size;
+      line-height: @badge-height;
+      white-space: nowrap;
+      text-align: center;
+      background: @badge-color;
+      border-radius: (@badge-height / 2);
+      box-shadow: 0 0 0 1px @shadow-color-inverse;
 
       &.long {
         background: @buy-color;
