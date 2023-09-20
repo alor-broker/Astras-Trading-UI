@@ -50,7 +50,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   private lastBarPoint = new Map<string, number>();
   private readonly barsSubscriptions = new Map<string, Subscription>();
 
-  private onSymbolChange$ = new BehaviorSubject<string | null>(null);
+  private onSymbolChange$ = new BehaviorSubject<InstrumentKey | null>(null);
   get onSymbolChange() {
     return this.onSymbolChange$.asObservable();
   }
@@ -121,7 +121,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     } else {
       request = this.instrumentService.getInstrument(instrumentsData.instrument)
         .pipe(
-          map(i => !!i ? { ...i, symbol: i.exchange + ':' + i.symbol } : i)
+          map(i => !!i ? { ...i, symbol: `${i.exchange}:${i.symbol}${ i.instrumentGroup ? ':' + i.instrumentGroup : '' }` } : i)
         );
     }
 
@@ -156,7 +156,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
       };
 
       onResolve(resolve);
-      this.onSymbolChange$.next(symbolName);
+      this.onSymbolChange$.next(instrumentsData.isSynthetic ? { symbol: '', exchange: '' } : instrumentsData.instrument);
     });
   }
 
