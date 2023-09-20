@@ -177,23 +177,25 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       }),
     );
 
+    const linkToActiveChange$ = this.settings$!.pipe(
+      startWith(null),
+      pairwise(),
+      withLatestFrom(this.techChartDatafeedService.onSymbolChange),
+      filter(([[prev, curr], chartInstrument]) => {
+        if (!prev) {
+          return true;
+        }
+        return !prev?.widgetSettings.linkToActive && !!curr?.widgetSettings?.linkToActive &&
+          (chartInstrument?.symbol !== curr?.instrument.symbol || chartInstrument?.exchange !== curr?.instrument.exchange);
+      })
+    );
+
     combineLatest([
       chartSettings$,
       this.themeService.getThemeSettings(),
       this.translatorService.getTranslator('tech-chart/tech-chart'),
       this.timezoneConverterService.getConverter(),
-      this.settings$!.pipe(
-        startWith(null),
-        pairwise(),
-        withLatestFrom(this.techChartDatafeedService.onSymbolChange),
-        filter(([[prev, curr], chartInstrument]) => {
-          if (!prev) {
-            return true;
-          }
-          return !prev?.widgetSettings.linkToActive && !!curr?.widgetSettings?.linkToActive &&
-            (chartInstrument?.symbol !== curr?.instrument.symbol || chartInstrument?.exchange !== curr?.instrument.exchange);
-        }),
-      )
+      linkToActiveChange$
     ]).pipe(
       map(([, theme, translator, timezoneConverter]) => ({
         theme,
