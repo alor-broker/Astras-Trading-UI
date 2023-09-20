@@ -4,6 +4,7 @@ import {
   distinctUntilChanged,
   filter,
   Observable,
+  pairwise,
   shareReplay,
   Subscription,
   switchMap,
@@ -176,11 +177,25 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       }),
     );
 
+    const linkToActiveChange$ = this.settings$!.pipe(
+      startWith(null),
+      pairwise(),
+      withLatestFrom(this.techChartDatafeedService.onSymbolChange),
+      filter(([[prev, curr], chartInstrument]) => {
+        if (!prev) {
+          return true;
+        }
+        return !prev?.widgetSettings.linkToActive && !!curr?.widgetSettings?.linkToActive &&
+          (chartInstrument?.symbol !== curr?.instrument.symbol || chartInstrument?.exchange !== curr?.instrument.exchange);
+      })
+    );
+
     combineLatest([
       chartSettings$,
       this.themeService.getThemeSettings(),
       this.translatorService.getTranslator('tech-chart/tech-chart'),
       this.timezoneConverterService.getConverter(),
+      linkToActiveChange$
     ]).pipe(
       map(([, theme, translator, timezoneConverter]) => ({
         theme,
@@ -361,8 +376,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         takeUntilDestroyed(this.destroyRef),
         mapWith(
           () => this.settings$!.pipe(take(1)),
-          (symbolName, settings) => symbolName === this.toTvSymbol(settings.instrument)),
-        filter(a => !a)
+          (instrument, settings) =>
+            (instrument?.symbol !== settings.instrument.symbol ||
+            instrument?.exchange !== settings.instrument.exchange) &&
+            settings.widgetSettings.linkToActive
+        ),
+        filter(needUnlink => !!needUnlink)
       )
         .subscribe(() => this.settingsService.updateIsLinked(this.guid, false));
     });
