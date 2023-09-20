@@ -10,17 +10,29 @@
       color: @buy-color;
     }
 
-    ::ng-deep {
-      .long {
-        nz-badge-sup {
+    .instrument-logo {
+      .badge {
+        z-index: @zindex-badge;
+        min-width: @badge-height;
+        height: @badge-height;
+        padding: 0 6px;
+        color: @badge-text-color;
+        font-weight: @badge-font-weight;
+        font-size: @badge-font-size;
+        line-height: @badge-height;
+        white-space: nowrap;
+        text-align: center;
+        background: @badge-color;
+        border-radius: (@badge-height / 2);
+        box-shadow: 0 0 0 1px @shadow-color-inverse;
+
+        &.long {
           color: @layout-header-color;
           cursor: pointer;
           background: @buy-color;
         }
-      }
 
-      .short {
-        nz-badge-sup {
+        &.short {
           color: @layout-header-color;
           cursor: pointer;
           background: @sell-color;
@@ -54,8 +66,17 @@
   flex-wrap: nowrap;
 }
 
-.badge {
+.instrument-logo {
   margin: 3px 10px 3px 0;
+  position: relative;
+
+  .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    transform-origin: 100% 0;
+  }
 }
 
 .description {
