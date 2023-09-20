@@ -3,12 +3,16 @@
     <ng-container *ngIf="(displayItems$ | async) as displayItems">
       <ng-container *ngFor="let item of displayItems;index as i; trackBy: trackBy">
         <div
-          [class.border-bottom]="(i+1)%5 === 0"
+          [ngClass]="{
+          'volume-cell': true,
+          'border-bottom': (i+1)%5 === 0,
+          'max-volume': item?.isMaxVolume
+          }"
           [ngStyle]="{
           'height': xAxisStep + 'px',
           'line-height': xAxisStep + 'px'
           }"
-          class="volume-cell">
+        >
           <ats-short-number
             *ngIf="settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
             [value]="item?.volume"

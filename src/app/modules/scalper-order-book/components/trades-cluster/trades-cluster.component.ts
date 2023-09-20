@@ -4,7 +4,10 @@ import {
   OnDestroy,
   OnInit
 } from '@angular/core';
-import { TradesCluster } from '../../models/trades-clusters.model';
+import {
+  ClusterItem,
+  TradesCluster
+} from '../../models/trades-clusters.model';
 import {
   BehaviorSubject,
   combineLatest,
@@ -31,7 +34,7 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
   xAxisStep!: number;
   @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
-  displayItems$!: Observable<({ volume: number } | null)[]>;
+  displayItems$!: Observable<({ volume: number; isMaxVolume: boolean } | null)[]>;
   settings$!: Observable<ScalperOrderBookExtendedSettings>;
   private readonly currentCluster$ = new BehaviorSubject<TradesCluster | null>(null);
 
@@ -56,6 +59,14 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
       map(([body, displayRange, currentCluster]) => {
         const displayRows = body.slice(displayRange!.start, Math.min(displayRange!.end + 1, body.length));
 
+        const getVolume = (item: ClusterItem) => {
+          return Math.round(item.buyQty + item.sellQty);
+        };
+
+        const maxVolume = !!currentCluster && currentCluster.tradeClusters.length > 0
+          ? Math.max(...currentCluster.tradeClusters.map(c => getVolume(c)))
+          : null;
+
         return displayRows.map(r => {
           if (!currentCluster) {
             return null;
@@ -66,8 +77,11 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
             return null;
           }
 
+          const itemVolume  = getVolume(mappedItem);
+
           return {
-            volume: mappedItem.buyQty + mappedItem.sellQty
+            volume: itemVolume,
+            isMaxVolume: itemVolume === maxVolume
           };
         });
       })
