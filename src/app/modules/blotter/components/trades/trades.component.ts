@@ -1,13 +1,9 @@
 import {
   Component,
   DestroyRef,
-  ElementRef,
   EventEmitter,
   OnInit,
-  Output,
-  QueryList,
-  ViewChild,
-  ViewChildren
+  Output
 } from '@angular/core';
 import {
   combineLatest,
@@ -22,13 +18,10 @@ import {
   mergeMap,
   startWith
 } from 'rxjs/operators';
-import { Trade } from 'src/app/shared/models/trades/trade.model';
-import { TradeFilter } from '../../models/trade-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { MathHelper } from '../../../../shared/utils/math-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { NzTableComponent } from 'ng-zorro-antd/table';
 import {
   isEqualPortfolioDependedSettings
 } from "../../../../shared/utils/settings-helper";
@@ -40,26 +33,17 @@ import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BaseTableComponent } from "../base-table/base-table.component";
-
-interface DisplayTrade extends Trade {
-  volume: number;
-}
+import {
+  DisplayTrade,
+  TradeFilter
+} from '../../models/trade.model';
 
 @Component({
   selector: 'ats-trades',
   templateUrl: './trades.component.html',
   styleUrls: ['./trades.component.less']
 })
-export class TradesComponent
-  extends BaseTableComponent<DisplayTrade, TradeFilter>
-  implements OnInit {
-
-  @ViewChild('nzTable')
-  table?: NzTableComponent<DisplayTrade>;
-
-  @ViewChildren('tableContainer')
-  tableContainer!: QueryList<ElementRef<HTMLElement>>;
-
+export class TradesComponent extends BaseTableComponent<DisplayTrade, TradeFilter> implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayTrades$: Observable<DisplayTrade[]> = of([]);
@@ -167,7 +151,7 @@ export class TradesComponent
 
     this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
-        TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)
+        TableSettingHelper.isTableSettingsEqual(previous?.tradesTable, current.tradesTable)
         && previous.badgeColor === current.badgeColor
       ),
       mapWith(

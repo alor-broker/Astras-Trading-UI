@@ -35,10 +35,12 @@ describe('BlotterWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         BlotterWidgetComponent,
-        mockComponent({ selector: 'ats-positions', inputs: ['shouldShowSettings', 'guid'] }),
-        mockComponent({ selector: 'ats-orders', inputs: ['shouldShowSettings', 'guid'] }),
-        mockComponent({ selector: 'ats-stop-orders', inputs: ['shouldShowSettings', 'guid'] }),
-        mockComponent({ selector: 'ats-trades', inputs: ['shouldShowSettings', 'guid'] }),
+        mockComponent({ selector: 'ats-positions', inputs: ['guid'] }),
+        mockComponent({ selector: 'ats-orders', inputs: ['guid'] }),
+        mockComponent({ selector: 'ats-stop-orders', inputs: ['guid'] }),
+        mockComponent({ selector: 'ats-trades', inputs: ['guid'] }),
+        mockComponent({ selector: 'ats-trades-history', inputs: ['guid'] }),
+        mockComponent({ selector: 'ats-repo-trades', inputs: ['guid'] }),
         mockComponent({ selector: 'ats-orders-group-modal-widget', inputs: ['guid'] }),
         mockComponent({ selector: 'ats-push-notifications', inputs: ['guid'] }),
         ...ngZorroMockComponents,
