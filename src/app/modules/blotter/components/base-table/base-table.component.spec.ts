@@ -7,13 +7,16 @@ import {
 } from '@angular/core/testing';
 
 import { BaseTableComponent } from "./base-table.component";
-import { Component, DestroyRef, ElementRef, QueryList, ViewChild, ViewChildren } from "@angular/core";
+import { Component, DestroyRef } from "@angular/core";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterService } from "../../services/blotter.service";
-import { NzTableComponent } from "ng-zorro-antd/table";
 import { getRandomInt, getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { By } from "@angular/platform-browser";
-import { BehaviorSubject, take } from "rxjs";
+import {
+  BehaviorSubject,
+  Subject,
+  take
+} from "rxjs";
 import { TableNames } from "../../models/blotter-settings.model";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 
@@ -26,12 +29,6 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
   `
 })
 class TestComponent extends BaseTableComponent<{ id: string }, {}> {
-  @ViewChild('nzTable')
-  table?: NzTableComponent<any>;
-
-  @ViewChildren('tableContainer')
-  tableContainer!: QueryList<ElementRef<HTMLElement>>;
-
   settingsTableName = TableNames.OrdersTable;
 
   containerHeight = 0;
@@ -65,6 +62,7 @@ describe('BaseTableComponent', () => {
   beforeEach(async () => {
     blotterServiceSpy = jasmine.createSpyObj('BlotterService', ['selectNewInstrument']);
     settingsServiceSpy = jasmine.createSpyObj('WidgetSettingsService', ['getSettings', 'updateSettings']);
+    settingsServiceSpy.getSettings.and.returnValue(new Subject());
 
     await TestBed.configureTestingModule({
       declarations: [

@@ -1,13 +1,9 @@
 import {
   Component,
   DestroyRef,
-  ElementRef,
   EventEmitter,
   OnInit,
-  Output,
-  QueryList,
-  ViewChild,
-  ViewChildren
+  Output
 } from '@angular/core';
 import {
   distinctUntilChanged,
@@ -26,7 +22,6 @@ import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { NzTableComponent } from 'ng-zorro-antd/table';
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
@@ -50,15 +45,7 @@ interface PositionDisplay extends Position {
   templateUrl: './positions.component.html',
   styleUrls: ['./positions.component.less']
 })
-export class PositionsComponent
-  extends BaseTableComponent<PositionDisplay, PositionFilter>
-  implements OnInit {
-
-  @ViewChild('nzTable')
-  table?: NzTableComponent<PositionDisplay>;
-  @ViewChildren('tableContainer')
-  tableContainer!: QueryList<ElementRef<HTMLElement>>;
-
+export class PositionsComponent extends BaseTableComponent<PositionDisplay, PositionFilter> implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayPositions$: Observable<PositionDisplay[]> = of([]);

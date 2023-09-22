@@ -1,15 +1,10 @@
 import {
   Component,
   DestroyRef,
-  ElementRef,
   EventEmitter,
   OnInit,
-  Output,
-  QueryList,
-  ViewChild,
-  ViewChildren
+  Output
 } from '@angular/core';
-import { NzTableComponent } from "ng-zorro-antd/table";
 import {
   combineLatest,
   distinctUntilChanged,
@@ -17,7 +12,6 @@ import {
   of,
   switchMap
 } from "rxjs";
-import { TradeFilter } from "../../models/trade-filter.model";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { TableNames } from "../../models/blotter-settings.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -32,22 +26,14 @@ import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { RepoTrade } from "../../../../shared/models/trades/trade.model";
 import { BaseTableComponent } from "../base-table/base-table.component";
+import { TradeFilter } from "../../models/trade.model";
 
 @Component({
   selector: 'ats-repo-trades',
   templateUrl: './repo-trades.component.html',
   styleUrls: ['./repo-trades.component.less']
 })
-export class RepoTradesComponent
-  extends BaseTableComponent<RepoTrade, TradeFilter>
-  implements OnInit {
-
-  @ViewChild('nzTable')
-  table?: NzTableComponent<RepoTrade>;
-
-  @ViewChildren('tableContainer')
-  tableContainer!: QueryList<ElementRef<HTMLElement>>;
-
+export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilter> implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayRepoTrades$: Observable<RepoTrade[]> = of([]);

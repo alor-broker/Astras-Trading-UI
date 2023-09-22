@@ -1,13 +1,9 @@
 import {
   Component,
   DestroyRef,
-  ElementRef,
   EventEmitter,
   OnInit,
   Output,
-  QueryList,
-  ViewChild,
-  ViewChildren
 } from '@angular/core';
 import {
   combineLatest,
@@ -27,7 +23,6 @@ import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { BlotterService } from '../../services/blotter.service';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { NzTableComponent } from 'ng-zorro-antd/table';
 import {
   isEqualPortfolioDependedSettings
 } from "../../../../shared/utils/settings-helper";
@@ -55,16 +50,7 @@ interface DisplayOrder extends Order {
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.less'],
 })
-export class OrdersComponent
-  extends BaseTableComponent<DisplayOrder, OrderFilter>
-  implements OnInit {
-
-  @ViewChild('nzTable')
-  table?: NzTableComponent<DisplayOrder>;
-
-  @ViewChildren('tableContainer')
-  tableContainer!: QueryList<ElementRef<HTMLElement>>;
-
+export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   isModalOpened = DomHelper.isModalOpen;

@@ -70,7 +70,7 @@
           </tr>
           </thead>
           <tbody>
-          <ng-template let-ord nz-virtual-scroll>
+            <ng-template let-ord nz-virtual-scroll>
             <tr (click)="selectInstrument(ord.symbol, ord.exchange)">
               <td>
                 <span
@@ -140,18 +140,17 @@
             </tr>
           </ng-template>
           </tbody>
+          <ng-template #footer>
+            <div class="export-button-container" *transloco="let tCommon; scope: 'blotter/blotter-common'">
+              <button nz-button nzType="link" *ngIf="canExport(nzTable.data)" (click)="exportToFile(nzTable.data)">
+                <i nz-icon nzType="download"></i>
+                {{tCommon('blotterBlotterCommon.exportToFile')}}
+              </button>
+            </div>
+          </ng-template>
         </nz-table>
       </ng-container>
     </div>
-
-    <ng-template #footer>
-      <div class="export-button-container">
-        <button (click)="exportToFile()" *ngIf="canExport" nz-button nzType="link">
-          <i nz-icon nzType="download"></i>
-          {{t('blotterBlotterCommon.exportToFile')}}
-        </button>
-      </div>
-    </ng-template>
 
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
       <ats-table-filter (filterChange)="filterChange($event)" [columns]="listOfColumns"></ats-table-filter>

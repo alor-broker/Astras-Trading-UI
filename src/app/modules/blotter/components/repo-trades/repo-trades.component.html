@@ -57,7 +57,7 @@
         </tr>
         </thead>
         <tbody>
-        <ng-template let-trd nz-virtual-scroll>
+          <ng-template let-trd nz-virtual-scroll>
           <tr>
             <td>
               <span [class]='trd.side.toString() === "sell" ? "bg-sell" : "bg-buy"'>&nbsp;</span>
@@ -81,18 +81,17 @@
           </tr>
         </ng-template>
         </tbody>
+        <ng-template #footer>
+          <div class="export-button-container" *transloco="let tCommon; scope: 'blotter/blotter-common'">
+            <button nz-button nzType="link" *ngIf="canExport(nzTable.data)" (click)="exportToFile(nzTable.data)">
+              <i nz-icon nzType="download"></i>
+              {{tCommon('blotterBlotterCommon.exportToFile')}}
+            </button>
+          </div>
+        </ng-template>
       </nz-table>
     </ng-container>
   </div>
-
-  <ng-template #footer>
-    <div class="export-button-container" *transloco="let tCommon; scope: 'blotter/blotter-common'">
-      <button nz-button nzType="link" *ngIf="canExport" (click)="exportToFile()">
-        <i nz-icon nzType="download"></i>
-        {{tCommon('blotterBlotterCommon.exportToFile')}}
-      </button>
-    </div>
-  </ng-template>
 
   <nz-dropdown-menu #searchMenu="nzDropdownMenu">
     <ats-table-filter [columns]="listOfColumns" (filterChange)="filterChange($event)"></ats-table-filter>
