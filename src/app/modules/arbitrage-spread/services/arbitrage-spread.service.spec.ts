@@ -7,8 +7,9 @@ import { of, filter, take, skip } from "rxjs";
 import { OrderService } from "../../../shared/services/orders/order.service";
 import { Side } from "../../../shared/models/enums/side.model";
 import { PortfolioSubscriptionsService } from "../../../shared/services/portfolio-subscriptions.service";
+import { ArbitrageSpread } from "../models/arbitrage-spread.model";
 
-const spreadItem = {
+const spreadItem: ArbitrageSpread = {
   id: 'spreadId',
   firstLeg: {
     instrument: {symbol: 'symbol1', exchange: 'exchange1', shortName: '', description: '', minstep: 1, currency: ''},
@@ -21,6 +22,13 @@ const spreadItem = {
     quantity: 2,
     ratio: 2,
     portfolio: {portfolio: 'portfolio2', exchange: 'exchange2'},
+  },
+  isThirdLeg: false,
+  thirdLeg: {
+    instrument: {symbol: 'symbol3', exchange: 'exchange3', shortName: '', description: '', minstep: 3, currency: ''},
+    quantity: 3,
+    ratio: 3,
+    portfolio: {portfolio: 'portfolio3', exchange: 'exchange3'},
   }
 };
 
@@ -162,6 +170,20 @@ describe('ArbitrageSpreadService', () => {
         quantity: 22,
         ratio: 22,
         portfolio: { portfolio: 'portfolio22', exchange: 'exchange22' },
+      },
+      isThirdLeg: true,
+      thirdLeg: {
+        instrument: {
+          symbol: 'symbol33',
+          exchange: 'exchange33',
+          shortName: '',
+          description: '',
+          minstep: 22,
+          currency: ''
+        },
+        quantity: 22,
+        ratio: 22,
+        portfolio: {portfolio: 'portfolio33', exchange: 'exchange33'},
       }
     };
 
@@ -183,11 +205,17 @@ describe('ArbitrageSpreadService', () => {
         expect(spreads[0].secondLeg.portfolio).toEqual(expectedSpread.secondLeg.portfolio);
         expect(spreads[0].secondLeg.quantity).toBe(expectedSpread.secondLeg.quantity);
         expect(spreads[0].secondLeg.ratio).toBe(expectedSpread.secondLeg.ratio);
+
+        expect(spreads[0].isThirdLeg).toBeTrue();
+        expect(spreads[0].thirdLeg.instrument).toEqual(expectedSpread.thirdLeg.instrument);
+        expect(spreads[0].thirdLeg.portfolio).toEqual(expectedSpread.thirdLeg.portfolio);
+        expect(spreads[0].thirdLeg.quantity).toBe(expectedSpread.thirdLeg.quantity);
+        expect(spreads[0].thirdLeg.ratio).toBe(expectedSpread.thirdLeg.ratio);
       });
 
     service.editSpread({
       ...expectedSpread,
-      id: spreadItem.id
+      id: spreadItem.id!
     });
     tick();
   }));
@@ -204,7 +232,7 @@ describe('ArbitrageSpreadService', () => {
         expect(spreads.length).toBe(0);
       });
 
-    service.removeSpread(spreadItem.id);
+    service.removeSpread(spreadItem.id!);
     tick();
   }));
 
@@ -213,7 +241,7 @@ describe('ArbitrageSpreadService', () => {
 
     service.addSpread(spreadItem);
     service.editSpread(spreadItem);
-    service.removeSpread(spreadItem.id);
+    service.removeSpread(spreadItem.id!);
 
     tick();
 

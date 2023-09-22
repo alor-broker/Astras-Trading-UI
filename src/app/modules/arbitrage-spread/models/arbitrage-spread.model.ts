@@ -1,10 +1,13 @@
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
+import { Side } from "../../../shared/models/enums/side.model";
 
 export interface ArbitrageSpread {
   id?: string;
   firstLeg: SpreadLeg;
   secondLeg: SpreadLeg;
+  isThirdLeg: boolean;
+  thirdLeg: SpreadLeg;
   buySpread?: number;
   sellSpread?: number;
 }
@@ -14,5 +17,6 @@ export interface SpreadLeg {
   quantity: number;
   ratio: number;
   portfolio: PortfolioKey;
+  side?: Side;
   positionsCount?: number;
 }
