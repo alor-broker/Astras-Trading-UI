@@ -37,6 +37,7 @@
           nzSize="small"
           nzType="text"
           [nzClickHide]="false"
+          nzTrigger="click"
           [nzDropdownMenu]="dashboardsMenu"
           (nzVisibleChange)="changeDashboardSelectionMenuVisibility($event)"
           [nzVisible]="(isDashboardSelectionMenuVisible$ | async) ?? false"

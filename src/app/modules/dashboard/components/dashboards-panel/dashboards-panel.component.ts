@@ -1,5 +1,14 @@
-import { Component, DestroyRef, Input, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, delay, Observable, shareReplay, take, tap } from "rxjs";
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
+import { BehaviorSubject, delay, filter, Observable, shareReplay, take, tap } from "rxjs";
 import { Dashboard, DefaultDashboardName } from "../../../../shared/models/dashboard/dashboard.model";
 import { NzSegmentedOption } from "ng-zorro-antd/segmented/types";
 import { mapWith } from "../../../../shared/utils/observable-helper";
@@ -8,6 +17,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import { NzDropDownDirective } from "ng-zorro-antd/dropdown";
 
 interface DashboardSegmentedOption extends NzSegmentedOption {
   value: string;
@@ -18,12 +28,14 @@ interface DashboardSegmentedOption extends NzSegmentedOption {
   templateUrl: './dashboards-panel.component.html',
   styleUrls: ['./dashboards-panel.component.less']
 })
-export class DashboardsPanelComponent implements OnInit, OnDestroy {
+export class DashboardsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input({ required: true }) selectedDashboard!: Dashboard | null;
   favoriteDashboards$!: Observable<DashboardSegmentedOption[]>;
   selectedDashboardIndex$ = new BehaviorSubject<number>(0);
   isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
   lastSelectedDashboard$ = new BehaviorSubject<Dashboard | null>(null);
+
+  @ViewChildren(NzDropDownDirective) dashboardsDropdown!: QueryList<NzDropDownDirective>;
 
   constructor(
     private readonly manageDashboardsService: ManageDashboardsService,
@@ -99,6 +111,20 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
         map(fd => fd.findIndex((d, i) => i === fd.length - 1 ? true : d.value === this.selectedDashboard!.guid)),
       )
       .subscribe(i => this.selectedDashboardIndex$.next(i));
+  }
+
+  ngAfterViewInit() {
+    this.dashboardsDropdown.changes
+      .pipe(
+        map(q => q.first),
+        filter((el): el is NzDropDownDirective => !!el),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(dropdown => {
+        dropdown.elementRef.nativeElement.addEventListener('mouseenter', () => {
+          dropdown.nzVisibleChange.emit(true);
+        });
+    });
   }
 
   ngOnDestroy() {
