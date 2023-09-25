@@ -1,9 +1,9 @@
 import { Component, DestroyRef, Input, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, delay, Observable, shareReplay, take, tap } from "rxjs";
+import { BehaviorSubject, Observable, shareReplay, take, tap } from "rxjs";
 import { Dashboard, DefaultDashboardName } from "../../../../shared/models/dashboard/dashboard.model";
 import { NzSegmentedOption } from "ng-zorro-antd/segmented/types";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { map } from "rxjs/operators";
+import { debounceTime, map } from "rxjs/operators";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
@@ -41,7 +41,7 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
           this.selectedDashboardIndex$.next(favDashboardsLength);
         }
       }),
-      delay(50), // used to prevent animation error
+      debounceTime(50), // used to prevent animation error
       map(({t, dashboards}) => {
           const options: DashboardSegmentedOption[] = dashboards
             .filter(d => d.isFavorite)
