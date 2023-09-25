@@ -23,6 +23,7 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
   favoriteDashboards$!: Observable<DashboardSegmentedOption[]>;
   selectedDashboardIndex$ = new BehaviorSubject<number>(0);
   isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
+  lastSelectedDashboard$ = new BehaviorSubject<Dashboard | null>(null);
 
   constructor(
     private readonly manageDashboardsService: ManageDashboardsService,
@@ -32,23 +33,34 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.favoriteDashboards$ = this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
-      mapWith(() => this.manageDashboardsService.allDashboards$, (t, dashboards) => ({ t, dashboards })),
-      tap(data => {
-        const favDashboardsLength = data.dashboards.filter(d => d.isFavorite).length;
+    const allDashboards$ = this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
+      mapWith(
+        () => this.manageDashboardsService.allDashboards$,
+        (t, dashboards) => ({ t, dashboards })
+      ),
+      map(data => data.dashboards.map(d => ({
+        ...d,
+        title: d.title.includes(DefaultDashboardName) ? d.title.replace(DefaultDashboardName, data.t(['defaultDashboardName'])) : d.title
+      }))),
+      shareReplay(1)
+    );
+
+    this.favoriteDashboards$ = allDashboards$.pipe(
+      tap(dashboards => {
+        const favDashboardsLength = dashboards.filter(d => d.isFavorite).length;
 
         if (this.selectedDashboardIndex$.getValue() > favDashboardsLength) {
           this.selectedDashboardIndex$.next(favDashboardsLength);
         }
       }),
       delay(50), // used to prevent animation error
-      map(({t, dashboards}) => {
+      map((dashboards) => {
           const options: DashboardSegmentedOption[] = dashboards
             .filter(d => d.isFavorite)
             .sort((a, b) => (a.favoritesOrder ?? 0) - (b.favoritesOrder ?? 0))
             .map(d => ({
               value: d.guid,
-              label: d.title.includes(DefaultDashboardName) ? d.title.replace(DefaultDashboardName, t(['defaultDashboardName'])) : d.title,
+              label: d.title,
               useTemplate: true
             }));
           options.push({ value: 'dashboardsDropdown', label: 'dashboards dropdown', useTemplate: true, disabled: true });
@@ -58,6 +70,28 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
       ),
       shareReplay(1)
     );
+
+    allDashboards$
+      .pipe(
+        mapWith(
+          () => this.lastSelectedDashboard$.pipe(take(1)),
+          (dashboards, lastSelectedDashboard) => ({ dashboards, lastSelectedDashboard })
+        ),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(({ dashboards, lastSelectedDashboard }) => {
+        const selectedDashboard: Dashboard = dashboards.find((d: Dashboard) => d.isSelected)!;
+        const updatedLastSelectedDashboard: Dashboard | undefined = dashboards.find(d => d.guid === lastSelectedDashboard?.guid);
+
+        if (!updatedLastSelectedDashboard || updatedLastSelectedDashboard.isFavorite) {
+          this.lastSelectedDashboard$.next(dashboards.find(d => !d.isFavorite) ?? null);
+        }
+
+        if (selectedDashboard.guid !== updatedLastSelectedDashboard?.guid && !selectedDashboard.isFavorite) {
+          this.lastSelectedDashboard$.next(selectedDashboard);
+        }
+
+      });
 
     this.favoriteDashboards$
       .pipe(
