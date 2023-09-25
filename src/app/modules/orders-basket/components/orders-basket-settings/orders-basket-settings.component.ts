@@ -44,7 +44,7 @@ export class OrdersBasketSettingsComponent extends WidgetSettingsBaseComponent<O
   }
 
   get showCopy(): boolean {
-    return false;
+    return true;
   }
 
   ngOnInit(): void {

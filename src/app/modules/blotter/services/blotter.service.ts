@@ -18,7 +18,10 @@ import { BlotterSettings } from '../models/blotter-settings.model';
 import {Position} from "../../../shared/models/positions/position.model";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
-import { RepoTrade } from "../../../shared/models/trades/trade.model";
+import {
+  RepoTrade,
+  Trade
+} from "../../../shared/models/trades/trade.model";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 
@@ -59,6 +62,40 @@ export class BlotterService {
 
   getTrades(settings: BlotterSettings) {
     return this.portfolioSubscriptionsService.getTradesSubscription(settings.portfolio, settings.exchange);
+  }
+
+  getTradesHistory(settings: BlotterSettings, options?: Partial<{from: string | null, limit: number | null}>): Observable<Trade[] | null> {
+    let params: any = {
+      descending: true
+    };
+
+    if(options) {
+      if(options.limit != null) {
+        params.limit = options.limit;
+      }
+
+      if(options.from) {
+        params.from = options.from;
+      }
+    }
+    return this.http.get<Trade[]>(
+      `${environment.apiUrl}/md/stats/${settings.exchange}/${settings.portfolio}/history/trades`,
+      {
+        params
+      }
+    ).pipe(
+      catchHttpError<Trade[] | null>(null, this.errorHandler),
+      map(trades => {
+        if (!trades) {
+          return trades;
+        }
+
+        return trades.map(t => ({
+          ...t,
+          date: new Date(t.date)
+        }));
+      })
+    );
   }
 
   getRepoTrades(settings: BlotterSettings): Observable<RepoTrade[]> {

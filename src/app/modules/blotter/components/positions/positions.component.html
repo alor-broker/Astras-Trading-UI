@@ -56,7 +56,7 @@
         </tr>
         </thead>
         <tbody>
-        <ng-template let-pos nz-virtual-scroll>
+          <ng-template let-pos nz-virtual-scroll>
           <tr (click)="selectInstrument(pos.symbol, pos.exchange)">
             <td>
               <a *ngIf="abs(pos.qtyTFutureBatch) > 0"
@@ -107,18 +107,17 @@
           </tr>
         </ng-template>
         </tbody>
+        <ng-template #footer>
+          <div class="export-button-container" *transloco="let tCommon; scope: 'blotter/blotter-common'">
+            <button nz-button nzType="link" *ngIf="canExport(nzTable.data)" (click)="exportToFile(nzTable.data)">
+              <i nz-icon nzType="download"></i>
+              {{tCommon('blotterBlotterCommon.exportToFile')}}
+            </button>
+          </div>
+        </ng-template>
       </nz-table>
     </ng-container>
   </div>
-
-  <ng-template #footer>
-    <div class="export-button-container" *transloco="let tCommon; scope: 'blotter/blotter-common'">
-      <button (click)="exportToFile()" *ngIf="canExport" nz-button nzType="link">
-        <i nz-icon nzType="download"></i>
-        {{tCommon('blotterBlotterCommon.exportToFile')}}
-      </button>
-    </div>
-  </ng-template>
 
   <nz-dropdown-menu #searchMenu="nzDropdownMenu">
     <ats-table-filter (filterChange)="filterChange($event)" [columns]="listOfColumns"></ats-table-filter>
