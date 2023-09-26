@@ -115,7 +115,8 @@ interface ChartState {
 @Component({
   selector: 'ats-tech-chart',
   templateUrl: './tech-chart.component.html',
-  styleUrls: ['./tech-chart.component.less']
+  styleUrls: ['./tech-chart.component.less'],
+  providers: [TechChartDatafeedService]
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input({required: true})
