@@ -8,11 +8,21 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { BehaviorSubject, delay, filter, Observable, shareReplay, take, tap } from "rxjs";
+import {
+  BehaviorSubject,
+  delay,
+  filter,
+  fromEvent,
+  Observable,
+  shareReplay,
+  take,
+  tap,
+  withLatestFrom
+} from "rxjs";
 import { Dashboard, DefaultDashboardName } from "../../../../shared/models/dashboard/dashboard.model";
 import { NzSegmentedOption } from "ng-zorro-antd/segmented/types";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { map } from "rxjs/operators";
+import { map, startWith } from "rxjs/operators";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
@@ -85,13 +95,10 @@ export class DashboardsPanelComponent implements OnInit, AfterViewInit, OnDestro
 
     allDashboards$
       .pipe(
-        mapWith(
-          () => this.lastSelectedDashboard$.pipe(take(1)),
-          (dashboards, lastSelectedDashboard) => ({ dashboards, lastSelectedDashboard })
-        ),
+        withLatestFrom(this.lastSelectedDashboard$),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(({ dashboards, lastSelectedDashboard }) => {
+      .subscribe(([ dashboards, lastSelectedDashboard ]) => {
         const selectedDashboard: Dashboard = dashboards.find((d: Dashboard) => d.isSelected)!;
         const updatedLastSelectedDashboard: Dashboard | undefined = dashboards.find(d => d.guid === lastSelectedDashboard?.guid);
 
@@ -117,18 +124,23 @@ export class DashboardsPanelComponent implements OnInit, AfterViewInit, OnDestro
     this.dashboardsDropdown.changes
       .pipe(
         map(q => q.first),
+        startWith(this.dashboardsDropdown.first),
         filter((el): el is NzDropDownDirective => !!el),
+        mapWith(
+          el => fromEvent(el.elementRef.nativeElement, 'mouseenter'),
+          (el) => el
+        ),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(dropdown => {
-        dropdown.elementRef.nativeElement.addEventListener('mouseenter', () => {
-          dropdown.nzVisibleChange.emit(true);
-        });
+        dropdown.nzVisibleChange.emit(true);
     });
   }
 
   ngOnDestroy() {
     this.selectedDashboardIndex$.complete();
+    this.isDashboardSelectionMenuVisible$.complete();
+    this.lastSelectedDashboard$.complete();
   }
 
   changeDashboardSelectionMenuVisibility(value: boolean) {
