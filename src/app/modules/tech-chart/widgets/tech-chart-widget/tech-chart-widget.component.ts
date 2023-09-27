@@ -3,27 +3,26 @@ import {
   Input,
   OnInit
 } from '@angular/core';
-import { TechChartDatafeedService } from "../../services/tech-chart-datafeed.service";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { Observable } from 'rxjs';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
-import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { TerminalSettingsService } from 'src/app/shared/services/terminal-settings.service';
 
 @Component({
   selector: 'ats-tech-chart-widget',
   templateUrl: './tech-chart-widget.component.html',
-  styleUrls: ['./tech-chart-widget.component.less'],
-  providers: [TechChartDatafeedService]
+  styleUrls: ['./tech-chart-widget.component.less']
 })
 export class TechChartWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 
