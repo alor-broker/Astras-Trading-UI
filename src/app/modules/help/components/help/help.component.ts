@@ -26,7 +26,7 @@ export class HelpComponent implements OnInit {
         map(help => ({
           ...help,
           markdown: help.markdown.replace(
-            '.gitbook/assets/',
+            /.gitbook\/assets\//g,
             'https://github.com/alor-broker/Astras-Docs/raw/main/.gitbook/assets/'
           )
         }))
