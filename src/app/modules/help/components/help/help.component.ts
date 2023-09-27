@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { HelpResponse } from '../../models/help-response.model';
 import { HelpService } from '../../services/help.service';
 import { environment } from 'src/environments/environment';
+import { map } from "rxjs/operators";
 
 @Component({
   selector: 'ats-help',
@@ -20,7 +21,16 @@ export class HelpComponent implements OnInit {
   constructor(private service: HelpService) { }
 
   ngOnInit() {
-    this.help$ = this.service.getHelp(this.name);
+    this.help$ = this.service.getHelp(this.name)
+      .pipe(
+        map(help => ({
+          ...help,
+          markdown: help.markdown.replace(
+            '.gitbook/assets/',
+            'https://github.com/alor-broker/Astras-Docs/raw/main/.gitbook/assets/'
+          )
+        }))
+      );
   }
 
 }
