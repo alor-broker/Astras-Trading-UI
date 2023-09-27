@@ -4,5 +4,6 @@
   "exchangeLabel": "Exchange",
   "advanced": "Advanced",
   "instrumentGroupLabel": "Trading mode",
-  "instrumentGroupError": "Select trading mode"
+  "instrumentGroupError": "Select trading mode",
+  "showTradesLabel": "Show trades"
 }

@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { TerminalSettingsService } from 'src/app/shared/services/terminal-settings.service';
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-tech-chart-widget',
@@ -48,7 +49,8 @@ export class TechChartWidgetComponent implements OnInit {
       this.widgetInstance,
       'TechChartSettings',
       settings => ({
-        ...settings
+        ...settings,
+        showTrades: getValueOrDefault(settings.showTrades, false)
       }),
       this.dashboardContextService,
       this.widgetSettingsService

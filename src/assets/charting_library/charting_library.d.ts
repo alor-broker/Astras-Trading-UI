@@ -1,5 +1,5 @@
 /**
- * TradingView Charting Library
+ * TradingView Advanced Charts
  * @packageDocumentation
  * @module Charting Library
  */
@@ -8,6 +8,7 @@
 declare const dateFormatFunctions: {
 	readonly "dd MMM 'yy": (date: Date, local: boolean) => string;
 	readonly "MMM dd, yyyy": (date: Date, local: boolean) => string;
+	readonly "MMM yyyy": (date: Date, local: boolean) => string;
 	readonly "MMM dd": (date: Date, local: boolean) => string;
 	readonly "dd MMM": (date: Date, local: boolean) => string;
 	readonly "yyyy-MM-dd": (date: Date, local: boolean) => string;
@@ -21,7 +22,6 @@ declare const dateFormatFunctions: {
 	readonly "MM/dd/yy": (date: Date, local: boolean) => string;
 	readonly "MM/dd/yyyy": (date: Date, local: boolean) => string;
 };
-
 declare enum HHistDirection {
 	LeftToRight = "left_to_right",
 	RightToLeft = "right_to_left"
@@ -244,6 +244,7 @@ export declare const enum ActionId {
 	ChartSourceVisualOrderBringToFront = "Chart.Source.VisualOrder.BringToFront",
 	ChartSourceVisualOrderSendBackward = "Chart.Source.VisualOrder.SendBackward",
 	ChartSourceVisualOrderSendToBack = "Chart.Source.VisualOrder.SendToBack",
+	ChartSourceResetInputPoints = "Chart.Source.ResetInputPoints",
 	ChartTimeScaleReset = "Chart.TimeScale.Reset",
 	ChartUndo = "Chart.Undo",
 	ChartSourceIntervalsVisibility = "Chart.Source.IntervalsVisibility",
@@ -271,7 +272,10 @@ export declare const enum ActionId {
 	TradingNoOverlapMode = "Trading.NoOverlapMode",
 	WatchlistAddSymbol = "Watchlist.AddSymbol",
 	WatchlistAddSymbolToCompare = "Watchlist.AddSymbolToCompare",
-	WatchlistAddSelectedSymbolsToCompare = "Watchlist.AddSelectedSymbolsToCompare "
+	WatchlistAddSelectedSymbolsToCompare = "Watchlist.AddSelectedSymbolsToCompare ",
+	WatchlistRenameSection = "Watchlist.RenameSection",
+	WatchlistRemoveSection = "Watchlist.RemoveSection",
+	WatchlistAddSymbolToSection = "Watchlist.AddSymbolToSection"
 }
 export declare const enum ChartStyle {
 	Bar = 0,
@@ -444,6 +448,7 @@ export declare const enum StandardFormatterName {
 	DateOrDateTime = "dateOrDateTime",
 	Default = "default",
 	Fixed = "fixed",
+	FixedInCurrency = "fixedInCurrency",
 	VariablePrecision = "variablePrecision",
 	FormatQuantity = "formatQuantity",
 	FormatPrice = "formatPrice",
@@ -621,6 +626,7 @@ export interface AccountManagerColumnBase<TFormatterName extends StandardFormatt
 	 * | `StandardFormatterName.Date` | Displays the date or time. |
 	 * | `StandardFormatterName.DateOrDateTime` | Displays the date or date and time. This formatter accepts an `{dateOrDateTime: number, hasTime: boolean}` object. If `hasTime` is set to `true` then the date and time are displayed. Otherwise only the date is displayed.|
 	 * | `StandardFormatterName.Fixed` | Displays a number with 2 decimal places. |
+	 * | `StandardFormatterName.FixedInCurrency` | Displays a number with 2 decimal places and adds currency. |
 	 * | `StandardFormatterName.FormatPrice` | Displays symbol's price. |
 	 * | `StandardFormatterName.FormatQuantity` | Displays an integer or floating point quantity, separates thousands groups with a space. |
 	 * | `StandardFormatterName.FormatPriceForexSup` | The same as `formatPrice`, but it makes the last character of the price superscripted. It works only if instrument type is set to `forex`.|
@@ -930,6 +936,31 @@ export interface AdditionalSymbolInfoField {
 	propertyName: string;
 }
 /**
+ * Override properties for the Anchoredvwap drawing tool.
+ */
+export interface AnchoredvwapLineToolOverrides {
+	/** Default value: `hlc3` */
+	"linetoolanchoredvwap.inputs.source": string;
+	/** Default value: `0` */
+	"linetoolanchoredvwap.inputs.start_time": number;
+	/** Default value: `default` */
+	"linetoolanchoredvwap.precision": string;
+	/** Default value: `#1e88e5` */
+	"linetoolanchoredvwap.styles.VWAP.color": string;
+	/** Default value: `15` */
+	"linetoolanchoredvwap.styles.VWAP.display": number;
+	/** Default value: `0` */
+	"linetoolanchoredvwap.styles.VWAP.linestyle": number;
+	/** Default value: `1` */
+	"linetoolanchoredvwap.styles.VWAP.linewidth": number;
+	/** Default value: `0` */
+	"linetoolanchoredvwap.styles.VWAP.plottype": number;
+	/** Default value: `false` */
+	"linetoolanchoredvwap.styles.VWAP.trackPrice": boolean;
+	/** Default value: `0` */
+	"linetoolanchoredvwap.styles.VWAP.transparency": number;
+}
+/**
  * Override properties for the Arc drawing tool.
  */
 export interface ArcLineToolOverrides {
@@ -1136,7 +1167,7 @@ export interface Bar {
 	/** Bar time.
 	 * Amount of **milliseconds** since Unix epoch start in **UTC** timezone.
 	 * `time` for daily, weekly, and monthly bars is expected to be a trading day (not session start day) at 00:00 UTC.
-	 * Charting Library adjusts time according to `session` from {@link LibrarySymbolInfo}.
+	 * The library adjusts time according to `session` from {@link LibrarySymbolInfo}.
 	 */
 	time: number;
 	/** Opening price */
@@ -1429,7 +1460,7 @@ export interface BrokerConfigFlags {
 	supportModifyTrailingStop?: boolean;
 	/**
 	 * Broker supports margin.
-	 * If the broker supports margin it should call `marginAvailableUpdate` ({@link IBrokerConnectionAdapterHost.marginAvailableUpdate}) when the Trading Terminal subscribes using `subscribeMarginAvailable` ({@link IBrokerWithoutRealtime.subscribeMarginAvailable}).
+	 * If the broker supports margin it should call `marginAvailableUpdate` ({@link IBrokerConnectionAdapterHost.marginAvailableUpdate}) when the Trading Platform subscribes using `subscribeMarginAvailable` ({@link IBrokerWithoutRealtime.subscribeMarginAvailable}).
 	 * @default false
 	 */
 	supportMargin?: boolean;
@@ -1551,28 +1582,19 @@ export interface BrokerConfigFlags {
 	 * @default false
 	 */
 	requiresFIFOCloseTrades?: boolean;
-	/**
-	 * @deprecated
-	 */
-	supportBrackets?: boolean;
-	/**
-	 * Use supportModifyOrderPrice, supportEditAmount and supportModifyBrackets instead.
-	 * @deprecated
-	 */
-	supportModifyOrder?: boolean;
 }
 export interface BrokerCustomUI {
 	/**
 	 * Shows standard Order Ticket to create or modify an order and executes handler if Buy/Sell/Modify is pressed.
 	 * @param  {OrderTemplate|Order} order - order to be placed or modified
-	 * @param  {OrderTicketFocusControl} focus? - Control to focus on when dialog is opened
+	 * @param  {OrderTicketFocusControl} [focus] - Control to focus on when dialog is opened
 	 */
 	showOrderDialog?: (order: OrderTemplate | Order, focus?: OrderTicketFocusControl) => Promise<boolean>;
 	/**
 	 * Shows the Position Dialog
 	 * @param  {Position|Trade} position - position to be placed or modified
 	 * @param  {Brackets} brackets - brackets for the position
-	 * @param  {OrderTicketFocusControl} focus? - Control to focus on when dialog is opened
+	 * @param  {OrderTicketFocusControl} [focus] - Control to focus on when dialog is opened
 	 */
 	showPositionDialog?: (position: Position | Trade, brackets: Brackets, focus?: OrderTicketFocusControl) => Promise<boolean>;
 	/**
@@ -1807,7 +1829,7 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 */
 	"paneProperties.separatorColor": string;
 	/**
-	 * Study legend input values visiblity.
+	 * Study legend input values visibility.
 	 *
 	 * @default true
 	 */
@@ -1819,7 +1841,7 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 */
 	"paneProperties.legendProperties.showStudyTitles": boolean;
 	/**
-	 * Study legend value visibility.
+	 * Toggle the visibility for all studies legend values.
 	 *
 	 * @default true
 	 */
@@ -2828,6 +2850,30 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 * @default 50
 	 */
 	"mainSeriesProperties.baselineStyle.baseLevelPercentage": number;
+	/**
+	 * Main series Line With Markers style Line Color.
+	 *
+	 * @default '#2962FF'
+	 */
+	"mainSeriesProperties.lineWithMarkersStyle.color": string;
+	/**
+	 * Main series Line With Markers style Line style.
+	 *
+	 * @default LineStyle.Solid
+	 */
+	"mainSeriesProperties.lineWithMarkersStyle.linestyle": OverrideLineStyle;
+	/**
+	 * Main series Line With Markers style Line width.
+	 *
+	 * @default 2
+	 */
+	"mainSeriesProperties.lineWithMarkersStyle.linewidth": number;
+	/**
+	 * Main series Line With Markers style Price Source.
+	 *
+	 * @default 'close'
+	 */
+	"mainSeriesProperties.lineWithMarkersStyle.priceSource": string;
 }
 /**
  * A chart template.
@@ -2867,14 +2913,12 @@ export interface ChartTemplateContent {
 }
 export interface ChartingLibraryWidgetConstructor {
 	/**
-	 * Constructor for the Charting Library Widget
+	 * Constructor for the Advanced Charts Widget
 	 * @param  {ChartingLibraryWidgetOptions|TradingTerminalWidgetOptions} options - Constructor options
 	 */
 	new (options: ChartingLibraryWidgetOptions | TradingTerminalWidgetOptions): IChartingLibraryWidget;
 }
 export interface ChartingLibraryWidgetOptions {
-	/** @deprecated */
-	container_id?: string;
 	/**
 	 * The `container` can either be a reference to an attribute of a DOM element inside which the iframe with the chart will be placed or the `HTMLElement` itself.
 	 *
@@ -3001,7 +3045,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	library_path?: string;
 	/**
-	 * Locale to be used by Charting Library. See [Localization](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Localization.md) section for details.
+	 * Locale to be used by the library. See [Localization](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Localization.md) section for details.
 	 *
 	 * ```javascript
 	 * locale: 'en',
@@ -3045,7 +3089,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	studies_access?: AccessList;
 	/**
-	 * Maximum amount of studies on the chart of a multichart layout. Minimum value is 2.
+	 * Maximum amount of studies allowed at one time within the layout. Minimum value is 2.
 	 *
 	 * ```javascript
 	 * study_count_limit: 5,
@@ -3053,7 +3097,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	study_count_limit?: number;
 	/**
-	 * A threshold delay in milliseconds that is used to reduce the number of symbol search requests when the user is typing a name of a symbol in the search box.
+	 * A threshold delay in milliseconds that is used to reduce the number of search requests when the user enters the symbol name in the [Symbol Search](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Symbol-Search.md).
 	 *
 	 * ```javascript
 	 * symbol_search_request_delay: 1000,
@@ -3173,7 +3217,10 @@ export interface ChartingLibraryWidgetOptions {
 	 * ```
 	 */
 	studies_overrides?: StudyOverrides;
-	/** Alias for {@link ChartingLibraryWidgetOptions.custom_formatters} */
+	/**
+	 * @deprecated
+	 * Alias for {@link ChartingLibraryWidgetOptions.custom_formatters}
+	 */
 	customFormatters?: CustomFormatters;
 	/**
 	 * Custom formatters for adjusting the display format of price, date, and time values.
@@ -3256,7 +3303,7 @@ export interface ChartingLibraryWidgetOptions {
 	custom_formatters?: CustomFormatters;
 	/**
 	 * Override values for the default widget properties
-	 * You can override most of the Charting Library properties (which also may be edited by user through UI)
+	 * You can override most of the properties (which also may be edited by user through UI)
 	 * using `overrides` parameter of Widget constructor. `overrides` is supposed to be an object.
 	 * The keys of this object are the names of overridden properties.
 	 * The values of these keys are the new values of the properties.
@@ -3283,7 +3330,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	snapshot_url?: string;
 	/**
-	 * List of visible timeframes that can be selected at the bottom of the chart. See [this topic](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Time-Frames.md) to learn more about timeframes. Timeframe is an object containing following properties:
+	 * List of visible time frames that can be selected at the bottom of the chart. See [Time frame toolbar](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Time-Scale.md#time-frame-toolbar) for more information. Time frame is an object containing the following properties:
 	 *
 	 * Example:
 	 *
@@ -3457,7 +3504,7 @@ export interface ChartingLibraryWidgetOptions {
 	 * For example, if you want to rename "Trend Line" shape to "Line Shape", then you can do something like this:
 	 *
 	 * ```javascript
-	 * custom_translate_function: (key, options) => {
+	 * custom_translate_function: (key, options, isTranslated) => {
 	 *     if (key === 'Trend Line') {
 	 *         // patch the title of trend line
 	 *         return 'Line Shape';
@@ -3469,11 +3516,11 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	custom_translate_function?: CustomTranslateFunction;
 	/**
-	 * Use this property to set a function to override the symbol input from symbol search dialogs.
+	 * Use this property to set a function to override the symbol input from the [Symbol Search](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Symbol-Search.md).
 	 *
-	 * For example for you may want to get additional input from the user before deciding which symbol should be resolved.
+	 * For example, you may want to get additional input from the user before deciding which symbol should be resolved.
 	 *
-	 * The function should take two parameters: a `string` of input from the symbol search and a optional search result item. It should return a `Promise` that resolves with a symbol ticker and a human friendly symbol name.
+	 * The function should take two parameters: a `string` of input from the Symbol Search and a optional search result item. It should return a `Promise` that resolves with a symbol ticker and a human-friendly symbol name.
 	 *
 	 * **NOTE:** This override is not called when adding a symbol to the watchlist.
 	 *
@@ -3624,8 +3671,27 @@ export interface ContextMenuOptions {
 	 *
 	 * You can filter out, add yours and re-order items.
 	 *
-	 * The library will call your function each time it wants to display a context menu and with provide a list of items to display.
+	 * The library will call your function each time it wants to display a context menu and will provide a list of items to display.
 	 * This function should return an array of items to display.
+	 *
+	 * Example:
+	 *
+	 * ```js
+	 * context_menu: {
+	 *   items_processor: function(items, actionsFactory, params) {
+	 *      console.log(`Menu name is: ${params.menuName}`);
+	 *      const newItem = actionsFactory.createAction({
+	 *         actionId: 'hello-world',
+	 *         label: 'Say Hello',
+	 *         onExecute: function() {
+	 *            alert('Hello World');
+	 *         },
+	 *      });
+	 *      items.unshift(newItem);
+	 *      return Promise.resolve(items);
+	 *   },
+	 * },
+	 * ```
 	 */
 	items_processor?: ContextMenuItemsProcessor;
 	/**
@@ -3722,6 +3788,16 @@ export interface CreateContextMenuParams {
 		type: "groupOfShapes";
 		/** id */
 		id: string | null;
+	} | {
+		/** Trading position */
+		type: "position";
+		/** id */
+		id: string | null;
+	} | {
+		/** Trading order */
+		type: "order";
+		/** id */
+		id: string | null;
 	};
 }
 export interface CreateHTMLButtonOptions {
@@ -3753,7 +3829,9 @@ export interface CreateShapeOptions<TOverrides extends object> extends CreateSha
 	 */
 	shape?: "arrow_up" | "arrow_down" | "flag" | "vertical_line" | "horizontal_line" | "long_position" | "short_position" | "icon" | "emoji" | "sticker" | "anchored_text" | "anchored_note";
 	/**
-	 * An optional study ID of the owner study.
+	 * An optional study ID to be attached to the owner study.
+	 * It does not mean that both the owner and all possible associated IDs will behave in tandem.
+	 * Their behavior will be independent.
 	 */
 	ownerStudyId?: EntityId;
 }
@@ -3867,6 +3945,46 @@ export interface CrossHairMovedEventParams {
 	 * The price coordinate of the crosshair.
 	 */
 	price: number;
+	/**
+	 * Series and study values at the crosshair position. The object keys are study or series IDs, and the object value are study or series values.
+	 * The ID for the main series will always be the string `'_seriesId'`.
+	 */
+	entityValues?: Record<EntityId, CrossHairMovedEventSource>;
+	/**
+	 * X coordinate of the crosshair relative to the left edge of the element containing the library.
+	 */
+	offsetX?: number;
+	/**
+	 * Y coordinate of the crosshair relative to the top edge of the element containing the library.
+	 */
+	offsetY?: number;
+}
+/**
+ * Data source (a series or a study) values for a crosshair position.
+ */
+export interface CrossHairMovedEventSource {
+	/**
+	 * `true` if the source is hovered by the crosshair `false` otherwise.
+	 */
+	isHovered: boolean;
+	/**
+	 * The title of the source. Matches the title shown in the data window.
+	 */
+	title: string;
+	/**
+	 * The values of the source. Matches the values shown in the data window.
+	 */
+	values: CrossHairMovedEventSourceValue[];
+}
+export interface CrossHairMovedEventSourceValue {
+	/**
+	 * Value title. E.g. 'open', 'high', 'change', etc. Matches the title shown in the data window.
+	 */
+	title: string;
+	/**
+	 * The value formatted as a string. Matches the value shown in the data window.
+	 */
+	value: string;
 }
 /**
  * Override properties for the Crossline drawing tool.
@@ -3976,7 +4094,7 @@ export interface CustomFormatters {
 	studyFormatterFactory?: CustomStudyFormatterFactory;
 }
 export interface CustomIndicator {
-	/** Your study name, it will be used internally by the Charting Library */
+	/** Your study name, it will be used internally by the library */
 	readonly name: string;
 	/**
 	 * The metainfo field is designed to contain the main info about the custom study.
@@ -4113,6 +4231,19 @@ export interface CustomTimezoneInfo {
 	title: string;
 }
 /**
+ * Additional translation options
+ */
+export interface CustomTranslateOptions {
+	/** Plural/s of the phrase */
+	plural?: string | string[];
+	/** Count of the phrase */
+	count?: number;
+	/** Context of the phrase */
+	context?: string;
+	/** Replacements object */
+	replace?: Record<string, string>;
+}
+/**
  * Override properties for the Cypherpattern drawing tool.
  */
 export interface CypherpatternLineToolOverrides {
@@ -4159,6 +4290,10 @@ export interface DOMLevel {
 	/** Volume for DOM level */
 	volume: number;
 }
+/**
+ * Datafeed configuration data.
+ * Pass the resulting array of properties as a parameter to {@link OnReadyCallback} of the [`onReady`](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Datafeed-API#onready) method.
+ */
 export interface DatafeedConfiguration {
 	/**
 	 * List of exchange descriptors.
@@ -4212,7 +4347,7 @@ export interface DatafeedConfiguration {
 	 */
 	symbols_types?: DatafeedSymbolType[];
 	/**
-	 * Set it if you want to group symbols in the symbol search.
+	 * Set it if you want to group symbols in the [Symbol Search](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Symbol-Search.md).
 	 * Represents an object where keys are symbol types {@link SymbolType} and values are regular expressions (each regular expression should divide an instrument name into 2 parts: a root and an expiration).
 	 *
 	 * Sample:
@@ -4223,6 +4358,7 @@ export interface DatafeedConfiguration {
 	 * }
 	 * ```
 	 * It will be applied to the instruments with futures and stock as a type.
+	 * Refer to [Symbol grouping](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Symbol-Search.md#symbol-grouping) for more information.
 	 */
 	symbols_grouping?: Record<string, string>;
 }
@@ -4258,7 +4394,7 @@ export interface DatafeedQuoteValues {
 	volume?: number;
 	/** Original name */
 	original_name?: string;
-	[valueName: string]: string | number | undefined;
+	[valueName: string]: string | number | string[] | number[] | undefined;
 }
 export interface DatafeedSymbolType {
 	/** Name of the symbol type */
@@ -4542,6 +4678,8 @@ export interface ExportDataOptions {
 	includeTime?: boolean;
 	/**
 	 * If true then each exported data item will include a user time value.
+	 * User time is the time that user sees on the chart.
+	 * This time depends on the selected time zone and resolution.
 	 *
 	 * @default false
 	 */
@@ -6867,26 +7005,26 @@ export interface IBrokerCommon {
 	 */
 	connectionStatus(): ConnectionStatus;
 	/**
-	 * Called by Trading Terminal to request orders
+	 * Called by Trading Platform to request orders
 	 */
 	orders(): Promise<Order[]>;
 	/**
-	 * This method is called by the Trading Terminal to request orders history.
+	 * This method is called by the Trading Platform to request orders history.
 	 * It is expected that returned orders will have a final status (`rejected`, `filled`, `cancelled`).
 	 *
 	 * This method is optional. If you don't support orders history, please set `supportOrdersHistory` flag to `false`.
 	 */
 	ordersHistory?(): Promise<Order[]>;
 	/**
-	 * Called by Trading Terminal to request positions
+	 * Called by Trading Platform to request positions
 	 */
 	positions?(): Promise<Position[]>;
 	/**
-	 * Called by Trading Terminal to request trades
+	 * Called by Trading Platform to request trades
 	 */
 	trades?(): Promise<Trade[]>;
 	/**
-	 * Called by Trading Terminal to request executions for the specified symbol
+	 * Called by Trading Platform to request executions for the specified symbol
 	 * @param  {string} symbol - symbol identifier
 	 */
 	executions(symbol: string): Promise<Execution[]>;
@@ -6934,21 +7072,11 @@ export interface IBrokerConnectionAdapterFactory {
 	createWatchedValue<T>(value?: T): IWatchedValue<T>;
 	/**
 	 * Creates a price formatter.
-	 * @param priceScale - defines the number of decimal places. It is `10^number-of-decimal-places`. If a price is displayed as `1.01`, `pricescale` is `100`; If it is displayed as `1.005`, `pricescale` is `1000`.
-	 * @param minMove - the amount of price precision steps for 1 tick. For example, since the tick size for U.S. equities is `0.01`, `minmov` is 1. But the price of the E-mini S&P futures contract moves upward or downward by `0.25` increments, so the `minmov` is `25`.
-	 * @param fractional - for common prices is `false` or it can be skipped.
-	 * @param minMove2 - for common prices is `0` or it can be skipped.
-	 * @param variableMinTick - for common prices is string (for example, `0.01 10 0.02 25 0.05`) or it can be skipped.
-	 *
-	 * Example:
-	 * 1. Typical stock with `0.01` price increment: `minmov = 1, pricescale = 100, minmove2 = 0`.
-	 * 2. If `minmov = 1, pricescale = 100, minmove2 = 0, variableMinTick = "0.01 10 0.02 25 0.05"`:
-	 *
-	 * - for `price = 9`: `minmov = 1, pricescale = 100, minmove2 = 0`.
-	 * - for `price = 13`: `minmov = 2, pricescale = 100, minmove2 = 0`.
-	 * - for `price = 27`: `minmov = 5, pricescale = 100, minmove2 = 0`.
-	 *
-	 * For more information on fractional prices, see this [article](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology#price-format)
+	 * @param priceScale - Defines the number of decimal places. It is `10^number-of-decimal-places`. If a price is displayed as `1.01`, `pricescale` is `100`; If it is displayed as `1.005`, `pricescale` is `1000`.
+	 * @param minMove - The amount of price precision steps for 1 tick. For example, since the tick size for U.S. equities is `0.01`, `minmov` is 1. But the price of the E-mini S&P futures contract moves upward or downward by `0.25` increments, so the `minmov` is `25`.
+	 * @param fractional - For common prices, is `false` or it can be skipped. For more information on fractional prices, refer to [Fractional format](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology.md#fractional-format).
+	 * @param minMove2 - For common prices, is `0` or it can be skipped.
+	 * @param variableMinTick - For common prices, is `string` (for example, `0.01 10 0.02 25 0.05`) or it can be skipped. For more information, refer to [Variable tick size](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology.md#variable-tick-size).
 	 */
 	createPriceFormatter(priceScale?: number, minMove?: number, fractional?: boolean, minMove2?: number, variableMinTick?: string): IPriceFormatter;
 }
@@ -6967,23 +7095,23 @@ export interface IBrokerConnectionAdapterHost {
 	defaultFormatter(symbol: string, alignToMinMove: boolean): Promise<INumberFormatter>;
 	/**
 	 * Generates and returns a number formatter with the desired decimal places
-	 * @param  {number} decimalPlaces? - decimal places
+	 * @param  {number} [decimalPlaces] - decimal places
 	 */
 	numericFormatter(decimalPlaces: number): Promise<INumberFormatter>;
 	/**
 	 * Generates and returns a quantity formatter with the desired decimal places
-	 * @param  {number} decimalPlaces? - decimal places
+	 * @param  {number} [decimalPlaces] - decimal places
 	 */
 	quantityFormatter(decimalPlaces?: number): Promise<INumberFormatter>;
 	/**
 	 * Provides default buy/sell, show properties actions to be returned as a default by {@link IBrokerCommon.chartContextMenuActions}.
 	 * @param  {TradeContext} context - trade context
-	 * @param  {DefaultContextMenuActionsParams} params? - optional parameters
+	 * @param  {DefaultContextMenuActionsParams} [params] - optional parameters
 	 */
 	defaultContextMenuActions(context: TradeContext, params?: DefaultContextMenuActionsParams): Promise<ActionMetaInfo[]>;
 	/**
 	 * Provides default dropdown list of actions. You can use default actions in {@link IBrokerConnectionAdapterHost.setButtonDropdownActions}
-	 * @param  {Partial<DefaultDropdownActionsParams>} options? - options for the dropdown menu actions
+	 * @param  {Partial<DefaultDropdownActionsParams>} [options] - options for the dropdown menu actions
 	 */
 	defaultDropdownMenuActions(options?: Partial<DefaultDropdownActionsParams>): ActionMetaInfo[];
 	/** Returns whether the buy/sell buttons are visible or not. */
@@ -7019,7 +7147,7 @@ export interface IBrokerConnectionAdapterHost {
 	/**
 	 * Call this method when a position is added or changed.
 	 * @param  {Position} position - position which was added or changed
-	 * @param  {boolean} isHistoryUpdate? - whether the change is a history update
+	 * @param  {boolean} [isHistoryUpdate] - whether the change is a history update
 	 */
 	positionUpdate(position: Position, isHistoryUpdate?: boolean): void;
 	/**
@@ -7032,7 +7160,7 @@ export interface IBrokerConnectionAdapterHost {
 	/**
 	 * Call this method when a trade is added or changed.
 	 * @param  {Trade} trade - updated trade
-	 * @param  {boolean} isHistoryUpdate? - whether the change is a history update
+	 * @param  {boolean} [isHistoryUpdate] - whether the change is a history update
 	 */
 	tradeUpdate(trade: Trade, isHistoryUpdate?: boolean): void;
 	/**
@@ -7084,7 +7212,7 @@ export interface IBrokerConnectionAdapterHost {
 	 * Call this method when a broker connection has received a margin available update.
 	 * This method is required by the standard Order Dialog to display the margin meter.
 	 * This method should be used when `supportMargin` flag is set in `configFlags`.
-	 * The Trading Terminal subscribes to margin available updates using {@link IBrokerWithoutRealtime.subscribeMarginAvailable}.
+	 * The Trading Platform subscribes to margin available updates using {@link IBrokerWithoutRealtime.subscribeMarginAvailable}.
 	 * @param  {number} marginAvailable - updated available margin
 	 */
 	marginAvailableUpdate(marginAvailable: number): void;
@@ -7183,18 +7311,18 @@ export interface IBrokerConnectionAdapterHost {
 	 * Displays a confirmation dialog to a user and returns a Promise to the result.
 	 * @param  {string} title - title of the confirmation dialog
 	 * @param  {string|string[]} content - content for the dialog
-	 * @param  {string} mainButtonText? - text for the main button (`true` result)
-	 * @param  {string} cancelButtonText? - text for the cancel button (`false` result)
-	 * @param  {boolean} showDisableConfirmationsCheckbox? - show disable confirmations checkbox within the dialog
+	 * @param  {string} [mainButtonText] - text for the main button (`true` result)
+	 * @param  {string} [cancelButtonText] - text for the cancel button (`false` result)
+	 * @param  {boolean} [showDisableConfirmationsCheckbox] - show disable confirmations checkbox within the dialog
 	 */
 	showConfirmDialog(title: string, content: string | string[], mainButtonText?: string, cancelButtonText?: string, showDisableConfirmationsCheckbox?: boolean): Promise<boolean>;
 	/**
 	 * Displays a simple confirmation dialog to a user and returns a Promise to the result.
 	 * @param  {string} title - title of the confirmation dialog
 	 * @param  {string|string[]} content - content for the dialog
-	 * @param  {string} mainButtonText? - text for the main button (`true` result)
-	 * @param  {string} cancelButtonText? - text for the cancel button (`false` result)
-	 * @param  {boolean} showDisableConfirmationsCheckbox? - show disable confirmations checkbox within the dialog
+	 * @param  {string} [mainButtonText] - text for the main button (`true` result)
+	 * @param  {string} [cancelButtonText] - text for the cancel button (`false` result)
+	 * @param  {boolean} [showDisableConfirmationsCheckbox] - show disable confirmations checkbox within the dialog
 	 */
 	showSimpleConfirmDialog(title: string, content: string | string[], mainButtonText?: string, cancelButtonText?: string, showDisableConfirmationsCheckbox?: boolean): Promise<boolean>;
 }
@@ -7224,7 +7352,7 @@ export interface IBrokerWithoutRealtime extends IBrokerCommon {
 	/**
 	 * Method is called when a user wants to place an order. Order is pre-filled with partial or complete information. This function returns an object with the order id.
 	 * @param  {PreOrder} order - order information
-	 * @param  {string} confirmId? - is passed if `supportPlaceOrderPreview` configuration flag is on.
+	 * @param  {string} [confirmId] - is passed if `supportPlaceOrderPreview` configuration flag is on.
 	 * @returns PlaceOrderResult, which should include an `orderId`
 	 */
 	placeOrder(order: PreOrder, confirmId?: string): Promise<PlaceOrderResult>;
@@ -7237,7 +7365,7 @@ export interface IBrokerWithoutRealtime extends IBrokerCommon {
 	/**
 	 * Method is called when a user wants to modify an existing order.
 	 * @param  {Order} order - order information
-	 * @param  {string} confirmId? - is passed if `supportPlaceOrderPreview` configuration flag is on.
+	 * @param  {string} [confirmId] - is passed if `supportPlaceOrderPreview` configuration flag is on.
 	 */
 	modifyOrder(order: Order, confirmId?: string): Promise<void>;
 	/**
@@ -7262,20 +7390,20 @@ export interface IBrokerWithoutRealtime extends IBrokerCommon {
 	/**
 	 * This method is called if `supportClosePosition` configuration flag is on. It allows to close the position by id.
 	 * @param  {string} positionId - position id
-	 * @param  {number} amount? - The amount is specified if `supportPartialClosePosition` is `true` and the user wants to close only part of the position.
+	 * @param  {number} [amount] - The amount is specified if `supportPartialClosePosition` is `true` and the user wants to close only part of the position.
 	 */
 	closePosition?(positionId: string, amount?: number): Promise<void>;
 	/**
 	 * This method is called if `supportCloseTrade` configuration flag is on. It allows to close the trade by id.
 	 * @param  {string} tradeId - trade id
-	 * @param  {number} amount? - The amount is specified if `supportPartialCloseTrade` is `true` and the user wants to close only part of the trade.
+	 * @param  {number} [amount] - The amount is specified if `supportPartialCloseTrade` is `true` and the user wants to close only part of the trade.
 	 */
 	closeTrade?(tradeId: string, amount?: number): Promise<void>;
 	/**
 	 * This method is called if `supportPositionBrackets` configuration flag is on. It shows a dialog that enables `take profit` and `stop loss` editing.
 	 * @param  {string} positionId - is an ID of an existing position to be modified
 	 * @param  {Brackets} brackets - new Brackets to be set for the position
-	 * @param  {CustomInputFieldsValues} customFields? - custom fields to display in the dialog
+	 * @param  {CustomInputFieldsValues} [customFields] - custom fields to display in the dialog
 	 */
 	editPositionBrackets?(positionId: string, brackets: Brackets, customFields?: CustomInputFieldsValues): Promise<void>;
 	/**
@@ -7299,10 +7427,6 @@ export interface IBrokerWithoutRealtime extends IBrokerCommon {
 	 * @param  {LeverageSetParams} leverageSetParams - `leverageSetParams` is an object similar to {@link leverageInfoParams}, but contains an additional `leverage: number` field, which holds the leverage value set by the user.
 	 */
 	previewLeverage?(leverageSetParams: LeverageSetParams): Promise<LeveragePreviewResult>;
-	/**
-	 * @deprecated Brokers should always send PL and equity updates
-	 */
-	subscribePL?(positionId: string): void;
 	/**
 	 * The method should be implemented if you use the standard Order dialog and support stop loss. Equity is used to calculate Risk in Percent.
 	 *
@@ -7340,10 +7464,6 @@ export interface IBrokerWithoutRealtime extends IBrokerCommon {
 	 */
 	unsubscribeMarginAvailable?(symbol: string): void;
 	/**
-	 * @deprecated
-	 */
-	unsubscribePL?(positionId: string): void;
-	/**
 	 * The method should be implemented if you use the standard Order dialog and support stop loss.
 	 *
 	 * Once this method is called the broker should stop providing equity updates.
@@ -7361,43 +7481,96 @@ export interface IChartWidgetApi {
 	/**
 	 * Get a subscription object for new data being loaded for the chart.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().onDataLoaded().subscribe(
+	 *     null,
+	 *     () => console.log('New history bars are loaded'),
+	 *     true
+	 * );
+	 * ```
 	 * @returns A subscription object for new data loaded for the chart.
 	 */
 	onDataLoaded(): ISubscription<() => void>;
 	/**
 	 * Get a subscription object for the chart symbol changing.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().onSymbolChanged().subscribe(null, () => console.log('The symbol is changed'));
+	 * ```
 	 * @returns A subscription object for the chart symbol changing.
 	 */
 	onSymbolChanged(): ISubscription<() => void>;
 	/**
-	 * Get a subscription object for the chart interval (resolution) changing.
+	 * Get a subscription object for the chart resolution (interval) changing. This method also allows you to track whether the chart's [date range](https://www.tradingview.com/charting-library-docs/latest/getting_started/glossary.md#date-range) is changed.
+	 * The `timeframe` argument represents if a user clicks on the [time frame toolbar](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Time-Scale.md#time-frame-toolbar) or changes the date range manually.
+	 * If `timeframe` is `undefined`, you can change a date range before data loading starts.
+	 * To do this, you can specify a time frame value or a certain date range.
 	 *
+	 * **Examples**
+	 *
+	 * The following code sample specifies a time frame value:
+	 *
+	 * ```javascript
+	 * widget.activeChart().onIntervalChanged().subscribe(null, (interval, timeframeObj) =>
+	 *     timeframeObj.timeframe = {
+	 *         value: "12M",
+	 *         type: "period-back"
+	 * });
+	 * ```
+	 *
+	 * The following code sample specifies a certain date range:
+	 *
+	 * ```javascript
+	 * widget.activeChart().onIntervalChanged().subscribe(null, (interval, timeframeObj) =>
+	 *     timeframeObj.timeframe = {
+	 *         from: new Date('2015-01-01').getTime() / 1000,
+	 *         to: new Date('2017-01-01').getTime() / 1000,
+	 *         type: "time-range"
+	 *     });
+	 * ```
 	 * @returns A subscription object for the chart interval (resolution) changing.
 	 */
 	onIntervalChanged(): ISubscription<(interval: ResolutionString, timeFrameParameters: {
-		/**
-		 * timeframe or dates range. It represents if the user clicks on the timeframe panel or changed the dates range.
-		 *
-		 * Otherwise `timeframe` is `undefined` and you can change it to display a certain range of bars. Valid timeframe is a `TimeFrameValue` object.
-		 */
 		timeframe?: TimeFrameValue;
 	}) => void>;
 	/**
 	 * Get a subscription object for the chart's visible range changing.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().onVisibleRangeChanged().subscribe(
+	 *     null,
+	 *     ({ from, to }) => console.log(from, to)
+	 * );
+	 * ```
 	 * @returns A subscription object for the chart's visible range changing.
 	 */
 	onVisibleRangeChanged(): ISubscription<(range: VisibleTimeRange) => void>;
 	/**
 	 * Get a subscription object for the chart type changing.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().onChartTypeChanged().subscribe(
+	 *     null,
+	 *     (chartType) => console.log('The type of chart is changed')
+	 * );
+	 * ```
 	 * @returns A subscription object for the chart type changing.
 	 */
 	onChartTypeChanged(): ISubscription<(chartType: SeriesType) => void>;
 	/**
 	 * Provide a callback function that will be called when chart data is loaded.
-	 * If chart data is already loaded when this method is called then the callback is called immediately.
+	 * If chart data is already loaded when this method is called, the callback is called immediately.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().dataReady(() => {
+	 *     // ...
+	 * }
+	 * ```
 	 *
 	 * @param callback A callback function called when chart data is loaded.
 	 */
@@ -7405,12 +7578,32 @@ export interface IChartWidgetApi {
 	/**
 	 * Get a subscription object for the crosshair moving over the chart.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().crossHairMoved().subscribe(
+	 *     null,
+	 *     ({ time, price }) => console.log(time, price)
+	 * );
+	 * ```
 	 * @returns A subscription object for the crosshair moving over the chart.
 	 */
 	crossHairMoved(): ISubscription<(params: CrossHairMovedEventParams) => void>;
 	/**
+	 * Get a subscription object for the ID of the study or series hovered by the crosshair.
+	 *
+	 * @returns A subscription object for the ID of the study or series hovered by the crosshair. Subscribers will be called with `null` if there is no study or series hovered.
+	 */
+	onHoveredSourceChanged(): ISubscription<(sourceId: EntityId) => void>;
+	/**
 	 * Scroll and/or scale the chart so a time range is visible.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().setVisibleRange(
+	 *     { from: 1420156800, to: 1451433600 },
+	 *     { percentRightMargin: 20 }
+	 * ).then(() => console.log('New visible range is applied'));
+	 * ```
 	 * @param range A range that will be made visible.
 	 * @param options Optional object of options for the new visible range.
 	 * @returns A promise that is resolved when the range has been set.
@@ -7419,8 +7612,12 @@ export interface IChartWidgetApi {
 	/**
 	 * Change the chart's symbol.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().setSymbol('IBM');
+	 * ```
 	 * Note: if you are attempting to change multiple charts (multi-chart layouts) at the same time with
-	 * multiple setSymbol calls then you should set `doNotActivateChart` option to `true`.
+	 * multiple `setSymbol` calls then you should set `doNotActivateChart` option to `true`.
 	 *
 	 * @param symbol A symbol.
 	 * @param options Optional object of options for the new symbol or optional callback that is called when the data for the new symbol has loaded.
@@ -7429,8 +7626,12 @@ export interface IChartWidgetApi {
 	/**
 	 * Change the chart's interval (resolution).
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().setResolution('2M');
+	 * ```
 	 * Note: if you are attempting to change multiple charts (multi-chart layouts) at the same time with
-	 * multiple setResolution calls then you should set `doNotActivateChart` option to `true`.
+	 * multiple `setResolution` calls then you should set `doNotActivateChart` option to `true`.
 	 *
 	 * @param resolution A resolution.
 	 * @param options Optional object of options for the new resolution or optional callback that is called when the data for the new resolution has loaded.
@@ -7439,6 +7640,11 @@ export interface IChartWidgetApi {
 	/**
 	 * Change the chart's type.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().setChartType(12); // Specifies the High-low type
+	 * ```
+	 *
 	 * @param type A chart type.
 	 * @param callback An optional callback function. Called when the chart type has changed and data has loaded.
 	 */
@@ -7446,26 +7652,60 @@ export interface IChartWidgetApi {
 	/**
 	 * Force the chart to re-request data.
 	 * Before calling this function the `onResetCacheNeededCallback` callback from {@link IDatafeedChartApi.subscribeBars} should be called.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().resetData();
+	 * ```
+	 *
 	 */
 	resetData(): void;
 	/**
 	 * Execute an action.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * // ...
+	 * widget.activeChart().executeActionById("undo");
+	 * // ...
+	 * widget.activeChart().executeActionById("drawingToolbarAction"); // Hides or shows the drawing toolbar
+	 * // ...
+	 * ```
 	 *
 	 * @param actionId An action ID.
 	 */
 	executeActionById(actionId: ChartActionId): void;
 	/**
 	 * Get the state of a checkable action.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * if (widget.activeChart().getCheckableActionState("drawingToolbarAction")) {
+	 *     // ...
+	 * };
+	 * ```
+	 *
 	 * @param actionId An action ID.
 	 * @returns `true` if the action is checked, `false` otherwise.
 	 */
 	getCheckableActionState(actionId: ChartActionId): boolean;
 	/**
 	 * Force the chart to re-request all bar marks and timescale marks.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().refreshMarks();
+	 * ```
+	 *
 	 */
 	refreshMarks(): void;
 	/**
 	 * Remove marks from the chart.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().clearMarks();
+	 * ```
 	 *
 	 * @param marksToClear type of marks to clear. If nothing is specified both bar & timescale marks will be removed.
 	 */
@@ -7473,11 +7713,21 @@ export interface IChartWidgetApi {
 	/**
 	 * Get an array of IDs and name for all drawings on the chart.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().getAllShapes().forEach(({ name }) => console.log(name));
+	 * ```
+	 *
 	 * @returns An array of drawing information.
 	 */
 	getAllShapes(): EntityInfo[];
 	/**
 	 * Get an array of IDs and names for all studies on the chart.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().getAllStudies().forEach(({ name }) => console.log(name));
+	 * ```
 	 *
 	 * @returns An array of study information.
 	 */
@@ -7485,11 +7735,21 @@ export interface IChartWidgetApi {
 	/**
 	 * Get the chart's price to bar ratio.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * console.log(widget.activeChart().getPriceToBarRatio());
+	 * ```
+	 *
 	 * @returns The ratio or `null` if no ratio is defined.
 	 */
 	getPriceToBarRatio(): number | null;
 	/**
 	 * Set the chart's price to bar ratio.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().setPriceToBarRatio(0.4567, { disableUndo: true });
+	 * ```
 	 *
 	 * @param ratio The new price to bar ratio.
 	 * @param options Optional undo options.
@@ -7497,10 +7757,21 @@ export interface IChartWidgetApi {
 	setPriceToBarRatio(ratio: number, options?: UndoOptions): void;
 	/**
 	 * Get the locked/unlocked state of the chart's price to bar ratio.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * console.log(widget.activeChart().isPriceToBarRatioLocked());
+	 * ```
+	 *
 	 */
 	isPriceToBarRatioLocked(): boolean;
 	/**
 	 * Lock or unlock the chart's price to bar ratio.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().setPriceToBarRatioLocked(true, { disableUndo: false });
+	 * ```
 	 *
 	 * @param value `true` to lock, `false` to unlock.
 	 * @param options Optional undo options.
@@ -7509,11 +7780,21 @@ export interface IChartWidgetApi {
 	/**
 	 * Get an array of the heigh of all panes.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * console.log(widget.activeChart().getAllPanesHeight());
+	 * ```
+	 *
 	 * @returns An array of heights.
 	 */
 	getAllPanesHeight(): number[];
 	/**
 	 * Set the height for each pane in the order provided.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * console.log(widget.activeChart().setAllPanesHeight([250, 400, 200]));
+	 * ```
 	 *
 	 * @param heights An array of heights.
 	 */
@@ -7521,7 +7802,7 @@ export interface IChartWidgetApi {
 	/**
 	 * Maximize to its full size currently selected chart.
 	 *
-	 * Example:
+	 * **Example**
 	 * ```javascript
 	 * widget.activeChart().maximizeChart();
 	 * ```
@@ -7536,7 +7817,7 @@ export interface IChartWidgetApi {
 	/**
 	 * Restore to its initial size currently selected chart.
 	 *
-	 * Example:
+	 * **Example**
 	 * ```javascript
 	 * widget.activeChart().restoreChart();
 	 * ```
@@ -7545,11 +7826,21 @@ export interface IChartWidgetApi {
 	/**
 	 * Get an object with operations available for the specified set of entities.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().availableZOrderOperations([id]);
+	 * ```
+	 *
 	 * @param sources An array of entity IDs.
 	 */
 	availableZOrderOperations(sources: readonly EntityId[]): AvailableZOrderOperations;
 	/**
 	 * Move the group to the bottom of the Z-order.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().sendToBack([id]);
+	 * ```
 	 *
 	 * @param sources An array of source IDs.
 	 */
@@ -7557,11 +7848,21 @@ export interface IChartWidgetApi {
 	/**
 	 * Move the sources to the top of the Z-order.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().bringToFront([id]);
+	 * ```
+	 *
 	 * @param sources An array of source IDs.
 	 */
 	bringToFront(sources: readonly EntityId[]): void;
 	/**
 	 * Move the sources one level up in the Z-order.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().bringForward([id]);
+	 * ```
 	 *
 	 * @param sources An array of source IDs.
 	 */
@@ -7569,32 +7870,34 @@ export interface IChartWidgetApi {
 	/**
 	 * Move the sources one level down in the Z-order.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().sendBackward([id]);
+	 * ```
+	 *
 	 * @param sources An array of source IDs.
 	 */
 	sendBackward(sources: readonly EntityId[]): void;
 	/**
-	 * @deprecated Use drawing/study API instead.
-	 * @see {@link getStudyById}
-	 * @see {@link getShapeById}
-	 */
-	setEntityVisibility(entityId: EntityId, isVisible: boolean): void;
-	/**
+	 * Adds an indicator or a symbol for comparison to the chart.
+	 * For more information, refer to the [Indicators](https://www.tradingview.com/charting-library-docs/latest/ui_elements/indicators/indicators.md) article.
+	 *
 	 * @param  {string} name - name of an indicator as shown in the `Indicators` widget
-	 * @param  {boolean} forceOverlay? - forces the Charting Library to place the created study on the main pane
-	 * @param  {boolean} lock? - whether a user will be able to remove/change/hide the study or not
-	 * @param  {Record<string} inputs? - **From version v22** it's an object containing named properties from the study properties dialog.
-	 * @param  {TOverrides} overrides? - an object (containing Studies Overrides) you'd like to set for your new study. Note that you should not specify the study name. Start a property path with a plot name.
-	 * @param  {CreateStudyOptions} options? - study creation options
+	 * @param  {boolean} [forceOverlay] - forces the Charting Library to place the created study on the main pane
+	 * @param  {boolean} [lock] - whether a user will be able to remove/change/hide the study or not
+	 * @param  {Record<string} [inputs] - **From version v22** it's an object containing named properties from the study properties dialog.
+	 * @param  {TOverrides} [overrides] - an object (containing Studies Overrides) you'd like to set for your new study. Note that you should not specify the study name. Start a property path with a plot name.
+	 * @param  {CreateStudyOptions} [options] - study creation options
 	 * @returns ID of the created study
 	 */
 	createStudy<TOverrides extends StudyOverrides>(name: string, forceOverlay?: boolean, lock?: boolean, inputs?: Record<string, StudyInputValue>, overrides?: TOverrides, options?: CreateStudyOptions): Promise<EntityId | null>;
 	/**
-	 * @deprecated Prefer `createStudy` function that relies on named properties for `inputs`.
-	 * @see {@link createStudy}
-	 */
-	createStudy<TStudyInputValue extends StudyInputValue, TOverrides extends StudyOverrides>(name: string, forceOverlay?: boolean, lock?: boolean, inputs?: TStudyInputValue[], overrides?: TOverrides, options?: CreateStudyOptions): Promise<EntityId | null>;
-	/**
 	 * Get a study by ID.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().getStudyById(id).setVisible(false);
+	 * ```
 	 *
 	 * @param entityId The study ID.
 	 * @returns An API object for interacting with the study.
@@ -7603,11 +7906,21 @@ export interface IChartWidgetApi {
 	/**
 	 * Get the main series.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().getSeries().setVisible(false);
+	 * ```
+	 *
 	 * @returns An API object for interacting with the main series.
 	 */
 	getSeries(): ISeriesApi;
 	/**
 	 * Create a new single point drawing.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().createShape({ time: 1514764800 }, { shape: 'vertical_line' });
+	 * ```
 	 *
 	 * @param point A point. The location of the new drawing.
 	 * @param options An options object for the new drawing.
@@ -7617,6 +7930,23 @@ export interface IChartWidgetApi {
 	/**
 	 * Create a new multi point drawing.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * const from = Date.now() / 1000 - 500 * 24 * 3600; // 500 days ago
+	 * const to = Date.now() / 1000;
+	 * widget.activeChart().createMultipointShape(
+	 *     [{ time: from, price: 150 }, { time: to, price: 150 }],
+	 *     {
+	 *         shape: "trend_line",
+	 *         lock: true,
+	 *         disableSelection: true,
+	 *         disableSave: true,
+	 *         disableUndo: true,
+	 *         text: "text",
+	 *     }
+	 * );
+	 * ```
+	 *
 	 * @param points An array of points that define the drawing.
 	 * @param options An options object for the new drawing.
 	 * @returns The ID of the new drawing if it was created successfully, or null otherwise.
@@ -7625,6 +7955,11 @@ export interface IChartWidgetApi {
 	/**
 	 * Create a new anchored drawing. Anchored drawings maintain their position when the chart's visible range changes.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.createAnchoredShape({ x: 0.1, y: 0.9 }, { shape: 'anchored_text', text: 'Hello, charts!', overrides: { color: 'green' }});
+	 * ```
+	 *
 	 * @param position Percent-based x and y position of the new drawing, relative to the top left of the chart.
 	 * @param options An options object for the new drawing.
 	 */
@@ -7632,36 +7967,77 @@ export interface IChartWidgetApi {
 	/**
 	 * Get a drawing by ID.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().getShapeById(id).bringToFront();
+	 * ```
+	 *
 	 * @param entityId A drawing ID.
 	 * @returns An API object for interacting with the drawing.
 	 */
 	getShapeById(entityId: EntityId): ILineDataSourceApi;
 	/**
 	 * Remove an entity (e.g. drawing or study) from the chart.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().removeEntity(id);
+	 * ```
+	 *
 	 * @param entityId The ID of the entity.
 	 * @param options Optional undo options.
 	 */
 	removeEntity(entityId: EntityId, options?: UndoOptions): void;
 	/**
 	 * Remove all drawings from the chart.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().removeAllShapes();
+	 * ```
+	 *
 	 */
 	removeAllShapes(): void;
 	/**
 	 * Remove all studies from the chart.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().removeAllStudies();
+	 * ```
+	 *
 	 */
 	removeAllStudies(): void;
 	/**
 	 * Get an API object for interacting with the selection.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().selection().clear();
+	 * ```
+	 *
 	 */
 	selection(): ISelectionApi;
 	/**
 	 * Show the properties dialog for a study or drawing.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * const chart = widget.activeChart();
+	 * chart.showPropertiesDialog(chart.getAllShapes()[0].id);`
+	 * ```
 	 *
 	 * @param studyId An ID of the study or drawing.
 	 */
 	showPropertiesDialog(studyId: EntityId): void;
 	/**
 	 * Save the current study template to a object.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * const options = { saveSymbol: true, saveInterval: true };
+	 * const template = widget.activeChart().createStudyTemplate(options);
+	 * ```
 	 *
 	 * @param options An object of study template options.
 	 * @returns A study template object.
@@ -7670,11 +8046,35 @@ export interface IChartWidgetApi {
 	/**
 	 * Apply a study template to the chart.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().applyStudyTemplate(template);
+	 * ```
+	 *
 	 * @param template A study template object.
 	 */
 	applyStudyTemplate(template: object): void;
 	/**
 	 * Create a new trading order on the chart.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().createOrderLine()
+	 *     .setTooltip("Additional order information")
+	 *     .setModifyTooltip("Modify order")
+	 *     .setCancelTooltip("Cancel order")
+	 *     .onMove(function() {
+	 *         this.setText("onMove called");
+	 *     })
+	 *     .onModify("onModify called", function(text) {
+	 *         this.setText(text);
+	 *     })
+	 *     .onCancel("onCancel called", function(text) {
+	 *         this.setText(text);
+	 *     })
+	 *     .setText("STOP: 73.5 (5,64%)")
+	 *     .setQuantity("2");
+	 * ```
 	 *
 	 * @param options Optional undo options.
 	 * @returns An API object for interacting with the order.
@@ -7683,6 +8083,30 @@ export interface IChartWidgetApi {
 	/**
 	 * Creates a new trading position on the chart.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.chart().createPositionLine()
+	 *     .onModify(function() {
+	 *         this.setText("onModify called");
+	 *     })
+	 *     .onReverse("onReverse called", function(text) {
+	 *         this.setText(text);
+	 *     })
+	 *     .onClose("onClose called", function(text) {
+	 *         this.setText(text);
+	 *     })
+	 *     .setText("PROFIT: 71.1 (3.31%)")
+	 *     .setTooltip("Additional position information")
+	 *     .setProtectTooltip("Protect position")
+	 *     .setCloseTooltip("Close position")
+	 *     .setReverseTooltip("Reverse position")
+	 *     .setQuantity("8.235")
+	 *     .setPrice(160)
+	 *     .setExtendLeft(false)
+	 *     .setLineStyle(0)
+	 *     .setLineLength(25);
+	 * ```
+	 *
 	 * @param options Optional undo options.
 	 * @returns An API object for interacting with the position.
 	 */
@@ -7690,38 +8114,62 @@ export interface IChartWidgetApi {
 	/**
 	 * Creates a new trade execution on the chart.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().createExecutionShape()
+	 *     .setText("@1,320.75 Limit Buy 1")
+	 *     .setTooltip("@1,320.75 Limit Buy 1")
+	 *     .setTextColor("rgba(0,255,0,0.5)")
+	 *     .setArrowColor("#0F0")
+	 *     .setDirection("buy")
+	 *     .setTime(widget.activeChart().getVisibleRange().from)
+	 *     .setPrice(160);
+	 * ```
+	 *
 	 * @param options Optional undo options.
 	 * @returns An API object for interacting with the execution.
 	 */
 	createExecutionShape(options?: UndoOptions): IExecutionLineAdapter;
 	/**
 	 * Get the name of the current symbol.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * console.log(widget.activeChart().symbol());
+	 * ```
+	 *
 	 */
 	symbol(): string;
 	/**
 	 * Get an extended information object for the current symbol.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * console.log(widget.activeChart().symbolExt().full_name);
+	 * ```
+	 *
 	 */
 	symbolExt(): SymbolExt | null;
 	/**
 	 * Get the current resolution (interval).
+	 *
+	 * **Example**
+	 * ```javascript
+	 * console.log(widget.activeChart().resolution());
+	 * ```
+	 *
 	 */
 	resolution(): ResolutionString;
 	/**
 	 * Get the current visible time range.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * console.log(widget.activeChart().getVisibleRange());
+	 * ```
+	 *
 	 */
 	getVisibleRange(): VisibleTimeRange;
-	/**
-	 * @deprecated Use Price Scale API instead
-	 */
-	getVisiblePriceRange(): VisiblePriceRange;
-	/**
-	 * @deprecated Use rightOffset from TimeScale API instead
-	 */
-	scrollPosition(): number;
-	/**
-	 * @deprecated Use defaultRightOffset from TimeScale API instead
-	 */
-	defaultScrollPosition(): number;
 	/**
 	 * Returns the object with 'format' function that you can use to format the prices.
 	 *
@@ -7739,25 +8187,43 @@ export interface IChartWidgetApi {
 	 */
 	chartType(): SeriesType;
 	/**
-	 * @deprecated Use Timezone API instead
-	 * @see {@link getTimezoneApi}
-	 */
-	setTimezone(timezone: "exchange" | Timezone): void;
-	/**
-	 * @deprecated Use Timezone API instead
-	 * @see {@link getTimezoneApi}
-	 */
-	getTimezone(): "exchange" | Timezone;
-	/**
 	 * Get an API object for interacting with the chart timezone.
 	 */
 	getTimezoneApi(): ITimezoneApi;
 	/**
 	 * Get an array of API objects for interacting with the chart panes.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().getPanes()[1].moveTo(0);
+	 * ```
+	 *
 	 */
 	getPanes(): IPaneApi[];
 	/**
 	 * Export the current data from the chart.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * // Exports series' data only
+	 * widget.activeChart().exportData({ includeTime: false, includedStudies: [] });
+	 * // Exports series' data with times
+	 * widget.activeChart().exportData({ includedStudies: [] });
+	 * // Exports series' data with with user time
+	 * widget.activeChart().exportData({ includeTime: false, includeUserTime: true, includedStudies: [] });
+	 * // Exports data for the indicator which ID is STUDY_ID
+	 * widget.activeChart().exportData({ includeTime: false, includeSeries: false, includedStudies: ['STUDY_ID'] });
+	 * // Exports all available data from the chart
+	 * widget.activeChart().exportData({ includeUserTime: true });
+	 * // Exports series' data before 2018-01-01
+	 * widget.activeChart().exportData({ includeTime: false, to: Date.UTC(2018, 0, 1) / 1000 });
+	 * // Exports series' data after 2018-01-01
+	 * widget.activeChart().exportData({ includeTime: false, from: Date.UTC(2018, 0, 1) / 1000 });
+	 * // Exports series' data in the range between 2018-01-01 and 2018-02-01
+	 * widget.activeChart().exportData({ includeTime: false, from: Date.UTC(2018, 0, 1) / 1000, to: Date.UTC(2018, 1, 1) / 1000 });
+	 * // Exports all displayed data on the chart
+	 * widget.activeChart().exportData({ includeDisplayedValues: true });
+	 * ```
 	 *
 	 * @param options Optional object of options to control the exported data.
 	 * @returns A promise that resolves with the exported data.
@@ -7765,6 +8231,13 @@ export interface IChartWidgetApi {
 	exportData(options?: Partial<ExportDataOptions>): Promise<ExportedData>;
 	/**
 	 * Check if the chart can be zoomed out using the {@link zoomOut} method.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * if(widget.activeChart().canZoomOut()) {
+	 *     widget.activeChart().zoomOut();
+	 * };
+	 * ```
 	 *
 	 * @returns `true` if the chart can be zoomed out.
 	 */
@@ -7776,17 +8249,33 @@ export interface IChartWidgetApi {
 	/**
 	 * Enable or disable zooming of the chart.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().setZoomEnabled(false);
+	 * ```
+	 *
 	 * @param enabled `true` to enable zooming, `false` to disable.
 	 */
 	setZoomEnabled(enabled: boolean): void;
 	/**
 	 * Enable or disable scrolling of the chart.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().setScrollEnabled(false);
+	 * ```
+	 *
 	 * @param enabled `true` to enable scrolling, `false` to disable.
 	 */
 	setScrollEnabled(enabled: boolean): void;
 	/**
 	 * Get an API object for interacting with groups of drawings.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().shapesGroupController().createGroupFromSelection();
+	 * ```
+	 *
 	 */
 	shapesGroupController(): IShapesGroupControllerApi;
 	/**
@@ -7801,10 +8290,21 @@ export interface IChartWidgetApi {
 	endOfPeriodToBarTime(unixTime: number): number;
 	/**
 	 * Get an API object for interacting with the timescale.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * var time = widget.activeChart().getTimeScale().coordinateToTime(100);
+	 * ```
+	 *
 	 */
 	getTimeScale(): ITimeScaleApi;
 	/**
 	 * Check if bar selection mode is active or not.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * var isRequested = widget.activeChart().isSelectBarRequested();
+	 * ```
 	 *
 	 * @returns `true` if active, `false` otherwise.
 	 */
@@ -7812,11 +8312,28 @@ export interface IChartWidgetApi {
 	/**
 	 * Switch the chart to bar selection mode.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().requestSelectBar()
+	 *     .then(function(time) {
+	 *         console.log('user selects bar with time', time);
+	 *     })
+	 *     .catch(function() {
+	 *         console.log('bar selection was rejected');
+	 *     });
+	 * ```
+	 *
 	 * @returns A promise that resolves to the timestamp of a bar selected by the user. Rejects if the bar selection was already requested or is cancelled.
 	 */
 	requestSelectBar(): Promise<number>;
 	/**
 	 * Cancel any active bar selection requests.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.activeChart().cancelSelectBar();
+	 * ```
+	 *
 	 */
 	cancelSelectBar(): void;
 	/**
@@ -7848,18 +8365,8 @@ export interface IChartWidgetApi {
 	setTimeFrame(timeFrame: RangeOptions): void;
 }
 /**
- * The main interface for interacting with the library.
- *
- * This interface is returned to you by the widget's constructor ({@link ChartingLibraryWidgetConstructor}).
- *
- * **Remark**: Please note that it's safe to call any method only **after** `onChartReady` callback function is called.
- *
- * Example:
- * ```javascript
- * widget.onChartReady(function() {
- *     // It's now safe to call any other methods of the widget
- * });
- * ```
+ * The main interface for interacting with the library, returned by {@link ChartingLibraryWidgetConstructor}.
+ * For more information, refer to the [Widget methods](https://www.tradingview.com/charting-library-docs/latest/core_concepts/widget-methods.md) article.
  */
 export interface IChartingLibraryWidget {
 	/**
@@ -8032,14 +8539,49 @@ export interface IChartingLibraryWidget {
 	 * The widget will call the callback function each time the widget wants to display a context menu.
 	 * See also {@link ChartingLibraryWidgetOptions.context_menu}.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.onChartReady(function() {
+	 *     widget.onContextMenu(function(unixtime, price) {
+	 *         return [{
+	 *             position: "top",
+	 *             text: "First top menu item, time: " + unixtime + ", price: " + price,
+	 *             click: function() { alert("First clicked."); }
+	 *         },
+	 *         { text: "-", position: "top" }, // Adds a separator between buttons
+	 *         { text: "-Paste" },             // Removes the existing item from the menu
+	 *         {
+	 *             position: "top",
+	 *             text: "Second top menu item 2",
+	 *             click: function() { alert("Second clicked."); }
+	 *         }, {
+	 *             position: "bottom",
+	 *             text: "Bottom menu item",
+	 *             click: function() { alert("Third clicked."); }
+	 *         }];
+	 *     });
+	 * });
+	 * ```
+	 *
 	 * @param callback A function called with the time and price of the location on the chart that triggered the context menu.
 	 * The array of objects returned will add or remove items from the context menu.
 	 */
 	onContextMenu(callback: (unixTime: number, price: number) => ContextMenuItem[]): void;
 	/**
 	 * Create a button in the top toolbar. This should be called after {@link headerReady} has resolved.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.headerReady().then(function() {
+	 *     var button = widget.createButton();
+	 *     button.setAttribute('title', 'My custom button tooltip');
+	 *     button.addEventListener('click', function() { alert("My custom button pressed!"); });
+	 *     button.textContent = 'My custom button caption';
+	 * });
+	 * ```
+	 *
 	 * @param options A optional object of options for the button.
-	 * @returns A `HTMLElement` you can customise.
+	 * @returns A `HTMLElement` you can customize.
 	 */
 	createButton(options?: CreateHTMLButtonOptions): HTMLElement;
 	/**
@@ -8056,7 +8598,52 @@ export interface IChartingLibraryWidget {
 	 */
 	createButton(options?: CreateButtonOptions): HTMLElement | undefined;
 	/**
-	 * add your own dropdown menu to the top toolbar.
+	 * Add a custom dropdown menu to the top toolbar.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.createDropdown(
+	 *     {
+	 *         title: 'dropdown',
+	 *         tooltip: 'tooltip for this dropdown',
+	 *         items: [
+	 *             {
+	 *                 title: 'item#1',
+	 *                 onSelect: () => {console.log('1');},
+	 *             },
+	 *             {
+	 *                 title: 'item#2',
+	 *                 onSelect: () => {widget.setSymbol('IBM', '1D');},
+	 *             },
+	 *             {
+	 *                 title: 'item#3',
+	 *                 onSelect: () => {
+	 *                     widget.activeChart().createStudy(
+	 *                         'MACD',
+	 *                         false,
+	 *                         false,
+	 *                         {
+	 *                             in_0: 14,
+	 *                             in_1: 30,
+	 *                             in_3: 'close',
+	 *                             in_2: 9
+	 *                         }
+	 *                     );
+	 *                 },
+	 *             }
+	 *         ],
+	 *         icon: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><g fill="none" stroke="currentColor"><circle cx="10" cy="10" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path stroke-linecap="square" d="M17.5 7.5l-7 13"/></g></svg>`,
+	 *     }
+	 * ).then(myDropdownApi => {
+	 *     // Use myDropdownApi if you need to update the dropdown:
+	 *     // myDropdownApi.applyOptions({
+	 *     //     title: 'a new title!'
+	 *     // });
+	 *
+	 *     // Or remove the dropdown:
+	 *     // myDropdownApi.remove();
+	 * });
+	 * ```
 	 * @param  {DropdownParams} params
 	 */
 	createDropdown(params: DropdownParams): Promise<IDropdownApi>;
@@ -8094,7 +8681,7 @@ export interface IChartingLibraryWidget {
 	 */
 	getIntervals(): string[];
 	/**
-	 * Get an array of the names of all supported studies. These names can be used when calling {@link createStudy}.
+	 * Get an array of the names of all supported studies. These names can be used when calling {@link IChartWidgetApi.createStudy}.
 	 *
 	 * @returns An array of supported study names. E.g. `['Accumulation/Distribution', 'Accumulative Swing Index', 'Advance/Decline', ...]`.
 	 */
@@ -8130,19 +8717,28 @@ export interface IChartingLibraryWidget {
 	 */
 	applyStudiesOverrides(overrides: object): void;
 	/**
-	 * Trading Terminal only. Get a promise that resolves with an API object for interacting with the widgetbar (right sidebar) watchlist.
+	 * Trading Platform only. Get a promise that resolves with an API object for interacting with the widgetbar (right sidebar) watchlist.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * const watchlistApi = await widget.watchList();
+	 * const activeListId = watchlistApi.getActiveListId();
+	 * const currentListItems = watchlistApi.getList(activeListId);
+	 * // append new section and item to the current watchlist
+	 * watchlistApi.updateList(activeListId, [...currentListItems, '###NEW SECTION', 'AMZN']);
+	 * ```
 	 *
 	 * @returns An API object for interacting with the widgetbar (right sidebar) watchlist.
 	 */
 	watchList(): Promise<IWatchListApi>;
 	/**
-	 * Trading Terminal only. Get a promise that resolves with an API object for interacting with the widgetbar (right sidebar) news widget.
+	 * Trading Platform only. Get a promise that resolves with an API object for interacting with the widgetbar (right sidebar) news widget.
 	 *
 	 * @returns An API object for interacting with the widgetbar (right sidebar) widget.
 	 */
 	news(): Promise<INewsApi>;
 	/**
-	 * Trading Terminal only. Get a promise that resolves with an API object for interacting with the widgetbar (right sidebar).
+	 * Trading Platform only. Get a promise that resolves with an API object for interacting with the widgetbar (right sidebar).
 	 *
 	 * @returns An API object for interacting with the widgetbar (right sidebar).
 	 */
@@ -8205,6 +8801,11 @@ export interface IChartingLibraryWidget {
 	/**
 	 * Get the current theme of the chart.
 	 *
+	 * **Example**
+	 * ```javascript
+	 * console.log(widget.getTheme());
+	 * ```
+	 *
 	 * @returns A theme name. The name of the current theme.
 	 */
 	getTheme(): ThemeName;
@@ -8215,9 +8816,9 @@ export interface IChartingLibraryWidget {
 	 */
 	takeScreenshot(): void;
 	/**
-	 * Create a shapshot of the chart and return it as a canvas.
+	 * Create a snapshot of the chart and return it as a canvas.
 	 *
-	 * @param options An optional object that customises the returned snapshot.
+	 * @param options An optional object that customizes the returned snapshot.
 	 * @returns A promise containing a `HTMLCanvasElement` of the snapshot.
 	 */
 	takeClientScreenshot(options?: Partial<ClientSnapshotOptions>): Promise<HTMLCanvasElement>;
@@ -8246,31 +8847,58 @@ export interface IChartingLibraryWidget {
 	 */
 	magnetMode(): IWatchedValue<number>;
 	/**
-	 * Only available in Trading Terminal. Get a watched value that can be used to read/write/subscribe to the state of the symbol sync between charts.
+	 * Only available in Trading Platform. Get a watched value that can be used to read/write/subscribe to the state of the symbol sync between charts.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * if (widget.symbolSync().value()) {
+	 *     // ...
+	 * }
+	 * ```
 	 *
 	 * @returns A watched value of the state of the symbol sync.
 	 */
 	symbolSync(): IWatchedValue<boolean>;
 	/**
-	 * Only available in Trading Terminal. Get a watched value that can be used to read/write/subscribe to the state of the interval sync between charts.
+	 * Only available in Trading Platform. Get a watched value that can be used to read/write/subscribe to the state of the interval sync between charts.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.intervalSync().setValue(true);
+	 * ```
 	 *
 	 * @returns A watched value of the state of the interval sync.
 	 */
 	intervalSync(): IWatchedValue<boolean>;
 	/**
-	 * Only available in Trading Terminal. Get a watched value that can be used to read/write/subscribe to the state of the crosshair sync between charts.
+	 * Only available in Trading Platform. Get a watched value that can be used to read/write/subscribe to the state of the crosshair sync between charts.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.crosshairSync().setValue(true);
+	 * ```
 	 *
 	 * @returns A watched value of the state of the crosshair sync.
 	 */
 	crosshairSync(): IWatchedValue<boolean>;
 	/**
-	 * Only available in Trading Terminal. Get a watched value that can be used to read/write/subscribe to the state of the time sync between charts.
+	 * Only available in Trading Platform. Get a watched value that can be used to read/write/subscribe to the state of the time sync between charts.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.timeSync().setValue(true);
+	 * ```
 	 *
 	 * @returns A watched value of the state of the time sync.
 	 */
 	timeSync(): IWatchedValue<boolean>;
 	/**
-	 * Only available in Trading Terminal. Get a watched value that can be used to read/write/subscribe to the state of the date range sync between charts.
+	 * Only available in Trading Platform. Get a watched value that can be used to read/write/subscribe to the state of the date range sync between charts.
+	 *
+	 * **Example**
+	 * ```javascript
+	 * widget.dateRangeSync().setValue(true);
+	 * ```
 	 *
 	 * @returns A watched value of the state of the date range sync.
 	 */
@@ -8361,7 +8989,34 @@ export interface IChartingLibraryWidget {
 	 * @returns An API object for controlling additional custom status items within the legend area.
 	 */
 	customSymbolStatus(): ICustomSymbolStatusApi;
+	/**
+	 * Sets the value for a CSS custom property.
+	 *
+	 * **Example:**
+	 * ```js
+	 * widget.setCSSCustomProperty('--my-theme-color', '#123AAA');
+	 * ```
+	 *
+	 * @param customPropertyName A string representing the CSS custom property name. It is expected that the name should start with a double hyphen ('--').
+	 * @param value A string containing the new property value.
+	 */
+	setCSSCustomProperty(customPropertyName: string, value: string): void;
+	/**
+	 * Returns the current value for a CSS custom property.
+	 *
+	 * **Example:**
+	 * ```js
+	 * const currentValue = widget.getCSSCustomPropertyValue('--my-theme-color');
+	 * ```
+	 *
+	 * @param customPropertyName A string representing the CSS custom property name to be checked. It is expected that the name should start with a double hyphen ('--').
+	 * @returns A string containing the value of the property. If not set, returns the empty string.
+	 */
+	getCSSCustomPropertyValue(customPropertyName: string): string;
 }
+/**
+ * PineJS execution context.
+ */
 export interface IContext {
 	/**
 	 * Symbol Instrument
@@ -8574,8 +9229,8 @@ export interface ICustomSymbolStatusApi {
 }
 export interface IDatafeedChartApi {
 	/**
-	 * The Library calls this function to get marks for visible bars range.
-	 * The Library assumes that you will call `onDataCallback` only once per `getMarks` call.
+	 * The library calls this function to get marks for visible bars range.
+	 * The library assumes that you will call `onDataCallback` only once per `getMarks` call.
 	 *
 	 * A few marks per bar are allowed (for now, the maximum is 10). The time of each mark must match the time of a bar. For example, if the bar times are `2023-01-01`, `2023-01-08`, and `2023-01-15`, then a mark cannot have the time `2023-01-05`.
 	 *
@@ -8589,8 +9244,8 @@ export interface IDatafeedChartApi {
 	 */
 	getMarks?(symbolInfo: LibrarySymbolInfo, from: number, to: number, onDataCallback: GetMarksCallback<Mark>, resolution: ResolutionString): void;
 	/**
-	 * The Library calls this function to get timescale marks for visible bars range.
-	 * The Library assumes that you will call `onDataCallback` only once per `getTimescaleMarks` call.
+	 * The library calls this function to get timescale marks for visible bars range.
+	 * The library assumes that you will call `onDataCallback` only once per `getTimescaleMarks` call.
 	 *
 	 * **Remark:** This function will be called only if you confirmed that your back-end is supporting marks ({@link DatafeedConfiguration.supports_timescale_marks}).
 	 *
@@ -8603,7 +9258,7 @@ export interface IDatafeedChartApi {
 	getTimescaleMarks?(symbolInfo: LibrarySymbolInfo, from: number, to: number, onDataCallback: GetMarksCallback<TimescaleMark>, resolution: ResolutionString): void;
 	/**
 	 * This function is called if configuration flag supports_time is set to true when chart needs to know the server time.
-	 * The charting library expects callback to be called once.
+	 * The library expects callback to be called once.
 	 * The time is provided without milliseconds. Example: `1445324591`. It is used to display Countdown on the price scale.
 	 */
 	getServerTime?(callback: ServerTimeCallback): void;
@@ -8636,8 +9291,8 @@ export interface IDatafeedChartApi {
 	 */
 	getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParams, onResult: HistoryCallback, onError: ErrorCallback): void;
 	/**
-	 * Charting Library calls this function when it wants to receive real-time updates for a symbol.
-	 * The Library assumes that you will call the callback provided by the `onTick` parameter every time you want to update the most recent bar or to add a new one.
+	 * The library calls this function when it wants to receive real-time updates for a symbol.
+	 * The library assumes that you will call the callback provided by the `onTick` parameter every time you want to update the most recent bar or to add a new one.
 	 *
 	 * @param symbolInfo A SymbolInfo object
 	 * @param resolution Resolution of the symbol
@@ -8653,7 +9308,7 @@ export interface IDatafeedChartApi {
 	 */
 	unsubscribeBars(listenerGuid: string): void;
 	/**
-	 * Trading Terminal calls this function when it wants to receive real-time level 2 (DOM) for a symbol.
+	 * Trading Platform calls this function when it wants to receive real-time level 2 (DOM) for a symbol.
 	 *
 	 * @param symbol A SymbolInfo object
 	 * @param callback Function returning an object to update Depth Of Market (DOM) data
@@ -8661,7 +9316,7 @@ export interface IDatafeedChartApi {
 	 */
 	subscribeDepth?(symbol: string, callback: DOMCallback): string;
 	/**
-	 * Trading Terminal calls this function when it doesn't want to receive updates for this listener anymore.
+	 * Trading Platform calls this function when it doesn't want to receive updates for this listener anymore.
 	 *
 	 * @param subscriberUID A string returned by `subscribeDepth`
 	 */
@@ -8685,14 +9340,14 @@ export interface IDatafeedChartApi {
 export interface IDatafeedQuotesApi {
 	/**
 	 * This function is called when the library needs quote data.
-	 * The charting library assumes that `onDataCallback` is called once when all the requested data is received.
+	 * The library assumes that `onDataCallback` is called once when all the requested data is received.
 	 * @param  {string[]} symbols - symbol names.
 	 * @param  {QuotesCallback} onDataCallback - callback to return the requested data.
 	 * @param  {QuotesErrorCallback} onErrorCallback - callback for responding with an error.
 	 */
 	getQuotes(symbols: string[], onDataCallback: QuotesCallback, onErrorCallback: QuotesErrorCallback): void;
 	/**
-	 * Trading Terminal calls this function when it wants to receive real-time quotes for a symbol.
+	 * Trading Platform calls this function when it wants to receive real-time quotes for a symbol.
 	 * The library assumes that you will call `onRealtimeCallback` every time you want to update the quotes.
 	 * @param  {string[]} symbols - list of symbols that should be updated rarely (once per minute). These symbols are included in the watchlist but they are not visible at the moment.
 	 * @param  {string[]} fastSymbols - list of symbols that should be updated frequently (at least once every 10 seconds)
@@ -8701,7 +9356,7 @@ export interface IDatafeedQuotesApi {
 	 */
 	subscribeQuotes(symbols: string[], fastSymbols: string[], onRealtimeCallback: QuotesCallback, listenerGUID: string): void;
 	/**
-	 * Trading Terminal calls this function when it doesn't want to receive updates for this listener anymore.
+	 * Trading Platform calls this function when it doesn't want to receive updates for this listener anymore.
 	 * `listenerGUID` will be the same object that the Library passed to `subscribeQuotes` before.
 	 * @param  {string} listenerGUID - unique identifier of the listener
 	 */
@@ -8732,6 +9387,13 @@ export interface IDestroyable {
 export interface IDropdownApi {
 	/**
 	 * Apply options to the dropdown menu.
+	 * Note that this method does not affect the menu's alignment. To change the alignment, you should remove and recreate the menu as follows:
+	 *
+	 * ```javascript
+	 * myCustomDropdownApi.remove();
+	 * widget.createDropdown(optionsWithDifferentAlignment);
+	 * ```
+	 *
 	 * @param  {DropdownUpdateParams} options - Partial options for the dropdown menu
 	 */
 	applyOptions(options: DropdownUpdateParams): void;
@@ -8852,7 +9514,7 @@ export interface IExecutionLineAdapter {
 export interface IExternalDatafeed {
 	/**
 	 * This call is intended to provide the object filled with the configuration data.
-	 * Charting Library assumes that you will call the callback function and pass your datafeed {@link DatafeedConfiguration} as an argument.
+	 * The lib assumes that you will call the callback function and pass your datafeed {@link DatafeedConfiguration} as an argument.
 	 *
 	 * @param  {OnReadyCallback} callback - callback to return your datafeed configuration ({@link DatafeedConfiguration}) to the library.
 	 */
@@ -9137,6 +9799,19 @@ export interface IOrderLineAdapter {
 	 */
 	onMove<T>(data: T, callback: (data: T) => void): this;
 	/**
+	 * Attach a callback to be executed while the order line is being moved.
+	 *
+	 * @param callback Callback to be executed while the order line is being moved.
+	 */
+	onMoving(callback: () => void): this;
+	/**
+	 * Attach a callback to be executed while the order line is being moved.
+	 *
+	 * @param data Data to be passed to the callback.
+	 * @param callback Callback to be executed while the order line is being moved.
+	 */
+	onMoving<T>(data: T, callback: (data: T) => void): this;
+	/**
 	 * Attach a callback to be executed when the order line is cancelled.
 	 *
 	 * @param callback Callback to be executed when the order line is cancelled.
@@ -9244,11 +9919,19 @@ export interface IOrderLineAdapter {
 	 */
 	getLineLength(): number;
 	/**
+	 * Get the unit of length specified for the line length of the order line.
+	 */
+	getLineLengthUnit(): OrderLineLengthUnit;
+	/**
 	 * Set the line length of the order line.
 	 *
+	 * If negative number is provided for the value and the unit is 'pixel' then
+	 * the position will be relative to the left edge of the chart.
+	 *
 	 * @param value The new line length.
+	 * @param [unit] - unit for the line length, defaults to 'percentage'.
 	 */
-	setLineLength(value: number): this;
+	setLineLength(value: number, unit?: OrderLineLengthUnit): this;
 	/**
 	 * Get the line style of the order line.
 	 */
@@ -9424,9 +10107,7 @@ export interface IPaneApi {
 	/** Restore the size of a previously collapsed pane */
 	restore(): void;
 }
-// tslint:disable:tv-variable-name
 export interface IPineSeries {
-	hist?: number[] | null;
 	/**
 	 * Get the value at a specific index.
 	 *
@@ -9450,9 +10131,52 @@ export interface IPineSeries {
 	 */
 	indexOf(time: number): number;
 	/**
-	 * Create an history to the series it's attached to.
+	 * Map some values from one time scale to another.
+	 *
+	 * @param source Source times.
+	 * @param destination Destination times.
+	 * @param mode Adopt mode. `0` for continuous, `1` for precise.
+	 *
+	 * In continuous mode (`0`) every source time will be mapped to a destination time if one exists. Multiple source times may be mapped to the same destination time.
+	 *
+	 * In precise mode (`1`) every source time will be mapped to a destination time AT MOST ONCE if one exists. Some source times may not be mapped.
+	 *
+	 * @example
+	 * ```javascript
+	 * // A pine series with values [5, 5]
+	 * const sourceTimes = ctx.new_var();
+	 * // A pine series with values [4, 5]
+	 * const destinationTimes = ctx.new_var();
+	 * // A pine series with values [1, 2]
+	 * const values = ctx.new_var();
+	 *
+	 * // Creates a pine series with values [2, 2]
+	 * const adopted1 = values.adopt(sourceTimes, destinationTimes, 0);
+	 *
+	 * // Creates a pine series with values [NaN, 2]
+	 * const adopted2 = values.adopt(sourceTimes, destinationTimes, 1);
+	 * ```
+	 *
+	 * @example
+	 *
+	 * Psuedocode of the adopt algorithm:
+	 *
+	 * ```
+	 * adopt(sourceSeries, destinationSeries, mode) =
+	 *   destinationValue = most recent value in destinationSeries
+	 *   sourceIndex = index of destinationValue in sourceSeries
+	 *
+	 *   if mode equals 1 then
+	 *     previousDestinationValue = second most recent value in destinationSeries
+	 *     previousSourceIndex = index of previousDestinationValue in sourceSeries
+	 *
+	 *     if sourceIndex equals previousSourceIndex
+	 *       return NaN
+	 *
+	 *   return value at sourceIndex
+	 * ```
 	 */
-	add_hist?(): void;
+	adopt(source: IPineSeries, destination: IPineSeries, mode: 0 | 1): number;
 }
 /**
  * An API object used to control position lines.
@@ -9581,14 +10305,23 @@ export interface IPositionLineAdapter {
 	 */
 	setExtendLeft(value: boolean): this;
 	/**
+	 * Get the unit of length specified for the line length of the position line.
+	 */
+	getLineLengthUnit(): PositionLineLengthUnit;
+	/**
 	 * Get the line length of the position line.
 	 */
 	getLineLength(): number;
 	/**
 	 * Set the line length of the position line.
+	 *
+	 * If negative number is provided for the value and the unit is 'pixel' then
+	 * the position will be relative to the left edge of the chart.
+	 *
 	 * @param value The new line length.
+	 * @param [unit] - unit for the line length, defaults to 'percentage'.
 	 */
-	setLineLength(value: number): this;
+	setLineLength(value: number, unit?: PositionLineLengthUnit): this;
 	/**
 	 * Get the line style of the position line.
 	 */
@@ -9754,10 +10487,10 @@ export interface IPriceFormatter extends ISymbolValueFormatter {
 	 * Price Formatter
 	 * @param  {number} price - price
 	 * @param  {boolean} signPositive? - add plus sign to result string.
-	 * @param  {number} tailSize? - add `tailSize` digits to fractional part of result string
-	 * @param  {boolean} signNegative? - add minus sign to result string.
-	 * @param  {boolean} useRtlFormat? - Use Right to left format
-	 * @param  {boolean} cutFractionalByPrecision? - cuts price by priceScalePrecision, without rounding.
+	 * @param  {number} [tailSize] - add `tailSize` digits to fractional part of result string
+	 * @param  {boolean} [signNegative] - add minus sign to result string.
+	 * @param  {boolean} [useRtlFormat] - Use Right to left format
+	 * @param  {boolean} [cutFractionalByPrecision] - cuts price by priceScalePrecision, without rounding.
 	 * @returns formatted price
 	 */
 	format(price: number, signPositive?: boolean, tailSize?: number, signNegative?: boolean, useRtlFormat?: boolean, cutFractionalByPrecision?: boolean): string;
@@ -10185,7 +10918,7 @@ export interface IStudyApi {
 	applyOverrides<TOverrides extends StudyOverrides>(overrides: TOverrides): void;
 	/**
 	 * Copies the study to all charts in the layout.
-	 * Only applicable to multi-chart layouts (Trading Terminal).
+	 * Only applicable to multi-chart layouts (Trading Platform).
 	 */
 	applyToEntireLayout(): void;
 	/**
@@ -10289,7 +11022,9 @@ export interface ISubscription<TFunc extends Function> {
 	 */
 	unsubscribeAll(obj: object | null): void;
 }
-// tslint:disable:tv-variable-name
+/**
+ * PineJS execution context symbol information.
+ */
 export interface ISymbolInstrument {
 	/** Period Base */
 	periodBase: string;
@@ -10297,8 +11032,10 @@ export interface ISymbolInstrument {
 	tickerid: string;
 	/** Currency Code */
 	currencyCode?: string;
-	/** Period */
-	period: string;
+	/** Unit ID */
+	unitId?: string;
+	/** Bar resolution */
+	period: ResolutionString;
 	/** Index */
 	index: number;
 	/** Time */
@@ -10315,10 +11052,6 @@ export interface ISymbolInstrument {
 	volume: number;
 	/** Time of the update */
 	updatetime: number;
-	/** Session string */
-	session: string;
-	/** Script */
-	script: any; // tslint:disable-line:no-any
 	/** Ticker */
 	ticker: string;
 	/** Resolution */
@@ -10337,6 +11070,16 @@ export interface ISymbolInstrument {
 	isBarClosed: boolean;
 	/** Symbol information */
 	info?: LibrarySymbolInfo;
+	/**
+	 * Time of the bar.
+	 *
+	 * @returns the timestamp in milliseconds
+	 */
+	bartime(): number;
+	/**
+	 * @returns true if the bar resolution is day/week/month, false if it is intraday
+	 */
+	isdwm(): boolean;
 }
 export interface ISymbolValueFormatter {
 	/** Default formatter function used to assign the correct sign (+ or -) to a number  */
@@ -10350,7 +11093,7 @@ export interface ISymbolValueFormatter {
 	formatChange?(currentPrice: number, prevPrice: number, signPositive?: boolean): string;
 }
 /**
- * API object for interacting with the timescale.
+ * API object for interacting with the [time scale](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Time-Scale.md).
  *
  * You can retrieve this interface by using the {@link IChartWidgetApi.getTimeScale} method
  */
@@ -10419,6 +11162,19 @@ export interface IUpdatableAction extends IAction {
 	 */
 	update(options: Partial<ActionOptions>): void;
 }
+/**
+ * An API object for interacting with the widgetbar (right sidebar) watchlist.
+ *
+ * **Notes about watchlist contents**
+ *
+ * Watchlist items should be symbol names which your datafeed `resolveSymbol` method can resolve. This
+ * means that generally shorter names such as `AAPL` can be used if your datafeed understands it. However,
+ * it is recommend that you provided the symbol names as they appear within the symbolInfo result (for
+ * example: `NASDAQNM:AAPL`).
+ *
+ * Additionally, any item in the list which is prefixed with `###` will be considered a
+ * section divider in the watchlist.
+ */
 export interface IWatchListApi {
 	/**
 	 * Get a default list of symbols.
@@ -10428,7 +11184,7 @@ export interface IWatchListApi {
 	/**
 	 * Get a list of symbols.
 	 * If the `id` parameter is not provided then the current list will be returned. If there is no WatchList then `null` will be returned.
-	 * @param  {string} id? - Watchlist ID
+	 * @param  {string} [id] - Watchlist ID
 	 * @returns list of symbols for watchlist
 	 */
 	getList(id?: string): string[] | null;
@@ -10457,7 +11213,8 @@ export interface IWatchListApi {
 	/**
 	 * Edit the list of symbols for a watchlist.
 	 * @param  {string} listId - ID of the watchlist
-	 * @param  {string[]} symbols - symbols to be set for the watchlist
+	 * @param  {string[]} symbols - symbols to be set for the watchlist. Any item in the list which is prefixed with `###` will be considered a
+	 * section divider in the watchlist.
 	 */
 	updateList(listId: string, symbols: string[]): void;
 	/**
@@ -10468,8 +11225,9 @@ export interface IWatchListApi {
 	renameList(listId: string, newName: string): void;
 	/**
 	 * Create a list of symbols with `listName` name. If the `listName` parameter is not provided or there is no WatchList then `null` will be returned;
-	 * @param  {string} listName? - name for the watchlist
-	 * @param  {string[]} symbols? - symbol IDs for the watchlist
+	 * @param  {string} [listName] - name for the watchlist
+	 * @param  {string[]} [symbols] - symbol IDs for the watchlist. Any item in the list which is prefixed with `###` will be considered a
+	 * section divider in the watchlist.
 	 * @returns WatchListSymbolList
 	 */
 	createList(listName?: string, symbols?: string[]): WatchListSymbolList | null;
@@ -10521,12 +11279,12 @@ export interface IWatchedValueReadonly<T> extends IObservableValueReadOnly<T> {
 	/**
 	 * Subscribe to watched value changes
 	 * @param  {(value:T)=>void} callback - callback to be evoked when change occurs
-	 * @param  {WatchedValueSubscribeOptions} options? - watch subscriber options
+	 * @param  {WatchedValueSubscribeOptions} [options] - watch subscriber options
 	 */
 	subscribe(callback: (value: T) => void, options?: WatchedValueSubscribeOptions): void;
 	/**
 	 * Unsubscribe to watched value changes
-	 * @param  {((value:T)=>void)|null} callback? - callback to remove
+	 * @param  {((value:T)=>void)|null} [callback] - callback to remove
 	 */
 	unsubscribe(callback?: ((value: T) => void) | null): void;
 	/**
@@ -10811,11 +11569,6 @@ export interface InstrumentInfo {
 	domVolumePrecision?: number;
 	/** Leverage */
 	leverage?: string;
-	/**
-	 * The margin requirement for the instrument. A 3% margin rate should be represented as 0.03.
-	 * @deprecated
-	 */
-	marginRate?: number;
 	/** Minimal price change for limit price field of the Limit and Stop Limit order. If set it will override the `minTick` value. */
 	limitPriceStep?: number;
 	/** Minimal price change for stop price field of the Stop and Stop Limit order. If set it will override the `minTick` value. */
@@ -10960,14 +11713,14 @@ export interface LibraryPineStudy<TPineStudyResult> {
 	 *     context.new_sym(symbol, period);
 	 * };
 	 * ```
-	 * @param  {IContext} ctx - An object containing symbol info along with some useful methods to load/store symbol
+	 * @param  ctx - An object containing symbol info along with some useful methods to load/store symbol
 	 * @param  {<TextendsStudyInputValue>(index:number} inputs - The inputs callback is an array of input values, placed in order of inputs in Metainfo.
 	 */
 	init?(ctx: IContext, inputs: <T extends StudyInputValue>(index: number) => T): void;
 	/**
 	 * Called every time the library wants to calculate the study. Also it's called for every bar of every symbol.
 	 * Thus, if you request several additional symbols inside your indicator it will increase the count of runs.
-	 * @param  {IContext} ctx - An object containing symbol info along with some useful methods to load/store symbol
+	 * @param  ctx - An object containing symbol info along with some useful methods to load/store symbol
 	 * @param  {<TextendsStudyInputValue>(index:number} inputs - The inputs callback is an array of input values, placed in order of inputs in Metainfo.
 	 */
 	main(ctx: IContext, inputs: <T extends StudyInputValue>(index: number) => T): TPineStudyResult | null;
@@ -11001,6 +11754,10 @@ export interface LibrarySubsessionInfo {
 	 * Session corrections string. See {@link LibrarySymbolInfo.corrections}.
 	 */
 	"session-correction"?: string;
+	/**
+	 * Session to display. See {@link LibrarySymbolInfo.session_display}.
+	 */
+	"session-display"?: string;
 }
 export interface LibrarySymbolInfo {
 	/**
@@ -11052,8 +11809,6 @@ export interface LibrarySymbolInfo {
 	 * The session value to display in the UI. If not specified, then `session` is used.
 	 */
 	session_display?: string;
-	/** @deprecated Use session_holidays instead */
-	holidays?: string;
 	/**
 	 * List of holidays for this symbol. These dates are not displayed on the chart.
 	 * It's a string in the following format: `YYYYMMDD[,YYYYMMDD]`.
@@ -11138,6 +11893,12 @@ export interface LibrarySymbolInfo {
 	 */
 	minmove2?: number;
 	/**
+	 * Dynamic minimum price movement. It is used if the instrument's minimum price movement changes depending on the price range.
+	 *
+	 * For example, '0.01 10 0.02 25 0.05', where the tick size is 0.01 for a price less than 10, the tick size is 0.02 for a price less than 25, the tick size is 0.05 for a price greater than or equal to 25.
+	 */
+	variable_tick_size?: string;
+	/**
 	 * Boolean value showing whether the symbol includes intraday (minutes) historical data.
 	 *
 	 * If it's `false` then all buttons for intraday resolutions will be disabled for this particular symbol.
@@ -11199,14 +11960,16 @@ export interface LibrarySymbolInfo {
 	/**
 	 * It is an array containing resolutions that include seconds (excluding postfix) that the data feed provides.
 	 * E.g., if the data feed supports resolutions such as `["1S", "5S", "15S"]`, but has 1-second bars for some symbols then you should set `seconds_multipliers` of this symbol to `[1]`.
-	 * This will make Charting Library build 5S and 15S resolutions by itself.
+	 * This will make the library build 5S and 15S resolutions by itself.
 	 */
 	seconds_multipliers?: string[];
 	/**
-	 * The boolean value showing whether data feed has its own daily resolution bars or not.
+	 * The boolean value specifying whether the datafeed can supply historical data at the daily resolution.
 	 *
-	 * If `has_daily` = `false` then Charting Library will build the respective resolutions using 1-minute bars by itself.
-	 * If not, then it will request those bars from the data feed only if specified resolution belongs to `daily_multipliers`, otherwise an error will be thrown.
+	 * If `has_daily` is set to `false`, all buttons for resolutions that include days are disabled for this particular symbol.
+	 * Otherwise, the library requests daily bars from the datafeed.
+	 * All daily resolutions that the datafeed supplies must be included in the {@link LibrarySymbolInfo.daily_multipliers} array.
+	 *
 	 * @default true
 	 */
 	has_daily?: boolean;
@@ -11224,7 +11987,7 @@ export interface LibrarySymbolInfo {
 	/**
 	 * The boolean value showing whether data feed has its own weekly and monthly resolution bars or not.
 	 *
-	 * If `has_weekly_and_monthly` = `false` then Charting Library will build the respective resolutions using daily bars by itself.
+	 * If `has_weekly_and_monthly` = `false` then the library will build the respective resolutions using daily bars by itself.
 	 * If not, then it will request those bars from the data feed using either the `weekly_multipliers` or `monthly_multipliers` if specified.
 	 * If resolution is not within either list an error will be raised.
 	 * @default false
@@ -11262,11 +12025,6 @@ export interface LibrarySymbolInfo {
 	 */
 	has_empty_bars?: boolean;
 	/**
-	 * @deprecated
-	 * use visible_plots_set instead
-	 */
-	has_no_volume?: boolean;
-	/**
 	 * Represents what values are supported by the symbol. Possible values:
 	 *
 	 * - `ohlcv` - the symbol supports open, high, low, close and has volume
@@ -11303,7 +12061,7 @@ export interface LibrarySymbolInfo {
 	expired?: boolean;
 	/**
 	 * Unix timestamp of the expiration date. One must set this value when `expired` = `true`.
-	 * Charting Library will request data for this symbol starting from that time point.
+	 * The library will request data for this symbol starting from that time point.
 	 */
 	expiration_date?: number;
 	/** Sector for stocks to be displayed in the Symbol Info. */
@@ -11364,7 +12122,7 @@ export interface LibrarySymbolInfo {
 	 * the browser supports natively.
 	 *
 	 * Examples:
-	 * - `https://s3-symbol-logo.tradingview.com/apple.svg`
+	 * - `https://yourserver.com/apple.svg`
 	 * - `/images/myImage.png`
 	 * - `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3...`
 	 * - `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4...`
@@ -11375,6 +12133,19 @@ export interface LibrarySymbolInfo {
 		string,
 		string
 	];
+	/**
+	 * URL of image to be displayed as the logo for the exchange. The `show_exchange_logos` featureset needs to be enabled for this to be visible in the UI.
+	 *
+	 * The image should ideally be square in dimension. You can use any image type which
+	 * the browser supports natively. Simple SVG images are recommended.
+	 *
+	 * Examples:
+	 * - `https://yourserver.com/exchangeLogo.svg`
+	 * - `/images/myImage.png`
+	 * - `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3...`
+	 * - `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4...`
+	 */
+	exchange_logo?: string;
 }
 export interface LineBreakStylePreferences {
 	/** Up bar color */
@@ -11458,8 +12229,6 @@ export interface Mark {
 	showLabelWhenImageLoaded?: boolean;
 }
 export interface MarkCustomColor {
-	/** @deprecated Foreground color */
-	color?: string;
 	/** Border color */
 	border: string;
 	/** Background color */
@@ -11867,9 +12636,13 @@ export interface PineJS {
 	Std: PineJSStd;
 }
 /**
- * An interface representing the standard library functions for PineJS.
+ * PineJS standard library functions.
  */
 export interface PineJSStd {
+	/**
+	 * Default maximum size of a pine series.
+	 */
+	max_series_default_size: 10001;
 	/**
 	 * Epsilon (machine precision)
 	 *
@@ -11963,63 +12736,69 @@ export interface PineJSStd {
 	 */
 	tickerid(context: IContext): string;
 	/**
-	 * Current bar year in exchange timezone.
+	 * Year of current bar time in exchange timezone.
 	 *
 	 * @param context - PineJS execution context.
+	 * @param time optional time. Current bar time will be used by default.
 	 * @returns Current bar year in exchange timezone.
 	 */
-	year(context: IContext): number;
+	year(context: IContext, time?: number): number;
 	/**
-	 * Current month year in exchange timezone.
+	 * Month of current bar time in exchange timezone.
 	 *
 	 * @param context - PineJS execution context.
-	 * @returns Current month year in exchange timezone.
+	 * @param time optional time. Current bar time will be used by default.
+	 * @returns Current bar month in exchange timezone.
 	 */
-	month(context: IContext): number;
+	month(context: IContext, time?: number): number;
 	/**
-	 * Week number of current bar in exchange timezone.
+	 * Week number of current bar time in exchange timezone.
 	 *
 	 * @param context - PineJS execution context.
+	 * @param time optional time. Current bar time will be used by default.
 	 * @returns Week number of current bar in exchange timezone.
 	 */
-	weekofyear(context: IContext): number;
+	weekofyear(context: IContext, time?: number): number;
 	/**
 	 * Day of month for current bar time in exchange timezone.
 	 *
 	 * @param context - PineJS execution context.
+	 * @param time optional time. Current bar time will be used by default.
 	 * @returns Day of month for current bar time in exchange timezone.
 	 */
-	dayofmonth(context: IContext): number;
+	dayofmonth(context: IContext, time?: number): number;
 	/**
 	 * Day of week for current bar time in exchange timezone.
 	 *
-	 * Sunday is 1, Monday is 2, Tuesday is 3, and so on.
-	 *
 	 * @param context - PineJS execution context.
+	 * @param time optional time. Current bar time will be used by default.
 	 * @returns Day of week for current bar time in exchange timezone.
 	 */
-	dayofweek(context: IContext): number;
+	dayofweek(context: IContext, time?: number): number;
 	/**
-	 * Current bar hour in exchange timezone.
+	 * Hour of current bar time in exchange timezone.
 	 *
 	 * @param context - PineJS execution context.
+	 * @param time optional time. Current bar time will be used by default.
 	 * @returns Current bar hour in exchange timezone.
 	 */
-	hour(context: IContext): number;
+	hour(context: IContext, time?: number): number;
 	/**
-	 * Current bar minute in exchange timezone.
+	 * Minute of current bar time in exchange timezone.
 	 *
 	 * @param context - PineJS execution context.
+	 * @param time optional time. Current bar time will be used by default.
 	 * @returns Current bar minute in exchange timezone.
 	 */
-	minute(context: IContext): number;
+	minute(context: IContext, time?: number): number;
 	/**
-	 * Current bar second in exchange timezone.
+	 * Second of current bar time in exchange timezone.
 	 *
 	 * @param context - PineJS execution context.
+	 * @param time optional time. Current bar time will be used by default.
 	 * @returns Current bar second in exchange timezone.
 	 */
-	second(context: IContext): number;
+	second(context: IContext, time?: number): number;
 	/**
 	 * Checks if `n1` is greater than or equal to `n2`
 	 *
@@ -12079,49 +12858,49 @@ export interface PineJSStd {
 	 *
 	 * @param n1
 	 * @param n2
-	 * @returns True if `n1` is greater than or equal to `n2`.
+	 * @returns `1` if `n1` is greater than or equal to `n2`, `0` otherwise.
 	 */
-	ge(n1: number, n2: number): boolean;
+	ge(n1: number, n2: number): number;
 	/**
 	 * Checks if `n1` is less than or equal to `n2`
 	 *
 	 * @param n1
 	 * @param n2
-	 * @returns True if `n1` is greater than or equal to `n2`.
+	 * @returns `1` if `n1` is greater than or equal to `n2`, `0` otherwise.
 	 */
-	le(n1: number, n2: number): boolean;
+	le(n1: number, n2: number): number;
 	/**
 	 * Checks if `n1` is equal to `n2`.
 	 *
 	 * @param n1
 	 * @param n2
-	 * @returns True if `n1` is equal to `n2`.
+	 * @returns `1` if `n1` is equal to `n2`, `0` otherwise.
 	 */
-	eq(n1: number, n2: number): boolean;
+	eq(n1: number, n2: number): number;
 	/**
 	 * Checks if `n1` is not equal to `n2`.
 	 *
 	 * @param n1
 	 * @param n2
-	 * @returns True if `n1` is not equal to `n2`.
+	 * @returns `1` if `n1` is not equal to `n2`, `0` otherwise.
 	 */
-	neq(n1: number, n2: number): boolean;
+	neq(n1: number, n2: number): number;
 	/**
 	 * Checks if `n1` is greater than `n2`
 	 *
 	 * @param n1
 	 * @param n2
-	 * @returns True if `n1` is greater than `n2`.
+	 * @returns `1` if `n1` is greater than `n2`, `0` otherwise.
 	 */
-	gt(n1: number, n2: number): boolean;
+	gt(n1: number, n2: number): number;
 	/**
 	 * Checks if `n1` is less than `n2`
 	 *
 	 * @param n1
 	 * @param n2
-	 * @returns True if `n1` is less than `n2`.
+	 * @returns `1` if `n1` is less than `n2`, `0` otherwise.
 	 */
-	lt(n1: number, n2: number): boolean;
+	lt(n1: number, n2: number): number;
 	/**
 	 * If ... then ... else ...
 	 * `iff` does exactly the same thing as ternary conditional operator `?:` but in a functional style. Also `iff` is slightly less efficient than operator `?:`
@@ -12131,15 +12910,15 @@ export interface PineJSStd {
 	 * @param elseValue - value to use if condition is false
 	 * @returns either thenValue or elseValue
 	 */
-	iff<T, V>(condition: boolean, thenValue: T, elseValue: V): T | V;
+	iff(condition: number, thenValue: number, elseValue: number): number;
 	/**
 	 * True Range
 	 *
-	 * @param handleNan - How NaN values are handled. If `true`, and previous day's close is `NaN` then tr would be calculated as current day `high-low`. Otherwise (if `false`) tr would return `NaN` in such cases. Also note, that `atr` uses `tr(true)`.
-	 * @param context - PineJS execution context.
+	 * @param n_handleNaN - How NaN values are handled. If truthy, and previous bar's close is `NaN` then tr would be calculated as current bar `high-low`. Otherwise tr would return `NaN` in such cases. Also note, that `atr` uses `tr(true)`.
+	 * @param ctx - PineJS execution context.
 	 * @returns True range. It is `max(high - low, abs(high - close[1]), abs(low - close[1]))`
 	 */
-	tr(handleNan: boolean, context: IContext): number;
+	tr(n_handleNaN: number | undefined, ctx: IContext): number;
 	/**
 	 * Function atr (average true range) returns the RMA of true range. True range is `max(high - low, abs(high - close[1]), abs(low - close[1]))`
 	 *
@@ -12207,28 +12986,28 @@ export interface PineJSStd {
 	/**
 	 * Zig-zag pivot points
 	 *
-	 * @param deviation - deviation
-	 * @param depth - depth (integer)
+	 * @param n_deviation - Deviation
+	 * @param n_depth - Depth (integer)
 	 * @param context - PineJS execution context.
 	 * @returns the zig-zag pivot points
 	 */
-	zigzag(deviation: number, depth: number, context: IContext): number[];
+	zigzag(n_deviation: number, n_depth: number, context: IContext): number;
 	/**
 	 * Zig-zag pivot points
 	 *
-	 * @param deviation - deviation
-	 * @param depth - depth (integer)
+	 * @param n_deviation - Deviation
+	 * @param n_depth - Depth (integer)
 	 * @param context - PineJS execution context.
 	 * @returns the zig-zag pivot points (for bars)
 	 */
-	zigzagbars(deviation: number, depth: number, context: IContext): number[];
+	zigzagbars(n_deviation: number, n_depth: number, context: IContext): number;
 	/**
 	 * Time of the current update
 	 *
 	 * @param context - PineJS execution context.
 	 * @returns symbol update time
 	 */
-	updatetime(context: IContext): string;
+	updatetime(context: IContext): number;
 	/**
 	 * Ticker ID for the current symbol
 	 *
@@ -12236,12 +13015,6 @@ export interface PineJSStd {
 	 * @returns Ticker ID for the current symbol
 	 */
 	ticker(context: IContext): string;
-	/**
-	 * Current interval for the symbol
-	 * @param context - PineJS execution context.
-	 * @returns interval string
-	 */
-	interval(context: IContext): string;
 	/**
 	 * Percent rank is the percentage of how many previous values were less than or equal to the current value of given series.
 	 *
@@ -12257,7 +13030,7 @@ export interface PineJSStd {
 	 * @param length - Number of bars (length).
 	 * @returns `true` if current `x` is greater than any previous `x` for length bars back, `false` otherwise.
 	 */
-	rising(series: IPineSeries, length: number): boolean;
+	rising(series: IPineSeries, length: number): number;
 	/**
 	 * Test if the series is now falling for length bars long.
 	 *
@@ -12265,7 +13038,7 @@ export interface PineJSStd {
 	 * @param length - Number of bars (length).
 	 * @returns `true` if current `x` is less than any previous `x` for length bars back, `false` otherwise.
 	 */
-	falling(series: IPineSeries, length: number): boolean;
+	falling(series: IPineSeries, length: number): number;
 	/**
 	 * Relative strength index. It is calculated based on rma's of upward and downward change of x.
 	 *
@@ -12284,7 +13057,7 @@ export interface PineJSStd {
 	 */
 	sum(source: IPineSeries, length: number, context: IContext): number;
 	/**
-	 * The sma function returns the moving average, that is the sum of last `length` values of `source`, divided by `length`.
+	 * Simple Moving Average. The sum of last `length` values of `source`, divided by `length`.
 	 *
 	 * @param source - Series of values to process.
 	 * @param length - Number of bars (length).
@@ -12292,6 +13065,15 @@ export interface PineJSStd {
 	 * @returns Simple moving average of x for y bars back.
 	 */
 	sma(source: IPineSeries, length: number, context: IContext): number;
+	/**
+	 * Smoothed Moving Average.
+	 *
+	 * @param n_value Next value in the series to calculate.
+	 * @param n_length Smoothing length.
+	 * @param ctx PineJS execution context.
+	 * @returns The smoothed moving average value.
+	 */
+	smma(n_value: number, n_length: number, ctx: IContext): number;
 	/**
 	 * Moving average used in RSI. It is the exponentially weighted moving average with `alpha = 1 / length`.
 	 *
@@ -12302,7 +13084,9 @@ export interface PineJSStd {
 	 */
 	rma(source: IPineSeries, length: number, context: IContext): number;
 	/**
-	 * The ema function returns the exponentially weighted moving average. In ema weighting factors decrease exponentially. It calculates by using a formula: `EMA = alpha * x + (1 - alpha) * EMA[1]`, where `alpha = 2 / (y + 1)`
+	 * Exponential Moving Average. In EMA weighting factors decrease exponentially.
+	 *
+	 * It calculates by using a formula: `EMA = alpha * x + (1 - alpha) * EMA[1]`, where `alpha = 2 / (y + 1)`.
 	 *
 	 * @param source - Series of values to process.
 	 * @param length - Number of bars (length).
@@ -12339,11 +13123,11 @@ export interface PineJSStd {
 	/**
 	 * For a given series replaces NaN values with previous nearest non-NaN value.
 	 *
-	 * @param current - Series of values to process.
+	 * @param n_current - Series of values to process.
 	 * @param context - PineJS execution context.
 	 * @returns Series without na gaps.
 	 */
-	fixnan(current: IPineSeries, context: IContext): IPineSeries;
+	fixnan(n_current: number, context: IContext): number;
 	/**
 	 * Lowest value offset for a given number of bars back.
 	 *
@@ -12381,13 +13165,13 @@ export interface PineJSStd {
 	 */
 	highest(source: IPineSeries, length: number, context: IContext): number;
 	/**
-	 * Cumulative (total) sum of `x`. In other words it's a sum of all elements of `x`.
+	 * Cumulative (total) sum. The function tracks the previous values internally.
 	 *
-	 * @param x - Series of values to process.
-	 * @param context - PineJS execution context.
-	 * @returns Total sum series.
+	 * @param n_value Value to add to the sum.
+	 * @param context PineJS execution context.
+	 * @returns The sum.
 	 */
-	cum(x: IPineSeries, context: IContext): number;
+	cum(n_value: number, context: IContext): number;
 	/**
 	 * Accumulation/distribution index.
 	 *
@@ -12427,14 +13211,14 @@ export interface PineJSStd {
 	 */
 	tsi(source: IPineSeries, shortLength: number, longLength: number, context: IContext): number;
 	/**
-	 * Crossing of series
+	 * Crossing of series.
 	 *
-	 * @param x - First series.
-	 * @param y - Second series.
+	 * @param n_0 - First value.
+	 * @param n_1 - Second value.
 	 * @param context - PineJS execution context.
 	 * @returns `true` if two series have crossed each other, otherwise `false`.
 	 */
-	cross(x: IPineSeries, y: IPineSeries, context: IContext): boolean;
+	cross(n_0: number, n_1: number, context: IContext): boolean;
 	/**
 	 * Linear regression curve. A line that best fits the prices specified over a user-defined time period.
 	 * It is calculated using the least squares method. The result of this function is calculated using the formula:
@@ -12451,12 +13235,12 @@ export interface PineJSStd {
 	 * Parabolic SAR (parabolic stop and reverse) is a method devised by J. Welles Wilder, Jr., to find potential reversals in the market price direction of traded goods.
 	 *
 	 * @param start - Start.
-	 * @param inc - Increment
-	 * @param max - Maximum
+	 * @param inc - Increment.
+	 * @param max - Maximum.
 	 * @param context - PineJS execution context.
-	 * @returns Parabolic SAR.
+	 * @returns Parabolic SAR value.
 	 */
-	sar(start: IPineSeries, inc: number, max: number, context: IContext): number;
+	sar(start: number, inc: number, max: number, context: IContext): number;
 	/**
 	 * Arnaud Legoux Moving Average. It uses Gaussian distribution as weights for moving average.
 	 *
@@ -12520,6 +13304,15 @@ export interface PineJSStd {
 	 */
 	add_days_considering_dst(timezone: string, utcTime: Date, daysCount: number): Date;
 	/**
+	 * Get time in `yearsCount` number of years while taking Daylight savings time into account.
+	 *
+	 * @param timezone - Timezone
+	 * @param utcTime - Date (JS built-in)
+	 * @param yearsCount - Number of years
+	 * @returns The time is `yearsCount` number of years, taking into account Daylight savings time.
+	 */
+	add_years_considering_dst(timezone: string, utcTime: Date, yearsCount: number): Date;
+	/**
 	 * Calculates the directional movement values +DI, -DI, DX, ADX, and ADXR.
 	 *
 	 * @param diLength - Number of bars (length) used when calculating the +DI and -DI values.
@@ -12538,55 +13331,55 @@ export interface PineJSStd {
 	 * Test value if it's a NaN.
 	 *
 	 * @param n - value to test
-	 * @returns `true` if `x` is not a valid number (`x` is `NaN`), otherwise `false`.
+	 * @returns `1` if `n` is not a valid number (`n` is `NaN`), otherwise `0`. Returns `NaN` if `n` is undefined.
 	 */
-	na(n: number): boolean;
+	na(n?: number): number;
 	/**
 	 * Replaces NaN values with zeros (or given value) in a series.
 	 *
 	 * @param x - value to test (and potentially replace)
-	 * @param y - fallback value
+	 * @param y - fallback value. `0` by default.
 	 * @returns `x` if it's a valid (not NaN) number, otherwise `y`
 	 */
-	nz(x: number, y: number): number;
+	nz(x: number, y?: number): number;
 	/**
-	 * Logical AND. Applicable to boolean expressions.
+	 * Logical AND.
 	 *
-	 * @returns Boolean value
+	 * @returns `1` if both values are truthy, `0` otherwise.
 	 */
-	and(expr1: boolean, expr2: boolean): boolean;
+	and(n_0: number, n_1: number): number;
 	/**
-	 * Logical OR. Applicable to boolean expressions.
+	 * Logical OR.
 	 *
-	 * @returns Boolean value
+	 * @returns `1` if either value is truthy, `0` otherwise.
 	 */
-	or(expr1: boolean, expr2: boolean): boolean;
+	or(n_0: number, n_1: number): number;
 	/**
-	 * Logical negation (NOT). Applicable to boolean expressions.
+	 * Logical negation (NOT).
 	 *
-	 * @returns Boolean value
+	 * @returns `1` if value is falsy, `0` if value is truthy.
 	 */
-	not(expr1: boolean): boolean;
+	not(n_0: number): number;
 	/**
 	 * Maximum number in the array
 	 *
 	 * @returns The greatest of multiple given values
 	 */
-	max<T>(...values: T[]): T;
+	max(...values: number[]): number;
 	/**
 	 * Minimum number in the array
 	 *
 	 * @returns The smallest of multiple given values
 	 */
-	min<T>(...values: T[]): T;
+	min(...values: number[]): number;
 	/**
 	 * Mathematical power function.
 	 *
 	 * @param base - Specify the base to use.
 	 * @param exponent - Specifies the exponent.
-	 * @returns `x` raised to the power of `y`. If `x` is a series, it is calculated elementwise.
+	 * @returns `x` raised to the power of `y`.
 	 */
-	pow<T extends number | IPineSeries>(base: T, exponent: number): T;
+	pow(base: number, exponent: number): number;
 	/**
 	 * Absolute value of x is x if x >= 0, or -x otherwise.
 	 *
@@ -12688,7 +13481,7 @@ export interface PineJSStd {
 	 *
 	 * @returns the average of the values
 	 */
-	avg<T>(...values: T[]): T;
+	avg(...values: number[]): number;
 	/**
 	 * Current bar index
 	 *
@@ -12696,7 +13489,41 @@ export interface PineJSStd {
 	 * @returns Current bar index. Numbering is zero-based, index of the first historical bar is 0.
 	 */
 	n(context: IContext): number;
-	[key: string]: (...params: any[]) => any;
+	/**
+	 * Check if a value is zero.
+	 *
+	 * @param v the value to test.
+	 * @returns `true` if the value is zero, `false` otherwise.
+	 */
+	isZero: (v: number) => number;
+	/**
+	 * Convert a number to a boolean.
+	 *
+	 * @param v the value to convert.
+	 * @returns `true` if the number is finite and non-zero, `false` otherwise.
+	 */
+	toBool(v: number): boolean;
+	/**
+	 * Get the symbol currency code.
+	 *
+	 * @param ctx PineJS execution context.
+	 * @returns Symbol currency code.
+	 */
+	currencyCode(ctx: IContext): string | null | undefined;
+	/**
+	 * Get the symbol unit ID.
+	 *
+	 * @param ctx PineJS execution context.
+	 * @returns Symbol unit ID.
+	 */
+	unitId(ctx: IContext): string | null | undefined;
+	/**
+	 * Get the symbol interval. For example: if the symbol has a resolution of `1D` then this function would return `1`.
+	 *
+	 * @param ctx PineJS execution context.
+	 * @returns Symbol interval.
+	 */
+	interval(ctx: IContext): number;
 }
 export interface PineStudyResultComposite<TPineStudyResultSimple> {
 	/** Type is composite */
@@ -13334,7 +14161,7 @@ export interface RawStudyMetaInfoBase {
 	readonly shortDescription: string;
 	/** Name for the study */
 	readonly name?: string;
-	/** Metainfo version of the Charting Library, the current is 51. Default is 0. */
+	/** Metainfo version of the study, the current is 51. Default is 0. */
 	readonly _metainfoVersion?: number;
 	/** Precision of the study's output values (quantity of digits after the decimal separator) */
 	readonly precision?: number | string;
@@ -13925,7 +14752,8 @@ export interface SchiffpitchforkLineToolOverrides {
 	"linetoolschiffpitchfork.transparency": number;
 }
 /**
- * Symbol search result item
+ * [Symbol Search](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Symbol-Search) result item.
+ * Pass the resulting array of symbols as a parameter to {@link SearchSymbolsCallback} of the [`searchSymbols`](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Datafeed-API#searchsymbols) method.
  *
  * @example
  * ```
@@ -13934,7 +14762,7 @@ export interface SchiffpitchforkLineToolOverrides {
  * 	exchange: 'NasdaqNM',
  * 	full_name: 'NasdaqNM:AAPL',
  * 	symbol: 'AAPL',
- *  ticker: 'AAPL',
+ * 	ticker: 'AAPL',
  * 	type: 'stock',
  * }
  * ```
@@ -14146,7 +14974,7 @@ export interface SingleBrokerMetaInfo {
 	orderRules?: OrderRule[];
 	/**
 	 * This optional field can be used to replace the standard Order Ticket and the Add Protection dialogs with your own.
-	 * Values of the following two fields are functions that are called by the Trading Terminal to show the dialogs. Each function shows a dialog and returns a `Promise` object that should be resolved when the operation is finished or cancelled.
+	 * Values of the following two fields are functions that are called by the Trading Platform to show the dialogs. Each function shows a dialog and returns a `Promise` object that should be resolved when the operation is finished or cancelled.
 	 *
 	 * **NOTE:** The returned `Promise` object should be resolved with either `true` or `false` value.
 	 *
@@ -14172,6 +15000,10 @@ export interface SortingParameters {
 export interface StandardFormattersDependenciesMapping {
 	[StandardFormatterName.Default]: string[];
 	[StandardFormatterName.Symbol]: [
+		brokerSymbolProperty: string,
+		symbolProperty: string,
+		message: string
+	] | [
 		brokerSymbolProperty: string,
 		symbolProperty: string
 	];
@@ -14211,6 +15043,10 @@ export interface StandardFormattersDependenciesMapping {
 	[StandardFormatterName.Fixed]: [
 		valueProperty: string
 	];
+	[StandardFormatterName.FixedInCurrency]: [
+		valueProperty: string,
+		currencyProperty: string
+	];
 	[StandardFormatterName.VariablePrecision]: [
 		valueProperty: string
 	];
@@ -14239,7 +15075,6 @@ export interface StandardFormattersDependenciesMapping {
 	[StandardFormatterName.Empty]: [
 	];
 }
-
 /**
  * Position defined by an OHLC price on a bar at a specified time.
  */
@@ -14634,7 +15469,7 @@ export interface StudyInputBaseInfo {
 	/** default value of the input variable. It has the specific type for a given input and can be optional. */
 	readonly defval?: StudyInputValue;
 	/** Input type */
-	readonly type: string;
+	readonly type: StudyInputType;
 	/** if true, then user will be asked to confirm input value before indicator is added to chart. Default value is false. */
 	readonly confirm?: boolean;
 	/** Is the input hidden */
@@ -14789,6 +15624,7 @@ export interface StudyOrDrawingAddedToChartEventParams {
 }
 /**
  * Study overrides.
+ * See [Studies Overrides](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides) to get a list of all possible properties to override.
  *
  * @example { 'a.overridable.property': 123 }
  */
@@ -15353,18 +16189,18 @@ export interface SubscribeEventsMap {
 	onSelectedLineToolChanged: EmptyCallback;
 	/**
 	 * Amount or placement of the charts is about to be changed.
-	 * **Note:** this event is only applicable to Trading Terminal.
+	 * **Note:** this event is only applicable to Trading Platform.
 	 * @param  {LayoutType} newLayoutType - whether the layout is single or multi-chart
 	 */
 	layout_about_to_be_changed: (newLayoutType: LayoutType) => void;
 	/**
 	 * Amount or placement of the charts is changed.
-	 * **Note:** this event is only applicable to Trading Terminal.
+	 * **Note:** this event is only applicable to Trading Platform.
 	 */
 	layout_changed: EmptyCallback;
 	/**
 	 * Active chart has changed
-	 * **Note:** this event is only applicable to Trading Terminal.
+	 * **Note:** this event is only applicable to Trading Platform.
 	 * @param  {number} chartIndex - index of the active chart
 	 */
 	activeChartChanged: (chartIndex: number) => void;
@@ -15780,7 +16616,29 @@ export interface TradingCustomization {
 	order: Overrides;
 }
 export interface TradingDialogOptions {
-	/** Custom fields to be displayed in the dialog (adds additional input fields to the Order dialog). */
+	/** Custom fields to be displayed in the dialog (adds additional input fields to the Order dialog).
+	 *
+	 * **Example**
+	 * ```javascript
+	 * customFields: [
+	 *     {
+	 *         inputType: 'TextWithCheckBox',
+	 *         id: '2410',
+	 *         title: 'Digital Signature',
+	 *         placeHolder: 'Enter your personal digital signature',
+	 *         value: {
+	 *             text: '',
+	 *             checked: false,
+	 *         },
+	 *         customInfo: {
+	 *             asterix: true,
+	 *             checkboxTitle: 'Save',
+	 *         },
+	 *     }
+	 * ]
+	 * ```
+	 *
+	 */
 	customFields?: TradingDialogCustomField[];
 }
 export interface TradingQuotes {
@@ -15830,9 +16688,9 @@ export interface TradingTerminalWidgetOptions extends Omit<ChartingLibraryWidget
 	 * See {@link ChartingLibraryWidgetOptions.favorites}
 	 */
 	favorites?: Favorites<TradingTerminalChartTypeFavorites>;
-	/** configuration flags for the Trading Terminal. */
+	/** configuration flags for the Trading Platform. */
 	brokerConfig?: SingleBrokerMetaInfo;
-	/** configuration flags for the Trading Terminal. */
+	/** configuration flags for the Trading Platform. */
 	broker_config?: SingleBrokerMetaInfo;
 	/** Connection configuration settings for Rest Broker API */
 	restConfig?: RestBrokerConnectionInfo;
@@ -15886,6 +16744,10 @@ export interface TradingTerminalWidgetOptions extends Omit<ChartingLibraryWidget
 	 */
 	rss_news_feed?: RssNewsFeedParams;
 	/**
+	 * Title for the News Widget
+	 */
+	rss_news_title?: string;
+	/**
 	 * Use this property to set your own news getter function. Both the `symbol` and `callback` will be passed to the function.
 	 *
 	 * The callback function should be called with an object. The object should have two properties: `title` which is a optional string, and `newsItems` which is an array of news objects that have the following structure:
@@ -15908,7 +16770,10 @@ export interface TradingTerminalWidgetOptions extends Omit<ChartingLibraryWidget
 	news_provider?: GetNewsFunction;
 	/** Override customizations for trading */
 	trading_customization?: TradingCustomization;
-	/** Alias for {@link broker_factory} */
+	/**
+	 * @deprecated
+	 * Alias for {@link broker_factory}
+	 */
 	brokerFactory?(host: IBrokerConnectionAdapterHost): IBrokerWithoutRealtime | IBrokerTerminal;
 	/**
 	 * Use this field to pass the function that returns a new object which implements Broker API. This is a function that accepts the Trading Host ({@link IBrokerConnectionAdapterHost}).
@@ -15920,19 +16785,6 @@ export interface TradingTerminalWidgetOptions extends Omit<ChartingLibraryWidget
 	 * @param host - Trading Host
 	 */
 	broker_factory?(host: IBrokerConnectionAdapterHost): IBrokerWithoutRealtime | IBrokerTerminal;
-}
-/**
- * Additional translation options
- */
-export interface TranslateOptions {
-	/** Plural of the phrase */
-	plural?: string;
-	/** Count of the phrase */
-	count?: number;
-	/** Context of the phrase */
-	context?: string;
-	/** Replacements object */
-	replace?: Record<string, string>;
 }
 /**
  * Override properties for the Trendangle drawing tool.
@@ -16578,7 +17430,15 @@ export interface WidgetBarParams {
 	watchlist_settings?: {
 		/**
 		 * Sets the list of default symbols for watchlist.
+		 *
+		 * Any item in the list which is prefixed with `###` will be considered a
+		 * section divider in the watchlist.
 		 * @default []
+		 *
+		 * **Example:**
+		 * ```
+		 * default_symbols: ['###TOP SECTION', 'AAPL', 'IBM', '###SECOND SECTION', 'MSFT']
+		 * ```
 		 */
 		default_symbols: string[];
 		/**
@@ -16607,18 +17467,18 @@ export type CellAlignment = "left" | "right";
  */
 export type ChartActionId = "chartProperties" | "compareOrAdd" | "scalesProperties" | "paneObjectTree" | "insertIndicator" | "symbolSearch" | "changeInterval" | "timeScaleReset" | "chartReset" | "seriesHide" | "studyHide" | "lineToggleLock" | "lineHide" | "scaleSeriesOnly" | "drawingToolbarAction" | "stayInDrawingModeAction" | "hideAllMarks" | "showCountdown" | "showSeriesLastValue" | "showSymbolLabelsAction" | "showStudyLastValue" | "showStudyPlotNamesAction" | "undo" | "redo" | "paneRemoveAllStudiesDrawingTools" | "showSymbolInfoDialog";
 /**
- * Chart type names for use within the `favourites` widget constructor option. This type is for Charting Library, if you are looking for the Trading Terminal type then please see {@link TradingTerminalChartTypeFavorites}.
+ * Chart type names for use within the `favourites` widget constructor option. This type is for Advanced Charts, if you are looking for the Trading Platform type then please see {@link TradingTerminalChartTypeFavorites}.
  *
  * See {@link Favorites} for the widget constructor option where you can define these favorites, and {@link ChartingLibraryWidgetOptions.favorites} for the Widget Constructor option.
  */
 export type ChartTypeFavorites = "Area" | "Bars" | "Candles" | "Heiken Ashi" | "Hollow Candles" | "Line" | "Line Break" | "Baseline" | "LineWithMarkers" | "Stepline" | "Columns" | "High-low";
-/** This is the list of all featuresets that work on Charting Library */
+/** This is the list of all [featuresets](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets.md) that work in Advanced Charts */
 export type ChartingLibraryFeatureset =
 /** Allows storing all properties (including favorites) to the localstorage @default true */
 "use_localstorage_for_settings" |
 /** Disabling this feature hides "Favorite this item" icon for Drawings and Intervals @default true */
 "items_favoriting" |
-/** Can be disabled to forbid storing chart properties to the localstorage while allowing to save other properties. The other properties are favorites in the Charting Library and Watchlist symbols and some panels states in the Trading Terminal @default true @default true */
+/** Can be disabled to forbid storing chart properties to the localstorage while allowing to save other properties. The other properties are favorites in the Advanced Charts and Watchlist symbols and some panels states in the Trading Platform @default true @default true */
 "save_chart_properties_to_local_storage" |
 /** Add the volume indicator upon initialisation of the chart @default true */
 "create_volume_indicator_by_default" |
@@ -16768,7 +17628,7 @@ export type ChartingLibraryFeatureset =
 "show_chart_property_page" |
 /** Allows overrides for the price scale @default true */
 "chart_property_page_scales" |
-/** This feature is for the Trading Terminal only @default true */
+/** This feature is for the Trading Platform only @default true */
 "chart_property_page_trading" |
 /** Shows the right margin editor in the setting dialog @default true */
 "chart_property_page_right_margin_editor" |
@@ -16847,6 +17707,12 @@ export type ChartingLibraryFeatureset =
 /** Show the option to specify the default right margin in percentage within chart settings dialog @default false */
 "show_percent_option_for_right_margin" |
 /**
+ * Lock the visible range when adjusting the percentage right margin via the settings dialog.
+ * This applies when the chart is already at the current default margin position.
+ * @default false
+ */
+"lock_visible_time_range_when_adjusting_percentage_right_margin" |
+/**
  * Alternative loading mode for the library, which can be used to support
  * older browsers and a few non-standard browsers.
  * @default false
@@ -16862,7 +17728,7 @@ export type ChartingLibraryFeatureset =
 "chart_template_storage" |
 /**
  * When chart data is reset, then re-request data for just the visible range (instead of the entire range of the existing data loaded).
- * @default true
+ * @default false
  */
 "request_only_visible_range_on_reset" |
 /** Clear pane price scales when the main series has an error or has no bars. @default true */
@@ -16877,16 +17743,37 @@ export type ChartingLibraryFeatureset =
  * @default false
  */
 "show_exchange_logos" |
+/**
+ * Display the main symbol's logo within the legend. This requires that `show_symbol_logos` is enabled.
+ * @default true
+ */
+"show_symbol_logo_in_legend" |
+/**
+ * Display the symbol's logo within the legend for compare studies. This requires that `show_symbol_logos` and `show_symbol_logo_in_legend` are enabled.
+ * @default true
+ */
+"show_symbol_logo_for_compare_studies" |
+/**
+ * Display legend values when on mobile.
+ * @default false
+ */
+"always_show_legend_values_on_mobile" |
 /** Enable studies to extend the time scale, if enabled in the study metainfo */
-"studies_extend_time_scale";
+"studies_extend_time_scale" |
+/**
+ * Enable accessibility features. Adds a keyboard shortcut which turns on keyboard navigation (alt/opt + z).
+ * @default true
+ */
+"accessibility";
 /** These are defining the types for a background */
 export type ColorTypes = "solid" | "gradient";
 /**
  * Context menu items processor signature
  * @param  {readonlyIActionVariant[]} items - an array of items the library wants to display
  * @param  {ActionsFactory} actionsFactory - factory you could use to create a new items for the context menu.
+ * @param  {CreateContextMenuParams} params - an object representing additional information about the context menu, such as the menu name.
  */
-export type ContextMenuItemsProcessor = (items: readonly IActionVariant[], actionsFactory: ActionsFactory) => Promise<readonly IActionVariant[]>;
+export type ContextMenuItemsProcessor = (items: readonly IActionVariant[], actionsFactory: ActionsFactory, params: CreateContextMenuParams) => Promise<readonly IActionVariant[]>;
 /**
  * @param  {readonlyIActionVariant[]} items - an array of items the library wants to display
  * @param  {CreateContextMenuParams} params - an object representing where the user right-clicked on (only if there is an existing menu)
@@ -16907,13 +17794,14 @@ export type CustomTableFormatElementFunction<T extends TableFormatterInputValues
  * Identifier for a custom timezone (string).
  */
 export type CustomTimezoneId = Nominal<"CustomTimezoneId", string>;
-export type CustomTimezones = "Africa/Cairo" | "Africa/Casablanca" | "Africa/Johannesburg" | "Africa/Lagos" | "Africa/Nairobi" | "Africa/Tunis" | "America/Anchorage" | "America/Argentina/Buenos_Aires" | "America/Bogota" | "America/Caracas" | "America/Chicago" | "America/El_Salvador" | "America/Juneau" | "America/Lima" | "America/Los_Angeles" | "America/Mexico_City" | "America/New_York" | "America/Phoenix" | "America/Santiago" | "America/Sao_Paulo" | "America/Toronto" | "America/Vancouver" | "Asia/Almaty" | "Asia/Ashkhabad" | "Asia/Bahrain" | "Asia/Bangkok" | "Asia/Chongqing" | "Asia/Colombo" | "Asia/Dubai" | "Asia/Ho_Chi_Minh" | "Asia/Hong_Kong" | "Asia/Jakarta" | "Asia/Jerusalem" | "Asia/Karachi" | "Asia/Kathmandu" | "Asia/Kolkata" | "Asia/Kuwait" | "Asia/Manila" | "Asia/Muscat" | "Asia/Nicosia" | "Asia/Qatar" | "Asia/Riyadh" | "Asia/Seoul" | "Asia/Shanghai" | "Asia/Singapore" | "Asia/Taipei" | "Asia/Tehran" | "Asia/Tokyo" | "Asia/Yangon" | "Atlantic/Reykjavik" | "Australia/Adelaide" | "Australia/Brisbane" | "Australia/Perth" | "Australia/Sydney" | "Europe/Amsterdam" | "Europe/Athens" | "Europe/Belgrade" | "Europe/Berlin" | "Europe/Bratislava" | "Europe/Brussels" | "Europe/Bucharest" | "Europe/Budapest" | "Europe/Copenhagen" | "Europe/Dublin" | "Europe/Helsinki" | "Europe/Istanbul" | "Europe/Lisbon" | "Europe/London" | "Europe/Luxembourg" | "Europe/Madrid" | "Europe/Malta" | "Europe/Moscow" | "Europe/Oslo" | "Europe/Paris" | "Europe/Riga" | "Europe/Rome" | "Europe/Stockholm" | "Europe/Tallinn" | "Europe/Vilnius" | "Europe/Warsaw" | "Europe/Zurich" | "Pacific/Auckland" | "Pacific/Chatham" | "Pacific/Fakaofo" | "Pacific/Honolulu" | "Pacific/Norfolk" | "US/Mountain";
+export type CustomTimezones = "Africa/Cairo" | "Africa/Casablanca" | "Africa/Johannesburg" | "Africa/Lagos" | "Africa/Nairobi" | "Africa/Tunis" | "America/Anchorage" | "America/Argentina/Buenos_Aires" | "America/Bogota" | "America/Caracas" | "America/Chicago" | "America/El_Salvador" | "America/Juneau" | "America/Lima" | "America/Los_Angeles" | "America/Mexico_City" | "America/New_York" | "America/Phoenix" | "America/Santiago" | "America/Sao_Paulo" | "America/Toronto" | "America/Vancouver" | "Asia/Almaty" | "Asia/Ashkhabad" | "Asia/Bahrain" | "Asia/Bangkok" | "Asia/Chongqing" | "Asia/Colombo" | "Asia/Dhaka" | "Asia/Dubai" | "Asia/Ho_Chi_Minh" | "Asia/Hong_Kong" | "Asia/Jakarta" | "Asia/Jerusalem" | "Asia/Karachi" | "Asia/Kathmandu" | "Asia/Kolkata" | "Asia/Kuwait" | "Asia/Manila" | "Asia/Muscat" | "Asia/Nicosia" | "Asia/Qatar" | "Asia/Riyadh" | "Asia/Seoul" | "Asia/Shanghai" | "Asia/Singapore" | "Asia/Taipei" | "Asia/Tehran" | "Asia/Tokyo" | "Asia/Yangon" | "Atlantic/Reykjavik" | "Australia/Adelaide" | "Australia/Brisbane" | "Australia/Perth" | "Australia/Sydney" | "Europe/Amsterdam" | "Europe/Athens" | "Europe/Belgrade" | "Europe/Berlin" | "Europe/Bratislava" | "Europe/Brussels" | "Europe/Bucharest" | "Europe/Budapest" | "Europe/Copenhagen" | "Europe/Dublin" | "Europe/Helsinki" | "Europe/Istanbul" | "Europe/Lisbon" | "Europe/London" | "Europe/Luxembourg" | "Europe/Madrid" | "Europe/Malta" | "Europe/Moscow" | "Europe/Oslo" | "Europe/Paris" | "Europe/Riga" | "Europe/Rome" | "Europe/Stockholm" | "Europe/Tallinn" | "Europe/Vilnius" | "Europe/Warsaw" | "Europe/Zurich" | "Pacific/Auckland" | "Pacific/Chatham" | "Pacific/Fakaofo" | "Pacific/Honolulu" | "Pacific/Norfolk" | "US/Mountain";
 /**
  * Custom translation function
  * @param  {string} key - key for string to be translated
- * @param  {TranslateOptions} options? - additional translation options
+ * @param  {CustomTranslateOptions} [options] - additional translation options
+ * @param  {boolean} [isTranslated] - True, if the provide key is already translated
  */
-export type CustomTranslateFunction = (key: string, options?: TranslateOptions) => string | null;
+export type CustomTranslateFunction = (key: string, options?: CustomTranslateOptions, isTranslated?: boolean) => string | null;
 export type DOMCallback = (data: DOMData) => void;
 export type DateFormat = keyof typeof dateFormatFunctions;
 export type DeepWriteable<T> = {
@@ -16969,7 +17857,7 @@ export type DrawingEventType = "click" | "move" | "remove" | "hide" | "show" | "
  *   - PERCENTAGE = 'percents'
  *   - MONEY = 'money'
  */
-export type DrawingOverrides = FivepointspatternLineToolOverrides | AbcdLineToolOverrides | ArcLineToolOverrides | ArrowLineToolOverrides | ArrowmarkdownLineToolOverrides | ArrowmarkerLineToolOverrides | ArrowmarkleftLineToolOverrides | ArrowmarkrightLineToolOverrides | ArrowmarkupLineToolOverrides | BalloonLineToolOverrides | BarspatternLineToolOverrides | BeziercubicLineToolOverrides | BezierquadroLineToolOverrides | BrushLineToolOverrides | CalloutLineToolOverrides | CircleLineToolOverrides | CirclelinesLineToolOverrides | CommentLineToolOverrides | CrosslineLineToolOverrides | CypherpatternLineToolOverrides | DisjointangleLineToolOverrides | ElliottcorrectionLineToolOverrides | ElliottdoublecomboLineToolOverrides | ElliottimpulseLineToolOverrides | ElliotttriangleLineToolOverrides | ElliotttriplecomboLineToolOverrides | EllipseLineToolOverrides | EmojiLineToolOverrides | ExecutionLineToolOverrides | ExtendedLineToolOverrides | FibchannelLineToolOverrides | FibcirclesLineToolOverrides | FibretracementLineToolOverrides | FibspeedresistancearcsLineToolOverrides | FibspeedresistancefanLineToolOverrides | FibspiralLineToolOverrides | FibtimezoneLineToolOverrides | FibwedgeLineToolOverrides | FlagmarkLineToolOverrides | FlatbottomLineToolOverrides | GanncomplexLineToolOverrides | GannfanLineToolOverrides | GannfixedLineToolOverrides | GannsquareLineToolOverrides | GhostfeedLineToolOverrides | HeadandshouldersLineToolOverrides | HighlighterLineToolOverrides | HorzlineLineToolOverrides | HorzrayLineToolOverrides | IconLineToolOverrides | ImageLineToolOverrides | InfolineLineToolOverrides | InsidepitchforkLineToolOverrides | NoteLineToolOverrides | NoteabsoluteLineToolOverrides | OrderLineToolOverrides | ParallelchannelLineToolOverrides | PathLineToolOverrides | PitchfanLineToolOverrides | PitchforkLineToolOverrides | PolylineLineToolOverrides | PositionLineToolOverrides | PredictionLineToolOverrides | PricelabelLineToolOverrides | ProjectionLineToolOverrides | RayLineToolOverrides | RectangleLineToolOverrides | RegressiontrendLineToolOverrides | RiskrewardlongLineToolOverrides | RiskrewardshortLineToolOverrides | RotatedrectangleLineToolOverrides | SchiffpitchforkLineToolOverrides | Schiffpitchfork2LineToolOverrides | SignpostLineToolOverrides | SinelineLineToolOverrides | StickerLineToolOverrides | TextLineToolOverrides | TextabsoluteLineToolOverrides | ThreedriversLineToolOverrides | TimecyclesLineToolOverrides | TrendangleLineToolOverrides | TrendbasedfibextensionLineToolOverrides | TrendbasedfibtimeLineToolOverrides | TrendlineLineToolOverrides | TriangleLineToolOverrides | TrianglepatternLineToolOverrides | VertlineLineToolOverrides;
+export type DrawingOverrides = FivepointspatternLineToolOverrides | AbcdLineToolOverrides | AnchoredvwapLineToolOverrides | ArcLineToolOverrides | ArrowLineToolOverrides | ArrowmarkdownLineToolOverrides | ArrowmarkerLineToolOverrides | ArrowmarkleftLineToolOverrides | ArrowmarkrightLineToolOverrides | ArrowmarkupLineToolOverrides | BalloonLineToolOverrides | BarspatternLineToolOverrides | BeziercubicLineToolOverrides | BezierquadroLineToolOverrides | BrushLineToolOverrides | CalloutLineToolOverrides | CircleLineToolOverrides | CirclelinesLineToolOverrides | CommentLineToolOverrides | CrosslineLineToolOverrides | CypherpatternLineToolOverrides | DisjointangleLineToolOverrides | ElliottcorrectionLineToolOverrides | ElliottdoublecomboLineToolOverrides | ElliottimpulseLineToolOverrides | ElliotttriangleLineToolOverrides | ElliotttriplecomboLineToolOverrides | EllipseLineToolOverrides | EmojiLineToolOverrides | ExecutionLineToolOverrides | ExtendedLineToolOverrides | FibchannelLineToolOverrides | FibcirclesLineToolOverrides | FibretracementLineToolOverrides | FibspeedresistancearcsLineToolOverrides | FibspeedresistancefanLineToolOverrides | FibspiralLineToolOverrides | FibtimezoneLineToolOverrides | FibwedgeLineToolOverrides | FlagmarkLineToolOverrides | FlatbottomLineToolOverrides | GanncomplexLineToolOverrides | GannfanLineToolOverrides | GannfixedLineToolOverrides | GannsquareLineToolOverrides | GhostfeedLineToolOverrides | HeadandshouldersLineToolOverrides | HighlighterLineToolOverrides | HorzlineLineToolOverrides | HorzrayLineToolOverrides | IconLineToolOverrides | ImageLineToolOverrides | InfolineLineToolOverrides | InsidepitchforkLineToolOverrides | NoteLineToolOverrides | NoteabsoluteLineToolOverrides | OrderLineToolOverrides | ParallelchannelLineToolOverrides | PathLineToolOverrides | PitchfanLineToolOverrides | PitchforkLineToolOverrides | PolylineLineToolOverrides | PositionLineToolOverrides | PredictionLineToolOverrides | PricelabelLineToolOverrides | ProjectionLineToolOverrides | RayLineToolOverrides | RectangleLineToolOverrides | RegressiontrendLineToolOverrides | RiskrewardlongLineToolOverrides | RiskrewardshortLineToolOverrides | RotatedrectangleLineToolOverrides | SchiffpitchforkLineToolOverrides | Schiffpitchfork2LineToolOverrides | SignpostLineToolOverrides | SinelineLineToolOverrides | StickerLineToolOverrides | TextLineToolOverrides | TextabsoluteLineToolOverrides | ThreedriversLineToolOverrides | TimecyclesLineToolOverrides | TrendangleLineToolOverrides | TrendbasedfibextensionLineToolOverrides | TrendbasedfibtimeLineToolOverrides | TrendlineLineToolOverrides | TriangleLineToolOverrides | TrianglepatternLineToolOverrides | VertlineLineToolOverrides;
 export type DrawingToolIdentifier = "arrow" | "cursor" | "dot" | "eraser" | "LineTool5PointsPattern" | "LineToolABCD" | "LineToolArc" | "LineToolArrow" | "LineToolArrowMarkDown" | "LineToolArrowMarker" | "LineToolArrowMarkLeft" | "LineToolArrowMarkRight" | "LineToolArrowMarkUp" | "LineToolBarsPattern" | "LineToolBezierCubic" | "LineToolBezierQuadro" | "LineToolBrush" | "LineToolCallout" | "LineToolCircle" | "LineToolCircleLines" | "LineToolComment" | "LineToolCrossLine" | "LineToolCypherPattern" | "LineToolDateAndPriceRange" | "LineToolDateRange" | "LineToolDisjointAngle" | "LineToolElliottCorrection" | "LineToolElliottDoubleCombo" | "LineToolElliottImpulse" | "LineToolElliottTriangle" | "LineToolElliottTripleCombo" | "LineToolEllipse" | "LineToolExtended" | "LineToolFibChannel" | "LineToolFibCircles" | "LineToolFibRetracement" | "LineToolFibSpeedResistanceArcs" | "LineToolFibSpeedResistanceFan" | "LineToolFibSpiral" | "LineToolFibTimeZone" | "LineToolFibWedge" | "LineToolFixedRangeVolumeProfile" | "LineToolFlagMark" | "LineToolFlatBottom" | "LineToolGannComplex" | "LineToolGannFan" | "LineToolGannFixed" | "LineToolGannSquare" | "LineToolGhostFeed" | "LineToolHeadAndShoulders" | "LineToolHighlighter" | "LineToolHorzLine" | "LineToolHorzRay" | "LineToolInfoLine" | "LineToolInsidePitchfork" | "LineToolNote" | "LineToolNoteAbsolute" | "LineToolParallelChannel" | "LineToolPath" | "LineToolPitchfan" | "LineToolPitchfork" | "LineToolPolyline" | "LineToolPrediction" | "LineToolPriceLabel" | "LineToolPriceNote" | "LineToolPriceRange" | "LineToolProjection" | "LineToolRay" | "LineToolRectangle" | "LineToolRegressionTrend" | "LineToolRiskRewardLong" | "LineToolRiskRewardShort" | "LineToolRotatedRectangle" | "LineToolSchiffPitchfork" | "LineToolSchiffPitchfork2" | "LineToolSignpost" | "LineToolSineLine" | "LineToolText" | "LineToolTextAbsolute" | "LineToolThreeDrivers" | "LineToolTimeCycles" | "LineToolTrendAngle" | "LineToolTrendBasedFibExtension" | "LineToolTrendBasedFibTime" | "LineToolTrendLine" | "LineToolTriangle" | "LineToolTrianglePattern" | "LineToolVertLine";
 /** Dropdown options which can be adjusted on an existing menu. */
 export type DropdownUpdateParams = Partial<Omit<DropdownParams, "align">>;
@@ -17052,7 +17940,7 @@ export type ISeriesStudyResult = [ /* time */
  */
 export type InputFieldValidator = (value: any) => InputFieldValidatorResult;
 export type InputFieldValidatorResult = PositiveBaseInputFieldValidatorResult | NegativeBaseInputFieldValidatorResult;
-export type LanguageCode = "ar" | "zh" | "cs" | "da_DK" | "ca_ES" | "nl_NL" | "en" | "et_EE" | "fr" | "de" | "el" | "he_IL" | "hu_HU" | "id_ID" | "it" | "ja" | "ko" | "fa" | "pl" | "pt" | "ro" | "ru" | "sk_SK" | "es" | "sv" | "th" | "tr" | "vi" | "no" | "ms_MY" | "zh_TW";
+export type LanguageCode = "ar" | "zh" | "cs" | "ca_ES" | "nl_NL" | "en" | "fr" | "de" | "el" | "he_IL" | "hu_HU" | "id_ID" | "it" | "ja" | "ko" | "fa" | "pl" | "pt" | "ro" | "ru" | "es" | "sv" | "th" | "tr" | "vi" | "ms_MY" | "zh_TW";
 export type LayoutType = SingleChartLayoutType | MultipleChartsLayoutType;
 export type LegendMode = "horizontal" | "vertical";
 export type LibrarySessionId = "regular" | "extended" | "premarket" | "postmarket";
@@ -17062,6 +17950,7 @@ export type OnActionExecuteHandler = (action: IAction) => void;
 export type OnActionUpdateHandler = (action: IAction) => void;
 export type OnReadyCallback = (configuration: DatafeedConfiguration) => void;
 export type Order = PlacedOrder | BracketOrder;
+export type OrderLineLengthUnit = "pixel" | "percentage";
 export type OrderTableColumn = AccountManagerColumn & {
 	/**
 	 * An optional numeric array of order statuses that is applied to order columns only. If it is available then the column will be displayed in the specified tabs of the status filter only.
@@ -17082,6 +17971,7 @@ export type PageName = "watchlist_details_news" | "data_window" | "object_tree";
  * Plot shape ID.
  */
 export type PlotShapeId = "shape_arrow_down" | "shape_arrow_up" | "shape_circle" | "shape_cross" | "shape_xcross" | "shape_diamond" | "shape_flag" | "shape_square" | "shape_label_down" | "shape_label_up" | "shape_triangle_down" | "shape_triangle_up";
+export type PositionLineLengthUnit = "pixel" | "percentage";
 export type PriceSource = "open" | "high" | "low" | "close";
 export type QuoteData = QuoteOkData | QuoteErrorData;
 /**
@@ -17102,7 +17992,7 @@ export type RawStudyMetaInformation = Omit<RawStudyMetaInfo, "defaults" | "plots
 	readonly defaults?: Readonly<DeepPartial<StudyDefaults>>;
 };
 /**
- * Resolution or time interval is a time period of one bar. Charting Library supports tick, intraday (seconds, minutes, hours), and DWM (daily, weekly, monthly) resolutions. The table below describes how to specify different types of resolutions:
+ * Resolution or time interval is a time period of one bar. Advanced Charts supports tick, intraday (seconds, minutes, hours), and DWM (daily, weekly, monthly) resolutions. The table below describes how to specify different types of resolutions:
  *
  * Resolution | Format | Example
  * ---------|----------|---------
@@ -17252,12 +18142,12 @@ export type TimezoneId = CustomTimezones | "Etc/UTC" | "exchange";
 export type TradableSolutions = ChangeAccountSolution | ChangeSymbolSolution | OpenUrlSolution;
 export type TradingDialogCustomField = CheckboxFieldMetaInfo | TextWithCheckboxFieldMetaInfo | CustomComboBoxMetaInfo;
 /**
- * Chart type names for use within the `favourites` widget constructor option. This type is for Trading Terminal, if you are looking for the Charting Library type then please see {@link ChartTypeFavorites}.
+ * Chart type names for use within the `favourites` widget constructor option. This type is for Trading Platform, if you are looking for the Advanced Charts type then please see {@link ChartTypeFavorites}.
  *
  * See {@link Favorites} for the widget constructor option where you can define these favorites, and {@link TradingTerminalWidgetOptions.favorites} for the Widget Constructor option.
  */
 export type TradingTerminalChartTypeFavorites = ChartTypeFavorites | "Renko" | "Kagi" | "Point & figure" | "Line Break";
-/** This is the list of all featuresets that work on Trading Terminal (which is an extension of Charting Library) */
+/** This is the list of all featuresets that work on Trading Platform (which is an extension of Advanced Charts) */
 export type TradingTerminalFeatureset = ChartingLibraryFeatureset |
 /** Enables the "plus" button on the price scale for quick trading @default true */
 "chart_crosshair_menu" |
@@ -17316,7 +18206,19 @@ export type TradingTerminalFeatureset = ChartingLibraryFeatureset |
 /** Hide the right_toolbar when initialising the chart. Can be expanded using the widgetBar API {@link IWidgetbarApi}  @default false */
 "hide_right_toolbar" |
 /** Hide the tabs within the right toolbar @default false */
-"hide_right_toolbar_tabs";
+"hide_right_toolbar_tabs" |
+/** Hide price scales when all sources attached to the price scale are hidden. */
+"hide_price_scale_if_all_sources_hidden" |
+/**
+ * Display the symbol's logo within the account manager panel. This requires that `show_symbol_logos` is enabled.
+ * @default true
+ */
+"show_symbol_logo_in_account_manager" |
+/**
+ * Display UI (buttons and context menu options) for creating sections within the watchlist.
+ * @default true
+ */
+"watchlist_sections";
 export type VisiblePlotsSet = "ohlcv" | "ohlc" | "c";
 export type WatchListSymbolListAddedCallback = (listId: string, symbols: string[]) => void;
 export type WatchListSymbolListChangedCallback = (listId: string) => void;

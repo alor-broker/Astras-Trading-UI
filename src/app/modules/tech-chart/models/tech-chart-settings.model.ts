@@ -3,4 +3,5 @@ import { InstrumentKey } from '../../../shared/models/instruments/instrument-key
 
 export interface TechChartSettings extends WidgetSettings, InstrumentKey {
   chartLayout?: object;
+  showTrades?: boolean;
 }

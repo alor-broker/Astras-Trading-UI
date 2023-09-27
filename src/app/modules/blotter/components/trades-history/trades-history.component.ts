@@ -52,6 +52,7 @@ import { Trade } from "../../../../shared/models/trades/trade.model";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
+import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 
 @Component({
   selector: 'ats-trades-history',
@@ -142,6 +143,7 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
     protected readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
+    private readonly tradesHistoryService: TradesHistoryService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(service, settingsService, translatorService, destroyRef);
@@ -198,7 +200,7 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
         return;
       }
 
-      const bufferItemsCount = 5;
+      const bufferItemsCount = 20;
       const bottomScrollOffset = scrollViewport.measureScrollOffset('bottom');
       if ((bottomScrollOffset / this.rowHeight) < bufferItemsCount) {
         const lastItem = loadedData[loadedData.length - 1];
@@ -237,8 +239,9 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
       tap(() => this.isLoading$.next(true)),
       withLatestFrom(this.settings$),
       switchMap(
-        ([, settings]) => this.service.getTradesHistory(
-          settings,
+        ([, settings]) => this.tradesHistoryService.getTradesHistoryForPortfolio(
+          settings.exchange,
+          settings.portfolio,
           {
             from: from,
             limit: itemsCount ?? 50
