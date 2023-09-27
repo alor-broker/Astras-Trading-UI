@@ -17,6 +17,7 @@ import {
 } from "../../../../shared/utils/testing";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
+import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 
 describe('TradesHistoryComponent', () => {
   let component: TradesHistoryComponent;
@@ -44,6 +45,12 @@ describe('TradesHistoryComponent', () => {
           provide: TranslatorService,
           useValue: {
             getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+          }
+        },
+        {
+          provide: TradesHistoryService,
+          useValue: {
+            getTradesHistoryForPortfolio: jasmine.createSpy('getTradesHistoryForPortfolio').and.returnValue(new Subject())
           }
         }
       ],

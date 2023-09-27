@@ -8,6 +8,11 @@
   "less": "меньше",
   "position": "Поз.",
   "MOEX": "Московская биржа",
+
+  "priceLabel": "Цена",
+  "qtyLabel": "Кол-во",
+  "sideLabel": "Сторона",
+
   "timeframes": {
     "all": {
       "desc": "Все",

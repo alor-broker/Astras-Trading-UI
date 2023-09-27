@@ -19,6 +19,14 @@
           <input formControlName='exchange' nz-input>
         </nz-form-control>
       </nz-form-item>
+      <nz-form-item class="one-row">
+        <nz-form-label nzFor="showTrades">
+          {{t('techChartSettings.showTradesLabel')}}
+        </nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName='showTrades'></nz-switch>
+        </nz-form-control>
+      </nz-form-item>
       <nz-form-item>
         <nz-collapse [nzBordered]="false" nzGhost>
           <nz-collapse-panel [nzHeader]="t('techChartSettings.advanced')">

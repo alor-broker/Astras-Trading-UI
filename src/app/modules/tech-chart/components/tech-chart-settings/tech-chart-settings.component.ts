@@ -56,7 +56,8 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
           instrumentGroup: settings.instrumentGroup
         } as InstrumentKey, Validators.required),
         exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
-        instrumentGroup: new UntypedFormControl(settings.instrumentGroup)
+        instrumentGroup: new UntypedFormControl(settings.instrumentGroup),
+        showTrades: new UntypedFormControl(settings.showTrades ?? false)
       });
     });
   }
