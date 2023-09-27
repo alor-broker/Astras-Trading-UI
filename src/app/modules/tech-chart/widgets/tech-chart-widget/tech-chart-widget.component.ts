@@ -9,7 +9,7 @@ import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-se
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { Observable } from 'rxjs';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
-import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { TerminalSettingsService } from 'src/app/shared/services/terminal-settings.service';
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
@@ -23,6 +23,7 @@ export class TechChartWidgetComponent implements OnInit {
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 

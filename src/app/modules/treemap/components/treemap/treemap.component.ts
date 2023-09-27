@@ -171,6 +171,9 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                       ? (tooltipItems[1]!.raw as any)._data.label
                       : (tooltipItems[0]!.raw as any)._data.label;
                   }
+                },
+                animation: {
+                  duration: 100
                 }
               },
             },
