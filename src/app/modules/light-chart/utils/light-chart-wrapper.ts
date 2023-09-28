@@ -5,8 +5,10 @@
 } from '../models/light-chart.models';
 import {
   BusinessDay,
-  ChartOptions, ColorType,
+  ChartOptions,
+  ColorType,
   createChart,
+  CrosshairMode,
   DeepPartial,
   HistogramData,
   IChartApi,
@@ -92,6 +94,9 @@ export class LightChartWrapper {
           color: this.config.themeColors.chartGridColor, // '#F0F3FA',
         },
       },
+      crosshair: {
+        mode: CrosshairMode.Normal
+      }
     };
   }
 
