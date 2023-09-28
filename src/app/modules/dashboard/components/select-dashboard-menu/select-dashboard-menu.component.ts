@@ -45,6 +45,9 @@ export class SelectDashboardMenuComponent implements OnInit {
   @Output()
   hideMenu = new EventEmitter();
 
+  @Output()
+  dropdownTriggerChange = new EventEmitter<'click' | 'hover'>();
+
   constructor(
     private dashboardService: ManageDashboardsService,
     private modal: NzModalService,

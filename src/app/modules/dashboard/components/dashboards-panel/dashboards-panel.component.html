@@ -37,7 +37,7 @@
           nzSize="small"
           nzType="text"
           [nzClickHide]="false"
-          nzTrigger="click"
+          [nzTrigger]="(dropdownTrigger$ | async) ?? 'hover'"
           [nzDropdownMenu]="dashboardsMenu"
           (nzVisibleChange)="changeDashboardSelectionMenuVisibility($event)"
           [nzVisible]="(isDashboardSelectionMenuVisible$ | async) ?? false"
@@ -57,6 +57,7 @@
             <ats-select-dashboard-menu
               (hideMenu)="changeDashboardSelectionMenuVisibility(false)"
               [visibilityChange]="(isDashboardSelectionMenuVisible$ | async) ?? false"
+              (dropdownTriggerChange)="dropdownTrigger$.next($event)"
             ></ats-select-dashboard-menu>
           </nz-dropdown-menu>
         </button>
