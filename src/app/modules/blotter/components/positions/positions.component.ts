@@ -242,4 +242,12 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
   reversePosition(position: PositionDisplay) {
     CommonOrderCommands.reversePositionsByMarket(position, undefined, this.ordersService);
   }
+
+  closeAllPositions(positions: readonly PositionDisplay[]){
+    positions
+      .filter(p => !!p.qtyTFutureBatch)
+      .forEach(p => {
+        this.closePosition(p);
+    });
+  }
 }

@@ -50,6 +50,8 @@
   "emptyPositions": "Позиций нет",
   "emptyPositionsWithFilters": "С такими фильтрами ничего не найдено",
 
+  "closeAllTooltip": "Закрыть ВСЕ позиции",
   "confirmClose": "Закрыть позицию?",
+  "confirmCloseAll": "Закрыть ВСЕ позиции?",
   "confirmReverse": "Перевернуть позицию?"
 }
