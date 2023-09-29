@@ -46,7 +46,7 @@ export class SelectDashboardMenuComponent implements OnInit {
   hideMenu = new EventEmitter();
 
   @Output()
-  dropdownTriggerChange = new EventEmitter<'click' | 'hover'>();
+  isNewDashboardFocused = new EventEmitter<boolean>();
 
   constructor(
     private dashboardService: ManageDashboardsService,

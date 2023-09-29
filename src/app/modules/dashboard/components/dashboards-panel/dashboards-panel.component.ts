@@ -116,6 +116,7 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
     this.selectedDashboardIndex$.complete();
     this.isDashboardSelectionMenuVisible$.complete();
     this.lastSelectedDashboard$.complete();
+    this.dropdownTrigger$.complete();
   }
 
   changeDashboardSelectionMenuVisibility(value: boolean) {

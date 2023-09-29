@@ -43,8 +43,8 @@
             <nz-form-control [nzErrorTip]="titleError">
               <input (keyup)="checkInputComplete($event)"
                      [placeholder]="t('dashboardSelectDashboardMenu.newDashboardTitlePlaceholder')" class="title-input"
-                     (focus)="dropdownTriggerChange.emit('click')"
-                     (blur)="dropdownTriggerChange.emit('hover')"
+                     (focus)="isNewDashboardFocused.emit(true)"
+                     (blur)="isNewDashboardFocused.emit(false)"
                      formControlName="title"
                      nz-input
                      type="text"/>

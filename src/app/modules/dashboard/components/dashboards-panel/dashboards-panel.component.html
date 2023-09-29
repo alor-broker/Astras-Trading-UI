@@ -57,7 +57,7 @@
             <ats-select-dashboard-menu
               (hideMenu)="changeDashboardSelectionMenuVisibility(false)"
               [visibilityChange]="(isDashboardSelectionMenuVisible$ | async) ?? false"
-              (dropdownTriggerChange)="dropdownTrigger$.next($event)"
+              (isNewDashboardFocused)="dropdownTrigger$.next($event ? 'click' : 'hover')"
             ></ats-select-dashboard-menu>
           </nz-dropdown-menu>
         </button>
