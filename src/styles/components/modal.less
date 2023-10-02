@@ -1,35 +1,39 @@
 ﻿@import 'theme-mixin';
+@import 'scrollable-mixin';
 
 .themeMixin({
   .ant-modal-close {
     color: @text-color;
   }
 
-  .ant-modal-title {
-    .title {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+  .ant-modal-title .title .right button {
+    border: none;
+    opacity: 0.5;
+    font-size: @font-size-base;
 
-      .right {
-        white-space: nowrap;
-        margin-right: -8px;
-        display: flex;
-        flex-direction: row-reverse;
-
-        button {
-          border: none;
-          opacity: 0.5;
-          font-size: @font-size-base;
-
-          &:hover, &:focus {
-            color: @text-color;
-            text-decoration: none;
-          }
-        }
-      }
+    &:hover, &:focus {
+      color: @text-color;
+      text-decoration: none;
     }
   }
 });
 
+.ant-modal-title {
+  .title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
 
+    .right {
+      white-space: nowrap;
+      margin-right: -8px;
+      display: flex;
+      flex-direction: row-reverse;
+    }
+  }
+}
+
+.ant-modal-body {
+  max-height: 70vh;
+  .scrollable();
+}

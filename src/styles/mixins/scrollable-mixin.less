@@ -1,0 +1,24 @@
+@import 'theme-mixin';
+
+.scrollable() {
+  .themeMixin({
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: @scrollbar-color transparent;
+
+    &::-webkit-scrollbar {
+      width: 3px;
+      height: 3px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: @scrollbar-color; /* or add it to the track */
+      border-radius: 10px;
+    }
+  });
+}
