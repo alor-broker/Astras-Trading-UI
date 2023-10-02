@@ -50,6 +50,8 @@
   "emptyPositions": "There are no positions",
   "emptyPositionsWithFilters": "Nothing found with these filters",
 
+  "closeAllTooltip": "Close ALL positions",
   "confirmClose": "Do you want to CLOSE the position?",
+  "confirmCloseAll": "Do you want to CLOSE ALL positions?",
   "confirmReverse": "Do you want to REVERSE the position?"
 }

@@ -1,17 +1,12 @@
 import {
-  AfterViewInit,
   Component,
   DestroyRef,
   Input,
   OnDestroy,
   OnInit,
-  QueryList,
-  ViewChildren
 } from '@angular/core';
 import {
   BehaviorSubject,
-  filter,
-  fromEvent,
   Observable,
   shareReplay,
   take,
@@ -21,12 +16,11 @@ import {
 import { Dashboard, DefaultDashboardName } from "../../../../shared/models/dashboard/dashboard.model";
 import { NzSegmentedOption } from "ng-zorro-antd/segmented/types";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { debounceTime, map, startWith } from "rxjs/operators";
+import { debounceTime, map } from "rxjs/operators";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { NzDropDownDirective } from "ng-zorro-antd/dropdown";
 
 interface DashboardSegmentedOption extends NzSegmentedOption {
   value: string;
@@ -37,14 +31,13 @@ interface DashboardSegmentedOption extends NzSegmentedOption {
   templateUrl: './dashboards-panel.component.html',
   styleUrls: ['./dashboards-panel.component.less']
 })
-export class DashboardsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DashboardsPanelComponent implements OnInit, OnDestroy {
   @Input({ required: true }) selectedDashboard!: Dashboard | null;
   favoriteDashboards$!: Observable<DashboardSegmentedOption[]>;
   selectedDashboardIndex$ = new BehaviorSubject<number>(0);
   isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
   lastSelectedDashboard$ = new BehaviorSubject<Dashboard | null>(null);
-
-  @ViewChildren(NzDropDownDirective) dashboardsDropdown!: QueryList<NzDropDownDirective>;
+  dropdownTrigger$ = new BehaviorSubject<'click' | 'hover'>('hover');
 
   constructor(
     private readonly manageDashboardsService: ManageDashboardsService,
@@ -119,27 +112,11 @@ export class DashboardsPanelComponent implements OnInit, AfterViewInit, OnDestro
       .subscribe(i => this.selectedDashboardIndex$.next(i));
   }
 
-  ngAfterViewInit() {
-    this.dashboardsDropdown.changes
-      .pipe(
-        map(q => q.first),
-        startWith(this.dashboardsDropdown.first),
-        filter((el): el is NzDropDownDirective => !!el),
-        mapWith(
-          el => fromEvent(el.elementRef.nativeElement, 'mouseenter'),
-          (el) => el
-        ),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(dropdown => {
-        dropdown.nzVisibleChange.emit(true);
-    });
-  }
-
   ngOnDestroy() {
     this.selectedDashboardIndex$.complete();
     this.isDashboardSelectionMenuVisible$.complete();
     this.lastSelectedDashboard$.complete();
+    this.dropdownTrigger$.complete();
   }
 
   changeDashboardSelectionMenuVisibility(value: boolean) {
