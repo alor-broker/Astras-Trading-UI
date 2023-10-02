@@ -166,7 +166,8 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
       mapWith(
         () => this.filter$,
         (data, filter) => data.filter(t => this.justifyFilter(t, filter))
-      )
+      ),
+      shareReplay(1)
     );
   }
 
@@ -187,7 +188,6 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
       startWith(null),
       pairwise(),
       filter(([first, second]) => first != null && second != null && first < second),
-      tap(x => console.log(x)),
       map(([, second]) => second),
       filter((x): x is number => x != null)
     );
@@ -223,6 +223,22 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
       this.loadedHistory$.next([]);
       const itemsCount = Math.ceil(scrollViewport.measureViewportSize('vertical') / this.rowHeight);
       this.loadMoreItems(null, Math.max(itemsCount, 100));
+    });
+
+    // Due to the use of filters, only some entries may be displayed.
+    // In this case, there is no scrolling and it is not possible to load more history.
+    // In this case, we are trying to fill the free space
+    combineLatest([
+      scrollViewport$,
+      this.displayTrades$
+    ]).pipe(
+      filter(([,displayTrades]) => displayTrades.length > 0),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(([scrollViewport, displayTrades]) => {
+      const itemsCount = Math.ceil(scrollViewport.measureViewportSize('vertical') / this.rowHeight);
+      if(itemsCount > displayTrades.length) {
+        this.loadMoreItems(null, Math.max(itemsCount, 100));
+      }
     });
   }
 
