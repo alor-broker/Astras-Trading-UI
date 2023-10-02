@@ -45,6 +45,9 @@ export class SelectDashboardMenuComponent implements OnInit {
   @Output()
   hideMenu = new EventEmitter();
 
+  @Output()
+  isNewDashboardFocused = new EventEmitter<boolean>();
+
   constructor(
     private dashboardService: ManageDashboardsService,
     private modal: NzModalService,
