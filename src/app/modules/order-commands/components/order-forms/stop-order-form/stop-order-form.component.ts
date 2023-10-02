@@ -12,7 +12,7 @@ import {TimeInForce} from "../../../../../shared/models/orders/order.model";
 import {Side} from "../../../../../shared/models/enums/side.model";
 import {combineLatest, distinctUntilChanged, Observable, switchMap, take} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {debounceTime, filter, map, startWith} from "rxjs/operators";
+import {debounceTime, filter, map} from "rxjs/operators";
 import {PriceDiffHelper} from "../../../utils/price-diff.helper";
 import {QuotesService} from "../../../../../shared/services/quotes.service";
 import {mapWith} from "../../../../../shared/utils/observable-helper";
@@ -378,17 +378,10 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
   }
 
   private initPriceDiffCalculation() {
-    const priceChanges$ = this.form.controls.price.valueChanges.pipe(
-      startWith(this.form.controls.price.value),
-      filter(p => p != null),
-      distinctUntilChanged((prev, curr) => prev === curr),
-    );
-
-    this.currentPriceDiffPercent$ = this.getInstrumentWithPortfolio().pipe(
-      switchMap(x => PriceDiffHelper.getPositionDiff(
-        priceChanges$,
-        this.portfolioSubscriptionsService.getInstrumentPositionSubscription(x.portfolioKey!, x.instrument!)
-      ))
+    this.currentPriceDiffPercent$ = PriceDiffHelper.getPriceDiffCalculation(
+      this.form.controls.price,
+      this.getInstrumentWithPortfolio(),
+      this.portfolioSubscriptionsService
     );
   }
 
