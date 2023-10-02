@@ -10,7 +10,7 @@ import {LessMore} from "../../../../../shared/models/enums/less-more.model";
 import {StopOrder, TimeInForce} from "../../../../../shared/models/orders/order.model";
 import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
 import {combineLatest, distinctUntilChanged, Observable, shareReplay, take} from "rxjs";
-import {debounceTime, filter, map, startWith, switchMap} from "rxjs/operators";
+import {debounceTime, filter, map, switchMap} from "rxjs/operators";
 import {startOfDay, toUnixTime} from "../../../../../shared/utils/datetime";
 import {PriceDiffHelper} from "../../../utils/price-diff.helper";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -201,18 +201,10 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
   }
 
   private initPriceDiffCalculation() {
-    const priceChanges$ = this.form.valueChanges.pipe(
-      map(v => v.price),
-      startWith(this.form.controls.price.value),
-      filter(p => p != null),
-      distinctUntilChanged((prev, curr) => prev === curr)
-    );
-
-    this.currentPriceDiffPercent$ = this.getInstrumentWithPortfolio().pipe(
-      switchMap(x => PriceDiffHelper.getPositionDiff(
-        priceChanges$,
-        this.portfolioSubscriptionsService.getInstrumentPositionSubscription(x.portfolioKey!, x.instrument!)
-      ))
+    this.currentPriceDiffPercent$ = PriceDiffHelper.getPriceDiffCalculation(
+      this.form.controls.price,
+      this.getInstrumentWithPortfolio(),
+      this.portfolioSubscriptionsService
     );
   }
 

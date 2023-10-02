@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 import {BehaviorSubject, Observable, shareReplay, take} from "rxjs";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
@@ -24,8 +24,7 @@ export class EditOrderDialogWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly ordersDialogService: OrdersDialogService,
-    private readonly commonParametersService: CommonParametersService,
-    private readonly destroyRef: DestroyRef
+    private readonly commonParametersService: CommonParametersService
   ) {
   }
 
