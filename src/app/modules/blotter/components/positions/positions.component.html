@@ -8,7 +8,8 @@
   </ng-template>
   <div #tableContainer class="table-container" *ngIf="displayPositions$ | async as positions">
     <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
-      <nz-table #nzTable [nzData]="positions"
+      <ng-container *ngIf="settings$ | async as settings">
+        <nz-table #nzTable [nzData]="positions"
                 [nzFooter]="footer"
                 [nzFrontPagination]="false"
                 [nzNoResult]="empty"
@@ -22,24 +23,23 @@
                 nzTableLayout="fixed">
         <thead>
         <tr (cdkDropListDropped)="changeColumnOrder($event)" cdkDropList cdkDropListOrientation="horizontal">
-          <th nzWidth="45px">
-            <a
-              *ngIf="nzTable.data.length > 0"
-              (click)="$event.preventDefault(); $event.stopPropagation()"
-              nz-popconfirm
-              [nzCancelText]="t('no')"
-              [nzOkText]="t('yes')"
-              [nzPopconfirmTitle]="t('blotterPositions.confirmCloseAll')"
-              nzOkDanger="true"
-              [nzAutofocus]="'cancel'"
-              (nzOnConfirm)="closeAllPositions(nzTable.data)"
-              nz-tooltip
-              [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
-              [nzTooltipTitle]="t('blotterPositions.closeAllTooltip')"
-              [nzTooltipMouseEnterDelay]="2"
-            >
-              <i nz-icon nzTheme="outline" nzType="close-circle"></i>
-            </a>
+          <th nzWidth="45px" *ngIf="showPositionActions(settings)">
+            <ng-container *ngIf="getClosablePositions(nzTable.data) as closablePositions">
+              <a
+                *ngIf="closablePositions.length > 0"
+                (click)="$event.preventDefault(); $event.stopPropagation()"
+                nz-popconfirm
+                [nzCancelText]="t('no')"
+                [nzOkText]="t('yes')"
+                [nzPopconfirmTitle]="t('blotterPositions.confirmCloseAll')"
+                nzOkDanger="true"
+                [nzAutofocus]="'cancel'"
+                (nzOnConfirm)="closeAllPositions(closablePositions)"
+                [title]="t('blotterPositions.closeAllTooltip')"
+              >
+                <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+              </a>
+            </ng-container>
           </th>
           <th (atsWidthChanged)="saveColumnWidth(column.id, $event)"
               (atsWidthChanging)="recalculateTableWidth($event)"
@@ -76,33 +76,35 @@
         <tbody>
           <ng-template let-pos nz-virtual-scroll>
           <tr (click)="selectInstrument(pos.symbol, pos.exchange)">
-            <td>
-              <a
-                *ngIf="abs(pos.qtyTFutureBatch) > 0"
-                (click)="$event.preventDefault(); $event.stopPropagation()"
-                nz-popconfirm
-                [nzCancelText]="t('no')"
-                [nzOkText]="t('yes')"
-                [nzPopconfirmTitle]="t('blotterPositions.confirmClose')"
-                nzOkDanger="true"
-                [nzAutofocus]="'cancel'"
-                (nzOnConfirm)="closePosition(pos)"
-              >
-                <i nz-icon nzTheme="outline" nzType="close-circle"></i>
-              </a>
-              &nbsp;
-              <a *ngIf="abs(pos.qtyTFutureBatch) > 0"
-                 (click)="$event.preventDefault(); $event.stopPropagation()"
-                 nz-popconfirm
-                 [nzCancelText]="t('no')"
-                 [nzOkText]="t('yes')"
-                 [nzPopconfirmTitle]="t('blotterPositions.confirmReverse')"
-                 nzOkDanger="true"
-                 [nzAutofocus]="'cancel'"
-                 (nzOnConfirm)="reversePosition(pos)"
-              >
-                <i nz-icon nzTheme="outline" nzType="retweet"></i>
-              </a>
+            <td *ngIf="showPositionActions(settings)">
+                <a
+                  *ngIf="canClosePosition(pos)"
+                  [title]="t('blotterPositions.closePositionTooltip')"
+                  (click)="$event.preventDefault(); $event.stopPropagation()"
+                  nz-popconfirm
+                  [nzCancelText]="t('no')"
+                  [nzOkText]="t('yes')"
+                  [nzPopconfirmTitle]="t('blotterPositions.confirmClose')"
+                  nzOkDanger="true"
+                  [nzAutofocus]="'cancel'"
+                  (nzOnConfirm)="closePosition(pos)"
+                >
+                  <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+                </a>
+                &nbsp;
+                <a *ngIf="canReversePosition(pos)"
+                   [title]="t('blotterPositions.reversePositionTooltip')"
+                   (click)="$event.preventDefault(); $event.stopPropagation()"
+                   nz-popconfirm
+                   [nzCancelText]="t('no')"
+                   [nzOkText]="t('yes')"
+                   [nzPopconfirmTitle]="t('blotterPositions.confirmReverse')"
+                   nzOkDanger="true"
+                   [nzAutofocus]="'cancel'"
+                   (nzOnConfirm)="reversePosition(pos)"
+                >
+                  <i nz-icon nzTheme="outline" nzType="retweet"></i>
+                </a>
             </td>
             <ng-container *ngFor='let column of listOfColumns'>
               <td *ngIf='column.id === "symbol"' class='bold'>
@@ -138,6 +140,7 @@
           </div>
         </ng-template>
       </nz-table>
+      </ng-container>
     </ng-container>
   </div>
 

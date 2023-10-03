@@ -17,6 +17,7 @@ export interface BlotterSettings extends WidgetSettings {
   isSoldPositionsHidden: boolean,
   cancelOrdersWithoutConfirmation?: boolean,
   showRepoTrades?: boolean,
+  showPositionActions?: boolean,
 
   /**
    * @deprecated use ordersTable

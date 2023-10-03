@@ -13,5 +13,6 @@
   "positionsColumnsLabel": "Колонки позиций",
   "notificationsColumnsLabel": "Колонки уведомлений",
   "hideSoldLabel": "Скрыть проданные",
-  "cancelWithoutConfirmLabel": "Отменять заявки без подтверждения"
+  "cancelWithoutConfirmLabel": "Отменять заявки без подтверждения",
+  "showPositionActionsLabel": "Показывать кнопки действий для позиций"
 }

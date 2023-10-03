@@ -115,6 +115,7 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
             settings.tradesHistoryTable,
             this.allTradesHistoryColumns.filter(c=> c.isDefault).map(c => c.id)
           )?.columns?.map(c => c.columnId)),
+          showPositionActions: new UntypedFormControl(settings.showPositionActions ?? false)
         });
       }
     });
