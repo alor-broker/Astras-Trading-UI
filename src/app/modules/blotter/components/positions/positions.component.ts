@@ -27,7 +27,11 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
+import {
+  BlotterSettings,
+  ColumnsNames,
+  TableNames
+} from '../../models/blotter-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -249,5 +253,21 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       .forEach(p => {
         this.closePosition(p);
     });
+  }
+
+  getClosablePositions(positions: readonly PositionDisplay[]): PositionDisplay[] {
+    return positions.filter(p => this.canClosePosition(p));
+  }
+
+  showPositionActions(settings: BlotterSettings): boolean {
+    return settings.showPositionActions ?? false;
+  }
+
+  canClosePosition(position: PositionDisplay): boolean {
+    return !position.isCurrency && this.abs(position.qtyTFutureBatch) > 0;
+  }
+
+  canReversePosition(position: PositionDisplay): boolean {
+    return this.canClosePosition(position);
   }
 }
