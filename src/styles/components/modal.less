@@ -19,7 +19,13 @@
 
   .ant-modal-body {
     max-height: 70vh;
-    .scrollable(@scrollbar-color);
+    &:not(:has(nz-tabset)) {
+      .scrollable(@scrollbar-color);
+    }
+
+    &:has(nz-tabset) {
+      overflow: hidden;
+    }
   }
 });
 

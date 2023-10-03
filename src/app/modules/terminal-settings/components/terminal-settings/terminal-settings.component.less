@@ -1,8 +1,30 @@
-:host ::ng-deep .ant-tabs-tabpane {
-  margin-top: 1em;
-  margin-bottom: 1em;
-}
+@import 'theme-mixin';
+@import 'scrollable-mixin';
 
+.themeMixin({
+  :host ::ng-deep {
+    .ant-tabs-content-holder {
+      .scrollable(@scrollbar-color);
+      overflow-x: hidden;
+    }
+  }
+});
+
+:host {
+  display: block;
+
+  ::ng-deep {
+    .ant-tabs-tabpane {
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+
+    .ant-divider-horizontal {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+  }
+}
 .profile-name {
   font-size: 17px;
   font-weight: 400;
@@ -10,9 +32,4 @@
 
 #reset-settings-btn {
   margin-left: -8px;
-}
-
-:host ::ng-deep .ant-divider-horizontal {
-  margin-top: 12px;
-  margin-bottom: 12px;
 }
