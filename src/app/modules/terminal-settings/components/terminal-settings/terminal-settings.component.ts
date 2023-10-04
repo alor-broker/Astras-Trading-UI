@@ -1,10 +1,11 @@
 import {
-  Component, DestroyRef,
-  EventEmitter, Input,
+  Component, DestroyRef, ElementRef,
+  EventEmitter, Input, OnDestroy,
   OnInit,
   Output
 } from '@angular/core';
 import {
+  BehaviorSubject,
   Observable,
   of,
   take
@@ -30,7 +31,7 @@ import {GeneralSettings, TabNames} from "../../models/terminal-settings.model";
   templateUrl: './terminal-settings.component.html',
   styleUrls: ['./terminal-settings.component.less']
 })
-export class TerminalSettingsComponent implements OnInit {
+export class TerminalSettingsComponent implements OnInit, OnDestroy {
   @Input()
   hiddenSections: string[] = [];
 
@@ -43,19 +44,37 @@ export class TerminalSettingsComponent implements OnInit {
     lastName: '',
     secondName: ''
   });
+  tabSetHeight$ = new BehaviorSubject(300);
 
   constructor(
     private readonly accountService: AccountService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private modal: ModalService,
     private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
+    private readonly destroyRef: DestroyRef,
+    private readonly elRef: ElementRef
   ) {
   }
 
   ngOnInit(): void {
     this.fullName$ = this.accountService.getFullName();
     this.initForm();
+  }
+
+  ngOnDestroy() {
+    this.tabSetHeight$.complete();
+  }
+
+  calculateTabSetHeight() {
+    const modalBodyContainerEl = this.elRef.nativeElement.parentElement;
+    const containerHeight = window.innerHeight * 0.7 -
+      parseFloat(window.getComputedStyle(modalBodyContainerEl).paddingTop) -
+      parseFloat(window.getComputedStyle(modalBodyContainerEl).paddingBottom);
+
+    const profileNameEl = this.elRef.nativeElement.querySelector('.profile-name');
+    const profileNameHeight = profileNameEl.offsetHeight + parseFloat(window.getComputedStyle(profileNameEl).marginBottom);
+
+    this.tabSetHeight$.next(containerHeight - profileNameHeight);
   }
 
   clearDashboard() {
