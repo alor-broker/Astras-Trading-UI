@@ -25,6 +25,11 @@
 
     &:has(nz-tabset) {
       overflow: hidden;
+
+      .ant-tabs-content-holder {
+        .scrollable(@scrollbar-color);
+        overflow-x: hidden;
+      }
     }
   }
 });

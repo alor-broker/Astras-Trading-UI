@@ -4,7 +4,7 @@
       {{t('help.docsHubLink')}}
     </ats-external-link>
   </ng-template>
-  <div class="help show-scroll" *ngIf="help$ | async as help">
+  <div class="help" *ngIf="help$ | async as help">
     <nz-alert class="help-info" nzType="info" [nzMessage]="t('help.docsHub')" nzShowIcon
       [nzAction]="docsLink">
     </nz-alert>
