@@ -8,6 +8,9 @@ export class CurrencyInstrument {
   static CNY = 'CNYRUB_TOM';
   static TRY = 'TRYRUB_TOM';
   static HKD = 'HKDRUB_TOM';
+  static AMD = 'AMDRUB_TOM';
+  static GLD = 'GLDRUB_TOM';
+  static SLV = 'SLVRUB_TOM';
 }
 
 export class CurrencyCode {
@@ -18,6 +21,9 @@ export class CurrencyCode {
   static CNY = 'CNY';
   static TRY = 'TRY';
   static HKD = 'HKD';
+  static AMD = 'AMD';
+  static GLD = 'GLD';
+  static SLV = 'SLV';
 
   static toInstrument(code: string): string {
     return (CurrencyInstrument)[code] as string;
