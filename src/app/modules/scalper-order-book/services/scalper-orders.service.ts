@@ -13,7 +13,7 @@ import {CurrentOrderDisplay,} from '../models/scalper-order-book.model';
 import {OrderbookData} from '../../orderbook/models/orderbook-data.model';
 import {MathHelper} from '../../../shared/utils/math-helper';
 import {LessMore} from "../../../shared/models/enums/less-more.model";
-import {PriceUnits, ScalperOrderBookSettings} from "../models/scalper-order-book-settings.model";
+import {PriceUnits, ScalperOrderBookWidgetSettings} from "../models/scalper-order-book-settings.model";
 import {ExecutionPolicy} from "../../../shared/models/orders/orders-group.model";
 import {OrdersDialogService} from "../../../shared/services/orders/orders-dialog.service";
 import {OrderType} from "../../../shared/models/orders/orders-dialog.model";
@@ -72,7 +72,7 @@ export class ScalperOrdersService {
   }
 
   placeBestOrder(
-    settings: ScalperOrderBookSettings,
+    settings: ScalperOrderBookWidgetSettings,
     instrument: Instrument,
     side: Side,
     quantity: number,
@@ -137,7 +137,7 @@ export class ScalperOrdersService {
   }
 
   sellBestBid(
-    settings: ScalperOrderBookSettings,
+    settings: ScalperOrderBookWidgetSettings,
     instrument: Instrument,
     quantity: number,
     orderBook: OrderbookData,
@@ -174,7 +174,7 @@ export class ScalperOrdersService {
   }
 
   buyBestAsk(
-    settings: ScalperOrderBookSettings,
+    settings: ScalperOrderBookWidgetSettings,
     instrument: Instrument,
     quantity: number,
     orderBook: OrderbookData,
@@ -232,7 +232,7 @@ export class ScalperOrdersService {
   }
 
   placeLimitOrder(
-    settings: ScalperOrderBookSettings,
+    settings: ScalperOrderBookWidgetSettings,
     instrument: Instrument,
     side: Side,
     quantity: number,
@@ -467,7 +467,7 @@ export class ScalperOrdersService {
     this.orderService.submitOrdersGroup(orders, portfolio, ExecutionPolicy.TriggerBracketOrders).subscribe();
   }
 
-  private checkBracketNeeded(settings: ScalperOrderBookSettings, side: Side, quantity: number, position: Position | null): boolean {
+  private checkBracketNeeded(settings: ScalperOrderBookWidgetSettings, side: Side, quantity: number, position: Position | null): boolean {
     if (!settings.useBrackets || (!settings.bracketsSettings?.topOrderPriceRatio && !settings.bracketsSettings?.bottomOrderPriceRatio)) {
       return false;
     }
@@ -481,7 +481,7 @@ export class ScalperOrdersService {
     return settings.bracketsSettings.useBracketsWhenClosingPosition || !isClosingPosition;
   }
 
-  private getBracketOrderPrice(settings: ScalperOrderBookSettings, price: number, minStep: number, orderType: BracketOrderType): number | null {
+  private getBracketOrderPrice(settings: ScalperOrderBookWidgetSettings, price: number, minStep: number, orderType: BracketOrderType): number | null {
     if (!settings.useBrackets) {
       return null;
     }

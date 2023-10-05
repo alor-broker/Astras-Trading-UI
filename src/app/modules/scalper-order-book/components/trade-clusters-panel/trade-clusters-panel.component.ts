@@ -26,7 +26,7 @@ import {finalize, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
 import {
   ClusterTimeframe,
-  ScalperOrderBookSettings,
+  ScalperOrderBookWidgetSettings,
   TradesClusterPanelSettings
 } from '../../models/scalper-order-book-settings.model';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
@@ -38,6 +38,7 @@ import {toUnixTime} from '../../../../shared/utils/datetime';
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {NumberDisplayFormat} from "../../../../shared/models/enums/number-display-format";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 
 @Component({
   selector: 'ats-trade-clusters-panel',
@@ -55,7 +56,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
   clusters$!: Observable<TradesCluster[]>;
 
-  settings$!: Observable<ScalperOrderBookSettings>;
+  settings$!: Observable<ScalperOrderBookWidgetSettings>;
 
   hScrollOffsets$ = new BehaviorSubject({left: 0, right: 0});
 
@@ -91,34 +92,14 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   }
 
   setTimeframe(value: number) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(x => {
-      this.widgetSettingsService.updateSettings<ScalperOrderBookSettings>(
-        x.guid,
-        {
-          tradesClusterPanelSettings: {
-            ...x.tradesClusterPanelSettings!,
-            timeframe: value
-          }
-        }
-      );
+    this.updateTradesClusterPanelSettings({
+      timeframe: value
     });
   }
 
   setIntervalsCount(value: number) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(x => {
-      this.widgetSettingsService.updateSettings<ScalperOrderBookSettings>(
-        x.guid,
-        {
-          tradesClusterPanelSettings: {
-            ...x.tradesClusterPanelSettings!,
-            displayIntervalsCount: value
-          }
-        }
-      );
+    this.updateTradesClusterPanelSettings({
+      displayIntervalsCount: value
     });
   }
 
@@ -232,7 +213,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   }
 
   private getClusterUpdatesStream(
-    settings: ScalperOrderBookSettings,
+    settings: ScalperOrderBookWidgetSettings,
     history: TradesCluster[]
   ): Observable<TradesCluster[]> {
     const lastHistoryPoint = history.length > 0
@@ -326,5 +307,44 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
   private getPeriodStart(unixTime: number, timeframe: ClusterTimeframe): number {
     return Math.floor(Math.floor(unixTime / timeframe) * timeframe);
+  }
+
+  private updateTradesClusterPanelSettings(updates: Partial<TradesClusterPanelSettings>) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      const instrumentKey = ScalperSettingsHelper.getInstrumentKey(s);
+      const instrumentSettings = s.instrumentLinkedSettings?.[instrumentKey];
+      if(!!instrumentSettings) {
+        this.widgetSettingsService.updateSettings<ScalperOrderBookWidgetSettings>(
+          s.guid,
+          {
+            instrumentLinkedSettings: {
+              ...s.instrumentLinkedSettings,
+              [instrumentKey]: {
+                ...instrumentSettings,
+                tradesClusterPanelSettings: {
+                  ...instrumentSettings.tradesClusterPanelSettings!,
+                  ...updates
+                }
+              }
+            }
+          }
+        );
+
+        return;
+      }
+
+
+      this.widgetSettingsService.updateSettings<ScalperOrderBookWidgetSettings>(
+        s.guid,
+        {
+          tradesClusterPanelSettings: {
+            ...s.tradesClusterPanelSettings!,
+            ...updates
+          }
+        }
+      );
+    });
   }
 }

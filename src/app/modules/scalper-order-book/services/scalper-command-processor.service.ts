@@ -22,7 +22,7 @@ import {
 } from 'rxjs/operators';
 import { ScalperOrdersService } from './scalper-orders.service';
 import { ScalperOrderBookCommands } from '../models/scalper-order-book-commands';
-import { ScalperOrderBookSettings } from '../models/scalper-order-book-settings.model';
+import { ScalperOrderBookWidgetSettings } from '../models/scalper-order-book-settings.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { Position } from '../../../shared/models/positions/position.model';
@@ -291,7 +291,7 @@ export class ScalperCommandProcessorService {
 
   private callWithSettings(
     dataContext: ScalperOrderBookDataContext,
-    action: (settings: { widgetSettings: ScalperOrderBookSettings, instrument: Instrument }) => void) {
+    action: (settings: { widgetSettings: ScalperOrderBookWidgetSettings, instrument: Instrument }) => void) {
     dataContext.extendedSettings$.pipe(
       take(1)
     ).subscribe(s => action(s));

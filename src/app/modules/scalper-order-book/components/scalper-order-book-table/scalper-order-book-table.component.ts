@@ -27,7 +27,7 @@ import { ScalperCommandProcessorService } from '../../services/scalper-command-p
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScalperOrdersService } from '../../services/scalper-orders.service';
 import {
-  ScalperOrderBookSettings,
+  ScalperOrderBookWidgetSettings,
   VolumeHighlightMode,
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
@@ -224,7 +224,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
     });
   }
 
-  private getVolumeHighlightStrategy(settings: ScalperOrderBookSettings, themeSettings: ThemeSettings): VolumeHighlightStrategy {
+  private getVolumeHighlightStrategy(settings: ScalperOrderBookWidgetSettings, themeSettings: ThemeSettings): VolumeHighlightStrategy {
     if (settings.volumeHighlightMode === VolumeHighlightMode.BiggestVolume) {
       return this.createBiggestVolumeHighlightStrategy(themeSettings);
     }
@@ -253,7 +253,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
     };
   }
 
-  private volumeBoundsWithFixedValueStrategy(settings: ScalperOrderBookSettings): VolumeHighlightStrategy {
+  private volumeBoundsWithFixedValueStrategy(settings: ScalperOrderBookWidgetSettings): VolumeHighlightStrategy {
     return (args: VolumeHighlightArguments) => {
       if (args.rowType !== ScalperOrderBookRowType.Ask && args.rowType !== ScalperOrderBookRowType.Bid || !args.volume) {
         return null;
@@ -278,7 +278,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
     };
   }
 
-  private getVolumeHighlightOption(settings: ScalperOrderBookSettings, volume: number): VolumeHighlightOption | undefined {
+  private getVolumeHighlightOption(settings: ScalperOrderBookWidgetSettings, volume: number): VolumeHighlightOption | undefined {
     return [...settings.volumeHighlightOptions]
       .sort((a, b) => b.boundary - a.boundary)
       .find(x => volume >= x.boundary);
