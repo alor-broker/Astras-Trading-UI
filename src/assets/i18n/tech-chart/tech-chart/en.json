@@ -9,6 +9,10 @@
   "less": "less",
   "position": "Pos.",
   "MOEX": "Moscow Exchange",
+  "priceLabel": "Price",
+  "qtyLabel": "Qty",
+  "sideLabel": "Side",
+
   "timeframes": {
     "all": {
       "desc": "All",

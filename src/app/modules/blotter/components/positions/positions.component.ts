@@ -1,13 +1,9 @@
 import {
   Component,
   DestroyRef,
-  ElementRef,
   EventEmitter,
   OnInit,
-  Output,
-  QueryList,
-  ViewChild,
-  ViewChildren
+  Output
 } from '@angular/core';
 import {
   distinctUntilChanged,
@@ -26,13 +22,16 @@ import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { NzTableComponent } from 'ng-zorro-antd/table';
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
+import {
+  BlotterSettings,
+  ColumnsNames,
+  TableNames
+} from '../../models/blotter-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -50,15 +49,7 @@ interface PositionDisplay extends Position {
   templateUrl: './positions.component.html',
   styleUrls: ['./positions.component.less']
 })
-export class PositionsComponent
-  extends BaseTableComponent<PositionDisplay, PositionFilter>
-  implements OnInit {
-
-  @ViewChild('nzTable')
-  table?: NzTableComponent<PositionDisplay>;
-  @ViewChildren('tableContainer')
-  tableContainer!: QueryList<ElementRef<HTMLElement>>;
-
+export class PositionsComponent extends BaseTableComponent<PositionDisplay, PositionFilter> implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayPositions$: Observable<PositionDisplay[]> = of([]);
@@ -254,5 +245,29 @@ export class PositionsComponent
 
   reversePosition(position: PositionDisplay) {
     CommonOrderCommands.reversePositionsByMarket(position, undefined, this.ordersService);
+  }
+
+  closeAllPositions(positions: readonly PositionDisplay[]){
+    positions
+      .filter(p => !!p.qtyTFutureBatch)
+      .forEach(p => {
+        this.closePosition(p);
+    });
+  }
+
+  getClosablePositions(positions: readonly PositionDisplay[]): PositionDisplay[] {
+    return positions.filter(p => this.canClosePosition(p));
+  }
+
+  showPositionActions(settings: BlotterSettings): boolean {
+    return settings.showPositionActions ?? false;
+  }
+
+  canClosePosition(position: PositionDisplay): boolean {
+    return !position.isCurrency && this.abs(position.qtyTFutureBatch) > 0;
+  }
+
+  canReversePosition(position: PositionDisplay): boolean {
+    return this.canClosePosition(position);
   }
 }

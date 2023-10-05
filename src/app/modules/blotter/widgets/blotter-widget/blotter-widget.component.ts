@@ -28,6 +28,7 @@ import {
   allRepoTradesColumns,
   allStopOrdersColumns,
   allTradesColumns,
+  allTradesHistoryColumns,
   BlotterSettings
 } from '../../models/blotter-settings.model';
 import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
@@ -99,9 +100,14 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
           settings.repoTradesTable,
           TableSettingHelper.toTableDisplaySettings(allRepoTradesColumns.filter(c => c.isDefault).map(c => c.id))
         ),
+        tradesHistoryTable: getValueOrDefault(
+          settings.tradesTable,
+          TableSettingHelper.toTableDisplaySettings(allTradesHistoryColumns.filter(c => c.isDefault).map(c => c.id))
+        ),
         badgeColor: getValueOrDefault(settings.badgeColor, defaultBadgeColor),
         isSoldPositionsHidden: getValueOrDefault(settings.isSoldPositionsHidden, true),
-        cancelOrdersWithoutConfirmation: getValueOrDefault(settings.cancelOrdersWithoutConfirmation, false)
+        cancelOrdersWithoutConfirmation: getValueOrDefault(settings.cancelOrdersWithoutConfirmation, false),
+        showPositionActions: getValueOrDefault(settings.showPositionActions, false),
       }),
       this.dashboardContextService,
       this.widgetSettingsService

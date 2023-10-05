@@ -280,17 +280,10 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   }
 
   private initPriceDiffCalculation() {
-    const priceChanges$ = this.form.controls.price.valueChanges.pipe(
-      startWith(this.form.controls.price.value),
-      filter(p => p != null),
-      distinctUntilChanged((prev, curr) => prev === curr)
-    );
-
-    this.currentPriceDiffPercent$ = this.getInstrumentWithPortfolio().pipe(
-      switchMap(x => PriceDiffHelper.getPositionDiff(
-        priceChanges$,
-        this.portfolioSubscriptionsService.getInstrumentPositionSubscription(x.portfolioKey!, x.instrument!)
-      ))
+    this.currentPriceDiffPercent$ = PriceDiffHelper.getPriceDiffCalculation(
+      this.form.controls.price,
+      this.getInstrumentWithPortfolio(),
+      this.portfolioSubscriptionsService
     );
   }
 

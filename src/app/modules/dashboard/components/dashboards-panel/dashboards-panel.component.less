@@ -27,6 +27,7 @@
 
 .favorite-dashboards, .favorite-dashboards-wrapper {
   min-width: 0;
+  max-width: 100%;
 }
 
 .dashboard-label {
@@ -52,10 +53,7 @@
 
       &-item {
         z-index: 2;
-
-        &-disabled {
-          flex: none !important;
-        }
+        min-width: 0;
 
         &-label {
           cursor: default;

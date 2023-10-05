@@ -21,72 +21,71 @@
       [nzVirtualMinBufferPx]="scrollHeight"
       [nzVirtualForTrackBy]="trackBy"
       [nzFooter]="footer">
-    <thead>
-      <tr cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="changeColumnOrder($event)">
-        <th nzWidth="5px"></th>
-        <th *ngFor="let column of listOfColumns"
-            [nzCustomFilter]="column.filterData && !column.filterData.isDefaultFilter"
-            [nzSortFn]="column.sortFn ?? false"
-            [nzFilters]="column.filterData?.filters ?? []"
-            [nzShowFilter]="column.filterData && column.filterData.isDefaultFilter"
-            (nzFilterChange)="defaultFilterChange(column.id, $event)"
-            [nzWidth]="column.width ? column.width + 'px': null"
-            [atsResizeColumn]
-            [minWidth]="column.minWidth ?? 50"
-            (atsWidthChanged)="saveColumnWidth(column.id, $event)"
-            (atsWidthChanging)="recalculateTableWidth($event)"
-            cdkDrag
-            cdkDragLockAxis="x"
-        >
-          <span
-            nz-tooltip
-            [nzTooltipTitle]="column.tooltip"
-            [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+      <thead>
+        <tr cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="changeColumnOrder($event)">
+          <th nzWidth="5px"></th>
+          <th *ngFor="let column of listOfColumns"
+              [nzCustomFilter]="column.filterData && !column.filterData.isDefaultFilter"
+              [nzSortFn]="column.sortFn ?? false"
+              [nzFilters]="column.filterData?.filters ?? []"
+              [nzShowFilter]="column.filterData && column.filterData.isDefaultFilter"
+              (nzFilterChange)="defaultFilterChange(column.id, $event)"
+              [nzWidth]="column.width ? column.width + 'px': null"
+              [atsResizeColumn]
+              [minWidth]="column.minWidth ?? 50"
+              (atsWidthChanged)="saveColumnWidth(column.id, $event)"
+              (atsWidthChanging)="recalculateTableWidth($event)"
+              cdkDrag
+              cdkDragLockAxis="x"
           >
-            {{column.displayName}}
-          </span>
-          <nz-filter-trigger
-            *ngIf="column.filterData && !column.filterData.isDefaultFilter"
-            [(nzVisible)]="!!column.filterData.isOpenedFilter"
-            [nzActive]="!!filter$"
-            [nzDropdownMenu]="searchMenu"
-          >
-            <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
-          </nz-filter-trigger>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-    <ng-template let-trd nz-virtual-scroll>
-      <tr>
-        <td>
-          <span [class]='trd.side.toString() === "sell" ? "bg-sell" : "bg-buy"'>&nbsp;</span>
-        </td>
-        <ng-container *ngFor='let column of listOfColumns'>
-          <td *ngIf='column.id === "id"'>{{ trd.id }}</td>
-          <td *ngIf='column.id === "orderno"'>{{ trd.orderno }}</td>
-          <td *ngIf='column.id === "symbol"' class='bold'>{{ trd.symbol }}</td>
-          <td *ngIf='column.id === "side"' [class]='trd.side.toString() === "sell" ? "sell" : "buy"'>{{ trd.side }}</td>
-          <td *ngIf='column.id === "qty"'>{{ trd.qty | number }}</td>
-          <td *ngIf='column.id === "price"'>{{ trd.price | number : '0.0-10' }}</td>
-          <td *ngIf='column.id === "date"'>{{ formatDate(trd.date) }}</td>
-          <td *ngIf='column.id === "volume"'>{{ trd.volume | number }}</td>
-        </ng-container>
-      </tr>
-    </ng-template>
-    </tbody>
-  </nz-table>
+            <span
+              nz-tooltip
+              [nzTooltipTitle]="column.tooltip"
+              [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+            >
+              {{column.displayName}}
+            </span>
+            <nz-filter-trigger
+              *ngIf="column.filterData && !column.filterData.isDefaultFilter"
+              [(nzVisible)]="!!column.filterData.isOpenedFilter"
+              [nzActive]="!!filter$"
+              [nzDropdownMenu]="searchMenu"
+            >
+              <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-template let-trd nz-virtual-scroll>
+        <tr>
+          <td>
+            <span [class]='trd.side.toString() === "sell" ? "bg-sell" : "bg-buy"'>&nbsp;</span>
+          </td>
+          <ng-container *ngFor='let column of listOfColumns'>
+            <td *ngIf='column.id === "id"'>{{ trd.id }}</td>
+            <td *ngIf='column.id === "orderno"'>{{ trd.orderno }}</td>
+            <td *ngIf='column.id === "symbol"' class='bold'>{{ trd.symbol }}</td>
+            <td *ngIf='column.id === "side"' [class]='trd.side.toString() === "sell" ? "sell" : "buy"'>{{ trd.side }}</td>
+            <td *ngIf='column.id === "qty"'>{{ trd.qty | number }}</td>
+            <td *ngIf='column.id === "price"'>{{ trd.price | number : '0.0-10' }}</td>
+            <td *ngIf='column.id === "date"'>{{ formatDate(trd.date) }}</td>
+            <td *ngIf='column.id === "volume"'>{{ trd.volume | number }}</td>
+          </ng-container>
+        </tr>
+      </ng-template>
+      </tbody>
+      <ng-template #footer>
+        <div class="export-button-container" *transloco="let tCommon; scope: 'blotter/blotter-common'">
+          <button nz-button nzType="link" *ngIf="canExport(nzTable.data)" (click)="exportToFile(nzTable.data)">
+            <i nz-icon nzType="download"></i>
+            {{tCommon('blotterBlotterCommon.exportToFile')}}
+          </button>
+        </div>
+      </ng-template>
+      </nz-table>
     </ng-container>
   </div>
-
-  <ng-template #footer>
-    <div class="export-button-container" *transloco="let tCommon; scope: 'blotter/blotter-common'">
-      <button nz-button nzType="link" *ngIf="canExport" (click)="exportToFile()">
-        <i nz-icon nzType="download"></i>
-        {{tCommon('blotterBlotterCommon.exportToFile')}}
-      </button>
-    </div>
-  </ng-template>
 
   <nz-dropdown-menu #searchMenu="nzDropdownMenu">
     <ats-table-filter [columns]="listOfColumns" (filterChange)="filterChange($event)"></ats-table-filter>

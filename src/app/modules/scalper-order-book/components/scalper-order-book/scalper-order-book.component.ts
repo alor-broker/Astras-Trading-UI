@@ -6,11 +6,11 @@ import {
 import {
   BehaviorSubject,
   Observable,
-  shareReplay,
   take
 } from 'rxjs';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { ScalperOrderBookSettings } from '../../models/scalper-order-book-settings.model';
+import { ScalperOrderBookWidgetSettings } from '../../models/scalper-order-book-settings.model';
+import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 
 @Component({
   selector: 'ats-scalper-order-book',
@@ -24,7 +24,7 @@ export class ScalperOrderBookComponent implements OnInit {
   @Input()
   isActive: boolean = false;
 
-  settings$!: Observable<ScalperOrderBookSettings>;
+  settings$!: Observable<ScalperOrderBookWidgetSettings>;
 
   workingVolume$ = new BehaviorSubject<number | null>(null);
 
@@ -32,16 +32,14 @@ export class ScalperOrderBookComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(
-      shareReplay(1)
-    );
+    this.settings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.widgetSettingsService);
   }
 
   switchEnableAutoAlign() {
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {
-      this.widgetSettingsService.updateSettings<ScalperOrderBookSettings>(
+      this.widgetSettingsService.updateSettings<ScalperOrderBookWidgetSettings>(
         s.guid,
         {
           enableAutoAlign: !(s.enableAutoAlign ?? true)

@@ -31,6 +31,7 @@ import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
 import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-display-option";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
+import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -136,6 +137,12 @@ describe('TechChartComponent', () => {
           provide: TimezoneConverterService,
           useValue: {
             getConverter: jasmine.createSpy('getConverter').and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime))),
+          }
+        },
+        {
+          provide: TradesHistoryService,
+          useValue: {
+            getTradesHistoryForSymbol: jasmine.createSpy('getTradesHistoryForSymbol').and.returnValue(new Subject()),
           }
         },
         ...commonTestProviders

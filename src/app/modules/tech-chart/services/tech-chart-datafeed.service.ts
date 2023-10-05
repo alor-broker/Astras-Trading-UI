@@ -121,7 +121,12 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     } else {
       request = this.instrumentService.getInstrument(instrumentsData.instrument)
         .pipe(
-          map(i => !!i ? { ...i, symbol: `${i.exchange}:${i.symbol}${ i.instrumentGroup ? ':' + i.instrumentGroup : '' }` } : i)
+          map(i => !!i
+            ? {
+              ...i,
+              symbol: `[${i.exchange}:${i.symbol}${i.instrumentGroup ? ':' + i.instrumentGroup : ''}]`
+            }
+            : i)
         );
     }
 
@@ -358,9 +363,15 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         ?.map(s => {
           if (s.match(/[a-zA-Z]/)) {
             if (s.includes(':')) {
-              return { isSpreadOperator: false, value: this.getSymbolAndExchangeFromTicker(s) } as InstrumentDataPart;
+              return {
+                isSpreadOperator: false,
+                value: this.getSymbolAndExchangeFromTicker(s)
+              } as InstrumentDataPart;
             }
-            return { isSpreadOperator: false, value: this.getSymbolAndExchangeFromTicker(DEFAULT_EXCHANGE + ':' + s) } as InstrumentDataPart;
+            return {
+              isSpreadOperator: false,
+              value: this.getSymbolAndExchangeFromTicker(DEFAULT_EXCHANGE + ':' + s)
+            } as InstrumentDataPart;
           }
 
           if (s === '^') {
@@ -372,7 +383,10 @@ export class TechChartDatafeedService implements IBasicDataFeed {
 
     if (parts.length < 2) {
       if ((<InstrumentDataPart>parts[0])?.value.symbol) {
-        return { isSynthetic: false, instrument: (<InstrumentDataPart>parts[0]).value };
+        return {
+          isSynthetic: false,
+          instrument: (<InstrumentDataPart>parts[0]).value,
+        };
       }
       return { isSynthetic: false, instrument: { symbol: '', exchange: '' }};
     }

@@ -7,12 +7,12 @@ import {
   BodyRow,
   CurrentOrderDisplay
 } from './scalper-order-book.model';
-import { ScalperOrderBookSettings } from './scalper-order-book-settings.model';
+import { ScalperOrderBookWidgetSettings } from './scalper-order-book-settings.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { AllTradesItem } from '../../../shared/models/all-trades.model';
 
 export interface ScalperOrderBookExtendedSettings {
-  widgetSettings: ScalperOrderBookSettings;
+  widgetSettings: ScalperOrderBookWidgetSettings;
   instrument: Instrument;
 }
 

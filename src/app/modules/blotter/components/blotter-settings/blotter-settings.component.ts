@@ -32,6 +32,7 @@ import {
   allRepoTradesColumns,
   allStopOrdersColumns,
   allTradesColumns,
+  allTradesHistoryColumns,
   BlotterSettings
 } from '../../models/blotter-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
@@ -49,6 +50,7 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
   allOrdersColumns: BaseColumnId[] = allOrdersColumns;
   allStopOrdersColumns: BaseColumnId[] = allStopOrdersColumns;
   allTradesColumns: BaseColumnId[] = allTradesColumns;
+  allTradesHistoryColumns: BaseColumnId[] = allTradesHistoryColumns;
   allRepoTradesColumns: BaseColumnId[] = allRepoTradesColumns;
   allPositionsColumns: BaseColumnId[] = allPositionsColumns;
   allNotificationsColumns: BaseColumnId[] = allNotificationsColumns;
@@ -109,6 +111,11 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
           cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false),
           showRepoTrades: new UntypedFormControl(settings.showRepoTrades ?? false),
           repoTradesColumns: new UntypedFormControl(this.toTableSettings(settings.repoTradesTable)?.columns?.map(c => c.columnId)),
+          tradesHistoryColumns: new UntypedFormControl(this.toTableSettings(
+            settings.tradesHistoryTable,
+            this.allTradesHistoryColumns.filter(c=> c.isDefault).map(c => c.id)
+          )?.columns?.map(c => c.columnId)),
+          showPositionActions: new UntypedFormControl(settings.showPositionActions ?? false)
         });
       }
     });
@@ -142,6 +149,8 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
     delete newSettings.stopOrdersColumns;
     newSettings.tradesTable = this.updateTableSettings(newSettings.tradesColumns, initialSettings.tradesTable);
     delete newSettings.tradesColumns;
+    newSettings.tradesHistoryTable = this.updateTableSettings(newSettings.tradesHistoryColumns, initialSettings.tradesHistoryTable);
+    delete newSettings.tradesHistoryColumns;
     newSettings.repoTradesTable = this.updateTableSettings(newSettings.repoTradesColumns, initialSettings.repoTradesTable);
     delete newSettings.tradesColumns;
     newSettings.positionsTable = this.updateTableSettings(newSettings.positionsColumns, initialSettings.positionsTable);

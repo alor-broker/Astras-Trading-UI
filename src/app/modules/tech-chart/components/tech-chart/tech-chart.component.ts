@@ -6,9 +6,11 @@ import {
   Observable,
   pairwise,
   shareReplay,
+  Subject,
   Subscription,
   switchMap,
   take,
+  tap,
   withLatestFrom
 } from 'rxjs';
 import {
@@ -54,8 +56,14 @@ import {OrdersDialogService} from "../../../../shared/services/orders/orders-dia
 import {toInstrumentKey} from "../../../../shared/utils/instruments";
 import {EditOrderDialogParams, OrderType} from "../../../../shared/models/orders/orders-dialog.model";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
+import { Trade } from "../../../../shared/models/trades/trade.model";
+import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
+
+interface IRemovableChartItem {
+  remove(): void;
+}
 
 class PositionState {
   positionLine: IPositionLineAdapter | null = null;
@@ -106,16 +114,76 @@ class OrdersState {
   }
 }
 
+class TradesState {
+  private readonly drawnTrades = new Map<string, IRemovableChartItem>();
+  private loadedData = new Map<string, Trade>();
+  private oldestTrade: Trade | null = null;
+
+  constructor(private tearDown: Subscription, public readonly instrument: InstrumentKey) {
+  }
+
+  addLoadedItem(item: Trade) {
+    this.loadedData.set(item.id, item);
+
+    if(!this.oldestTrade || this.oldestTrade.date.getTime() > item.date.getTime()) {
+      this.oldestTrade = item;
+    }
+  }
+
+  isTradeDrawn(trade: Trade): boolean {
+    return this.drawnTrades.has(trade.id);
+  }
+
+  markTradeDrawn(trade: Trade, removableItem: IRemovableChartItem) {
+    this.drawnTrades.set(trade.id, removableItem);
+  }
+
+  getOldestTrade(): Trade | null {
+    return this.oldestTrade;
+  }
+
+  getTradesForRange(fromSec: number, toSec: number) {
+    return Array.from(this.loadedData.values())
+      .filter(t => {
+        const tradeTime = Math.round(t.date.getTime() / 1000);
+        return tradeTime >= fromSec && tradeTime <= toSec;
+      });
+  }
+
+  destroy() {
+    this.tearDown.add(() => {
+      this.clear();
+    });
+
+    this.tearDown.unsubscribe();
+  }
+
+  clear() {
+    this.drawnTrades.forEach(t => {
+      try {
+        t.remove();
+      } catch {
+      }
+    });
+
+    this.drawnTrades.clear();
+    this.loadedData.clear();
+    this.oldestTrade = null;
+  }
+}
+
 interface ChartState {
   widget: IChartingLibraryWidget;
   positionState?: PositionState;
   ordersState?: OrdersState;
+  tradesState?: TradesState;
 }
 
 @Component({
   selector: 'ats-tech-chart',
   templateUrl: './tech-chart.component.html',
-  styleUrls: ['./tech-chart.component.less']
+  styleUrls: ['./tech-chart.component.less'],
+  providers: [TechChartDatafeedService]
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input({required: true})
@@ -146,6 +214,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly orderCancellerService: OrderCancellerService,
     private readonly translatorService: TranslatorService,
     private readonly timezoneConverterService: TimezoneConverterService,
+    private readonly tradesHistoryService: TradesHistoryService,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -160,6 +229,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.clearChartEventsSubscription(this.chartState.widget);
       this.chartState.ordersState?.destroy();
       this.chartState.positionState?.destroy();
+      this.chartState.tradesState?.destroy();
       this.chartState.widget.remove();
     }
 
@@ -280,6 +350,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           () => {
             this.initPositionDisplay(settings, theme.themeColors);
             this.initOrdersDisplay(settings, theme.themeColors);
+            this.initTradesDisplay(settings, theme.themeColors);
           }
         );
 
@@ -335,30 +406,18 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         'symbol_info',
         'display_market_status',
         'symbol_search_hot_key',
-        'save_shortcut'
+        'save_shortcut',
+        'use_localstorage_for_settings',
       ],
       enabled_features: [
         'header_symbol_search',
         'side_toolbar_in_fullscreen_mode',
         'chart_crosshair_menu',
-        'show_spread_operators'
+        'show_spread_operators',
       ] as unknown as ChartingLibraryFeatureset[]
     };
 
     const chartWidget = new widget(config);
-
-    chartWidget.applyOverrides({
-      'paneProperties.background': theme.themeColors.componentBackground,
-      'paneProperties.backgroundType': 'solid',
-      'paneProperties.vertGridProperties.color': theme.themeColors.chartGridColor,
-      'paneProperties.horzGridProperties.color': theme.themeColors.chartGridColor,
-      'scalesProperties.textColor': theme.themeColors.chartLabelsColor,
-      'mainSeriesProperties.candleStyle.upColor': theme.themeColors.buyColor,
-      'mainSeriesProperties.candleStyle.downColor': theme.themeColors.sellColor,
-      'mainSeriesProperties.candleStyle.borderUpColor': theme.themeColors.buyColor,
-      'mainSeriesProperties.candleStyle.borderDownColor': theme.themeColors.sellColor
-    });
-
     this.subscribeToChartEvents(chartWidget);
 
     this.chartState = {
@@ -366,9 +425,23 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     chartWidget.onChartReady(() => {
+      this.chartState?.widget.changeTheme(theme.theme === ThemeType.default ? 'light' : 'dark');
+      chartWidget.applyOverrides({
+        'paneProperties.background': theme.themeColors.componentBackground,
+        'paneProperties.backgroundType': 'solid',
+        'paneProperties.vertGridProperties.color': theme.themeColors.chartGridColor,
+        'paneProperties.horzGridProperties.color': theme.themeColors.chartGridColor,
+        'scalesProperties.textColor': theme.themeColors.chartLabelsColor,
+        'mainSeriesProperties.candleStyle.upColor': theme.themeColors.buyColor,
+        'mainSeriesProperties.candleStyle.downColor': theme.themeColors.sellColor,
+        'mainSeriesProperties.candleStyle.borderUpColor': theme.themeColors.buyColor,
+        'mainSeriesProperties.candleStyle.borderDownColor': theme.themeColors.sellColor
+      });
+
       this.chartState?.widget!.activeChart().dataReady(() => {
           this.initPositionDisplay(settings, theme.themeColors);
           this.initOrdersDisplay(settings, theme.themeColors);
+          this.initTradesDisplay(settings, theme.themeColors);
         }
       );
 
@@ -388,7 +461,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private toTvSymbol(instrumentKey: InstrumentKey): string {
-    return `${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup ?? ''}`;
+    return `[${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup ?? ''}]`;
   }
 
   private subscribeToChartEvents(widget: IChartingLibraryWidget) {
@@ -532,6 +605,176 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.fillStopOrder(order, orderLineAdapter);
       }
     ));
+  }
+
+  private initTradesDisplay(settings: TechChartSettings, themeColors: ThemeColors) {
+    if(!settings.showTrades) {
+      return;
+    }
+
+    this.chartState!.tradesState?.destroy();
+
+    const tearDown = new Subscription();
+    this.chartState!.tradesState = new TradesState(tearDown, settings);
+
+    const currentPortfolio$ = this.getCurrentPortfolio().pipe(
+      tap( () => this.chartState?.tradesState?.clear()),
+      shareReplay(1)
+    );
+
+    // setup today trades
+    tearDown.add(
+      currentPortfolio$.pipe(
+        switchMap(portfolio => this.portfolioSubscriptionsService.getTradesSubscription(portfolio.portfolio, portfolio.exchange)),
+        map(trades => trades.filter(t => t.symbol === settings.symbol && t.exchange === settings.exchange))
+      ).subscribe(trades => {
+        if(trades.length === 0) {
+          return;
+        }
+
+        trades.forEach(trade => {
+          this.chartState?.tradesState?.addLoadedItem(trade);
+          this.drawTrade(trade, themeColors);
+        });
+      })
+    );
+
+    //setup history trades
+    const visibleRangeChange$ = new Subject();
+    const checkHistoryCallback = () => visibleRangeChange$.next({});
+
+    this.chartState?.widget.activeChart().onVisibleRangeChanged().subscribe(null, checkHistoryCallback);
+    tearDown.add(() => visibleRangeChange$.complete());
+    tearDown.add(() => this.chartState?.widget?.activeChart().onVisibleRangeChanged().unsubscribe(null, checkHistoryCallback));
+
+    visibleRangeChange$.pipe(
+      debounceTime(500),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.fillTradesHistoryCurrentRange(settings, currentPortfolio$, themeColors);
+    });
+
+    this.fillTradesHistoryCurrentRange(settings, currentPortfolio$, themeColors);
+  }
+
+  private drawTrade(trade: Trade, themeColors: ThemeColors) {
+    if(!this.chartState?.tradesState) {
+      return;
+    }
+
+    if(this.chartState?.tradesState.instrument.exchange !== trade.exchange
+      || this.chartState?.tradesState.instrument.symbol !== trade.symbol) {
+      return;
+    }
+
+    if(this.chartState?.tradesState?.isTradeDrawn(trade) === false) {
+
+      const currentVisibleRange = this.chartState.widget.activeChart().getVisibleRange();
+      const tradeTime = Math.round(trade.date.getTime() / 1000);
+
+      if(tradeTime < currentVisibleRange.from || tradeTime > currentVisibleRange.to) {
+        return;
+      }
+
+      const text = `${this.translateFn(['sideLabel'])}: ${trade.side},
+      ${this.translateFn(['priceLabel'])}: ${trade.price},
+      ${this.translateFn(['qtyLabel'])}: ${trade.qtyBatch}`;
+
+      const shapeId = this.chartState.widget.activeChart().createMultipointShape(
+        [
+          {
+            time: tradeTime,
+            price: trade.price
+          }
+        ],
+        {
+          lock: true,
+          disableSelection: false,
+          disableSave: true,
+          disableUndo: true,
+          shape: "note",
+          text: text,
+          zOrder: 'top',
+          overrides: {
+            markerColor: trade.side === Side.Buy ? themeColors.buyColorAccent : themeColors.sellColorAccent,
+            backgroundColor: themeColors.primaryColor,
+            fontsize: 10
+          }
+        }
+      );
+
+      if(!!shapeId) {
+        this.chartState.tradesState.markTradeDrawn(
+          trade,
+          {
+            remove: () => {
+              this.chartState?.widget.activeChart()?.removeEntity(shapeId);
+            }
+          }
+        );
+      }
+    }
+  }
+
+  private fillTradesHistoryCurrentRange(
+    instrument: InstrumentKey,
+    portfolioKey$: Observable<PortfolioKey>,
+    themeColors: ThemeColors
+  ) {
+    const visibleRange = this.chartState?.widget.activeChart().getVisibleRange();
+    if(!visibleRange) {
+      return;
+    }
+
+    let startTradeId: string | null = null;
+    const drawTrades = () => {
+      this.chartState?.tradesState?.getTradesForRange(visibleRange.from, visibleRange.to).forEach(t => {
+        this.drawTrade(t, themeColors);
+      });
+    };
+
+    const oldestLoadedTrade = this.chartState?.tradesState?.getOldestTrade();
+    if(oldestLoadedTrade) {
+      if(visibleRange.from * 1000 < oldestLoadedTrade.date.getTime()) {
+        startTradeId = oldestLoadedTrade.id;
+      } else {
+        drawTrades();
+        return;
+      }
+    }
+
+    portfolioKey$.pipe(
+      switchMap(p => this.tradesHistoryService.getTradesHistoryForSymbol(
+          p.exchange,
+          p.portfolio,
+          instrument.symbol,
+          {
+            from: startTradeId,
+            limit: 50
+          }
+        )
+      ),
+      take(1)
+    ).subscribe(historyTrades => {
+      if(!historyTrades) {
+        return;
+      }
+
+      if(historyTrades.length > 0) {
+        const trades = historyTrades.filter(t => t.id !== startTradeId);
+        if(trades.length === 0) {
+          return;
+        }
+
+        trades.forEach(trade => {
+          this.chartState?.tradesState?.addLoadedItem(trade);
+        });
+
+        drawTrades();
+
+        this.fillTradesHistoryCurrentRange(instrument, portfolioKey$, themeColors);
+      }
+    });
   }
 
   private setupOrdersUpdate<T extends Order>(

@@ -1,5 +1,5 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {distinctUntilChanged, filter, Observable, shareReplay, switchMap, take, tap} from "rxjs";
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { BehaviorSubject, distinctUntilChanged, filter, Observable, shareReplay, switchMap, take, tap } from "rxjs";
 import {ModalService} from "../../../../shared/services/modal.service";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
 import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
@@ -17,13 +17,14 @@ import {OrderDialogParams, OrderType} from "../../../../shared/models/orders/ord
   styleUrls: ['./orders-dialog-widget.component.less'],
   providers: [CommonParametersService]
 })
-export class OrdersDialogWidgetComponent implements OnInit {
+export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   dialogParams$!: Observable<OrderDialogParams | null>;
 
   currentPortfolio$!: Observable<PortfolioKey>;
   currentInstrument$!: Observable<Instrument>;
 
   commonParameters$ = this.commonParametersService.parameters$;
+  tabSetHeight$ = new BehaviorSubject(300);
 
   @ViewChild('orderTabs', {static: false})
   orderTabs?: NzTabSetComponent;
@@ -62,6 +63,10 @@ export class OrdersDialogWidgetComponent implements OnInit {
     );
   }
 
+  ngOnDestroy() {
+    this.tabSetHeight$.complete();
+  }
+
   closeDialog() {
     this.ordersDialogService.closeNewOrderDialog();
   }
@@ -97,6 +102,20 @@ export class OrdersDialogWidgetComponent implements OnInit {
 
   setCommonParameters(params: Partial<CommonParameters>) {
     this.commonParametersService.setParameters(params);
+  }
+
+  calculateTabSetHeight(event: ResizeObserverEntry[]) {
+    const modalContentEl = event[0]?.target;
+    const containerHeight = window.innerHeight * 0.7 -
+      parseFloat(window.getComputedStyle(modalContentEl.parentElement!).paddingTop) -
+      parseFloat(window.getComputedStyle(modalContentEl.parentElement!).paddingBottom);
+
+    if (!modalContentEl) {
+      return;
+    }
+
+    const instrumentInfoEl = modalContentEl.querySelector('.instrument-info');
+    this.tabSetHeight$.next(containerHeight - instrumentInfoEl!.clientHeight);
   }
 
   private activateCommandTab(targetTab?: NzTabComponent) {

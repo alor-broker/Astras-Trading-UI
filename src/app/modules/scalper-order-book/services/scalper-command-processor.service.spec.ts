@@ -13,7 +13,7 @@ import {
   getRandomInt
 } from '../../../shared/utils/testing';
 import {
-  ScalperOrderBookSettings,
+  ScalperOrderBookWidgetSettings,
   VolumeHighlightMode
 } from '../models/scalper-order-book-settings.model';
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
@@ -39,7 +39,7 @@ describe('ScalperCommandProcessorService', () => {
   let modifiersMock$: BehaviorSubject<ModifierKeys>;
   let scalperOrdersServiceSpy: any;
 
-  const orderBookDefaultSettings: ScalperOrderBookSettings = {
+  const orderBookDefaultSettings: ScalperOrderBookWidgetSettings = {
     guid: generateRandomString(10),
     symbol: 'SBER',
     exchange: 'MOEX',
@@ -254,7 +254,7 @@ describe('ScalperCommandProcessorService', () => {
         dataContextMock.workingVolume$.next(workingVolume);
 
 
-        scalperOrdersServiceSpy.placeBestOrder.and.callFake((settings: ScalperOrderBookSettings, instrument: Instrument, side: Side, quantity: number) => {
+        scalperOrdersServiceSpy.placeBestOrder.and.callFake((settings: ScalperOrderBookWidgetSettings, instrument: Instrument, side: Side, quantity: number) => {
           done();
 
           expect(instrument).toEqual(defaultInstrumentInfo);
@@ -287,7 +287,7 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.placeBestOrder.and.callFake((settings: ScalperOrderBookSettings, instrument: Instrument, side: Side, quantity: number) => {
+        scalperOrdersServiceSpy.placeBestOrder.and.callFake((settings: ScalperOrderBookWidgetSettings, instrument: Instrument, side: Side, quantity: number) => {
           done();
 
           expect(instrument).toEqual(defaultInstrumentInfo);
@@ -324,7 +324,7 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.sellBestBid.and.callFake((settings: ScalperOrderBookSettings, instrument: Instrument, quantity: number) => {
+        scalperOrdersServiceSpy.sellBestBid.and.callFake((settings: ScalperOrderBookWidgetSettings, instrument: Instrument, quantity: number) => {
           done();
 
           expect(settings).toEqual(orderBookDefaultSettings);
@@ -357,7 +357,7 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.buyBestAsk.and.callFake((settings: ScalperOrderBookSettings, instrument: Instrument, quantity: number) => {
+        scalperOrdersServiceSpy.buyBestAsk.and.callFake((settings: ScalperOrderBookWidgetSettings, instrument: Instrument, quantity: number) => {
           done();
 
           expect(settings).toEqual(orderBookDefaultSettings);
@@ -538,7 +538,7 @@ describe('ScalperCommandProcessorService', () => {
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as BodyRow;
 
-        scalperOrdersServiceSpy.placeLimitOrder.and.callFake((settings: ScalperOrderBookSettings, instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
+        scalperOrdersServiceSpy.placeLimitOrder.and.callFake((settings: ScalperOrderBookWidgetSettings, instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
           done();
           expect(settings).toEqual(orderBookDefaultSettings);
           expect(instrumentKey).toEqual(defaultInstrumentInfo);
@@ -615,7 +615,7 @@ describe('ScalperCommandProcessorService', () => {
         rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
       } as BodyRow;
 
-      scalperOrdersServiceSpy.placeLimitOrder.and.callFake((settings: ScalperOrderBookSettings, instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
+      scalperOrdersServiceSpy.placeLimitOrder.and.callFake((settings: ScalperOrderBookWidgetSettings, instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
         done();
         expect(settings).toEqual(orderBookDefaultSettings);
         expect(instrumentKey).toEqual(defaultInstrumentInfo);

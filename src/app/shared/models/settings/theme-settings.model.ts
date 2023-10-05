@@ -6,10 +6,12 @@
 export interface ThemeColors {
   sellColor: string;
   sellColorBackground: string;
+  sellColorAccent: string;
   buyColor: string;
   buyColorBackground: string;
   buyColorBackgroundLight: string;
   buySellLabelColor: string;
+  buyColorAccent: string;
   componentBackground: string;
   primaryColor: string;
   purpleColor: string;

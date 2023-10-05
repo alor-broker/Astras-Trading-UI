@@ -7,6 +7,7 @@ import {
   OnDestroy,
   OnInit,
   QueryList,
+  ViewChildren,
 } from '@angular/core';
 import { filter, map, startWith } from "rxjs/operators";
 import { BehaviorSubject, Observable, shareReplay, switchMap, take, combineLatest } from "rxjs";
@@ -41,8 +42,13 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
 
   protected listOfColumns: BaseColumnSettings<T>[] = [];
 
-  protected table?: NzTableComponent<T>;
-  protected tableContainer!: QueryList<ElementRef<HTMLElement>>;
+  @ViewChildren('nzTable')
+  dataTableQuery!: QueryList<NzTableComponent<T>>;
+
+  @ViewChildren('tableContainer')
+  tableContainer!: QueryList<ElementRef<HTMLElement>>;
+
+  protected tableRef$!: Observable<NzTableComponent<T>>;
   protected tableInnerWidth: number = 1000;
   protected isFilterDisabled = () => Object.keys(this.filter$.getValue()).length === 0;
 
@@ -58,7 +64,10 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
   }
 
   ngOnInit() {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid);
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid)
+      .pipe(
+        shareReplay(1)
+      );
   }
 
   ngAfterViewInit(): void {
@@ -75,6 +84,13 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
     ).subscribe(x => {
       setTimeout(()=> this.scrollHeight$.next(x));
     });
+
+    this.tableRef$ = this.dataTableQuery.changes.pipe(
+      map(x => x.first),
+      startWith(this.dataTableQuery.first),
+      filter((x): x is NzTableComponent<any> => !!x),
+      shareReplay(1)
+    );
   }
 
   ngOnDestroy(): void {
@@ -113,11 +129,11 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
     return column.id in filter && !!filter[<keyof F>column.id];
   }
 
-  protected get canExport(): boolean {
-    return !!this.table?.data && this.table.data.length > 0;
+  canExport(data: readonly T[] | undefined | null): boolean {
+    return !!data && data.length > 0;
   }
 
-  protected exportToFile() {
+  protected exportToFile(data: readonly T[]) {
     combineLatest({
       tBlotterCommon: this.translatorService.getTranslator('blotter/blotter-common'),
       tBlotter: this.translatorService.getTranslator('blotter'),
@@ -137,7 +153,7 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
         ExportHelper.exportToCsv(
           tBlotter([this.fileSuffix + 'Tab']),
           settings,
-          [...this.table?.data ?? []],
+          [...data ?? []],
           this.listOfColumns,
           valueTranslators
         );

@@ -17,8 +17,8 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { map } from 'rxjs/operators';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
-import { ScalperOrderBookSettings } from '../../models/scalper-order-book-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 
 @Component({
   selector: 'ats-working-volumes-panel',
@@ -42,9 +42,9 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.workingVolumes$ = this.widgetSettingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(
+    this.workingVolumes$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.widgetSettingsService).pipe(
       map(x => x.workingVolumes),
-      shareReplay()
+      shareReplay(1)
     );
 
     this.workingVolumes$.pipe(

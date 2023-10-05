@@ -4,5 +4,6 @@
   "exchangeLabel": "Биржа",
   "advanced": "Продвинутые",
   "instrumentGroupLabel": "Режим торгов",
-  "instrumentGroupError": "Выберите режим торгов"
+  "instrumentGroupError": "Выберите режим торгов",
+  "showTradesLabel": "Отображать сделки"
 }

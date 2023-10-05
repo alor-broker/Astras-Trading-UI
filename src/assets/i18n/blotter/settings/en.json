@@ -8,9 +8,11 @@
   "ordersColumnsLabel": "Orders columns",
   "stopOrdersColumnsLabel": "Stop-orders columns",
   "tradesColumnsLabel": "Trades columns",
+  "tradesHistoryColumnsLabel": "Trades history columns",
   "repoTradesColumnsLabel": "REPO trades columns",
   "positionsColumnsLabel": "Positions columns",
   "notificationsColumnsLabel": "Notifications columns",
   "hideSoldLabel": "Hide sold positions",
-  "cancelWithoutConfirmLabel": "Cancel orders without confirmation"
+  "cancelWithoutConfirmLabel": "Cancel orders without confirmation",
+  "showPositionActionsLabel": "Show action buttons for positions"
 }

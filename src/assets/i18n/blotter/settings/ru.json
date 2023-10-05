@@ -8,9 +8,11 @@
   "ordersColumnsLabel": "Колонки заявок",
   "stopOrdersColumnsLabel": "Колонки стоп-заявок",
   "tradesColumnsLabel": "Колонки сделок",
+  "tradesHistoryColumnsLabel": "Колонки истории сделок",
   "repoTradesColumnsLabel": "Колонки сделок РЕПО",
   "positionsColumnsLabel": "Колонки позиций",
   "notificationsColumnsLabel": "Колонки уведомлений",
   "hideSoldLabel": "Скрыть проданные",
-  "cancelWithoutConfirmLabel": "Отменять заявки без подтверждения"
+  "cancelWithoutConfirmLabel": "Отменять заявки без подтверждения",
+  "showPositionActionsLabel": "Показывать кнопки действий для позиций"
 }

@@ -10,12 +10,14 @@ export interface BlotterSettings extends WidgetSettings {
   ordersTable?: TableDisplaySettings,
   stopOrdersTable?: TableDisplaySettings,
   tradesTable?: TableDisplaySettings,
+  tradesHistoryTable?: TableDisplaySettings,
   repoTradesTable?: TableDisplaySettings,
   positionsTable?: TableDisplaySettings,
   notificationsTable?: TableDisplaySettings,
   isSoldPositionsHidden: boolean,
   cancelOrdersWithoutConfirmation?: boolean,
   showRepoTrades?: boolean,
+  showPositionActions?: boolean,
 
   /**
    * @deprecated use ordersTable
@@ -81,6 +83,17 @@ export const allTradesColumns: BaseColumnId[] = [
   { id: 'volume', displayName: 'Объем', isDefault: false }
 ];
 
+export const allTradesHistoryColumns: BaseColumnId[] = [
+  { id: 'id', displayName: "Номер", isDefault: false },
+  { id: 'orderno', displayName: "Заявка", isDefault: false },
+  { id: 'symbol', displayName: "Тикер", isDefault: true },
+  { id: 'side', displayName: "Сторона", isDefault: true },
+  { id: 'price', displayName: "Цена", isDefault: true },
+  { id: 'qty', displayName: "Кол-во", isDefault: true },
+  { id: 'date', displayName: 'Время', isDefault: true },
+  { id: 'volume', displayName: 'Объем', isDefault: false }
+];
+
 export const allNotificationsColumns: BaseColumnId[] = [
   { id: 'id', displayName: "id", isDefault: false },
   { id: 'subscriptionType', displayName: "subscriptionType", isDefault: true },
@@ -104,6 +117,7 @@ export enum TableNames {
   OrdersTable = 'ordersTable',
   StopOrdersTable = 'stopOrdersTable',
   TradesTable = 'tradesTable',
+  TradesHistoryTable = 'tradesHistoryTable',
   RepoTradesTable = 'repoTradesTable',
   PositionsTable = 'positionsTable'
 }

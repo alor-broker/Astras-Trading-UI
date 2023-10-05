@@ -46,7 +46,7 @@ export interface VolumeHighlightOption {
   color: string;
 }
 
-export interface ScalperOrderBookSettings extends WidgetSettings, InstrumentKey {
+export interface InstrumentLinkedSettings {
   depth?: number;
   showZeroVolumeItems: boolean;
   showSpreadItems: boolean;
@@ -54,18 +54,24 @@ export interface ScalperOrderBookSettings extends WidgetSettings, InstrumentKey 
   volumeHighlightOptions: VolumeHighlightOption[];
   volumeHighlightFullness?: number;
   workingVolumes: number[];
+  tradesClusterPanelSettings?: TradesClusterPanelSettings;
+  bracketsSettings?: BracketsSettings;
+}
+
+export interface ScalperOrderBookWidgetSettings extends WidgetSettings, InstrumentKey, InstrumentLinkedSettings {
   disableHotkeys: boolean;
   enableMouseClickSilentOrders: boolean;
   autoAlignIntervalSec?: number;
   enableAutoAlign?: boolean;
   showTradesPanel?: boolean;
   showTradesClustersPanel?: boolean;
-  tradesClusterPanelSettings?: TradesClusterPanelSettings;
   volumeDisplayFormat?: NumberDisplayFormat;
   showPriceWithZeroPadding?: boolean;
   layout?: OrderBookLayoutSettings;
   showRuler?: boolean;
   rulerSettings?: RulerSettings;
   useBrackets?: boolean;
-  bracketsSettings?: BracketsSettings;
+  instrumentLinkedSettings?: {
+    [key: string]: InstrumentLinkedSettings
+  }
 }
