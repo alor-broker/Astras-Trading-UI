@@ -32,7 +32,7 @@ import {
   ScalperOrderBookRowType
 } from '../models/scalper-order-book.model';
 import { Range } from '../../../shared/models/common.model';
-import { ScalperOrderBookSettings } from '../models/scalper-order-book-settings.model';
+import { ScalperOrderBookWidgetSettings } from '../models/scalper-order-book-settings.model';
 import {
   OrderbookData,
   OrderbookDataRow,
@@ -48,6 +48,7 @@ import {
 import { isInstrumentEqual } from '../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { QuotesService } from '../../../shared/services/quotes.service';
+import { ScalperSettingsHelper } from "../utils/scalper-settings.helper";
 
 
 export interface ContextGetters {
@@ -134,7 +135,7 @@ export class ScalperOrderBookDataContextService {
   }
 
   public getSettingsStream(widgetGuid: string): Observable<ScalperOrderBookExtendedSettings> {
-    return this.widgetSettingsService.getSettings<ScalperOrderBookSettings>(widgetGuid).pipe(
+    return ScalperSettingsHelper.getSettingsStream(widgetGuid, this.widgetSettingsService).pipe(
       mapWith(
         settings => this.instrumentsService.getInstrument(settings),
         (widgetSettings, instrument) => ({ widgetSettings, instrument } as ScalperOrderBookExtendedSettings)
@@ -448,7 +449,7 @@ export class ScalperOrderBookDataContextService {
     row: PriceRow,
     orderBookData: OrderbookData,
     orderBookBounds: { asksRange: Range | null, bidsRange: Range | null },
-    settings: ScalperOrderBookSettings,
+    settings: ScalperOrderBookWidgetSettings,
   ): BodyRow | null {
     const resultRow = {
       ...row

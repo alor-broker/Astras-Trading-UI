@@ -1,13 +1,16 @@
 import { Component, DestroyRef, OnInit } from '@angular/core';
-import { Observable } from "rxjs";
+import {
+  Observable
+} from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { AbstractControl, UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import {
+  InstrumentLinkedSettings,
   PriceUnits,
-  ScalperOrderBookSettings,
+  ScalperOrderBookWidgetSettings,
   VolumeHighlightMode,
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
@@ -17,13 +20,14 @@ import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 
 @Component({
   selector: 'ats-scalper-order-book-settings',
   templateUrl: './scalper-order-book-settings.component.html',
   styleUrls: ['./scalper-order-book-settings.component.less']
 })
-export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseComponent<ScalperOrderBookSettings> implements OnInit {
+export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseComponent<ScalperOrderBookWidgetSettings> implements OnInit {
   readonly volumeHighlightModes = VolumeHighlightMode;
   readonly validationOptions = {
     depth: {
@@ -65,7 +69,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     VolumeHighlightMode.VolumeBoundsWithFixedValue,
   ];
 
-  protected settings$!: Observable<ScalperOrderBookSettings>;
+  protected settings$!: Observable<ScalperOrderBookWidgetSettings>;
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
@@ -170,7 +174,11 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     return control as UntypedFormArray;
   }
 
-  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<ScalperOrderBookSettings> {
+  protected initSettingsStream(){
+    this.settings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.settingsService);
+  }
+
+  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<ScalperOrderBookWidgetSettings> {
     const formValue = this.form.value;
 
     const newSettings = {
@@ -193,10 +201,25 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     delete newSettings.instrument;
     newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
 
+    newSettings.instrumentLinkedSettings = {
+      ...initialSettings.instrumentLinkedSettings,
+      [ScalperSettingsHelper.getInstrumentKey(newSettings)]: {
+        depth: newSettings.depth,
+        showZeroVolumeItems: newSettings.showZeroVolumeItems,
+        showSpreadItems: newSettings.showSpreadItems,
+        volumeHighlightMode: newSettings.volumeHighlightMode,
+        volumeHighlightOptions: newSettings.volumeHighlightOptions,
+        volumeHighlightFullness: newSettings.volumeHighlightFullness,
+        workingVolumes: newSettings.workingVolumes,
+        tradesClusterPanelSettings: initialSettings.tradesClusterPanelSettings,
+        bracketsSettings: newSettings.bracketsSettings,
+      } as InstrumentLinkedSettings
+    };
+
     return newSettings;
   }
 
-  private buildForm(settings: ScalperOrderBookSettings) {
+  private buildForm(settings: ScalperOrderBookWidgetSettings) {
     const stepsPriceStepValidatorFn = AtsValidators.priceStepMultiplicity(this.validationOptions.bracket.price.stepsStep);
     const percentsPriceStepValidatorFn = AtsValidators.priceStepMultiplicity(this.validationOptions.bracket.price.percentsStep);
 

@@ -22,7 +22,7 @@ import {CancelCommand} from '../../../shared/models/commands/cancel-command.mode
 import {CurrentOrderDisplay} from '../models/scalper-order-book.model';
 import {OrderbookDataRow} from '../../orderbook/models/orderbook-data.model';
 import {LessMore} from "../../../shared/models/enums/less-more.model";
-import {PriceUnits, ScalperOrderBookSettings, VolumeHighlightMode} from "../models/scalper-order-book-settings.model";
+import {PriceUnits, ScalperOrderBookWidgetSettings, VolumeHighlightMode} from "../models/scalper-order-book-settings.model";
 import {ExecutionPolicy} from "../../../shared/models/orders/orders-group.model";
 import {MathHelper} from "../../../shared/utils/math-helper";
 import {OrdersDialogService} from "../../../shared/services/orders/orders-dialog.service";
@@ -44,7 +44,7 @@ describe('ScalperOrdersService', () => {
   let notificationServiceSpy: any;
   let ordersDialogServiceSpy: any;
 
-  let testSettings: ScalperOrderBookSettings;
+  let testSettings: ScalperOrderBookWidgetSettings;
 
   beforeEach(() => {
     orderCancellerServiceSpy = jasmine.createSpyObj('OrderCancellerService', ['cancelOrder']);

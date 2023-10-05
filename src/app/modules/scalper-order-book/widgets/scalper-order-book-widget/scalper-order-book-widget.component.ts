@@ -13,7 +13,7 @@ import {
 import {
   ClusterTimeframe,
   PriceUnits,
-  ScalperOrderBookSettings,
+  ScalperOrderBookWidgetSettings,
   VolumeHighlightMode
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
@@ -37,7 +37,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
   @Input()
   isActive: boolean = false;
 
-  settings$!: Observable<ScalperOrderBookSettings>;
+  settings$!: Observable<ScalperOrderBookWidgetSettings>;
   showBadge$!: Observable<boolean>;
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -55,7 +55,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<ScalperOrderBookSettings>(
+    WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<ScalperOrderBookWidgetSettings>(
       this.widgetInstance,
       'ScalperOrderBookSettings',
       settings => ({
@@ -103,7 +103,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
       this.widgetSettingsService,
     );
 
-    this.settings$ = this.widgetSettingsService.getSettings<ScalperOrderBookSettings>(this.guid);
+    this.settings$ = this.widgetSettingsService.getSettings<ScalperOrderBookWidgetSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
   }
 }

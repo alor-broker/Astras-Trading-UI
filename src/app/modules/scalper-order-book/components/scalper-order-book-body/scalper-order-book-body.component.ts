@@ -37,8 +37,9 @@ import {
 } from '../../models/scalper-order-book.model';
 import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-table.helper';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { ScalperOrderBookSettings } from '../../models/scalper-order-book-settings.model';
+import { ScalperOrderBookWidgetSettings } from '../../models/scalper-order-book-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -134,10 +135,10 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   }
 
   updatePanelWidth(panel: string, width: number) {
-    this.widgetSettingsService.getSettings<ScalperOrderBookSettings>(this.guid).pipe(
+    ScalperSettingsHelper.getSettingsStream(this.guid,this.widgetSettingsService).pipe(
       take(1)
     ).subscribe(settings => {
-      this.widgetSettingsService.updateSettings<ScalperOrderBookSettings>(
+      this.widgetSettingsService.updateSettings<ScalperOrderBookWidgetSettings>(
         settings.guid,
         {
           layout: {
