@@ -461,7 +461,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private toTvSymbol(instrumentKey: InstrumentKey): string {
-    return `${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup ?? ''}`;
+    return `[${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup ?? ''}]`;
   }
 
   private subscribeToChartEvents(widget: IChartingLibraryWidget) {
