@@ -2,7 +2,7 @@ import { SyntheticInstrumentPart } from "../models/synthetic-instruments.model";
 import { Candle } from "../../../shared/models/history/candle.model";
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
 
-export const SYNTHETIC_INSTRUMENT_REGEX = /[\^+*\/()-]|[\w:.]+(?:-\d+\.\d+)?[\w:.]*/g;
+export const SYNTHETIC_INSTRUMENT_REGEX = /[^\[]+(?=])|[\^+*\/()-]|[\w:.]+(?:-\d+\.\d+)?[\w:.]*/g;
 
 export class SyntheticInstrumentsHelper {
   static assembleInstrument(instruments: SyntheticInstrumentPart<Instrument>[]): Instrument {
@@ -18,12 +18,14 @@ export class SyntheticInstrumentsHelper {
         } as Instrument;
       } else {
         return {
-          symbol: acc.symbol + `${curr.value!.exchange}:${curr.value!.symbol}${curr.value!.instrumentGroup ? ':' + curr.value!.instrumentGroup : ''}`,
+          symbol:
+            acc.symbol +
+            `[${curr.value!.exchange}:${curr.value!.symbol}${curr.value!.instrumentGroup ? ':' + curr.value!.instrumentGroup : ''}]`,
           description: acc.description + curr.value!.symbol,
           exchange: acc.exchange + curr.value!.exchange,
           currency: acc.currency || curr.value!.currency,
           type: acc.type + (curr.value!.type ?? ''),
-          shortName: acc.shortName + `${curr.value!.exchange}:${curr.value!.symbol}${curr.value!.instrumentGroup ? ':' + curr.value!.instrumentGroup : ''}`,
+          shortName: acc.shortName + `[${curr.value!.exchange}:${curr.value!.symbol}${curr.value!.instrumentGroup ? ':' + curr.value!.instrumentGroup : ''}]`,
           minstep: Math.min(acc.minstep, curr.value!.minstep),
         } as Instrument;
       }

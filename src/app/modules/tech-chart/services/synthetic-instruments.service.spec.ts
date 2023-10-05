@@ -120,12 +120,12 @@ describe('SyntheticInstrumentsService', () => {
         .pipe(take(1))
         .subscribe(instrument => {
           expect(instrument).toEqual({
-            symbol: `(${instrumentKey1.exchange}:${instrumentKey1.symbol}:${instrumentKey1.instrumentGroup}+${instrumentKey2.exchange}:${instrumentKey2.symbol}:${instrumentKey2.instrumentGroup})`,
+            symbol: `([${instrumentKey1.exchange}:${instrumentKey1.symbol}:${instrumentKey1.instrumentGroup}]+[${instrumentKey2.exchange}:${instrumentKey2.symbol}:${instrumentKey2.instrumentGroup}])`,
             description: `(${instrumentKey1.symbol}+${instrumentKey2.symbol})`,
             exchange: `(${instrumentKey1.exchange}+${instrumentKey2.exchange})`,
             currency: 'RUB',
             type: `(${instrument1.type}+${instrument2.type})`,
-            shortName: `(${instrumentKey1.exchange}:${instrumentKey1.symbol}:${instrumentKey1.instrumentGroup}+${instrumentKey2.exchange}:${instrumentKey2.symbol}:${instrumentKey2.instrumentGroup})`,
+            shortName: `([${instrumentKey1.exchange}:${instrumentKey1.symbol}:${instrumentKey1.instrumentGroup}]+[${instrumentKey2.exchange}:${instrumentKey2.symbol}:${instrumentKey2.instrumentGroup}])`,
             minstep: Math.min(instrument1.minstep, instrument2.minstep),
           });
         });
