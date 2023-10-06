@@ -373,7 +373,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       interval: ((<any>settings.chartLayout)?.charts?.[0]?.panes?.[0]?.sources?.[0]?.state?.interval ?? '1D') as ResolutionString,
       locale: this.translatorService.getActiveLang() as LanguageCode,
       library_path: '/assets/charting_library/',
-      custom_css_url: '../tv-custom-styles.css',
       datafeed: this.techChartDatafeedService,
       // additional options
       fullscreen: false,
@@ -425,19 +424,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     chartWidget.onChartReady(() => {
-      this.chartState?.widget.changeTheme(theme.theme === ThemeType.default ? 'light' : 'dark');
-      chartWidget.applyOverrides({
-        'paneProperties.background': theme.themeColors.componentBackground,
-        'paneProperties.backgroundType': 'solid',
-        'paneProperties.vertGridProperties.color': theme.themeColors.chartGridColor,
-        'paneProperties.horzGridProperties.color': theme.themeColors.chartGridColor,
-        'scalesProperties.textColor': theme.themeColors.chartLabelsColor,
-        'mainSeriesProperties.candleStyle.upColor': theme.themeColors.buyColor,
-        'mainSeriesProperties.candleStyle.downColor': theme.themeColors.sellColor,
-        'mainSeriesProperties.candleStyle.borderUpColor': theme.themeColors.buyColor,
-        'mainSeriesProperties.candleStyle.borderDownColor': theme.themeColors.sellColor
-      });
-
       this.chartState?.widget!.activeChart().dataReady(() => {
           this.initPositionDisplay(settings, theme.themeColors);
           this.initOrdersDisplay(settings, theme.themeColors);
