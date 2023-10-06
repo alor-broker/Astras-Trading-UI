@@ -89,10 +89,21 @@ export class ArbitrageSpreadService {
                 map(([firstLeg, firstLegPositions, secondLeg, secondLegPositions, thirdLeg, thirdLegPositions]) => {
                   const thirdLegSpread: { thirdLeg?: SpreadLeg} = {};
 
-                  let buySpread = firstLeg!.ask * spread.firstLeg.quantity * spread.firstLeg.ratio -
-                    secondLeg!.bid * spread.secondLeg.quantity * spread.secondLeg.ratio;
-                  let sellSpread = firstLeg!.bid * spread.firstLeg.quantity * spread.firstLeg.ratio -
-                    secondLeg!.ask * spread.secondLeg.quantity * spread.secondLeg.ratio;
+                  let buySpread = (spread.calculationFormula ?? 'L1-L2')
+                    .replace(/L1/g, (firstLeg!.ask * spread.firstLeg.quantity * spread.firstLeg.ratio).toString());
+
+                  buySpread = buySpread.replace(
+                    /L2/g,
+                    ((spread.secondLeg.side === Side.Buy ? secondLeg!.ask : secondLeg!.bid) * spread.secondLeg.quantity * spread.secondLeg.ratio).toString()
+                  );
+
+                  let sellSpread = (spread.calculationFormula ?? 'L1-L2')
+                    .replace(/L1/g, (firstLeg!.bid * spread.firstLeg.quantity * spread.firstLeg.ratio).toString());
+
+                  sellSpread = sellSpread.replace(
+                    /L2/g,
+                    ((spread.secondLeg.side === Side.Buy ? secondLeg!.bid : secondLeg!.ask) * spread.secondLeg.quantity * spread.secondLeg.ratio).toString()
+                  );
 
                   if (spread.isThirdLeg) {
                     thirdLegSpread.thirdLeg = {
@@ -104,13 +115,15 @@ export class ArbitrageSpreadService {
                         )?.qtyTFutureBatch ?? 0
                     };
 
-                    if (spread.thirdLeg!.side === Side.Buy) {
-                      buySpread += thirdLeg!.ask * spread.thirdLeg.quantity * spread.thirdLeg.ratio;
-                      sellSpread += thirdLeg!.bid * spread.thirdLeg.quantity * spread.thirdLeg.ratio;
-                    } else {
-                      buySpread -= thirdLeg!.bid * spread.thirdLeg.quantity * spread.thirdLeg.ratio;
-                      sellSpread -= thirdLeg!.ask * spread.thirdLeg.quantity * spread.thirdLeg.ratio;
-                    }
+                    buySpread = (buySpread).replace(
+                      /L3/g,
+                      ((spread.thirdLeg!.side === Side.Buy ? thirdLeg!.ask : thirdLeg!.bid) * spread.thirdLeg!.quantity * spread.thirdLeg!.ratio).toString()
+                    );
+
+                    sellSpread = sellSpread.replace(
+                      /L3/g,
+                      ((spread.thirdLeg?.side === Side.Buy ? thirdLeg!.bid : thirdLeg!.ask) * spread.thirdLeg.quantity * spread.thirdLeg.ratio).toString()
+                    );
                   }
 
                   return {
@@ -132,8 +145,8 @@ export class ArbitrageSpreadService {
                       )?.qtyTFutureBatch ?? 0
                     },
                     ...thirdLegSpread,
-                    buySpread,
-                    sellSpread
+                    buySpread: +eval(buySpread),
+                    sellSpread: +eval(sellSpread)
                   };
                 })
               );

@@ -177,7 +177,8 @@ import { WidgetSettingsComponent } from './components/widget-settings/widget-set
         NzRadioModule,
         NzPopoverModule,
         NzSpaceModule,
-        // modules
+        NzInputModule,
+      // modules
         CommonModule,
         FormsModule,
         ReactiveFormsModule,

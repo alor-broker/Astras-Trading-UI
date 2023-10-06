@@ -4,6 +4,7 @@ import { ArbitrageSpreadManageComponent } from './arbitrage-spread-manage.compon
 import { commonTestProviders, getTranslocoModule, sharedModuleImportForTests } from "../../../../shared/utils/testing";
 import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
 import {Subject} from "rxjs";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 describe('ArbitrageSpreadManageComponent', () => {
   let component: ArbitrageSpreadManageComponent;
@@ -12,7 +13,10 @@ describe('ArbitrageSpreadManageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ ArbitrageSpreadManageComponent ],
-      imports: [...sharedModuleImportForTests, getTranslocoModule()],
+      imports: [
+        BrowserAnimationsModule,
+        ...sharedModuleImportForTests, getTranslocoModule()
+      ],
       providers: [
         {
           provide: UserPortfoliosService,

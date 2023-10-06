@@ -4,6 +4,7 @@ import { Side } from "../../../shared/models/enums/side.model";
 
 export interface ArbitrageSpread {
   id?: string;
+  calculationFormula?: string;
   firstLeg: SpreadLeg;
   secondLeg: SpreadLeg;
   isThirdLeg: boolean;

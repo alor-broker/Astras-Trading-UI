@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { ArbitrageSpread } from "../../models/arbitrage-spread.model";
+import { FormControl, FormGroup, ValidatorFn, Validators } from "@angular/forms";
+import { ArbitrageSpread, SpreadLeg } from "../../models/arbitrage-spread.model";
 import { map } from "rxjs/operators";
 import { Observable, shareReplay, Subscription } from "rxjs";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
@@ -14,10 +14,11 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
 
 interface SpreadFormGroup {
   id: FormControl;
+  calculationFormula: FormControl;
   firstLeg: FormGroup<SpreadLegFormGroup>;
-  secondLeg: FormGroup<SpreadLegFormGroup>;
+  secondLeg: FormGroup<SpreadLegWithSideFormGroup>;
   isThirdLeg: FormControl;
-  thirdLeg: FormGroup<ThirdLegFromGroup>;
+  thirdLeg: FormGroup<SpreadLegWithSideFormGroup>;
 }
 
 interface SpreadLegFormGroup {
@@ -27,9 +28,25 @@ interface SpreadLegFormGroup {
   portfolio: FormControl;
 }
 
-interface ThirdLegFromGroup extends SpreadLegFormGroup {
+interface SpreadLegWithSideFormGroup extends SpreadLegFormGroup {
   side: FormControl;
 }
+
+const CALCULATION_FORMULA_PATTERN = /^(?:L[1-3]|\d+(.\d+)?)(?:[-+*\/](?:L[1-3]|\d+(.\d+)?))*$/g;
+
+const calculationFormulaValidator: ValidatorFn = (form) => {
+  if (
+    !form.get('calculationFormula')?.errors?.pattern &&
+    !form.get('isThirdLeg')?.value &&
+    form.get('calculationFormula')?.value?.includes('L3')
+  ) {
+    return {
+      calculationFormula: true
+    };
+  }
+
+  return null;
+};
 
 @Component({
   selector: 'ats-arbitrage-spread-manage',
@@ -47,6 +64,7 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
 
   form = new FormGroup<SpreadFormGroup>({
     id: new FormControl(null),
+    calculationFormula: new FormControl('L1-L2', Validators.pattern(CALCULATION_FORMULA_PATTERN)),
     firstLeg: new FormGroup({
       instrument: new FormControl<Instrument | null>(null, [
         Validators.required,
@@ -77,7 +95,8 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
         Validators.min(inputNumberValidation.min),
         Validators.max(inputNumberValidation.max)
       ]),
-      portfolio: new FormControl(null, Validators.required)
+      portfolio: new FormControl(null, Validators.required),
+      side: new FormControl(Side.Sell)
     }),
     isThirdLeg: new FormControl(false),
     thirdLeg: new FormGroup({
@@ -100,21 +119,26 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
       AtsValidators.requiredIfTrue('isThirdLeg', 'thirdLeg.quantity'),
       AtsValidators.requiredIfTrue('isThirdLeg', 'thirdLeg.ratio'),
       AtsValidators.requiredIfTrue('isThirdLeg', 'thirdLeg.portfolio'),
-      AtsValidators.requiredIfTrue('isThirdLeg', 'thirdLeg.side')
+      AtsValidators.requiredIfTrue('isThirdLeg', 'thirdLeg.side'),
+      calculationFormulaValidator
     ]);
 
   formChangeSub?: Subscription;
+
+  get calculationFormulaControl(): FormControl {
+    return this.form.get('calculationFormula') as FormControl;
+  }
 
   get firstLegFormGroup(): FormGroup<SpreadLegFormGroup> {
     return this.form.get('firstLeg') as FormGroup<SpreadLegFormGroup>;
   }
 
-  get secondLegFormGroup(): FormGroup<SpreadLegFormGroup> {
-    return this.form.get('secondLeg') as FormGroup<SpreadLegFormGroup>;
+  get secondLegFormGroup(): FormGroup<SpreadLegWithSideFormGroup> {
+    return this.form.get('secondLeg') as FormGroup<SpreadLegWithSideFormGroup>;
   }
 
-  get thirdLegFormGroup(): FormGroup<ThirdLegFromGroup> {
-    return this.form.get('thirdLeg') as FormGroup<ThirdLegFromGroup>;
+  get thirdLegFormGroup(): FormGroup<SpreadLegWithSideFormGroup> {
+    return this.form.get('thirdLeg') as FormGroup<SpreadLegWithSideFormGroup>;
   }
 
   get isThirdLegControl(): FormControl<boolean> {
@@ -134,12 +158,13 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
       );
 
     if (this.spread) {
+      this.form.get('calculationFormula')?.setValue(this.spread.calculationFormula);
       this.form.get('firstLeg')?.patchValue(this.spread.firstLeg);
-      this.form.get('secondLeg')?.patchValue(this.spread.secondLeg);
+      this.form.get('secondLeg')?.patchValue(this.spread.secondLeg as SpreadLeg & {side: Side});
 
       if (this.spread.isThirdLeg) {
         this.form.get('isThirdLeg')?.setValue(true);
-        this.form.get('thirdLeg')?.patchValue(this.spread.thirdLeg as any);
+        this.form.get('thirdLeg')?.patchValue(this.spread.thirdLeg as SpreadLeg & {side: Side});
       }
 
       this.form.get('id')?.patchValue(this.spread.id);

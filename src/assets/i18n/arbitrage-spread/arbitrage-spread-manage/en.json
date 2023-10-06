@@ -1,4 +1,10 @@
 {
+  "calculationFormulaLabel": "Calculation formula",
+  "calculationFormulaTooltip1": "Formula for calculating arbitrage spread to buy.",
+  "calculationFormulaTooltip2": "For the leg element, use the keywords \"L1\", \"L2\", \"L3\" for the first, second and third leg, respectively. For example:",
+  "calculationFormulaTooltip3": "The formula for calculating the arbitrage spread to sell will be applied automatically, based on the formula for calculating the spread to buy.",
+  "calculationFormulaIncorrectError": "Calculation formula is incorrect",
+  "calculationFormulaNoThirdLegError": "Third leg is not added",
   "firstLegTitle": "First leg",
   "secondLegTitle": "Second leg",
   "isThirdLegLabel": "Third leg",

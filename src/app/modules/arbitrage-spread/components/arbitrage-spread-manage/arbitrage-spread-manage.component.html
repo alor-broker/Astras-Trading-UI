@@ -1,5 +1,45 @@
 <ng-container *transloco="let t; scope: 'arbitrage-spread/arbitrage-spread-manage'">
   <div class="d-flex flex-column" [formGroup]="firstLegFormGroup">
+    <nz-form-item>
+      <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaIncorrectError')">
+        <nz-form-label>{{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaLabel')}}</nz-form-label>
+        <nz-input-group [nzSuffix]="suffixIconHelp">
+          <input
+            type="text"
+            nz-input
+            [formControl]="calculationFormulaControl"
+            [placeholder]="t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaLabel')"
+          />
+        </nz-input-group>
+
+        <ng-template #suffixIconHelp>
+          <span
+            class="help-icon"
+            nz-icon
+            nzType="question-circle"
+            nz-tooltip
+            [nzTooltipTitle]="calculationTooltip"
+          ></span>
+        </ng-template>
+
+        <ng-template #calculationTooltip>
+          <p>{{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaTooltip1')}}</p>
+          <p>{{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaTooltip2')}}</p>
+          <p>L1*L3-L2</p>
+          <p>L1/L2</p>
+          <p>{{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaTooltip3')}}</p>
+        </ng-template>
+      </nz-form-control>
+
+      <span
+        *ngIf="form?.errors?.calculationFormula"
+        nz-typography
+        nzType="danger"
+      >
+        {{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaNoThirdLegError')}}
+      </span>
+    </nz-form-item>
+
     <h2>{{t('arbitrageSpreadArbitrageSpreadManage.firstLegTitle')}}</h2>
 
     <nz-form-item class="compact">
@@ -118,6 +158,24 @@
             [nzLabel]="p.portfolio + ' (' + p.exchange + ')'"
             [nzValue]="p"
           ></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="compact">
+      <nz-form-control>
+        <nz-form-label nzRequired>
+          {{t('arbitrageSpreadArbitrageSpreadManage.sideLabel')}}
+          &nbsp;
+          <span
+            nz-icon
+            nzType="question-circle"
+            nz-tooltip
+            [nzTooltipTitle]="t('arbitrageSpreadArbitrageSpreadManage.sideTooltip')"
+          ></span>
+        </nz-form-label>
+        <nz-select formControlName="side">
+          <nz-option [nzLabel]="t('arbitrageSpreadArbitrageSpreadManage.buy')" [nzValue]="sideEnum.Buy"></nz-option>
+          <nz-option [nzLabel]="t('arbitrageSpreadArbitrageSpreadManage.sell')" [nzValue]="sideEnum.Sell"></nz-option>
         </nz-select>
       </nz-form-control>
     </nz-form-item>
