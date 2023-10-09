@@ -4,19 +4,26 @@ import {
 } from "../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component";
 import {
   FormControl,
+  FormGroup,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
-  UntypedFormControl,
-  UntypedFormGroup, Validator,
+  Validator,
   Validators
 } from "@angular/forms";
 import { SpreadLeg } from "../../models/arbitrage-spread.model";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+
+interface SpreadLegFormGroup {
+  instrument: FormControl;
+  quantity: FormControl;
+  ratio: FormControl;
+  portfolio: FormControl;
+  side?: FormControl;
+}
 
 @Component({
   selector: 'ats-spread-leg',
@@ -39,7 +46,7 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
   @Input() isSideNeeded = false;
   @Input() portfolios: PortfolioKey[] = [];
 
-  form!: UntypedFormGroup;
+  form!: FormGroup<SpreadLegFormGroup>;
   isPortfoliosEqual = isPortfoliosEqual;
   sideEnum = Side;
 
@@ -50,8 +57,8 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
   }
 
   ngOnInit() {
-    this.form = new UntypedFormGroup({
-      instrument: new FormControl<Instrument | null>(null, [
+    this.form = new FormGroup<SpreadLegFormGroup>({
+      instrument: new FormControl(null, [
         Validators.required,
       ]),
       quantity: new FormControl(null, [
@@ -68,12 +75,12 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
     });
 
     if (this.isSideNeeded) {
-      this.form.addControl('side', new UntypedFormControl(Side.Sell));
+      this.form.addControl('side', new FormControl(Side.Sell));
     }
 
     this.form.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.emitValue(this.form.value));
+      .subscribe(() => this.emitValue(<SpreadLeg>this.form.value));
   }
 
   getAvailablePortfolios(): PortfolioKey[] {

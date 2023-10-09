@@ -7,20 +7,5 @@
   "calculationFormulaNoThirdLegError": "Third leg is not added",
   "firstLegTitle": "First leg",
   "secondLegTitle": "Second leg",
-  "isThirdLegLabel": "Third leg",
-  "instrumentLabel": "Instrument",
-  "quantityLabel": "Lots quantity",
-  "calculationRatioLabel": "Calculation ratio",
-  "portfolioLabel": "Portfolio",
-  "sideLabel": "Side",
-  "sideTooltip": "Side relative to the first leg while spread buying",
-  "buy": "Buy",
-  "sell": "Sell",
-  "portfolioPlaceholder": "Select portfolio",
-  "portfoliosEmpty": "Portfolios list is empty or instrument is not selected",
-  "instrumentRequiredError": "Select instrument",
-  "quantityRequiredError": "Input quantity",
-  "ratioRequiredError": "Input ratio",
-  "tooLittle": "Too little",
-  "tooMuch": "Too much"
+  "isThirdLegLabel": "Third leg"
 }
