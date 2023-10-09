@@ -1,0 +1,90 @@
+<ng-container *transloco="let t; scope: 'arbitrage-spread/arbitrage-spread-manage'">
+  <div class="d-flex flex-column" [formGroup]="form">
+    <nz-form-item class="compact">
+      <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.instrumentRequiredError')">
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.instrumentLabel')}}</nz-form-label>
+        <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentChange()"></ats-instrument-search>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="compact">
+      <nz-form-control [nzErrorTip]="quantityError">
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.quantityLabel')}}</nz-form-label>
+        <ats-input-number placeholder="0" formControlName="quantity"></ats-input-number>
+      </nz-form-control>
+      <ng-template #quantityError>
+            <span *ngIf="form.get('quantity')?.errors?.required">
+              {{t('arbitrageSpreadArbitrageSpreadManage.quantityRequiredError')}}
+            </span>
+        <span *ngIf="form.get('quantity')?.errors?.min">
+              {{t('arbitrageSpreadArbitrageSpreadManage.tooLittle')}}
+            </span>
+        <span *ngIf="form.get('quantity')?.errors?.max">
+              {{t('arbitrageSpreadArbitrageSpreadManage.tooMuch')}}
+            </span>
+      </ng-template>
+    </nz-form-item>
+
+    <nz-form-item class="compact">
+      <nz-form-control [nzErrorTip]="ratioError">
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.calculationRatioLabel')}}</nz-form-label>
+        <ats-input-number placeholder="0" formControlName="ratio"></ats-input-number>
+      </nz-form-control>
+      <ng-template #ratioError>
+            <span *ngIf="form.get('ratio')?.errors?.required">
+              {{t('arbitrageSpreadArbitrageSpreadManage.ratioRequiredError')}}
+            </span>
+        <span *ngIf="form.get('ratio')?.errors?.min">
+              {{t('arbitrageSpreadArbitrageSpreadManage.tooLittle')}}
+            </span>
+        <span *ngIf="form.get('ratio')?.errors?.max">
+              {{t('arbitrageSpreadArbitrageSpreadManage.tooMuch')}}
+            </span>
+      </ng-template>
+    </nz-form-item>
+
+    <nz-form-item class="compact">
+      <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.portfolioPlaceholder')">
+        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.portfolioLabel')}}</nz-form-label>
+        <nz-select
+          formControlName="portfolio"
+          [compareWith]="isPortfoliosEqual"
+          [nzPlaceHolder]="t('arbitrageSpreadArbitrageSpreadManage.portfolioPlaceholder')"
+          [nzNotFoundContent]="emptyPortfolios"
+        >
+          <nz-option
+            *ngFor="let p of getAvailablePortfolios()"
+            [nzLabel]="p.portfolio + ' (' + p.exchange + ')'"
+            [nzValue]="p"
+          ></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="compact" *ngIf="isSideNeeded">
+      <nz-form-control>
+        <nz-form-label nzRequired>
+          {{t('arbitrageSpreadArbitrageSpreadManage.sideLabel')}}
+          &nbsp;
+          <span
+            nz-icon
+            nzType="question-circle"
+            nz-tooltip
+            [nzTooltipTitle]="t('arbitrageSpreadArbitrageSpreadManage.sideTooltip')"
+          ></span>
+        </nz-form-label>
+        <nz-select formControlName="side">
+          <nz-option [nzLabel]="t('arbitrageSpreadArbitrageSpreadManage.buy')" [nzValue]="sideEnum.Buy"></nz-option>
+          <nz-option [nzLabel]="t('arbitrageSpreadArbitrageSpreadManage.sell')" [nzValue]="sideEnum.Sell"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <ng-template #emptyPortfolios>
+    <nz-empty
+      [nzNotFoundContent]="t('arbitrageSpreadArbitrageSpreadManage.portfoliosEmpty')"
+      nzNotFoundImage="simple"
+    ></nz-empty>
+  </ng-template>
+</ng-container>

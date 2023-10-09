@@ -1,38 +1,22 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from "@angular/forms";
-import { ArbitrageSpread, SpreadLeg } from "../../models/arbitrage-spread.model";
+import { ArbitrageSpread } from "../../models/arbitrage-spread.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { map } from "rxjs/operators";
-import { Observable, shareReplay, Subscription } from "rxjs";
+import { Observable, shareReplay } from "rxjs";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
-import { inputNumberValidation } from "../../../../shared/utils/validation-options";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
-import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
-import { Side } from "../../../../shared/models/enums/side.model";
-import { AtsValidators } from "../../../../shared/utils/form-validators";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
 
 interface SpreadFormGroup {
   id: FormControl;
   calculationFormula: FormControl;
-  firstLeg: FormGroup<SpreadLegFormGroup>;
-  secondLeg: FormGroup<SpreadLegWithSideFormGroup>;
+  firstLeg: FormControl;
+  secondLeg: FormControl;
   isThirdLeg: FormControl;
-  thirdLeg: FormGroup<SpreadLegWithSideFormGroup>;
+  thirdLeg: FormControl;
 }
 
-interface SpreadLegFormGroup {
-  instrument: FormControl;
-  quantity: FormControl;
-  ratio: FormControl;
-  portfolio: FormControl;
-}
-
-interface SpreadLegWithSideFormGroup extends SpreadLegFormGroup {
-  side: FormControl;
-}
-
-const CALCULATION_FORMULA_PATTERN = /^(?:L[1-3]|\d+(.\d+)?)(?:[-+*\/](?:L[1-3]|\d+(.\d+)?))*$/g;
+const CALCULATION_FORMULA_PATTERN = /^(?:L[1-3]|\d+(.\d+)?)(?:[\-+*\/](?:L[1-3]|\d+(.\d+)?))*$/;
 
 const calculationFormulaValidator: ValidatorFn = (form) => {
   if (
@@ -53,92 +37,26 @@ const calculationFormulaValidator: ValidatorFn = (form) => {
   templateUrl: './arbitrage-spread-manage.component.html',
   styleUrls: ['./arbitrage-spread-manage.component.less']
 })
-export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
+export class ArbitrageSpreadManageComponent implements OnInit {
   @Input() spread?: ArbitrageSpread | null;
   @Output() formChange = new EventEmitter();
 
-  isPortfoliosEqual = isPortfoliosEqual;
-
   portfolios$?: Observable<PortfolioKey[]>;
-  sideEnum = Side;
 
   form = new FormGroup<SpreadFormGroup>({
     id: new FormControl(null),
     calculationFormula: new FormControl('L1-L2', Validators.pattern(CALCULATION_FORMULA_PATTERN)),
-    firstLeg: new FormGroup({
-      instrument: new FormControl<Instrument | null>(null, [
-        Validators.required,
-      ]),
-      quantity: new FormControl(null, [
-        Validators.required,
-        Validators.min(inputNumberValidation.min),
-        Validators.max(inputNumberValidation.max)
-      ]),
-      ratio: new FormControl(1, [
-        Validators.required,
-        Validators.min(inputNumberValidation.min),
-        Validators.max(inputNumberValidation.max)
-      ]),
-      portfolio: new FormControl(null, Validators.required)
-    }),
-    secondLeg: new FormGroup({
-      instrument: new FormControl(null, [
-        Validators.required,
-      ]),
-      quantity: new FormControl(null, [
-        Validators.required,
-        Validators.min(inputNumberValidation.min),
-        Validators.max(inputNumberValidation.max)
-      ]),
-      ratio: new FormControl(1, [
-        Validators.required,
-        Validators.min(inputNumberValidation.min),
-        Validators.max(inputNumberValidation.max)
-      ]),
-      portfolio: new FormControl(null, Validators.required),
-      side: new FormControl(Side.Sell)
-    }),
+    firstLeg: new FormControl(null, Validators.required),
+    secondLeg: new FormControl(null, Validators.required),
     isThirdLeg: new FormControl(false),
-    thirdLeg: new FormGroup({
-      instrument: new FormControl(null, [
-      ]),
-      quantity: new FormControl(null, [
-        Validators.min(inputNumberValidation.min),
-        Validators.max(inputNumberValidation.max)
-      ]),
-      ratio: new FormControl(1, [
-        Validators.min(inputNumberValidation.min),
-        Validators.max(inputNumberValidation.max)
-      ]),
-      portfolio: new FormControl(null),
-      side: new FormControl(Side.Buy)
-    })
+    thirdLeg: new FormControl(null, Validators.required)
   },
     [
-      AtsValidators.requiredIfTrue('isThirdLeg', 'thirdLeg.instrument'),
-      AtsValidators.requiredIfTrue('isThirdLeg', 'thirdLeg.quantity'),
-      AtsValidators.requiredIfTrue('isThirdLeg', 'thirdLeg.ratio'),
-      AtsValidators.requiredIfTrue('isThirdLeg', 'thirdLeg.portfolio'),
-      AtsValidators.requiredIfTrue('isThirdLeg', 'thirdLeg.side'),
       calculationFormulaValidator
     ]);
 
-  formChangeSub?: Subscription;
-
   get calculationFormulaControl(): FormControl {
     return this.form.get('calculationFormula') as FormControl;
-  }
-
-  get firstLegFormGroup(): FormGroup<SpreadLegFormGroup> {
-    return this.form.get('firstLeg') as FormGroup<SpreadLegFormGroup>;
-  }
-
-  get secondLegFormGroup(): FormGroup<SpreadLegWithSideFormGroup> {
-    return this.form.get('secondLeg') as FormGroup<SpreadLegWithSideFormGroup>;
-  }
-
-  get thirdLegFormGroup(): FormGroup<SpreadLegWithSideFormGroup> {
-    return this.form.get('thirdLeg') as FormGroup<SpreadLegWithSideFormGroup>;
   }
 
   get isThirdLegControl(): FormControl<boolean> {
@@ -146,7 +64,8 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private readonly userPortfoliosService: UserPortfoliosService
+    private readonly userPortfoliosService: UserPortfoliosService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -157,66 +76,40 @@ export class ArbitrageSpreadManageComponent implements OnInit, OnDestroy {
         shareReplay(1)
       );
 
+    this.form.get('thirdLeg')?.disable();
+
     if (this.spread) {
-      this.form.get('calculationFormula')?.setValue(this.spread.calculationFormula);
-      this.form.get('firstLeg')?.patchValue(this.spread.firstLeg);
-      this.form.get('secondLeg')?.patchValue(this.spread.secondLeg as SpreadLeg & {side: Side});
+      this.form.get('calculationFormula')?.setValue(this.spread.calculationFormula ?? 'L1-L2');
+      this.form.get('firstLeg')?.setValue(this.spread.firstLeg);
+      this.form.get('secondLeg')?.setValue(this.spread.secondLeg);
 
       if (this.spread.isThirdLeg) {
         this.form.get('isThirdLeg')?.setValue(true);
-        this.form.get('thirdLeg')?.patchValue(this.spread.thirdLeg as SpreadLeg & {side: Side});
+        this.form.get('thirdLeg')?.enable();
+        this.form.get('thirdLeg')?.setValue(this.spread.thirdLeg);
       }
 
       this.form.get('id')?.patchValue(this.spread.id);
     }
 
-    this.formChangeSub = this.form.valueChanges.subscribe(() => {
-      this.formChange.emit({
-        value: this.form.value,
-        isValid: this.form.valid
+    this.form.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.formChange.emit({
+          value: this.form.value,
+          isValid: this.form.valid
+        });
       });
-    });
-  }
 
-  ngOnDestroy() {
-    this.formChangeSub?.unsubscribe();
-  }
 
-  getAvailablePortfolios(allPortfolios: PortfolioKey[], legNumber = 1) {
-    let selectedInstrument: InstrumentKey;
-    switch (legNumber) {
-      case 1:
-        selectedInstrument = this.firstLegFormGroup?.get('instrument')?.value;
-        break;
-      case 2:
-        selectedInstrument = this.secondLegFormGroup?.get('instrument')?.value;
-        break;
-      case 3:
-        selectedInstrument = this.thirdLegFormGroup?.get('instrument')?.value;
-        break;
-      default:
-        selectedInstrument = this.firstLegFormGroup?.get('instrument')?.value;
-        break;
-    }
-
-    if (!selectedInstrument) {
-      return [];
-    }
-
-    return allPortfolios.filter(p => p.exchange === selectedInstrument.exchange);
-  }
-
-  instrumentChange(legNumber = 1) {
-    switch (legNumber) {
-      case 1:
-        this.firstLegFormGroup.get('portfolio')?.reset();
-        break;
-      case 2:
-        this.secondLegFormGroup.get('portfolio')?.reset();
-        break;
-      case 3:
-        this.thirdLegFormGroup.get('portfolio')?.reset();
-        break;
-    }
+    this.isThirdLegControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value: boolean) => {
+        if (value) {
+          this.form.get('thirdLeg')!.enable();
+        } else {
+          this.form.get('thirdLeg')!.disable();
+        }
+      });
   }
 }

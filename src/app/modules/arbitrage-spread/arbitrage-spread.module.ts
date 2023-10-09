@@ -13,6 +13,7 @@ import {
 import {
   ArbitrageSpreadManageComponent
 } from './components/arbitrage-spread-manage/arbitrage-spread-manage.component';
+import { SpreadLegComponent } from './components/spread-leg/spread-leg.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import {
     ArbitrageSpreadWidgetComponent,
     ArbitrageSpreadTableComponent,
     ArbitrageSpreadModalWidgetComponent,
-    ArbitrageSpreadManageComponent
+    ArbitrageSpreadManageComponent,
+    SpreadLegComponent
   ],
   exports: [
     ArbitrageSpreadWidgetComponent,
