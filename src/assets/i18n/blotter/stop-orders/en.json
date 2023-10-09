@@ -19,8 +19,8 @@
       "tooltip": "The ratio of outstanding orders to the total"
     },
     "volume": {
-      "name": "Value",
-      "tooltip": "Value"
+      "name": "Volume",
+      "tooltip": "Volume"
     },
     "qty": {
       "name": "Quantity",
