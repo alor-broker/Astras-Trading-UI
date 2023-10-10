@@ -56,11 +56,11 @@ export class ArbitrageSpreadManageComponent implements OnInit {
     ]);
 
   get calculationFormulaControl(): FormControl {
-    return this.form.get('calculationFormula') as FormControl;
+    return this.form.controls.calculationFormula as FormControl;
   }
 
   get isThirdLegControl(): FormControl<boolean> {
-    return this.form.get('isThirdLeg') as FormControl<boolean>;
+    return this.form.controls.isThirdLeg as FormControl<boolean>;
   }
 
   constructor(
@@ -76,20 +76,20 @@ export class ArbitrageSpreadManageComponent implements OnInit {
         shareReplay(1)
       );
 
-    this.form.get('thirdLeg')?.disable();
+    this.form.controls.thirdLeg.disable();
 
     if (this.spread) {
-      this.form.get('calculationFormula')?.setValue(this.spread.calculationFormula ?? 'L1-L2');
-      this.form.get('firstLeg')?.setValue(this.spread.firstLeg);
-      this.form.get('secondLeg')?.setValue(this.spread.secondLeg);
+      this.form.controls.calculationFormula.setValue(this.spread.calculationFormula ?? 'L1-L2');
+      this.form.controls.firstLeg.setValue(this.spread.firstLeg);
+      this.form.controls.secondLeg.setValue(this.spread.secondLeg);
 
       if (this.spread.isThirdLeg) {
-        this.form.get('isThirdLeg')?.setValue(true);
-        this.form.get('thirdLeg')?.enable();
-        this.form.get('thirdLeg')?.setValue(this.spread.thirdLeg);
+        this.form.controls.isThirdLeg.setValue(true);
+        this.form.controls.thirdLeg.enable();
+        this.form.controls.thirdLeg.setValue(this.spread.thirdLeg);
       }
 
-      this.form.get('id')?.patchValue(this.spread.id);
+      this.form.controls.id.patchValue(this.spread.id);
     }
 
     this.form.valueChanges
@@ -106,9 +106,9 @@ export class ArbitrageSpreadManageComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value: boolean) => {
         if (value) {
-          this.form.get('thirdLeg')!.enable();
+          this.form.controls.thirdLeg.enable();
         } else {
-          this.form.get('thirdLeg')!.disable();
+          this.form.controls.thirdLeg.disable();
         }
       });
   }

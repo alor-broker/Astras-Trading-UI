@@ -67,7 +67,7 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
 
   ngOnInit() {
     if (!this.isSideNeeded) {
-      this.form.get('side')!.disable();
+      this.form.controls.side.disable();
     }
 
     this.form.valueChanges
@@ -86,7 +86,7 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
   }
 
   instrumentChange() {
-    this.form.get('portfolio')?.reset();
+    this.form.controls.portfolio.reset();
   }
 
   protected needMarkTouched(): boolean {
