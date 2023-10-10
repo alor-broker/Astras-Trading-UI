@@ -16,14 +16,7 @@ import { Side } from "../../../../shared/models/enums/side.model";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-
-interface SpreadLegFormGroup {
-  instrument: FormControl;
-  quantity: FormControl;
-  ratio: FormControl;
-  portfolio: FormControl;
-  side?: FormControl;
-}
+import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 
 @Component({
   selector: 'ats-spread-leg',
@@ -46,7 +39,23 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
   @Input() isSideNeeded = false;
   @Input() portfolios: PortfolioKey[] = [];
 
-  form!: FormGroup<SpreadLegFormGroup>;
+  form = new FormGroup({
+    instrument: new FormControl<Instrument | null>(null, [
+      Validators.required,
+    ]),
+    quantity: new FormControl(1, [
+      Validators.required,
+      Validators.min(inputNumberValidation.min),
+      Validators.max(inputNumberValidation.max)
+    ]),
+    ratio: new FormControl(1, [
+      Validators.required,
+      Validators.min(inputNumberValidation.min),
+      Validators.max(inputNumberValidation.max)
+    ]),
+    portfolio: new FormControl<PortfolioKey | null>(null, Validators.required),
+    side: new FormControl(Side.Sell)
+  });
   isPortfoliosEqual = isPortfoliosEqual;
   sideEnum = Side;
 
@@ -57,25 +66,8 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
   }
 
   ngOnInit() {
-    this.form = new FormGroup<SpreadLegFormGroup>({
-      instrument: new FormControl(null, [
-        Validators.required,
-      ]),
-      quantity: new FormControl(null, [
-        Validators.required,
-        Validators.min(inputNumberValidation.min),
-        Validators.max(inputNumberValidation.max)
-      ]),
-      ratio: new FormControl(1, [
-        Validators.required,
-        Validators.min(inputNumberValidation.min),
-        Validators.max(inputNumberValidation.max)
-      ]),
-      portfolio: new FormControl(null, Validators.required)
-    });
-
-    if (this.isSideNeeded) {
-      this.form.addControl('side', new FormControl(Side.Sell));
+    if (!this.isSideNeeded) {
+      this.form.get('side')!.disable();
     }
 
     this.form.valueChanges
