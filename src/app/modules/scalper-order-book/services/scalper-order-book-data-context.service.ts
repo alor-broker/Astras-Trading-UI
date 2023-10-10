@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   combineLatest,
+  distinctUntilChanged,
   filter,
   Observable,
   of,
@@ -187,13 +188,19 @@ export class ScalperOrderBookDataContextService {
     );
   }
 
-  private getInstrumentTradesStream(settings$: Observable<ScalperOrderBookExtendedSettings>): Observable<AllTradesItem[]> {
-    const results: AllTradesItem[] = [];
+  private getInstrumentTradesStream(settings$: Observable<ScalperOrderBookExtendedSettings>, depth = 1000): Observable<AllTradesItem[]> {
+    let results: AllTradesItem[] = [];
 
     return settings$.pipe(
+      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev?.widgetSettings, curr?.widgetSettings)),
       switchMap(x => this.allTradesService.getNewTradesSubscription(x.widgetSettings, 100)),
       map(trade => {
         results.push(trade);
+
+        if(results.length > depth) {
+          results = results.slice(-depth);
+        }
+
         return results;
       }),
       startWith([]),
