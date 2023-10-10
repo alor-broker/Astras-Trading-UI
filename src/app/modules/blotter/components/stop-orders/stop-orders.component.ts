@@ -312,7 +312,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       map(([orders, f, converter, groups]) => orders
         .map(o => ({
           ...o,
-          residue: `0/${o.qty}`,
+          residue: `${o.filled ?? 0}/${o.qty}`,
           volume: MathHelper.round(o.qtyUnits * o.price, 2),
           transTime: converter.toTerminalDate(o.transTime),
           endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime,
