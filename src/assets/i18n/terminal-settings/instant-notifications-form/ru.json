@@ -9,6 +9,8 @@
   "orderUpdatedLabel": "Заявка изменена",
   "orderUpdateFailedLabel": "Ошибка изменения заявки",
   "orderStatusChangedLabel": "Изменение статуса заявки",
+  "ordersGroupCreatedLabel": "Группа заявок создана",
+
   "hiddenPortfoliosForNotificationsLabel": "Скрыть уведомления для портфелей",
   "hiddenPortfoliosForNotificationsPlaceholder": "Выберите портфели"
 }

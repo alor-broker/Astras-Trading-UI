@@ -7,7 +7,7 @@ import {BehaviorSubject, forkJoin, Observable, shareReplay, switchMap, tap} from
 import {CreateOrderGroupReq, OrdersGroup, SubmitGroupResult} from "../../models/orders/orders-group.model";
 import {OrderCancellerService} from "../order-canceller.service";
 import {InstantNotificationsService} from "../instant-notifications.service";
-import {CommonInstantNotificationType} from "../../models/terminal-settings/terminal-settings.model";
+import { OrdersInstantNotificationType } from "../../models/terminal-settings/terminal-settings.model";
 import {map} from "rxjs/operators";
 
 type SubmitGroupResponse = string & Partial<{ title: string, status: string, detail: string }>;
@@ -51,7 +51,7 @@ export class OrdersGroupService {
           } else {
             this.refresh$.next(null);
             this.instantNotificationsService.showNotification(
-              CommonInstantNotificationType.Common,
+              OrdersInstantNotificationType.OrdersGroupCreated,
               'success',
               `Группа создана`,
               `Группа с заявками ${req.orders.map(o => o.orderId).join(', ')} успешно создана`

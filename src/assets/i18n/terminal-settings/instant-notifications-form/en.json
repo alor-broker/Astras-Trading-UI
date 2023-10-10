@@ -9,6 +9,8 @@
   "orderUpdatedLabel": "Order updated",
   "orderUpdateFailedLabel": "Order update failed",
   "orderStatusChangedLabel": "Order status changed",
+  "ordersGroupCreatedLabel": "Orders group created",
+
   "hiddenPortfoliosForNotificationsLabel": "Hide notifications for portfolios",
   "hiddenPortfoliosForNotificationsPlaceholder": "Select portfolios"
 }
