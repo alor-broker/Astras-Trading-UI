@@ -1,15 +1,11 @@
 {
+  "calculationFormulaLabel": "Формула рассчёта",
+  "calculationFormulaTooltip1": "Формула для рассчёта рыночной раздвижки на покупку.",
+  "calculationFormulaTooltip2": "В качестве элемента ноги используйте ключевые слова \"L1\", \"L2\", \"L3\" для первой, второй и тертьей ноги, соответственно. Например:",
+  "calculationFormulaTooltip3": "Формула для расёта рыночной раздвижки на продажу будет применена автоматически, опираясь на формулу для рассчёта раздвижки на покупку.",
+  "calculationFormulaIncorrectError": "Формула расчёта некорректна",
+  "calculationFormulaNoThirdLegError": "Третья нога не добавлена",
   "firstLegTitle": "Первая нога",
   "secondLegTitle": "Вторая нога",
-  "instrumentLabel": "Инструмент",
-  "quantityLabel": "Кол-во лотов",
-  "calculationRatioLabel": "Коэффициент для расчетов",
-  "portfolioLabel": "Портфель",
-  "portfolioPlaceholder": "Выберите портфель",
-  "portfoliosEmpty": "Список портфелей пуст, либо не выбран инструмент",
-  "instrumentRequiredError": "Выберите инструмент",
-  "quantityRequiredError": "Введите количество",
-  "ratioRequiredError": "Введите коэфициент",
-  "tooLittle": "Слишком мало",
-  "tooMuch": "Слишком много"
+  "isThirdLegLabel": "Третья нога"
 }

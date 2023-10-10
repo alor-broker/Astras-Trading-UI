@@ -1,132 +1,76 @@
 <ng-container *transloco="let t; scope: 'arbitrage-spread/arbitrage-spread-manage'">
-  <div class="d-flex flex-column" [formGroup]="firstLegFormGroup">
-    <h2>{{t('arbitrageSpreadArbitrageSpreadManage.firstLegTitle')}}</h2>
+  <div [formGroup]="form">
+    <div class="d-flex flex-column" >
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaIncorrectError')">
+          <nz-form-label>{{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaLabel')}}</nz-form-label>
+          <nz-input-group [nzSuffix]="suffixIconHelp">
+            <input
+              type="text"
+              nz-input
+              [formControl]="calculationFormulaControl"
+              [placeholder]="t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaLabel')"
+            />
+          </nz-input-group>
 
-    <nz-form-item class="compact">
-      <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.instrumentRequiredError')">
-        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.instrumentLabel')}}</nz-form-label>
-        <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentChange()"></ats-instrument-search>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item class="compact">
-      <nz-form-control [nzErrorTip]="quantityError">
-        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.quantityLabel')}}</nz-form-label>
-        <ats-input-number placeholder="0" formControlName="quantity"></ats-input-number>
-      </nz-form-control>
-      <ng-template #quantityError>
-        <span *ngIf="firstLegFormGroup.get('quantity')?.errors?.required">
-          {{t('arbitrageSpreadArbitrageSpreadManage.quantityRequiredError')}}
-        </span>
-        <span *ngIf="firstLegFormGroup.get('quantity')?.errors?.min">
-          {{t('arbitrageSpreadArbitrageSpreadManage.tooLittle')}}
-        </span>
-        <span *ngIf="firstLegFormGroup.get('quantity')?.errors?.max">
-          {{t('arbitrageSpreadArbitrageSpreadManage.tooMuch')}}
-        </span>
-      </ng-template>
-    </nz-form-item>
-    <nz-form-item class="compact">
-      <nz-form-control [nzErrorTip]="ratioError">
-        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.calculationRatioLabel')}}</nz-form-label>
-        <ats-input-number placeholder="0" formControlName="ratio"></ats-input-number>
-      </nz-form-control>
-      <ng-template #ratioError>
-        <span *ngIf="firstLegFormGroup.get('ratio')?.errors?.required">
-          {{t('arbitrageSpreadArbitrageSpreadManage.ratioRequiredError')}}
-        </span>
-        <span *ngIf="firstLegFormGroup.get('ratio')?.errors?.min">
-          {{t('arbitrageSpreadArbitrageSpreadManage.tooLittle')}}
-        </span>
-        <span *ngIf="firstLegFormGroup.get('ratio')?.errors?.max">
-          {{t('arbitrageSpreadArbitrageSpreadManage.tooMuch')}}
-        </span>
-      </ng-template>
-    </nz-form-item>
-    <nz-form-item *ngIf="portfolios$ | async as portfolios" class="compact">
-      <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.portfolioPlaceholder')">
-        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.portfolioLabel')}}</nz-form-label>
-        <nz-select
-          formControlName="portfolio"
-          [compareWith]="isPortfoliosEqual"
-          [nzPlaceHolder]="t('arbitrageSpreadArbitrageSpreadManage.portfolioPlaceholder')"
-          [nzNotFoundContent]="emptyPortfolios"
+          <ng-template #suffixIconHelp>
+            <span
+              class="help-icon"
+              nz-icon
+              nzType="question-circle"
+              nz-tooltip
+              [nzTooltipTitle]="calculationTooltip"
+            ></span>
+          </ng-template>
+
+          <ng-template #calculationTooltip>
+            <p>{{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaTooltip1')}}</p>
+            <p>{{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaTooltip2')}}</p>
+            <p>L1*L3-L2</p>
+            <p>L1/L2</p>
+            <p>{{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaTooltip3')}}</p>
+          </ng-template>
+        </nz-form-control>
+
+        <span
+          *ngIf="form?.errors?.calculationFormula"
+          nz-typography
+          nzType="danger"
         >
-          <nz-option
-            *ngFor="let p of getAvailablePortfolios(portfolios)"
-            [nzLabel]="p.portfolio + ' (' + p.exchange + ')'"
-            [nzValue]="p"
-          ></nz-option>
-        </nz-select>
+          {{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaNoThirdLegError')}}
+        </span>
+      </nz-form-item>
+
+      <h2>{{t('arbitrageSpreadArbitrageSpreadManage.firstLegTitle')}}</h2>
+
+      <ats-spread-leg formControlName="firstLeg" [portfolios]="(portfolios$ | async) ?? []"></ats-spread-leg>
+    </div>
+
+    <div class="d-flex flex-column mt-10">
+      <h2>{{t('arbitrageSpreadArbitrageSpreadManage.secondLegTitle')}}</h2>
+
+      <ats-spread-leg
+        formControlName="secondLeg"
+        [isSideNeeded]="true"
+        [portfolios]="(portfolios$ | async) ?? []"
+      ></ats-spread-leg>
+    </div>
+
+    <nz-form-item class="mt-10">
+      <nz-form-label nzFor="isThirdLeg">
+        {{t('arbitrageSpreadArbitrageSpreadManage.isThirdLegLabel')}}
+      </nz-form-label>
+      <nz-form-control>
+        <nz-switch [formControl]="isThirdLegControl"></nz-switch>
       </nz-form-control>
     </nz-form-item>
+
+    <div class="d-flex flex-column mt-10" *ngIf="isThirdLegControl.value">
+      <ats-spread-leg
+        formControlName="thirdLeg"
+        [isSideNeeded]="true"
+        [portfolios]="(portfolios$ | async) ?? []"
+      ></ats-spread-leg>
+    </div>
   </div>
-
-  <div class="d-flex flex-column mt-10" [formGroup]="secondLegFormGroup">
-    <h2>{{t('arbitrageSpreadArbitrageSpreadManage.secondLegTitle')}}</h2>
-
-    <nz-form-item class="compact">
-      <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.instrumentRequiredError')">
-        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.instrumentLabel')}}</nz-form-label>
-        <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentChange(false)"></ats-instrument-search>
-      </nz-form-control>
-    </nz-form-item>
-    <nz-form-item class="compact">
-      <nz-form-control [nzErrorTip]="quantityError">
-        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.quantityLabel')}}</nz-form-label>
-        <ats-input-number placeholder="0" formControlName="quantity"></ats-input-number>
-      </nz-form-control>
-            <ng-template #quantityError>
-              <span *ngIf="secondLegFormGroup.get('quantity')?.errors?.required">
-                {{t('arbitrageSpreadArbitrageSpreadManage.quantityRequiredError')}}
-              </span>
-              <span *ngIf="secondLegFormGroup.get('quantity')?.errors?.min">
-                {{t('arbitrageSpreadArbitrageSpreadManage.tooLittle')}}
-              </span>
-              <span *ngIf="secondLegFormGroup.get('quantity')?.errors?.max">
-                {{t('arbitrageSpreadArbitrageSpreadManage.tooMuch')}}
-              </span>
-            </ng-template>
-    </nz-form-item>
-    <nz-form-item class="compact">
-      <nz-form-control [nzErrorTip]="ratioError">
-        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.calculationRatioLabel')}}</nz-form-label>
-        <ats-input-number placeholder="0" formControlName="ratio"></ats-input-number>
-      </nz-form-control>
-      <ng-template #ratioError>
-        <span *ngIf="secondLegFormGroup.get('ratio')?.errors?.required">
-          {{t('arbitrageSpreadArbitrageSpreadManage.ratioRequiredError')}}
-        </span>
-        <span *ngIf="secondLegFormGroup.get('ratio')?.errors?.min">
-          {{t('arbitrageSpreadArbitrageSpreadManage.tooLittle')}}
-        </span>
-        <span *ngIf="secondLegFormGroup.get('ratio')?.errors?.max">
-          {{t('arbitrageSpreadArbitrageSpreadManage.tooMuch')}}
-        </span>
-      </ng-template>
-    </nz-form-item>
-    <nz-form-item *ngIf="portfolios$ | async as portfolios" class="compact">
-      <nz-form-control [nzErrorTip]="t('arbitrageSpreadArbitrageSpreadManage.portfolioPlaceholder')">
-        <nz-form-label nzRequired>{{t('arbitrageSpreadArbitrageSpreadManage.portfolioLabel')}}</nz-form-label>
-        <nz-select
-          formControlName="portfolio"
-          [compareWith]="isPortfoliosEqual"
-          [nzPlaceHolder]="t('arbitrageSpreadArbitrageSpreadManage.portfolioPlaceholder')"
-          [nzNotFoundContent]="emptyPortfolios"
-        >
-          <nz-option
-            *ngFor="let p of getAvailablePortfolios(portfolios, false)"
-            [nzLabel]="p.portfolio + ' (' + p.exchange + ')'"
-            [nzValue]="p"
-          ></nz-option>
-        </nz-select>
-      </nz-form-control>
-    </nz-form-item>
-  </div>
-
-  <ng-template #emptyPortfolios>
-    <nz-empty
-      [nzNotFoundContent]="t('arbitrageSpreadArbitrageSpreadManage.portfoliosEmpty')"
-      nzNotFoundImage="simple"
-    ></nz-empty>
-  </ng-template>
 </ng-container>

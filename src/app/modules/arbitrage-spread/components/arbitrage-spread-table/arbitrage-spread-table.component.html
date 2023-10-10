@@ -35,24 +35,73 @@
         <tr *ngFor="let spread of nzTable.data!; let i = index; trackBy: trackByFn">
           <ng-container *ngFor='let column of listOfColumns'>
             <td *ngIf='column.id === "symbols"' class='bold'>
-              <nz-badge
-                nzSize="small"
-                [nzCount]="getAbs(spread.firstLeg.positionsCount!)"
-                [class.mr-8]="!!spread.firstLeg.positionsCount"
-                [class.buy-badge]="spread.firstLeg.positionsCount! > 0"
-                [class.sell-badge]="spread.firstLeg.positionsCount! < 0"
-              >
-               <span class="symbol-name">{{ spread.firstLeg.instrument.symbol }}</span>
-              </nz-badge>
+              <div class="symbol-name" [class.mr-8]="!!spread.firstLeg.positionsCount">
+                <span
+                  *ngIf="!!spread.firstLeg.positionsCount"
+                  class="badge"
+                  [class]="spread.firstLeg.positionsCount > 0 ? 'long' : 'short'"
+                  [title]="getAbs(spread.firstLeg.positionsCount)"
+                >
+                  {{getAbs(spread.firstLeg.positionsCount)}}
+                </span>
+                {{ spread.firstLeg.instrument.symbol }}
+              </div>
               /
-              <nz-badge
-                nzSize="small"
-                [nzCount]="getAbs(spread.secondLeg.positionsCount!)"
-                [class.buy-badge]="spread.secondLeg.positionsCount! > 0"
-                [class.sell-badge]="spread.secondLeg.positionsCount! < 0"
-              >
-                <span class="symbol-name">{{spread.secondLeg.instrument.symbol}}</span>
-              </nz-badge>
+              <div class="symbol-name" [class.mr-8]="!!spread.secondLeg.positionsCount">
+                <span
+                  *ngIf="!!spread.secondLeg.positionsCount"
+                  class="badge"
+                  [class]="spread.secondLeg.positionsCount > 0 ? 'long' : 'short'"
+                  [title]="getAbs(spread.secondLeg.positionsCount)"
+                >
+                  {{getAbs(spread.secondLeg.positionsCount)}}
+                </span>
+                {{ spread.secondLeg.instrument.symbol }}
+              </div>
+
+              <ng-container *ngIf="spread.isThirdLeg">
+                /
+                <div class="symbol-name" [class.mr-8]="!!spread.thirdLeg.positionsCount">
+                  <span
+                    *ngIf="!!spread.thirdLeg.positionsCount"
+                    class="badge"
+                    [class]="spread.thirdLeg.positionsCount > 0 ? 'long' : 'short'"
+                    [title]="getAbs(spread.thirdLeg.positionsCount)"
+                  >
+                    {{getAbs(spread.thirdLeg.positionsCount)}}
+                  </span>
+                  {{ spread.thirdLeg.instrument.symbol }}
+                </div>
+              </ng-container>
+<!--              <nz-badge-->
+<!--                nzSize="small"-->
+<!--                [nzCount]="getAbs(spread.firstLeg.positionsCount!)"-->
+<!--                [class.mr-8]="!!spread.firstLeg.positionsCount"-->
+<!--                [class.buy-badge]="spread.firstLeg.positionsCount! > 0"-->
+<!--                [class.sell-badge]="spread.firstLeg.positionsCount! < 0"-->
+<!--              >-->
+<!--               <span class="symbol-name">{{ spread.firstLeg.instrument.symbol }}</span>-->
+<!--              </nz-badge>-->
+<!--              /-->
+<!--              <nz-badge-->
+<!--                nzSize="small"-->
+<!--                [nzCount]="getAbs(spread.secondLeg.positionsCount!)"-->
+<!--                [class.buy-badge]="spread.secondLeg.positionsCount! > 0"-->
+<!--                [class.sell-badge]="spread.secondLeg.positionsCount! < 0"-->
+<!--              >-->
+<!--                <span class="symbol-name">{{spread.secondLeg.instrument.symbol}}</span>-->
+<!--              </nz-badge>-->
+<!--              <ng-container *ngIf="spread.isThirdLeg">-->
+<!--                /-->
+<!--                <nz-badge-->
+<!--                  nzSize="small"-->
+<!--                  [nzCount]="getAbs(spread.thirdLeg.positionsCount!)"-->
+<!--                  [class.buy-badge]="spread.thirdLeg.positionsCount! > 0"-->
+<!--                  [class.sell-badge]="spread.thirdLeg.positionsCount! < 0"-->
+<!--                >-->
+<!--                  <span class="symbol-name">{{spread.thirdLeg.instrument.symbol}}</span>-->
+<!--                </nz-badge>-->
+<!--              </ng-container>-->
             </td>
             <td *ngIf='column.id === "buySpread"'>{{ spread.buySpread | number}}</td>
             <td *ngIf='column.id === "sellSpread"'>{{ spread.sellSpread | number}}</td>

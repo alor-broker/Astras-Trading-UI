@@ -24,6 +24,7 @@ export class ArbitrageSpreadModalWidgetComponent implements OnInit {
   }
 
   handleCancel() {
+    this.formData = null;
     this.service.closeSpreadModal();
   }
 
