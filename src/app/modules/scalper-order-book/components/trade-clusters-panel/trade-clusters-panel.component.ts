@@ -14,6 +14,7 @@ import {
   BehaviorSubject,
   bufferCount,
   combineLatest,
+  distinctUntilChanged,
   fromEvent,
   Observable,
   shareReplay,
@@ -39,6 +40,7 @@ import {mapWith} from "../../../../shared/utils/observable-helper";
 import {NumberDisplayFormat} from "../../../../shared/models/enums/number-display-format";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
+import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 
 @Component({
   selector: 'ats-trade-clusters-panel',
@@ -199,6 +201,11 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
   private initClustersStream() {
     this.clusters$ = this.settings$.pipe(
+      distinctUntilChanged((prev, curr) => {
+        return isInstrumentEqual(prev, curr)
+        && prev.tradesClusterPanelSettings?.timeframe === curr.tradesClusterPanelSettings?.timeframe
+        && prev.tradesClusterPanelSettings?.displayIntervalsCount === curr.tradesClusterPanelSettings?.displayIntervalsCount;
+      }),
       mapWith(
         s => this.tradeClustersService.getHistory(
           s,

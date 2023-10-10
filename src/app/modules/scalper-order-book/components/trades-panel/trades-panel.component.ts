@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   ElementRef,
   Input,
   OnDestroy,
@@ -26,8 +27,11 @@ import {
 import { map } from 'rxjs/operators';
 import { AllTradesItem } from '../../../../shared/models/all-trades.model';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
-import { TradeDisplay } from '../../models/trade-display.model';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {
+  ArrayReverseIterator,
+  CustomIteratorWrapper
+} from "../../../../shared/utils/array-iterators";
 
 interface LayerDrawer {
   zIndex: number;
@@ -44,8 +48,21 @@ interface DrewItemMeta {
   yBottom: number;
 
   connectionColor: string;
+}
 
-  type: string;
+interface TradeDisplay {
+  rowIndex: number;
+
+  volume: number;
+
+  color: 'red' | 'green';
+}
+
+interface ItemMeasurements {
+  xLeft: number;
+  xRight: number;
+  yTop: number;
+  yBottom: number;
 }
 
 @Component({
@@ -57,10 +74,10 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas')
   canvas?: ElementRef<HTMLCanvasElement>;
 
-  @Input({required: true})
+  @Input({ required: true })
   xAxisStep!: number;
 
-  @Input({required: true})
+  @Input({ required: true })
   dataContext!: ScalperOrderBookDataContext;
 
   private readonly zIndexes = {
@@ -99,7 +116,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     combineLatest([
       this.contentSize$,
       this.displayPriceItems$,
-      this.getTradesStream(),
+      this.dataContext.trades$,
       this.themeService.getThemeSettings()
     ]).pipe(
       takeUntilDestroyed(this.destroyRef)
@@ -111,7 +128,12 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       canvas.width = size!.width;
       canvas.height = priceItems.length * this.xAxisStep;
 
-      this.draw(canvas, priceItems.length, themeSettings, this.getDisplayTrades(priceItems, trades));
+      this.draw(
+        canvas,
+        themeSettings,
+        priceItems,
+        trades
+      );
     });
   }
 
@@ -142,58 +164,38 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  private getDisplayTrades(priceRows: number[], trades: AllTradesItem[]): TradeDisplay[] {
-    const displayTrades: TradeDisplay[] = [];
-    trades.forEach(trade => {
-      const matchedRowIndex = priceRows.indexOf(trade.price);
-      if (matchedRowIndex >= 0) {
-        displayTrades.push({
-          rowIndex: matchedRowIndex,
-          color: trade.side === 'buy' ? 'green' : 'red',
-          volume: trade.qty,
-          showVolume: true
-        });
-      }
-    });
-
-    return displayTrades;
-  }
-
-  private getTradesStream(): Observable<AllTradesItem[]> {
-    return this.dataContext.trades$.pipe(
-      map(x => x.slice(-1000))
-    );
-  }
-
   private draw(
     canvas: HTMLCanvasElement,
-    rowsCount: number,
     themeSettings: ThemeSettings,
-    data: TradeDisplay[]
+    priceItems: number[],
+    orderedTrades: AllTradesItem[]
   ) {
     const context = canvas.getContext('2d')!;
     const xScale = scaleLinear([0, canvas.width])
       .domain([0, canvas.width]);
     const yScale = scaleLinear([0, canvas.height])
-      .domain([0, rowsCount]);
+      .domain([0, priceItems.length]);
 
     let layers: LayerDrawer[] = [];
 
-    layers.push(this.drawGridLines(rowsCount, xScale, yScale, context, themeSettings.themeColors));
+    layers.push(this.drawGridLines(priceItems.length, xScale, yScale, context, themeSettings.themeColors));
 
     const itemsDraws: LayerDrawer[] = [];
     let prevItem: DrewItemMeta | null = null;
-    [...data].reverse().every(d => {
-      const currentItem = this.drawTradeItem(
-        d,
+    for (const trade of new CustomIteratorWrapper(() => new ArrayReverseIterator(orderedTrades))) {
+
+      const currentItem = this.drawTrade(
+        trade,
+        priceItems,
         prevItem,
         xScale,
         yScale,
         context,
-        themeSettings.themeColors);
+        themeSettings.themeColors
+      );
 
       if (currentItem.meta.xRight < 0) {
-        return false;
+        break;
       }
 
       itemsDraws.push(currentItem.drawer);
@@ -208,9 +210,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       prevItem = currentItem.meta;
-
-      return true;
-    });
+    }
 
     layers = [
       ...layers,
@@ -230,6 +230,78 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         return 0;
       })
       .forEach(x => x.draw());
+  }
+
+  private drawTrade(
+    trade: AllTradesItem,
+    priceItems: number[],
+    prevItem: DrewItemMeta | null,
+    xScale: ScaleLinear<number, number>,
+    yScale: ScaleLinear<number, number>,
+    context: CanvasRenderingContext2D,
+    themeColors: ThemeColors): { meta: DrewItemMeta, drawer: LayerDrawer } {
+    const mappedPriceIndex = priceItems.indexOf(trade.price);
+    const tradeDisplay: TradeDisplay = {
+      rowIndex: mappedPriceIndex,
+      color: trade.side === 'buy' ? 'green' : 'red',
+      volume: trade.qty
+    };
+
+    let currentItem: { meta: DrewItemMeta, drawer: LayerDrawer };
+    if (mappedPriceIndex < 0) {
+      if (trade.price < priceItems[0] && trade.price > priceItems[priceItems.length - 1]) {
+        currentItem = this.drawMissingPriceItem(
+          {
+            ...tradeDisplay,
+            rowIndex: this.getNearestPriceIndex(trade, priceItems)
+          },
+          prevItem,
+          xScale,
+          yScale,
+          context,
+          themeColors
+        );
+      } else {
+        currentItem = this.drawOuterItem(
+          {
+            ...tradeDisplay,
+            rowIndex: trade.price > priceItems[0]
+              ? 0
+              : priceItems.length
+          },
+          prevItem,
+          xScale,
+          yScale,
+          context,
+          themeColors
+        );
+      }
+
+    } else {
+      currentItem = this.drawItemWithVolume(
+        tradeDisplay,
+        prevItem,
+        xScale,
+        yScale,
+        context,
+        themeColors
+      );
+    }
+
+    return currentItem;
+  }
+
+  private getNearestPriceIndex(trade: AllTradesItem, priceItems: number[]): number {
+    let index = 0;
+    for (let i = priceItems.length - 1; i >= 0; i--) {
+      if (trade.price < priceItems[i]) {
+        break;
+      }
+
+      index = i;
+    }
+
+    return index;
   }
 
   private drawItemsConnection(
@@ -259,37 +331,25 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     context: CanvasRenderingContext2D,
     themeColors: ThemeColors
   ): { meta: DrewItemMeta, drawer: LayerDrawer } {
-    const itemType = 'volume';
 
-    const prevLeftBound = prevItemMeta?.xLeft ?? xScale(xScale.domain()[1]);
-    const yTop = yScale(item.rowIndex) + this.margins.tradePoint.top;
-    const yBottom = yScale(item.rowIndex) + this.xAxisStep - this.margins.tradePoint.bottom;
-    let xRight = prevLeftBound - this.margins.tradePoint.itemsGap;
-
-    if (!!prevItemMeta && this.getMetaCenterY(prevItemMeta) !== this.getCenter(yTop, yBottom)) {
-      xRight = this.getMetaCenterX(prevItemMeta)! - this.margins.tradePoint.itemsGap;
-    }
-
-    context.font = `${this.tradeItemFontSettings.fontSize}px ${this.tradeItemFontSettings.fontFace}`;
     const itemText = item.volume.toString();
-    const textMetrics = context.measureText(itemText);
-    const textWidth = Math.ceil(textMetrics.width);
-    const textMargins = this.margins.tradePoint.text.left + this.margins.tradePoint.text.right;
+    const itemMeasurements = this.getItemWithVolumeMeasurements(
+      itemText,
+      item.rowIndex,
+      prevItemMeta,
+      xScale,
+      yScale,
+      context
+    );
 
-    const itemHeight = yBottom - yTop;
-    let itemWidth = Math.max(itemHeight, textWidth);
-    const marginDiff = itemWidth - textWidth;
-    if (marginDiff < textMargins) {
-      itemWidth = itemWidth + textMargins - marginDiff;
-    }
-
-    const xLeft = xRight - itemWidth;
-    const xCenter = xLeft + itemWidth / 2;
-    const yCenter = yTop + (itemHeight / 2);
+    const itemWidth = itemMeasurements.xRight - itemMeasurements.xLeft;
+    const itemHeight = itemMeasurements.yBottom - itemMeasurements.yTop;
+    const xCenter = itemMeasurements.xLeft + itemWidth / 2;
+    const yCenter = itemMeasurements.yTop + (itemHeight / 2);
 
     const draw = () => {
       context.fillStyle = item.color === 'green' ? themeColors.buyColor : themeColors.sellColor;
-      this.drawRoundedRect(xLeft, yTop, itemWidth, itemHeight, 2, context);
+      this.drawRoundedRect(itemMeasurements.xLeft, itemMeasurements.yTop, itemWidth, itemHeight, 2, context);
       context.fill();
       context.fillStyle = themeColors.buySellLabelColor;
       context.textAlign = 'center';
@@ -303,17 +363,16 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         draw
       },
       meta: {
-        xLeft,
-        xRight,
-        yTop,
-        yBottom,
+        xLeft: itemMeasurements.xLeft,
+        xRight: itemMeasurements.xRight,
+        yTop: itemMeasurements.yTop,
+        yBottom: itemMeasurements.yBottom,
         connectionColor: item.color === 'green' ? themeColors.buyColorBackground : themeColors.sellColorBackground,
-        type: itemType
       }
     };
   }
 
-  private drawItemAsPoint(
+  private drawMissingPriceItem(
     item: TradeDisplay,
     prevItemMeta: DrewItemMeta | null,
     xScale: ScaleLinear<number, number>,
@@ -321,31 +380,31 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     context: CanvasRenderingContext2D,
     themeColors: ThemeColors
   ): { meta: DrewItemMeta, drawer: LayerDrawer } {
-    const itemType = 'point';
 
-    const prevLeftBound = prevItemMeta?.xLeft ?? xScale(xScale.domain()[1]);
+    const itemText = item.volume.toString();
+    const itemMeasurements = this.getItemWithVolumeMeasurements(
+      itemText,
+      item.rowIndex,
+      prevItemMeta,
+      xScale,
+      yScale,
+      context
+    );
 
-    const yTop = yScale(item.rowIndex) + this.margins.tradePoint.top;
-    const yBottom = yScale(item.rowIndex) + this.xAxisStep - this.margins.tradePoint.bottom;
-    const pointRadius = Math.round((yBottom - yTop) / 3);
-    const centerY = yTop + (yBottom - yTop) / 2;
-
-    let xRight = prevLeftBound - this.margins.tradePoint.itemsGap;
-    if (prevItemMeta && (prevItemMeta.type === itemType || this.getMetaCenterY(prevItemMeta) !== centerY)) {
-      xRight = xRight + pointRadius;
-    }
-
-    const centerX = xRight - pointRadius;
+    const itemWidth = itemMeasurements.xRight - itemMeasurements.xLeft;
+    const itemHeight = itemMeasurements.yBottom - itemMeasurements.yTop;
+    const xCenter = itemMeasurements.xLeft + itemWidth / 2;
+    const yCenter = itemMeasurements.yTop + (itemHeight / 2);
 
     const draw = () => {
-      context.beginPath();
-      context.arc(centerX, centerY, pointRadius, 0, 2 * Math.PI, false);
       context.strokeStyle = item.color === 'green' ? themeColors.buyColor : themeColors.sellColor;
-      context.fillStyle = item.color === 'green' ? themeColors.buyColorBackground : themeColors.sellColorBackground;
+      this.drawRoundedRect(itemMeasurements.xLeft, itemMeasurements.yTop, itemWidth, itemHeight, 2, context);
       context.stroke();
-      context.fill();
+      context.fillStyle = themeColors.buySellLabelColor;
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(itemText, xCenter, yCenter);
     };
-
 
     return {
       drawer: {
@@ -353,13 +412,92 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         draw
       },
       meta: {
-        xLeft: xRight - (pointRadius * 2),
-        xRight: xRight,
-        yTop: centerY - pointRadius,
-        yBottom: centerY + pointRadius,
-        connectionColor: item.color === 'green' ? themeColors.buyColorBackground : themeColors.sellColorBackground,
-        type: itemType
+        xLeft: itemMeasurements.xLeft,
+        xRight: itemMeasurements.xRight,
+        yTop: itemMeasurements.yTop,
+        yBottom: itemMeasurements.yBottom,
+        connectionColor: item.color === 'green' ? themeColors.buyColorBackground : themeColors.sellColorBackground
       }
+    };
+  }
+
+  private drawOuterItem(
+    item: TradeDisplay,
+    prevItemMeta: DrewItemMeta | null,
+    xScale: ScaleLinear<number, number>,
+    yScale: ScaleLinear<number, number>,
+    context: CanvasRenderingContext2D,
+    themeColors: ThemeColors
+  ): { meta: DrewItemMeta, drawer: LayerDrawer } {
+    const measurements = this.getItemWithVolumeMeasurements(
+      item.volume.toString(),
+      item.rowIndex,
+      prevItemMeta,
+      xScale,
+      yScale,
+      context
+    );
+
+    const x = measurements.xLeft + (measurements.xRight - measurements.xLeft) / 2;
+    const y = yScale(item.rowIndex);
+
+    const draw = () => {
+      context.beginPath();
+      context.arc(x, y, 2, 0, 2 * Math.PI, false);
+      context.strokeStyle = item.color === 'green' ? themeColors.buyColor : themeColors.sellColor;
+      context.fillStyle = item.color === 'green' ? themeColors.buyColorBackground : themeColors.sellColorBackground;
+      context.stroke();
+      context.fill();
+    };
+
+    return {
+      drawer: {
+        zIndex: this.zIndexes.item,
+        draw
+      },
+      meta: {
+        xLeft: measurements.xLeft,
+        xRight: measurements.xRight,
+        yTop: measurements.yTop,
+        yBottom: measurements.yBottom,
+        connectionColor: item.color === 'green' ? themeColors.buyColorBackground : themeColors.sellColorBackground
+      }
+    };
+  }
+
+  private getItemWithVolumeMeasurements(
+    itemText: string,
+    rowIndex: number,
+    prevItemMeta: DrewItemMeta | null,
+    xScale: ScaleLinear<number, number>,
+    yScale: ScaleLinear<number, number>,
+    context: CanvasRenderingContext2D): ItemMeasurements {
+    const prevLeftBound = prevItemMeta?.xLeft ?? xScale(xScale.domain()[1]);
+    const yTop = yScale(rowIndex) + this.margins.tradePoint.top;
+    const yBottom = yScale(rowIndex) + this.xAxisStep - this.margins.tradePoint.bottom;
+    let xRight = prevLeftBound - this.margins.tradePoint.itemsGap;
+
+    if (!!prevItemMeta && this.getMetaCenterY(prevItemMeta) !== this.getCenter(yTop, yBottom)) {
+      xRight = this.getMetaCenterX(prevItemMeta)! - this.margins.tradePoint.itemsGap;
+    }
+
+    context.font = `${this.tradeItemFontSettings.fontSize}px ${this.tradeItemFontSettings.fontFace}`;
+    const textMetrics = context.measureText(itemText);
+    const textWidth = Math.ceil(textMetrics.width);
+    const textMargins = this.margins.tradePoint.text.left + this.margins.tradePoint.text.right;
+
+    const itemHeight = yBottom - yTop;
+    let itemWidth = Math.max(itemHeight, textWidth);
+    const marginDiff = itemWidth - textWidth;
+    if (marginDiff < textMargins) {
+      itemWidth = itemWidth + textMargins - marginDiff;
+    }
+
+    return {
+      xLeft: xRight - itemWidth,
+      xRight,
+      yTop,
+      yBottom
     };
   }
 
@@ -396,21 +534,6 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     context.closePath();
   }
 
-  private drawTradeItem(
-    item: TradeDisplay,
-    prevItemMeta: DrewItemMeta | null,
-    xScale: ScaleLinear<number, number>,
-    yScale: ScaleLinear<number, number>,
-    context: CanvasRenderingContext2D,
-    themeColors: ThemeColors): { meta: DrewItemMeta, drawer: LayerDrawer } {
-
-    if (item.showVolume) {
-      return this.drawItemWithVolume(item, prevItemMeta, xScale, yScale, context, themeColors);
-
-    }
-
-    return this.drawItemAsPoint(item, prevItemMeta, xScale, yScale, context, themeColors);
-  }
 
   private getMetaCenterX(item: DrewItemMeta | null): number | null {
     if (!item) {
