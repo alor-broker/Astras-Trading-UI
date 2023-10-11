@@ -155,6 +155,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         type: instrumentDetails.type ?? '',
         has_empty_bars: false,
         has_intraday: true,
+        has_seconds: true,
         timezone: 'Europe/Moscow',
         supported_resolutions: this.getSupportedResolutions(),
         session: '24x7'
@@ -435,6 +436,9 @@ export class TechChartDatafeedService implements IBasicDataFeed {
 
   private getSupportedResolutions(): ResolutionString[] {
     return [
+      '1S' as ResolutionString,
+      '5S' as ResolutionString,
+      '10S' as ResolutionString,
       '1' as ResolutionString,
       '5' as ResolutionString,
       '15' as ResolutionString,

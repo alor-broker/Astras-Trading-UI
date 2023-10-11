@@ -309,6 +309,11 @@ export class LightChartWrapper {
       case TimeframeValue.M5:
       case TimeframeValue.M1:
         return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 3))).getTime();
+      case TimeframeValue.S10:
+        return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes() - 20))).getTime();
+      case TimeframeValue.S5:
+      case TimeframeValue.S1:
+        return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes() - 5))).getTime();
       default:
         return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1))).getTime();
     }
@@ -329,6 +334,12 @@ export class LightChartWrapper {
       case TimeframeValue.M5:
       case TimeframeValue.M1:
         return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate() - 3))).getTime();
+      case TimeframeValue.S10:
+        return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate(), fromDate.getUTCHours(), fromDate.getUTCMinutes() - 20))).getTime();
+      case TimeframeValue.S5:
+      case TimeframeValue.S1:
+        return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate(), fromDate.getUTCHours(), fromDate.getUTCMinutes() - 5))).getTime();
+
       default:
         return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth() - 1))).getTime();
     }
