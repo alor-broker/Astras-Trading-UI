@@ -204,6 +204,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private lastLang?: string;
   private lastTimezone?: TimezoneDisplayOption;
   private translateFn!: (key: string[], params?: HashMap) => string;
+  private intervalChangeSub?: Subscription;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -233,6 +234,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.chartState.ordersState?.destroy();
       this.chartState.positionState?.destroy();
       this.chartState.tradesState?.destroy();
+      this.intervalChangeSub?.unsubscribe();
       this.chartState.widget.remove();
     }
 
@@ -346,6 +348,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.chartState) {
       if (forceRecreate) {
         this.chartState.widget?.remove();
+        this.intervalChangeSub?.unsubscribe();
       }
       else {
         this.chartState.widget.activeChart().setSymbol(
@@ -448,12 +451,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       )
         .subscribe(() => this.settingsService.updateIsLinked(this.guid, false));
 
-      const tearDown = new Subscription();
+      this.intervalChangeSub = new Subscription();
 
-      this.chartState?.widget!.activeChart().onIntervalChanged()
+      this.chartState!.widget.activeChart().onIntervalChanged()
         .subscribe(null, this.intervalChangeCallback);
 
-      tearDown.add(() => this.chartState?.widget!.activeChart().onIntervalChanged().unsubscribe(null, this.intervalChangeCallback));
+      this.intervalChangeSub.add(() => this.chartState?.widget!.activeChart().onIntervalChanged().unsubscribe(null, this.intervalChangeCallback));
     });
   }
 
