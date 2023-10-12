@@ -26,6 +26,7 @@ import {
   ResolutionString,
   SubscribeEventsMap,
   TimeFrameType,
+  TimeFrameValue,
   widget
 } from '../../../../../assets/charting_library';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
@@ -447,18 +448,25 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       )
         .subscribe(() => this.settingsService.updateIsLinked(this.guid, false));
 
+      const tearDown = new Subscription();
+
       this.chartState?.widget!.activeChart().onIntervalChanged()
-        .subscribe(null, (interval, timeframeObj) => {
-          if (interval.includes('S')) {
-            timeframeObj.timeframe = {
-              from: Math.round(addSeconds(new Date(), +interval.slice(0, -1) * 30).getTime() / 1000),
-              to: Math.round(new Date().getTime() / 1000),
-              type: TimeFrameType.TimeRange
-            };
-          }
-        });
+        .subscribe(null, this.intervalChangeCallback);
+
+      tearDown.add(() => this.chartState?.widget!.activeChart().onIntervalChanged().unsubscribe(null, this.intervalChangeCallback));
     });
   }
+
+  private intervalChangeCallback: (interval: ResolutionString, timeFrameParameters: { timeframe?: TimeFrameValue }) => void =
+    (interval, timeframeObj) => {
+      if (interval.includes('S')) {
+        timeframeObj.timeframe = {
+          from: Math.round(addSeconds(new Date(), +interval.slice(0, -1) * -100).getTime() / 1000),
+          to: Math.round(new Date().getTime() / 1000),
+          type: TimeFrameType.TimeRange
+        };
+      }
+    };
 
   private toTvSymbol(instrumentKey: InstrumentKey): string {
     return `[${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup ?? ''}]`;
