@@ -9,6 +9,9 @@ export interface Timeframe {
 
 export class TimeframesHelper {
   public static timeFrames: Timeframe[] = [
+    { label: '1s', value: TimeframeValue.S1 },
+    { label: '5s', value: TimeframeValue.S5 },
+    { label: '10s', value: TimeframeValue.S10 },
     { label: '1m', value: TimeframeValue.M1 },
     { label: '5m', value: TimeframeValue.M5 },
     { label: '15m', value: TimeframeValue.M15 },
@@ -60,6 +63,21 @@ export class TimeframesHelper {
           [...existing, ...history],
           (b1, b2) => b1.time - b2.time,
           (b1, b2) => b1.time - b2.time < 60);
+      case TimeframeValue.S10:
+        return findUniqueElements(
+          [...existing, ...history],
+          (b1, b2) => b1.time - b2.time,
+          (b1, b2) => b1.time - b2.time < 10);
+      case TimeframeValue.S5:
+        return findUniqueElements(
+          [...existing, ...history],
+          (b1, b2) => b1.time - b2.time,
+          (b1, b2) => b1.time - b2.time < 5);
+      case TimeframeValue.S1:
+        return findUniqueElements(
+          [...existing, ...history],
+          (b1, b2) => b1.time - b2.time,
+          (b1, b2) => b1.time - b2.time < 1);
       default:
         return existing;
     }

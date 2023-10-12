@@ -25,6 +25,8 @@ import {
   PlusClickParams,
   ResolutionString,
   SubscribeEventsMap,
+  TimeFrameType,
+  TimeFrameValue,
   widget
 } from '../../../../../assets/charting_library';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
@@ -58,6 +60,7 @@ import {EditOrderDialogParams, OrderType} from "../../../../shared/models/orders
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { Trade } from "../../../../shared/models/trades/trade.model";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
+import { addSeconds } from "../../../../shared/utils/datetime";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -201,6 +204,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private lastLang?: string;
   private lastTimezone?: TimezoneDisplayOption;
   private translateFn!: (key: string[], params?: HashMap) => string;
+  private intervalChangeSub?: Subscription;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -230,6 +234,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.chartState.ordersState?.destroy();
       this.chartState.positionState?.destroy();
       this.chartState.tradesState?.destroy();
+      this.intervalChangeSub?.unsubscribe();
       this.chartState.widget.remove();
     }
 
@@ -343,6 +348,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.chartState) {
       if (forceRecreate) {
         this.chartState.widget?.remove();
+        this.intervalChangeSub?.unsubscribe();
       }
       else {
         this.chartState.widget.activeChart().setSymbol(
@@ -397,7 +403,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         { text: '1m', resolution: '1H' as ResolutionString, description: this.translateFn(['timeframes', '1m', 'desc']), title: this.translateFn(['timeframes', '1m', 'title']) },
         { text: '14d', resolution: '1H' as ResolutionString, description: this.translateFn(['timeframes', '2w', 'desc']), title: this.translateFn(['timeframes', '2w', 'title']) },
         { text: '7d', resolution: '15' as ResolutionString, description: this.translateFn(['timeframes', '1w', 'desc']), title: this.translateFn(['timeframes', '1w', 'title']) },
-        { text: '1d', resolution: '5' as ResolutionString as ResolutionString, description: this.translateFn(['timeframes', '1d', 'desc']), title: this.translateFn(['timeframes', '1d', 'title']) },
+        { text: '1d', resolution: '5' as ResolutionString, description: this.translateFn(['timeframes', '1d', 'desc']), title: this.translateFn(['timeframes', '1d', 'title']) },
       ],
       symbol_search_request_delay: 2000,
       //features
@@ -413,6 +419,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         'side_toolbar_in_fullscreen_mode',
         'chart_crosshair_menu',
         'show_spread_operators',
+        'seconds_resolution'
       ] as unknown as ChartingLibraryFeatureset[]
     };
 
@@ -443,8 +450,26 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         filter(needUnlink => !!needUnlink)
       )
         .subscribe(() => this.settingsService.updateIsLinked(this.guid, false));
+
+      this.intervalChangeSub = new Subscription();
+
+      this.chartState!.widget.activeChart().onIntervalChanged()
+        .subscribe(null, this.intervalChangeCallback);
+
+      this.intervalChangeSub.add(() => this.chartState?.widget!.activeChart().onIntervalChanged().unsubscribe(null, this.intervalChangeCallback));
     });
   }
+
+  private intervalChangeCallback: (interval: ResolutionString, timeFrameParameters: { timeframe?: TimeFrameValue }) => void =
+    (interval, timeframeObj) => {
+      if (interval.includes('S')) {
+        timeframeObj.timeframe = {
+          from: Math.round(addSeconds(new Date(), +interval.slice(0, -1) * -100).getTime() / 1000),
+          to: Math.round(new Date().getTime() / 1000),
+          type: TimeFrameType.TimeRange
+        };
+      }
+    };
 
   private toTvSymbol(instrumentKey: InstrumentKey): string {
     return `[${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup ?? ''}]`;

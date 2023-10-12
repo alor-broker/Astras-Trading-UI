@@ -117,6 +117,12 @@ export class LightChartDatafeed {
         return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes() - 5))).getTime() / 1000;
       case TimeframeValue.M1:
         return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes() - 1))).getTime() / 1000;
+      case TimeframeValue.S10:
+        return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds() - 10))).getTime() / 1000;
+      case TimeframeValue.S5:
+        return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds() - 5))).getTime() / 1000;
+      case TimeframeValue.S1:
+        return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds() - 1))).getTime() / 1000;
       default:
         return now.getTime() / 1000;
     }

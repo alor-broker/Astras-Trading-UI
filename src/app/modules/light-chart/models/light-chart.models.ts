@@ -4,6 +4,9 @@ import { LightChartDatafeed } from '../services/light-chart-datafeed';
 import { ThemeColors } from '../../../shared/models/settings/theme-settings.model';
 
 export enum TimeframeValue {
+  S1 = '1',
+  S5 = '5',
+  S10 = '10',
   M1 = '60',
   M5 = '300',
   M15 = '900',
