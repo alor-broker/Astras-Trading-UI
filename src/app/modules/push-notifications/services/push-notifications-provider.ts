@@ -92,7 +92,13 @@ export class PushNotificationsProvider implements NotificationsProvider {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(payload => {
       const messageData = JSON.parse(payload!.data!.body!).notification;
-      if (!messageData) {
+      const savedNotifications = this.getSavedNotifications();
+
+      if (
+        !messageData ||
+        messageData.body?.slice(-7) === 'цена: 0' ||
+        savedNotifications.find(n => n.title === messageData.title)
+      ) {
         return;
       }
 
