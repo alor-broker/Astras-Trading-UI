@@ -320,7 +320,7 @@ export class ScalperOrdersService {
       price: price,
       instrument: instrumentKey,
       triggerPrice: price,
-      condition: side === Side.Sell ? LessMore.More : LessMore.Less
+      condition: side === Side.Sell ? LessMore.MoreOrEqual : LessMore.LessOrEqual
     };
 
     if (silent) {
@@ -369,7 +369,7 @@ export class ScalperOrdersService {
         instrumentGroup: instrumentGroup
       },
       triggerPrice: price,
-      condition: side === Side.Sell ? LessMore.Less : LessMore.More
+      condition: side === Side.Sell ? LessMore.LessOrEqual : LessMore.MoreOrEqual
     };
 
     if (silent) {
@@ -445,7 +445,7 @@ export class ScalperOrdersService {
     if (topOrderPrice) {
       orders.push({
         ...baseOrder,
-        condition: LessMore.More,
+        condition: LessMore.MoreOrEqual,
         triggerPrice: topOrderPrice!,
         side: baseOrder.side === Side.Buy ? Side.Sell : Side.Buy,
         type: 'StopLimit',
@@ -456,7 +456,7 @@ export class ScalperOrdersService {
     if (bottomOrderPrice) {
       orders.push({
         ...baseOrder,
-        condition: LessMore.Less,
+        condition: LessMore.LessOrEqual,
         triggerPrice: bottomOrderPrice!,
         side: baseOrder.side === Side.Buy ? Side.Sell : Side.Buy,
         type: 'StopLimit',

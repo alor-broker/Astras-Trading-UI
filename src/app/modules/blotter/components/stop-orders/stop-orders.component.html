@@ -131,7 +131,7 @@
                     {{ t('blotterBlotterCommon.orderStatus.' + ord.status, {fallback: ord.status}) }}
                   </ng-template>
                 </td>
-                <td *ngIf='column.id === "conditionType"'>{{ ord.conditionType }}</td>
+                <td *ngIf='column.id === "conditionType"'>{{ getConditionSign(ord.conditionType) }}</td>
                 <td *ngIf='column.id === "transTime"'>{{ formatDate(ord.transTime) }}</td>
                 <td *ngIf='column.id === "exchange"'>{{ ord.exchange }}</td>
                 <td *ngIf='column.id === "type"'>{{ ord.type }}</td>

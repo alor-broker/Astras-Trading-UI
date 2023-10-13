@@ -1,25 +1,25 @@
-import {Component, DestroyRef, Input, OnInit} from '@angular/core';
-import {BaseEditOrderFormComponent} from "../base-edit-order-form.component";
-import {FormBuilder, Validators} from "@angular/forms";
-import {OrderDetailsService} from "../../../../../shared/services/orders/order-details.service";
-import {InstrumentsService} from "../../../../instruments/services/instruments.service";
-import {CommonParametersService} from "../../../services/common-parameters.service";
-import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {OrderService} from "../../../../../shared/services/orders/order.service";
-import {LessMore} from "../../../../../shared/models/enums/less-more.model";
-import {StopOrder, TimeInForce} from "../../../../../shared/models/orders/order.model";
-import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
-import {combineLatest, distinctUntilChanged, Observable, shareReplay, take} from "rxjs";
-import {debounceTime, filter, map, switchMap} from "rxjs/operators";
-import {startOfDay, toUnixTime} from "../../../../../shared/utils/datetime";
-import {PriceDiffHelper} from "../../../utils/price-diff.helper";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {mapWith} from "../../../../../shared/utils/observable-helper";
-import {QuotesService} from "../../../../../shared/services/quotes.service";
-import {TimezoneConverterService} from "../../../../../shared/services/timezone-converter.service";
-import {AtsValidators} from "../../../../../shared/utils/form-validators";
-import {TimezoneConverter} from "../../../../../shared/utils/timezone-converter";
-import {StopLimitOrderEdit, StopMarketOrderEdit} from "../../../../../shared/models/orders/edit-order.model";
+import { Component, DestroyRef, Input, OnInit } from '@angular/core';
+import { BaseEditOrderFormComponent } from "../base-edit-order-form.component";
+import { FormBuilder, Validators } from "@angular/forms";
+import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
+import { InstrumentsService } from "../../../../instruments/services/instruments.service";
+import { CommonParametersService } from "../../../services/common-parameters.service";
+import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
+import { OrderService } from "../../../../../shared/services/orders/order.service";
+import { LessMore } from "../../../../../shared/models/enums/less-more.model";
+import { StopOrder, TimeInForce } from "../../../../../shared/models/orders/order.model";
+import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
+import { combineLatest, distinctUntilChanged, Observable, shareReplay, take } from "rxjs";
+import { filter, map, switchMap } from "rxjs/operators";
+import { startOfDay, toUnixTime } from "../../../../../shared/utils/datetime";
+import { PriceDiffHelper } from "../../../utils/price-diff.helper";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { QuotesService } from "../../../../../shared/services/quotes.service";
+import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
+import { AtsValidators } from "../../../../../shared/utils/form-validators";
+import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
+import { StopLimitOrderEdit, StopMarketOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
+import { getConditionTypeByString } from "../../../../../shared/utils/order-conditions-helper";
 
 @Component({
   selector: 'ats-edit-stop-order-form',
@@ -109,7 +109,6 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     this.initCommonParametersUpdate();
     this.initPriceDiffCalculation();
     this.initFormFieldsCheck();
-    this.initFieldDependencies();
     this.initFormStateChangeNotification();
   }
 
@@ -132,7 +131,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
 
       this.form.controls.quantity.setValue(this.initialValues?.quantity ?? x.currentOrder.qtyBatch);
       this.form.controls.triggerPrice.setValue(this.initialValues?.price ?? x.currentOrder.triggerPrice);
-      this.form.controls.condition.setValue(x.currentOrder.conditionType === 'less' ? LessMore.Less : LessMore.More);
+      this.form.controls.condition.setValue(getConditionTypeByString(x.currentOrder.conditionType) ?? LessMore.More);
       this.form.controls.price.setValue(this.initialValues?.price ?? x.currentOrder.price);
 
       this.form.controls.withLimit.setValue(x.currentOrder.type === 'stoplimit');
@@ -206,21 +205,6 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       this.getInstrumentWithPortfolio(),
       this.portfolioSubscriptionsService
     );
-  }
-
-  private initFieldDependencies() {
-    this.form.controls.price.valueChanges.pipe(
-      distinctUntilChanged((prev, curr) => prev === curr),
-      debounceTime(500),
-      mapWith(
-        () => this.getCurrentPrice(),
-        (value, lastPrice) => ({value, lastPrice})
-      ),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(v => {
-      this.form.controls.condition.setValue(((v.lastPrice ?? 0) < +(v.value ?? 0)) ? LessMore.More : LessMore.Less);
-    });
-
   }
 
   private initFormFieldsCheck() {

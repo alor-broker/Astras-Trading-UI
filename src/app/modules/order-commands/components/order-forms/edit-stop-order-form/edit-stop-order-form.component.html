@@ -32,7 +32,9 @@
                 <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.conditionError')">
                   <nz-select formControlName="condition">
                     <nz-option [nzLabel]="t('orderCommandsOrderForms.more')" [nzValue]="conditionType.More"></nz-option>
+                    <nz-option [nzLabel]="t('orderCommandsOrderForms.moreOrEqual')" [nzValue]="conditionType.MoreOrEqual"></nz-option>
                     <nz-option [nzLabel]="t('orderCommandsOrderForms.less')" [nzValue]="conditionType.Less"></nz-option>
+                    <nz-option [nzLabel]="t('orderCommandsOrderForms.lessOrEqual')" [nzValue]="conditionType.LessOrEqual"></nz-option>
                   </nz-select>
                 </nz-form-control>
               </nz-form-item>

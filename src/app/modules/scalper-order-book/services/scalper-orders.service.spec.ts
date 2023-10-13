@@ -399,7 +399,7 @@ describe('ScalperOrdersService', () => {
         {
           ...expectedLimitOrder,
           type: 'StopLimit',
-          condition: LessMore.More,
+          condition: LessMore.MoreOrEqual,
           triggerPrice: MathHelper.roundPrice(testBids[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Sell,
           activate: false
@@ -407,7 +407,7 @@ describe('ScalperOrdersService', () => {
         {
           ...expectedLimitOrder,
           type: 'StopLimit',
-          condition: LessMore.Less,
+          condition: LessMore.LessOrEqual,
           triggerPrice: MathHelper.roundPrice(testBids[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Sell,
           activate: false
@@ -544,7 +544,7 @@ describe('ScalperOrdersService', () => {
         {
           ...expectedLimitOrder,
           type: 'StopLimit',
-          condition: LessMore.More,
+          condition: LessMore.MoreOrEqual,
           triggerPrice: MathHelper.roundPrice(testBids[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Buy,
           activate: false
@@ -552,7 +552,7 @@ describe('ScalperOrdersService', () => {
         {
           ...expectedLimitOrder,
           type: 'StopLimit',
-          condition: LessMore.Less,
+          condition: LessMore.LessOrEqual,
           triggerPrice: MathHelper.roundPrice(testBids[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Buy,
           activate: false
@@ -688,7 +688,7 @@ describe('ScalperOrdersService', () => {
         {
           ...expectedLimitOrder,
           type: 'StopLimit',
-          condition: LessMore.Less,
+          condition: LessMore.LessOrEqual,
           triggerPrice: MathHelper.roundPrice(testAsks[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Sell,
           activate: false
@@ -891,7 +891,7 @@ describe('ScalperOrdersService', () => {
         {
           ...expectedLimitOrder,
           type: 'StopLimit',
-          condition: LessMore.More,
+          condition: LessMore.MoreOrEqual,
           triggerPrice: MathHelper.roundPrice(price + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Sell,
           activate: false
@@ -899,7 +899,7 @@ describe('ScalperOrdersService', () => {
         {
           ...expectedLimitOrder,
           type: 'StopLimit',
-          condition: LessMore.Less,
+          condition: LessMore.LessOrEqual,
           triggerPrice: MathHelper.roundPrice(price - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Sell,
           activate: false
@@ -970,7 +970,7 @@ describe('ScalperOrdersService', () => {
         {
           ...expectedLimitOrder,
           type: 'StopLimit',
-          condition: LessMore.More,
+          condition: LessMore.MoreOrEqual,
           triggerPrice: MathHelper.roundPrice((1 + testSettings.bracketsSettings!.topOrderPriceRatio! * 0.01) * price, testInstrument.minstep),
           side: Side.Sell,
           activate: false
@@ -1071,7 +1071,7 @@ describe('ScalperOrdersService', () => {
             price,
             instrument: testInstrumentKey,
             triggerPrice: price,
-            condition: LessMore.More
+            condition: LessMore.MoreOrEqual
           } as NewStopLimitOrder,
           portfolioKey.portfolio
         );
@@ -1096,7 +1096,7 @@ describe('ScalperOrdersService', () => {
             price,
             instrument: testInstrumentKey,
             triggerPrice: price,
-            condition: LessMore.Less
+            condition: LessMore.LessOrEqual
           } as NewStopLimitOrder,
           portfolioKey.portfolio
         );
@@ -1121,7 +1121,7 @@ describe('ScalperOrdersService', () => {
             quantity,
             price: price,
             stopOrder:{
-              condition: LessMore.Less,
+              condition: LessMore.LessOrEqual,
               limit: true
             }
           }
@@ -1249,7 +1249,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Sell,
             quantity: position.qtyTFutureBatch,
             triggerPrice: expectedPrice,
-            condition: LessMore.Less,
+            condition: LessMore.LessOrEqual,
             instrument: testInstrumentKey
           } as NewStopMarketOrder,
           portfolioKey.portfolio
@@ -1266,7 +1266,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Buy,
             quantity: Math.abs(position.qtyTFutureBatch),
             triggerPrice: expectedPrice,
-            condition: LessMore.More,
+            condition: LessMore.MoreOrEqual,
             instrument: testInstrumentKey
           } as NewStopMarketOrder,
           portfolioKey.portfolio

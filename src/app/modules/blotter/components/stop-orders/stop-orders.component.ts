@@ -1,27 +1,6 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  OnInit,
-  Output,
-} from '@angular/core';
-import {
-  combineLatest,
-  distinctUntilChanged,
-  Observable,
-  of,
-  Subject,
-  switchMap,
-  take,
-} from 'rxjs';
-import {
-  catchError,
-  debounceTime,
-  map,
-  mergeMap,
-  startWith,
-  tap
-} from 'rxjs/operators';
+import { Component, DestroyRef, EventEmitter, OnInit, Output, } from '@angular/core';
+import { combineLatest, distinctUntilChanged, Observable, of, Subject, switchMap, take, } from 'rxjs';
+import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
@@ -29,9 +8,7 @@ import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { BlotterService } from '../../services/blotter.service';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  isEqualPortfolioDependedSettings
-} from "../../../../shared/utils/settings-helper";
+import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
@@ -43,9 +20,14 @@ import { OrdersGroupService } from "../../../../shared/services/orders/orders-gr
 import { DomHelper } from "../../../../shared/utils/dom-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BaseTableComponent } from "../base-table/base-table.component";
-import {StopOrder} from "../../../../shared/models/orders/order.model";
-import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
-import {OrderType} from "../../../../shared/models/orders/orders-dialog.model";
+import { StopOrder } from "../../../../shared/models/orders/order.model";
+import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
+import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
+import {
+  getConditionSign,
+  getConditionTypeByString
+} from "../../../../shared/utils/order-conditions-helper";
+import { LessMore } from "../../../../shared/models/enums/less-more.model";
 
 interface DisplayOrder extends StopOrder {
   residue: string,
@@ -169,8 +151,10 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
         filterName: 'conditionType',
         isDefaultFilter: true,
         filters: [
-          { text: '>', value: 'more' },
-          { text: '<', value: 'less' }
+          { text: getConditionSign(LessMore.More)!, value: 'more' },
+          { text: getConditionSign(LessMore.Less)!, value: 'less' },
+          { text: getConditionSign(LessMore.MoreOrEqual)!, value: 'moreorequal' },
+          { text: getConditionSign(LessMore.LessOrEqual)!, value: 'lessorequal' }
         ]
       },
       tooltip: 'Условие, при котором будет выставлена заявка',
@@ -374,6 +358,10 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
     event.preventDefault();
     event.stopPropagation();
     this.service.openOrderGroupModal(groupId);
+  }
+
+  getConditionSign(condition: string): string {
+    return getConditionSign(getConditionTypeByString(condition)!) || '';
   }
 
   private sortOrders(a: DisplayOrder, b: DisplayOrder) {

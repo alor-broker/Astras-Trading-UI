@@ -1,4 +1,6 @@
 ﻿export enum LessMore {
   Less = 'Less',
-  More = 'More'
+  More = 'More',
+  MoreOrEqual = 'MoreOrEqual',
+  LessOrEqual = 'LessOrEqual',
 }

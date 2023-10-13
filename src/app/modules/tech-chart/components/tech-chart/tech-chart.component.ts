@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, DestroyRef, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -29,38 +29,40 @@ import {
   TimeFrameValue,
   widget
 } from '../../../../../assets/charting_library';
-import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
-import {TechChartDatafeedService} from '../../services/tech-chart-datafeed.service';
-import {ThemeService} from '../../../../shared/services/theme.service';
-import {ThemeColors, ThemeSettings, ThemeType} from '../../../../shared/models/settings/theme-settings.model';
-import {mapWith} from '../../../../shared/utils/observable-helper';
-import {SelectedPriceData} from '../../../../shared/models/orders/selected-order-price.model';
-import {Instrument} from '../../../../shared/models/instruments/instrument.model';
-import {InstrumentsService} from '../../../instruments/services/instruments.service';
-import {MathHelper} from '../../../../shared/utils/math-helper';
-import {PortfolioSubscriptionsService} from '../../../../shared/services/portfolio-subscriptions.service';
-import {PortfolioKey} from '../../../../shared/models/portfolio-key.model';
-import {Position} from '../../../../shared/models/positions/position.model';
-import {debounceTime, map, startWith} from 'rxjs/operators';
-import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
-import {Order, StopOrder} from '../../../../shared/models/orders/order.model';
-import {Side} from '../../../../shared/models/enums/side.model';
-import {OrderCancellerService} from '../../../../shared/services/order-canceller.service';
-import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
-import {TechChartSettings} from '../../models/tech-chart-settings.model';
-import {TranslatorService} from "../../../../shared/services/translator.service";
-import {HashMap} from "@ngneat/transloco/lib/types";
-import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
-import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
-import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-display-option";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
-import {toInstrumentKey} from "../../../../shared/utils/instruments";
-import {EditOrderDialogParams, OrderType} from "../../../../shared/models/orders/orders-dialog.model";
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
+import { ThemeService } from '../../../../shared/services/theme.service';
+import { ThemeColors, ThemeSettings, ThemeType } from '../../../../shared/models/settings/theme-settings.model';
+import { mapWith } from '../../../../shared/utils/observable-helper';
+import { SelectedPriceData } from '../../../../shared/models/orders/selected-order-price.model';
+import { Instrument } from '../../../../shared/models/instruments/instrument.model';
+import { InstrumentsService } from '../../../instruments/services/instruments.service';
+import { MathHelper } from '../../../../shared/utils/math-helper';
+import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
+import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
+import { Position } from '../../../../shared/models/positions/position.model';
+import { debounceTime, map, startWith } from 'rxjs/operators';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { Order, StopOrder } from '../../../../shared/models/orders/order.model';
+import { Side } from '../../../../shared/models/enums/side.model';
+import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { TechChartSettings } from '../../models/tech-chart-settings.model';
+import { TranslatorService } from "../../../../shared/services/translator.service";
+import { HashMap } from "@ngneat/transloco/lib/types";
+import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
+import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
+import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
+import { toInstrumentKey } from "../../../../shared/utils/instruments";
+import { EditOrderDialogParams, OrderType } from "../../../../shared/models/orders/orders-dialog.model";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { Trade } from "../../../../shared/models/trades/trade.model";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 import { addSeconds } from "../../../../shared/utils/datetime";
+import { LessMore } from "../../../../shared/models/enums/less-more.model";
+import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -908,16 +910,17 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private fillStopOrder(order: StopOrder, orderLineAdapter: IOrderLineAdapter) {
+    const conditionType: LessMore = getConditionTypeByString(order.conditionType)!;
     const orderText = 'S'
       + (order.type === 'stoplimit' ? 'L' : 'M')
       + ' '
-      + (order.conditionType === 'more' ? '(>)' : '(<)');
+      + getConditionSign(conditionType);
 
     const orderTooltip = this.translateFn([order.side === Side.Buy ? 'buy' : 'sell'])
       + ' '
       + this.translateFn([order.type === 'stoplimit' ? 'stopLimit' : 'stopMarket'])
       + ' ('
-      + this.translateFn([order.conditionType === 'more' ? 'more' : 'less'])
+      + this.translateFn([conditionType ?? ''])
       + ')';
 
     const getEditCommand = () => ({
