@@ -358,7 +358,11 @@ export class ScalperCommandProcessorService {
         return map.actions.find(a =>
           a.button === btn
           && (a.orderBookRowType === row.rowType || a.orderBookRowType === 'any')
-          && ((!a.modifier && !e.ctrlKey && !e.shiftKey) || (a.modifier === 'ctrl' && e.ctrlKey) || (a.modifier === 'shift' && e.shiftKey))
+          && (
+              (!a.modifier && !e.ctrlKey && !e.shiftKey && !e.metaKey)
+              || (a.modifier === 'ctrl' && (e.ctrlKey || e.metaKey))
+              || (a.modifier === 'shift' && e.shiftKey)
+            )
         )?.action ?? null;
       })
     ).subscribe(action => {

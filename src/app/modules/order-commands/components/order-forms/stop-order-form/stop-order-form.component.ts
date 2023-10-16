@@ -404,7 +404,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       this.isActivated$,
       this.form.controls.price.valueChanges
     ]).pipe(
-      filter(([isActivated,]) => isActivated),
+      filter(([isActivated, v]) => isActivated && this.form.controls.condition.untouched && !!v),
       map(([, price]) => price),
       distinctUntilChanged((prev, curr) => prev === curr),
       debounceTime(500),

@@ -14,6 +14,8 @@
   "conditionError": "Select condition",
   "more": "More",
   "less": "Less",
+  "moreOrEqual": "More or equal",
+  "lessOrEqual": "Less or equal",
   "stopEndTimeLabel": "Expiration date",
   "stopEndTimeError": "Fill expiration date input",
   "stopEndTimePlaceholder": "Select date",
