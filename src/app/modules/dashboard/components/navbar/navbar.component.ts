@@ -1,26 +1,27 @@
-import {Component, OnInit} from '@angular/core';
-import {Observable, shareReplay, take} from 'rxjs';
-import {AuthService} from 'src/app/shared/services/auth.service';
-import {ModalService} from 'src/app/shared/services/modal.service';
-import {Store} from '@ngrx/store';
-import {PortfolioExtended} from 'src/app/shared/models/user/portfolio-extended.model';
-import {ThemeService} from '../../../../shared/services/theme.service';
-import {ThemeColors} from '../../../../shared/models/settings/theme-settings.model';
-import {filter, map} from 'rxjs/operators';
-import {selectPortfoliosState} from '../../../../store/portfolios/portfolios.selectors';
-import {EntityStatus} from '../../../../shared/models/enums/entity-status';
-import {FormControl} from "@angular/forms";
-import {groupPortfoliosByAgreement} from '../../../../shared/utils/portfolios';
-import {ManageDashboardsService} from '../../../../shared/services/manage-dashboards.service';
-import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
-import {TranslatorService} from '../../../../shared/services/translator.service';
-import {Dashboard, DefaultDashboardName} from '../../../../shared/models/dashboard/dashboard.model';
-import {mapWith} from '../../../../shared/utils/observable-helper';
-import {defaultBadgeColor, toInstrumentKey} from '../../../../shared/utils/instruments';
-import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
-import {environment} from "../../../../../environments/environment";
-import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
-import {OrderType} from "../../../../shared/models/orders/orders-dialog.model";
+import { Component, DestroyRef, OnInit } from '@angular/core';
+import { Observable, shareReplay, take } from 'rxjs';
+import { AuthService } from 'src/app/shared/services/auth.service';
+import { ModalService } from 'src/app/shared/services/modal.service';
+import { Store } from '@ngrx/store';
+import { PortfolioExtended } from 'src/app/shared/models/user/portfolio-extended.model';
+import { ThemeService } from '../../../../shared/services/theme.service';
+import { ThemeColors } from '../../../../shared/models/settings/theme-settings.model';
+import { filter, map } from 'rxjs/operators';
+import { selectPortfoliosState } from '../../../../store/portfolios/portfolios.selectors';
+import { EntityStatus } from '../../../../shared/models/enums/entity-status';
+import { FormControl } from "@angular/forms";
+import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios';
+import { ManageDashboardsService } from '../../../../shared/services/manage-dashboards.service';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { TranslatorService } from '../../../../shared/services/translator.service';
+import { Dashboard, DefaultDashboardName } from '../../../../shared/models/dashboard/dashboard.model';
+import { mapWith } from '../../../../shared/utils/observable-helper';
+import { defaultBadgeColor, toInstrumentKey } from '../../../../shared/utils/instruments';
+import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { environment } from "../../../../../environments/environment";
+import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
+import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-navbar',
@@ -50,6 +51,7 @@ export class NavbarComponent implements OnInit {
     private readonly ordersDialogService: OrdersDialogService,
     private readonly themeService: ThemeService,
     private readonly translatorService: TranslatorService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -87,6 +89,18 @@ export class NavbarComponent implements OnInit {
             ) ?? null;
         })
       );
+
+    this.portfolios$
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(portfolios => {
+        const isEmptyPortfolios = !Array.from(portfolios.values()).find(p => !!p.length);
+
+        if (isEmptyPortfolios) {
+          this.modal.openEmptyPortfoliosWarningModal();
+        }
+      });
 
     this.activeInstrument$ = this.dashboardContextService.instrumentsSelection$.pipe(
       map(selection => selection[defaultBadgeColor])

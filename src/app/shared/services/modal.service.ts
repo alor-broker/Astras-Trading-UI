@@ -12,32 +12,29 @@ import { ModalOptions } from "ng-zorro-antd/modal/modal-types";
 export class ModalService {
   private helpParams = new BehaviorSubject<string | null>(null);
   private shouldShowHelpModal = new BehaviorSubject<boolean>(false);
+  helpParams$ = this.helpParams.asObservable();
+  shouldShowHelpModal$ = this.shouldShowHelpModal.asObservable();
 
   private shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
+  shouldShowTerminalSettingsModal$ = this.shouldShowTerminalSettingsModal.asObservable();
 
   private shouldShowVoteModal = new BehaviorSubject<boolean>(false);
   private voteParams = new BehaviorSubject<NewFeedback | null>(null);
+  shouldShowVoteModal$ = this.shouldShowVoteModal.asObservable();
+  voteParams$ = this.voteParams.asObservable();
 
   private newsItem = new BehaviorSubject<NewsListItem | null>(null);
   private shouldShowNewsModal = new BehaviorSubject<boolean>(false);
+  newsItem$ = this.newsItem.asObservable();
+  shouldShowNewsModal$ = this.shouldShowNewsModal.asObservable();
 
   private shouldShowApplicationUpdatedModal = new BehaviorSubject<boolean>(false);
   private applicationUpdatedParams = new BehaviorSubject<ReleaseMeta | null>(null);
   applicationUpdatedParams$ = this.applicationUpdatedParams.asObservable();
-
-  helpParams$ = this.helpParams.asObservable();
-  shouldShowHelpModal$ = this.shouldShowHelpModal.asObservable();
-
-  shouldShowTerminalSettingsModal$ = this.shouldShowTerminalSettingsModal.asObservable();
-
-  newsItem$ = this.newsItem.asObservable();
-
-  shouldShowNewsModal$ = this.shouldShowNewsModal.asObservable();
-
-  shouldShowVoteModal$ = this.shouldShowVoteModal.asObservable();
-  voteParams$ = this.voteParams.asObservable();
-
   shouldShowApplicationUpdatedModal$  = this.shouldShowApplicationUpdatedModal.asObservable();
+
+  private shouldShowEmptyPortfoliosWarningModal = new BehaviorSubject<boolean>(false);
+  shouldShowEmptyPortfoliosWarningModal$ = this.shouldShowEmptyPortfoliosWarningModal.asObservable();
 
   constructor(
     private readonly nzModalService: NzModalService
@@ -72,6 +69,10 @@ export class ModalService {
     this.nzModalService.confirm(options);
   }
 
+  openEmptyPortfoliosWarningModal() {
+    this.shouldShowEmptyPortfoliosWarningModal.next(true);
+  }
+
   closeTerminalSettingsModal() {
     this.shouldShowTerminalSettingsModal.next(false);
   }
@@ -92,5 +93,9 @@ export class ModalService {
   closeApplicationUpdatedModal() {
     this.shouldShowApplicationUpdatedModal.next(false);
     this.applicationUpdatedParams.next(null);
+  }
+
+  closeEmptyPortfoliosWarningModal() {
+    this.shouldShowEmptyPortfoliosWarningModal.next(false);
   }
 }

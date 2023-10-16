@@ -45,6 +45,7 @@ import { NzSegmentedModule } from "ng-zorro-antd/segmented";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { DashboardsPanelComponent } from './components/dashboards-panel/dashboards-panel.component';
 import {OrderCommandsModule} from "../order-commands/order-commands.module";
+import { EmptyPortfoliosWarningModalWidgetComponent } from './widgets/empty-portfolios-warning-modal-widget/empty-portfolios-warning-modal-widget.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import {OrderCommandsModule} from "../order-commands/order-commands.module";
     MobileDashboardComponent,
     MobileInstrumentsHistoryComponent,
     NetworkIndicatorComponent,
-    DashboardsPanelComponent
+    DashboardsPanelComponent,
+    EmptyPortfoliosWarningModalWidgetComponent
   ],
     imports: [
         DashboardRoutingModule,
