@@ -95,9 +95,9 @@ export class NavbarComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(portfolios => {
-        const isEmptyPortfolios = Array.from(portfolios.values()).every(p => p.length === 0);
+        const hasActivePortfolios = Array.from(portfolios.values()).some(p => p.length > 0);
 
-        if (isEmptyPortfolios) {
+        if (!hasActivePortfolios) {
           this.modal.openEmptyPortfoliosWarningModal();
         }
       });
