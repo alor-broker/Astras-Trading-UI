@@ -32,8 +32,8 @@
   "useBracketsLabel": "Use brackets",
   "bracketsSettingsLabel": "Bracket settings",
   "orderPriceUnitsLabel": "Price units",
-  "topOrderPriceRatioLabel": "Order from above (>)",
-  "bottomOrderPriceRatioLabel": "Order from below (<)",
+  "topOrderPriceRatioLabel": "Order from above (≥)",
+  "bottomOrderPriceRatioLabel": "Order from below (≤)",
   "useBracketsWhenClosingPositionLabel": "Use bracket when closing position",
 
   "tickerError": "Select ticker",
