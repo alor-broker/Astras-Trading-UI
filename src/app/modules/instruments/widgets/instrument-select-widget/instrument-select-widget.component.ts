@@ -4,7 +4,6 @@ import {
   OnInit
 } from '@angular/core';
 import { Observable } from 'rxjs';
-import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
@@ -20,8 +19,7 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 @Component({
   selector: 'ats-instrument-select-widget',
   templateUrl: './instrument-select-widget.component.html',
-  styleUrls: ['./instrument-select-widget.component.less'],
-  providers: [WatchInstrumentsService]
+  styleUrls: ['./instrument-select-widget.component.less']
 })
 export class InstrumentSelectWidgetComponent implements OnInit {
   shouldShowSettings: boolean = false;

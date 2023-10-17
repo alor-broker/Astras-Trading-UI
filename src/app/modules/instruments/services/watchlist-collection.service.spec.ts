@@ -1,14 +1,21 @@
-import {TestBed} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
-import {WatchlistCollectionService} from './watchlist-collection.service';
-import {TestData} from '../../../shared/utils/testing';
-import {WatchlistCollection} from '../models/watchlist.model';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {ErrorHandlerService} from '../../../shared/services/handle-error/error-handler.service';
-import {TranslocoTestingModule} from "@ngneat/transloco";
-import {GuidGenerator} from "../../../shared/utils/guid";
-import {WatchlistCollectionBrokerService} from "./watchlist-collection-broker.service";
-import {BehaviorSubject, Subject, take} from "rxjs";
+import { WatchlistCollectionService } from './watchlist-collection.service';
+import { TestData } from '../../../shared/utils/testing';
+import {
+  WatchlistCollection,
+  WatchlistType
+} from '../models/watchlist.model';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
+import { TranslocoTestingModule } from "@ngneat/transloco";
+import { GuidGenerator } from "../../../shared/utils/guid";
+import { WatchlistCollectionBrokerService } from "./watchlist-collection-broker.service";
+import {
+  BehaviorSubject,
+  Subject,
+  take
+} from "rxjs";
 
 describe('WatchListCollectionService', () => {
   const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
@@ -21,14 +28,22 @@ describe('WatchListCollectionService', () => {
       id: '123',
       title: 'Test List',
       isDefault: false,
-      items: TestData.instruments.map(x => ({...x, recordId: GuidGenerator.newGuid()}))
+      items: TestData.instruments.map(x => ({ ...x, recordId: GuidGenerator.newGuid() }))
     },
       {
         id: '321',
         title: 'Test List',
         isDefault: true,
-        items: TestData.instruments.map(x => ({...x, recordId: GuidGenerator.newGuid()}))
-      }]
+        items: TestData.instruments.map(x => ({ ...x, recordId: GuidGenerator.newGuid() }))
+      }
+      ,
+      {
+        id: '456',
+        title: 'Test List',
+        type: WatchlistType.HistoryList,
+        items: TestData.instruments.map(x => ({ ...x, recordId: GuidGenerator.newGuid() }))
+      }
+    ]
   } as WatchlistCollection;
 
   const setupGetItemMock = (returnValue: WatchlistCollection | null = null) => {
@@ -46,8 +61,8 @@ describe('WatchListCollectionService', () => {
       ],
       providers: [
         WatchlistCollectionService,
-        {provide: WatchlistCollectionBrokerService, useValue: watchlistCollectionBrokerServiceSpy},
-        {provide: ErrorHandlerService, useValue: errorHandlerSpy}
+        { provide: WatchlistCollectionBrokerService, useValue: watchlistCollectionBrokerServiceSpy },
+        { provide: ErrorHandlerService, useValue: errorHandlerSpy }
       ]
     });
 
@@ -69,7 +84,7 @@ describe('WatchListCollectionService', () => {
   });
 
   it('#getWatchlistCollection should create default collection if missing', () => {
-    setupGetItemMock({collection: []});
+    setupGetItemMock({ collection: [] });
     watchlistCollectionBrokerServiceSpy.addOrUpdateLists.and.returnValue(new Subject());
 
     service.getWatchlistCollection()
@@ -100,7 +115,7 @@ describe('WatchListCollectionService', () => {
     setupGetItemMock(testCollection);
     watchlistCollectionBrokerServiceSpy.addOrUpdateLists.and.returnValue(new Subject());
 
-    service.updateListMeta(testCollection.collection[0].id, {title: 'new title'});
+    service.updateListMeta(testCollection.collection[0].id, { title: 'new title' });
 
     expect(watchlistCollectionBrokerServiceSpy.addOrUpdateLists).toHaveBeenCalled();
   });

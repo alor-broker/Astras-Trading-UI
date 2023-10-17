@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   ElementRef,
   Input,
   OnDestroy,
@@ -10,6 +11,7 @@ import {
 } from '@angular/core';
 import {
   BehaviorSubject,
+  distinctUntilChanged,
   Observable,
   of,
   shareReplay,
@@ -23,29 +25,37 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
   filter,
-  map, startWith
+  map,
+  startWith
 } from 'rxjs/operators';
 import { getPropertyFromPath } from "../../../../shared/utils/object-helper";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
+import {
+  NzContextMenuService,
+  NzDropdownMenuComponent
+} from "ng-zorro-antd/dropdown";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import {toInstrumentKey} from "../../../../shared/utils/instruments";
+import { toInstrumentKey } from "../../../../shared/utils/instruments";
 import { TableAutoHeightBehavior } from '../../../blotter/utils/table-auto-height.behavior';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import {
-  InstrumentSelectSettings
-} from '../../models/instrument-select-settings.model';
+import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { mapWith } from "../../../../shared/utils/observable-helper";
+import {
+  Watchlist,
+  WatchlistType
+} from "../../models/watchlist.model";
 
 @Component({
   selector: 'ats-watchlist-table',
   templateUrl: './watchlist-table.component.html',
-  styleUrls: ['./watchlist-table.component.less']
+  styleUrls: ['./watchlist-table.component.less'],
+  providers: [WatchInstrumentsService]
 })
 export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input({required: true})
+  @Input({ required: true })
   guid!: string;
 
   @ViewChildren('tableContainer')
@@ -98,13 +108,40 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngOnInit(): void {
+    const getList = (settings: InstrumentSelectSettings) => this.watchlistCollectionService.getWatchlistCollection().pipe(
+      take(1),
+      map(collection => {
+        if (!!settings.activeListId) {
+          return collection.collection.find(x => x.id === settings.activeListId);
+        }
+
+        return collection.collection.find(x => x.isDefault);
+      }),
+      filter((x): x is Watchlist => !!x)
+    );
+
     this.watchedInstruments$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
       tap(settings => {
         this.displayedColumns = this.allColumns.filter(c => settings.instrumentColumns.includes(c.id));
         this.badgeColor = settings.badgeColor!;
       }),
-      switchMap(settings => this.watchInstrumentsService.getWatched(settings)),
-      shareReplay(1)
+      switchMap(settings => getList(settings)),
+      distinctUntilChanged((prev, curr) => prev.id === curr.id),
+      mapWith(
+        watchlist => this.watchInstrumentsService.getWatched(watchlist.id),
+        (source, updates) => ({
+          watchlist: source,
+          updates
+        })
+      ),
+      map(x => {
+        if (x.watchlist.type === WatchlistType.HistoryList) {
+          return x.updates.sort((a, b) => b.addTime - a.addTime);
+        }
+
+        return x.updates.sort((a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol));
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     this.menuWidgets$ = this.widgetsMetaService.getWidgetsMeta().pipe(
@@ -114,7 +151,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngAfterViewInit(): void {
-    const container$ =  this.tableContainer.changes.pipe(
+    const container$ = this.tableContainer.changes.pipe(
       map(x => x.first),
       startWith(this.tableContainer.first),
       filter((x): x is ElementRef<HTMLElement> => !!x),
@@ -125,12 +162,12 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
       switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
-      setTimeout(()=> this.scrollHeight$.next(x));
+      setTimeout(() => this.scrollHeight$.next(x));
     });
   }
 
   ngOnDestroy(): void {
-    this.watchInstrumentsService.unsubscribe();
+    this.watchInstrumentsService.clear();
     this.scrollHeight$.complete();
   }
 
@@ -149,7 +186,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   getTrackKey(index: number, item: WatchedInstrument): string {
-    return WatchlistCollectionService.getInstrumentKey(item.instrument);
+    return item.recordId;
   }
 
   isVisibleColumn(colName: string): boolean {

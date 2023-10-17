@@ -10,6 +10,7 @@
              class='whole'
              nz-input
              [placeholder]="t('instrumentsSelect.searchPlaceHolder')"
+             [disabled]="(currentWatchlist$ | async)?.type === watchlistTypes.HistoryList"
       />
       <nz-autocomplete #auto>
         <nz-auto-option
@@ -32,7 +33,7 @@
       <nz-dropdown-menu #menu="nzDropdownMenu">
         <ul nz-menu nzSelectable>
           <li (click)="selectCollection(list.id)" *ngFor="let list of collection.collection" nz-menu-item [nzSelected]="settings.activeListId === list.id">
-            <span *transloco="let tSettings; scope: 'instruments/settings'">{{ hasDefaultTitle(list) ? tSettings('instrumentsSettings.defaultWatchlist') : list.title}}</span>
+            <span *transloco="let tTitle; scope: 'instruments'">{{ tTitle('instruments.' + getTitleTranslationKey(list), {fallback: list.title})}}</span>
           </li>
         </ul>
       </nz-dropdown-menu>

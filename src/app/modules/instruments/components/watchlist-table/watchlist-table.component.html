@@ -1,28 +1,34 @@
 <div #tableContainer class="table-container">
-  <nz-table *ngIf="watchedInstruments$ | async as instruments"
-    #nzTable
-    [nzData]="instruments"
-    nzTableLayout="fixed"
-    nzSize="small"
-    [nzFrontPagination]="false"
-    [nzShowPagination]="false"
-    [nzScroll]="{ y: ((scrollHeight$ | async) ?? 0) - 5 + 'px'}"
-    [nzVirtualItemSize]="20">
-    <thead *transloco="let t; scope: 'instruments/select'">
+  <ng-container *ngIf="watchedInstruments$ | async as instruments">
+    <nz-table
+              #nzTable
+              [nzData]="instruments"
+              nzTableLayout="fixed"
+              nzSize="small"
+              [nzFrontPagination]="false"
+              [nzShowPagination]="false"
+              [nzScroll]="{ y: ((scrollHeight$ | async) ?? 0) - 5 + 'px'}"
+              [nzVirtualItemSize]="20">
+      <thead *transloco="let t; scope: 'instruments/select'">
       <tr>
-        <th [nzSortFn]="sortFns[col.id]" *ngFor="let col of displayedColumns" [nzWidth]="(col.minWidth ?? 50) + 'px'">
-          <span nz-tooltip [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.id + '.tooltip', { fallback: col.tooltip })">
-            {{t('instrumentsSelect.columns.' + col.id + '.name', { fallback: col.displayName })}}
-          </span>
-        </th>
+        <ng-container *ngFor="let col of displayedColumns">
+          <th
+            [nzSortFn]="sortFns[col.id]"
+            [nzWidth]="(col.minWidth ?? 50) + 'px'"
+          >
+            <span nz-tooltip [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.id + '.tooltip', { fallback: col.tooltip })">
+              {{t('instrumentsSelect.columns.' + col.id + '.name', { fallback: col.displayName })}}
+            </span>
+          </th>
+        </ng-container>
         <th [nzWidth]="'40px'">
           <span nz-tooltip [nzTooltipTitle]="t('instrumentsSelect.columns.delete.tooltip')">
             {{t('instrumentsSelect.columns.delete.name')}}
           </span>
         </th>
       </tr>
-    </thead>
-    <tbody>
+      </thead>
+      <tbody>
       <tr
         *ngFor="let inst of nzTable.data!; trackBy: getTrackKey"
         (click)='makeActive(inst.instrument)'
@@ -53,13 +59,14 @@
         <td *ngIf="isVisibleColumn('openPrice')">{{ inst.openPrice }}</td>
         <td *ngIf="isVisibleColumn('closePrice')">{{ inst.closePrice }}</td>
         <td>
-          <a (click)="remove(inst.recordId)">
+          <a (click)="remove(inst.recordId); $event.preventDefault(); $event.stopPropagation();">
             <i nz-icon nzTheme="outline" nzType="close"></i>
           </a>
         </td>
       </tr>
-    </tbody>
-  </nz-table>
+      </tbody>
+    </nz-table>
+  </ng-container>
 </div>
 
 <nz-dropdown-menu #menu="nzDropdownMenu">

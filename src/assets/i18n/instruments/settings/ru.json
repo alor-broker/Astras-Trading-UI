@@ -9,6 +9,5 @@
   "addWatchlistBtnTooltip": "Добавить новый список",
   "standardListPlaceholder": "Выберите стандартный список",
   "removeConfirmText": "Точно удалить?",
-  "editWatchlistTooltip": "Редактировать",
-  "defaultWatchlist": "Список по умолчанию"
+  "editWatchlistTooltip": "Редактировать"
 }

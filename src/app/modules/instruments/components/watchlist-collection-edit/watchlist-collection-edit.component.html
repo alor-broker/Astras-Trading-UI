@@ -50,31 +50,33 @@
         </nz-list-item-action>
       </ul>
     </nz-list-item>
-    <nz-list-item *ngFor="let list of collection">
+    <ng-container *transloco="let tTitle; scope: 'instruments'">
+      <nz-list-item *ngFor="let list of collection">
       <span
         (nzContentChange)="changeListTitle($event, list)"
-        [nzContent]="hasDefaultTitle(list) ? t('instrumentsSettings.defaultWatchlist') : list.title"
+        [nzContent]="tTitle('instruments.' + getTitleTranslationKey(list), {fallback: list.title})"
         nz-typography
-        nzEditable
+        [nzEditable]="hasEditableTitle(list)"
         [nzEditTooltip]="t('instrumentsSettings.editWatchlistTooltip')"
       >
         {{list.title}}
       </span>
-      <ul nz-list-item-actions>
-        <nz-list-item-action *ngIf="!list.isDefault">
-          <button (nzOnConfirm)="removeList(list.id)"
-                  nz-button
-                  nzDanger
-                  [nz-popconfirm]="t('instrumentsSettings.removeConfirmText')"
-                  [nzCancelText]="t('no')"
-                  [nzOkText]="t('yes')"
-                  nzSize='small'
-                  nzType="primary">
-            <i nz-icon nzType="minus"></i>
-          </button>
-        </nz-list-item-action>
-      </ul>
-    </nz-list-item>
+        <ul nz-list-item-actions>
+          <nz-list-item-action *ngIf="isRemovable(list)">
+            <button (nzOnConfirm)="removeList(list.id)"
+                    nz-button
+                    nzDanger
+                    [nz-popconfirm]="t('instrumentsSettings.removeConfirmText')"
+                    [nzCancelText]="t('no')"
+                    [nzOkText]="t('yes')"
+                    nzSize='small'
+                    nzType="primary">
+              <i nz-icon nzType="minus"></i>
+            </button>
+          </nz-list-item-action>
+        </ul>
+      </nz-list-item>
+    </ng-container>
     <nz-list-empty *ngIf="collection.length === 0"></nz-list-empty>
   </nz-list>
 </div>

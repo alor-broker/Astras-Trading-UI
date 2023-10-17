@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject,
+  DestroyRef,
+  Injectable
+} from '@angular/core';
+import {
   Observable,
   Subscription,
   switchMap,
-  take, tap
+  take
 } from 'rxjs';
 import {
   filter,
@@ -16,105 +18,80 @@ import { WatchedInstrument } from '../models/watched-instrument.model';
 import { WatchlistCollectionService } from './watchlist-collection.service';
 import { InstrumentsService } from './instruments.service';
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
-import { InstrumentSelectSettings } from '../models/instrument-select-settings.model';
-import {WatchlistItem} from "../models/watchlist.model";
+import { WatchlistItem } from "../models/watchlist.model";
+import { WatchlistUpdatesState } from "../utils/watchlist-updates-state";
+import { InstrumentsToWatchState } from "../utils/instruments-to-watch-state";
+import { GuidGenerator } from "../../../shared/utils/guid";
 
 @Injectable()
 export class WatchInstrumentsService {
-  private watchListState: WatchedInstrument[] = [];
-  private readonly watchListStateSubj = new BehaviorSubject<WatchedInstrument[]>(this.watchListState);
-  private watchListUpdates$ = this.watchListStateSubj.asObservable()
-    .pipe(
-      map(x => x.sort((a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol)))
-    );
+  private readonly watchlistUpdatesState = new WatchlistUpdatesState();
+  private readonly instrumentsToWatchState = new InstrumentsToWatchState();
 
-  private readonly instrumentsToWatch$ = new BehaviorSubject<WatchlistItem[]>([]);
-  private readonly quotesSubsByKey = new Map<string, Subscription>();
-  private instrumentsToWatchSubscription?: Subscription;
   private collectionChangeSubscription?: Subscription;
 
 
   constructor(
     private readonly history: HistoryService,
     private readonly quotesService: QuotesService,
+    private readonly instrumentsService: InstrumentsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly instrumentSService: InstrumentsService) {
+    destroyRef: DestroyRef) {
+    destroyRef.onDestroy(() => this.clear());
+    destroyRef.onDestroy(() => this.watchlistUpdatesState.destroy());
   }
 
-  unsubscribe() {
-    Array.from(this.quotesSubsByKey.keys()).forEach(key => {
-      this.quotesSubsByKey.get(key)?.unsubscribe();
-      this.quotesSubsByKey.delete(key);
-    });
+  clear() {
+    this.watchlistUpdatesState.removeAll();
+    this.instrumentsToWatchState.removeAll();
 
     this.collectionChangeSubscription?.unsubscribe();
-    this.instrumentsToWatchSubscription?.unsubscribe();
-    this.updateWatchState([]);
   }
 
-  getWatched(settings: InstrumentSelectSettings): Observable<WatchedInstrument[]> {
-    return this.watchlistCollectionService.getWatchlistCollection().pipe(
-      take(1),
-      tap(collection => {
-        let displayListId = settings.activeListId;
-        if (!displayListId) {
-          const defaultList = collection.collection.find(x => x.isDefault);
-          displayListId = defaultList?.id;
-        }
+  getWatched(listId: string): Observable<WatchedInstrument[]> {
+    this.clear();
 
-        if (!displayListId) {
-          throw new Error('Watchlist missing');
-        }
+    this.collectionChangeSubscription = this.watchlistCollectionService.getWatchlistCollection().pipe(
+      map(currentCollection => currentCollection.collection.find(x => x.id === listId)),
+      filter(x => !!x)
+    ).subscribe(currentList => {
+      this.refreshWatchItems(currentList!.items.map(item => ({
+          ...item,
+          recordId: item.recordId ?? GuidGenerator.newGuid(),
+        })
+      ));
+    });
 
-        this.unsubscribe();
-
-        this.collectionChangeSubscription = this.watchlistCollectionService.getWatchlistCollection()
-          .subscribe(currentCollection => {
-            const targetWatchlist = currentCollection.collection.find(x => x.id === displayListId);
-            if (!targetWatchlist) {
-              return;
-            }
-            this.refreshWatchItems(targetWatchlist.items);
-          });
-
-
-        this.initInstrumentsWatch();
-      }),
-      switchMap(() => this.watchListUpdates$)
-    );
+    return this.watchlistUpdatesState.updates$;
   }
 
   private refreshWatchItems(items: WatchlistItem[]) {
-    const itemKeys = new Set(items.map(x => WatchlistCollectionService.getInstrumentKey(x)));
-    for (let [key, sub] of this.quotesSubsByKey) {
-      if (!itemKeys.has(key)) {
-        sub.unsubscribe();
-        this.quotesSubsByKey.delete(key);
-        this.removeItemFromState(key);
+    const previousIds = new Set(this.instrumentsToWatchState.getCurrentItemIds());
+    const currentIds = new Set<string>();
+
+    items.forEach(item => {
+      const currentRecordId = item.recordId;
+      currentIds.add(currentRecordId);
+      if (!previousIds.has(currentRecordId)) {
+        this.instrumentsToWatchState.addItem(
+          item,
+          () => this.watchlistUpdatesState.removeItem(currentRecordId)
+        );
+
+        this.initInstrumentWatch(item);
       }
-    }
+    });
 
-    this.instrumentsToWatch$.next(items);
+    previousIds.forEach(id => {
+      if (!currentIds.has(id)) {
+        this.instrumentsToWatchState.removeItem(id);
+      }
+    });
+
   }
 
-  private initInstrumentsWatch() {
-    this.instrumentsToWatchSubscription = this.instrumentsToWatch$
-      .subscribe(instrumentsToWatch => {
-          const notSubscribedInstruments = instrumentsToWatch.filter(instrument => !this.quotesSubsByKey.has(WatchlistCollectionService.getInstrumentKey(instrument)));
-
-          if (notSubscribedInstruments.length === 0) {
-            return;
-          }
-
-          notSubscribedInstruments.forEach(instrument => {
-            this.initInstrumentSubscription(instrument);
-          });
-        }
-      );
-  }
-
-  private initInstrumentSubscription(instrument: WatchlistItem) {
-    this.instrumentSService.getInstrument(instrument).pipe(
+  private initInstrumentWatch(instrument: WatchlistItem) {
+    this.instrumentsService.getInstrument(instrument).pipe(
       take(1),
       filter((x): x is Instrument => !!x),
       switchMap(i => {
@@ -122,6 +99,7 @@ export class WatchInstrumentsService {
           .pipe(
             map(candles => <WatchedInstrument>{
               recordId: instrument.recordId,
+              addTime: instrument.addTime ?? Date.now(),
               instrument: i,
               closePrice: candles?.prev?.close ?? 0,
               openPrice: candles?.cur.open ?? 0,
@@ -137,51 +115,29 @@ export class WatchInstrumentsService {
           );
       })
     ).subscribe(wi => {
-      this.updateWatchStateItem(wi);
-      this.setupInstrumentQuotesSubscription(wi);
+      this.watchlistUpdatesState.addItem(wi);
+      this.setupInstrumentUpdatesSubscription(wi);
     });
   }
 
-  private setupInstrumentQuotesSubscription(wi: WatchedInstrument) {
-    const key = WatchlistCollectionService.getInstrumentKey(wi.instrument);
+  private setupInstrumentUpdatesSubscription(wi: WatchedInstrument) {
+    const sub = this.quotesService.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup).subscribe(q => {
+      const updatedInstrument = <WatchedInstrument>{
+        ...wi,
+        prevTickPrice: wi.price,
+        closePrice: q.prev_close_price,
+        openPrice: q.open_price,
+        price: q.last_price,
+        dayChange: q.change,
+        dayChangePerPrice: q.change_percent,
+        minPrice: q.low_price,
+        maxPrice: q.high_price,
+        volume: q.volume
+      };
 
-    const sub = this.quotesService.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup)
-      .subscribe(q => {
-        const updatedInstrument = <WatchedInstrument>{
-          ...wi,
-          prevTickPrice: wi.price,
-          closePrice: q.prev_close_price,
-          openPrice: q.open_price,
-          price: q.last_price,
-          dayChange: q.change,
-          dayChangePerPrice: q.change_percent,
-          minPrice: q.low_price,
-          maxPrice: q.high_price,
-          volume: q.volume
-        };
+      this.watchlistUpdatesState.updateItem(updatedInstrument);
+    });
 
-        this.updateWatchStateItem(updatedInstrument);
-      });
-
-    this.quotesSubsByKey.set(key, sub);
-  }
-
-  private updateWatchStateItem(wi: WatchedInstrument) {
-    const key = WatchlistCollectionService.getInstrumentKey(wi.instrument);
-    this.updateWatchState([
-      ...this.watchListState.filter(x => WatchlistCollectionService.getInstrumentKey(x.instrument) !== key),
-      wi
-    ]);
-  }
-
-  private removeItemFromState(key: string) {
-    this.updateWatchState([
-      ...this.watchListState.filter(x => WatchlistCollectionService.getInstrumentKey(x.instrument) !== key),
-    ]);
-  }
-
-  private updateWatchState(watchList: WatchedInstrument[]) {
-    this.watchListState = watchList;
-    this.watchListStateSubj.next(this.watchListState);
+    this.instrumentsToWatchState.setUpdatesSubscription(wi.recordId, sub);
   }
 }

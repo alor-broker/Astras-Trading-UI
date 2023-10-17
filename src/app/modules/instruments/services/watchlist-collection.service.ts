@@ -1,15 +1,32 @@
-import {Injectable} from '@angular/core';
-import {InstrumentKey} from '../../../shared/models/instruments/instrument-key.model';
-import {GuidGenerator} from '../../../shared/utils/guid';
-import {Observable, shareReplay, take, tap} from 'rxjs';
-import {PresetWatchlistCollection, Watchlist, WatchlistCollection, WatchlistItem} from '../models/watchlist.model';
-import {environment} from '../../../../environments/environment';
-import {HttpClient} from '@angular/common/http';
-import {ErrorHandlerService} from '../../../shared/services/handle-error/error-handler.service';
-import {catchHttpError} from '../../../shared/utils/observable-helper';
-import {toInstrumentKey} from '../../../shared/utils/instruments';
-import {WatchlistCollectionBrokerService} from "./watchlist-collection-broker.service";
-import {filter, map} from "rxjs/operators";
+import { Injectable } from '@angular/core';
+import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
+import { GuidGenerator } from '../../../shared/utils/guid';
+import {
+  forkJoin,
+  Observable,
+  of,
+  shareReplay,
+  take,
+  tap
+} from 'rxjs';
+import {
+  PresetWatchlistCollection,
+  Watchlist,
+  WatchlistCollection,
+  WatchlistItem,
+  WatchlistType
+} from '../models/watchlist.model';
+import { environment } from '../../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
+import { catchHttpError } from '../../../shared/utils/observable-helper';
+import { toInstrumentKey } from '../../../shared/utils/instruments';
+import { WatchlistCollectionBrokerService } from "./watchlist-collection-broker.service";
+import {
+  filter,
+  map
+} from "rxjs/operators";
+import { InstrumentsService } from "./instruments.service";
 
 @Injectable({
   providedIn: 'root'
@@ -22,12 +39,9 @@ export class WatchlistCollectionService {
   constructor(
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
-    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService
+    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService,
+    private readonly instrumentsService: InstrumentsService
   ) {
-  }
-
-  public static getInstrumentKey(instrument: InstrumentKey): string {
-    return `${instrument.exchange}.${instrument.instrumentGroup}.${instrument.symbol}`;
   }
 
   public getWatchlistCollection(): Observable<WatchlistCollection> {
@@ -88,12 +102,72 @@ export class WatchlistCollectionService {
         } as WatchlistItem))
       ];
 
+      const uniqueItems: {[key: string]: WatchlistItem} = {};
+      allItems.forEach(item => uniqueItems[this.getInstrumentKey(item)] = item);
+
       const updatedList = {
         ...list,
-        items: Array.from(new Map(allItems.map(x => [WatchlistCollectionService.getInstrumentKey(x), x])).values())
+        items: Object.values(uniqueItems)
       } as Watchlist;
 
       this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+    });
+  }
+
+  public addItemsToHistory(items: InstrumentKey[]) {
+    this.getCollection().pipe(
+      take(1)
+    ).subscribe(collection => {
+      const list = collection.collection.find(x => x.type === WatchlistType.HistoryList);
+      if (!list) {
+        return;
+      }
+
+      forkJoin(
+        items.map(i => {
+          if (!!i.instrumentGroup) {
+            return of(toInstrumentKey(i));
+          }
+           // get instrumentGroup if missing
+          return this.instrumentsService.getInstrument(i).pipe(
+            take(1),
+            map(i => !!i ? toInstrumentKey(i) : null)
+          );
+        })
+      ).pipe(
+        take(1)
+      ).subscribe(items => {
+        const uniqueItems: {[key: string]: WatchlistItem} = {};
+        list.items.forEach(item => uniqueItems[this.getInstrumentKey(item)] = item);
+
+        let newItemsAdded = false;
+
+        items.filter((i): i is InstrumentKey => !!i)
+          .forEach(i => {
+            const itemKey = this.getInstrumentKey(i);
+            if(!uniqueItems[itemKey]) {
+              uniqueItems[itemKey] = {
+                ...i,
+                recordId: GuidGenerator.newGuid()
+              };
+
+              newItemsAdded = true;
+            }
+          });
+
+        if(!newItemsAdded) {
+          // performance optimization
+          // prevent collection updating when no new items were added
+          return;
+        }
+
+        const updatedList = {
+          ...list,
+          items: Array.from(Object.values(uniqueItems)).slice(0, 25)
+        } as Watchlist;
+
+        this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+      });
     });
   }
 
@@ -126,8 +200,30 @@ export class WatchlistCollectionService {
     if (!this.collection$) {
       this.collection$ = this.watchlistCollectionBrokerService.getCollection().pipe(
         tap(x => {
+          const newLists: Watchlist[] = [];
           if (x.length === 0) {
-            this.watchlistCollectionBrokerService.addOrUpdateLists([this.createDefaultList()]).subscribe();
+            newLists.push({
+              id: GuidGenerator.newGuid(),
+              title: WatchlistCollectionService.DefaultListName,
+              isDefault: true,
+              type: WatchlistType.DefaultList,
+              items: []
+            });
+
+
+          }
+
+          if(!x.find(x => x.type === WatchlistType.HistoryList)) {
+            newLists.push({
+              id: GuidGenerator.newGuid(),
+              title: "History",
+              type: WatchlistType.HistoryList,
+              items: []
+            });
+          }
+
+          if(newLists.length > 0) {
+            this.watchlistCollectionBrokerService.addOrUpdateLists(newLists).subscribe();
           }
         }),
         map(x => ({
@@ -140,12 +236,7 @@ export class WatchlistCollectionService {
     return this.collection$;
   }
 
-  private createDefaultList(): Watchlist {
-    return {
-      id: GuidGenerator.newGuid(),
-      title: WatchlistCollectionService.DefaultListName,
-      isDefault: true,
-      items: []
-    } as Watchlist;
+  private getInstrumentKey(instrument: InstrumentKey): string {
+    return `${instrument.exchange}:${instrument.symbol}:${instrument.instrumentGroup ?? '-'}`;
   }
 }

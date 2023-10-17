@@ -3,7 +3,14 @@ import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Store} from '@ngrx/store';
 import {filter, map, switchMap} from 'rxjs/operators';
 import {GuidGenerator} from '../../shared/utils/guid';
-import {distinctUntilChanged, EMPTY, of, take, withLatestFrom} from 'rxjs';
+import {
+  distinctUntilChanged,
+  EMPTY,
+  of,
+  take,
+  tap,
+  withLatestFrom
+} from 'rxjs';
 import {Dashboard, DefaultDashboardName} from '../../shared/models/dashboard/dashboard.model';
 import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
 import { getDashboardItems } from './dashboards.selectors';
@@ -14,6 +21,7 @@ import {CurrentDashboardActions, InternalDashboardActions, ManageDashboardsActio
 import {instrumentsBadges} from '../../shared/utils/instruments';
 import {UserPortfoliosService} from "../../shared/services/user-portfolios.service";
 import {DashboardsStreams} from "./dashboards.streams";
+import { WatchlistCollectionService } from "../../modules/instruments/services/watchlist-collection.service";
 
 
 @Injectable()
@@ -184,12 +192,27 @@ export class DashboardsEffects {
       ));
   });
 
+  addInstrumentToHistory$ = createEffect(() => {
+      return this.actions$.pipe(
+        ofType(CurrentDashboardActions.selectInstruments),
+        tap(action => {
+            this.watchlistCollectionService.addItemsToHistory(action.selection.map(x => x.instrumentKey));
+          }
+        )
+      );
+    },
+    {
+      dispatch: false
+    }
+  );
+
   constructor(
     private readonly actions$: Actions,
     private readonly store: Store,
     private readonly dashboardService: ManageDashboardsService,
     private readonly marketService: MarketService,
-    private readonly userPortfoliosService: UserPortfoliosService
+    private readonly userPortfoliosService: UserPortfoliosService,
+    private readonly watchlistCollectionService: WatchlistCollectionService
   ) {
   }
 }
