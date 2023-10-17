@@ -32,8 +32,8 @@
   "useBracketsLabel": "Использовать коридоры",
   "bracketsSettingsLabel": "Настройки коридора",
   "orderPriceUnitsLabel": "Единицы цены",
-  "topOrderPriceRatioLabel": "Условная заявка сверху (>)",
-  "bottomOrderPriceRatioLabel": "Условная заявка снизу (<)",
+  "topOrderPriceRatioLabel": "Условная заявка сверху (≥)",
+  "bottomOrderPriceRatioLabel": "Условная заявка снизу (≤)",
   "useBracketsWhenClosingPositionLabel": "Ставить коридор при закрытии позиции",
 
   "tickerError": "Выберите тикер",

@@ -16,6 +16,7 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import {Order, StopOrder} from "../../../../shared/models/orders/order.model";
 import { OrdersGroupTreeNode } from "../../../../shared/models/orders/orders-group.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
 
 
 @Component({
@@ -128,5 +129,9 @@ export class OrdersGroupModalComponent implements AfterViewInit {
             node.removeAttribute('title');
           });
       });
+  }
+
+  getOrderConditionSign(condition: string) {
+    return getConditionSign(getConditionTypeByString(condition)!);
   }
 }
