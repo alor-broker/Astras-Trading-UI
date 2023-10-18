@@ -10,7 +10,10 @@ export const instrumentsBadges = [
   'blue',
   'pink',
   'red',
-  'orange'
+  'orange',
+  'green',
+  'cyan',
+  'geekblue'
 ];
 
 /**
