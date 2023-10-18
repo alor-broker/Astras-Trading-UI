@@ -40,7 +40,9 @@ export class InstrumentsService {
           minstep: r.minstep ?? 0.01,
           lotsize: r.lotsize,
           cfiCode: r.cfiCode,
-          type: r.type
+          type: r.type,
+          marginbuy: r.marginbuy,
+          marginsell: r.marginsell
         };
         return selected;
       }),

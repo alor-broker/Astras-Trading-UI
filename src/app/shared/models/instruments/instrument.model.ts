@@ -9,5 +9,7 @@ export interface Instrument extends InstrumentKey {
   minstep: number,
   lotsize?: number,
   cfiCode?: string,
-  type?: string
+  type?: string,
+  marginbuy?: number,
+  marginsell?: number,
 }

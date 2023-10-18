@@ -1,14 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  distinctUntilChanged,
   map,
   Observable, of,
   shareReplay,
   switchMap
 } from 'rxjs';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
-import { InstrumentSearchResponse } from 'src/app/shared/models/instruments/instrument-search-response.model';
 import { environment } from 'src/environments/environment';
 import { Calendar } from '../models/calendar.model';
 import { Description } from '../models/description.model';
@@ -25,6 +23,7 @@ import { MarketService } from "../../../shared/services/market.service";
 import { InfoSettings } from '../models/info-settings.model';
 import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
 import { RisksInfo } from "../models/risks.model";
+import { InstrumentsService } from "../../instruments/services/instruments.service";
 
 interface SettingsWithExchangeInfo {
   settings: InfoSettings,
@@ -33,7 +32,6 @@ interface SettingsWithExchangeInfo {
 
 @Injectable()
 export class InfoService {
-  private securitiesUrl = environment.apiUrl + '/md/v2/Securities';
   private instrumentUrl = environment.apiUrl + '/instruments/v1';
   private clientsRiskUrl = environment.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/clientsRisk';
 
@@ -44,7 +42,8 @@ export class InfoService {
     private readonly dashboardContextService: DashboardContextService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
-    private readonly marketService: MarketService
+    private readonly marketService: MarketService,
+    private readonly instrumentsService: InstrumentsService
   ) {
   }
 
@@ -54,7 +53,11 @@ export class InfoService {
     }
 
     const getExchangeInfo = (settings: InfoSettings) => {
-      return this.getExchangeInfoReq({ symbol: settings.symbol, exchange: settings.exchange }).pipe(
+      return this.getExchangeInfoReq({
+        symbol: settings.symbol,
+        exchange: settings.exchange,
+        instrumentGroup: settings.instrumentGroup
+      }).pipe(
         map(info => ({ settings: settings, info: info })),
         catchHttpError({ settings: settings, info: {} as ExchangeInfo }, this.errorHandlerService),
       );
@@ -170,26 +173,28 @@ export class InfoService {
   }
 
   private getExchangeInfoReq(key: InstrumentKey): Observable<ExchangeInfo> {
-    return this.http.get<InstrumentSearchResponse>(`${this.securitiesUrl}/${key.exchange}/${key.symbol}`, {}).pipe(
-      distinctUntilChanged((a, b) => {
-        return a.symbol == b.symbol && a.exchange == b.exchange;
-      }),
-      map(r => {
-        const info: ExchangeInfo = {
-          symbol: r.symbol,
-          shortName: r.shortname,
-          exchange: r.exchange,
-          description: r.description,
-          instrumentGroup: r.board,
-          isin: r.ISIN,
-          currency: r.currency,
-          type: getTypeByCfi(r.cfiCode),
-          lotsize: r.lotsize ?? 1,
-          marginbuy: r.marginbuy,
-          marginsell: r.marginsell
-        };
-        return info;
-      })
-    );
+    return this.instrumentsService.getInstrument(key)
+      .pipe(
+        map(r => {
+          if (!r) {
+            return {} as ExchangeInfo;
+          }
+
+          const info: ExchangeInfo = {
+            symbol: r.symbol,
+            shortName: r.shortName,
+            exchange: r.exchange,
+            description: r.description,
+            instrumentGroup: r.instrumentGroup,
+            isin: r.isin ?? '',
+            currency: r.currency,
+            type: getTypeByCfi(r.cfiCode),
+            lotsize: r.lotsize ?? 1,
+            marginbuy: r.marginbuy,
+            marginsell: r.marginsell
+          };
+          return info;
+        })
+      );
   }
 }
