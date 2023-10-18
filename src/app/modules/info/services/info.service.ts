@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  distinctUntilChanged,
   map,
   Observable, of,
   shareReplay,
@@ -176,31 +175,26 @@ export class InfoService {
   private getExchangeInfoReq(key: InstrumentKey): Observable<ExchangeInfo> {
     return this.instrumentsService.getInstrument(key)
       .pipe(
-      distinctUntilChanged((a, b) => {
-        return a?.symbol == b?.symbol &&
-          a?.exchange == b?.exchange &&
-          a?.instrumentGroup == b?.instrumentGroup;
-      }),
-      map(r => {
-        if (!r) {
-          return {} as ExchangeInfo;
-        }
+        map(r => {
+          if (!r) {
+            return {} as ExchangeInfo;
+          }
 
-        const info: ExchangeInfo = {
-          symbol: r.symbol,
-          shortName: r.shortName,
-          exchange: r.exchange,
-          description: r.description,
-          instrumentGroup: r.instrumentGroup,
-          isin: r.isin ?? '',
-          currency: r.currency,
-          type: getTypeByCfi(r.cfiCode),
-          lotsize: r.lotsize ?? 1,
-          marginbuy: r.marginbuy,
-          marginsell: r.marginsell
-        };
-        return info;
-      })
-    );
+          const info: ExchangeInfo = {
+            symbol: r.symbol,
+            shortName: r.shortName,
+            exchange: r.exchange,
+            description: r.description,
+            instrumentGroup: r.instrumentGroup,
+            isin: r.isin ?? '',
+            currency: r.currency,
+            type: getTypeByCfi(r.cfiCode),
+            lotsize: r.lotsize ?? 1,
+            marginbuy: r.marginbuy,
+            marginsell: r.marginsell
+          };
+          return info;
+        })
+      );
   }
 }
