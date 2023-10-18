@@ -1,6 +1,10 @@
 {
   "searchPlaceHolder": "Search...",
   "columns": {
+    "favorites": {
+      "name": "Favorites",
+      "tooltip": "Favorites"
+    },
     "symbol": {
       "name": "Ticker",
       "tooltip": "Exchange identifier of the security"
@@ -45,5 +49,8 @@
       "name": "Del.",
       "tooltip": "Delete from watchlist"
     }
-  }
+  },
+
+  "addToFavoritesTooltip": "Add to favorites",
+  "removeFromFavoritesTooltip": "Remove from favorites"
 }

@@ -1,6 +1,10 @@
 {
   "searchPlaceHolder": "Поиск (Ctrl+F/Cmd+F)...",
   "columns": {
+    "favorites": {
+      "name": "Избранное",
+      "tooltip": "Избранное"
+    },
     "symbol": {
       "name": "Тикер",
       "tooltip": "Биржевой идентификатор ценной бумаги"
@@ -45,5 +49,8 @@
       "name": "Удл.",
       "tooltip": "Убрать из наблюдения"
     }
-  }
+  },
+
+  "addToFavoritesTooltip": "Добавить в избранное",
+  "removeFromFavoritesTooltip": "Удалить из избранного"
 }

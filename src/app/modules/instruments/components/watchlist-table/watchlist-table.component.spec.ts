@@ -11,11 +11,13 @@ import { WatchlistTableComponent } from './watchlist-table.component';
 import {
   commonTestProviders,
   getTranslocoModule,
+  mockDirective,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
+import { LetDirective } from "@ngrx/component";
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
@@ -38,9 +40,12 @@ describe('WatchlistTableComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ...sharedModuleImportForTests,
+        LetDirective,
         getTranslocoModule()
       ],
-      declarations: [WatchlistTableComponent],
+      declarations: [
+        WatchlistTableComponent,
+      ],
       providers: [
         {
           provide: WidgetSettingsService,

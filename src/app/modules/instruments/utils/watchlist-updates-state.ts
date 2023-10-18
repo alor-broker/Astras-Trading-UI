@@ -26,20 +26,20 @@ export class WatchlistUpdatesState {
     this.updateState(state => this.adapter.addOne(item, state));
   }
 
-  updateItem(item: Partial<WatchedInstrument>) {
+  updateItem(recordId: string, update: Partial<Omit<WatchedInstrument, 'recordId' | 'instrument' | 'addTime'>>) {
     this.updateState(state => {
       return this.adapter.updateOne(
         {
-          id: item.recordId!,
-          changes: item
+          id: recordId,
+          changes: update
         },
         state
       );
     });
   }
 
-  removeItem(itemId: string) {
-    this.updateState(state => this.adapter.removeOne(itemId, state));
+  removeItem(recordId: string) {
+    this.updateState(state => this.adapter.removeOne(recordId, state));
   }
 
   removeAll() {

@@ -10,6 +10,7 @@ import { WatchlistCollectionEditComponent } from './components/watchlist-collect
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
+import { LetDirective } from "@ngrx/component";
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
         InstrumentsRoutingModule,
         NzListModule,
         NzInputModule,
-        NzResizeObserverModule
+        NzResizeObserverModule,
+        LetDirective
     ],
   exports: [
     InstrumentSelectWidgetComponent

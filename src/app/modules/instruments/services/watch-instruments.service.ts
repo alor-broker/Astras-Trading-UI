@@ -62,7 +62,9 @@ export class WatchInstrumentsService {
       ));
     });
 
-    return this.watchlistUpdatesState.updates$;
+    return this.watchlistUpdatesState.updates$.pipe(
+      map(u => [...u])
+    );
   }
 
   private refreshWatchItems(items: WatchlistItem[]) {
@@ -79,6 +81,13 @@ export class WatchInstrumentsService {
         );
 
         this.initInstrumentWatch(item);
+      } else {
+        this.watchlistUpdatesState.updateItem(
+          currentRecordId,
+          {
+            favoriteOrder: item.favoriteOrder
+          }
+        );
       }
     });
 
@@ -100,6 +109,7 @@ export class WatchInstrumentsService {
             map(candles => <WatchedInstrument>{
               recordId: instrument.recordId,
               addTime: instrument.addTime ?? Date.now(),
+              favoriteOrder: instrument.favoriteOrder,
               instrument: i,
               closePrice: candles?.prev?.close ?? 0,
               openPrice: candles?.cur.open ?? 0,
@@ -122,8 +132,7 @@ export class WatchInstrumentsService {
 
   private setupInstrumentUpdatesSubscription(wi: WatchedInstrument) {
     const sub = this.quotesService.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup).subscribe(q => {
-      const updatedInstrument = <WatchedInstrument>{
-        ...wi,
+      const update = <WatchedInstrument>{
         prevTickPrice: wi.price,
         closePrice: q.prev_close_price,
         openPrice: q.open_price,
@@ -135,7 +144,7 @@ export class WatchInstrumentsService {
         volume: q.volume
       };
 
-      this.watchlistUpdatesState.updateItem(updatedInstrument);
+      this.watchlistUpdatesState.updateItem(wi.recordId, update);
     });
 
     this.instrumentsToWatchState.setUpdatesSubscription(wi.recordId, sub);

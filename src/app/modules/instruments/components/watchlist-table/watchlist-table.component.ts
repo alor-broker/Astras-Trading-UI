@@ -42,11 +42,11 @@ import { InstrumentSelectSettings } from '../../models/instrument-select-setting
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { mapWith } from "../../../../shared/utils/observable-helper";
 import {
   Watchlist,
   WatchlistType
 } from "../../models/watchlist.model";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 @Component({
   selector: 'ats-watchlist-table',
@@ -55,6 +55,7 @@ import {
   providers: [WatchInstrumentsService]
 })
 export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit {
+  readonly listTypes = WatchlistType;
   @Input({ required: true })
   guid!: string;
 
@@ -62,6 +63,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
   watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
+  currentWatchlist$!: Observable<Watchlist>;
 
   readonly scrollHeight$ = new BehaviorSubject<number>(100);
   allColumns: BaseColumnSettings<WatchedInstrument>[] = [
@@ -90,10 +92,10 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     openPrice: this.getSortFn('openPrice'),
     closePrice: this.getSortFn('closePrice'),
   };
-
   menuWidgets$!: Observable<string[] | null>;
-
+  settings$!: Observable<InstrumentSelectSettings>;
   private selectedInstrument: InstrumentKey | null = null;
+  private defaultSortFn?: (a: WatchedInstrument, b: WatchedInstrument) => number;
 
   constructor(
     private readonly currentDashboardService: DashboardContextService,
@@ -107,39 +109,51 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   ) {
   }
 
-  ngOnInit(): void {
-    const getList = (settings: InstrumentSelectSettings) => this.watchlistCollectionService.getWatchlistCollection().pipe(
-      take(1),
-      map(collection => {
-        if (!!settings.activeListId) {
-          return collection.collection.find(x => x.id === settings.activeListId);
-        }
+  sortFavorites = (a: WatchedInstrument, b: WatchedInstrument) => {
+    const res = (a.favoriteOrder ?? -1) - (b.favoriteOrder ?? -1);
+    if (res === 0 && this.defaultSortFn) {
+      return this.defaultSortFn(b, a);
+    }
 
-        return collection.collection.find(x => x.isDefault);
-      }),
-      filter((x): x is Watchlist => !!x)
+    return res;
+  };
+
+  ngOnInit(): void {
+    this.settings$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    this.watchedInstruments$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
+    this.currentWatchlist$ = this.settings$.pipe(
+      filter(s => !!s.activeListId),
       tap(settings => {
         this.displayedColumns = this.allColumns.filter(c => settings.instrumentColumns.includes(c.id));
         this.badgeColor = settings.badgeColor!;
       }),
-      switchMap(settings => getList(settings)),
-      distinctUntilChanged((prev, curr) => prev.id === curr.id),
       mapWith(
-        watchlist => this.watchInstrumentsService.getWatched(watchlist.id),
-        (source, updates) => ({
-          watchlist: source,
-          updates
-        })
+        () => this.watchlistCollectionService.getWatchlistCollection(),
+        (settings, collection) => collection.collection.find(x => x.id === settings.activeListId)
       ),
-      map(x => {
-        if (x.watchlist.type === WatchlistType.HistoryList) {
-          return x.updates.sort((a, b) => b.addTime - a.addTime);
+      filter((x): x is Watchlist => !!x),
+      distinctUntilChanged((prev, curr) => prev.id === curr.id),
+      tap(list => {
+        if (list.type === WatchlistType.HistoryList) {
+          this.defaultSortFn = (a, b) => b.addTime - a.addTime;
+        } else {
+          this.defaultSortFn = (a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol);
+        }
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+
+    this.watchedInstruments$ = this.currentWatchlist$.pipe(
+      switchMap(watchlist => this.watchInstrumentsService.getWatched(watchlist.id)),
+      map(updates => {
+        if (this.defaultSortFn) {
+          return updates.sort(this.defaultSortFn);
         }
 
-        return x.updates.sort((a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol));
+        return updates;
       }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
@@ -176,7 +190,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   remove(itemId: string) {
-    this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
+    this.settings$.pipe(
       map(s => s.activeListId),
       filter((id): id is string => !!id),
       take(1)
@@ -206,6 +220,26 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
         ...toInstrumentKey(this.selectedInstrument!)
       }
     );
+  }
+
+  updateFavorites(item: WatchedInstrument) {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      if (!s.activeListId) {
+        return;
+      }
+
+      this.watchlistCollectionService.updateListItem(
+        s.activeListId,
+        item.recordId,
+        {
+          favoriteOrder: item.favoriteOrder != null
+            ? null
+            : 1
+        }
+      );
+    });
   }
 
   private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {

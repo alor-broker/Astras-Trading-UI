@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {
   filter,
-  Observable,
-  shareReplay
+  Observable
 } from 'rxjs';
 import {Store} from "@ngrx/store";
 import {addWidgetSettings, updateWidgetSettings} from "../../store/widget-settings/widget-settings.actions";
@@ -20,8 +19,7 @@ export class WidgetSettingsService {
 
   getSettings<T extends WidgetSettings>(guid: string): Observable<T> {
     return this.getSettingsOrNull(guid).pipe(
-      filter((s): s is T => !!s),
-      shareReplay({bufferSize: 1, refCount: true})
+      filter((s): s is T => !!s)
     );
   }
 

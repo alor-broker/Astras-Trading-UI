@@ -4,6 +4,7 @@ import { BaseColumnId } from "../../../shared/models/settings/table-settings.mod
 export interface InstrumentSelectSettings extends WidgetSettings {
   activeListId?: string;
   instrumentColumns: string[];
+  showFavorites?: boolean;
 }
 
 export const allInstrumentsColumns: BaseColumnId[] = [

@@ -46,7 +46,7 @@ export class WatchlistCollectionService {
 
   public getWatchlistCollection(): Observable<WatchlistCollection> {
     return this.getCollection().pipe(
-      filter(c=> c.collection.length > 0)
+      filter(c => c.collection.length > 0)
     );
   }
 
@@ -54,7 +54,7 @@ export class WatchlistCollectionService {
     const newList = {
       id: GuidGenerator.newGuid(),
       title: title,
-      items: (items ?? []).map(x=> ({
+      items: (items ?? []).map(x => ({
         ...x,
         recordId: GuidGenerator.newGuid()
       }) as WatchlistItem)
@@ -102,7 +102,7 @@ export class WatchlistCollectionService {
         } as WatchlistItem))
       ];
 
-      const uniqueItems: {[key: string]: WatchlistItem} = {};
+      const uniqueItems: { [key: string]: WatchlistItem } = {};
       allItems.forEach(item => uniqueItems[this.getInstrumentKey(item)] = item);
 
       const updatedList = {
@@ -128,7 +128,7 @@ export class WatchlistCollectionService {
           if (!!i.instrumentGroup) {
             return of(toInstrumentKey(i));
           }
-           // get instrumentGroup if missing
+          // get instrumentGroup if missing
           return this.instrumentsService.getInstrument(i).pipe(
             take(1),
             map(i => !!i ? toInstrumentKey(i) : null)
@@ -137,7 +137,7 @@ export class WatchlistCollectionService {
       ).pipe(
         take(1)
       ).subscribe(items => {
-        const uniqueItems: {[key: string]: WatchlistItem} = {};
+        const uniqueItems: { [key: string]: WatchlistItem } = {};
         list.items.forEach(item => uniqueItems[this.getInstrumentKey(item)] = item);
 
         let newItemsAdded = false;
@@ -145,17 +145,18 @@ export class WatchlistCollectionService {
         items.filter((i): i is InstrumentKey => !!i)
           .forEach(i => {
             const itemKey = this.getInstrumentKey(i);
-            if(!uniqueItems[itemKey]) {
+            if (!uniqueItems[itemKey]) {
               uniqueItems[itemKey] = {
                 ...i,
-                recordId: GuidGenerator.newGuid()
+                recordId: GuidGenerator.newGuid(),
+                addTime: Date.now()
               };
 
               newItemsAdded = true;
             }
           });
 
-        if(!newItemsAdded) {
+        if (!newItemsAdded) {
           // performance optimization
           // prevent collection updating when no new items were added
           return;
@@ -163,7 +164,7 @@ export class WatchlistCollectionService {
 
         const updatedList = {
           ...list,
-          items: Array.from(Object.values(uniqueItems)).slice(0, 25)
+          items: Array.from(Object.values(uniqueItems)).slice(-25)
         } as Watchlist;
 
         this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
@@ -183,6 +184,35 @@ export class WatchlistCollectionService {
       const updatedList = {
         ...list,
         items: list.items.filter(item => !itemsToRemove.includes(item.recordId))
+      } as Watchlist;
+
+      this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+    });
+  }
+
+  public updateListItem(listId: string, recordId: string, update: Partial<{ favoriteOrder: number | null }>) {
+    this.getCollection().pipe(
+      take(1)
+    ).subscribe(collection => {
+      const list = collection.collection.find(x => x.id === listId);
+      if (!list) {
+        return;
+      }
+
+      const targetItemIndex = list.items.findIndex(i => i.recordId === recordId);
+      if (targetItemIndex < 0) {
+        return;
+      }
+
+      const updated = [...list.items];
+      updated[targetItemIndex] = {
+        ...updated[targetItemIndex],
+        ...update
+      };
+
+      const updatedList = {
+        ...list,
+        items: updated
       } as Watchlist;
 
       this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
@@ -213,7 +243,7 @@ export class WatchlistCollectionService {
 
           }
 
-          if(!x.find(x => x.type === WatchlistType.HistoryList)) {
+          if (!x.find(x => x.type === WatchlistType.HistoryList)) {
             newLists.push({
               id: GuidGenerator.newGuid(),
               title: "History",
@@ -222,7 +252,7 @@ export class WatchlistCollectionService {
             });
           }
 
-          if(newLists.length > 0) {
+          if (newLists.length > 0) {
             this.watchlistCollectionBrokerService.addOrUpdateLists(newLists).subscribe();
           }
         }),

@@ -13,4 +13,5 @@ export interface WatchedInstrument {
   minPrice: number;
   volume: number;
   openPrice: number;
+  favoriteOrder?: number | null;
 }

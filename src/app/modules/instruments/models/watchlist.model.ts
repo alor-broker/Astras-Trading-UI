@@ -12,6 +12,7 @@ export interface WatchlistCollection {
 export interface WatchlistItem extends InstrumentKey {
   recordId: string;
   addTime?: number;
+  favoriteOrder?: number | null;
 }
 
 export interface Watchlist {
