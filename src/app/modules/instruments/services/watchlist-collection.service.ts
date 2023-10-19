@@ -85,7 +85,7 @@ export class WatchlistCollectionService {
     });
   }
 
-  public addItemsToList(listId: string, items: InstrumentKey[]) {
+  public addItemsToList(listId: string, items: InstrumentKey[], rewriteDuplicates = true) {
     this.getCollection().pipe(
       take(1)
     ).subscribe(collection => {
@@ -94,21 +94,7 @@ export class WatchlistCollectionService {
         return;
       }
 
-      const allItems = [
-        ...list.items,
-        ...items.map(x => ({
-          ...toInstrumentKey(x),
-          recordId: GuidGenerator.newGuid()
-        } as WatchlistItem))
-      ];
-
-      const uniqueItems: { [key: string]: WatchlistItem } = {};
-      allItems.forEach(item => uniqueItems[this.getInstrumentKey(item)] = item);
-
-      const updatedList = {
-        ...list,
-        items: Object.values(uniqueItems)
-      } as Watchlist;
+      const updatedList = this.addItemsToListInternal(items, list, rewriteDuplicates);
 
       this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
     });
@@ -181,10 +167,7 @@ export class WatchlistCollectionService {
         return;
       }
 
-      const updatedList = {
-        ...list,
-        items: list.items.filter(item => !itemsToRemove.includes(item.recordId))
-      } as Watchlist;
+      const updatedList = this.removeItemsFromListInternal(itemsToRemove, list);
 
       this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
     });
@@ -216,6 +199,33 @@ export class WatchlistCollectionService {
       } as Watchlist;
 
       this.watchlistCollectionBrokerService.addOrUpdateLists([updatedList]).subscribe();
+    });
+  }
+
+  public moveItem(recordId: string, fromListId: string, toListId: string) {
+    this.getCollection().pipe(
+      take(1)
+    ).subscribe(collection => {
+      const fromList = collection.collection.find(x => x.id === fromListId);
+      if (!fromList) {
+        return;
+      }
+
+      const targetItem = fromList.items.find(i => i.recordId === recordId);
+
+      if (!targetItem) {
+        return;
+      }
+
+      const toList = collection.collection.find(x => x.id === toListId);
+      if (!toList) {
+        return;
+      }
+
+      const fromListUpdated = this.removeItemsFromListInternal([targetItem.recordId], fromList);
+      const toListUpdated = this.addItemsToListInternal([targetItem], toList, false);
+
+      this.watchlistCollectionBrokerService.addOrUpdateLists([toListUpdated, fromListUpdated]).subscribe();
     });
   }
 
@@ -268,5 +278,37 @@ export class WatchlistCollectionService {
 
   private getInstrumentKey(instrument: InstrumentKey): string {
     return `${instrument.exchange}:${instrument.symbol}:${instrument.instrumentGroup ?? '-'}`;
+  }
+
+  private removeItemsFromListInternal(idsToRemove: string[], targetList: Watchlist): Watchlist {
+    return {
+      ...targetList,
+      items: targetList.items.filter(item => !idsToRemove.includes(item.recordId))
+    } as Watchlist;
+  }
+
+  private addItemsToListInternal(items: InstrumentKey[], targetList: Watchlist, rewriteDuplicates = true): Watchlist {
+    const allItems = [
+      ...targetList.items,
+      ...items.map(x => ({
+        ...toInstrumentKey(x),
+        recordId: GuidGenerator.newGuid(),
+        addTime: Date.now()
+      } as WatchlistItem))
+    ];
+
+    const uniqueItems: { [key: string]: WatchlistItem } = {};
+    allItems.forEach(item => {
+      const itemKey = this.getInstrumentKey(item);
+
+      if(!uniqueItems[itemKey] || rewriteDuplicates) {
+        uniqueItems[itemKey] = item;
+      }
+    });
+
+    return {
+      ...targetList,
+      items: Object.values(uniqueItems)
+    } as Watchlist;
   }
 }

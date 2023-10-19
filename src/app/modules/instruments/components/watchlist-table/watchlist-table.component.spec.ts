@@ -4,7 +4,8 @@ import {
 } from '@angular/core/testing';
 import {
   BehaviorSubject,
-  of
+  of,
+  Subject
 } from 'rxjs';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { WatchlistTableComponent } from './watchlist-table.component';
@@ -18,6 +19,7 @@ import { WatchlistCollectionService } from '../../services/watchlist-collection.
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { LetDirective } from "@ngrx/component";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
@@ -34,7 +36,9 @@ describe('WatchlistTableComponent', () => {
     watchInstrumentsServiceSpy = jasmine.createSpyObj('WatchInstrumentsService', ['getWatched', 'clear']);
     watchInstrumentsServiceSpy.getWatched.and.returnValue(of([]));
 
-    watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['removeItemsFromList']);
+    watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['removeItemsFromList', 'getWatchlistCollection']);
+
+    watchlistCollectionServiceSpy.getWatchlistCollection.and.returnValue(new Subject());
   });
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -53,6 +57,12 @@ describe('WatchlistTableComponent', () => {
         },
         { provide: WatchInstrumentsService, useValue: watchInstrumentsServiceSpy },
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getLangChanges: jasmine.createSpy('getLangChanges').and.returnValue(new Subject())
+          }
+        },
         ...commonTestProviders
       ]
     }).compileComponents();

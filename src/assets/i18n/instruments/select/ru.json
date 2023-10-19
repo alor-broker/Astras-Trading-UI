@@ -52,5 +52,10 @@
   },
 
   "addToFavoritesTooltip": "Добавить в избранное",
-  "removeFromFavoritesTooltip": "Удалить из избранного"
+  "removeFromFavoritesTooltip": "Удалить из избранного",
+  "contextMenu": {
+    "copyToItemLabel": "Копировать в список",
+    "moveToItemLabel": "Перенести в список",
+    "addWidgetItemLabel": "Добавить виджет"
+  }
 }

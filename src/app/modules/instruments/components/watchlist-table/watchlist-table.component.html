@@ -1,15 +1,20 @@
 <ng-container *transloco="let t; scope: 'instruments/select'">
   <div #tableContainer class="table-container">
-    <ng-container *ngrxLet="{ settings: settings$, list: currentWatchlist$, updates: watchedInstruments$ } as vm">
+    <ng-container *ngrxLet="{
+    settings: settings$,
+    collection: collection$,
+    list: currentWatchlist$,
+    updates: watchedInstruments$
+    } as vm">
       <nz-table
         #nzTable
         [nzData]="vm.updates"
-        nzTableLayout="fixed"
-        nzSize="small"
         [nzFrontPagination]="false"
-        [nzShowPagination]="false"
         [nzScroll]="{ y: ((scrollHeight$ | async) ?? 0) - 5 + 'px'}"
-        [nzVirtualItemSize]="20">
+        [nzShowPagination]="false"
+        [nzVirtualItemSize]="20"
+        nzSize="small"
+        nzTableLayout="fixed">
         <thead *transloco="let t; scope: 'instruments/select'">
         <tr>
           <th
@@ -39,13 +44,14 @@
               [nzSortFn]="sortFns[col.id]"
               [nzWidth]="(col.minWidth ?? 50) + 'px'"
             >
-            <span nz-tooltip [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.id + '.tooltip', { fallback: col.tooltip })">
+            <span [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.id + '.tooltip', { fallback: col.tooltip })"
+                  nz-tooltip>
               {{t('instrumentsSelect.columns.' + col.id + '.name', { fallback: col.displayName })}}
             </span>
             </th>
           </ng-container>
           <th [nzWidth]="'40px'">
-          <span nz-tooltip [nzTooltipTitle]="t('instrumentsSelect.columns.delete.tooltip')">
+          <span [nzTooltipTitle]="t('instrumentsSelect.columns.delete.tooltip')" nz-tooltip>
             {{t('instrumentsSelect.columns.delete.name')}}
           </span>
           </th>
@@ -53,11 +59,11 @@
         </thead>
         <tbody>
         <tr
-          *ngFor="let inst of nzTable.data!; trackBy: getTrackKey"
           (click)='makeActive(inst.instrument)'
-          (contextmenu)="contextMenu($event, menu, inst.instrument)"
+          (contextmenu)="contextMenu($event, menu, inst)"
+          *ngFor="let inst of nzTable.data!; trackBy: getTrackKey"
         >
-          <td class="favorites" *ngIf="vm.settings.showFavorites ?? false">
+          <td *ngIf="vm.settings.showFavorites ?? false" class="favorites">
             <span
               (click)="updateFavorites(inst); $event.preventDefault(); $event.stopPropagation();"
               *ngIf="vm.list.type !== listTypes.HistoryList"
@@ -80,19 +86,20 @@
             {{inst.instrument.shortName}}
           </td>
           <td *ngIf="isVisibleColumn('price')">
-            <ats-price-tick [price]='inst.price' [prevPrice]='inst.prevTickPrice'>
+            <ats-price-tick [prevPrice]='inst.prevTickPrice' [price]='inst.price'>
             </ats-price-tick>
           </td>
           <td *ngIf="isVisibleColumn('dayChange')" [ngClass]="inst.dayChange < 0 ? 'sellCell' : 'buyCell'">
             {{ inst.dayChange }}
           </td>
-          <td *ngIf="isVisibleColumn('dayChangePerPrice')" [ngClass]="inst.dayChangePerPrice < 0 ? 'sellCell' : 'buyCell'">
+          <td *ngIf="isVisibleColumn('dayChangePerPrice')"
+              [ngClass]="inst.dayChangePerPrice < 0 ? 'sellCell' : 'buyCell'">
             {{ inst.dayChangePerPrice }}
           </td>
           <td *ngIf="isVisibleColumn('maxPrice')">{{ inst.maxPrice }}</td>
           <td *ngIf="isVisibleColumn('minPrice')">{{ inst.minPrice }}</td>
           <td *ngIf="isVisibleColumn('volume')" style="white-space: nowrap;">
-            <ats-short-number [value]="inst.volume" [allowRounding]="true" [roundPrecision]="3"></ats-short-number>
+            <ats-short-number [allowRounding]="true" [roundPrecision]="3" [value]="inst.volume"></ats-short-number>
           </td>
           <td *ngIf="isVisibleColumn('openPrice')">{{ inst.openPrice }}</td>
           <td *ngIf="isVisibleColumn('closePrice')">{{ inst.closePrice }}</td>
@@ -104,12 +111,69 @@
         </tr>
         </tbody>
       </nz-table>
+
+      <nz-dropdown-menu #menu="nzDropdownMenu">
+        <ul nz-menu>
+          <ng-container *ngIf="getListsForCopyMove(vm.list, vm.collection) as lists">
+            <ng-container *transloco="let tTitle; scope: 'instruments'">
+              <li
+                *ngIf="canMoveItem(vm.list)"
+                [nzTitle]="title"
+                nz-submenu
+                #submenu
+              >
+                <ng-template #title>
+                  <span><i nz-icon nzTheme="outline" nzType="arrow-right"></i><label>&nbsp;{{t('instrumentsSelect.contextMenu.moveToItemLabel')}}</label></span>
+                </ng-template>
+                <ul>
+                  <li *ngFor="let wl of lists"
+                      nz-menu-item
+                      (click)="moveItem(vm.list, wl); submenu.nzOpen = false"
+                  >
+                    {{ tTitle('instruments.' + getListTitleTranslationKey(wl), { fallback: wl.title })}}</li>
+                </ul>
+              </li>
+              <li
+                [nzTitle]="title"
+                nz-submenu
+                #submenu
+              >
+                <ng-template #title>
+                  <span><i nz-icon nzTheme="outline" nzType="copy"></i><label>&nbsp;{{t('instrumentsSelect.contextMenu.copyToItemLabel')}}</label></span>
+                </ng-template>
+                <ul>
+                  <li
+                    *ngFor="let wl of lists"
+                    nz-menu-item
+                    (click)="copyItem(wl); submenu.nzOpen = false"
+                  >
+                    {{ tTitle('instruments.' + getListTitleTranslationKey(wl), { fallback: wl.title })}}
+                  </li>
+                </ul>
+              </li>
+            </ng-container>
+          </ng-container>
+
+          <li
+            *ngIf="menuWidgets$ | async as menuWidgets"
+            [nzTitle]="title"
+            nz-submenu
+          >
+            <ng-template #title>
+              <span><i nz-icon nzTheme="outline" nzType="appstore-add"></i><label>&nbsp;{{t('instrumentsSelect.contextMenu.addWidgetItemLabel')}}</label></span>
+            </ng-template>
+            <ul>
+              <li
+                (click)="addWidget(widget.typeId)"
+                *ngFor="let widget of menuWidgets"
+                nz-menu-item
+              >
+                <span><i [nzType]="widget.icon" nz-icon nzTheme="outline"></i><label>&nbsp;{{widget.name}}</label></span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nz-dropdown-menu>
     </ng-container>
   </div>
-
-  <nz-dropdown-menu #menu="nzDropdownMenu">
-    <ng-container *ngIf="menuWidgets$ | async as displayWidgets">
-      <ats-widget-menu [showedWidgets]="displayWidgets" (selected)="addWidget($event)"></ats-widget-menu>
-    </ng-container>
-  </nz-dropdown-menu>
 </ng-container>

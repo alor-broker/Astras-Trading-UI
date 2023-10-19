@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {
   BehaviorSubject,
+  combineLatest,
   distinctUntilChanged,
   Observable,
   of,
@@ -44,9 +45,13 @@ import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.ser
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   Watchlist,
+  WatchlistCollection,
   WatchlistType
 } from "../../models/watchlist.model";
 import { mapWith } from "../../../../shared/utils/observable-helper";
+import { WatchListTitleHelper } from "../../utils/watch-list-title.helper";
+import { WidgetsHelper } from "../../../../shared/utils/widgets";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 @Component({
   selector: 'ats-watchlist-table',
@@ -64,6 +69,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
 
   watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
   currentWatchlist$!: Observable<Watchlist>;
+  collection$!: Observable<WatchlistCollection>;
 
   readonly scrollHeight$ = new BehaviorSubject<number>(100);
   allColumns: BaseColumnSettings<WatchedInstrument>[] = [
@@ -92,9 +98,16 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     openPrice: this.getSortFn('openPrice'),
     closePrice: this.getSortFn('closePrice'),
   };
-  menuWidgets$!: Observable<string[] | null>;
+
+  menuWidgets$!: Observable<{
+    typeId: string,
+    name: string,
+    icon: string
+  }[]>;
+
   settings$!: Observable<InstrumentSelectSettings>;
-  private selectedInstrument: InstrumentKey | null = null;
+  getListTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
+  private selectedItem: WatchedInstrument | null = null;
   private defaultSortFn?: (a: WatchedInstrument, b: WatchedInstrument) => number;
 
   constructor(
@@ -105,6 +118,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     private readonly nzContextMenuService: NzContextMenuService,
     private readonly dashboardService: ManageDashboardsService,
     private readonly widgetsMetaService: WidgetsMetaService,
+    private readonly translatorService: TranslatorService,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -123,6 +137,10 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
+    this.collection$ = this.watchlistCollectionService.getWatchlistCollection().pipe(
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
     this.currentWatchlist$ = this.settings$.pipe(
       filter(s => !!s.activeListId),
       tap(settings => {
@@ -130,7 +148,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
         this.badgeColor = settings.badgeColor!;
       }),
       mapWith(
-        () => this.watchlistCollectionService.getWatchlistCollection(),
+        () => this.collection$,
         (settings, collection) => collection.collection.find(x => x.id === settings.activeListId)
       ),
       filter((x): x is Watchlist => !!x),
@@ -158,8 +176,24 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    this.menuWidgets$ = this.widgetsMetaService.getWidgetsMeta().pipe(
-      map(widgets => widgets.filter(x => x.hasInstrumentBind).map(x => x.typeId)),
+    this.menuWidgets$ = combineLatest([
+        this.widgetsMetaService.getWidgetsMeta(),
+        this.translatorService.getLangChanges()
+      ]
+    ).pipe(
+      map(([meta, lang]) => meta
+        .filter(x => !!x.desktopMeta && x.desktopMeta.enabled)
+        .filter(x => x.hasInstrumentBind)
+        .sort((a, b) => {
+            return (a.desktopMeta!.galleryOrder ?? 0) - (b.desktopMeta!.galleryOrder ?? 0);
+          }
+        )
+        .map(x => ({
+          typeId: x.typeId,
+          name: WidgetsHelper.getWidgetName(x.widgetName, lang) ?? x.typeId,
+          icon: x.desktopMeta?.galleryIcon ?? 'appstore'
+        }))
+      ),
       shareReplay(1)
     );
   }
@@ -207,8 +241,8 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     return this.displayedColumns.map(c => c.id).includes(colName);
   }
 
-  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedInstrument: InstrumentKey): void {
-    this.selectedInstrument = selectedInstrument;
+  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedInstrument: WatchedInstrument): void {
+    this.selectedItem = selectedInstrument;
     this.nzContextMenuService.create($event, menu);
   }
 
@@ -217,7 +251,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
       type,
       {
         linkToActive: false,
-        ...toInstrumentKey(this.selectedInstrument!)
+        ...toInstrumentKey(this.selectedItem?.instrument!)
       }
     );
   }
@@ -240,6 +274,33 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
         }
       );
     });
+  }
+
+  canMoveItem(currentList: Watchlist): boolean {
+    return currentList.type != WatchlistType.HistoryList;
+  }
+
+  getListsForCopyMove(currentList: Watchlist, collection: WatchlistCollection): Watchlist[] | null {
+    const filteredLists = collection.collection.filter(wl => wl.id !== currentList.id && wl.type !== WatchlistType.HistoryList);
+    return filteredLists.length > 0
+      ? filteredLists
+      : null;
+  }
+
+  copyItem(targetList: Watchlist) {
+    if (!this.selectedItem) {
+      return;
+    }
+
+    this.watchlistCollectionService.addItemsToList(targetList.id, [this.selectedItem.instrument], false);
+  }
+
+  moveItem(fromList: Watchlist, toList: Watchlist) {
+    if (!this.selectedItem) {
+      return;
+    }
+
+    this.watchlistCollectionService.moveItem(this.selectedItem.recordId, fromList.id, toList.id);
   }
 
   private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {

@@ -17,8 +17,6 @@ interface WidgetDisplay {
   styleUrls: ['./widget-menu.component.less']
 })
 export class WidgetMenuComponent implements OnInit {
-
-  @Input() public showedWidgets: string[] = [];
   @Input() public showResetItem: boolean = false;
   @Output() public selected = new EventEmitter<string>();
   @Output() public resetDashboard = new EventEmitter<void>();
@@ -39,7 +37,6 @@ export class WidgetMenuComponent implements OnInit {
     ).pipe(
       map(([meta, lang]) => meta
         .filter(x => !!x.desktopMeta && x.desktopMeta.enabled)
-        .filter(x => this.showedWidgets.length === 0 || this.showedWidgets.includes(x.typeId))
         .sort((a, b) => {
             return (a.desktopMeta!.galleryOrder ?? 0) - (b.desktopMeta!.galleryOrder ?? 0);
           }
