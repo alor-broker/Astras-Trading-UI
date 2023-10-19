@@ -17,6 +17,9 @@ export class MergedBadgeComponent {
     ["pink", "#eb2f96"],
     ["red", "#f5222d"],
     ["orange", "#fa8c16"],
+    ['green', '#49aa1b'],
+    ['cyan', '#13a9aa'],
+    ['geekblue', '#2b4bcd']
   ]);
 
   getBackgroundStyle(): string {
