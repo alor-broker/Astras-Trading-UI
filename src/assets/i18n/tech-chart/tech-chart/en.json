@@ -15,6 +15,7 @@
   "priceLabel": "Price",
   "qtyLabel": "Qty",
   "sideLabel": "Side",
+  "timeLabel": "Time",
 
   "timeframes": {
     "all": {
