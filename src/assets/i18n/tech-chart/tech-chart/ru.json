@@ -15,6 +15,7 @@
   "priceLabel": "Цена",
   "qtyLabel": "Кол-во",
   "sideLabel": "Сторона",
+  "timeLabel": "Время",
 
   "timeframes": {
     "all": {

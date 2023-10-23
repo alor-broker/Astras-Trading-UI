@@ -207,6 +207,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private lastTimezone?: TimezoneDisplayOption;
   private translateFn!: (key: string[], params?: HashMap) => string;
   private intervalChangeSub?: Subscription;
+  private timezoneChangeSub?: Subscription;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -237,6 +238,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.chartState.positionState?.destroy();
       this.chartState.tradesState?.destroy();
       this.intervalChangeSub?.unsubscribe();
+      this.timezoneChangeSub?.unsubscribe();
       this.chartState.widget.remove();
     }
 
@@ -359,6 +361,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
             this.initPositionDisplay(settings, theme.themeColors);
             this.initOrdersDisplay(settings, theme.themeColors);
             this.initTradesDisplay(settings, theme.themeColors);
+            this.initTimezoneChangeStream(settings, theme.themeColors);
           }
         );
 
@@ -437,6 +440,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           this.initPositionDisplay(settings, theme.themeColors);
           this.initOrdersDisplay(settings, theme.themeColors);
           this.initTradesDisplay(settings, theme.themeColors);
+          this.initTimezoneChangeStream(settings, theme.themeColors);
         }
       );
 
@@ -620,6 +624,15 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     ));
   }
 
+  private initTimezoneChangeStream(settings: TechChartSettings, themeColors: ThemeColors) {
+    this.timezoneChangeSub?.unsubscribe();
+    this.timezoneChangeSub = new Subscription();
+
+    const timezoneChangeCallback = () => this.initTradesDisplay(settings, themeColors);
+    this.chartState?.widget.activeChart().getTimezoneApi().onTimezoneChanged().subscribe(null, timezoneChangeCallback);
+    this.timezoneChangeSub.add(() => this.chartState?.widget.activeChart().getTimezoneApi().onTimezoneChanged().unsubscribe(null, timezoneChangeCallback));
+  }
+
   private initTradesDisplay(settings: TechChartSettings, themeColors: ThemeColors) {
     if(!settings.showTrades) {
       return;
@@ -689,9 +702,31 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
 
+      let chartSelectedTimezone: string | undefined = this.chartState?.widget.activeChart().getTimezoneApi().getTimezone()?.id;
+      if (!chartSelectedTimezone || chartSelectedTimezone === 'exchange') {
+        chartSelectedTimezone = TimezoneConverter.moscowTimezone;
+      }
+
       const text = `${this.translateFn(['sideLabel'])}: ${trade.side},
       ${this.translateFn(['priceLabel'])}: ${trade.price},
-      ${this.translateFn(['qtyLabel'])}: ${trade.qtyBatch}`;
+      ${this.translateFn(['qtyLabel'])}: ${trade.qtyBatch}
+      ${this.translateFn(['timeLabel'])}: ${
+        trade.date.toLocaleDateString(
+          'RU-ru',
+          {
+            timeZone: chartSelectedTimezone
+          }
+        )
+      } ${
+        trade.date.toLocaleTimeString(
+          'RU-ru',
+          {
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: chartSelectedTimezone
+          }
+        )
+      }`;
 
       const shapeId = this.chartState.widget.activeChart().createMultipointShape(
         [
