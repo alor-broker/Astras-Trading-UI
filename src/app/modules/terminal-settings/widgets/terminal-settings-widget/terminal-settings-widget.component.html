@@ -16,7 +16,7 @@
           [nzLoading]="isLoading$ | async">
           {{t('saveBtnText')}}
         </button>
-        <button nz-button nzType="default" class="secondary-btn" (click)="closeModal()">{{t('cancelBtnText')}}</button>
+        <button nz-button nzType="default" (click)="closeModal()">{{t('cancelBtnText')}}</button>
       </ng-container>
     </div>
   </nz-modal>

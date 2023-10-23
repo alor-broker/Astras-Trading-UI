@@ -1,0 +1,14 @@
+﻿{
+  "dialogTitle": "Import items",
+  "inputStringPlaceholder": "Type string in format: '[Exchange]:[Ticker1]:[Board1];[Exchange]:[Ticker2]:[Board2];...' or upload file",
+  "parseBtnTooltip": "Read input",
+  "uploadFileBtnTooltip": "Upload file",
+
+  "tickerColLabel": "Ticker",
+  "parseStatusColLabel": "Status",
+
+  "parseStatus": {
+    "success": "",
+    "notFound": "Not found"
+  }
+}

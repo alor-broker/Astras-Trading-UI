@@ -139,7 +139,7 @@
                 #submenu
               >
                 <ng-template #title>
-                  <span><i nz-icon nzTheme="outline" nzType="copy"></i><label>&nbsp;{{t('instrumentsSelect.contextMenu.copyToItemLabel')}}</label></span>
+                  <span><i nz-icon nzTheme="outline" nzType="copy"></i>{{t('instrumentsSelect.contextMenu.copyToItemLabel')}}</span>
                 </ng-template>
                 <ul>
                   <li
@@ -160,7 +160,7 @@
             nz-submenu
           >
             <ng-template #title>
-              <span><i nz-icon nzTheme="outline" nzType="appstore-add"></i><label>&nbsp;{{t('instrumentsSelect.contextMenu.addWidgetItemLabel')}}</label></span>
+              <span><i nz-icon nzTheme="outline" nzType="appstore-add"></i>{{t('instrumentsSelect.contextMenu.addWidgetItemLabel')}}</span>
             </ng-template>
             <ul>
               <li
@@ -168,7 +168,7 @@
                 *ngFor="let widget of menuWidgets"
                 nz-menu-item
               >
-                <span><i [nzType]="widget.icon" nz-icon nzTheme="outline"></i><label>&nbsp;{{widget.name}}</label></span>
+                <span><i [nzType]="widget.icon" nz-icon nzTheme="outline"></i>{{widget.name}}</span>
               </li>
             </ul>
           </li>

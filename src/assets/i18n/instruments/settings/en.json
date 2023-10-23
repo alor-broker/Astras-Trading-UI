@@ -10,5 +10,8 @@
   "standardListPlaceholder": "Select standard list",
   "removeConfirmText": "Are you sure?",
   "editWatchlistTooltip": "Edit",
-  "showFavoritesLabel": "Show favorites"
+  "showFavoritesLabel": "Show favorites",
+
+  "exportActionLabel": "Export items",
+  "importActionLabel": "Import items"
 }

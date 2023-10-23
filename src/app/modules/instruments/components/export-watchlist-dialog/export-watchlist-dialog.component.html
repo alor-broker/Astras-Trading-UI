@@ -1,0 +1,51 @@
+<ng-container *transloco="let t; scope: 'instruments/export-watchlist-dialog'">
+  <ng-container *ngrxLet="{exportResult: exportResult$} as vm">
+    <nz-modal
+      (nzOnCancel)="closeDialog()"
+      [nzTitle]="t('instrumentsExportWatchlistDialog.dialogTitle')"
+      [nzVisible]="isVisible$ | async"
+    >
+
+      <ng-container *nzModalContent>
+        <div>
+        <textarea
+          [readonly]="true"
+          [value]="vm.exportResult.content ?? t('instrumentsExportWatchlistDialog.noItemsToExport')"
+          nz-input
+          rows="5"
+        >
+        </textarea>
+        </div>
+      </ng-container>
+
+      <ng-container *nzModalFooter>
+        <div class="d-flex flex-nowrap flex-row justify-content-between">
+          <div>
+            <button
+              (click)="copyToClipboard(vm.exportResult.content!)"
+              [disabled]="vm.exportResult.content === null"
+              [nz-tooltip]="t('instrumentsExportWatchlistDialog.copyBtnTooltip')"
+              nz-button
+              nzType="primary"
+            >
+              <span nz-icon nzTheme="outline" nzType="copy"></span>
+            </button>
+
+            <button
+              (click)="saveToFile(vm.exportResult)"
+              [disabled]="vm.exportResult.content === null"
+              [nz-tooltip]="t('instrumentsExportWatchlistDialog.saveToFileBtnTooltip')"
+              nz-button
+              nzType="primary"
+            >
+              <span nz-icon nzTheme="outline" nzType="download"></span>
+            </button>
+          </div>
+
+          <button (click)="closeDialog()" nz-button>{{t('cancelBtnText')}}</button>
+        </div>
+      </ng-container>
+
+    </nz-modal>
+  </ng-container>
+</ng-container>

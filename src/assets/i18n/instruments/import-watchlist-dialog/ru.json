@@ -1,0 +1,14 @@
+﻿{
+  "dialogTitle": "Импорт инструментов",
+  "inputStringPlaceholder": "Введите строку в формате: '[Exchange]:[Ticker1]:[Board1];[Exchange]:[Ticker2]:[Board2]';... или загрузите файл",
+  "parseBtnTooltip": "Прочитать входные данные",
+  "uploadFileBtnTooltip": "Загрузить из файла",
+
+  "tickerColLabel": "Тикер",
+  "parseStatusColLabel": "Статус",
+
+  "parseStatus": {
+    "success": "",
+    "notFound": "Не найден"
+  }
+}

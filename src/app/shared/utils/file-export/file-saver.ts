@@ -1,5 +1,6 @@
 export enum FileType {
-  Csv = 'csv'
+  Csv = 'csv',
+  Txt = 'txt'
 }
 
 export interface FileMeta {

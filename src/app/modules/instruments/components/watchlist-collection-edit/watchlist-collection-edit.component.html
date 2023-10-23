@@ -74,9 +74,40 @@
               <i nz-icon nzType="minus"></i>
             </button>
           </nz-list-item-action>
+          <nz-list-item-action>
+            <button
+              nz-button
+              nzSize='small'
+              nzType="text"
+              nz-dropdown
+              [nzDropdownMenu]="menu"
+            >
+              <i nz-icon nzType="more"></i>
+            </button>
+            <nz-dropdown-menu #menu="nzDropdownMenu">
+              <ul nz-menu>
+                <li
+                  nz-menu-item
+                  (click)="exportDialogParams$.next({ listId: list.id})"
+                >
+                  <span><i nzType="upload" nz-icon nzTheme="outline"></i>&nbsp;{{t('instrumentsSettings.exportActionLabel')}}</span>
+                </li>
+                <li
+                  nz-menu-item
+                  *ngIf="canImport(list)"
+                  (click)="importDialogParams$.next({ listId: list.id})"
+                >
+                  <span><i nzType="download" nz-icon nzTheme="outline"></i>&nbsp;{{t('instrumentsSettings.importActionLabel')}}</span>
+                </li>
+              </ul>
+            </nz-dropdown-menu>
+          </nz-list-item-action>
         </ul>
       </nz-list-item>
     </ng-container>
     <nz-list-empty *ngIf="collection.length === 0"></nz-list-empty>
   </nz-list>
 </div>
+
+<ats-export-watchlist-dialog [dialogParams]="exportDialogParams$ | async"></ats-export-watchlist-dialog>
+<ats-import-watchlist-dialog [dialogParams]="importDialogParams$ | async"></ats-import-watchlist-dialog>

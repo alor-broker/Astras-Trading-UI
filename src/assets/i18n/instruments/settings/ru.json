@@ -10,5 +10,8 @@
   "standardListPlaceholder": "Выберите стандартный список",
   "removeConfirmText": "Точно удалить?",
   "editWatchlistTooltip": "Редактировать",
-  "showFavoritesLabel": "Показывать избранное"
+  "showFavoritesLabel": "Показывать избранное",
+
+  "exportActionLabel": "Экспорт инструментов",
+  "importActionLabel": "Импорт инструментов"
 }

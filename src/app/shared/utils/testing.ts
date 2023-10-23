@@ -133,7 +133,7 @@ export const ngZorroMockComponents = [
   }),
   mockComponent({
     selector: 'nz-modal',
-    inputs: ['nzCancelText', 'nzVisible', 'nzTitle', 'nzMaskClosable']
+    inputs: ['nzCancelText', 'nzVisible', 'nzTitle', 'nzMaskClosable', 'nzOkText']
   }),
   mockComponent({
     selector: 'nz-badge',
