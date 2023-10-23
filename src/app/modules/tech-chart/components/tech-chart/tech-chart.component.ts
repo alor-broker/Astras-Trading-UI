@@ -417,7 +417,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         'display_market_status',
         'symbol_search_hot_key',
         'save_shortcut',
-        'use_localstorage_for_settings',
+        'save_chart_properties_to_local_storage',
       ],
       enabled_features: [
         'header_symbol_search',
