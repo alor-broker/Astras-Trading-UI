@@ -248,6 +248,20 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
     this.isLoading$.complete();
   }
 
+  formatDate(date: Date) {
+    return date.toLocaleTimeString(
+      [],
+      {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute:"2-digit",
+        hour12: false
+      }
+    );
+  }
+
   private loadMoreItems(from?: string | null, itemsCount?: number | null) {
     this.isLoading$.pipe(
       take(1),
