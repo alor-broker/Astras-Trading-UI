@@ -6,17 +6,20 @@ import { Instrument } from '../models/instruments/instrument.model';
  * badge colors array
  */
 export const instrumentsBadges = [
-  'yellow',
-  'blue',
-  'pink',
-  'red',
-  'orange'
+  '#FFFF00',
+  '#FF0000',
+  '#FFA500',
+  '#008C00',
+  '#00C4FF',
+  '#0000FF',
+  '#F100F1',
+  '#800000',
 ];
 
 /**
  * default badge color
  */
-export const defaultBadgeColor = 'yellow';
+export const defaultBadgeColor = '#FFFF00';
 
 /**
  * Determines the category of instrument by CFI code

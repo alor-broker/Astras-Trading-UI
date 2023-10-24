@@ -153,7 +153,7 @@ export class DashboardsEffects {
   setDefaultInstrumentsSelectionForCurrentDashboard$ = createEffect(() => {
     return DashboardsStreams.getSelectedDashboard(this.store).pipe(
       filter((d): d is Dashboard => !!d),
-      filter(d => !d.instrumentsSelection),
+      filter(d => instrumentsBadges.some(badge => !d.instrumentsSelection?.[badge])),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),
       mapWith(
         () => this.marketService.getAllExchanges().pipe(take(1)),
@@ -173,7 +173,7 @@ export class DashboardsEffects {
               dashboardGuid: dashboard.guid,
               selection: instrumentsBadges.map(badge => ({
                 groupKey: badge,
-                instrumentKey: {
+                instrumentKey: dashboard.instrumentsSelection?.[badge] ?? {
                   ...exchangeSettings!.settings.defaultInstrument,
                   exchange: exchangeSettings!.exchange
                 }

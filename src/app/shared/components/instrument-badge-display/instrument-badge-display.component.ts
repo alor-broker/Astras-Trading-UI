@@ -3,7 +3,7 @@ import {InstrumentKey} from "../../models/instruments/instrument-key.model";
 import {combineLatest, Observable, shareReplay} from "rxjs";
 import {InstrumentGroups} from "../../models/dashboard/dashboard.model";
 import {map} from "rxjs/operators";
-import {defaultBadgeColor} from "../../utils/instruments";
+import { defaultBadgeColor, instrumentsBadges } from "../../utils/instruments";
 import {DashboardContextService} from "../../services/dashboard-context.service";
 import {TerminalSettingsService} from "../../services/terminal-settings.service";
 
@@ -43,6 +43,7 @@ export class InstrumentBadgeDisplayComponent implements OnInit {
 
   getApplicableBadges(selectedGroups: InstrumentGroups): string[] {
     return Object.entries(selectedGroups)
+      .filter(([key]) => instrumentsBadges.includes(key))
       .filter(([, value]) => this.isBadgeApplicable(value))
       .map(([key]) => key);
   }

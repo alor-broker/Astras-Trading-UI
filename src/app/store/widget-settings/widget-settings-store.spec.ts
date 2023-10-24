@@ -22,6 +22,7 @@ import {
 } from "./widget-settings.actions";
 import { InstrumentsService } from "../../modules/instruments/services/instruments.service";
 import { WidgetSettings } from '../../shared/models/widget-settings.model';
+import { defaultBadgeColor } from "../../shared/utils/instruments";
 
 describe('Widget Settings Store', () => {
   let store: Store;
@@ -38,7 +39,8 @@ describe('Widget Settings Store', () => {
         guid: GuidGenerator.newGuid(),
         exchange: Math.random() > 0.5 ? 'MOEX' : 'SPBX',
         width: Math.round(Math.random() * 100),
-        height: Math.round(Math.random() * 100)
+        height: Math.round(Math.random() * 100),
+        badgeColor: defaultBadgeColor
       });
     }
 

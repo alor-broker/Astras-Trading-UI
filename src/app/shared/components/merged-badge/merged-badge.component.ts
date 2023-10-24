@@ -12,11 +12,14 @@ export class MergedBadgeComponent {
   width: number = 10;
 
   private readonly colorOverrides = new Map<string, string>([
-    ["yellow", "#fadb14"],
-    ["blue", "#1890ff"],
-    ["pink", "#eb2f96"],
-    ["red", "#f5222d"],
-    ["orange", "#fa8c16"],
+    ["#FFFF00", "#FFFF00"],
+    ["#FF0000", "#FF0000"],
+    ["#FFA500", "#FFA500"],
+    ["#008C00", "#008C00"],
+    ["#00C4FF", "#00C4FF"],
+    ['#0000FF', '#0000FF'],
+    ['#F100F1', '#F100F1'],
+    ['#800000', '#800000']
   ]);
 
   getBackgroundStyle(): string {
