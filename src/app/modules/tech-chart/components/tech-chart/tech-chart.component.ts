@@ -351,8 +351,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     forceRecreate: boolean = false) {
     if (this.chartState) {
       if (forceRecreate) {
-        this.chartState.widget?.remove();
         this.intervalChangeSub?.unsubscribe();
+        this.chartState.widget?.remove();
       }
       else {
         this.chartState.widget.activeChart().setSymbol(
