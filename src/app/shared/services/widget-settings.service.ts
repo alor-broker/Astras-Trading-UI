@@ -1,5 +1,8 @@
 import {Injectable} from '@angular/core';
-import {filter, Observable} from 'rxjs';
+import {
+  filter,
+  Observable
+} from 'rxjs';
 import {Store} from "@ngrx/store";
 import {addWidgetSettings, updateWidgetSettings} from "../../store/widget-settings/widget-settings.actions";
 import {map} from 'rxjs/operators';

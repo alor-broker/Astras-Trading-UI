@@ -1,9 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { WatchlistCollectionEditComponent } from './watchlist-collection-edit.component';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
-import { of, Subject } from 'rxjs';
-import { getTranslocoModule } from "../../../../shared/utils/testing";
+import {
+  of,
+  Subject
+} from 'rxjs';
+import {
+  getTranslocoModule,
+  mockComponent
+} from "../../../../shared/utils/testing";
 
 describe('WatchlistCollectionEditComponent', () => {
   let component: WatchlistCollectionEditComponent;
@@ -26,7 +35,11 @@ describe('WatchlistCollectionEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [WatchlistCollectionEditComponent],
+      declarations: [
+        WatchlistCollectionEditComponent,
+        mockComponent({ selector: 'ats-export-watchlist-dialog', inputs: ['dialogParams'] }),
+        mockComponent({ selector: 'ats-import-watchlist-dialog', inputs: ['dialogParams'] })
+      ],
       imports: [
         getTranslocoModule()
       ],

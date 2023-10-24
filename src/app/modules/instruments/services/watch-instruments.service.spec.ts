@@ -5,7 +5,7 @@ import {WatchInstrumentsService} from './watch-instruments.service';
 import {TestData} from '../../../shared/utils/testing';
 import {WatchlistCollectionService} from './watchlist-collection.service';
 import {HistoryService} from '../../../shared/services/history.service';
-import {BehaviorSubject, skipWhile, Subject, take} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {Candle} from '../../../shared/models/history/candle.model';
 import {WatchlistCollection} from '../models/watchlist.model';
 import {InstrumentsService} from './instruments.service';
@@ -79,7 +79,7 @@ describe('WatchInstrumentsService', () => {
       } as WatchlistCollection);
     });
 
-    service.getWatched({guid: 'guid', activeListId: '123', instrumentColumns: []});
+    service.getWatched('123');
 
     expect(watchlistCollectionServiceSpy.getWatchlistCollection).toHaveBeenCalledTimes(1);
   });

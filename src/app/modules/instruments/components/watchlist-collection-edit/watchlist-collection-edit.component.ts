@@ -1,10 +1,30 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { map } from 'rxjs/operators';
-import { filter, Observable, shareReplay } from 'rxjs';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { PresetWatchlist, PresetWatchlistCollection, Watchlist } from '../../models/watchlist.model';
+import {
+  filter,
+  Observable,
+  shareReplay,
+  Subject
+} from 'rxjs';
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from '@angular/forms';
+import {
+  PresetWatchlist,
+  PresetWatchlistCollection,
+  Watchlist,
+  WatchlistType
+} from '../../models/watchlist.model';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import { WatchListTitleHelper } from "../../utils/watch-list-title.helper";
+import { ExportDialogParams } from "../export-watchlist-dialog/export-watchlist-dialog.component";
+import { ImportDialogParams } from "../import-watchlist-dialog/import-watchlist-dialog.component";
 
 @Component({
   selector: 'ats-watchlist-collection-edit',
@@ -12,10 +32,15 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
   styleUrls: ['./watchlist-collection-edit.component.less']
 })
 export class WatchlistCollectionEditComponent implements OnInit {
+  readonly exportDialogParams$ = new Subject<ExportDialogParams | null>();
+  readonly importDialogParams$ = new Subject<ImportDialogParams | null>();
+
   newListForm!: UntypedFormGroup;
   collection$?: Observable<Watchlist[]>;
   presetCollection$?: Observable<PresetWatchlist[]>;
   selectedPresetWatchlist?: PresetWatchlist | null = null;
+
+  getTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
 
   constructor(private readonly watchlistCollectionService: WatchlistCollectionService) {
   }
@@ -71,9 +96,16 @@ export class WatchlistCollectionEditComponent implements OnInit {
     this.watchlistCollectionService.removeList(listId);
   }
 
-  hasDefaultTitle(list: Watchlist): boolean {
-    return (list.isDefault ?? false)
-      && list.title === WatchlistCollectionService.DefaultListName;
+  isRemovable(list: Watchlist): boolean {
+    return !(list.isDefault || list.type === WatchlistType.DefaultList || list.type === WatchlistType.HistoryList);
+  }
+
+  hasEditableTitle(list: Watchlist): boolean {
+    return list.type !== WatchlistType.HistoryList;
+  }
+
+  canImport(list: Watchlist): boolean {
+    return list.type !== WatchlistType.HistoryList;
   }
 
   private buildNewListForm() {

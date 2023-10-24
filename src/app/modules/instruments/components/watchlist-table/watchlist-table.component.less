@@ -23,4 +23,45 @@
 .table-container {
   height: 100%;
   min-height: 20px;
+
+  .favorites {
+    padding-left: 0;
+    padding-right: 0;
+    text-align: center;
+
+    ::ng-deep .ant-table-column-sorter {
+      display: none;
+    }
+
+    .btn {
+      cursor: pointer;
+      opacity: 0.15;
+
+      &.active {
+        opacity: 1;
+        color: orange;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+
+      &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  th.favorites {
+    .btn {
+      opacity: 1;
+    }
+  }
+}
+
+li.ant-dropdown-menu-item, li.ant-dropdown-menu-submenu {
+  i {
+    margin-right: 7px;
+  }
 }

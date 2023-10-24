@@ -7,15 +7,18 @@ import { InstrumentSelectSettingsComponent } from './instrument-select-settings.
 import { BehaviorSubject } from 'rxjs';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
+  commonTestProviders,
   getTranslocoModule,
   mockComponent,
-  ngZorroMockComponents
+  ngZorroMockComponents,
+  sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { ReactiveFormsModule } from "@angular/forms";
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { InstrumentsModule } from "../../instruments.module";
 
 describe('InstrumentSelectSettingsComponent', () => {
   let component: InstrumentSelectSettingsComponent;
@@ -38,9 +41,9 @@ describe('InstrumentSelectSettingsComponent', () => {
         })
       ],
       imports: [
+        InstrumentsModule,
+        ...sharedModuleImportForTests,
         NoopAnimationsModule,
-        NzSelectModule,
-        ReactiveFormsModule,
         getTranslocoModule()
       ],
       providers: [
@@ -56,7 +59,8 @@ describe('InstrumentSelectSettingsComponent', () => {
           useValue: {
             copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
           }
-        }
+        },
+        ...commonTestProviders
       ]
     }).compileComponents();
   });
@@ -66,8 +70,6 @@ describe('InstrumentSelectSettingsComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
-
-  afterEach(() => fixture.destroy());
 
   it('should create', () => {
     expect(component).toBeTruthy();

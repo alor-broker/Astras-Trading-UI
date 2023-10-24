@@ -10,6 +10,11 @@ import { WatchlistCollectionEditComponent } from './components/watchlist-collect
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
+import { LetDirective } from "@ngrx/component";
+import { ExportWatchlistDialogComponent } from './components/export-watchlist-dialog/export-watchlist-dialog.component';
+import { ImportWatchlistDialogComponent } from './components/import-watchlist-dialog/import-watchlist-dialog.component';
+import { NzSpinModule } from "ng-zorro-antd/spin";
+import { NzUploadModule } from "ng-zorro-antd/upload";
 
 
 @NgModule({
@@ -18,15 +23,20 @@ import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
     InstrumentSelectWidgetComponent,
     InstrumentSelectSettingsComponent,
     WatchlistTableComponent,
-    WatchlistCollectionEditComponent
+    WatchlistCollectionEditComponent,
+    ExportWatchlistDialogComponent,
+    ImportWatchlistDialogComponent
   ],
-    imports: [
-        SharedModule,
-        InstrumentsRoutingModule,
-        NzListModule,
-        NzInputModule,
-        NzResizeObserverModule
-    ],
+  imports: [
+    SharedModule,
+    InstrumentsRoutingModule,
+    NzListModule,
+    NzInputModule,
+    NzResizeObserverModule,
+    LetDirective,
+    NzSpinModule,
+    NzUploadModule
+  ],
   exports: [
     InstrumentSelectWidgetComponent
   ]

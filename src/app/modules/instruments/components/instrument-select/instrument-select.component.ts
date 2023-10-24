@@ -1,5 +1,6 @@
 import {
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   ElementRef,
   Inject,
   Input,
@@ -8,7 +9,8 @@ import {
 } from '@angular/core';
 import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
 import {
-  BehaviorSubject, combineLatest,
+  BehaviorSubject,
+  combineLatest,
   fromEvent,
   Observable,
   of,
@@ -18,6 +20,7 @@ import {
 import {
   debounceTime,
   filter,
+  map,
   switchMap
 } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
@@ -26,12 +29,17 @@ import { InstrumentsService } from '../../services/instruments.service';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {Watchlist, WatchlistCollection} from '../../models/watchlist.model';
+import {
+  Watchlist,
+  WatchlistCollection,
+  WatchlistType
+} from '../../models/watchlist.model';
 import { DOCUMENT } from '@angular/common';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
-import {DomHelper} from "../../../../shared/utils/dom-helper";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { DomHelper } from "../../../../shared/utils/dom-helper";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { WatchListTitleHelper } from "../../utils/watch-list-title.helper";
 
 @Component({
   selector: 'ats-instrument-select',
@@ -39,17 +47,19 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   styleUrls: ['./instrument-select.component.less']
 })
 export class InstrumentSelectComponent implements OnInit {
+  readonly watchlistTypes = WatchlistType;
 
   @ViewChild('inputEl') inputEl!: ElementRef<HTMLInputElement>;
 
-  @Input({required: true})
+  @Input({ required: true })
   guid!: string;
 
   filteredInstruments$: Observable<Instrument[]> = of([]);
   inputValue?: string;
   collection$!: Observable<WatchlistCollection>;
   settings$!: Observable<InstrumentSelectSettings>;
-
+  currentWatchlist$!: Observable<Watchlist>;
+  getTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
   private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
 
   constructor(
@@ -83,8 +93,7 @@ export class InstrumentSelectComponent implements OnInit {
         exchange: isComplexSearch ? exchange : '',
         instrumentGroup: isComplexSearch && instrumentGroup ? instrumentGroup : ''
       };
-    }
-    else {
+    } else {
       filter = {
         query: isComplexSearch ? query : value,
         exchange: isComplexSearch ? exchange : '',
@@ -121,6 +130,15 @@ export class InstrumentSelectComponent implements OnInit {
       shareReplay(1)
     );
 
+    this.currentWatchlist$ = combineLatest({
+      settings: this.settings$,
+      collection: this.collection$
+    }).pipe(
+      map(x => x.collection.collection.find(wl => wl.id === x.settings.activeListId)),
+      filter((wl): wl is Watchlist => !!wl),
+      shareReplay(1)
+    );
+
     this.setDefaultWatchList();
 
     fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
@@ -136,14 +154,17 @@ export class InstrumentSelectComponent implements OnInit {
   }
 
   watch(instrument: InstrumentKey) {
-    this.settings$.pipe(
-      filter(({ activeListId }) => !!activeListId),
+    combineLatest({
+      watchlist: this.currentWatchlist$,
+      settings: this.settings$
+    }).pipe(
       take(1)
-    ).subscribe(s => {
-      this.watchlistCollectionService.addItemsToList(s.activeListId!, [instrument]);
-      this.dashboardContextService.selectDashboardInstrument(instrument, s.badgeColor!);
+    ).subscribe(x => {
+      this.watchlistCollectionService.addItemsToList(x.watchlist.id, [instrument]);
+      this.dashboardContextService.selectDashboardInstrument(instrument, x.settings.badgeColor!);
     });
   }
+
 
   selectCollection(listId: string) {
     this.settingsService.updateSettings(this.guid, { activeListId: listId });
@@ -151,14 +172,14 @@ export class InstrumentSelectComponent implements OnInit {
 
   private setDefaultWatchList() {
     combineLatest([
-      this.settings$,
-      this.collection$
-    ]
+        this.settings$,
+        this.collection$
+      ]
     ).pipe(
       take(1)
     ).subscribe(([settings, collection]) => {
       if (!!settings.activeListId) {
-        if(collection.collection.find(w => w.id === settings.activeListId)) {
+        if (collection.collection.find(w => w.id === settings.activeListId)) {
           return;
         }
       }
@@ -168,10 +189,5 @@ export class InstrumentSelectComponent implements OnInit {
         this.settingsService.updateSettings(this.guid, { activeListId: defaultList.id });
       }
     });
-  }
-
-  hasDefaultTitle(list: Watchlist): boolean {
-    return (list.isDefault ?? false)
-      && list.title === WatchlistCollectionService.DefaultListName;
   }
 }

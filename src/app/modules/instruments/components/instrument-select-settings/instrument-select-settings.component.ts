@@ -64,7 +64,8 @@ export class InstrumentSelectSettingsComponent extends WidgetSettingsBaseCompone
 
   private buildSettingsForm(currentSettings: InstrumentSelectSettings) {
     this.settingsForm = new UntypedFormGroup({
-      instrumentColumns: new UntypedFormControl(currentSettings.instrumentColumns)
+      instrumentColumns: new UntypedFormControl(currentSettings.instrumentColumns),
+      showFavorites: new UntypedFormControl(currentSettings.showFavorites ?? false)
     });
   }
 }

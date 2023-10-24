@@ -1,0 +1,6 @@
+﻿{
+  "dialogTitle": "Экспорт инструментов",
+  "noItemsToExport": "Нет инструментов для экспорта",
+  "copyBtnTooltip": "Копировать",
+  "saveToFileBtnTooltip": "Сохранить в файл"
+}

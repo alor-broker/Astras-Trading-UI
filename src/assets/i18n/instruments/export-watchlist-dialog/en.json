@@ -1,0 +1,6 @@
+﻿{
+  "dialogTitle": "Export items",
+  "noItemsToExport": "The list does not contain items to export",
+  "copyBtnTooltip": "Copy",
+  "saveToFileBtnTooltip": "Save to file"
+}

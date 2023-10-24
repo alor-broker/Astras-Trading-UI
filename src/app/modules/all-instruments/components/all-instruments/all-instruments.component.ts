@@ -1,4 +1,10 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import {
   BehaviorSubject,
@@ -12,11 +18,17 @@ import {
   withLatestFrom
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { AllInstruments, AllInstrumentsFilters } from "../../model/all-instruments.model";
+import {
+  AllInstruments,
+  AllInstrumentsFilters
+} from "../../model/all-instruments.model";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
 import { mapWith } from '../../../../shared/utils/observable-helper';
-import { filter, map } from 'rxjs/operators';
+import {
+  filter,
+  map
+} from 'rxjs/operators';
 import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
@@ -26,9 +38,12 @@ import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.
 import { AllInstrumentsSettings } from '../../model/all-instruments-settings.model';
 import { TableConfig } from '../../../../shared/models/table-config.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import {WatchlistCollection} from "../../../instruments/models/watchlist.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import {
+  WatchlistCollection,
+  WatchlistType
+} from "../../../instruments/models/watchlist.model";
 
 @Component({
   selector: 'ats-all-instruments',
@@ -275,16 +290,18 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   }
 
   initContextMenu(collection: WatchlistCollection) {
+    const avalableWatchlists = collection.collection.filter(c => c.type != WatchlistType.HistoryList);
+
     this.contextMenu = [
       {
         title: 'Добавить в список',
         clickFn: (row: AllInstruments) => {
-          if (collection.collection.length > 1) {
+          if (avalableWatchlists.length > 1) {
             return;
           }
 
           this.watchlistCollectionService.addItemsToList(
-            collection.collection[0].id,
+            avalableWatchlists[0].id,
             [
             { symbol: row.name, exchange: row.exchange }
             ]);
@@ -292,8 +309,8 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       }
     ];
 
-    if (collection.collection.length > 1) {
-      this.contextMenu[0].subMenu = collection.collection
+    if (avalableWatchlists.length > 1) {
+      this.contextMenu[0].subMenu = avalableWatchlists
         .map(list => ({
           title: list.title,
           clickFn: (row: AllInstruments) => {
