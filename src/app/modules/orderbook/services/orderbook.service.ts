@@ -154,13 +154,25 @@ export class OrderbookService {
         };
       }
     }
-    const minPrice = Math.min(...bids.map(b => b.x).filter(x => x > 0));
-    const maxPrice = Math.max(...asks.map(a => a.x).filter(x => x > 0));
+
+    let minPrice = Math.min(...bids.map(b => b.x).filter(x => x > 0));
+    let maxPrice = Math.max(...asks.map(a => a.x).filter(x => x > 0));
+
+    if (minPrice === Infinity) {
+      minPrice = maxPrice === -Infinity ? maxPrice : Math.min(...asks.map(a => a.x).filter(x => x > 0));
+      minPrice -= maxPrice === minPrice ? minPrice : maxPrice - minPrice;
+    }
+
+    if (maxPrice === -Infinity) {
+      maxPrice = minPrice === Infinity ? minPrice : Math.max(...bids.map(b => b.x).filter(x => x > 0));
+      maxPrice += maxPrice === minPrice ? maxPrice : maxPrice - minPrice;
+    }
+
     return {
       asks: asks.filter(x => x.x > 0),
       bids: bids.filter(x => x.x > 0),
-      minPrice: minPrice,
-      maxPrice: maxPrice
+      minPrice,
+      maxPrice
     };
   }
 
