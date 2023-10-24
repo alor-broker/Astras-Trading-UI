@@ -41,7 +41,7 @@ interface ParsedItem {
   styleUrls: ['./import-watchlist-dialog.component.less']
 })
 export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
-  inputString = 'ssss';
+  inputString = '';
   parsedResults$: Observable<ParsedItem[] | null> | null = null;
   private readonly dialogParams$ = new BehaviorSubject<ImportDialogParams | null>(null);
   isVisible$ = this.dialogParams$.pipe(
