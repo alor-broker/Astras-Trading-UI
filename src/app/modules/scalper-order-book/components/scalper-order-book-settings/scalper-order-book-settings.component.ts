@@ -174,6 +174,10 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     return control as UntypedFormArray;
   }
 
+  getColorControl(i: number): UntypedFormControl {
+    return this.asFormGroup(this.volumeHighlightOptions.at(i)).controls.color as UntypedFormControl;
+  }
+
   protected initSettingsStream(){
     this.settings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.settingsService);
   }

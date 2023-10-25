@@ -233,7 +233,12 @@
                         </nz-form-control>
                         <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.colorError')">
                           <nz-form-label nzFor="color" nzRequired>{{t('scalperOrderBookSettings.colorLabel')}}</nz-form-label>
-                          <ats-color-picker-input (colorChangeComplete)="setVolumeHighlightOptionColor(i, $event)" [value]="optionForm.value.color"></ats-color-picker-input>
+
+                          <nz-color-picker class="w-100" [nzFlipFlop]="flipFlop" [formControl]="getColorControl(i)"></nz-color-picker>
+
+                          <ng-template #flipFlop>
+                            <button class="w-100" nz-button [style.background-color]="getColorControl(i).value">&nbsp;</button>
+                          </ng-template>
                         </nz-form-control>
                         <button (click)="removeVolumeHighlightOption($event, i)"
                                 class="volume-highlight-options-remove-btn"
