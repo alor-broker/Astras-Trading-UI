@@ -37,7 +37,7 @@
     "lightweight-charts": "^4.0.1",
     "marked": "^4.3.0",
     "ng-antd-color-picker": "^0.0.2",
-    "ng-zorro-antd": "16.2.0",
+    "ng-zorro-antd": "^16.2.0",
     "ng2-charts": "^4.1.1",
     "ngx-device-info": "^3.0.3",
     "ngx-joyride": "^2.5.0",

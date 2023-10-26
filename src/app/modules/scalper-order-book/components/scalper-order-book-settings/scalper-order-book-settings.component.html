@@ -232,13 +232,12 @@
                           <ats-input-number formControlName="boundary"></ats-input-number>
                         </nz-form-control>
                         <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.colorError')">
-                          <nz-form-label nzFor="color" nzRequired>{{t('scalperOrderBookSettings.colorLabel')}}</nz-form-label>
-
-                          <nz-color-picker class="w-100" [nzFlipFlop]="flipFlop" [formControl]="getColorControl(i)"></nz-color-picker>
-
-                          <ng-template #flipFlop>
-                            <button class="w-100" nz-button [style.background-color]="getColorControl(i).value">&nbsp;</button>
-                          </ng-template>
+                          <nz-color-picker
+                            nz-tooltip
+                            [nzTooltipTitle]="t('scalperOrderBookSettings.colorLabel')"
+                            class="color-picker"
+                            [formControl]="getColorControl(i)"
+                          ></nz-color-picker>
                         </nz-form-control>
                         <button (click)="removeVolumeHighlightOption($event, i)"
                                 class="volume-highlight-options-remove-btn"
