@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import {filter, map, switchMap} from 'rxjs/operators';
 import {GuidGenerator} from '../../shared/utils/guid';
 import {
@@ -30,13 +30,43 @@ export class DashboardsEffects {
     () => {
       return this.actions$.pipe(
         ofType(ManageDashboardsActions.initDashboards),
-        switchMap(action => {
-          if (action.dashboards.length > 0) {
-            return of(ManageDashboardsActions.initDashboardsSuccess());
+        mapWith(
+          () => this.marketService.getAllExchanges().pipe(take(1)),
+          ({dashboards}, marketSettings) => ({dashboards, marketSettings})
+        ),
+        switchMap(({dashboards, marketSettings}) => {
+          let exchangeSettings = marketSettings.find(x => x.settings.isDefault);
+          const instrumentsSelectionActions: Action[] = [];
+
+          dashboards.forEach(d => {
+            let exchangeSettingsCopy = JSON.parse(JSON.stringify(exchangeSettings));
+
+            if (d.selectedPortfolio) {
+              exchangeSettingsCopy = marketSettings.find(x => x.exchange === d.selectedPortfolio!.portfolio) ?? exchangeSettingsCopy;
+            }
+
+            if (!exchangeSettingsCopy || !exchangeSettingsCopy.settings.defaultInstrument) {
+              return;
+            }
+
+            instrumentsSelectionActions.push(CurrentDashboardActions.selectInstruments({
+              dashboardGuid: d.guid,
+              selection: instrumentsBadges.map(badge => ({
+                groupKey: badge,
+                instrumentKey: d.instrumentsSelection?.[badge] ?? {
+                  ...exchangeSettingsCopy!.settings.defaultInstrument,
+                  exchange: exchangeSettingsCopy!.exchange
+                }
+              }))
+            }));
+          });
+
+          if (dashboards.length > 0) {
+            return of(...instrumentsSelectionActions, ManageDashboardsActions.initDashboardsSuccess());
           }
 
           return EMPTY;
-        })
+        }),
       );
     }
   );
