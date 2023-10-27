@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import {filter, map, switchMap} from 'rxjs/operators';
 import {GuidGenerator} from '../../shared/utils/guid';
 import {
@@ -30,13 +30,48 @@ export class DashboardsEffects {
     () => {
       return this.actions$.pipe(
         ofType(ManageDashboardsActions.initDashboards),
-        switchMap(action => {
-          if (action.dashboards.length > 0) {
-            return of(ManageDashboardsActions.initDashboardsSuccess());
+        mapWith(
+          () => this.marketService.getAllExchanges().pipe(take(1)),
+          ({dashboards}, marketSettings) => ({dashboards, marketSettings})
+        ),
+        switchMap(({dashboards, marketSettings}) => {
+          if (!dashboards.length) {
+            return EMPTY;
           }
 
-          return EMPTY;
-        })
+          // This logic needs to replace instruments selection with new badges colors before dashboards init
+          // to prevent widgets badges errors
+          const defaultSettings = marketSettings.find(x => x.settings.isDefault); // Find default market settings
+          const instrumentsSelectionActions: Action[] = [];  // Array with actions to replace dashboard old badges with new
+
+          dashboards.forEach(d => {
+            let exchangeSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
+
+            // If portfolio selected, find default settings of selected portfolio exchange
+            if (d.selectedPortfolio) {
+              exchangeSettingsCopy = marketSettings.find(x => x.exchange === d.selectedPortfolio!.exchange) ?? exchangeSettingsCopy;
+            }
+
+            if (!exchangeSettingsCopy || !exchangeSettingsCopy.settings.defaultInstrument) {
+              return;
+            }
+
+            // Push the action to replace old badges with new
+            instrumentsSelectionActions.push(CurrentDashboardActions.selectInstruments({
+              dashboardGuid: d.guid,
+              selection: instrumentsBadges.map(badge => ({
+                groupKey: badge,
+                instrumentKey: d.instrumentsSelection?.[badge] ?? {
+                  ...exchangeSettingsCopy!.settings.defaultInstrument,
+                  exchange: exchangeSettingsCopy!.exchange
+                }
+              }))
+            }));
+          });
+
+          // Replace old badges with new and then init dashboards
+          return of(...instrumentsSelectionActions, ManageDashboardsActions.initDashboardsSuccess());
+        }),
       );
     }
   );
@@ -170,7 +205,7 @@ export class DashboardsEffects {
       switchMap(({dashboard, marketSettings}) => {
           let exchangeSettings = marketSettings.find(x => x.settings.isDefault);
           if (dashboard.selectedPortfolio) {
-            exchangeSettings = marketSettings.find(x => x.exchange === dashboard.selectedPortfolio!.portfolio) ?? exchangeSettings;
+            exchangeSettings = marketSettings.find(x => x.exchange === dashboard.selectedPortfolio!.exchange) ?? exchangeSettings;
           }
 
           if (!exchangeSettings || !exchangeSettings.settings.defaultInstrument) {

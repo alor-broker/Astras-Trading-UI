@@ -26,7 +26,7 @@ import {
   PortfolioKeyEqualityComparer
 } from "../../shared/models/portfolio-key.model";
 import { mapWith } from '../../shared/utils/observable-helper';
-import { InstrumentEqualityComparer } from '../../shared/utils/instruments';
+import { defaultBadgeColor, InstrumentEqualityComparer, instrumentsBadges } from '../../shared/utils/instruments';
 import { InstrumentKey } from '../../shared/models/instruments/instrument-key.model';
 import { DashboardContextService } from "../../shared/services/dashboard-context.service";
 import {TerminalSettingsStreams} from "../terminal-settings/terminal-settings.streams";
@@ -48,9 +48,12 @@ export class WidgetSettingsBridgeEffects {
         const dashboardWidgetGuids = d.items.map(x => x.guid);
         const settingsToUpdate = settings
           .filter(s => dashboardWidgetGuids.includes(s.guid))
-          .map(s => ({ guid: s.guid, groupKey: s.badgeColor!, instrumentKey: (<any>s) as InstrumentKey }))
+          .map(s => ({
+              guid: s.guid,
+              groupKey: instrumentsBadges.includes(s.badgeColor!) ? s.badgeColor! : defaultBadgeColor,
+              instrumentKey: (<any>s) as InstrumentKey
+            }))
           .filter(s => !InstrumentEqualityComparer.equals(d.instrumentsSelection![s.groupKey], s.instrumentKey));
-
         return {
           settingsToUpdate,
           instrumentsSelection: d.instrumentsSelection!
