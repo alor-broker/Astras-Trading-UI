@@ -1,0 +1,23 @@
+﻿{
+  "parametersForm": {
+    "targetListLabel": "Список инструментов",
+    "timeframeLabel": "Временной промежуток для анализа",
+    "detrendTypeLabel": "Удаление тренда",
+
+    "timeframeOptions": {
+      "month": "Месяц",
+      "quarter": "Квартал",
+      "halfYear": "Полгода",
+      "year": "Год"
+    },
+
+    "detrendTypeOptions": {
+      "constant": "Постоянное",
+      "linear": "Линейное",
+      "logarithmic": "Логарифмическое"
+    }
+  },
+
+  "cointegrationMark": "К",
+  "cointegrationLegend": "Инструменты коинтегрированы"
+}

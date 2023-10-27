@@ -604,5 +604,34 @@
       "galleryOrder": 19,
       "enabled": true
     }
+  },
+  {
+    "typeId": "instruments-correlation",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "InstrumentsCorrelationModule",
+        "componentName": "InstrumentsCorrelationWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Instruments Correlation",
+      "translations": {
+        "ru": "Корреляция инструментов",
+        "en": "Instruments Correlation"
+      }
+    },
+    "desktopMeta": {
+      "headerIcon": "node-index",
+      "galleryIcon": "node-index",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 20,
+      "enabled": true
+    }
   }
 ]
