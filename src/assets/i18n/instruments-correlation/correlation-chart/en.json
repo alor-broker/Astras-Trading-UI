@@ -1,0 +1,23 @@
+﻿{
+  "parametersForm": {
+    "targetListLabel": "Instruments list",
+    "timeframeLabel": "Time period for analysis",
+    "detrendTypeLabel": "Detrend type",
+
+    "timeframeOptions": {
+      "month": "Month",
+      "quarter": "Quarter",
+      "halfYear": "Half-year",
+      "year": "Year"
+    },
+
+    "detrendTypeOptions": {
+      "constant": "Сonstant",
+      "linear": "Linear",
+      "logarithmic": "Logarithmic"
+    }
+  },
+
+  "cointegrationMark": "С",
+  "cointegrationLegend": "Cointegrated instruments"
+}

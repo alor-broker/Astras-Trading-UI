@@ -46,6 +46,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
 import { DashboardsPanelComponent } from './components/dashboards-panel/dashboards-panel.component';
 import {OrderCommandsModule} from "../order-commands/order-commands.module";
 import { EmptyPortfoliosWarningModalWidgetComponent } from './widgets/empty-portfolios-warning-modal-widget/empty-portfolios-warning-modal-widget.component';
+import { InstrumentsCorrelationModule } from "../instruments-correlation/instruments-correlation.module";
 
 @NgModule({
   declarations: [
@@ -95,6 +96,7 @@ import { EmptyPortfoliosWarningModalWidgetComponent } from './widgets/empty-port
         NzSegmentedModule,
         DragDropModule,
         OrderCommandsModule,
+        InstrumentsCorrelationModule,
         // components
     ],
   providers: [
