@@ -232,8 +232,12 @@
                           <ats-input-number formControlName="boundary"></ats-input-number>
                         </nz-form-control>
                         <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.colorError')">
-                          <nz-form-label nzFor="color" nzRequired>{{t('scalperOrderBookSettings.colorLabel')}}</nz-form-label>
-                          <ats-color-picker-input (colorChangeComplete)="setVolumeHighlightOptionColor(i, $event)" [value]="optionForm.value.color"></ats-color-picker-input>
+                          <nz-color-picker
+                            nz-tooltip
+                            [nzTooltipTitle]="t('scalperOrderBookSettings.colorLabel')"
+                            class="color-picker"
+                            [formControl]="getColorControl(i)"
+                          ></nz-color-picker>
                         </nz-form-control>
                         <button (click)="removeVolumeHighlightOption($event, i)"
                                 class="volume-highlight-options-remove-btn"
