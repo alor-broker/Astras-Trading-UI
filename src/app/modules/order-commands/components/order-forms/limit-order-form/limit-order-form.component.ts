@@ -176,7 +176,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     this.checkFieldsAvailability();
   }
 
-  protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<SubmitOrderResult | SubmitGroupResult> {
+  protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<SubmitOrderResult | SubmitGroupResult | null> {
     const limitOrder = this.getLimitOrder(instrument, side);
     const bracketOrders = this.getBracketOrders(limitOrder);
 

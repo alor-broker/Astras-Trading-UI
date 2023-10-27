@@ -187,7 +187,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     this.checkFieldsAvailability();
   }
 
-  protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<SubmitOrderResult | SubmitGroupResult> {
+  protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<SubmitOrderResult | SubmitGroupResult | null> {
     return this.timezoneConverterService.getConverter().pipe(
       take(1),
       switchMap(tc => {
