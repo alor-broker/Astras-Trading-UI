@@ -2,7 +2,7 @@
   <div class="container">
     <ng-template #empty>
       <nz-empty
-        [nzNotFoundContent]="isFilterEmpty() ? t('blotterNotifications.emptyList') : t('blotterNotifications.emptyListWithFilters')"
+        [nzNotFoundContent]="isFilterDisabled() ? t('blotterNotifications.emptyList') : t('blotterNotifications.emptyListWithFilters')"
         class="ant-list-empty-text"
         nzNotFoundImage="simple">
       </nz-empty>
@@ -66,7 +66,7 @@
             </thead>
             <tbody>
             <ng-template let-notification nz-virtual-scroll>
-              <tr (click)="selectInstrument(notification)">
+              <tr (click)="selectNotificationInstrument(notification)">
                 <td>
                   <a (click)="cancelSubscription(notification.id)"
                      *ngIf='notification.subscriptionType === subscriptionTypes.PriceSpark'
@@ -103,7 +103,7 @@
     </ng-container>
 
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-table-filter (filterChange)="applyFilter($event)" [columns]="listOfColumns"></ats-table-filter>
+      <ats-table-filter (filterChange)="filterChange($event)" [columns]="listOfColumns"></ats-table-filter>
     </nz-dropdown-menu>
   </div>
 </ng-container>

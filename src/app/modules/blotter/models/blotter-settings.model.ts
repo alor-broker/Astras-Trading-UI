@@ -119,7 +119,8 @@ export enum TableNames {
   TradesTable = 'tradesTable',
   TradesHistoryTable = 'tradesHistoryTable',
   RepoTradesTable = 'repoTradesTable',
-  PositionsTable = 'positionsTable'
+  PositionsTable = 'positionsTable',
+  NotificationsTable = 'notificationsTable'
 }
 
 export enum ColumnsNames {
