@@ -66,13 +66,13 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
         this.requestProcessing$.next({});
       }),
     ).subscribe(r => {
-      if (r.isSuccess) {
+      if ((<SubmitOrderResult>r)?.isSuccess || (<SubmitGroupResult>r)?.message === 'success') {
         this.submitted.emit();
       }
     });
   }
 
-  protected abstract prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<SubmitOrderResult | SubmitGroupResult>;
+  protected abstract prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<SubmitOrderResult | SubmitGroupResult | null>;
 
   protected getInstrumentWithPortfolio(): Observable<{ instrument: Instrument, portfolioKey: PortfolioKey }> {
     return combineLatest({

@@ -24,7 +24,7 @@ import {InstantNotificationsService} from '../instant-notifications.service';
 import {OrdersInstantNotificationType} from '../../models/terminal-settings/terminal-settings.model';
 import {OrdersGroupService} from "./orders-group.service";
 import {OrderCancellerService} from "../order-canceller.service";
-import {ExecutionPolicy} from "../../models/orders/orders-group.model";
+import { ExecutionPolicy, SubmitGroupResult } from "../../models/orders/orders-group.model";
 import {
   NewLimitOrder,
   NewMarketOrder,
@@ -144,7 +144,7 @@ export class OrderService {
     orders: NewLinkedOrder[],
     portfolio: string,
     executionPolicy: ExecutionPolicy
-  ): Observable<SubmitOrderResult> {
+  ): Observable<SubmitGroupResult | null> {
 
     return forkJoin(orders.map(o => {
       switch (o.type) {
@@ -161,7 +161,7 @@ export class OrderService {
       .pipe(
         switchMap(ordersRes => {
           if (!ordersRes.length) {
-            return of({isSuccess: false});
+            return of(null);
           }
 
           const orderIds = ordersRes
@@ -181,7 +181,7 @@ export class OrderService {
               )
             )
               .pipe(
-                map(() => ({isSuccess: false}))
+                map(() => null)
               );
           }
 

@@ -1,16 +1,13 @@
-import {Injectable} from '@angular/core';
-import {catchHttpError} from "../../utils/observable-helper";
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../../../../environments/environment";
-import {ErrorHandlerService} from "../handle-error/error-handler.service";
-import {BehaviorSubject, forkJoin, Observable, shareReplay, switchMap, tap} from "rxjs";
-import {CreateOrderGroupReq, OrdersGroup, SubmitGroupResult} from "../../models/orders/orders-group.model";
-import {OrderCancellerService} from "../order-canceller.service";
-import {InstantNotificationsService} from "../instant-notifications.service";
+import { Injectable } from '@angular/core';
+import { catchHttpError } from "../../utils/observable-helper";
+import { HttpClient } from "@angular/common/http";
+import { environment } from "../../../../environments/environment";
+import { ErrorHandlerService } from "../handle-error/error-handler.service";
+import { BehaviorSubject, forkJoin, Observable, shareReplay, switchMap, tap } from "rxjs";
+import { CreateOrderGroupReq, OrdersGroup, SubmitGroupResult } from "../../models/orders/orders-group.model";
+import { OrderCancellerService } from "../order-canceller.service";
+import { InstantNotificationsService } from "../instant-notifications.service";
 import { OrdersInstantNotificationType } from "../../models/terminal-settings/terminal-settings.model";
-import {map} from "rxjs/operators";
-
-type SubmitGroupResponse = string & Partial<{ title: string, status: string, detail: string }>;
 
 @Injectable({
   providedIn: 'root'
@@ -29,16 +26,12 @@ export class OrdersGroupService {
   ) {
   }
 
-  createOrdersGroup(req: CreateOrderGroupReq): Observable<SubmitGroupResult> {
-    return this.http.post<SubmitGroupResponse>(this.orderGroupsUrl, req)
+  createOrdersGroup(req: CreateOrderGroupReq): Observable<SubmitGroupResult | null> {
+    return this.http.post<SubmitGroupResult>(this.orderGroupsUrl, req)
       .pipe(
-        map(response => ({
-          isSuccess: response?.title == null,
-          groupNumber: response
-        } as SubmitGroupResult)),
-        catchHttpError<SubmitGroupResult>({isSuccess: false}, this.errorHandlerService),
+        catchHttpError<SubmitGroupResult | null>(null, this.errorHandlerService),
         tap((res) => {
-          if (!res.isSuccess) {
+          if (!res || res.message !== 'success') {
             forkJoin([
               req.orders.map(o => this.canceller.cancelOrder({
                 orderid: o.orderId,

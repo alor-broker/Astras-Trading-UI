@@ -44,8 +44,7 @@ export interface OrdersGroupTreeNode extends NzTreeNodeOptions {
   children?: OrdersGroupTreeNode[]
 }
 
-
 export interface SubmitGroupResult {
-  isSuccess: boolean;
-  groupNumber?: string;
+  message: string;
+  groupId: string;
 }
