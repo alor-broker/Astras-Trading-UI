@@ -6,6 +6,7 @@ import {Store} from '@ngrx/store';
 import {DeviceService} from "../../../../shared/services/device.service";
 import {Router} from "@angular/router";
 import {DesktopSettingsBrokerService} from "../../services/desktop-settings-broker.service";
+import { WidgetsLocalStateActions } from "../../../../store/widgets-local-state/widgets-local-state.actions";
 
 @Component({
   selector: 'ats-dashboard-widget',
@@ -39,6 +40,7 @@ export class DashboardWidgetComponent implements OnInit {
   private initDashboard() {
     this.desktopSettingsBrokerService.initSettingsBrokers();
     this.store.dispatch(PortfoliosActions.initPortfolios());
+    this.store.dispatch(WidgetsLocalStateActions.init());
     this.onboarding.start();
   }
 }

@@ -14,6 +14,9 @@ import { DashboardsEffects } from './dashboards/dashboards.effects';
 import { DashboardsBridgeEffects } from './dashboards/dashboards-bridge.effects';
 import { MobileDashboardEffects } from "./mobile-dashboard/mobile-dashboard.effects";
 import {TerminalSettingsBridgeEffects} from "./terminal-settings/terminal-settings-bridge.effects";
+import { WidgetsLocalStateEffects } from "./widgets-local-state/widgets-local-state.effects";
+import { WidgetsLocalStateBridgeEffects } from "./widgets-local-state/widgets-local-state-bridge.effects";
+import { widgetsLocalStatesFeature } from "./widgets-local-state/widgets-local-state.reducer";
 
 @NgModule({
   declarations: [],
@@ -21,6 +24,7 @@ import {TerminalSettingsBridgeEffects} from "./terminal-settings/terminal-settin
     StoreModule.forFeature(fromPortfolios.portfoliosFeatureKey, fromPortfolios.reducer),
     StoreModule.forFeature(fromTerminalSettings.terminalSettingsFeatureKey, fromTerminalSettings.reducer),
     StoreModule.forFeature(fromWidgetSettings.widgetSettingsFeatureKey, fromWidgetSettings.reducer),
+    StoreModule.forFeature(widgetsLocalStatesFeature.name, widgetsLocalStatesFeature.reducer),
     StoreModule.forFeature(fromDashboards.dashboardsFeatureKey, fromDashboards.reducer),
     StoreModule.forFeature(fromMobileDashboard.mobileDashboardFeatureKey, fromMobileDashboard.reducer),
     EffectsModule.forFeature([
@@ -29,9 +33,12 @@ import {TerminalSettingsBridgeEffects} from "./terminal-settings/terminal-settin
       TerminalSettingsBridgeEffects,
       WidgetSettingsEffects,
       WidgetSettingsBridgeEffects,
+      WidgetsLocalStateEffects,
+      WidgetsLocalStateBridgeEffects,
       DashboardsEffects,
       DashboardsBridgeEffects,
-      MobileDashboardEffects
+      MobileDashboardEffects,
+
     ])
   ],
   exports: [],

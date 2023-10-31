@@ -4,6 +4,7 @@ import { WorkingVolumesPanelComponent } from './working-volumes-panel.component'
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { Subject } from 'rxjs';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
+import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
 
 describe('WorkingVolumesPanelComponent', () => {
   let component: WorkingVolumesPanelComponent;
@@ -23,6 +24,13 @@ describe('WorkingVolumesPanelComponent', () => {
           provide: HotKeyCommandService,
           useValue: {
             commands$: new Subject()
+          }
+        },
+        {
+          provide: WidgetLocalStateService,
+          useValue: {
+            getStateRecord: jasmine.createSpy('getStateRecord').and.returnValue(new Subject()),
+            setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
           }
         }
       ]

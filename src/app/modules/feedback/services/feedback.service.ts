@@ -17,6 +17,7 @@ import { LocalStorageService } from '../../../shared/services/local-storage.serv
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { map } from 'rxjs/operators';
+import { LocalStorageConstants } from "../../../shared/constants/local-storage.constants";
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,6 @@ import { map } from 'rxjs/operators';
 export class FeedbackService {
   unansweredFeedbackRemoved$ = new Subject();
   private readonly baseUrl = environment.apiUrl + '/astras';
-  private readonly feedbackLocalStorageKey = 'feedback';
 
   constructor(
     private readonly httpClient: HttpClient,
@@ -88,10 +88,10 @@ export class FeedbackService {
   }
 
   getSavedFeedbackMeta(): FeedbackMeta | null {
-    return this.localStorage.getItem<FeedbackMeta>(this.feedbackLocalStorageKey) ?? null;
+    return this.localStorage.getItem<FeedbackMeta>(LocalStorageConstants.FeedbackStorageKey) ?? null;
   }
 
   private saveFeedbackMeta(meta: FeedbackMeta) {
-    this.localStorage.setItem(this.feedbackLocalStorageKey, meta);
+    this.localStorage.setItem(LocalStorageConstants.FeedbackStorageKey, meta);
   }
 }
