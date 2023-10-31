@@ -6,6 +6,7 @@ import {ApplicationMetaService} from "../../shared/services/application-meta.ser
 import {TerminalSettingsActions} from "./terminal-settings.actions";
 import {tap} from "rxjs";
 import {LocalStorageService} from "../../shared/services/local-storage.service";
+import { LocalStorageConstants } from "../../shared/constants/local-storage.constants";
 
 @Injectable()
 export class TerminalSettingsBridgeEffects {
@@ -15,8 +16,8 @@ export class TerminalSettingsBridgeEffects {
       tap(() => {
         this.applicationMetaService.updateLastReset();
 
-        this.localStorageService.removeItem('profile');
-        this.localStorageService.removeItem('feedback');
+        this.localStorageService.removeItem(LocalStorageConstants.ProfileStorageKey);
+        this.localStorageService.removeItem(LocalStorageConstants.FeedbackStorageKey);
       }),
       map(() => ManageDashboardsActions.removeAllDashboards())
     );

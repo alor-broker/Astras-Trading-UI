@@ -19,6 +19,7 @@ import {TerminalSettingsActions} from "../../../store/terminal-settings/terminal
 import {filter} from "rxjs/operators";
 import {TerminalSettings} from "../../../shared/models/terminal-settings/terminal-settings.model";
 import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
+import { WidgetsLocalStateActions } from "../../../store/widgets-local-state/widgets-local-state.actions";
 
 @Injectable({
   providedIn: 'root'
@@ -153,6 +154,7 @@ export class DesktopSettingsBrokerService {
       }
 
       this.widgetsSettingsBrokerService.removeSettings(dirtySettings).subscribe();
+      this.store.dispatch(WidgetsLocalStateActions.removeForWidgets({ widgetsGuids: dirtySettings }));
     });
   }
 

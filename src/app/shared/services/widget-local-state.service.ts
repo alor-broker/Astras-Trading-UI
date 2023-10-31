@@ -1,10 +1,6 @@
 import { Injectable } from '@angular/core';
+import { RecordContent } from "../../store/widgets-local-state/widgets-local-state.model";
 import {
-  RecordContent,
-  WidgetStateRecord
-} from "../../store/widgets-local-state/widgets-local-state.model";
-import {
-  filter,
   Observable,
   shareReplay
 } from "rxjs";
@@ -14,9 +10,12 @@ import {
   widgetsLocalStatesFeature
 } from "../../store/widgets-local-state/widgets-local-state.reducer";
 import { Store } from "@ngrx/store";
-import { EntityStatus } from "../models/enums/entity-status";
-import { map } from "rxjs/operators";
+import {
+  filter,
+  map
+} from "rxjs/operators";
 import { WidgetsLocalStateActions } from "../../store/widgets-local-state/widgets-local-state.actions";
+import { EntityStatus } from "../models/enums/entity-status";
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +25,7 @@ export class WidgetLocalStateService {
   constructor(private readonly store: Store) {
   }
 
-  getStateRecord<T extends WidgetStateRecord>(
+  getStateRecord<T extends RecordContent>(
     widgetGuid: string,
     recordKey: string
   ): Observable<T | null> {
@@ -36,12 +35,13 @@ export class WidgetLocalStateService {
     );
   }
 
-  setStateRecord<T extends RecordContent>(widgetGuid: string, recordKey: string, content: T) {
-    this.store.dispatch(WidgetsLocalStateActions.setWidgetLocalStateRecord({
+  setStateRecord<T extends RecordContent>(widgetGuid: string, recordKey: string, content: T, restorable = true) {
+    this.store.dispatch(WidgetsLocalStateActions.setRecord({
       record: {
         widgetGuid,
         recordKey,
-        content
+        content,
+        restorable
       }
     }));
   }

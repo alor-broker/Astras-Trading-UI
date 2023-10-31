@@ -16,7 +16,7 @@ export interface State extends EntityState<WidgetStateRecord> {
   status: EntityStatus
 }
 
-export const getRecordId = (record: { widgetGuid: string; recordKey: string;}) => {
+export const getRecordId = (record: { widgetGuid: string; recordKey: string; }) => {
   return `${record.widgetGuid}_${record.recordKey}`;
 };
 
@@ -30,41 +30,38 @@ export const initialState: State = adapter.getInitialState({
 
 export const reducer = createReducer(
   initialState,
-  on(WidgetsLocalStateActions.setWidgetLocalStateRecord,
+  on(WidgetsLocalStateActions.setRecord,
     (state, action) => adapter.upsertOne(action.record, state)
   ),
+  on(WidgetsLocalStateActions.init,
+    (state) => ({
+      ...state,
+      status: EntityStatus.Loading
+    })
+  ),
+  on(WidgetsLocalStateActions.load,
+    (state, action) => ({
+      ...adapter.addMany(action.records, state),
+      status: EntityStatus.Success
+    })
+  ),
+  on(WidgetsLocalStateActions.removeForWidgets,
+    (state, action) => {
 
-  /*
-  on(WidgetsLocalStateActions.addWidgetsLocalState,
-    (state, action) => adapter.addOne(action.widgetsLocalState, state)
+      const allRecords = adapter.getSelectors()
+        .selectIds(state)
+        .map((id) => ({
+          id: <string>id,
+          record: state.entities[id]!
+        }));
+
+      const recordIdsToRemove =
+        allRecords.filter(r => action.widgetsGuids.includes(r.record.widgetGuid))
+          .map(r => r.id);
+
+      return adapter.removeMany(recordIdsToRemove, state);
+    }
   ),
-  on(WidgetsLocalStateActions.upsertWidgetsLocalState,
-    (state, action) => adapter.upsertOne(action.widgetsLocalState, state)
-  ),
-  on(WidgetsLocalStateActions.addWidgetsLocalStates,
-    (state, action) => adapter.addMany(action.widgetsLocalStates, state)
-  ),
-  on(WidgetsLocalStateActions.upsertWidgetsLocalStates,
-    (state, action) => adapter.upsertMany(action.widgetsLocalStates, state)
-  ),
-  on(WidgetsLocalStateActions.updateWidgetsLocalState,
-    (state, action) => adapter.updateOne(action.widgetsLocalState, state)
-  ),
-  on(WidgetsLocalStateActions.updateWidgetsLocalStates,
-    (state, action) => adapter.updateMany(action.widgetsLocalStates, state)
-  ),
-  on(WidgetsLocalStateActions.deleteWidgetsLocalState,
-    (state, action) => adapter.removeOne(action.id, state)
-  ),
-  on(WidgetsLocalStateActions.deleteWidgetsLocalStates,
-    (state, action) => adapter.removeMany(action.ids, state)
-  ),
-  on(WidgetsLocalStateActions.loadWidgetsLocalStates,
-    (state, action) => adapter.setAll(action.widgetsLocalStates, state)
-  ),
-  on(WidgetsLocalStateActions.clearWidgetsLocalStates,
-    state => adapter.removeAll(state)
-  ),*/
 );
 
 export const widgetsLocalStatesFeature = createFeature({
@@ -74,10 +71,3 @@ export const widgetsLocalStatesFeature = createFeature({
     ...adapter.getSelectors(selectWidgetsLocalStatesState)
   }),
 });
-
-export const {
-  selectIds,
-  selectEntities,
-  selectAll,
-  selectTotal,
-} = widgetsLocalStatesFeature;

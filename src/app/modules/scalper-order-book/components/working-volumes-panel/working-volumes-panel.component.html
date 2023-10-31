@@ -1,6 +1,6 @@
 <ng-container *ngIf="selectedVolume$ | async as selectedVolume">
   <div *ngIf="workingVolumes$ | async as workingVolumes" class="container">
-    <div (click)="selectVolume(i, vol)"
+    <div (click)="selectVolume(i)"
          *ngFor="let vol of workingVolumes; let i = index"
          [class.active]="selectedVolume.index === i &&  selectedVolume.value === vol"
          class="working-volume-item"

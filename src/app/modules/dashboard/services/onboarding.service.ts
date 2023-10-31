@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
 import {JoyrideService} from 'ngx-joyride';
 import {LocalStorageService} from "../../../shared/services/local-storage.service";
+import { LocalStorageConstants } from "../../../shared/constants/local-storage.constants";
 
 @Injectable({
   providedIn: 'root'
 })
 export class OnboardingService {
-  private profileStorage = 'profile';
   private isCompleted = false;
 
   constructor(
@@ -31,7 +31,7 @@ export class OnboardingService {
   }
 
   private getProfile() {
-    return this.localStorage.getItem<any>(this.profileStorage);
+    return this.localStorage.getItem<any>(LocalStorageConstants.ProfileStorageKey);
   }
 
   private getIsCompleted(): boolean {
@@ -48,6 +48,6 @@ export class OnboardingService {
       isCompleted
     };
 
-    this.localStorage.setItem(this.profileStorage, profile);
+    this.localStorage.setItem(LocalStorageConstants.ProfileStorageKey, profile);
   }
 }
