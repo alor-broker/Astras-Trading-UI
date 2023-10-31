@@ -2,12 +2,8 @@ import {
   AfterViewInit,
   Component,
   DestroyRef,
-  ElementRef,
-  Input,
   OnDestroy,
   OnInit,
-  QueryList,
-  ViewChildren
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -21,15 +17,16 @@ import {
   tap
 } from "rxjs";
 import {filter, map, startWith, switchMap} from "rxjs/operators";
-import {defaultBadgeColor} from "../../../../shared/utils/instruments";
-import {TableAutoHeightBehavior} from "../../utils/table-auto-height.behavior";
 import {
   OrderExecuteSubscription,
   PriceSparkSubscription,
   PushSubscriptionType,
   SubscriptionBase
 } from "../../../push-notifications/models/push-notifications.model";
-import {allNotificationsColumns, BlotterSettings} from "../../models/blotter-settings.model";
+import {
+  allNotificationsColumns,
+  TableNames
+} from "../../models/blotter-settings.model";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {BlotterService} from "../../services/blotter.service";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
@@ -40,9 +37,8 @@ import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper"
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {NzTableFilterList} from "ng-zorro-antd/table/src/table.types";
 import {TranslatorService} from "../../../../shared/services/translator.service";
-import {CdkDragDrop} from "@angular/cdk/drag-drop";
-import {BlotterTablesHelper} from "../../utils/blotter-tables.helper";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { BaseTableComponent } from "../base-table/base-table.component";
 
 interface NotificationFilter {
   id?: string,
@@ -50,32 +46,21 @@ interface NotificationFilter {
   instrument?: string
 }
 
-type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSparkSubscription>;
+type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSparkSubscription> & { id: string };
 
 @Component({
   selector: 'ats-push-notifications',
   templateUrl: './push-notifications.component.html',
   styleUrls: ['./push-notifications.component.less']
 })
-export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PushNotificationsComponent extends BaseTableComponent<DisplayNotification, NotificationFilter> implements OnInit, AfterViewInit, OnDestroy {
   readonly subscriptionTypes = PushSubscriptionType;
   readonly isLoading$ = new BehaviorSubject(false);
 
-  @ViewChildren('tableContainer')
-  tableContainer!: QueryList<ElementRef<HTMLElement>>;
-  tableInnerWidth: number = 1000;
   displayNotifications$: Observable<DisplayNotification[]> = of([]);
 
-  @Input({required: true})
-  guid!: string;
-
-  readonly scrollHeight$ = new BehaviorSubject<number>(100);
-  listOfColumns: BaseColumnSettings<DisplayNotification>[] = [];
   isNotificationsAllowed$!: Observable<boolean>;
-  readonly filter$ = new BehaviorSubject<NotificationFilter>({});
-  private readonly columnDefaultWidth = 100;
-  private badgeColor = defaultBadgeColor;
-  private settings$!: Observable<BlotterSettings>;
+
   private readonly allColumns: BaseColumnSettings<DisplayNotification>[] = [
     {
       id: 'id',
@@ -117,30 +102,16 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
     },
   ];
 
+  settingsTableName = TableNames.NotificationsTable;
+
   constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly blotterService: BlotterService,
+    protected readonly widgetSettingsService: WidgetSettingsService,
+    protected readonly blotterService: BlotterService,
     private readonly pushNotificationsService: PushNotificationsService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef) {
-  }
-
-  isFilterEmpty = () => Object.keys(this.filter$.getValue()).length === 0;
-
-  ngAfterViewInit(): void {
-    const container$ =  this.tableContainer.changes.pipe(
-      map(x => x.first),
-      startWith(this.tableContainer.first),
-      filter((x): x is ElementRef<HTMLElement> => !!x),
-      shareReplay(1)
-    );
-
-    container$.pipe(
-      switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => {
-      setTimeout(()=> this.scrollHeight$.next(x));
-    });
+    protected readonly translatorService: TranslatorService,
+    protected readonly destroyRef: DestroyRef
+  ) {
+    super(blotterService, widgetSettingsService, translatorService, destroyRef);
   }
 
   trackBy(index: number, notification: DisplayNotification): string {
@@ -153,83 +124,21 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<BlotterSettings>(this.guid).pipe(
-      shareReplay(1)
-    );
+    super.ngOnInit();
 
     this.initColumns();
     this.initNotificationStatusCheck();
     this.initDisplayNotifications();
   }
 
-  selectInstrument(notification: SubscriptionBase) {
+  selectNotificationInstrument(notification: SubscriptionBase) {
     if (notification.subscriptionType !== PushSubscriptionType.PriceSpark) {
       return;
     }
 
     const priceSparkSubscription = <PriceSparkSubscription>notification;
 
-    this.blotterService.selectNewInstrument(priceSparkSubscription.instrument, priceSparkSubscription.exchange, this.badgeColor);
-  }
-
-  changeColumnOrder(event: CdkDragDrop<any>) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      this.widgetSettingsService.updateSettings<BlotterSettings>(
-        settings.guid,
-        {
-          notificationsTable: BlotterTablesHelper.changeColumnOrder(
-            event,
-            settings.notificationsTable ?? TableSettingHelper.toTableDisplaySettings(allNotificationsColumns.filter(c => c.isDefault).map(c => c.id))!,
-            this.listOfColumns
-          )
-        }
-      );
-    });
-  }
-
-  saveColumnWidth(id: string, width: number) {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      const tableSettings = settings.notificationsTable ?? TableSettingHelper.toTableDisplaySettings(allNotificationsColumns.filter(c => c.isDefault).map(c => c.id));
-      if (tableSettings) {
-        this.widgetSettingsService.updateSettings<BlotterSettings>(
-          settings.guid,
-          {
-            notificationsTable: TableSettingHelper.updateColumn(
-              id,
-              tableSettings,
-              {
-                columnWidth: width
-              }
-            )
-          }
-        );
-      }
-    });
-  }
-
-  recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
-    const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
-    this.tableInnerWidth += delta;
-  }
-
-  defaultFilterChange(key: string, value: string[]) {
-    this.applyFilter({[key]: value});
-  }
-
-  applyFilter(newFilter: NotificationFilter) {
-    this.filter$.next({
-      ...this.filter$.getValue(),
-      ...newFilter
-    });
-  }
-
-  isFilterApplied(column: BaseColumnSettings<DisplayNotification>) {
-    const filter = this.filter$.getValue();
-    return column.id in filter && !!filter[column.id as keyof NotificationFilter];
+    super.selectInstrument(priceSparkSubscription.instrument, priceSparkSubscription.exchange);
   }
 
   cancelSubscription(id: string) {
@@ -360,31 +269,5 @@ export class PushNotificationsComponent implements OnInit, AfterViewInit, OnDest
       map(s => s === "granted"),
       shareReplay(1)
     );
-  }
-
-  private justifyFilter(order: DisplayNotification, filter: NotificationFilter): boolean {
-    let isFiltered = true;
-    for (const key of Object.keys(filter)) {
-      const filterValue = filter[key as keyof NotificationFilter];
-      if (filter[key as keyof NotificationFilter]) {
-        const column = this.listOfColumns.find(o => o.id == key);
-        if (
-          !column!.filterData!.isDefaultFilter && !this.searchInNotification(order, <keyof DisplayNotification>key, <string>filterValue) ||
-          column!.filterData!.isDefaultFilter && filterValue?.length && !filterValue?.includes(order[<keyof DisplayNotification>key]!.toString())
-        ) {
-          isFiltered = false;
-        }
-      }
-    }
-
-    return isFiltered;
-  }
-
-  private searchInNotification(order: DisplayNotification, key: keyof DisplayNotification, value?: string): boolean {
-    if (!value) {
-      return true;
-    }
-
-    return order[key]?.toString()?.toLowerCase()?.includes(value.toLowerCase()) ?? false;
   }
 }
