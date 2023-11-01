@@ -5,7 +5,7 @@
       class="working-volume-item"
       [class.active]="selectedVolume.index === i && selectedVolume.value === vol"
       nz-popconfirm
-      nzPopconfirmPlacement="bottom"
+      [nzPopconfirmPlacement]="['bottom', 'bottomLeft', 'bottomRight']"
       [nzPopconfirmTitle]="workingVolumeChangePopup"
       [nzPopconfirmVisible]="changeVolumeConfirmVisibleIndex === i"
       [nzPopconfirmTrigger]="null"
