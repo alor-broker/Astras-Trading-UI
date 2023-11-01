@@ -31,11 +31,14 @@ export class ThemeService {
     sellColor: 'rgba(209, 38, 27, 1)',
     sellColorBackground: 'rgba(209, 38, 27, 0.4)',
     sellColorAccent: 'rgba(255, 69, 0, 1)',
+
     buyColor: 'rgba(0, 155, 99, 1)',
     buyColorBackground: 'rgba(0, 155, 99, 0.4)',
     buyColorBackgroundLight: 'rgba(0, 155, 99, 1)',
-    buySellLabelColor: '#ffffff',
     buyColorAccent: 'rgba(19, 219, 146, 1)',
+
+
+    buySellLabelColor: '#ffffff',
     componentBackground: '#141922',
     primaryColor: '#177ddc',
     purpleColor: '#51258f',
@@ -56,10 +59,12 @@ export class ThemeService {
     buyColorBackgroundLight: 'rgba(0, 219, 139, 1)',
     buySellLabelColor: '#ffffff',
     buyColorAccent: 'rgba(0, 128, 64, 1)',
+
     componentBackground: '#ffffff',
     primaryColor: '#177ddc',
-    purpleColor: '#51258f',
+
     errorColor: '#a61d24',
+    purpleColor: '#51258f',
     chartGridColor: '#D8E3F5',
     chartLabelsColor: '#647188',
     chartPrimaryTextColor: '#000000',
