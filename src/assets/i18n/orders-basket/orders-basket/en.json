@@ -1,8 +1,6 @@
 {
   "budgetLabel": "All Orders Amount",
   "budgetPlaceholder": "Enter amount",
-  "tooLittle": "Too little",
-  "tooMuch": "Too much",
   "moreThan100Percents": "The sum of the indicated percentages is more than 100",
   "submitLabel": "Submit",
   "submitSuccessMessage": "All orders have been submitted successfully",

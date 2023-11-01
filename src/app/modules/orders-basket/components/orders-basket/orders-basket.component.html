@@ -50,8 +50,8 @@
                 ></ats-input-number>
                 <ng-template #budgetError>
                   <span *ngIf="form.controls.budget?.errors?.required">{{t('ordersBasketOrdersBasket.budgetPlaceholder')}}</span>
-                  <span *ngIf="form.controls.budget?.errors?.min">{{t('ordersBasketOrdersBasket.tooLittle')}}</span>
-                  <span *ngIf="form.controls.budget?.errors?.max">{{t('ordersBasketOrdersBasket.tooMuch')}}</span>
+                  <span *ngIf="form.controls.budget?.errors?.min">{{t('validationErrors.tooLittle')}}</span>
+                  <span *ngIf="form.controls.budget?.errors?.max">{{t('validationErrors.tooMuch')}}</span>
                 </ng-template>
               </nz-form-control>
             </nz-form-item>

@@ -3,8 +3,6 @@
   "lot": "lot",
   "pcs": "pcs",
   "emptyQuantityError": "Fill the quantity field",
-  "tooLittle": "Too little",
-  "tooMuch": "Too much",
   "priceLabel": "Price",
   "priceDifferenceTooltip": "The difference between the entered price and the average price of the position",
   "emptyPriceError": "Fill the price field",
