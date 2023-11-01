@@ -30,7 +30,8 @@ describe('DashboardWidgetComponent', () => {
         mockComponent({ selector: 'ats-terminal-settings-widget', inputs:['hiddenSections'] }),
         mockComponent({ selector: 'ats-news-modal-widget' }),
         mockComponent({ selector: 'ats-feedback-widget' }),
-        mockComponent({ selector: 'ats-application-updated-widget' })
+        mockComponent({ selector: 'ats-application-updated-widget' }),
+        mockComponent({ selector: 'ats-empty-portfolios-warning-modal-widget' })
       ],
       providers: [
         { provide: OnboardingService, useValue: spyOnboarding },
