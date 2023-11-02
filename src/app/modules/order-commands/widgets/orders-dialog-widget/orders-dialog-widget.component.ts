@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject, distinctUntilChanged, filter, Observable, shareReplay, switchMap, take, tap } from "rxjs";
-import {ModalService} from "../../../../shared/services/modal.service";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
 import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
@@ -37,7 +36,6 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly ordersDialogService: OrdersDialogService,
-    private readonly modalService: ModalService,
     private readonly currentDashboardService: DashboardContextService,
     private readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
@@ -69,10 +67,6 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
 
   closeDialog() {
     this.ordersDialogService.closeNewOrderDialog();
-  }
-
-  openHelp() {
-    this.modalService.openHelpModal('new-order');
   }
 
   setInitialTab() {

@@ -91,8 +91,17 @@
               <button (click)="closeDialog()" aria-label="Close" nz-button>
                 <i [nzTheme]="'outline'" nz-icon nzType="close"></i>
               </button>
-              <button (click)="openHelp()" aria-label="Help" nz-button>
-                <i [nzTheme]="'outline'" nz-icon nzType="question-circle"></i>
+              <button
+                nz-button
+                aria-label="Help"
+              >
+                <a
+                  class="help-link"
+                  href="https://alor.gitbook.io/astras/new-order"
+                  target="_blank"
+                >
+                  <i [nzTheme]="'outline'" nz-icon nzType="question-circle"></i>
+                </a>
               </button>
             </div>
           </div>

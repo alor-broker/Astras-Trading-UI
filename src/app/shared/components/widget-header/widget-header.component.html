@@ -73,14 +73,22 @@
          [title]="t('joyride.step7.title')"
          [text]="t('joyride.step7.text')"></i>
     </button>
-    <button *ngIf="hasHelp" nz-button nzSize="small"
-            (mousedown)="onOpenHelp($event)"
-            (touchstart)="onOpenHelp($event)"
+    <button
+      *ngIf="hasHelp"
+      nz-button
+      nzSize="small"
+      (mousedown)="preventMouseEvents($event)"
+      (touchstart)="preventMouseEvents($event)"
     >
-      <i nz-icon nzType="question-circle" [nzTheme]="'outline'"
-         joyrideStep="step5"
-         [title]="t('joyride.step5.title')"
-         [text]="t('joyride.step5.text')"></i>
+      <a
+        [href]="'https://alor.gitbook.io/astras/' + (widgetMeta?.typeId ?? '')"
+        target="_blank"
+      >
+        <i nz-icon nzType="question-circle" [nzTheme]="'outline'"
+           joyrideStep="step5"
+           [title]="t('joyride.step5.title')"
+           [text]="t('joyride.step5.text')"></i>
+      </a>
     </button>
     <button nz-button
             nzSize="small"
