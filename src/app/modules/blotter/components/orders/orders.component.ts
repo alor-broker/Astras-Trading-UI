@@ -71,6 +71,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'symbol',
       displayName: 'Тикер',
       sortOrder: null,
+      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.symbol.localeCompare(b.symbol),
       filterData: {
         filterName: 'symbol',
         isDefaultFilter: false
