@@ -48,11 +48,14 @@ export class ThemeService {
 
   getThemeSettings(): Observable<ThemeSettings> {
     if (!this.themeSettings$) {
+      const lightThemeColorsMap$ = this.getColorsMap(ThemeType.default);
+      const darkThemeColorsMap$ = this.getColorsMap(ThemeType.dark);
+
       this.themeSettings$ = this.terminalSettings.getSettings().pipe(
         distinctUntilChanged((previous, current) => previous.designSettings?.theme === current.designSettings?.theme),
         map(x => x.designSettings?.theme ?? ThemeType.dark),
         mapWith(
-          theme => theme === ThemeType.default ? this.lightThemeColorsMap$ : this.darkThemeColorsMap$,
+          theme => theme === ThemeType.default ? lightThemeColorsMap$ : darkThemeColorsMap$,
           (theme, colorsMap) => {
             const themeColors: ThemeColors = {
               sellColor: colorsMap['sell-color'],
@@ -91,8 +94,8 @@ export class ThemeService {
     return this.themeSettings$;
   }
 
-  private readonly getColorsMap = (theme: ThemeType) =>
-    this.httpClient.get<{ [key: string]: string }>(
+  private getColorsMap(theme: ThemeType) {
+    return this.httpClient.get<{ [key: string]: string }>(
       `../../../assets/${theme}-shared-colors.json`,
       {
         headers: {
@@ -103,9 +106,7 @@ export class ThemeService {
     ).pipe(
       shareReplay(1)
     );
-
-  private readonly lightThemeColorsMap$ = this.getColorsMap(ThemeType.default);
-  private readonly darkThemeColorsMap$ = this.getColorsMap(ThemeType.dark);
+  }
 
   private setTheme(theme: ThemeType): void {
     this.loadCss(theme).pipe(
