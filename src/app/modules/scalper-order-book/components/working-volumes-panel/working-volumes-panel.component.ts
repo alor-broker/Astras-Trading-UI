@@ -26,6 +26,7 @@ import { WidgetLocalStateService } from "../../../../shared/services/widget-loca
 import { RecordContent } from "../../../../store/widgets-local-state/widgets-local-state.model";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { ScalperOrderBookWidgetSettings } from "../../models/scalper-order-book-settings.model";
+import { FormControl, Validators } from "@angular/forms";
 
 interface SelectedWorkingVolumeState extends RecordContent {
   lastSelectedVolume?: {
@@ -50,6 +51,9 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   private readonly lastSelectedVolumeStateKey = 'last-selected-volume';
   private lastSelectedVolumeState$!: Observable<SelectedWorkingVolumeState | null>;
   private settings$!: Observable<ScalperOrderBookWidgetSettings>;
+
+  changeVolumeConfirmVisibleIndex: null | number = null;
+  changeVolumeControl = new FormControl(1, [Validators.required, Validators.min(1)]);
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -116,6 +120,40 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
       this.selectedVolume$.next({ index, value: v[index] });
 
     });
+  }
+
+  changeVolume(index: number) {
+    this.settings$
+      .pipe(take(1))
+      .subscribe(s => {
+        const instrumentKey = ScalperSettingsHelper.getInstrumentKey(s);
+        const newWorkingVolumes = (s.instrumentLinkedSettings?.[instrumentKey] ?? s).workingVolumes
+          .map((v, i) => i === index ? this.changeVolumeControl.value : v);
+
+        this.widgetSettingsService.updateSettings(
+          this.guid,
+          {
+            instrumentLinkedSettings: {
+              ...s.instrumentLinkedSettings,
+              [instrumentKey]: {
+                ...(s.instrumentLinkedSettings?.[instrumentKey] ?? {}),
+                workingVolumes: newWorkingVolumes
+              }
+            }
+          }
+        );
+        this.selectedVolume$.next({ index, value: this.changeVolumeControl.value!});
+        this.closeChangeVolumeConfirm();
+      });
+  }
+
+  openChangeVolumeConfirm(i: number, currentVolume: number) {
+    this.changeVolumeControl.setValue(currentVolume);
+    this.changeVolumeConfirmVisibleIndex = i;
+  }
+
+  closeChangeVolumeConfirm() {
+    this.changeVolumeConfirmVisibleIndex = null;
   }
 
   private updateLastSelectedVolumeState(currentVolume: number) {
