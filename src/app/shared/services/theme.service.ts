@@ -7,6 +7,7 @@ import {
   BehaviorSubject,
   distinctUntilChanged,
   Observable,
+  shareReplay,
   Subscription
 } from 'rxjs';
 import {
@@ -20,61 +21,21 @@ import {
   ThemeType
 } from '../models/settings/theme-settings.model';
 import { TerminalSettingsService } from "./terminal-settings.service";
+import { HttpClient } from "@angular/common/http";
+import { mapWith } from "../utils/observable-helper";
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
   private currentTheme?: ThemeType | null;
-
-  private readonly darkThemeColors: ThemeColors = {
-    sellColor: 'rgba(209, 38, 27, 1)',
-    sellColorBackground: 'rgba(209, 38, 27, 0.4)',
-    sellColorAccent: 'rgba(255, 69, 0, 1)',
-
-    buyColor: 'rgba(0, 155, 99, 1)',
-    buyColorBackground: 'rgba(0, 155, 99, 0.4)',
-    buyColorBackgroundLight: 'rgba(0, 155, 99, 1)',
-    buyColorAccent: 'rgba(19, 219, 146, 1)',
-
-
-    buySellLabelColor: '#ffffff',
-    componentBackground: '#141922',
-    primaryColor: '#177ddc',
-    purpleColor: '#51258f',
-    errorColor: '#a61d24',
-    chartGridColor: '#272E3B',
-    chartLabelsColor: '#97A4BB',
-    chartPrimaryTextColor: '#ffffff',
-    chartBackground: '#1F2530',
-    textColor: '#97A4BB'
-  };
-
-  private readonly lightThemeColors: ThemeColors = {
-    sellColor: 'rgba(250, 79, 56, 1)',
-    sellColorBackground: 'rgba(250, 79, 56, 0.4)',
-    sellColorAccent: 'rgba(229, 49, 25, 1)',
-    buyColor: 'rgba(56, 142, 60, 1)',
-    buyColorBackground: 'rgba(0, 219, 139, 0.4)',
-    buyColorBackgroundLight: 'rgba(0, 219, 139, 1)',
-    buySellLabelColor: '#ffffff',
-    buyColorAccent: 'rgba(0, 128, 64, 1)',
-
-    componentBackground: '#ffffff',
-    primaryColor: '#177ddc',
-
-    errorColor: '#a61d24',
-    purpleColor: '#51258f',
-    chartGridColor: '#D8E3F5',
-    chartLabelsColor: '#647188',
-    chartPrimaryTextColor: '#000000',
-    chartBackground: '#F1F4F9',
-    textColor: '#31363F'
-  };
+  private themeSettings$?: Observable<ThemeSettings>;
 
   constructor(
     @Inject(DOCUMENT) private readonly document: Document,
-    private readonly terminalSettings: TerminalSettingsService) {
+    private readonly terminalSettings: TerminalSettingsService,
+    private readonly httpClient: HttpClient
+  ) {
   }
 
   subscribeToThemeChanges(): Subscription {
@@ -86,15 +47,65 @@ export class ThemeService {
   }
 
   getThemeSettings(): Observable<ThemeSettings> {
-    return this.terminalSettings.getSettings().pipe(
-      distinctUntilChanged((previous, current) => previous.designSettings?.theme === current.designSettings?.theme),
-      map(x => x.designSettings?.theme ?? ThemeType.dark),
-      map(x => ({
-        theme: x,
-        themeColors: x === ThemeType.dark ? this.darkThemeColors : this.lightThemeColors
-      }))
-    );
+    if (!this.themeSettings$) {
+      this.themeSettings$ = this.terminalSettings.getSettings().pipe(
+        distinctUntilChanged((previous, current) => previous.designSettings?.theme === current.designSettings?.theme),
+        map(x => x.designSettings?.theme ?? ThemeType.dark),
+        mapWith(
+          theme => theme === ThemeType.default ? this.lightThemeColorsMap$ : this.darkThemeColorsMap$,
+          (theme, colorsMap) => {
+            const themeColors: ThemeColors = {
+              sellColor: colorsMap['sell-color'],
+              sellColorBackground: colorsMap['sell-color-background'],
+              sellColorAccent: colorsMap['sell-color-accent'],
+
+              buyColor: colorsMap['buy-color'],
+              buyColorBackground: colorsMap['buy-color-background'],
+              buyColorAccent: colorsMap['buy-color-accent'],
+              buyColorBackgroundLight: colorsMap['buy-color-background-light'],
+
+              buySellBtnTextColor: colorsMap['buy-sell-btn-text-color'],
+
+              componentBackground: colorsMap['component-background'],
+              primaryColor: colorsMap['primary-color'],
+              errorColor: colorsMap['error-color'],
+              purpleColor: colorsMap['purple-color'],
+              textColor: colorsMap['text-color'],
+
+              chartGridColor: colorsMap['chart-grid-color'],
+              chartLabelsColor: colorsMap['chart-labels-color'],
+              chartPrimaryTextColor: colorsMap['chart-primary-text-color'],
+              chartShadow: colorsMap['chart-shadow']
+            };
+
+            return {
+              theme,
+              themeColors
+            };
+          }
+        ),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+    }
+
+    return this.themeSettings$;
   }
+
+  private readonly getColorsMap = (theme: ThemeType) =>
+    this.httpClient.get<{ [key: string]: string }>(
+      `../../../assets/${theme}-shared-colors.json`,
+      {
+        headers: {
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache"
+        }
+      }
+    ).pipe(
+      shareReplay(1)
+    );
+
+  private readonly lightThemeColorsMap$ = this.getColorsMap(ThemeType.default);
+  private readonly darkThemeColorsMap$ = this.getColorsMap(ThemeType.dark);
 
   private setTheme(theme: ThemeType): void {
     this.loadCss(theme).pipe(
