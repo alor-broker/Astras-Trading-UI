@@ -4,6 +4,7 @@ import { DashboardsPanelComponent } from './dashboards-panel.component';
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { of } from "rxjs";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 
 describe('DashboardsPanelComponent', () => {
   let component: DashboardsPanelComponent;
@@ -11,7 +12,10 @@ describe('DashboardsPanelComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DashboardsPanelComponent],
+      declarations: [
+        DashboardsPanelComponent,
+        ...ngZorroMockComponents
+      ],
       providers: [
         {
           provide: ManageDashboardsService,

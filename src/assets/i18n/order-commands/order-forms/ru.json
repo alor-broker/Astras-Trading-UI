@@ -3,8 +3,6 @@
   "lot": "лот",
   "pcs": "шт.",
   "emptyQuantityError": "Введите кол-во",
-  "tooLittle": "Слишком мало",
-  "tooMuch": "Слишком много",
   "priceLabel": "Цена",
   "priceDifferenceTooltip": "Разница между указанной ценой и средней ценой позиции",
   "emptyPriceError": "Введите цену",
