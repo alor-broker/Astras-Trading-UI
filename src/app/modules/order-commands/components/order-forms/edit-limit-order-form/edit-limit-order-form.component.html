@@ -16,8 +16,8 @@
                   <ng-template #quantityError>
                   <span
                     *ngIf="form.controls.quantity.errors?.required">{{t('orderCommandsOrderForms.emptyQuantityError')}}</span>
-                    <span *ngIf="form.controls.quantity.errors?.min">{{t('orderCommandsOrderForms.tooLittle')}}</span>
-                    <span *ngIf="form.controls.quantity.errors?.max">{{t('orderCommandsOrderForms.tooMuch')}}</span>
+                    <span *ngIf="form.controls.quantity.errors?.min">{{t('validationErrors.tooLittle')}}</span>
+                    <span *ngIf="form.controls.quantity.errors?.max">{{t('validationErrors.tooMuch')}}</span>
                   </ng-template>
                 </nz-form-control>
               </nz-form-item>
@@ -46,8 +46,8 @@
                   <ng-template #priceError>
                     <span
                       *ngIf="form.controls.price.errors?.required">{{t('orderCommandsOrderForms.emptyPriceError')}}</span>
-                    <span *ngIf="form.controls.price.errors?.min">{{t('orderCommandsOrderForms.tooLittle')}}</span>
-                    <span *ngIf="form.controls.price.errors?.max">{{t('orderCommandsOrderForms.tooMuch')}}</span>
+                    <span *ngIf="form.controls.price.errors?.min">{{t('validationErrors.tooLittle')}}</span>
+                    <span *ngIf="form.controls.price.errors?.max">{{t('validationErrors.tooMuch')}}</span>
                     <span *ngIf="form.controls.price.errors?.priceStepMultiplicity">
                   {{t('orderCommandsOrderForms.priceStepMultiplicityError')}}
                       ({{form.controls.price.errors!.priceStepMultiplicity!.step}})
@@ -95,8 +95,8 @@
 
                   <ng-template #icebergFixedError>
                     <span
-                      *ngIf="form.controls.icebergFixed.errors?.min">{{t('orderCommandsOrderForms.tooLittle')}}</span>
-                    <span *ngIf="form.controls.icebergFixed.errors?.max">{{t('orderCommandsOrderForms.tooMuch')}}</span>
+                      *ngIf="form.controls.icebergFixed.errors?.min">{{t('validationErrors.tooLittle')}}</span>
+                    <span *ngIf="form.controls.icebergFixed.errors?.max">{{t('validationErrors.tooMuch')}}</span>
                   </ng-template>
                   <span *ngIf="form.errors?.icebergFixedNotBiggerThanQuantity" nz-typography nzType="danger">
                 {{t('orderCommandsOrderForms.notBiggerThanError', {fieldName: t('orderCommandsOrderForms.quantityLabel')})}}
@@ -112,9 +112,9 @@
 
                     <ng-template #icebergVarianceError>
                       <span
-                        *ngIf="form.controls.icebergFixed.errors?.min">{{t('orderCommandsOrderForms.tooLittle')}}</span>
+                        *ngIf="form.controls.icebergFixed.errors?.min">{{t('validationErrors.tooLittle')}}</span>
                       <span
-                        *ngIf="form.controls.icebergFixed.errors?.max">{{t('orderCommandsOrderForms.tooMuch')}}</span>
+                        *ngIf="form.controls.icebergFixed.errors?.max">{{t('validationErrors.tooMuch')}}</span>
                     </ng-template>
                   </nz-form-item>
                 </ng-container>

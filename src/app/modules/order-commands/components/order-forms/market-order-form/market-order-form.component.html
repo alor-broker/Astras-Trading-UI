@@ -14,8 +14,8 @@
             <ng-template #quantityError>
               <span
                 *ngIf="form.controls.quantity.errors?.required">{{t('orderCommandsOrderForms.emptyQuantityError')}}</span>
-              <span *ngIf="form.controls.quantity.errors?.min">{{t('orderCommandsOrderForms.tooLittle')}}</span>
-              <span *ngIf="form.controls.quantity.errors?.max">{{t('orderCommandsOrderForms.tooMuch')}}</span>
+              <span *ngIf="form.controls.quantity.errors?.min">{{t('validationErrors.tooLittle')}}</span>
+              <span *ngIf="form.controls.quantity.errors?.max">{{t('validationErrors.tooMuch')}}</span>
             </ng-template>
           </nz-form-item>
           <nz-collapse [nzBordered]="false" class="compact" nzGhost>
