@@ -10,7 +10,7 @@ export interface ThemeColors {
   buyColor: string;
   buyColorBackground: string;
   buyColorBackgroundLight: string;
-  buySellLabelColor: string;
+  buySellBtnTextColor: string;
   buyColorAccent: string;
   componentBackground: string;
   primaryColor: string;
@@ -19,7 +19,7 @@ export interface ThemeColors {
   chartGridColor: string;
   chartLabelsColor: string;
   chartPrimaryTextColor: string;
-  chartBackground: string;
+  chartShadow: string;
   textColor: string;
 }
 

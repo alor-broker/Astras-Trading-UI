@@ -5,6 +5,7 @@ import { TerminalSettings } from '../models/terminal-settings/terminal-settings.
 import { of } from 'rxjs';
 import { ThemeType } from '../models/settings/theme-settings.model';
 import {TerminalSettingsService} from "./terminal-settings.service";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
 describe('ThemeService', () => {
   let service: ThemeService;
@@ -22,8 +23,12 @@ describe('ThemeService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [
-        { provide: TerminalSettingsService, useValue: terminalSettingsServiceSpy}
+        {
+          provide: TerminalSettingsService,
+          useValue: terminalSettingsServiceSpy
+        }
       ]
     });
 

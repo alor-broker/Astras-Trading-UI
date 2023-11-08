@@ -4,11 +4,11 @@
 .themeMixin({
   :host {
     .buy-button {
-      .buySellButton(@buy-color, white, @buy-color-disabled, @buy-color-background-disabled);
+      .buySellButton(@buy-color, @buy-sell-btn-text-color, @buy-color-disabled, @buy-color-background-disabled);
     }
 
     .sell-button {
-      .buySellButton(@sell-color, white, @sell-color-disabled, @sell-color-background-disabled);
+      .buySellButton(@sell-color, @buy-sell-btn-text-color, @sell-color-disabled, @sell-color-background-disabled);
     }
   }
 });
