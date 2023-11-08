@@ -10,6 +10,7 @@ import {DashboardContextService} from "../../services/dashboard-context.service"
 import {Observable, shareReplay} from "rxjs";
 import {InstrumentKey} from "../../models/instruments/instrument-key.model";
 import {map} from "rxjs/operators";
+import { environment } from "../../../../environments/environment";
 
 @Component({
   selector: 'ats-widget-header',
@@ -52,6 +53,8 @@ export class WidgetHeaderComponent implements OnInit {
   switchSettings = new EventEmitter();
 
   titleText!: string;
+
+  helpUrl = environment.externalLinks.help + '/';
 
   badgeOptions$!: Observable<{
     color: string,

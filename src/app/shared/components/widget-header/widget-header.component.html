@@ -81,7 +81,7 @@
       (touchstart)="preventMouseEvents($event)"
     >
       <a
-        [href]="'https://alor.gitbook.io/astras/' + (widgetMeta?.typeId ?? '')"
+        [href]="helpUrl + (widgetMeta?.typeId ?? '')"
         target="_blank"
       >
         <i nz-icon nzType="question-circle" [nzTheme]="'outline'"
