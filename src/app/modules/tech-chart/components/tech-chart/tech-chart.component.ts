@@ -4,6 +4,7 @@ import {
   distinctUntilChanged,
   filter,
   Observable,
+  of,
   pairwise,
   shareReplay,
   Subject,
@@ -63,6 +64,8 @@ import { TradesHistoryService } from "../../../../shared/services/trades-history
 import { addSeconds } from "../../../../shared/utils/datetime";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
 import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
+import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
+import { RegularInstrumentKey } from "../../models/synthetic-instruments.model";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -208,6 +211,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private translateFn!: (key: string[], params?: HashMap) => string;
   private intervalChangeSub?: Subscription;
   private timezoneChangeSub?: Subscription;
+  private symbolChangeSub?: Subscription;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -239,6 +243,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.chartState.tradesState?.destroy();
       this.intervalChangeSub?.unsubscribe();
       this.timezoneChangeSub?.unsubscribe();
+      this.symbolChangeSub?.unsubscribe();
       this.chartState.widget.remove();
     }
 
@@ -306,15 +311,18 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initSettingsStream() {
-    const getInstrumentInfo = (settings: TechChartSettings) => this.instrumentsService.getInstrument(settings).pipe(
-      filter((x): x is Instrument => !!x)
-    );
+    const getInstrumentInfo = (settings: TechChartSettings) =>
+      SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol)
+        ? of(settings as InstrumentKey)
+        : this.instrumentsService.getInstrument(settings).pipe(
+          filter((x): x is Instrument => !!x)
+        );
 
     this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => this.isEqualTechChartSettings(previous, current)),
       mapWith(
         settings => getInstrumentInfo(settings),
-        (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedSettings)
+        (widgetSettings, instrument: Instrument | InstrumentKey) => ({ widgetSettings, instrument } as ExtendedSettings)
       ),
       shareReplay(1)
     );
@@ -352,11 +360,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.chartState) {
       if (forceRecreate) {
         this.intervalChangeSub?.unsubscribe();
+        this.symbolChangeSub?.unsubscribe();
         this.chartState.widget?.remove();
       }
       else {
         this.chartState.widget.activeChart().setSymbol(
-          this.toTvSymbol(settings),
+          SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol) ? settings.symbol : this.toTvSymbol(settings),
           () => {
             this.initPositionDisplay(settings, theme.themeColors);
             this.initOrdersDisplay(settings, theme.themeColors);
@@ -380,7 +389,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       debug: false,
       // base options
       container: this.chartContainer.nativeElement,
-      symbol: this.toTvSymbol(settings),
+      symbol: SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol) ? settings.symbol : this.toTvSymbol(settings),
       interval: ((<any>settings.chartLayout)?.charts?.[0]?.panes?.[0]?.sources?.[0]?.state?.interval ?? '1D') as ResolutionString,
       locale: this.translatorService.getActiveLang() as LanguageCode,
       library_path: '/assets/charting_library/',
@@ -444,25 +453,17 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       );
 
-      this.techChartDatafeedService.onSymbolChange.pipe(
-        takeUntilDestroyed(this.destroyRef),
-        mapWith(
-          () => this.settings$!.pipe(take(1)),
-          (instrument, settings) =>
-            (instrument?.symbol !== settings.instrument.symbol ||
-            instrument?.exchange !== settings.instrument.exchange) &&
-            settings.widgetSettings.linkToActive
-        ),
-        filter(needUnlink => !!needUnlink)
-      )
-        .subscribe(() => this.settingsService.updateIsLinked(this.guid, false));
-
       this.intervalChangeSub = new Subscription();
+      this.symbolChangeSub = new Subscription();
 
       this.chartState!.widget.activeChart().onIntervalChanged()
         .subscribe(null, this.intervalChangeCallback);
-
       this.intervalChangeSub.add(() => this.chartState?.widget!.activeChart().onIntervalChanged().unsubscribe(null, this.intervalChangeCallback));
+
+      this.chartState!.widget.activeChart().onSymbolChanged()
+        .subscribe(null, this.symbolChangeCallback);
+      this.symbolChangeSub.add(() => this.chartState?.widget!.activeChart().onSymbolChanged().unsubscribe(null, this.symbolChangeCallback));
+
     });
   }
 
@@ -476,6 +477,29 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         };
       }
     };
+
+  private symbolChangeCallback = () => {
+    this.settings$!.pipe(
+      take(1),
+      filter((s: ExtendedSettings) => {
+        const settingsTicker = SyntheticInstrumentsHelper.isSyntheticInstrument(s.instrument.symbol)
+          ? s.instrument.symbol
+          : this.toTvSymbol(s.instrument);
+
+        return settingsTicker !== this.chartState!.widget.activeChart().symbol();
+      })
+    )
+      .subscribe(() => {
+        this.settingsService.updateSettings(this.guid, {
+          linkToActive: false,
+          ...(
+            SyntheticInstrumentsHelper.isSyntheticInstrument(this.chartState!.widget.activeChart().symbol())
+              ? { symbol: this.chartState!.widget.activeChart().symbol() }
+              : (<RegularInstrumentKey>SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(this.chartState!.widget.activeChart().symbol())).instrument
+          )
+        });
+      });
+  };
 
   private toTvSymbol(instrumentKey: InstrumentKey): string {
     return `[${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup ?? ''}]`;
