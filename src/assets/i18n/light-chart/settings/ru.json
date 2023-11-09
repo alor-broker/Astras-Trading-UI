@@ -2,12 +2,14 @@
   "tickerError": "Выберите тикер",
   "tickerLabel": "Тикер",
   "exchangeLabel": "Биржа",
-  "timeframeLabel": "Таймфрейм",
+  "timeframeLabel": "Текущий таймфрейм",
+  "availableTimeFramesLabel": "Отображаемые таймфреймы",
   "timeframeDisplayLabel": "Отображение таймфреймов",
   "timeframeDisplayButtons": "В виде кнопок",
   "timeframeDisplayMenu": "В виде меню",
   "timeframeDisplayHide": "Не показывать",
   "advanced": "Продвинутые",
   "instrumentGroupLabel": "Режим торгов",
-  "instrumentGroupError": "Выберите режим торгов"
+  "instrumentGroupError": "Выберите режим торгов",
+  "selectTimeframesError": "Выберите хотя бы один отображаемый таймфрейм"
 }

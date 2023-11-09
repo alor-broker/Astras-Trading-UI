@@ -2,26 +2,8 @@ import { findUniqueElements } from "src/app/shared/utils/collections";
 import { Candle } from "../../../shared/models/history/candle.model";
 import { TimeframeValue } from "../models/light-chart.models";
 
-export interface Timeframe {
-  label: string,
-  value: TimeframeValue
-}
-
 export class TimeframesHelper {
-  public static timeFrames: Timeframe[] = [
-    { label: '1s', value: TimeframeValue.S1 },
-    { label: '5s', value: TimeframeValue.S5 },
-    { label: '10s', value: TimeframeValue.S10 },
-    { label: '1m', value: TimeframeValue.M1 },
-    { label: '5m', value: TimeframeValue.M5 },
-    { label: '15m', value: TimeframeValue.M15 },
-    { label: 'H', value: TimeframeValue.H },
-    { label: '4H', value: TimeframeValue.H4 },
-    { label: 'D', value: TimeframeValue.Day },
-    { label: 'M', value: TimeframeValue.Month },
-  ];
-
-  // LightCharts library throws errors, when bars is duplicationg or too close to each other
+  // LightCharts library throws errors, when bars is duplicating or too close to each other
   static aggregateBars(existing: Candle[], history: Candle[], selectedTimeframe: TimeframeValue) {
     const getDate = (p: any) => {
       const d = new Date(p * 1000);
@@ -81,14 +63,5 @@ export class TimeframesHelper {
       default:
         return existing;
     }
-  }
-
-  static getTimeframeByValue(timeframeValue: string): Timeframe {
-    const timeframe = TimeframesHelper.timeFrames.find(t => t.value === timeframeValue);
-    if (!timeframe) {
-      throw new Error('Unknown timeframe');
-    }
-
-    return timeframe;
   }
 }

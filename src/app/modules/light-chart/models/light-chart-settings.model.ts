@@ -1,5 +1,6 @@
 import { WidgetSettings } from '../../../shared/models/widget-settings.model';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
+import { TimeframeValue } from "./light-chart.models";
 
 
 export enum TimeFrameDisplayMode {
@@ -9,8 +10,9 @@ export enum TimeFrameDisplayMode {
 }
 
 export interface LightChartSettings extends WidgetSettings, InstrumentKey {
-  timeFrame: string,
-  width: number,
-  height: number,
-  timeFrameDisplayMode?: TimeFrameDisplayMode
+  timeFrame: TimeframeValue;
+  width: number;
+  height: number;
+  timeFrameDisplayMode?: TimeFrameDisplayMode;
+  availableTimeFrames?: TimeframeValue[];
 }
