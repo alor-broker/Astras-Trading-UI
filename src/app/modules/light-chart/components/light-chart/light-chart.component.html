@@ -3,45 +3,16 @@
      class="container"
      nzResizeObserver
 >
-  <ng-container
-    *ngIf="(settings.timeFrameDisplayMode ?? timeFrameDisplayModes.Buttons) === timeFrameDisplayModes.Buttons">
-    <div *ngIf="activeTimeFrame$ | async as tf" class="timeframes">
-      <ng-container *ngFor="let timeframe of availableTimeFrames">
-        <button
-          (click)="changeTimeframe(timeframe.value)"
-          [nzType]="tf === timeframe.value ? 'primary': 'default'"
-          nz-button>
-          {{timeframe.label}}
-        </button>
-      </ng-container>
-    </div>
-  </ng-container>
-  <ng-container *ngIf="(settings.timeFrameDisplayMode ?? timeFrameDisplayModes.Buttons) === timeFrameDisplayModes.Menu">
-    <ng-container *ngIf="activeTimeFrame$ | async as tf">
-      <button
-        [nzDropdownMenu]="timeFramesMenu"
-        [nzType]="'primary'"
-        class="timeframes-menu"
-        nz-button
-        nz-dropdown
-        nzShape="round">
-        {{getTimeFrameLabel(tf)}}
-      </button>
-      <nz-dropdown-menu #timeFramesMenu="nzDropdownMenu">
-        <ul nz-menu nzSelectable>
-          <ng-container *ngFor="let timeframe of availableTimeFrames">
-            <li (click)="changeTimeframe(timeframe.value)"
-                [nzSelected]="timeframe.value === tf"
-                nz-menu-item>
-              {{timeframe.label}}
-            </li>
-          </ng-container>
-        </ul>
-      </nz-dropdown-menu>
-    </ng-container>
-  </ng-container>
+  <ats-timeframes-panel
+    (changeTimeframe)="changeTimeframe($event)"
+    [availableTimeframes]="(availableTimeFrames$ | async) ?? []"
+    [selectedTimeframe]="settings.timeFrame"
+    [displayMode]="settings.timeFrameDisplayMode ?? timeFrameDisplayModes.Buttons"
+  ></ats-timeframes-panel>
   <div (mousedown)="$event.stopPropagation()" class="main-chart">
     <div [id]="guid" class="chart-container"></div>
   </div>
 </div>
+
+
 

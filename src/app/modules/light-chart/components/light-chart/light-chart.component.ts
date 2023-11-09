@@ -1,7 +1,8 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -9,9 +10,17 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable} from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
-import { TimeframesHelper } from '../../utils/timeframes-helper';
+import {
+  combineLatest,
+  distinctUntilChanged,
+  Observable,
+  shareReplay
+} from 'rxjs';
+import {
+  filter,
+  map,
+  switchMap
+} from 'rxjs/operators';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ThemeService } from '../../../../shared/services/theme.service';
@@ -25,7 +34,7 @@ import {
   TimeFrameDisplayMode
 } from '../../models/light-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
@@ -37,16 +46,15 @@ type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
   encapsulation: ViewEncapsulation.None,
 })
 export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
-  readonly availableTimeFrames = TimeframesHelper.timeFrames;
+  availableTimeFrames$!: Observable<TimeframeValue[]>;
   timeFrameDisplayModes = TimeFrameDisplayMode;
 
-  @Input({required: true})
+  @Input({ required: true })
   guid!: string;
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
 
-  activeTimeFrame$ = new BehaviorSubject('D');
   settings$!: Observable<LightChartSettingsExtended>;
   private chart?: LightChartWrapper;
 
@@ -78,14 +86,20 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
         );
       })
     );
+
+    this.availableTimeFrames$ = this.settings$.pipe(
+      map(s => {
+        return s.availableTimeFrames ?? Object.values(TimeframeValue);
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
   }
 
   ngOnDestroy(): void {
     this.chart?.clear();
-    this.activeTimeFrame$.complete();
   }
 
-  changeTimeframe(timeframe: string) {
+  changeTimeframe(timeframe: TimeframeValue) {
     this.settingsService.updateSettings<LightChartSettings>(this.guid, { timeFrame: timeframe });
   }
 
@@ -93,10 +107,6 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.guid) {
       this.initChart();
     }
-  }
-
-  getTimeFrameLabel(value: string): string | undefined {
-    return this.availableTimeFrames.find(x => x.value === value)?.label;
   }
 
   containerSizeChanged(entries: ResizeObserverEntry[]) {
@@ -138,8 +148,6 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.chart?.clear();
         const timeFrame = options.widgetSettings.timeFrame as TimeframeValue;
 
-        this.setActiveTimeFrame(timeFrame);
-
         this.chart = LightChartWrapper.create({
           containerId: this.guid,
           instrumentKey: options.widgetSettings,
@@ -175,11 +183,6 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
         settings1.timeFrameDisplayMode == settings2.timeFrameDisplayMode
       );
     } else return false;
-  }
-
-  private setActiveTimeFrame(timeFrame: string) {
-    // for some reason template is not updated without using setTimeout
-    setTimeout(() => this.activeTimeFrame$.next(timeFrame));
   }
 
   private chartResize(contentSize: ContentSize) {

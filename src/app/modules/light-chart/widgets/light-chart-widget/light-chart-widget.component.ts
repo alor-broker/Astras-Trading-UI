@@ -6,7 +6,6 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { TimeframesHelper } from '../../utils/timeframes-helper';
 import { TimeframeValue } from '../../models/light-chart.models';
 import { Observable } from 'rxjs';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
@@ -55,7 +54,7 @@ export class LightChartWidgetComponent implements OnInit {
       'LightChartSettings',
       settings => ({
         ...settings,
-        timeFrame: getValueOrDefault(settings.timeFrame, TimeframesHelper.getTimeframeByValue(TimeframeValue.Day)?.value),
+        timeFrame: getValueOrDefault(settings.timeFrame, TimeframeValue.Day),
         timeFrameDisplayMode: getValueOrDefault(settings.timeFrameDisplayMode, TimeFrameDisplayMode.Buttons),
         width: 300,
         height: 300
