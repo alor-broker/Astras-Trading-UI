@@ -1,15 +1,14 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
 import { WidgetSettingsService } from "../../services/widget-settings.service";
-import { Observable, of, shareReplay, switchMap, take } from "rxjs";
+import { Observable, shareReplay, switchMap, take } from "rxjs";
 import { WidgetSettings } from "../../models/widget-settings.model";
 import { InstrumentKey } from "../../models/instruments/instrument-key.model";
 import { Instrument } from "../../models/instruments/instrument.model";
 import { InstrumentSearchComponent } from "../instrument-search/instrument-search.component";
 import { DashboardContextService } from "../../services/dashboard-context.service";
 import { defaultBadgeColor, toInstrumentKey } from "../../utils/instruments";
-import { filter } from "rxjs/operators";
-import { SyntheticInstrumentsHelper } from "../../../modules/tech-chart/utils/synthetic-instruments.helper";
+import { filter, map } from "rxjs/operators";
 
 @Component({
   selector: 'ats-widget-header-instrument-switch',
@@ -19,6 +18,9 @@ import { SyntheticInstrumentsHelper } from "../../../modules/tech-chart/utils/sy
 export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
   @Input({required: true})
   widgetGuid!: string;
+
+  @Input()
+  customTitle?: string | null;
 
   @ViewChild(InstrumentSearchComponent)
   searchInput?: InstrumentSearchComponent;
@@ -40,9 +42,10 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
     );
 
     this.instrument$ = this.settings$.pipe(
-      switchMap(s => SyntheticInstrumentsHelper.isSyntheticInstrument(s.symbol)
-        ? of(s)
-        : this.instrumentService.getInstrument(s)
+      switchMap(s =>
+        this.instrumentService.getInstrument(s).pipe(
+          map(i => i ?? s)
+        )
       ),
       filter((x): x is Instrument => !!x)
     );
@@ -55,9 +58,7 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
   }
 
   getTitle(instrument: Instrument): string {
-    return SyntheticInstrumentsHelper.isSyntheticInstrument(instrument.symbol)
-      ? instrument.symbol
-      : `${instrument.symbol}${instrument.instrumentGroup ? ' (' + instrument.instrumentGroup + ') ' : ' '}${instrument.shortName}`;
+    return `${instrument.symbol}${instrument.instrumentGroup ? ' (' + instrument.instrumentGroup + ') ' : ' '}${instrument.shortName}`;
   }
 
   searchVisibilityChanged(isVisible: boolean) {

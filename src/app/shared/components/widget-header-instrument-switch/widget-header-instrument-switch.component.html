@@ -5,7 +5,7 @@
              [nzPopoverTrigger]="searchVisible ? null : 'hover'"
              nz-popover
              nzPopoverPlacement="bottom">
-        {{getTitle(instrument)}}
+        {{customTitle ?? getTitle(instrument)}}
       </label>
     </div>
     <div>
