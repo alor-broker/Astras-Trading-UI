@@ -4,7 +4,6 @@ import {
   distinctUntilChanged,
   filter,
   Observable,
-  of,
   pairwise,
   shareReplay,
   Subject,
@@ -65,7 +64,8 @@ import { addSeconds } from "../../../../shared/utils/datetime";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
 import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
-import { RegularInstrumentKey } from "../../models/synthetic-instruments.model";
+import { RegularInstrumentKey, SyntheticInstrumentKey } from "../../models/synthetic-instruments.model";
+import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -226,7 +226,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly translatorService: TranslatorService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly tradesHistoryService: TradesHistoryService,
-    private readonly destroyRef: DestroyRef
+    private readonly destroyRef: DestroyRef,
+    private readonly syntheticInstrumentsService: SyntheticInstrumentsService
   ) {
   }
 
@@ -312,17 +313,18 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private initSettingsStream() {
     const getInstrumentInfo = (settings: TechChartSettings) =>
-      SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol)
-        ? of(settings as InstrumentKey)
-        : this.instrumentsService.getInstrument(settings).pipe(
-          filter((x): x is Instrument => !!x)
-        );
+      (SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol)
+          ? this.syntheticInstrumentsService.getInstrument((<SyntheticInstrumentKey>SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(settings.symbol)).parts)
+          : this.instrumentsService.getInstrument(settings)
+      ).pipe(
+        filter((x): x is Instrument => !!x)
+      );
 
     this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => this.isEqualTechChartSettings(previous, current)),
       mapWith(
         settings => getInstrumentInfo(settings),
-        (widgetSettings, instrument: Instrument | InstrumentKey) => ({ widgetSettings, instrument } as ExtendedSettings)
+        (widgetSettings, instrument: Instrument) => ({ widgetSettings, instrument } as ExtendedSettings)
       ),
       shareReplay(1)
     );
@@ -541,6 +543,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private selectPrice(price: number) {
+    if (!this.chartState?.widget || SyntheticInstrumentsHelper.isSyntheticInstrument(this.chartState.widget.activeChart().symbol())) {
+      return;
+    }
+
     this.settings$?.pipe(
       mapWith(
         settings => this.settingsService.getSettingsByColor(settings.widgetSettings.badgeColor ?? ''),

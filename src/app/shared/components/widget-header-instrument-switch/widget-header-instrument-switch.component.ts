@@ -1,14 +1,14 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
 import { WidgetSettingsService } from "../../services/widget-settings.service";
-import { Observable, shareReplay, switchMap, take } from "rxjs";
+import { Observable, of, shareReplay, switchMap, take } from "rxjs";
 import { WidgetSettings } from "../../models/widget-settings.model";
 import { InstrumentKey } from "../../models/instruments/instrument-key.model";
 import { Instrument } from "../../models/instruments/instrument.model";
 import { InstrumentSearchComponent } from "../instrument-search/instrument-search.component";
 import { DashboardContextService } from "../../services/dashboard-context.service";
 import { defaultBadgeColor, toInstrumentKey } from "../../utils/instruments";
-import { filter, map } from "rxjs/operators";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: 'ats-widget-header-instrument-switch',
@@ -26,7 +26,7 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
   searchInput?: InstrumentSearchComponent;
 
   settings$!: Observable<WidgetSettings & InstrumentKey>;
-  instrument$!: Observable<Instrument>;
+  instrumentTitle$!: Observable<string>;
   searchVisible = false;
 
   constructor(
@@ -41,13 +41,16 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
       shareReplay(1)
     );
 
-    this.instrument$ = this.settings$.pipe(
-      switchMap(s =>
-        this.instrumentService.getInstrument(s).pipe(
-          map(i => i ?? s)
-        )
-      ),
-      filter((x): x is Instrument => !!x)
+    this.instrumentTitle$ = this.settings$.pipe(
+      switchMap(s => {
+        if (this.customTitle) {
+          return of(this.customTitle);
+        }
+
+        return this.instrumentService.getInstrument(s).pipe(
+          map(i => this.getTitle(i))
+        );
+      }),
     );
   }
 
@@ -57,7 +60,11 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
     event.target!.dispatchEvent(new Event('click'));
   }
 
-  getTitle(instrument: Instrument): string {
+  getTitle(instrument: Instrument | null): string {
+    if (!instrument) {
+      return '';
+    }
+
     return `${instrument.symbol}${instrument.instrumentGroup ? ' (' + instrument.instrumentGroup + ') ' : ' '}${instrument.shortName}`;
   }
 

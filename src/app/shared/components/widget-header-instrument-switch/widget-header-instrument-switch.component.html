@@ -1,11 +1,11 @@
-<ng-container *ngIf="instrument$ | async as instrument">
+<ng-container *ngIf="instrumentTitle$ | async as instrumentTitle">
   <div class="d-flex">
     <div class="title-text overflow-x-hidden">
-      <label [nzPopoverContent]="getTitle(instrument)"
+      <label [nzPopoverContent]="instrumentTitle"
              [nzPopoverTrigger]="searchVisible ? null : 'hover'"
              nz-popover
              nzPopoverPlacement="bottom">
-        {{customTitle ?? getTitle(instrument)}}
+        {{instrumentTitle}}
       </label>
     </div>
     <div>
@@ -33,7 +33,7 @@
     <ul nz-menu>
       <li nz-menu-item>
         <div class="w-100 d-flex justify-content-between">
-          <span nz-typography><strong>{{getTitle(instrument)}}</strong></span>
+          <span nz-typography><strong>{{instrumentTitle}}</strong></span>
           <button (click)="close()"
                   nz-button
                   nzSize='small'

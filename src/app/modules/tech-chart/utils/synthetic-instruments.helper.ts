@@ -25,12 +25,12 @@ export class SyntheticInstrumentsHelper {
             if (s.includes(':')) {
               return {
                 isSpreadOperator: false,
-                value: this.getSymbolAndExchangeFromTicker(s)
+                value: SyntheticInstrumentsHelper.getSymbolAndExchangeFromTicker(s)
               } as InstrumentDataPart;
             }
             return {
               isSpreadOperator: false,
-              value: this.getSymbolAndExchangeFromTicker(DEFAULT_EXCHANGE + ':' + s)
+              value: SyntheticInstrumentsHelper.getSymbolAndExchangeFromTicker(DEFAULT_EXCHANGE + ':' + s)
             } as InstrumentDataPart;
           }
 
@@ -65,7 +65,7 @@ export class SyntheticInstrumentsHelper {
   }
 
   static isSyntheticInstrument(symbolName: string): boolean {
-    return this.getSyntheticInstrumentKeys(symbolName).isSynthetic;
+    return SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(symbolName).isSynthetic;
   }
 
   static assembleInstrument(instruments: SyntheticInstrumentPart<Instrument>[]): Instrument {
