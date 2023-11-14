@@ -27,7 +27,6 @@ import { DeviceService } from "../../../../shared/services/device.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
 
 @Component({
   selector: 'ats-light-chart-settings',
@@ -89,7 +88,7 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
-  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<TechChartSettings> {
+  protected getUpdatedSettings(initialSettings: LightChartSettings): Partial<LightChartSettings> {
     const formValue = this.form.value;
     const newSettings = {
       ...formValue,

@@ -8,7 +8,7 @@ import { Instrument } from "../../models/instruments/instrument.model";
 import { InstrumentSearchComponent } from "../instrument-search/instrument-search.component";
 import { DashboardContextService } from "../../services/dashboard-context.service";
 import { defaultBadgeColor, toInstrumentKey } from "../../utils/instruments";
-import { map } from "rxjs/operators";
+import { debounceTime, map } from "rxjs/operators";
 
 @Component({
   selector: 'ats-widget-header-instrument-switch',
@@ -42,6 +42,7 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
     );
 
     this.instrumentTitle$ = this.settings$.pipe(
+      debounceTime(300), // to prevent error when settings changed but customTitle not yet
       switchMap(s => {
         if (this.customTitle) {
           return of(this.customTitle);

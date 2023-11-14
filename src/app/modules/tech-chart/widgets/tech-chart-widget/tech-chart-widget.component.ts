@@ -14,6 +14,7 @@ import { TerminalSettingsService } from 'src/app/shared/services/terminal-settin
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { map } from "rxjs/operators";
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 @Component({
   selector: 'ats-tech-chart-widget',
@@ -49,7 +50,7 @@ export class TechChartWidgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<TechChartSettings>(
+    WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<TechChartSettings & InstrumentKey>(
       this.widgetInstance,
       'TechChartSettings',
       settings => ({

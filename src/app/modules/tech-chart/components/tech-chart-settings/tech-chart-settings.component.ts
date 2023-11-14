@@ -79,7 +79,7 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
 
     delete newSettings.instrument;
 
-    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings as InstrumentKey, newSettings);
 
     return newSettings;
   }
