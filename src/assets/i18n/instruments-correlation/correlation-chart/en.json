@@ -19,5 +19,12 @@
   },
 
   "cointegrationMark": "С",
-  "cointegrationLegend": "Cointegrated instruments"
+  "cointegrationLegend": "Cointegrated instruments",
+  "correlationLabel": "Correlation",
+
+  "errorCodes": {
+    "EMPTY_TICKERS_LIST": "Solected list does not contain instruments",
+    "SHORT_TICKERS_LIST": "The list have to contain at least two instruments",
+    "UNKNOWN": "Analysis failed for selected parameters"
+  }
 }

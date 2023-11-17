@@ -12,7 +12,7 @@ export interface InstrumentsCorrelationRequest {
   detrendType: DetrendType;
 }
 
-export interface InstrumentsCorrelationResponse {
+export interface CorrelationMatrix {
   correlation: {
     [key: string]: {
       [key: string]: number
@@ -24,4 +24,17 @@ export interface InstrumentsCorrelationResponse {
       [key: string]: number
     };
   }
+}
+
+export interface InstrumentsCorrelationResponse {
+  data?: CorrelationMatrix;
+  errorCode?: InstrumentsCorrelationErrorCodes;
+  errorMessage?: string;
+}
+
+export enum InstrumentsCorrelationErrorCodes {
+  EmptyTickersList = 'EMPTY_TICKERS_LIST',
+  ShortTickersList = 'SHORT_TICKERS_LIST',
+  NotTradingInstruments = 'NOT_TRADING_INSTRUMENTS',
+  Unknown = 'UNKNOWN'
 }
