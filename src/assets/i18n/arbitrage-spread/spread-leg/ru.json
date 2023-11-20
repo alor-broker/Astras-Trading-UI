@@ -11,7 +11,5 @@
   "portfoliosEmpty": "Список портфелей пуст, либо не выбран инструмент",
   "instrumentRequiredError": "Выберите инструмент",
   "quantityRequiredError": "Введите количество",
-  "ratioRequiredError": "Введите коэфициент",
-  "tooLittle": "Слишком мало",
-  "tooMuch": "Слишком много"
+  "ratioRequiredError": "Введите коэфициент"
 }

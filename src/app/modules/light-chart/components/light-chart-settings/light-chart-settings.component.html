@@ -6,7 +6,8 @@
   (copyClick)="createWidgetCopy()"
 >
   <ng-container *transloco="let t; scope: 'light-chart/settings'">
-  <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" *ngIf="deviceInfo$ | async as deviceInfo">
+    <ng-container *transloco="let tChart; scope: 'light-chart'">
+    <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" *ngIf="deviceInfo$ | async as deviceInfo">
     <nz-form-item *ngIf="!deviceInfo.isMobile">
       <nz-form-control [nzErrorTip]="t('lightChartSettings.tickerError')">
         <nz-form-label nzRequired nzFor="instrument">{{t('lightChartSettings.tickerLabel')}}</nz-form-label>
@@ -20,10 +21,32 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
+      <nz-form-control [nzErrorTip]="t('lightChartSettings.selectTimeframesError')">
+        <nz-form-label nzRequired nzFor="availableTimeFrames">
+          {{t('lightChartSettings.availableTimeFramesLabel')}}
+        </nz-form-label>
+        <nz-select
+          [nzMaxTagCount]="10"
+          [nzMaxTagPlaceholder]="tagPlaceHolder"
+          nzMode="multiple"
+          formControlName="availableTimeFrames"
+          atsRemoveSelectTitles
+          (ngModelChange)="checkCurrentTimeFrame()"
+        >
+          <nz-option *ngFor='let tf of allTimeFrames' [nzValue]="tf" [nzLabel]="tChart('lightChart.timeframes.' + tf)"></nz-option>
+        </nz-select>
+        <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
       <nz-form-control>
         <nz-form-label nzRequired nzFor="timeFrame">{{t('lightChartSettings.timeframeLabel')}}</nz-form-label>
         <nz-select formControlName='timeFrame'>
-          <nz-option  *ngFor='let tf of timeFrames' [nzValue]="tf.value" [nzLabel]="tf.label"></nz-option>
+          <nz-option
+            *ngFor='let tf of this.form.controls.availableTimeFrames.value ?? []'
+            [nzValue]="tf"
+            [nzLabel]="tChart('lightChart.timeframes.' + tf)">
+          </nz-option>
         </nz-select>
       </nz-form-control>
     </nz-form-item>
@@ -52,5 +75,6 @@
       </nz-collapse>
     </nz-form-item>
   </form>
+    </ng-container>
 </ng-container>
 </ats-widget-settings>

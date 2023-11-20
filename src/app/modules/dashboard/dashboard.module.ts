@@ -9,7 +9,6 @@ import { DashboardWidgetComponent } from './widgets/dashboard-widget/dashboard-w
 import { LightChartModule } from '../light-chart/light-chart.module';
 import { InstrumentsModule } from '../instruments/instruments.module';
 import { BlotterModule } from '../blotter/blotter.module';
-import { HelpModule } from '../help/help.module';
 import { InfoModule } from '../info/info.module';
 import { TerminalSettingsModule } from '../terminal-settings/terminal-settings.module';
 import { JoyrideModule } from 'ngx-joyride';
@@ -70,7 +69,6 @@ import { InstrumentsCorrelationModule } from "../instruments-correlation/instrum
         LightChartModule,
         InstrumentsModule,
         BlotterModule,
-        HelpModule,
         InfoModule,
         TerminalSettingsModule,
         JoyrideModule.forRoot(),

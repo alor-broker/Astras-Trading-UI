@@ -25,6 +25,7 @@ import { TradesClusterComponent } from './components/trades-cluster/trades-clust
 import { HoverItemDirective } from './directives/hover-item.directive';
 import { HoverItemsGroupDirective } from './directives/hover-items-group.directive';
 import { TableRulerComponent } from './components/table-ruler/table-ruler.component';
+import { LetDirective } from "@ngrx/component";
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { TableRulerComponent } from './components/table-ruler/table-ruler.compon
         NzSpinModule,
         CdkDropListGroup,
         CdkDropList,
-        CdkDrag
+        CdkDrag,
+        LetDirective
     ],
   exports: [
     ScalperOrderBookWidgetComponent

@@ -10,11 +10,6 @@ import { ModalOptions } from "ng-zorro-antd/modal/modal-types";
   providedIn: 'root'
 })
 export class ModalService {
-  private helpParams = new BehaviorSubject<string | null>(null);
-  private shouldShowHelpModal = new BehaviorSubject<boolean>(false);
-  helpParams$ = this.helpParams.asObservable();
-  shouldShowHelpModal$ = this.shouldShowHelpModal.asObservable();
-
   private shouldShowTerminalSettingsModal = new BehaviorSubject<boolean>(false);
   shouldShowTerminalSettingsModal$ = this.shouldShowTerminalSettingsModal.asObservable();
 
@@ -39,11 +34,6 @@ export class ModalService {
   constructor(
     private readonly nzModalService: NzModalService
   ) {
-  }
-
-  openHelpModal(helpRef: string) {
-    this.shouldShowHelpModal.next(true);
-    this.helpParams.next(helpRef);
   }
 
   openTerminalSettingsModal() {
@@ -75,10 +65,6 @@ export class ModalService {
 
   closeTerminalSettingsModal() {
     this.shouldShowTerminalSettingsModal.next(false);
-  }
-
-  closeHelpModal() {
-    this.shouldShowHelpModal.next(false);
   }
 
   closeNewsModal() {

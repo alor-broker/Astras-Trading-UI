@@ -2,12 +2,14 @@
   "tickerError": "Select ticker",
   "tickerLabel": "Ticker",
   "exchangeLabel": "Exchange",
-  "timeframeLabel": "Timeframe",
+  "timeframeLabel": "Current timeframe",
+  "availableTimeFramesLabel": "Displayed timeframes",
   "timeframeDisplayLabel": "Timeframe display",
   "timeframeDisplayButtons": "Buttons",
   "timeframeDisplayMenu": "Menu",
   "timeframeDisplayHide": "None",
   "advanced": "Advanced",
   "instrumentGroupLabel": "Trading mode",
-  "instrumentGroupError": "Select trading mode"
+  "instrumentGroupError": "Select trading mode",
+  "selectTimeframesError": "Select at least one displayed timeframes"
 }

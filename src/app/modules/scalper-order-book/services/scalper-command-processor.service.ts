@@ -207,7 +207,7 @@ export class ScalperCommandProcessorService {
           this.callWithPosition(
             dataContext,
             position => {
-              this.scalperOrdersService.reversePositionsByMarket(position, settings.widgetSettings.instrumentGroup);
+              this.scalperOrdersService.reversePositionsByMarket(position, settings.widgetSettings.instrumentGroup ?? null);
             }
           );
         }
@@ -235,7 +235,7 @@ export class ScalperCommandProcessorService {
       settings => {
         this.callWithPosition(
           dataContext,
-          position => this.scalperOrdersService.closePositionsByMarket(position, settings.widgetSettings.instrumentGroup)
+          position => this.scalperOrdersService.closePositionsByMarket(position, settings.widgetSettings.instrumentGroup ?? null)
         );
       }
     );
@@ -433,7 +433,7 @@ export class ScalperCommandProcessorService {
                   row.price,
                   settings.widgetSettings.enableMouseClickSilentOrders,
                   position,
-                  settings.widgetSettings.instrumentGroup,
+                  settings.widgetSettings.instrumentGroup ?? null,
                   portfolioKey
                 );
               }

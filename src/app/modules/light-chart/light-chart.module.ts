@@ -7,6 +7,8 @@ import { LightChartSettingsComponent } from './components/light-chart-settings/l
 import { SharedModule } from 'src/app/shared/shared.module';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
+import { LetDirective } from "@ngrx/component";
+import { TimeframesPanelComponent } from './components/timeframes-panel/timeframes-panel.component';
 
 
 @NgModule({
@@ -14,12 +16,14 @@ import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
     LightChartComponent,
     LightChartSettingsComponent,
     LightChartWidgetComponent,
+    TimeframesPanelComponent,
   ],
     imports: [
         SharedModule,
         LightChartRoutingModule,
         NzInputModule,
-        NzResizeObserverModule
+        NzResizeObserverModule,
+        LetDirective
     ],
   exports: [
     LightChartWidgetComponent

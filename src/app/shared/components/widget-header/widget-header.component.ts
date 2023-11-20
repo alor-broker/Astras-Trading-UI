@@ -10,6 +10,7 @@ import {DashboardContextService} from "../../services/dashboard-context.service"
 import {Observable, shareReplay} from "rxjs";
 import {InstrumentKey} from "../../models/instruments/instrument-key.model";
 import {map} from "rxjs/operators";
+import { environment } from "../../../../environments/environment";
 
 @Component({
   selector: 'ats-widget-header',
@@ -53,6 +54,8 @@ export class WidgetHeaderComponent implements OnInit {
 
   titleText!: string;
 
+  helpUrl = environment.externalLinks.help + '/';
+
   badgeOptions$!: Observable<{
     color: string,
     assignedInstrument: InstrumentKey | null
@@ -89,7 +92,7 @@ export class WidgetHeaderComponent implements OnInit {
                   ...currentSelection[b],
                   instrumentGroup: symbolGroups[assignedInstrument.symbol] > 1
                     ? assignedInstrument.instrumentGroup
-                    : undefined
+                    : null
                 }
                 : null
             };
@@ -108,34 +111,24 @@ export class WidgetHeaderComponent implements OnInit {
     this.settingsService.updateSettings(this.guid, {badgeColor});
   }
 
-  changeLinkToActive($event: MouseEvent | TouchEvent, linkToActive: boolean): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-
+  changeLinkToActive(event: MouseEvent | TouchEvent, linkToActive: boolean): void {
+    this.preventMouseEvents(event);
     this.settingsService.updateIsLinked(this.guid, linkToActive);
   }
 
-  removeItem($event: MouseEvent | TouchEvent): void {
-    $event.preventDefault();
-    $event.stopPropagation();
+  removeItem(event: MouseEvent | TouchEvent): void {
+    this.preventMouseEvents(event);
     this.manageDashboardService.removeWidget(this.guid);
   }
 
-  onSwitchSettings($event: MouseEvent | TouchEvent) {
-    $event.preventDefault();
-    $event.stopPropagation();
+  onSwitchSettings(event: MouseEvent | TouchEvent) {
+    this.preventMouseEvents(event);
     this.switchSettings.emit();
   }
 
-  onOpenHelp($event: MouseEvent | TouchEvent) {
-    $event.preventDefault();
-    $event.stopPropagation();
-
-    if (!this.widgetMeta) {
-      throw new Error('Unknown widgetMeta');
-    }
-
-    this.modal.openHelpModal(this.widgetMeta.typeId);
+  preventMouseEvents(event: MouseEvent | TouchEvent) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   getIconTooltip(): string {

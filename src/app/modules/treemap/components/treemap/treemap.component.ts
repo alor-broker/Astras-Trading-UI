@@ -43,6 +43,7 @@ import {
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { getNumberAbbreviation } from "../../../../shared/utils/number-abbreviation";
+import { color } from "d3";
 
 @Component({
   selector: 'ats-treemap',
@@ -138,11 +139,17 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                 },
                 backgroundColor: (t: any) => {
                   if (t.raw?._data.label === t.raw?._data.sector) {
-                    return themeColors.chartBackground;
+                    return themeColors.chartShadow;
                   } else {
-                    return t.raw._data.children[0]?.dayChange > 0
-                      ? themeColors.buyColor.replace('1)', `${t.raw._data.children[0]?.dayChangeAbs / this.maxDayChange})`)
-                      : themeColors.sellColor.replace('1)', `${t.raw._data.children[0]?.dayChangeAbs / this.maxDayChange})`);
+                    const c = t.raw._data.children[0]?.dayChange > 0
+                      ? color(themeColors.buyColor)
+                      : color(themeColors.sellColor);
+
+                    if(!!c) {
+                      c.opacity = t.raw._data.children[0]?.dayChangeAbs / this.maxDayChange;
+                    }
+
+                    return c?.formatRgb() ?? '';
                   }
                 },
                 borderRadius: 4

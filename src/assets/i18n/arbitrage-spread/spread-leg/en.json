@@ -11,7 +11,5 @@
   "portfoliosEmpty": "Portfolios list is empty or instrument is not selected",
   "instrumentRequiredError": "Select instrument",
   "quantityRequiredError": "Input quantity",
-  "ratioRequiredError": "Input ratio",
-  "tooLittle": "Too little",
-  "tooMuch": "Too much"
+  "ratioRequiredError": "Input ratio"
 }

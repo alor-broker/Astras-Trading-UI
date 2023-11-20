@@ -17,10 +17,10 @@
               {{t('arbitrageSpreadSpreadLeg.quantityRequiredError')}}
             </span>
         <span *ngIf="form.get('quantity')?.errors?.min">
-              {{t('arbitrageSpreadSpreadLeg.tooLittle')}}
+              {{t('validationErrors.tooLittle')}}
             </span>
         <span *ngIf="form.get('quantity')?.errors?.max">
-              {{t('arbitrageSpreadSpreadLeg.tooMuch')}}
+              {{t('validationErrors.tooMuch')}}
             </span>
       </ng-template>
     </nz-form-item>
@@ -35,10 +35,10 @@
               {{t('arbitrageSpreadSpreadLeg.ratioRequiredError')}}
             </span>
         <span *ngIf="form.get('ratio')?.errors?.min">
-              {{t('arbitrageSpreadSpreadLeg.tooLittle')}}
+              {{t('validationErrors.tooLittle')}}
             </span>
         <span *ngIf="form.get('ratio')?.errors?.max">
-              {{t('arbitrageSpreadSpreadLeg.tooMuch')}}
+              {{t('validationErrors.tooMuch')}}
             </span>
       </ng-template>
     </nz-form-item>

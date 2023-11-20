@@ -8,10 +8,6 @@ import {
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import {
-  Timeframe,
-  TimeframesHelper
-} from '../../utils/timeframes-helper';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   Observable,
@@ -24,9 +20,10 @@ import {
   TimeFrameDisplayMode
 } from '../../models/light-chart-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { TimeframeValue } from "../../models/light-chart.models";
 
 @Component({
   selector: 'ats-light-chart-settings',
@@ -35,7 +32,7 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
 })
 export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<LightChartSettings> implements OnInit {
   form!: UntypedFormGroup;
-  timeFrames: Timeframe[];
+  readonly allTimeFrames = Object.values(TimeframeValue);
   timeFrameDisplayModes = TimeFrameDisplayMode;
   deviceInfo$!: Observable<any>;
   protected settings$!: Observable<LightChartSettings>;
@@ -47,7 +44,6 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
     private readonly destroyRef: DestroyRef
   ) {
     super(settingsService, manageDashboardsService);
-    this.timeFrames = TimeframesHelper.timeFrames;
   }
 
   get showCopy(): boolean {
@@ -78,7 +74,11 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
         exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
         timeFrame: new UntypedFormControl(settings.timeFrame, Validators.required),
         timeFrameDisplayMode: new UntypedFormControl(settings.timeFrameDisplayMode ?? TimeFrameDisplayMode.Buttons, Validators.required),
-        instrumentGroup: new UntypedFormControl(settings.instrumentGroup)
+        instrumentGroup: new UntypedFormControl(settings.instrumentGroup),
+        availableTimeFrames: new UntypedFormControl(
+          settings.availableTimeFrames ?? this.allTimeFrames,
+          Validators.required
+        )
       });
     });
   }
@@ -88,18 +88,36 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
+  checkCurrentTimeFrame() {
+    const availableTimeFrames = this.sortTimeFrames(this.form.controls.availableTimeFrames.value as TimeframeValue[]);
+    if (availableTimeFrames.length > 0 && !availableTimeFrames.includes(this.form.controls.timeFrame.value)) {
+      this.form.controls.timeFrame.setValue(availableTimeFrames[availableTimeFrames.length - 1]);
+    }
+  }
+
   protected getUpdatedSettings(initialSettings: LightChartSettings): Partial<LightChartSettings> {
     const formValue = this.form.value;
     const newSettings = {
       ...formValue,
       symbol: formValue.instrument.symbol,
-      exchange: formValue.instrument.exchange,
-    };
+      exchange: formValue.instrument.exchange
+    } as LightChartSettings;
+
+    newSettings.availableTimeFrames = this.sortTimeFrames(newSettings.availableTimeFrames ?? []);
 
     delete newSettings.instrument;
 
     newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
 
     return newSettings;
+  }
+
+  private sortTimeFrames(selectedTimeFrames: TimeframeValue[]): TimeframeValue[] {
+    return [...selectedTimeFrames].sort((a, b) => {
+      const aIndex = this.allTimeFrames.indexOf(a);
+      const bIndex = this.allTimeFrames.indexOf(b);
+
+      return aIndex - bIndex;
+    });
   }
 }

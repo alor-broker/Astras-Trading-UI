@@ -1,29 +1,45 @@
 import { Injectable } from '@angular/core';
 import {
+  CorrelationMatrix,
+  InstrumentsCorrelationErrorCodes,
   InstrumentsCorrelationRequest,
   InstrumentsCorrelationResponse
 } from "../models/instruments-correlation.model";
 import {
   Observable,
+  of,
   take
 } from "rxjs";
-import { HttpClient } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpErrorResponse
+} from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
-import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
+import { map } from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
 })
 export class InstrumentsCorrelationService {
-
   constructor(
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
+    private readonly httpClient: HttpClient
   ) {
   }
 
-  getCorrelation(request: InstrumentsCorrelationRequest): Observable<InstrumentsCorrelationResponse | null> {
+  getCorrelation(request: InstrumentsCorrelationRequest): Observable<InstrumentsCorrelationResponse> {
+    if (request.instruments.length === 0) {
+      return of({
+        errorCode: InstrumentsCorrelationErrorCodes.EmptyTickersList
+      } as InstrumentsCorrelationResponse);
+    }
+
+    if (request.instruments.length < 2) {
+      return of({
+        errorCode: InstrumentsCorrelationErrorCodes.ShortTickersList
+      } as InstrumentsCorrelationResponse);
+    }
+
     const tickers =
       request.instruments.map(i => {
         const parts = [
@@ -38,7 +54,7 @@ export class InstrumentsCorrelationService {
         return parts.join(':');
       }).join(',');
 
-    return this.httpClient.get<InstrumentsCorrelationResponse>(
+    return this.httpClient.get<CorrelationMatrix>(
       `${environment.apiUrl}/timeseriesanalyser/tsa`,
       {
         params: {
@@ -48,8 +64,24 @@ export class InstrumentsCorrelationService {
         }
       }
     ).pipe(
-      catchHttpError<InstrumentsCorrelationResponse | null>(null, this.errorHandlerService),
+      map(r => ({
+        data: r
+      } as InstrumentsCorrelationResponse)),
+      catchHttpError<InstrumentsCorrelationResponse>(error => this.getError(error)),
       take(1)
     );
+  }
+
+  private getError(error: HttpErrorResponse): { errorCode: InstrumentsCorrelationErrorCodes; errorMessage?: string } {
+    if (/^(\[.+\])/.test(error.error ?? '')) {
+      return {
+        errorCode: InstrumentsCorrelationErrorCodes.NotTradingInstruments,
+        errorMessage: error.error.error
+      };
+    }
+
+    return {
+      errorCode: InstrumentsCorrelationErrorCodes.Unknown
+    };
   }
 }

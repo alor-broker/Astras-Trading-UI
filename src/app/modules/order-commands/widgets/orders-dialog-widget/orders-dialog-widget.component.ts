@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject, distinctUntilChanged, filter, Observable, shareReplay, switchMap, take, tap } from "rxjs";
-import {ModalService} from "../../../../shared/services/modal.service";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
 import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
@@ -10,6 +9,7 @@ import {NzTabComponent, NzTabSetComponent} from "ng-zorro-antd/tabs";
 import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {OrderDialogParams, OrderType} from "../../../../shared/models/orders/orders-dialog.model";
+import { environment } from "../../../../../environments/environment";
 
 @Component({
   selector: 'ats-orders-dialog-widget',
@@ -18,6 +18,7 @@ import {OrderDialogParams, OrderType} from "../../../../shared/models/orders/ord
   providers: [CommonParametersService]
 })
 export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
+  helpUrl = environment.externalLinks.help + '/new-order';
   dialogParams$!: Observable<OrderDialogParams | null>;
 
   currentPortfolio$!: Observable<PortfolioKey>;
@@ -37,7 +38,6 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly ordersDialogService: OrdersDialogService,
-    private readonly modalService: ModalService,
     private readonly currentDashboardService: DashboardContextService,
     private readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
@@ -69,10 +69,6 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
 
   closeDialog() {
     this.ordersDialogService.closeNewOrderDialog();
-  }
-
-  openHelp() {
-    this.modalService.openHelpModal('new-order');
   }
 
   setInitialTab() {

@@ -351,7 +351,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       context.fillStyle = item.color === 'green' ? themeColors.buyColor : themeColors.sellColor;
       this.drawRoundedRect(itemMeasurements.xLeft, itemMeasurements.yTop, itemWidth, itemHeight, 2, context);
       context.fill();
-      context.fillStyle = themeColors.buySellLabelColor;
+      context.fillStyle = themeColors.buySellBtnTextColor;
       context.textAlign = 'center';
       context.textBaseline = 'middle';
       context.fillText(itemText, xCenter, yCenter);
@@ -400,7 +400,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       context.strokeStyle = item.color === 'green' ? themeColors.buyColor : themeColors.sellColor;
       this.drawRoundedRect(itemMeasurements.xLeft, itemMeasurements.yTop, itemWidth, itemHeight, 2, context);
       context.stroke();
-      context.fillStyle = themeColors.buySellLabelColor;
+      context.fillStyle = themeColors.buySellBtnTextColor;
       context.textAlign = 'center';
       context.textBaseline = 'middle';
       context.fillText(itemText, xCenter, yCenter);

@@ -4,7 +4,10 @@ import { of } from 'rxjs';
 import { LightChartComponent } from './light-chart.component';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import {
+  mockComponent,
+  ngZorroMockComponents
+} from "../../../../shared/utils/testing";
 import { ThemeColors, ThemeSettings, ThemeType } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
@@ -52,6 +55,10 @@ describe('LightChartComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         LightChartComponent,
+        mockComponent({
+          selector: 'ats-timeframes-panel',
+          inputs: ['availableTimeframes', 'selectedTimeframe', 'displayMode']
+        }),
         ...ngZorroMockComponents
       ],
       providers: [

@@ -8,9 +8,7 @@ import {
 import {
   BehaviorSubject,
   combineLatest,
-  Observable,
   shareReplay,
-  take,
   tap
 } from "rxjs";
 import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
@@ -18,53 +16,64 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   axisBottom,
   axisRight,
-  create,
   interpolateRdYlGn,
+  pointer,
   scaleBand,
   ScaleDiverging,
   scaleDiverging,
   scaleLinear,
-  select
+  select,
+  zoom
 } from "d3";
-import {
-  Watchlist,
-  WatchlistType
-} from "../../../instruments/models/watchlist.model";
-import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import {
   filter,
   map,
-  startWith,
   switchMap
 } from "rxjs/operators";
-import { WatchListTitleHelper } from "../../../instruments/utils/watch-list-title.helper";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
 import { InstrumentsCorrelationService } from "../../services/instruments-correlation.service";
-import { InstrumentsCorrelationSettings } from "../../models/instruments-correlation-settings.model";
 import {
-  DetrendType,
+  InstrumentsCorrelationErrorCodes,
+  InstrumentsCorrelationRequest,
   InstrumentsCorrelationResponse
 } from "../../models/instruments-correlation.model";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { TranslatorService } from "../../../../shared/services/translator.service";
+import {
+  TranslatorFn,
+  TranslatorService
+} from "../../../../shared/services/translator.service";
+import {
+  BaseType,
+  Selection
+} from "d3-selection";
+import { ScaleBand } from "d3-scale";
 import { MathHelper } from "../../../../shared/utils/math-helper";
+import { G } from "@angular/cdk/keycodes";
 
 enum LoadingStatus {
   Initial = 'initial',
   Loading = 'loading',
   NoData = 'no-data',
-  Success = 'success'
+  Success = 'success',
+  Error = 'error'
 }
 
-interface ItemMeasurements {
+interface LoadingError {
+  errorCode: InstrumentsCorrelationErrorCodes,
+  errorMessage?: string;
+}
+
+interface ItemPosition {
   xLeft: number;
   xRight: number;
   yTop: number;
   yBottom: number;
+}
+
+interface ChartItemsPositions {
+  matrixArea: ItemPosition;
+  xAxis: ItemPosition;
+  yAxis: ItemPosition;
+  colorLegend: ItemPosition;
+  symbolsLegend: ItemPosition;
 }
 
 interface MatrixCell {
@@ -84,55 +93,17 @@ interface CorrelationMatrix {
 })
 export class CorrelationChartComponent implements OnInit, OnDestroy {
   readonly loadingStatus$ = new BehaviorSubject<LoadingStatus>(LoadingStatus.Initial);
+  readonly request$ = new BehaviorSubject<InstrumentsCorrelationRequest | null>(null);
   readonly loadingStatuses = LoadingStatus;
-  readonly timeframes = [
-    {
-      key: 'month',
-      value: 30
-    },
-    {
-      key: 'quarter',
-      value: 90
-    },
-    {
-      key: 'halfYear',
-      value: 180
-    },
-    {
-      key: 'year',
-      value: 360
-    },
-  ];
 
-  readonly detrendTypes = Object.values(DetrendType);
 
   @Input({ required: true })
   guid!: string;
-
-  availableLists$!: Observable<Watchlist[]>;
-  getTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
-  parametersForm = this.formBuilder.group({
-    targetListId: this.formBuilder.control<string | null>(
-      null,
-      Validators.required
-    ),
-    days: this.formBuilder.nonNullable.control(
-      this.timeframes[0].value,
-      Validators.required
-    ),
-    detrendType: this.formBuilder.nonNullable.control(
-      DetrendType.Linear,
-      Validators.required
-    )
-  });
-
+  loadingError: LoadingError | null = null;
+  protected readonly G = G;
   private readonly contentSize$ = new BehaviorSubject<ContentSize>({ width: 0, height: 0 });
-  private settings$!: Observable<InstrumentsCorrelationSettings>;
 
   constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly widgetSettingsService: WidgetSettingsService,
     private readonly instrumentsCorrelationService: InstrumentsCorrelationService,
     private readonly translatorService: TranslatorService,
     private readonly destroyRef: DestroyRef
@@ -155,39 +126,36 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.contentSize$.complete();
     this.loadingStatus$.complete();
+    this.request$.complete();
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<InstrumentsCorrelationSettings>(this.guid).pipe(
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+    this.loadingStatus$.next(LoadingStatus.Loading);
 
-    this.availableLists$ = this.watchlistCollectionService.getWatchlistCollection().pipe(
-      map(c => c.collection),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
-
-    this.setInitialRequestValues();
-
-    const correlationData$ = this.parametersForm.valueChanges.pipe(
-      startWith(this.parametersForm.value),
-      filter(() => this.parametersForm.valid),
-      tap(() => this.saveCurrentParameters()),
+    const correlationData$ = this.request$.pipe(
+      filter((r): r is InstrumentsCorrelationRequest => !!r),
       tap(() => this.loadingStatus$.next(LoadingStatus.Loading)),
-      mapWith(
-        () => this.availableLists$,
-        (params, allLists) => ({
-          ...params,
-          targetWatchlist: allLists.find(l => l.id === params.targetListId!)!
-        })
-      ),
-      switchMap(x => this.instrumentsCorrelationService.getCorrelation({
-          instruments: x.targetWatchlist.items,
-          days: x.days!,
-          detrendType: x.detrendType!
-        })
-      ),
-      map(x => this.toMatrix(x)),
+      switchMap(r => this.instrumentsCorrelationService.getCorrelation(r)),
+      map(x => {
+        if (!!x.errorCode) {
+          this.loadingError = {
+            errorCode: x.errorCode,
+            errorMessage: x.errorMessage
+          };
+
+          this.loadingStatus$.next(LoadingStatus.Error);
+          return null;
+        }
+
+        this.loadingError = null;
+        const matrix = this.toMatrix(x);
+        if (!matrix) {
+          this.loadingStatus$.next(LoadingStatus.NoData);
+          return null;
+        }
+
+        return matrix;
+      }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
@@ -198,125 +166,311 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
     }).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
-      // clean;
       const figure = select(`#${this.figureId}`);
       figure.selectAll("*").remove();
 
       if (!x.data) {
-        this.loadingStatus$.next(LoadingStatus.NoData);
         return;
       }
 
-      this.loadingStatus$.next(LoadingStatus.Success);
-
-      const svg = figure.append("svg")
-        .attr("width", x.size.width)
-        .attr("height", x.size.height);
-
-      const topMargin = 5;
-      const bottomMargin = 45;
-      const leftMargin = 0;
-      const rightMargin = 50;
-
-      const bodyPosition: ItemMeasurements = {
-        xLeft: leftMargin,
-        xRight: x.size.width - rightMargin,
-        yTop: topMargin,
-        yBottom: x.size.height - bottomMargin,
+      const containerSize: ContentSize = {
+        width: Math.max(x.size.width, 100),
+        height: Math.max(x.size.height, 100)
       };
 
+      const svg = figure.append("svg")
+        .attr("width", containerSize.width)
+        .attr("height", containerSize.height)
+        .attr("viewBox", `0 0 ${containerSize.width} ${containerSize.height}`);
 
-      const xScale = scaleBand(x.data.indexes, [bodyPosition.xLeft, bodyPosition.xRight]);
-      const yScale = scaleBand(x.data.indexes, [bodyPosition.yTop, bodyPosition.yBottom]);
+      svg.append("defs");
 
-      // start plot
-      const color = scaleDiverging([-1, 0, 1], interpolateRdYlGn);
+      const tooltip = figure.append('div')
+        .attr('class', 'tooltip');
+
+      const positions = this.getChartItemsPositions(containerSize);
+
+      const xScale = scaleBand(x.data.indexes, [positions.matrixArea.xLeft, positions.matrixArea.xRight]);
+      const yScale = scaleBand(x.data.indexes, [positions.matrixArea.yTop, positions.matrixArea.yBottom]);
+      const colorScale = scaleDiverging([-1, 0, 1], interpolateRdYlGn);
+
+      const matrixAreaArtifacts = this.drawMatrixArea(
+        positions.matrixArea,
+        svg,
+        tooltip,
+        xScale,
+        yScale,
+        colorScale,
+        x.data,
+        x.translator,
+        containerSize
+      );
+
+      const xAxisArtifacts = this.drawXAxis(
+        positions.xAxis,
+        svg,
+        xScale
+      );
+
+      const yAxisArtifacts = this.drawYAxis(
+        positions.yAxis,
+        svg,
+        yScale
+      );
+
+      this.drawColorLegend(
+        positions.colorLegend,
+        svg,
+        colorScale
+      );
+
+      this.drawSymbolsLegend(
+        positions.symbolsLegend,
+        svg,
+        x.translator
+      );
+
+      const zoomBehavior = zoom<SVGSVGElement, any>();
+      zoomBehavior.scaleExtent([1, 10]);
+      zoomBehavior.translateExtent([[positions.matrixArea.xLeft, positions.matrixArea.yTop], [positions.matrixArea.xRight, positions.matrixArea.yBottom]]);
+      zoomBehavior.extent([[positions.matrixArea.xLeft, positions.matrixArea.yTop], [positions.matrixArea.xRight, positions.matrixArea.yBottom]]);
+
+      zoomBehavior.on('zoom end', (event) => {
+        xScale.range([positions.matrixArea.xLeft, positions.matrixArea.xRight].map(r => event.transform.applyX(r)));
+        yScale.range([positions.matrixArea.yTop, positions.matrixArea.yBottom].map(r => event.transform.applyY(r)));
+
+        matrixAreaArtifacts.onZoom();
+        xAxisArtifacts.onZoom();
+        yAxisArtifacts.onZoom();
+      });
+
+      svg.call(zoomBehavior);
+
+      svg.on('contextmenu', event => {
+        event.preventDefault();
+        zoomBehavior.scaleTo(svg.transition(), 1);
+      });
+
+      this.loadingStatus$.next(LoadingStatus.Success);
+    });
+  }
+
+  private drawMatrixArea(
+    position: ItemPosition,
+    root: Selection<SVGSVGElement, any, HTMLElement, any>,
+    tooltipContainer: Selection<HTMLDivElement, any, HTMLElement, any>,
+    xScale: ScaleBand<string>,
+    yScale: ScaleBand<string>,
+    colorScale: ScaleDiverging<string, never>,
+    data: CorrelationMatrix,
+    translator: TranslatorFn,
+    containerSize: ContentSize
+  ): { onZoom: () => void } {
+    const matrixClipId = 'matrix-clip';
+
+    const clipPath = root.select('defs').append("svg:clipPath");
+    clipPath.attr("id", matrixClipId);
+
+    const clipPathRect = clipPath.append("svg:rect");
+    clipPathRect
+      .attr("width", position.xRight - position.xLeft)
+      .attr("height", position.yBottom - position.yTop)
+      .attr("x", position.xLeft)
+      .attr("y", position.yTop);
+
+    const matrixArea = root.append("g");
+    matrixArea
+      .attr("class", "matrix-area")
+      .attr("clip-path", `url(#${matrixClipId})`);
+
+    const matrixRows = matrixArea
+      .selectAll("g")
+      .data(data.indexes)
+      .join(elem => {
+        return elem
+          .append('g')
+          .attr('class', 'matrix-row');
+      });
 
 
-      svg.append("g")
-        .selectAll("g")
-        .data(x.data.indexes)
-        .join('g')
-        .selectAll('g')
-        .data((datum, dIndex) => x.data!.matrix[dIndex].map((value, index) => ({
-            rowInstrument: datum,
-            colInstrument: x.data!.indexes[index],
-            cellValue: value
-          }))
-        )
-        .join(enter => {
-          const g = enter.append("g");
+    matrixRows.selectAll('g')
+      .data((datum, dIndex) => data!.matrix[dIndex].map((value, index) => ({
+          rowInstrument: datum,
+          colInstrument: data!.indexes[index],
+          cellValue: value
+        }))
+      )
+      .join(enter => {
+        const cell = enter.append("g");
+        cell.attr('class', 'matrix-cell');
 
-          g.append("title")
-            .text(d => {
-              const correlationPercent = MathHelper.round(d.cellValue.correlation * 100, 1);
-              //TODO: rework tooltip
-              return `${d.rowInstrument} - ${d.colInstrument}
-${correlationPercent}%`;
-            });
+        this.applyTooltip(
+          cell,
+          tooltipContainer,
+          containerSize,
+          (data, tooltip) => {
+            tooltip.append('div')
+              .style('font-weight', 'bold')
+              .text(`${this.getSymbol(data.rowInstrument)} - ${this.getSymbol(data.colInstrument)}`);
 
-          g.append("rect")
-            .attr("x", d => xScale(d.colInstrument)!)
-            .attr("y", d => yScale(d.rowInstrument)!)
-            .attr("width", xScale.bandwidth() - 1)
-            .attr("height", yScale.bandwidth() - 1)
-            .attr("fill", d => color(d.cellValue.correlation));
+            const correlationPercent = MathHelper.round(data.cellValue.correlation * 100, 1);
 
-          g.append("text")
-            .attr("x", d => xScale(d.colInstrument)! + xScale.bandwidth() / 2)
-            .attr("y", d => yScale(d.rowInstrument)! + yScale.bandwidth() / 2)
-            .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "central")
-            .text(d => d.cellValue.cointegration ? x.translator(['cointegrationMark']) : '');
+            const secondLine = tooltip.append('div');
+            secondLine.append('span')
+              .text(`${translator(['correlationLabel'])}: `);
 
-          return g;
-        });
-      // end plot
+            secondLine.append('span')
+              .style('font-weight', 'bold')
+              .style('color',
+                () => {
+                  if (correlationPercent > 0) {
+                    return colorScale.interpolator()(100);
+                  }
 
-      // start axis
-      if (xScale.bandwidth() > 30) {
-        svg.append("g")
-          .attr("transform", `translate(0,${bodyPosition.yBottom})`)
-          .call(axisBottom(xScale))
-          .call(g => {
-            g.select(".domain").remove();
+                  if (correlationPercent < 0) {
+                    return colorScale.interpolator()(-100);
+                  }
 
-            g.selectAll('text')
-              .text((d: any) => {
-                const symbol = d.split(':')[1];
-
-                let maxLength = 3;
-                const bandWidth = xScale.bandwidth();
-                if (bandWidth > 80) {
-                  maxLength = 8;
-                } else if (bandWidth > 50) {
-                  maxLength = 5;
-                } else if (bandWidth > 40) {
-                  maxLength = 4;
+                  return null;
                 }
+              )
+              .text(`${correlationPercent}%`);
+          }
+        );
 
-                if (symbol.length > maxLength) {
-                  return `${symbol.slice(0, maxLength)}...`;
-                }
+        cell.append("rect")
+          .attr("class", "cell-rect")
+          .attr("x", d => xScale(d.colInstrument)!)
+          .attr("y", d => yScale(d.rowInstrument)!)
+          .attr("width", xScale.bandwidth() - 1)
+          .attr("height", yScale.bandwidth() - 1)
+          .attr("fill", d => colorScale(d.cellValue.correlation));
 
-                return symbol;
-              });
+        cell.append("text")
+          .attr("class", "cell-text")
+          .attr("x", d => xScale(d.colInstrument)! + xScale.bandwidth() / 2)
+          .attr("y", d => yScale(d.rowInstrument)! + yScale.bandwidth() / 2)
+          .attr("text-anchor", "middle")
+          .attr("dominant-baseline", "middle")
+          .style('user-select', 'none')
+          .text(d => d.cellValue.cointegration ? translator(['cointegrationMark']) : '');
 
-            g.selectAll('.tick')
-              .append('title')
-              .text((d: any) => d);
-          });
+        return cell;
+      });
+
+    return {
+      onZoom: () => {
+        matrixRows.selectAll(".cell-rect")
+          .attr("x", (d: any) => xScale(d.colInstrument)!)
+          .attr("y", (d: any) => yScale(d.rowInstrument)!)
+          .attr("width", xScale.bandwidth() - 1)
+          .attr("height", yScale.bandwidth() - 1);
+
+        matrixRows.selectAll(".cell-text")
+          .attr("x", (d: any) => xScale(d.colInstrument)! + xScale.bandwidth() / 2)
+          .attr("y", (d: any) => yScale(d.rowInstrument)! + yScale.bandwidth() / 2);
       }
+    };
+  }
 
-      svg.append("g")
-        .attr("transform", `translate(${bodyPosition.xRight},0)`)
-        .call(axisRight(yScale))
+  private drawXAxis(
+    position: ItemPosition,
+    root: Selection<SVGSVGElement, any, HTMLElement, any>,
+    xScale: ScaleBand<string>,
+  ): { onZoom: () => void } {
+    const axisClipId = 'x-axis-clip';
+
+    const clipPath = root.select('defs').append("svg:clipPath");
+    clipPath.attr("id", axisClipId);
+
+    const clipPathRect = clipPath.append("svg:rect");
+    clipPathRect
+      .attr("width", position.xRight - position.xLeft)
+      .attr("height", position.yBottom - position.yTop)
+      .attr("x", 0)
+      .attr("y", 0);
+
+    const xAxis = root.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", `translate(${position.xLeft},${position.yTop})`)
+      .attr("clip-path", `url(#${axisClipId})`)
+      .style('display', 'none')
+      .style('user-select', 'none');
+
+    const draw = () => {
+      xAxis
+        .call(axisBottom(xScale))
         .call(g => {
           g.select(".domain").remove();
 
           g.selectAll('text')
             .text((d: any) => {
-              const symbol = d.split(':')[1];
+              const symbol = this.getSymbol(d);
+
+              let maxLength = 3;
+              const bandWidth = xScale.bandwidth();
+              if (bandWidth > 80) {
+                maxLength = 8;
+              } else if (bandWidth > 50) {
+                maxLength = 5;
+              } else if (bandWidth > 40) {
+                maxLength = 4;
+              }
+
+              if (symbol.length > maxLength) {
+                return `${symbol.slice(0, maxLength)}...`;
+              }
+
+              return symbol;
+            });
+
+          g.selectAll('.tick')
+            .append('title')
+            .text((d: any) => d);
+        });
+
+      xAxis.style('display', () => xScale.bandwidth() > 30 ? 'block' : 'none');
+    };
+
+    draw();
+
+    return {
+      onZoom: () => draw()
+    };
+  }
+
+  private drawYAxis(
+    position: ItemPosition,
+    root: Selection<SVGSVGElement, any, HTMLElement, any>,
+    yScale: ScaleBand<string>,
+  ): { onZoom: () => void } {
+    const axisClipId = 'y-axis-clip';
+
+    const clipPath = root.select('defs').append("svg:clipPath");
+    clipPath.attr("id", axisClipId);
+
+    const clipPathRect = clipPath.append("svg:rect");
+    clipPathRect
+      .attr("width", position.xRight - position.xLeft)
+      .attr("height", position.yBottom - position.yTop)
+      .attr("x", 0)
+      .attr("y", 0);
+
+    const yAxis = root.append("g")
+      .attr("class", "y-axis")
+      .attr("transform", `translate(${position.xLeft},${position.yTop})`)
+      .attr("clip-path", `url(#${axisClipId})`)
+      .style('display', 'none')
+      .style('user-select', 'none');
+
+    const draw = () => {
+      yAxis.call(axisRight(yScale))
+        .call(g => {
+          g.select(".domain").remove();
+
+          g.selectAll('text')
+            .text((d: any) => {
+              const symbol = this.getSymbol(d);
               if (symbol.length > 4) {
                 return `${symbol.slice(0, 4)}...`;
               }
@@ -328,108 +482,172 @@ ${correlationPercent}%`;
             .append('title')
             .text((d: any) => d);
         });
-      // end axis
 
-      // start legend
-      svg.append("g")
-        .attr("transform", `translate(0,${bodyPosition.yBottom + bottomMargin / 2})`)
-        .append(() => this.drawLegend(
-          color,
-          {
-            width: 75
-          }
-        ));
+      yAxis.style('display', () => yScale.bandwidth() > 8 ? 'block' : 'none');
+    };
 
-      svg.append("g")
-        .attr("transform", `translate(80,${bodyPosition.yBottom + bottomMargin / 2})`)
-        .call(g => {
-          g.append("rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", 20)
-            .attr("height", 20)
-            .attr("fill-opacity", 0)
-            .style("stroke", "currentColor");
+    draw();
 
-          g.append("text")
-            .attr("x", 10)
-            .attr("y", 10)
-            .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "central")
-            .attr("fill", "currentColor")
-            .text(x.translator(['cointegrationMark']));
-
-          g.append("text")
-            .attr("x", 25)
-            .attr("y", 10)
-            .attr("alignment-baseline", "central")
-            .attr("fill", "currentColor")
-            .text(`- ${x.translator(['cointegrationLegend'])}`);
-
-        });
-
-      // end legend
-    });
+    return {
+      onZoom: () => draw()
+    };
   }
 
-  private setInitialRequestValues() {
-    combineLatest({
-        settings: this.settings$,
-        allLists: this.availableLists$
-      }
-    ).pipe(
-      take(1)
-    ).subscribe(x => {
-      const lastParams = x.settings.lastRequestParams;
+  private drawColorLegend(
+    position: ItemPosition,
+    root: Selection<SVGSVGElement, any, HTMLElement, any>,
+    colorScale: ScaleDiverging<string>,
+  ): void {
+    const container = root.append("g")
+      .attr('class', 'color-legend')
+      .attr("transform", `translate(${position.xLeft},${position.yTop})`);
 
-      let currentListId: string | null = null;
-      if (x.allLists.find(l => l.id === lastParams?.listId)) {
-        currentListId = lastParams!.listId;
-      } else {
-        const historyList = x.allLists.find(l => l.type === WatchlistType.HistoryList);
-        if (!!historyList) {
-          currentListId = historyList.id;
-        } else {
-          const defaultList = x.allLists.find(l => l.isDefault || l.type === WatchlistType.DefaultList);
-          if (!!defaultList) {
-            currentListId = defaultList.id;
-          }
-        }
-      }
+    const width = position.xRight - position.xLeft;
+    const legend = container.append("svg");
+    legend
+      .attr("width", width)
+      .attr("height", position.yBottom - position.yTop)
+      .style("overflow", "visible")
+      .style("display", "block");
 
-      if (!!currentListId) {
-        this.parametersForm.controls.targetListId.setValue(currentListId);
-      }
-
-      this.parametersForm.controls.days.setValue(lastParams?.days ?? this.timeframes[0].value);
-      this.parametersForm.controls.detrendType.setValue(lastParams?.detrendType ?? DetrendType.Linear);
-    });
-  }
-
-  private saveCurrentParameters() {
-    if (!this.parametersForm.valid) {
-      return;
+    const ramp = document.createElement("canvas");
+    ramp.width = 256;
+    ramp.height = 1;
+    const context = ramp.getContext("2d");
+    const interpolator = colorScale.interpolator();
+    for (let i = 0; i < ramp.width; ++i) {
+      context!.fillStyle = interpolator(i / (ramp.width - 1));
+      context!.fillRect(i, 0, 1, 1);
     }
 
-    const formValue = this.parametersForm.value;
-    this.widgetSettingsService.updateSettings<InstrumentsCorrelationSettings>(
-      this.guid,
-      {
-        lastRequestParams: {
-          listId: formValue.targetListId!,
-          days: formValue.days!,
-          detrendType: formValue.detrendType!
-        }
-      }
-    );
+    legend.append("image")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", width)
+      .attr("height", 10)
+      .attr("preserveAspectRatio", "none")
+      .attr("xlink:href", ramp.toDataURL());
+
+    const ticksMargin = 10;
+    legend.append("g")
+      .attr("transform", `translate(0,5)`)
+      .style('user-select', 'none')
+      .call(axisBottom(scaleLinear([-100, 100], [ticksMargin, width - ticksMargin]))
+        .ticks(3, 'd')
+        .tickValues([-100, 0, 100])
+      )
+      .call(g => g.select(".domain").remove());
   }
 
-  private toMatrix(response: InstrumentsCorrelationResponse | null): CorrelationMatrix | null {
-    if (!response) {
+  private drawSymbolsLegend(
+    position: ItemPosition,
+    root: Selection<SVGSVGElement, any, HTMLElement, any>,
+    translator: TranslatorFn
+  ): void {
+    const container = root.append("g")
+      .attr("transform", `translate(${position.xLeft},${position.yTop})`)
+      .attr('class', 'symbols-legend')
+      .style('user-select', 'none');
+
+    const height = position.yBottom - position.yTop;
+
+    container.call(g => {
+      const borderWidth = 1;
+      g.append("rect")
+        .attr("x", borderWidth)
+        .attr("y", borderWidth)
+        .attr("width", height - borderWidth * 2)
+        .attr("height", height - borderWidth * 2)
+        .attr("fill-opacity", 0)
+        .style("stroke", "currentColor")
+        .style('stroke-width', borderWidth);
+
+      g.append("text")
+        .attr("x", height / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("fill", "currentColor")
+        .text(translator(['cointegrationMark']));
+
+      g.append("text")
+        .attr("x", height + 5)
+        .attr("y", height / 2)
+        .attr("alignment-baseline", "central")
+        .attr("fill", "currentColor")
+        .text(`- ${translator(['cointegrationLegend'])}`);
+
+    });
+  }
+
+  private applyTooltip<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
+    selection: Selection<GElement, Datum, PElement, PDatum>,
+    tooltipContainer: Selection<HTMLDivElement, any, HTMLElement, any>,
+    containerSize: ContentSize,
+    onShow: (data: Datum, tooltipContainer: Selection<HTMLDivElement, any, HTMLElement, any>) => void
+  ): void {
+    const pointerPaddingTop = 2;
+    const pointerPaddingBottom = 18;
+    const pointerPaddingLeft = 2;
+    const pointerPaddingRight = 12;
+
+    const handleMouseover = (datum: Datum) => {
+      tooltipContainer.selectAll("*").remove();
+      onShow(datum, tooltipContainer);
+
+      tooltipContainer
+        .transition()
+        .delay(750)
+        .style('display', 'block');
+    };
+
+    const handleMousemove = (position: [number, number]) => {
+      const mouseX = position[0];
+      const mouseY = position[1];
+
+      tooltipContainer
+        .style(
+          "top",
+          mouseY < (containerSize.height / 2) ? `${mouseY + pointerPaddingBottom}px` : "initial"
+        )
+        .style(
+          "right",
+          mouseX > containerSize.width / 2
+            ? `${containerSize.width - mouseX + pointerPaddingLeft}px`
+            : "initial"
+        )
+        .style(
+          "bottom",
+          mouseY > containerSize.height / 2
+            ? `${containerSize.height - mouseY + pointerPaddingTop}px`
+            : "initial"
+        )
+        .style(
+          "left",
+          mouseX < containerSize.width / 2 ? `${mouseX + pointerPaddingRight}px` : "initial"
+        );
+    };
+
+    const handleMouseleave = () => {
+      tooltipContainer
+        .transition()
+        .style('display', 'none');
+    };
+
+    selection.each(function (datum) {
+      select(this)
+        .on("mouseover.tooltip", () => handleMouseover(datum))
+        .on("mousemove.tooltip", event => handleMousemove(pointer(event)))
+        .on("mouseleave.tooltip", () => handleMouseleave());
+    });
+  }
+
+  private toMatrix(response: InstrumentsCorrelationResponse): CorrelationMatrix | null {
+    if (!response.data) {
       return null;
     }
 
-    const indexes = Object.keys(response.correlation).sort((a, b) => a.localeCompare(b));
+    const indexes = Object.keys(response.data.correlation).sort((a, b) => a.localeCompare(b));
 
     const matrix: MatrixCell[][] = [];
     for (let i = 0; i < indexes.length; i++) {
@@ -440,8 +658,8 @@ ${correlationPercent}%`;
         const colInstrument = indexes[j];
 
         matrixRow.push({
-          correlation: response.correlation[rowInstrument][colInstrument],
-          cointegration: response.cointegration[rowInstrument][colInstrument] === 1
+          correlation: response.data.correlation[rowInstrument][colInstrument],
+          cointegration: response.data.cointegration[rowInstrument][colInstrument] === 1
         });
       }
     }
@@ -452,48 +670,61 @@ ${correlationPercent}%`;
     };
   }
 
-  private drawLegend(
-    color: ScaleDiverging<string>,
-    params: {
-      width: number
+  private getChartItemsPositions(containerSize: ContentSize): ChartItemsPositions {
+    const xAxisHeight = 25;
+    const yAxisWidth = 50;
+    const legendHeight = 22;
 
-    }): SVGSVGElement | null {
-    const svg = create("svg")
-      .attr("width", params.width)
-      .attr("height", 25)
-      .style("overflow", "visible")
-      .style("display", "block");
+    const colorLegend: ItemPosition = {
+      xLeft: 0,
+      yTop: containerSize.height - legendHeight,
+      xRight: 75,
+      yBottom: containerSize.height
+    };
 
-    const scale = color.copy();
+    const symbolsLegend: ItemPosition = {
+      xLeft: colorLegend.xRight + 5,
+      yTop: containerSize.height - legendHeight,
+      xRight: containerSize.width,
+      yBottom: containerSize.height
+    };
 
-    const ramp = document.createElement("canvas");
-    ramp.width = 256;
-    ramp.height = 1;
-    const context = ramp.getContext("2d");
-    const interpolator = scale.interpolator();
-    for (let i = 0; i < ramp.width; ++i) {
-      context!.fillStyle = interpolator(i / (ramp.width - 1));
-      context!.fillRect(i, 0, 1, 1);
-    }
+    const xAxis: ItemPosition = {
+      xLeft: 0,
+      yTop: colorLegend.yTop - xAxisHeight,
+      xRight: containerSize.width - yAxisWidth,
+      yBottom: colorLegend.yTop
+    };
 
-    svg.append("image")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", params.width)
-      .attr("height", 10)
-      .attr("preserveAspectRatio", "none")
-      .attr("xlink:href", ramp.toDataURL());
+    const yAxis: ItemPosition = {
+      xLeft: containerSize.width - yAxisWidth,
+      yTop: 0,
+      xRight: containerSize.width,
+      yBottom: xAxis.yTop
+    };
 
-    const ticks = [-1, 0, 1];
+    const matrixArea: ItemPosition = {
+      xLeft: 0,
+      yTop: 0,
+      xRight: yAxis.xLeft,
+      yBottom: yAxis.yBottom,
+    };
 
-    svg.append("g")
-      .attr("transform", `translate(0,5)`)
-      .call(axisBottom(scaleLinear(ticks, [5, params.width / 2]))
-        .ticks(3, 'd')
-        .tickValues(ticks)
-      )
-      .call(g => g.select(".domain").remove());
+    return {
+      matrixArea,
+      xAxis,
+      yAxis,
+      colorLegend,
+      symbolsLegend
+    };
+  }
 
-    return svg.node();
+  private getSymbol(symbolWithExchange: string): string {
+    const parts = symbolWithExchange.split(':');
+
+    return parts.length > 1
+      ? parts[1]
+      : symbolWithExchange;
   }
 }
+
