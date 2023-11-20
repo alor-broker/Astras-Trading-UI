@@ -7,13 +7,15 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { LetDirective } from "@ngrx/component";
 import { NzSpinModule } from "ng-zorro-antd/spin";
+import { ChartFiltersComponent } from './components/chart-filters/chart-filters.component';
 
 
 
 @NgModule({
   declarations: [
     InstrumentsCorrelationWidgetComponent,
-    CorrelationChartComponent
+    CorrelationChartComponent,
+    ChartFiltersComponent
   ],
   exports: [
     InstrumentsCorrelationWidgetComponent
