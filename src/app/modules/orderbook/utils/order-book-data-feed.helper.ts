@@ -5,7 +5,7 @@ import { CurrentOrder } from '../models/orderbook-view-row.model';
 export class OrderBookDataFeedHelper {
   public static getRealtimeDateRequest(symbol: string,
                                        exchange: string,
-                                       instrumentGroup?: string,
+                                       instrumentGroup?: string | null,
                                        depth?: number): OrderbookRequest {
     return {
       opcode: 'OrderBookGetAndSubscribe',

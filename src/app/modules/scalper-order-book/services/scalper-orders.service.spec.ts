@@ -168,7 +168,7 @@ describe('ScalperOrdersService', () => {
 
       orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
 
-      service.closePositionsByMarket(position1, testInstrumentKey1.instrumentGroup);
+      service.closePositionsByMarket(position1, testInstrumentKey1.instrumentGroup ?? null);
       tick(10000);
 
       expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
@@ -181,7 +181,7 @@ describe('ScalperOrdersService', () => {
       );
 
       orderServiceSpy.submitMarketOrder.calls.reset();
-      service.closePositionsByMarket(position2, testInstrumentKey2.instrumentGroup);
+      service.closePositionsByMarket(position2, testInstrumentKey2.instrumentGroup ?? null);
       tick(10000);
 
       expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
@@ -1003,7 +1003,7 @@ describe('ScalperOrdersService', () => {
 
       orderServiceSpy.submitMarketOrder.and.returnValue(of({}));
 
-      service.reversePositionsByMarket(position, testInstrumentKey.instrumentGroup);
+      service.reversePositionsByMarket(position, testInstrumentKey.instrumentGroup ?? null);
 
       tick(10000);
       expect(orderServiceSpy.submitMarketOrder)
@@ -1020,7 +1020,7 @@ describe('ScalperOrdersService', () => {
       orderServiceSpy.submitMarketOrder.calls.reset();
       position.qtyTFutureBatch = position.qtyTFutureBatch * -1;
 
-      service.reversePositionsByMarket(position, testInstrumentKey.instrumentGroup);
+      service.reversePositionsByMarket(position, testInstrumentKey.instrumentGroup ?? null);
       tick(10000);
       expect(orderServiceSpy.submitMarketOrder)
         .withContext('qtyTFutureBatch < 0')
@@ -1153,7 +1153,7 @@ describe('ScalperOrdersService', () => {
         getRandomInt(1, 1000),
         Math.random() < 0.5,
         currentPortfolioPosition,
-        testInstrumentKey.instrumentGroup,
+        testInstrumentKey.instrumentGroup ?? null,
         portfolioKey
       );
 
@@ -1187,7 +1187,7 @@ describe('ScalperOrdersService', () => {
         avgPrice + 1,
         Math.random() < 0.5,
         position,
-        testInstrumentKey.instrumentGroup,
+        testInstrumentKey.instrumentGroup ?? null,
         portfolioKey
       );
 
@@ -1207,7 +1207,7 @@ describe('ScalperOrdersService', () => {
         avgPrice - 1,
         Math.random() < 0.5,
         position,
-        testInstrumentKey.instrumentGroup,
+        testInstrumentKey.instrumentGroup ?? null,
         portfolioKey
       );
 
@@ -1242,7 +1242,7 @@ describe('ScalperOrdersService', () => {
 
         orderServiceSpy.submitStopMarketOrder.and.returnValue(of({}));
 
-        service.setStopLoss(expectedPrice, true, position, testInstrumentKey.instrumentGroup, portfolioKey);
+        service.setStopLoss(expectedPrice, true, position, testInstrumentKey.instrumentGroup ?? null, portfolioKey);
         tick(10000);
         expect(orderServiceSpy.submitStopMarketOrder).toHaveBeenCalledOnceWith(
           {
@@ -1259,7 +1259,7 @@ describe('ScalperOrdersService', () => {
         expectedPrice = avgPrice + 1;
         position.qtyTFutureBatch = -1;
 
-        service.setStopLoss(expectedPrice, true, position, testInstrumentKey.instrumentGroup, portfolioKey);
+        service.setStopLoss(expectedPrice, true, position, testInstrumentKey.instrumentGroup ?? null, portfolioKey);
         tick(10000);
         expect(orderServiceSpy.submitStopMarketOrder).toHaveBeenCalledOnceWith(
           {

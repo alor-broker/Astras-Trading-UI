@@ -59,7 +59,7 @@ export class ScalperOrdersService {
     }
   }
 
-  closePositionsByMarket(position: Position | null, instrumentGroup: string | undefined): void {
+  closePositionsByMarket(position: Position | null, instrumentGroup: string | null): void {
     if (!position || !position.qtyTFutureBatch) {
       return;
     }
@@ -84,7 +84,7 @@ export class ScalperOrdersService {
       return;
     }
 
-    let price: number | undefined;
+    let price: number | null;
 
     const bestAsk = orderBook.a[0].p;
     const bestBid = orderBook.b[0].p;
@@ -110,7 +110,7 @@ export class ScalperOrdersService {
         : bestBid;
     }
 
-    if (price != undefined) {
+    if (price != null) {
       if (this.checkBracketNeeded(settings, side, quantity, position)) {
         this.placeBracket(
           {
@@ -298,7 +298,7 @@ export class ScalperOrdersService {
     }
   }
 
-  reversePositionsByMarket(position: Position | null, instrumentGroup: string | undefined): void {
+  reversePositionsByMarket(position: Position | null, instrumentGroup: string | null): void {
     if (!position || !position.qtyTFutureBatch) {
       return;
     }
@@ -342,7 +342,7 @@ export class ScalperOrdersService {
     }
   }
 
-  setStopLoss(price: number, silent: boolean, position: Position | null, instrumentGroup: string | undefined, portfolio: PortfolioKey): void {
+  setStopLoss(price: number, silent: boolean, position: Position | null, instrumentGroup: string | null, portfolio: PortfolioKey): void {
     if (!position || position.qtyTFutureBatch === 0 || !position.avgPrice) {
       this.notification.error('Нет позиций', 'Позиции для установки стоп-лосс отсутствуют');
       return;

@@ -257,7 +257,6 @@ export class TechChartDatafeedService implements IBasicDataFeed {
                 ? this.historyService.getHistory({
                   symbol: instruments[i].value.symbol,
                   exchange: instruments[i].value.exchange,
-                  instrumentGroup: instruments[i].value.instrumentGroup ?? '',
                   tf: this.parseTimeframe(resolution),
                   from: addDaysUnix(new Date(), -30),
                   to: Math.round(Date.now() / 1000)
