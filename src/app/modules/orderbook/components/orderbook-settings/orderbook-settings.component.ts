@@ -11,7 +11,6 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
 
 @Component({
   selector: 'ats-orderbook-settings',
@@ -118,7 +117,7 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
-  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<TechChartSettings> {
+  protected getUpdatedSettings(initialSettings: OrderbookSettings): Partial<OrderbookSettings> {
     const formValue = this.form.getRawValue();
 
     const newSettings = {

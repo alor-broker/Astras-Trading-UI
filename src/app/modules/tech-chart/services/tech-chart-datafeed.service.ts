@@ -34,16 +34,10 @@ import { TranslatorService } from "../../../shared/services/translator.service";
 import { SyntheticInstrumentsService } from "./synthetic-instruments.service";
 import { map, startWith } from "rxjs/operators";
 import { addDaysUnix } from "../../../shared/utils/datetime";
-import {
-  InstrumentDataPart, OperatorPart,
-  RegularOrSyntheticInstrumentKey,
-  SyntheticInstrumentPart
-} from "../models/synthetic-instruments.model";
+import { InstrumentDataPart } from "../models/synthetic-instruments.model";
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
 import { HistoryResponse } from "../../../shared/models/history/history-response.model";
-import { SYNTHETIC_INSTRUMENT_REGEX, SyntheticInstrumentsHelper } from "../utils/synthetic-instruments.helper";
-
-const DEFAULT_EXCHANGE = 'MOEX';
+import { SyntheticInstrumentsHelper } from "../utils/synthetic-instruments.helper";
 
 @Injectable()
 export class TechChartDatafeedService implements IBasicDataFeed {
@@ -112,7 +106,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   }
 
   resolveSymbol(symbolName: string, onResolve: ResolveCallback, onError: ErrorCallback): void {
-    const instrumentsData = this.getSyntheticInstrumentKeys(symbolName);
+    const instrumentsData = SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(symbolName);
 
     let request: Observable<Instrument | null>;
 
@@ -162,12 +156,12 @@ export class TechChartDatafeedService implements IBasicDataFeed {
       };
 
       onResolve(resolve);
-      this.onSymbolChange$.next(instrumentsData.isSynthetic ? { symbol: '', exchange: '' } : instrumentsData.instrument);
+      this.onSymbolChange$.next(instrumentsData.isSynthetic ? instrumentDetails : instrumentsData.instrument);
     });
   }
 
   getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParams, onResult: HistoryCallback, onError: ErrorCallback): void {
-    const instrumentsData = this.getSyntheticInstrumentKeys(symbolInfo.ticker!);
+    const instrumentsData = SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(symbolInfo.ticker!);
     const lastBarPointKey = this.getLastBarPointKey(symbolInfo.ticker!, resolution);
     if (periodParams.firstDataRequest) {
       this.lastBarPoint.delete(lastBarPointKey);
@@ -227,7 +221,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   }
 
   subscribeBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, onTick: SubscribeBarsCallback, listenerGuid: string): void {
-    const instrumentsData = this.getSyntheticInstrumentKeys(symbolInfo.ticker!);
+    const instrumentsData = SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(symbolInfo.ticker!);
 
     let request: Observable<Candle | null>;
 
@@ -351,57 +345,6 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     ).subscribe(time => {
       callback(time);
     });
-  }
-
-  private getSyntheticInstrumentKeys(searchString: string): RegularOrSyntheticInstrumentKey {
-    if (!searchString) {
-      return { isSynthetic: false, instrument: { symbol: '', exchange: '' }};
-    }
-
-    const parts: SyntheticInstrumentPart[] = searchString
-        .match(SYNTHETIC_INSTRUMENT_REGEX)
-        ?.map(s => {
-          if (s.match(/[a-zA-Z]/)) {
-            if (s.includes(':')) {
-              return {
-                isSpreadOperator: false,
-                value: this.getSymbolAndExchangeFromTicker(s)
-              } as InstrumentDataPart;
-            }
-            return {
-              isSpreadOperator: false,
-              value: this.getSymbolAndExchangeFromTicker(DEFAULT_EXCHANGE + ':' + s)
-            } as InstrumentDataPart;
-          }
-
-          if (s === '^') {
-            return { isSpreadOperator: true, value: '**' } as OperatorPart;
-          }
-          return { isSpreadOperator: true, value: s } as OperatorPart;
-        })
-      ?? [];
-
-    if (parts.length < 2) {
-      if ((<InstrumentDataPart>parts[0])?.value.symbol) {
-        return {
-          isSynthetic: false,
-          instrument: (<InstrumentDataPart>parts[0]).value,
-        };
-      }
-      return { isSynthetic: false, instrument: { symbol: '', exchange: '' }};
-    }
-
-    return { isSynthetic: true, parts };
-  }
-
-  private getSymbolAndExchangeFromTicker(symbolName: string): InstrumentKey {
-    const splits = symbolName.split(':');
-
-    if (splits.length < 2) {
-      return { symbol: splits[0], exchange: '' };
-    }
-
-    return { symbol: splits[1], exchange: splits[0], instrumentGroup: splits[2] };
   }
 
   private getLastBarPointKey(ticker: string, resolution: ResolutionString): string {
