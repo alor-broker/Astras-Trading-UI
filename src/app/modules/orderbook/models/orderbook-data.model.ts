@@ -3,7 +3,7 @@ import { SubscriptionRequest } from '../../../shared/services/subscriptions-data
 export interface OrderbookRequest extends SubscriptionRequest {
   code: string,
   exchange: string,
-  instrumentGroup?: string
+  instrumentGroup?: string | null
   depth: number,
   format: string
 }

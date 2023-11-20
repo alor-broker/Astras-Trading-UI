@@ -240,11 +240,11 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
   }
 
   closePosition(position: PositionDisplay) {
-    CommonOrderCommands.closePositionByMarket(position, undefined, this.ordersService);
+    CommonOrderCommands.closePositionByMarket(position, null, this.ordersService);
   }
 
   reversePosition(position: PositionDisplay) {
-    CommonOrderCommands.reversePositionsByMarket(position, undefined, this.ordersService);
+    CommonOrderCommands.reversePositionsByMarket(position, null, this.ordersService);
   }
 
   closeAllPositions(positions: readonly PositionDisplay[]){

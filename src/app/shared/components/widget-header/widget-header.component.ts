@@ -92,7 +92,7 @@ export class WidgetHeaderComponent implements OnInit {
                   ...currentSelection[b],
                   instrumentGroup: symbolGroups[assignedInstrument.symbol] > 1
                     ? assignedInstrument.instrumentGroup
-                    : undefined
+                    : null
                 }
                 : null
             };
