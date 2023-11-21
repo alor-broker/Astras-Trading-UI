@@ -63,12 +63,20 @@ li {
   }
 }
 
-.dashboard-selection-row {
-  width: 100%;
-  display: flex;
+.ant-dropdown-menu-item {
+  ::ng-deep {
+    .ant-menu-title-content {
+      width: 100%;
 
-  .title {
-    flex: 1;
+      .dashboard-selection-row {
+        display: flex;
+
+        .title {
+          flex: 1;
+        }
+
+      }
+    }
   }
-
 }
+
