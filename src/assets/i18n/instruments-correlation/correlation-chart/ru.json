@@ -19,5 +19,12 @@
   },
 
   "cointegrationMark": "К",
-  "cointegrationLegend": "Инструменты коинтегрированы"
+  "cointegrationLegend": "Инструменты коинтегрированы",
+  "correlationLabel": "Корреляция",
+
+  "errorCodes": {
+    "EMPTY_TICKERS_LIST": "Выбранный список не содержит инструментов",
+    "SHORT_TICKERS_LIST": "Список должен содержать как минимум два инструмента",
+    "UNKNOWN": "Не удалось выполнить анализ для выбранных параметров"
+  }
 }

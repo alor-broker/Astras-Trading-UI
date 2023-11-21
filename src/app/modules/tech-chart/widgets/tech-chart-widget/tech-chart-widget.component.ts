@@ -12,6 +12,9 @@ import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { TerminalSettingsService } from 'src/app/shared/services/terminal-settings.service';
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import { map } from "rxjs/operators";
+import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 @Component({
   selector: 'ats-tech-chart-widget',
@@ -29,6 +32,8 @@ export class TechChartWidgetComponent implements OnInit {
 
   settings$!: Observable<TechChartSettings>;
   showBadge$!: Observable<boolean>;
+  headerTitle$!: Observable<string | null>;
+
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
@@ -45,7 +50,7 @@ export class TechChartWidgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<TechChartSettings>(
+    WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<TechChartSettings & InstrumentKey>(
       this.widgetInstance,
       'TechChartSettings',
       settings => ({
@@ -58,5 +63,8 @@ export class TechChartWidgetComponent implements OnInit {
 
     this.settings$ = this.widgetSettingsService.getSettings<TechChartSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
+    this.headerTitle$ = this.settings$.pipe(
+      map(s => SyntheticInstrumentsHelper.isSyntheticInstrument(s.symbol) ? s.symbol : null)
+    );
   }
 }

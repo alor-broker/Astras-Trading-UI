@@ -63,6 +63,9 @@ import { TradesHistoryService } from "../../../../shared/services/trades-history
 import { addSeconds } from "../../../../shared/utils/datetime";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
 import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
+import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
+import { RegularInstrumentKey, SyntheticInstrumentKey } from "../../models/synthetic-instruments.model";
+import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -208,6 +211,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private translateFn!: (key: string[], params?: HashMap) => string;
   private intervalChangeSub?: Subscription;
   private timezoneChangeSub?: Subscription;
+  private symbolChangeSub?: Subscription;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -222,7 +226,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly translatorService: TranslatorService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly tradesHistoryService: TradesHistoryService,
-    private readonly destroyRef: DestroyRef
+    private readonly destroyRef: DestroyRef,
+    private readonly syntheticInstrumentsService: SyntheticInstrumentsService
   ) {
   }
 
@@ -239,6 +244,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.chartState.tradesState?.destroy();
       this.intervalChangeSub?.unsubscribe();
       this.timezoneChangeSub?.unsubscribe();
+      this.symbolChangeSub?.unsubscribe();
       this.chartState.widget.remove();
     }
 
@@ -306,15 +312,19 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initSettingsStream() {
-    const getInstrumentInfo = (settings: TechChartSettings) => this.instrumentsService.getInstrument(settings).pipe(
-      filter((x): x is Instrument => !!x)
-    );
+    const getInstrumentInfo = (settings: TechChartSettings) =>
+      (SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol)
+          ? this.syntheticInstrumentsService.getInstrument((<SyntheticInstrumentKey>SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(settings.symbol)).parts)
+          : this.instrumentsService.getInstrument(settings as InstrumentKey)
+      ).pipe(
+        filter((x): x is Instrument => !!x)
+      );
 
     this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid).pipe(
       distinctUntilChanged((previous, current) => this.isEqualTechChartSettings(previous, current)),
       mapWith(
         settings => getInstrumentInfo(settings),
-        (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedSettings)
+        (widgetSettings, instrument: Instrument) => ({ widgetSettings, instrument } as ExtendedSettings)
       ),
       shareReplay(1)
     );
@@ -352,14 +362,15 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.chartState) {
       if (forceRecreate) {
         this.intervalChangeSub?.unsubscribe();
+        this.symbolChangeSub?.unsubscribe();
         this.chartState.widget?.remove();
       }
       else {
         this.chartState.widget.activeChart().setSymbol(
-          this.toTvSymbol(settings),
+          SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol) ? settings.symbol : this.toTvSymbol(settings as InstrumentKey),
           () => {
-            this.initPositionDisplay(settings, theme.themeColors);
-            this.initOrdersDisplay(settings, theme.themeColors);
+            this.initPositionDisplay(settings as InstrumentKey, theme.themeColors);
+            this.initOrdersDisplay(settings as InstrumentKey, theme.themeColors);
             this.initTradesDisplay(settings, theme.themeColors);
             this.initTimezoneChangeStream(settings, theme.themeColors);
           }
@@ -375,13 +386,24 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const currentTimezone = timezoneConverter.getTimezone();
 
+    let chartLayout: any;
+    const selectedInstrumentSymbol = SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol) ? settings.symbol : this.toTvSymbol(settings as InstrumentKey);
+
+    if (settings.chartLayout) {
+      chartLayout = JSON.parse(JSON.stringify(settings.chartLayout));
+      if (chartLayout?.charts?.[0]?.panes?.[0]?.sources?.[0]?.state) {
+        chartLayout.charts[0].panes[0].sources[0].state.symbol = selectedInstrumentSymbol;
+        chartLayout.charts[0].panes[0].sources[0].state.shortName = selectedInstrumentSymbol;
+      }
+    }
+
     const config: ChartingLibraryWidgetOptions = {
       // debug
       debug: false,
       // base options
       container: this.chartContainer.nativeElement,
-      symbol: this.toTvSymbol(settings),
-      interval: ((<any>settings.chartLayout)?.charts?.[0]?.panes?.[0]?.sources?.[0]?.state?.interval ?? '1D') as ResolutionString,
+      symbol: selectedInstrumentSymbol,
+      interval: (chartLayout?.charts?.[0]?.panes?.[0]?.sources?.[0]?.state?.interval ?? '1D') as ResolutionString,
       locale: this.translatorService.getActiveLang() as LanguageCode,
       library_path: '/assets/charting_library/',
       datafeed: this.techChartDatafeedService,
@@ -397,7 +419,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       ],
       theme: theme.theme === ThemeType.default ? 'light' : 'dark',
-      saved_data: settings.chartLayout,
+      saved_data: chartLayout,
       auto_save_delay: 1,
       time_frames: [
         { text: '1000y', resolution: '1M' as ResolutionString, description: this.translateFn(['timeframes', 'all', 'desc']), title: this.translateFn(['timeframes', 'all', 'title']) },
@@ -437,32 +459,24 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     chartWidget.onChartReady(() => {
       this.chartState?.widget!.activeChart().dataReady(() => {
-          this.initPositionDisplay(settings, theme.themeColors);
-          this.initOrdersDisplay(settings, theme.themeColors);
+          this.initPositionDisplay(settings as InstrumentKey, theme.themeColors);
+          this.initOrdersDisplay(settings as InstrumentKey, theme.themeColors);
           this.initTradesDisplay(settings, theme.themeColors);
           this.initTimezoneChangeStream(settings, theme.themeColors);
         }
       );
 
-      this.techChartDatafeedService.onSymbolChange.pipe(
-        takeUntilDestroyed(this.destroyRef),
-        mapWith(
-          () => this.settings$!.pipe(take(1)),
-          (instrument, settings) =>
-            (instrument?.symbol !== settings.instrument.symbol ||
-            instrument?.exchange !== settings.instrument.exchange) &&
-            settings.widgetSettings.linkToActive
-        ),
-        filter(needUnlink => !!needUnlink)
-      )
-        .subscribe(() => this.settingsService.updateIsLinked(this.guid, false));
-
       this.intervalChangeSub = new Subscription();
+      this.symbolChangeSub = new Subscription();
 
       this.chartState!.widget.activeChart().onIntervalChanged()
         .subscribe(null, this.intervalChangeCallback);
-
       this.intervalChangeSub.add(() => this.chartState?.widget!.activeChart().onIntervalChanged().unsubscribe(null, this.intervalChangeCallback));
+
+      this.chartState!.widget.activeChart().onSymbolChanged()
+        .subscribe(null, this.symbolChangeCallback);
+      this.symbolChangeSub.add(() => this.chartState?.widget!.activeChart().onSymbolChanged().unsubscribe(null, this.symbolChangeCallback));
+
     });
   }
 
@@ -476,6 +490,29 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         };
       }
     };
+
+  private symbolChangeCallback = () => {
+    this.settings$!.pipe(
+      take(1),
+      filter((s: ExtendedSettings) => {
+        const settingsTicker = SyntheticInstrumentsHelper.isSyntheticInstrument(s.instrument.symbol)
+          ? s.instrument.symbol
+          : this.toTvSymbol(s.instrument);
+
+        return settingsTicker !== this.chartState!.widget.activeChart().symbol();
+      })
+    )
+      .subscribe(() => {
+        this.settingsService.updateSettings(this.guid, {
+          linkToActive: false,
+          ...(
+            SyntheticInstrumentsHelper.isSyntheticInstrument(this.chartState!.widget.activeChart().symbol())
+              ? { symbol: this.chartState!.widget.activeChart().symbol() }
+              : (<RegularInstrumentKey>SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(this.chartState!.widget.activeChart().symbol())).instrument
+          )
+        });
+      });
+  };
 
   private toTvSymbol(instrumentKey: InstrumentKey): string {
     return `[${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup ?? ''}]`;
@@ -517,6 +554,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private selectPrice(price: number) {
+    if (!this.chartState?.widget || SyntheticInstrumentsHelper.isSyntheticInstrument(this.chartState.widget.activeChart().symbol())) {
+      return;
+    }
+
     this.settings$?.pipe(
       mapWith(
         settings => this.settingsService.getSettingsByColor(settings.widgetSettings.badgeColor ?? ''),
@@ -528,7 +569,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
       if (submitOrderWidgetSettings.length === 0 || !widgetSettings.widgetSettings.badgeColor) {
         this.ordersDialogService.openNewOrderDialog({
-          instrumentKey: toInstrumentKey(widgetSettings.widgetSettings),
+          instrumentKey: toInstrumentKey(widgetSettings.widgetSettings as InstrumentKey),
           initialValues: {
             orderType: OrderType.Limit,
             price: roundedPrice,
@@ -641,7 +682,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.chartState!.tradesState?.destroy();
 
     const tearDown = new Subscription();
-    this.chartState!.tradesState = new TradesState(tearDown, settings);
+    this.chartState!.tradesState = new TradesState(tearDown, settings as InstrumentKey);
 
     const currentPortfolio$ = this.getCurrentPortfolio().pipe(
       tap( () => this.chartState?.tradesState?.clear()),
@@ -677,10 +718,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       debounceTime(500),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
-      this.fillTradesHistoryCurrentRange(settings, currentPortfolio$, themeColors);
+      this.fillTradesHistoryCurrentRange(settings as InstrumentKey, currentPortfolio$, themeColors);
     });
 
-    this.fillTradesHistoryCurrentRange(settings, currentPortfolio$, themeColors);
+    this.fillTradesHistoryCurrentRange(settings as InstrumentKey, currentPortfolio$, themeColors);
   }
 
   private drawTrade(trade: Trade, themeColors: ThemeColors) {

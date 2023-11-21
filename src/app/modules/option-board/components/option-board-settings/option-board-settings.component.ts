@@ -15,7 +15,6 @@ import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { OptionBoardSettings } from "../../models/option-board-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 @Component({
@@ -66,7 +65,7 @@ export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<Op
     this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
-  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<TechChartSettings> {
+  protected getUpdatedSettings(initialSettings: OptionBoardSettings): Partial<OptionBoardSettings> {
     const formValue = this.form.value;
 
     const newSettings = {

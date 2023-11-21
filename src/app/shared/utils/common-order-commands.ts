@@ -5,7 +5,7 @@ import { Side } from "../models/enums/side.model";
 export class CommonOrderCommands {
   static closePositionByMarket(
     position: Position,
-    instrumentGroup: string | undefined,
+    instrumentGroup: string | null,
     orderService: OrderService
   ): void {
     if (!position.qtyTFutureBatch) {
@@ -27,7 +27,7 @@ export class CommonOrderCommands {
 
   static reversePositionsByMarket(
     position: Position,
-    instrumentGroup: string | undefined,
+    instrumentGroup: string | null,
     orderService: OrderService
   ): void {
     if (!position.qtyTFutureBatch) {

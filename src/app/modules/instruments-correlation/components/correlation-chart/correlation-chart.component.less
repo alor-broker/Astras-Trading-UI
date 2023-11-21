@@ -1,11 +1,19 @@
 .container {
-  .header {
-    .ant-form-inline {
-      flex-wrap: nowrap;
-
-      .ant-select {
-        min-width: 85px;
-      }
+  ::ng-deep {
+    .tooltip {
+      box-sizing: border-box;
+      position: absolute;
+      display: none;
+      top: 0;
+      left: -100000000px;
+      padding: 0 3px;
+      font-size: 12px;
+      color: #333;
+      background-color: #fff;
+      border: 1px solid #333;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 1;
     }
   }
 }

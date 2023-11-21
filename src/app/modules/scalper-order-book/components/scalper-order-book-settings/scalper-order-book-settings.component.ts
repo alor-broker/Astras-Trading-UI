@@ -18,7 +18,6 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 
@@ -182,7 +181,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.settings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.settingsService);
   }
 
-  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<ScalperOrderBookWidgetSettings> {
+  protected getUpdatedSettings(initialSettings: ScalperOrderBookWidgetSettings): Partial<ScalperOrderBookWidgetSettings> {
     const formValue = this.form.value;
 
     const newSettings = {

@@ -3,6 +3,6 @@ import { SubscriptionRequest } from '../../services/subscriptions-data-feed.serv
 export interface QuotesRequest extends SubscriptionRequest {
   code: string,
   exchange: string,
-  instrumentGroup?: string
+  instrumentGroup?: string | null
   format: string
 }
