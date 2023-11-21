@@ -1,13 +1,29 @@
-import {createReducer, on} from '@ngrx/store';
-import {createEntityAdapter, EntityAdapter, EntityState} from '@ngrx/entity';
-import {EntityStatus} from '../../shared/models/enums/entity-status';
-import {CurrentDashboardVersion, Dashboard} from '../../shared/models/dashboard/dashboard.model';
-import {Widget} from '../../shared/models/dashboard/widget.model';
-import {GuidGenerator} from '../../shared/utils/guid';
-import {CurrentDashboardActions, InternalDashboardActions, ManageDashboardsActions} from './dashboards-actions';
-import {toInstrumentKey} from '../../shared/utils/instruments';
-
-export const dashboardsFeatureKey = 'dashboards';
+import {
+  createFeature,
+  createReducer,
+  createSelector,
+  on
+} from '@ngrx/store';
+import {
+  createEntityAdapter,
+  EntityAdapter,
+  EntityState
+} from '@ngrx/entity';
+import { EntityStatus } from '../../shared/models/enums/entity-status';
+import {
+  CurrentDashboardVersion,
+  Dashboard
+} from '../../shared/models/dashboard/dashboard.model';
+import { Widget } from '../../shared/models/dashboard/widget.model';
+import { GuidGenerator } from '../../shared/utils/guid';
+import {
+  DashboardFavoritesActions,
+  DashboardItemsActions,
+  DashboardsCurrentSelectionActions,
+  DashboardsInternalActions,
+  DashboardsManageActions,
+} from './dashboards-actions';
+import { toInstrumentKey } from '../../shared/utils/instruments';
 
 export interface State extends EntityState<Dashboard> {
   status: EntityStatus
@@ -20,11 +36,10 @@ export const adapter: EntityAdapter<Dashboard> = createEntityAdapter<Dashboard>(
 const initialState: State = adapter.getInitialState({
   status: EntityStatus.Initial
 });
-
-export const reducer = createReducer(
+const reducer = createReducer(
   initialState,
 
-  on(ManageDashboardsActions.initDashboards, (state, {dashboards}) => {
+  on(DashboardsInternalActions.init, (state, { dashboards }) => {
     return adapter.addMany(
       dashboards,
       {
@@ -33,13 +48,13 @@ export const reducer = createReducer(
       });
   }),
 
-  on(ManageDashboardsActions.initDashboardsSuccess, (state) => ({
+  on(DashboardsInternalActions.initSuccess, (state) => ({
     ...state,
     status: EntityStatus.Success
   })),
 
   on(
-    ManageDashboardsActions.addDashboard,
+    DashboardsManageActions.add,
     (state, props) => {
       let updatedState = state;
       if (props.isSelected) {
@@ -59,14 +74,14 @@ export const reducer = createReducer(
           version: CurrentDashboardVersion,
           title: props.title,
           isSelected: props.isSelected,
-          items: props.existedItems.map(x => ({...x})),
+          items: props.existedItems.map(x => ({ ...x })),
           instrumentsSelection: props.instrumentsSelection ?? null,
           sourceGuid: props.sourceGuid
         },
         updatedState);
     }),
 
-  on(ManageDashboardsActions.renameDashboard, (state, props) => {
+  on(DashboardsManageActions.rename, (state, props) => {
     return adapter.updateOne({
         id: props.dashboardGuid,
         changes: {
@@ -76,7 +91,7 @@ export const reducer = createReducer(
       state);
   }),
 
-  on(ManageDashboardsActions.addDashboardToFavorites, (state, props) => {
+  on(DashboardFavoritesActions.add, (state, props) => {
     const favoritesOrder = Object.values(state.entities).filter(d => d!.isFavorite).length;
 
     return adapter.updateOne({
@@ -89,7 +104,7 @@ export const reducer = createReducer(
       state);
   }),
 
-  on(ManageDashboardsActions.removeDashboardFromFavorites, (state, props) => {
+  on(DashboardFavoritesActions.remove, (state, props) => {
     const cahnges = Object.values(state.entities)
       .filter(d => d!.isFavorite && d!.guid !== props.dashboardGuid)
       .sort((a, b) => a!.favoritesOrder! - b!.favoritesOrder!)
@@ -115,8 +130,8 @@ export const reducer = createReducer(
       state);
   }),
 
-  on(ManageDashboardsActions.changeFavoriteDashboardsOrder, (state, props) => {
-    const dashboards: {id: string, order: number}[] = Object.values(state.entities)
+  on(DashboardFavoritesActions.changeOrder, (state, props) => {
+    const dashboards: { id: string, order: number }[] = Object.values(state.entities)
       .filter(d => d!.isFavorite)
       .map(d => ({ id: d!.guid, order: d!.favoritesOrder ?? 0 }));
 
@@ -142,7 +157,7 @@ export const reducer = createReducer(
       state);
   }),
 
-  on(ManageDashboardsActions.addWidgets, (state, props) => {
+  on(DashboardItemsActions.addWidgets, (state, props) => {
     const targetItem = state.entities[props.dashboardGuid];
     if (!targetItem) {
       return state;
@@ -164,7 +179,7 @@ export const reducer = createReducer(
       state);
   }),
 
-  on(ManageDashboardsActions.removeWidgets, (state, props) => {
+  on(DashboardItemsActions.removeWidgets, (state, props) => {
     const targetItem = state.entities[props.dashboardGuid];
     if (!targetItem) {
       return state;
@@ -179,7 +194,7 @@ export const reducer = createReducer(
       state);
   }),
 
-  on(ManageDashboardsActions.selectDashboard, (state, props) => {
+  on(DashboardsCurrentSelectionActions.select, (state, props) => {
     const updatedState = adapter.updateMany(
       state.ids.map(id => ({
         id: <string>id,
@@ -199,7 +214,7 @@ export const reducer = createReducer(
       updatedState);
   }),
 
-  on(ManageDashboardsActions.updateWidgetPositions, (state, props) => {
+  on(DashboardItemsActions.updateWidgetsPositions, (state, props) => {
     const targetDashboard = state.entities[props.dashboardGuid];
     if (!targetDashboard) {
       return state;
@@ -232,7 +247,7 @@ export const reducer = createReducer(
     );
   }),
 
-  on(InternalDashboardActions.dropDashboardEntity, (state, props) => {
+  on(DashboardsInternalActions.drop, (state, props) => {
     let updatedState = state;
     const targetDashboard = state.entities[props.dashboardGuid];
     if (!targetDashboard) {
@@ -258,9 +273,9 @@ export const reducer = createReducer(
     return adapter.removeOne(props.dashboardGuid, updatedState);
   }),
 
-  on(ManageDashboardsActions.removeAllDashboards, (state) => adapter.removeAll(state)),
+  on(DashboardsManageActions.removeAll, (state) => adapter.removeAll(state)),
 
-  on(CurrentDashboardActions.selectPortfolio, (state, props) => {
+  on(DashboardsCurrentSelectionActions.selectPortfolio, (state, props) => {
     return adapter.updateOne({
         id: props.dashboardGuid,
         changes: {
@@ -275,7 +290,7 @@ export const reducer = createReducer(
       state);
   }),
 
-  on(CurrentDashboardActions.selectInstruments, (state, props) => {
+  on(DashboardsCurrentSelectionActions.selectInstruments, (state, props) => {
     const targetDashboard = state.entities[props.dashboardGuid];
     if (!targetDashboard) {
       return state;
@@ -300,3 +315,14 @@ export const reducer = createReducer(
       state);
   }),
 );
+
+export const DashboardsFeature = createFeature({
+  name: 'Dashboards',
+  reducer,
+  extraSelectors: ({ selectDashboardsState }) => ({
+    getDashboardItems: (dashboardGuid: string) => createSelector(
+      selectDashboardsState,
+      state => state.entities[dashboardGuid]?.items
+    )
+  })
+});

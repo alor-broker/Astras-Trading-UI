@@ -10,10 +10,10 @@ import { AuthService } from "../../../../shared/services/auth.service";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { filter, map } from "rxjs/operators";
-import { selectPortfoliosState } from "../../../../store/portfolios/portfolios.selectors";
 import { EntityStatus } from "../../../../shared/models/enums/entity-status";
 import { groupPortfoliosByAgreement } from "../../../../shared/utils/portfolios";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 
 @Component({
   selector: 'ats-mobile-navbar',
@@ -43,7 +43,7 @@ export class MobileNavbarComponent implements OnInit {
   ngOnInit(): void {
     this.selectedDashboard$ = this.dashboardContextService.selectedDashboard$;
 
-    this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
+    this.portfolios$ = this.store.select(PortfoliosFeature.selectPortfoliosState).pipe(
       filter(p => p.status === EntityStatus.Success),
       map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x))),
       shareReplay(1)

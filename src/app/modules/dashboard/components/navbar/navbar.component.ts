@@ -7,7 +7,6 @@ import { PortfolioExtended } from 'src/app/shared/models/user/portfolio-extended
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeColors } from '../../../../shared/models/settings/theme-settings.model';
 import { filter, map } from 'rxjs/operators';
-import { selectPortfoliosState } from '../../../../store/portfolios/portfolios.selectors';
 import { EntityStatus } from '../../../../shared/models/enums/entity-status';
 import { FormControl } from "@angular/forms";
 import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios';
@@ -22,6 +21,7 @@ import { environment } from "../../../../../environments/environment";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 
 @Component({
   selector: 'ats-navbar',
@@ -65,7 +65,7 @@ export class NavbarComponent implements OnInit {
       shareReplay(1)
     );
 
-    this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
+    this.portfolios$ = this.store.select(PortfoliosFeature.selectPortfoliosState).pipe(
       filter(p => p.status === EntityStatus.Success),
       map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x))),
       shareReplay(1)

@@ -6,12 +6,18 @@ import {
 
 import { WidgetStateRecord, } from './widgets-local-state.model';
 
-export const WidgetsLocalStateActions = createActionGroup({
-  source: 'WidgetsLocalState',
+export const WidgetsLocalStateInternalActions = createActionGroup({
+  source: 'WidgetsLocalState/Internal',
   events: {
     'Init': emptyProps(),
     'Load': props<{ records: WidgetStateRecord[] }>(),
-    'Set Record': props<{ record: WidgetStateRecord }>(),
     'Remove For Widgets': props<{ widgetsGuids: string[] }>(),
+  }
+});
+
+export const WidgetsLocalStateServicesActions = createActionGroup({
+  source: 'WidgetsLocalState/Services',
+  events: {
+    'Set Record': props<{ record: WidgetStateRecord }>()
   }
 });

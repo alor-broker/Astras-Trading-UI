@@ -17,10 +17,7 @@ import {
 import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.model';
 import { catchHttpError } from '../../shared/utils/observable-helper';
 import { PortfolioKey } from '../../shared/models/portfolio-key.model';
-import {
-  InternalPortfoliosActions,
-  PortfoliosActions
-} from './portfolios.actions';
+import { PortfoliosInternalActions } from "./portfolios.actions";
 
 export interface SavedPortfolioState {
   lastActivePortfolio: PortfolioKey;
@@ -30,12 +27,12 @@ export interface SavedPortfolioState {
 export class PortfoliosEffects {
   initPortfolios$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(PortfoliosActions.initPortfolios),
+      ofType(PortfoliosInternalActions.init),
       switchMap(() => this.accountService.getLoginPortfolios()),
       take(1),
       catchHttpError<PortfolioExtended[] | null>(null, this.errorHandlerService),
       filter(x => !!x),
-      map(portfolios => InternalPortfoliosActions.initPortfoliosSuccess({ portfolios: portfolios ?? [] }))
+      map(portfolios => PortfoliosInternalActions.initSuccess({ portfolios: portfolios ?? [] }))
     )
   );
 

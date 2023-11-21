@@ -7,28 +7,31 @@ import {
 
 import { map } from 'rxjs/operators';
 import { tap } from 'rxjs';
-import { TerminalSettingsActions } from "../terminal-settings/terminal-settings.actions";
 import { LocalStorageConstants } from "../../shared/constants/local-storage.constants";
-import { ManageDashboardsActions } from "../dashboards/dashboards-actions";
 import { LocalStorageService } from "../../shared/services/local-storage.service";
-import { WidgetsLocalStateActions } from "./widgets-local-state.actions";
+import {
+  DashboardItemsActions,
+  DashboardsManageActions
+} from "../dashboards/dashboards-actions";
+import { TerminalSettingsServicesActions } from "../terminal-settings/terminal-settings.actions";
+import { WidgetsLocalStateInternalActions } from "./widgets-local-state.actions";
 
 @Injectable()
 export class WidgetsLocalStateBridgeEffects {
   reset$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(TerminalSettingsActions.reset),
+      ofType(TerminalSettingsServicesActions.reset),
       tap(() => {
         this.localStorageService.removeItem(LocalStorageConstants.WidgetsLocalStateStorageKey);
       }),
-      map(() => ManageDashboardsActions.removeAllDashboards())
+      map(() => DashboardsManageActions.removeAll())
     );
   });
 
   widgetsRemoved$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ManageDashboardsActions.removeWidgets),
-      map(action => WidgetsLocalStateActions.removeForWidgets({ widgetsGuids: action.widgetIds }))
+      ofType(DashboardItemsActions.removeWidgets),
+      map(action => WidgetsLocalStateInternalActions.removeForWidgets({ widgetsGuids: action.widgetIds }))
     );
   });
 

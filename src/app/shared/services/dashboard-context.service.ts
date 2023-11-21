@@ -13,13 +13,13 @@ import {
 import { DashboardsStreams } from '../../store/dashboards/dashboards.streams';
 import { PortfolioKey } from '../models/portfolio-key.model';
 import { map } from 'rxjs/operators';
-import { CurrentDashboardActions } from '../../store/dashboards/dashboards-actions';
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { DeviceService } from "./device.service";
-import { MobileDashboardActions } from "../../store/mobile-dashboard/mobile-dashboard-actions";
 import { MobileDashboardStreams } from "../../store/mobile-dashboard/mobile-dashboard.streams";
 import { mapWith } from "../utils/observable-helper";
 import { isPortfoliosEqual } from "../utils/portfolios";
+import { DashboardsCurrentSelectionActions } from "../../store/dashboards/dashboards-actions";
+import { MobileDashboardCurrentSelectionActions } from "../../store/mobile-dashboard/mobile-dashboard-actions";
 
 @Injectable({
   providedIn: 'root'
@@ -55,9 +55,9 @@ export class DashboardContextService {
       take(1)
     ).subscribe(({ dashboard, isMobile }) => {
       if (isMobile) {
-        this.store.dispatch(MobileDashboardActions.selectPortfolio({ portfolioKey }));
+        this.store.dispatch(MobileDashboardCurrentSelectionActions.selectPortfolio({ portfolioKey }));
       } else {
-        this.store.dispatch(CurrentDashboardActions.selectPortfolio({ dashboardGuid: dashboard.guid, portfolioKey }));
+        this.store.dispatch(DashboardsCurrentSelectionActions.selectPortfolio({ dashboardGuid: dashboard.guid, portfolioKey }));
       }
     });
   }
@@ -71,11 +71,11 @@ export class DashboardContextService {
       take(1)
     ).subscribe(({ dashboard, isMobile }) => {
       if (isMobile) {
-        this.store.dispatch(MobileDashboardActions.selectInstrument({
+        this.store.dispatch(MobileDashboardCurrentSelectionActions.selectInstrument({
           selection: { groupKey, instrumentKey }
         }));
       } else {
-        this.store.dispatch(CurrentDashboardActions.selectInstruments({
+        this.store.dispatch(DashboardsCurrentSelectionActions.selectInstruments({
           dashboardGuid: dashboard.guid,
           selection: [{ groupKey, instrumentKey }]
         }));

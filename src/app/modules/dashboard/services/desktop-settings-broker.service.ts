@@ -1,25 +1,41 @@
-import {DestroyRef, Injectable} from '@angular/core';
 import {
-  DashboardSettingsBrokerService
-} from "../../../shared/services/settings-broker/dashboard-settings-broker.service";
-import {WidgetsSettingsBrokerService} from "../../../shared/services/settings-broker/widgets-settings-broker.service";
-import {WidgetSettingsService} from "../../../shared/services/widget-settings.service";
-import {ManageDashboardsActions} from "../../../store/dashboards/dashboards-actions";
-import {combineLatest, take} from "rxjs";
-import * as WidgetSettingsActions from "../../../store/widget-settings/widget-settings.actions";
-import {initWidgetSettings} from "../../../store/widget-settings/widget-settings.actions";
-import {ActionCreator} from "@ngrx/store/src/models";
-import {Actions, ofType} from "@ngrx/effects";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {Store} from "@ngrx/store";
-import {ManageDashboardsService} from "../../../shared/services/manage-dashboards.service";
-import {mergeArrays} from "../../../shared/utils/collections";
-import {TerminalSettingsBrokerService} from "../../../shared/services/settings-broker/terminal-settings-broker.service";
-import {TerminalSettingsActions} from "../../../store/terminal-settings/terminal-settings.actions";
-import {filter} from "rxjs/operators";
-import {TerminalSettings} from "../../../shared/models/terminal-settings/terminal-settings.model";
-import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
-import { WidgetsLocalStateActions } from "../../../store/widgets-local-state/widgets-local-state.actions";
+  DestroyRef,
+  Injectable
+} from '@angular/core';
+import { DashboardSettingsBrokerService } from "../../../shared/services/settings-broker/dashboard-settings-broker.service";
+import { WidgetsSettingsBrokerService } from "../../../shared/services/settings-broker/widgets-settings-broker.service";
+import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
+import {
+  combineLatest,
+  take
+} from "rxjs";
+import { ActionCreator } from "@ngrx/store/src/models";
+import {
+  Actions,
+  ofType
+} from "@ngrx/effects";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Store } from "@ngrx/store";
+import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
+import { mergeArrays } from "../../../shared/utils/collections";
+import { TerminalSettingsBrokerService } from "../../../shared/services/settings-broker/terminal-settings-broker.service";
+import { filter } from "rxjs/operators";
+import { TerminalSettings } from "../../../shared/models/terminal-settings/terminal-settings.model";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
+import {
+  WidgetSettingsInternalActions,
+  WidgetSettingsServiceActions
+} from "../../../store/widget-settings/widget-settings.actions";
+import {
+  DashboardsEventsActions,
+  DashboardsInternalActions
+} from "../../../store/dashboards/dashboards-actions";
+import {
+  TerminalSettingsEventsActions,
+  TerminalSettingsInternalActions,
+  TerminalSettingsServicesActions
+} from "../../../store/terminal-settings/terminal-settings.actions";
+import { WidgetsLocalStateInternalActions } from "../../../store/widgets-local-state/widgets-local-state.actions";
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +64,7 @@ export class DesktopSettingsBrokerService {
 
   private initDashboardSettingsBroker() {
     this.addActionSubscription(
-      ManageDashboardsActions.dashboardsUpdated,
+      DashboardsEventsActions.updated,
       action => {
         this.dashboardSettingsBrokerService.saveSettings(action.dashboards).subscribe();
       }
@@ -57,51 +73,51 @@ export class DesktopSettingsBrokerService {
     this.dashboardSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(dashboards => {
-      this.store.dispatch(ManageDashboardsActions.initDashboards({dashboards: dashboards ?? []}));
+      this.store.dispatch(DashboardsInternalActions.init({ dashboards: dashboards ?? [] }));
     });
   }
 
   private initWidgetSettingsBroker() {
     this.addActionSubscription(
-      WidgetSettingsActions.removeWidgetSettings,
+      WidgetSettingsServiceActions.remove,
       action => this.widgetsSettingsBrokerService.removeSettings(action.settingGuids).subscribe()
     );
 
     this.addActionSubscription(
-      WidgetSettingsActions.addWidgetSettings,
+      WidgetSettingsServiceActions.add,
       action => this.saveWidgetSettings(action.settings.map(s => s.guid))
     );
 
     this.addActionSubscription(
-      WidgetSettingsActions.updateWidgetSettings,
+      WidgetSettingsServiceActions.updateContent,
       action => this.saveWidgetSettings([action.settingGuid])
     );
 
     this.addActionSubscription(
-      WidgetSettingsActions.updateWidgetSettingsInstrument,
+      WidgetSettingsServiceActions.updateInstrument,
       action => this.saveWidgetSettings(action.updates.map(s => s.guid))
     );
 
     this.addActionSubscription(
-      WidgetSettingsActions.updateWidgetSettingsPortfolio,
+      WidgetSettingsServiceActions.updatePortfolio,
       action => this.saveWidgetSettings(action.settingGuids)
     );
 
     this.addActionSubscription(
-      WidgetSettingsActions.setDefaultBadges,
+      WidgetSettingsInternalActions.setDefaultBadges,
       action => this.saveWidgetSettings(action.settingGuids)
     );
 
     this.widgetsSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(settings => {
-      this.store.dispatch(initWidgetSettings({settings: settings ?? []}));
+      this.store.dispatch(WidgetSettingsInternalActions.init({ settings: settings ?? [] }));
     });
   }
 
   private initTerminalSettingsBroker() {
     this.addActionSubscription(
-      TerminalSettingsActions.updateTerminalSettings,
+      TerminalSettingsServicesActions.update,
       () => {
         this.terminalSettingsService.getSettings(true).pipe(
           take(1),
@@ -109,18 +125,18 @@ export class DesktopSettingsBrokerService {
         ).subscribe(settings => {
           this.terminalSettingsBrokerService.saveSettings(settings).pipe(
             take(1)
-          ).subscribe(() => this.store.dispatch(TerminalSettingsActions.saveTerminalSettingsSuccess()));
+          ).subscribe(() => this.store.dispatch(TerminalSettingsEventsActions.saveSuccess()));
         });
       }
     );
 
     this.addActionSubscription(
-      TerminalSettingsActions.reset,
+      TerminalSettingsServicesActions.reset,
       () => {
         this.terminalSettingsBrokerService.removeSettings().pipe(
           take(1)
         ).subscribe(() => {
-          this.store.dispatch(TerminalSettingsActions.resetSuccess());
+          this.store.dispatch(TerminalSettingsEventsActions.resetSuccess());
         });
       }
     );
@@ -128,7 +144,7 @@ export class DesktopSettingsBrokerService {
     this.terminalSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(settings => {
-      this.store.dispatch(TerminalSettingsActions.initTerminalSettings({settings}));
+      this.store.dispatch(TerminalSettingsInternalActions.init({ settings }));
     });
   }
 
@@ -154,7 +170,7 @@ export class DesktopSettingsBrokerService {
       }
 
       this.widgetsSettingsBrokerService.removeSettings(dirtySettings).subscribe();
-      this.store.dispatch(WidgetsLocalStateActions.removeForWidgets({ widgetsGuids: dirtySettings }));
+      this.store.dispatch(WidgetsLocalStateInternalActions.removeForWidgets({ widgetsGuids: dirtySettings }));
     });
   }
 

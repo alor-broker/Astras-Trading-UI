@@ -6,30 +6,34 @@ import {GuidGenerator} from '../../shared/utils/guid';
 import {distinctUntilChanged, EMPTY, of, take, withLatestFrom} from 'rxjs';
 import {Dashboard,} from '../../shared/models/dashboard/dashboard.model';
 import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
-import {instrumentsHistory} from './mobile-dashboard.selectors';
-import {MobileDashboardActions} from './mobile-dashboard-actions';
 import {mapWith} from "../../shared/utils/observable-helper";
 import {getDefaultPortfolio, isPortfoliosEqual} from "../../shared/utils/portfolios";
 import {MarketService} from "../../shared/services/market.service";
 import {defaultBadgeColor} from "../../shared/utils/instruments";
 import {UserPortfoliosService} from "../../shared/services/user-portfolios.service";
 import {MobileDashboardStreams} from "./mobile-dashboard.streams";
+import {
+  MobileDashboardCurrentSelectionActions,
+  MobileDashboardEventsActions,
+  MobileDashboardInternalActions
+} from "./mobile-dashboard-actions";
+import { MobileDashboardFeature } from "./mobile-dashboard.reducer";
 
 @Injectable()
 export class MobileDashboardEffects {
   initMobileDashboard$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(MobileDashboardActions.initMobileDashboard),
+      ofType(MobileDashboardInternalActions.init),
       filter(action => !!action.mobileDashboard),
       map(() => {
-        return MobileDashboardActions.initMobileDashboardSuccess();
+        return MobileDashboardInternalActions.initSuccess();
       })
     );
   });
 
   createDefaultMobileDashboard$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(MobileDashboardActions.initMobileDashboard),
+      ofType(MobileDashboardInternalActions.init),
       filter(action => !action.mobileDashboard),
       mapWith(
         () => this.dashboardService.getDefaultDashboardConfig(),
@@ -37,7 +41,7 @@ export class MobileDashboardEffects {
       ),
       switchMap(defaultConfig => {
         return of(
-          MobileDashboardActions.addMobileDashboard({
+          MobileDashboardInternalActions.add({
             guid: GuidGenerator.newGuid(),
             title: 'Mobile dashboard',
             items: defaultConfig.mobile.widgets.map(w => ({
@@ -46,7 +50,7 @@ export class MobileDashboardEffects {
               initialSettings: w.initialSettings
             }))
           }),
-          MobileDashboardActions.initMobileDashboardSuccess()
+          MobileDashboardInternalActions.initSuccess()
         );
       })
     )
@@ -55,22 +59,22 @@ export class MobileDashboardEffects {
   createDashboardUpdatedAction$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(
-        MobileDashboardActions.addMobileDashboard,
-        MobileDashboardActions.selectPortfolio,
-        MobileDashboardActions.selectInstrument
+        MobileDashboardInternalActions.add,
+        MobileDashboardCurrentSelectionActions.selectPortfolio,
+        MobileDashboardCurrentSelectionActions.selectInstrument
       ),
       withLatestFrom(MobileDashboardStreams.getMobileDashboard(this.store)),
-      map(([, dashboard]) => MobileDashboardActions.mobileDashboardUpdated({dashboard}))
+      map(([, dashboard]) => MobileDashboardEventsActions.updated({dashboard}))
     );
   });
 
   createInstrumentsHistoryUpdatedAction = createEffect(() => {
     return this.actions$.pipe(
       ofType(
-        MobileDashboardActions.selectInstrument
+        MobileDashboardCurrentSelectionActions.selectInstrument
       ),
-      withLatestFrom(this.store.select(instrumentsHistory)),
-      map(([, history]) => MobileDashboardActions.instrumentsHistoryUpdated({instruments: history ?? []}))
+      withLatestFrom(this.store.select(MobileDashboardFeature.instrumentsHistory)),
+      map(([, history]) => MobileDashboardEventsActions.instrumentsHistoryUpdated({instruments: history ?? []}))
     );
   });
 
@@ -89,7 +93,7 @@ export class MobileDashboardEffects {
         () => this.marketService.getDefaultExchange(),
         (source, defaultExchange) => ({...source, defaultExchange})
       ),
-      map(({allPortfolios, defaultExchange}) => MobileDashboardActions.selectPortfolio({
+      map(({allPortfolios, defaultExchange}) => MobileDashboardCurrentSelectionActions.selectPortfolio({
         portfolioKey: getDefaultPortfolio(allPortfolios, defaultExchange ?? null)
       }))
     );
@@ -114,7 +118,7 @@ export class MobileDashboardEffects {
             return EMPTY;
           }
 
-          return of(MobileDashboardActions.selectInstrument({
+          return of(MobileDashboardCurrentSelectionActions.selectInstrument({
               selection: {
                 groupKey: defaultBadgeColor,
                 instrumentKey: {
