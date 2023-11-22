@@ -202,7 +202,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private readonly selectedPriceProviderName = 'selectedPrice';
   private chartState?: ChartState;
-  private settings$?: Observable<ExtendedSettings>;
+  private settings$!: Observable<ExtendedSettings>;
   private allActivePositions$?: Observable<Position[]>;
   private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
   private lastTheme?: ThemeSettings;
@@ -558,18 +558,24 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.settings$?.pipe(
-      mapWith(
-        settings => this.settingsService.getSettingsByColor(settings.widgetSettings.badgeColor ?? ''),
-        (widgetSettings, relatedSettings) => ({ widgetSettings, relatedSettings })),
+    combineLatest({
+      settings: this.settings$,
+      allSettings: this.settingsService.getAllSettings(),
+      currentDashboard: this.currentDashboardService.selectedDashboard$
+    }).pipe(
       take(1)
-    ).subscribe(({ widgetSettings, relatedSettings }) => {
-      const submitOrderWidgetSettings = relatedSettings.filter(x => x.settingsType === 'OrderSubmitSettings');
-      const roundedPrice = MathHelper.roundByMinStepMultiplicity(price, widgetSettings.instrument.minstep);
+    ).subscribe(x => {
+      const relatedWidgets = x.currentDashboard.items
+        .filter(i => i.widgetType === 'order-submit')
+        .map(i => i.guid);
 
-      if (submitOrderWidgetSettings.length === 0 || !widgetSettings.widgetSettings.badgeColor) {
+      const relatedSettings = x.allSettings.filter(s => relatedWidgets.includes(s.guid) && s.badgeColor === x.settings.widgetSettings.badgeColor);
+
+      const roundedPrice = MathHelper.roundByMinStepMultiplicity(price, x.settings.instrument.minstep);
+
+      if (relatedSettings.length === 0 || !x.settings.widgetSettings.badgeColor) {
         this.ordersDialogService.openNewOrderDialog({
-          instrumentKey: toInstrumentKey(widgetSettings.widgetSettings as InstrumentKey),
+          instrumentKey: toInstrumentKey(x.settings.widgetSettings as InstrumentKey),
           initialValues: {
             orderType: OrderType.Limit,
             price: roundedPrice,
@@ -580,7 +586,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       else {
         this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>(this.selectedPriceProviderName, {
           price: roundedPrice,
-          badgeColor: widgetSettings.widgetSettings.badgeColor
+          badgeColor: x.settings.widgetSettings.badgeColor
         });
       }
     });
