@@ -44,4 +44,8 @@ export class DividendsComponent implements OnInit, OnDestroy {
     this.isLoading$.complete();
     this.isActivated$.complete();
   }
+
+  formatDate(date: Date): string {
+    return date.toLocaleDateString();
+  }
 }

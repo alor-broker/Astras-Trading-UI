@@ -154,6 +154,12 @@ export class InfoService {
   getDividends(exchangeInfo: ExchangeInfo): Observable<Dividend[]> {
     return this.getInstrumentEntity<Dividend[]>(exchangeInfo, 'stock/dividends')
       .pipe(
+        map(r => {
+          return r.map(i => ({
+            ...i,
+            recordDate: new Date(i.recordDate)
+          }));
+        }),
         catchError(() => of([])),
       );
   }
