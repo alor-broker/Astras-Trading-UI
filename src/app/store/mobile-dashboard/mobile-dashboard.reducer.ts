@@ -1,15 +1,24 @@
-import { createReducer, on } from '@ngrx/store';
+import {
+  createFeature,
+  createReducer,
+  createSelector,
+  on
+} from '@ngrx/store';
 import { EntityStatus } from '../../shared/models/enums/entity-status';
-import { MobileDashboardActions } from './mobile-dashboard-actions';
 import { toInstrumentKey } from "../../shared/utils/instruments";
-import { CurrentDashboardVersion, Dashboard } from "../../shared/models/dashboard/dashboard.model";
+import {
+  CurrentDashboardVersion,
+  Dashboard
+} from "../../shared/models/dashboard/dashboard.model";
 import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
-
-export const mobileDashboardFeatureKey = 'mobile-dashboard';
+import {
+  MobileDashboardCurrentSelectionActions,
+  MobileDashboardInternalActions
+} from "./mobile-dashboard-actions";
 
 export interface State {
   dashboard: Dashboard | null;
-  instrumentsHistory?: InstrumentKey[];
+  instrumentsHistory: InstrumentKey[];
   status: EntityStatus;
 }
 
@@ -19,10 +28,10 @@ const initialState: State = {
   instrumentsHistory: []
 };
 
-export const reducer = createReducer(
+const reducer = createReducer(
   initialState,
 
-  on(MobileDashboardActions.initMobileDashboard, (state, { mobileDashboard, instrumentsHistory }) => ({
+  on(MobileDashboardInternalActions.init, (state, { mobileDashboard, instrumentsHistory }) => ({
       ...state,
       status: EntityStatus.Loading,
       dashboard: mobileDashboard,
@@ -30,13 +39,13 @@ export const reducer = createReducer(
     })
   ),
 
-  on(MobileDashboardActions.initMobileDashboardSuccess, (state) => ({
+  on(MobileDashboardInternalActions.initSuccess, (state) => ({
       ...state,
       status: EntityStatus.Success,
     })
   ),
 
-  on(MobileDashboardActions.addMobileDashboard, (state, dashboard) => ({
+  on(MobileDashboardInternalActions.add, (state, dashboard) => ({
     ...state,
     dashboard: {
       ...dashboard,
@@ -44,7 +53,7 @@ export const reducer = createReducer(
     }
   })),
 
-  on(MobileDashboardActions.selectPortfolio, (state, { portfolioKey }) => ({
+  on(MobileDashboardCurrentSelectionActions.selectPortfolio, (state, { portfolioKey }) => ({
     ...state,
     dashboard: {
       ...state.dashboard!,
@@ -58,7 +67,7 @@ export const reducer = createReducer(
     }
   })),
 
-  on(MobileDashboardActions.selectInstrument, (state, props) => {
+  on(MobileDashboardCurrentSelectionActions.selectInstrument, (state, props) => {
     if (!state.dashboard) {
       return state;
     }
@@ -88,3 +97,14 @@ export const reducer = createReducer(
     };
   }),
 );
+
+export const MobileDashboardFeature = createFeature({
+  name: 'MobileDashboard',
+  reducer,
+  extraSelectors: ({ selectMobileDashboardState }) => ({
+    instrumentsHistory: createSelector(
+      selectMobileDashboardState,
+      state => state.instrumentsHistory
+    )
+  })
+});

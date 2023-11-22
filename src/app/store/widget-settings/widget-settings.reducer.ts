@@ -1,4 +1,5 @@
 import {
+  createFeature,
   createReducer,
   on
 } from '@ngrx/store';
@@ -8,12 +9,13 @@ import {
   EntityState
 } from "@ngrx/entity";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
-import * as WidgetSettingsActions from "./widget-settings.actions";
 import { Update } from "@ngrx/entity/src/models";
 import { defaultBadgeColor } from "../../shared/utils/instruments";
 import { WidgetSettings } from '../../shared/models/widget-settings.model';
-
-export const widgetSettingsFeatureKey = 'widgetSettings';
+import {
+  WidgetSettingsInternalActions,
+  WidgetSettingsServiceActions
+} from "./widget-settings.actions";
 
 export interface State extends EntityState<WidgetSettings> {
   status: EntityStatus
@@ -28,10 +30,10 @@ const initialState: State = adapter.getInitialState({
 });
 
 
-export const reducer = createReducer(
+const reducer = createReducer(
   initialState,
 
-  on(WidgetSettingsActions.initWidgetSettings, (state, { settings }) => {
+  on(WidgetSettingsInternalActions.init, (state, { settings }) => {
     return adapter.addMany(
       settings,
       {
@@ -40,12 +42,12 @@ export const reducer = createReducer(
       });
   }),
 
-  on(WidgetSettingsActions.addWidgetSettings, (state, { settings }) => {
+  on(WidgetSettingsServiceActions.add, (state, { settings }) => {
     return adapter.addMany(settings, state);
   }),
 
   on(
-    WidgetSettingsActions.updateWidgetSettingsInstrument,
+    WidgetSettingsServiceActions.updateInstrument,
     (state, props) => {
       return adapter.updateMany(
         props.updates.map(u => ({
@@ -63,7 +65,7 @@ export const reducer = createReducer(
   ),
 
   on(
-    WidgetSettingsActions.setDefaultBadges,
+    WidgetSettingsInternalActions.setDefaultBadges,
     (state, {
       settingGuids
     }) => {
@@ -87,7 +89,7 @@ export const reducer = createReducer(
   ),
 
   on(
-    WidgetSettingsActions.updateWidgetSettingsPortfolio,
+    WidgetSettingsServiceActions.updatePortfolio,
     (state, {
       settingGuids,
       newPortfolioKey
@@ -113,7 +115,7 @@ export const reducer = createReducer(
     }
   ),
 
-  on(WidgetSettingsActions.updateWidgetSettings, (state, { settingGuid, changes }) => {
+  on(WidgetSettingsServiceActions.updateContent, (state, { settingGuid, changes }) => {
       return adapter.updateOne(
         { id: settingGuid, changes },
         state
@@ -121,12 +123,17 @@ export const reducer = createReducer(
     }
   ),
 
-  on(WidgetSettingsActions.removeWidgetSettings, (state, { settingGuids }) => {
+  on(WidgetSettingsServiceActions.remove, (state, { settingGuids }) => {
     return adapter.removeMany(settingGuids, state);
   }),
 
-  on(WidgetSettingsActions.removeAllWidgetSettings, state => {
+  on(WidgetSettingsServiceActions.removeAll, state => {
     return adapter.removeAll(state);
   })
 );
+
+export const WidgetSettingsFeature = createFeature({
+  name: 'WidgetSettings',
+  reducer
+});
 

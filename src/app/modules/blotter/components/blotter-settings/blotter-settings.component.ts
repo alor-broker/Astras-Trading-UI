@@ -18,7 +18,6 @@ import { BaseColumnId, TableDisplaySettings } from '../../../../shared/models/se
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { Store } from '@ngrx/store';
 import { PortfolioExtended } from '../../../../shared/models/user/portfolio-extended.model';
-import { selectPortfoliosState } from '../../../../store/portfolios/portfolios.selectors';
 import {
   filter,
   map
@@ -39,6 +38,7 @@ import { DeviceService } from "../../../../shared/services/device.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 
 @Component({
   selector: 'ats-blotter-settings',
@@ -120,7 +120,7 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
       }
     });
 
-    this.availablePortfolios$ = this.store.select(selectPortfoliosState).pipe(
+    this.availablePortfolios$ = this.store.select(PortfoliosFeature.selectPortfoliosState).pipe(
       filter(p => p.status === EntityStatus.Success),
       map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x)))
     );

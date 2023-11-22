@@ -1,12 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, concatLatestFrom, createEffect, ofType} from '@ngrx/effects';
 import {map, switchMap} from 'rxjs/operators';
-import {
-  addWidgetSettings,
-  removeAllWidgetSettings,
-  removeWidgetSettings
-} from '../widget-settings/widget-settings.actions';
-import {ManageDashboardsActions} from './dashboards-actions';
+import {WidgetSettingsServiceActions} from '../widget-settings/widget-settings.actions';
 import {Store} from "@ngrx/store";
 import {EMPTY} from "rxjs";
 import {Widget} from "../../shared/models/dashboard/widget.model";
@@ -14,26 +9,30 @@ import {WidgetSettings} from "../../shared/models/widget-settings.model";
 import {GuidGenerator} from "../../shared/utils/guid";
 import {WidgetSettingsStreams} from "../widget-settings/widget-settings.streams";
 import {DashboardsStreams} from "./dashboards.streams";
+import {
+  DashboardItemsActions,
+  DashboardsManageActions
+} from "./dashboards-actions";
 
 @Injectable()
 export class DashboardsBridgeEffects {
   removeSettings$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ManageDashboardsActions.removeWidgets),
-      map(action => removeWidgetSettings({settingGuids: action.widgetIds}))
+      ofType(DashboardItemsActions.removeWidgets),
+      map(action => WidgetSettingsServiceActions.remove({settingGuids: action.widgetIds}))
     );
   });
 
   removeAllSettings$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ManageDashboardsActions.removeAllDashboards),
-      map(() => removeAllWidgetSettings())
+      ofType(DashboardsManageActions.removeAll),
+      map(() => WidgetSettingsServiceActions.removeAll())
     );
   });
 
   copyDashboard$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ManageDashboardsActions.copyDashboard),
+      ofType(DashboardsManageActions.copy),
       concatLatestFrom(() => DashboardsStreams.getAllDashboards(this.store)),
       map(([action, allDashboards]) => ({
           action,
@@ -76,10 +75,10 @@ export class DashboardsBridgeEffects {
 
         const actions = [];
         if (settingsCopy.length > 0) {
-          actions.push(addWidgetSettings({settings: settingsCopy}));
+          actions.push(WidgetSettingsServiceActions.add({settings: settingsCopy}));
         }
 
-        actions.push(ManageDashboardsActions.addDashboard({
+        actions.push(DashboardsManageActions.add({
           guid: GuidGenerator.newGuid(),
           sourceGuid: targetDashboard.guid,
           title: `${targetDashboard.title } ${params.allDashboards.filter(d => d.sourceGuid === targetDashboard.guid).length + 1}`,

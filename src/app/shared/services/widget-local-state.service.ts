@@ -7,15 +7,15 @@ import {
 import {
   getRecordId,
   State,
-  widgetsLocalStatesFeature
+  WidgetsLocalStatesFeature
 } from "../../store/widgets-local-state/widgets-local-state.reducer";
 import { Store } from "@ngrx/store";
 import {
   filter,
   map
 } from "rxjs/operators";
-import { WidgetsLocalStateActions } from "../../store/widgets-local-state/widgets-local-state.actions";
 import { EntityStatus } from "../models/enums/entity-status";
+import { WidgetsLocalStateServicesActions } from "../../store/widgets-local-state/widgets-local-state.actions";
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +36,7 @@ export class WidgetLocalStateService {
   }
 
   setStateRecord<T extends RecordContent>(widgetGuid: string, recordKey: string, content: T, restorable = true) {
-    this.store.dispatch(WidgetsLocalStateActions.setRecord({
+    this.store.dispatch(WidgetsLocalStateServicesActions.setRecord({
       record: {
         widgetGuid,
         recordKey,
@@ -47,7 +47,7 @@ export class WidgetLocalStateService {
   }
 
   private getState(): Observable<State> {
-    return this.store.select(widgetsLocalStatesFeature.selectWidgetsLocalStatesState).pipe(
+    return this.store.select(WidgetsLocalStatesFeature.selectWidgetsLocalStatesState).pipe(
       filter(state => state.status === EntityStatus.Success),
     );
   }

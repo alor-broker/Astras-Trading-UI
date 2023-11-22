@@ -1,12 +1,12 @@
 ﻿import {Store} from "@ngrx/store";
 import {filter, Observable} from "rxjs";
 import {WidgetSettings} from "../../shared/models/widget-settings.model";
-import {
-  selectWidgetSettingsState
-} from "./widget-settings.selectors";
 import {EntityStatus} from "../../shared/models/enums/entity-status";
 import {distinct, map} from "rxjs/operators";
-import {State} from "./widget-settings.reducer";
+import {
+  State,
+  WidgetSettingsFeature
+} from "./widget-settings.reducer";
 import {isInstrumentDependent, isPortfolioDependent} from "../../shared/utils/settings-helper";
 
 export class WidgetSettingsStreams {
@@ -36,8 +36,8 @@ export class WidgetSettingsStreams {
     );
   }
 
-  private static getState(store: Store): Observable<State> {
-    return store.select(selectWidgetSettingsState).pipe(
+  static getState(store: Store): Observable<State> {
+    return store.select(WidgetSettingsFeature.selectWidgetSettingsState).pipe(
       filter(state => state.status === EntityStatus.Success),
     );
   }

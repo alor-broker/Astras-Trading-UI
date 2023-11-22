@@ -1,10 +1,15 @@
-import {Observable} from 'rxjs';
-import {Dashboard} from '../../shared/models/dashboard/dashboard.model';
-import {Store} from '@ngrx/store';
-import {selectDashboardsState} from './dashboards.selectors';
-import {filter, map} from 'rxjs/operators';
-import {EntityStatus} from "../../shared/models/enums/entity-status";
-import {State} from "./dashboards.reducer";
+import { Observable } from 'rxjs';
+import { Dashboard } from '../../shared/models/dashboard/dashboard.model';
+import { Store } from '@ngrx/store';
+import {
+  filter,
+  map
+} from 'rxjs/operators';
+import { EntityStatus } from "../../shared/models/enums/entity-status";
+import {
+  DashboardsFeature,
+  State
+} from "./dashboards.reducer";
 
 export class DashboardsStreams {
   static getSelectedDashboard(store: Store): Observable<Dashboard> {
@@ -21,7 +26,7 @@ export class DashboardsStreams {
   }
 
   private static getState(store: Store): Observable<State> {
-    return store.select(selectDashboardsState).pipe(
+    return store.select(DashboardsFeature.selectDashboardsState).pipe(
       filter(state => state.status === EntityStatus.Success),
     );
   }

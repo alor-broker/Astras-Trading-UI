@@ -6,11 +6,11 @@ import {
 } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
 import { Observable, filter, map } from "rxjs";
-import { selectPortfoliosState } from "../../../../store/portfolios/portfolios.selectors";
 import { EntityStatus } from "../../../../shared/models/enums/entity-status";
 import { Store } from "@ngrx/store";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
+import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 
 @Component({
   selector: 'ats-instant-notifications-form',
@@ -42,7 +42,7 @@ implements OnInit {
   }
 
   ngOnInit() {
-    this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
+    this.portfolios$ = this.store.select(PortfoliosFeature.selectPortfoliosState).pipe(
       filter(p => p.status === EntityStatus.Success),
       map(ps => {
         return Object.values(ps.entities)

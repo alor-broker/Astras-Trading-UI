@@ -4,7 +4,7 @@ import {
   Observable
 } from 'rxjs';
 import {Store} from "@ngrx/store";
-import {addWidgetSettings, updateWidgetSettings} from "../../store/widget-settings/widget-settings.actions";
+import {WidgetSettingsServiceActions } from "../../store/widget-settings/widget-settings.actions";
 import {map} from 'rxjs/operators';
 import {WidgetSettings} from '../models/widget-settings.model';
 import {LoggerService} from './logging/logger.service';
@@ -40,7 +40,7 @@ export class WidgetSettingsService {
   }
 
   addSettings(settings: WidgetSettings[]) {
-    this.store.dispatch(addWidgetSettings({settings}));
+    this.store.dispatch(WidgetSettingsServiceActions.add({settings}));
   }
 
   updateSettings<T extends WidgetSettings>(guid: string, changes: Partial<T>) {
@@ -49,7 +49,7 @@ export class WidgetSettingsService {
       return;
     }
 
-    this.store.dispatch(updateWidgetSettings({settingGuid: guid, changes}));
+    this.store.dispatch(WidgetSettingsServiceActions.updateContent({settingGuid: guid, changes}));
   }
 
   updateIsLinked(guid: string, isLinked: boolean) {
@@ -58,6 +58,6 @@ export class WidgetSettingsService {
       return;
     }
 
-    this.store.dispatch(updateWidgetSettings({settingGuid: guid, changes: {linkToActive: isLinked}}));
+    this.store.dispatch(WidgetSettingsServiceActions.updateContent({settingGuid: guid, changes: {linkToActive: isLinked}}));
   }
 }

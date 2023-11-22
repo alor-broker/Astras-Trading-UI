@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {fromEvent, Observable} from "rxjs";
 import {Store} from "@ngrx/store";
-import {PortfoliosActions} from "../../../../store/portfolios/portfolios.actions";
 import {map, startWith} from "rxjs/operators";
 import {MobileSettingsBrokerService} from "../../services/mobile-settings-broker.service";
-import { WidgetsLocalStateActions } from "../../../../store/widgets-local-state/widgets-local-state.actions";
+import { PortfoliosInternalActions } from "../../../../store/portfolios/portfolios.actions";
+import { WidgetsLocalStateInternalActions } from "../../../../store/widgets-local-state/widgets-local-state.actions";
 
 @Component({
   selector: 'ats-mobile-dashboard-widget',
@@ -22,8 +22,8 @@ export class MobileDashboardWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     this.mobileSettingsBrokerService.initSettingsBrokers();
-    this.store.dispatch(PortfoliosActions.initPortfolios());
-    this.store.dispatch(WidgetsLocalStateActions.init());
+    this.store.dispatch(PortfoliosInternalActions.init());
+    this.store.dispatch(WidgetsLocalStateInternalActions.init());
 
     this.screenHeight = fromEvent(window, 'resize')
       .pipe(
