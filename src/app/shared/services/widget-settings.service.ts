@@ -28,13 +28,6 @@ export class WidgetSettingsService {
       map(x => <T | null>x)
     );
   }
-
-  getSettingsByColor(color: string): Observable<WidgetSettings[]> {
-    return this.getAllSettings().pipe(
-      map(s => s.filter(x => x.badgeColor === color))
-    );
-  }
-
   getAllSettings(): Observable<WidgetSettings[]> {
     return WidgetSettingsStreams.getAllSettings(this.store);
   }
