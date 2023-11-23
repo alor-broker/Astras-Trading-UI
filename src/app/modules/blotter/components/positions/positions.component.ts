@@ -233,12 +233,6 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
     return MathHelper.round(number, 2);
   }
 
-  roundPrice(price: number) {
-    return price > 10
-      ? MathHelper.round(price, 2)
-      : MathHelper.round(price, 6);
-  }
-
   closePosition(position: PositionDisplay) {
     CommonOrderCommands.closePositionByMarket(position, null, this.ordersService);
   }
