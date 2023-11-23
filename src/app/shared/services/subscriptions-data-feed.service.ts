@@ -23,6 +23,7 @@ import {LoggerService} from './logging/logger.service';
 
 export interface SubscriptionRequest {
   opcode: string;
+  repeatCount?: number;
 }
 
 type WsResponseMessage = BaseResponse<any> & ConfirmResponse;
@@ -116,7 +117,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
           this.dropSubscription(socketState, subscriptionId);
         }),
         map(x => x.data as R),
-        shareReplay({bufferSize: 1, refCount: true})
+        shareReplay({bufferSize: Math.max(1, request.repeatCount ?? 1), refCount: true})
       ),
       subscription: messageSubscription
     };
