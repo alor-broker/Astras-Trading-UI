@@ -11,7 +11,7 @@
       </thead>
       <tbody>
       <tr *ngFor="let dividend of nzTable.data">
-        <td>{{ dividend.recordDate | date }}</td>
+        <td>{{ formatDate(dividend.recordDate) }}</td>
         <td>{{ dividend.dividendPerShare | currency: dividend.currency:'symbol-narrow'}}</td>
         <td>{{ dividend.dividendYield | percent:'1.1-2'}}</td>
       </tr>

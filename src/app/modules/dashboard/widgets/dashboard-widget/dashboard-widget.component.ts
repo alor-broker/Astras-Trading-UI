@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {take} from 'rxjs';
 import {OnboardingService} from '../../services/onboarding.service';
-import {PortfoliosActions} from '../../../../store/portfolios/portfolios.actions';
 import {Store} from '@ngrx/store';
 import {DeviceService} from "../../../../shared/services/device.service";
 import {Router} from "@angular/router";
 import {DesktopSettingsBrokerService} from "../../services/desktop-settings-broker.service";
-import { WidgetsLocalStateActions } from "../../../../store/widgets-local-state/widgets-local-state.actions";
+import { PortfoliosInternalActions } from "../../../../store/portfolios/portfolios.actions";
+import { WidgetsLocalStateInternalActions } from "../../../../store/widgets-local-state/widgets-local-state.actions";
 
 @Component({
   selector: 'ats-dashboard-widget',
@@ -39,8 +39,8 @@ export class DashboardWidgetComponent implements OnInit {
 
   private initDashboard(): void {
     this.desktopSettingsBrokerService.initSettingsBrokers();
-    this.store.dispatch(PortfoliosActions.initPortfolios());
-    this.store.dispatch(WidgetsLocalStateActions.init());
+    this.store.dispatch(PortfoliosInternalActions.init());
+    this.store.dispatch(WidgetsLocalStateInternalActions.init());
     this.onboarding.start();
   }
 }

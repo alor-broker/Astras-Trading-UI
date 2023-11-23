@@ -11,18 +11,15 @@ import {
 import { take } from "rxjs";
 import { LocalStorageService } from "../../shared/services/local-storage.service";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
-import { selectWidgetSettingsState } from "./widget-settings.selectors";
 import { GuidGenerator } from "../../shared/utils/guid";
-import {
-  addWidgetSettings,
-  initWidgetSettings,
-  removeAllWidgetSettings,
-  removeWidgetSettings,
-  updateWidgetSettings
-} from "./widget-settings.actions";
 import { InstrumentsService } from "../../modules/instruments/services/instruments.service";
 import { WidgetSettings } from '../../shared/models/widget-settings.model';
 import { defaultBadgeColor } from "../../shared/utils/instruments";
+import {
+  WidgetSettingsInternalActions,
+  WidgetSettingsServiceActions
+} from "./widget-settings.actions";
+import { WidgetSettingsFeature } from "./widget-settings.reducer";
 
 describe('Widget Settings Store', () => {
   let store: Store;
@@ -48,7 +45,7 @@ describe('Widget Settings Store', () => {
   };
 
   const initSettings = (settings: WidgetSettings[]): void => {
-    store.dispatch(initWidgetSettings({settings}));
+    store.dispatch(WidgetSettingsInternalActions.init({settings}));
   };
 
   beforeAll(() => TestBed.resetTestingModule());
@@ -72,7 +69,7 @@ describe('Widget Settings Store', () => {
   });
 
   it('settings should be read from local storage', fakeAsync(() => {
-      store.select(selectWidgetSettingsState).pipe(
+      store.select(WidgetSettingsFeature.selectWidgetSettingsState).pipe(
         take(1)
       ).subscribe(settingsState => {
         expect(settingsState.status).toEqual(EntityStatus.Initial);
@@ -84,7 +81,7 @@ describe('Widget Settings Store', () => {
       initSettings(expectedSettings);
       tick();
 
-      store.select(selectWidgetSettingsState).pipe(
+      store.select(WidgetSettingsFeature.selectWidgetSettingsState).pipe(
         take(1)
       ).subscribe(settingsState => {
         expect(settingsState.status).toEqual(EntityStatus.Success);
@@ -112,10 +109,10 @@ describe('Widget Settings Store', () => {
         expect(settings.map(x => x[1])).toEqual(expectedState);
       });
 
-      store.dispatch(addWidgetSettings({ settings: [newSettings] }));
+      store.dispatch(WidgetSettingsServiceActions.add({ settings: [newSettings] }));
       tick();
 
-      store.select(selectWidgetSettingsState).pipe(
+      store.select(WidgetSettingsFeature.selectWidgetSettingsState).pipe(
         take(1)
       ).subscribe(settingsState => {
         expect(Object.values(settingsState.entities)).toEqual(jasmine.objectContaining(expectedState));
@@ -139,7 +136,7 @@ describe('Widget Settings Store', () => {
         expect(settings.find(x => x[0] === updatedSettings.guid)![1]).toEqual(updatedSettings);
       });
 
-      store.dispatch(updateWidgetSettings({
+      store.dispatch(WidgetSettingsServiceActions.updateContent({
           settingGuid: updatedSettings.guid,
           changes: updatedSettings
         }
@@ -147,7 +144,7 @@ describe('Widget Settings Store', () => {
 
       tick();
 
-      store.select(selectWidgetSettingsState).pipe(
+      store.select(WidgetSettingsFeature.selectWidgetSettingsState).pipe(
         take(1)
       ).subscribe(settingsState => {
         expect(Object.values(settingsState.entities)).toContain(updatedSettings);
@@ -167,11 +164,11 @@ describe('Widget Settings Store', () => {
         expect(settings.find(x => x[0] === settingsToRemove.guid)).toBeUndefined();
       });
 
-      store.dispatch(removeWidgetSettings({ settingGuids: [settingsToRemove.guid] }));
+      store.dispatch(WidgetSettingsServiceActions.remove({ settingGuids: [settingsToRemove.guid] }));
 
       tick();
 
-      store.select(selectWidgetSettingsState).pipe(
+      store.select(WidgetSettingsFeature.selectWidgetSettingsState).pipe(
         take(1)
       ).subscribe(settingsState => {
         expect(Object.values(settingsState.entities)).not.toContain(settingsToRemove);
@@ -184,7 +181,7 @@ describe('Widget Settings Store', () => {
       initSettings(expectedSettings);
       tick();
 
-      store.select(selectWidgetSettingsState).pipe(
+      store.select(WidgetSettingsFeature.selectWidgetSettingsState).pipe(
         take(1)
       ).subscribe(settingsState => {
         expect(Object.values(settingsState.entities)).toEqual(jasmine.objectContaining(expectedSettings));
@@ -197,10 +194,10 @@ describe('Widget Settings Store', () => {
         expect(settings.length).toBe(0);
       });
 
-      store.dispatch(removeAllWidgetSettings());
+      store.dispatch(WidgetSettingsServiceActions.removeAll());
       tick();
 
-      store.select(selectWidgetSettingsState).pipe(
+      store.select(WidgetSettingsFeature.selectWidgetSettingsState).pipe(
         take(1)
       ).subscribe(settingsState => {
         expect(Object.values(settingsState.entities).length).toBe(0);

@@ -14,6 +14,7 @@ import {
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { LetDirective } from "@ngrx/component";
 
 describe('ScalperOrderBookBodyComponent', () => {
   let component: ScalperOrderBookBodyComponent;
@@ -22,7 +23,8 @@ describe('ScalperOrderBookBodyComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        ScrollingModule
+        ScrollingModule,
+        LetDirective
       ],
       declarations: [
         ScalperOrderBookBodyComponent,

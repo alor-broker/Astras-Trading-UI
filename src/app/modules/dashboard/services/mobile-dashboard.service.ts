@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
-import { instrumentsHistory } from "../../../store/mobile-dashboard/mobile-dashboard.selectors";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
+import { MobileDashboardFeature } from "../../../store/mobile-dashboard/mobile-dashboard.reducer";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +15,6 @@ export class MobileDashboardService {
   }
 
   getInstrumentsHistory(): Observable<InstrumentKey[] | undefined> {
-    return this.store.select(instrumentsHistory);
+    return this.store.select(MobileDashboardFeature.instrumentsHistory);
   }
 }

@@ -79,38 +79,47 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     });
   }
 
-  public initWithPriceRange(instrumentKey: InstrumentKey, priceRange: Range, step: number, renderRowsCount: number, complete?: () => void): void {
-    const priceRowsCount = Math.ceil((priceRange.max - priceRange.min) / step);
-    const startPrice = MathHelper.round(
-      priceRange.min + Math.ceil(priceRowsCount / 2) * step,
-      MathHelper.getPrecision(step)
-    );
+  public initWithPriceRange(instrumentKey: InstrumentKey, priceRange: Range | null, step: number, renderRowsCount: number, complete?: () => void): void {
+    if(!!priceRange) {
+      const priceRowsCount = Math.ceil((priceRange.max - priceRange.min) / step);
+      const startPrice = MathHelper.round(
+        priceRange.min + Math.ceil(priceRowsCount / 2) * step,
+        MathHelper.getPrecision(step)
+      );
 
-    const oneDirectionRowsCount = Math.ceil(renderRowsCount / 2);
+      const oneDirectionRowsCount = Math.ceil(renderRowsCount / 2);
 
-    const rowsCount = Math.ceil(Math.max(priceRowsCount + 5, oneDirectionRowsCount));
+      const rowsCount = Math.ceil(Math.max(priceRowsCount + 5, oneDirectionRowsCount));
 
-    let topRows = this.generatePriceSequence(startPrice + step, step, rowsCount).reverse();
-    const bottomRows = this.generatePriceSequence(startPrice - step, -step, rowsCount);
+      let topRows = this.generatePriceSequence(startPrice + step, step, rowsCount).reverse();
+      const bottomRows = this.generatePriceSequence(startPrice - step, -step, rowsCount);
 
-    if((topRows.length + bottomRows.length) < renderRowsCount) {
-      topRows = this.generatePriceSequence(startPrice + step, step, rowsCount * 2,).reverse();
+      if((topRows.length + bottomRows.length) < renderRowsCount) {
+        topRows = this.generatePriceSequence(startPrice + step, step, rowsCount * 2,).reverse();
+      }
+
+      const rows = [
+        ...topRows,
+        startPrice,
+        ...bottomRows
+      ].map(price => ({ price: price } as PriceRow));
+
+      rows[rowsCount].isStartRow = true;
+
+      this.setState({
+        instrumentKey,
+        rowStep: step,
+        directionRowsCount: rowsCount,
+        rows: rows
+      });
+    } else {
+      this.setState({
+        instrumentKey,
+        rowStep: step,
+        directionRowsCount: 0,
+        rows: []
+      });
     }
-
-    const rows = [
-      ...topRows,
-      startPrice,
-      ...bottomRows
-    ].map(price => ({ price: price } as PriceRow));
-
-    rows[rowsCount].isStartRow = true;
-
-    this.setState({
-      instrumentKey,
-      rowStep: step,
-      directionRowsCount: rowsCount,
-      rows: rows
-    });
 
     if (complete) {
       complete();

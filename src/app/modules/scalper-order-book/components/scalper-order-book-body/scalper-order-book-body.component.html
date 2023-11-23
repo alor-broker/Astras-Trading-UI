@@ -1,64 +1,76 @@
-<nz-spin [nzSpinning]="isLoading$ | async">
-  <cdk-virtual-scroll-viewport
-    (nzResizeObserve)="updateContentSize($event)"
-    [itemSize]="rowHeight"
-    [maxBufferPx]="rowHeight * 10"
-    [minBufferPx]="rowHeight * 10"
-    [orientation]="'vertical'"
-    class="container show-scroll"
-    nzResizeObserver>
-    <ng-container *ngIf="dataContext">
-      <ng-container *ngIf="initialWidths$ | async as initialWidths">
-        <ng-container *ngIf="dataContext.orderBookBody$ | async as orderBookBody">
-          <div id="spacer">
-            <div *cdkVirtualFor="let row of orderBookBody; templateCacheSize: 0"
-                 [style.height]="rowHeight + 'px'"
-                 [style.line-height]="rowHeight + 'px'"
-            ></div>
-          </div>
-          <div *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesClustersPanel"
-               [id]="panelIds.tradeClusters"
-               [ngStyle]="{ 'width': (initialWidths?.[panelIds.tradeClusters] ?? 50) + 'px'}"
-               atsResizable
-               [minWidth]="20"
-               (atsWidthChanged)="updatePanelWidth(panelIds.tradeClusters, $event)">
-            <ats-trade-clusters-panel
-              [dataContext]="dataContext"
-              [xAxisStep]="rowHeight"
-            ></ats-trade-clusters-panel>
-          </div>
-          <div *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesPanel"
-               [id]="panelIds.currentTrades"
-               [ngStyle]="{ 'width': (initialWidths?.[panelIds.currentTrades] ?? 75) + 'px'}"
-               atsResizable
-               [minWidth]="20"
-               (atsWidthChanged)="updatePanelWidth(panelIds.currentTrades, $event)">
-            <ats-trades-panel
-              [dataContext]="dataContext"
-              [xAxisStep]="rowHeight"
-            ></ats-trades-panel>
-          </div>
-          <div id="table">
-            <ats-scalper-order-book-table [dataContext]="dataContext"
-                                          [isActive]="isActive"
-                                          [rowHeight]="rowHeight"
-            >
-            </ats-scalper-order-book-table>
-          </div>
+<ng-container *ngrxLet="{ isLoading: isLoading$ } as vm">
+  <nz-spin [nzSpinning]="vm.isLoading">
+    <cdk-virtual-scroll-viewport
+      (nzResizeObserve)="updateContentSize($event)"
+      [itemSize]="rowHeight"
+      [maxBufferPx]="rowHeight * 10"
+      [minBufferPx]="rowHeight * 10"
+      [orientation]="'vertical'"
+      class="container show-scroll"
+      nzResizeObserver>
+      <ng-container *ngIf="dataContext">
+        <ng-container *ngIf="initialWidths$ | async as initialWidths">
+          <ng-container *ngIf="dataContext.orderBookBody$ | async as orderBookBody">
+            <div id="spacer">
+                <div *cdkVirtualFor="let row of orderBookBody; templateCacheSize: 0"
+                     [style.height]="rowHeight + 'px'"
+                     [style.line-height]="rowHeight + 'px'"
+                ></div>
+              </div>
+            <ng-container *ngIf="orderBookBody.length > 0">
+              <div *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesClustersPanel"
+                   [id]="panelIds.tradeClusters"
+                   [ngStyle]="{ 'width': (initialWidths?.[panelIds.tradeClusters] ?? 50) + 'px'}"
+                   atsResizable
+                   [minWidth]="20"
+                   (atsWidthChanged)="updatePanelWidth(panelIds.tradeClusters, $event)">
+                <ats-trade-clusters-panel
+                  [dataContext]="dataContext"
+                  [xAxisStep]="rowHeight"
+                ></ats-trade-clusters-panel>
+              </div>
+              <div *ngIf="(dataContext.extendedSettings$ | async)?.widgetSettings?.showTradesPanel"
+                   [id]="panelIds.currentTrades"
+                   [ngStyle]="{ 'width': (initialWidths?.[panelIds.currentTrades] ?? 75) + 'px'}"
+                   atsResizable
+                   [minWidth]="20"
+                   (atsWidthChanged)="updatePanelWidth(panelIds.currentTrades, $event)">
+                <ats-trades-panel
+                  [dataContext]="dataContext"
+                  [xAxisStep]="rowHeight"
+                ></ats-trades-panel>
+              </div>
+              <div id="table">
+                <ats-scalper-order-book-table [dataContext]="dataContext"
+                                              [isActive]="isActive"
+                                              [rowHeight]="rowHeight"
+                >
+                </ats-scalper-order-book-table>
+              </div>
+            </ng-container>
+          </ng-container>
         </ng-container>
       </ng-container>
-    </ng-container>
-  </cdk-virtual-scroll-viewport>
-  <div class="position-absolute top-0 end-0">
-    <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
-                          direction="up"></ats-orders-indicator>
-  </div>
-  <div class="position-absolute bottom-0 end-0">
-    <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
-                          direction="down"></ats-orders-indicator>
-  </div>
-  <div class="position-absolute bottom-0 w-100" id="possible-actions-panel-container">
-    <ats-possible-actions-panel></ats-possible-actions-panel>
-  </div>
+    </cdk-virtual-scroll-viewport>
+    <div class="position-absolute top-0 end-0">
+      <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
+                            direction="up"></ats-orders-indicator>
+    </div>
+    <div class="position-absolute bottom-0 end-0">
+      <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
+                            direction="down"></ats-orders-indicator>
+    </div>
+    <div class="position-absolute bottom-0 w-100" id="possible-actions-panel-container">
+      <ats-possible-actions-panel></ats-possible-actions-panel>
+    </div>
+    <div
+      *ngIf="(dataContext.orderBookBody$  | async)?.length === 0 && !vm.isLoading"
+      class="position-absolute top-0 w-100"
+    >
+      <nz-empty
+        class="ant-list-empty-text"
+        nzNotFoundImage="simple"
+      ></nz-empty>
+    </div>
 </nz-spin>
-
+</ng-container>

@@ -1,10 +1,19 @@
-import {Injectable} from '@angular/core';
-import {Observable, take} from 'rxjs';
-import {Store} from '@ngrx/store';
-import {Actions, ofType} from "@ngrx/effects";
-import {TerminalSettingsStreams} from "../../store/terminal-settings/terminal-settings.streams";
-import {TerminalSettings} from "../models/terminal-settings/terminal-settings.model";
-import {TerminalSettingsActions} from "../../store/terminal-settings/terminal-settings.actions";
+import { Injectable } from '@angular/core';
+import {
+  Observable,
+  take
+} from 'rxjs';
+import { Store } from '@ngrx/store';
+import {
+  Actions,
+  ofType
+} from "@ngrx/effects";
+import { TerminalSettingsStreams } from "../../store/terminal-settings/terminal-settings.streams";
+import { TerminalSettings } from "../models/terminal-settings/terminal-settings.model";
+import {
+  TerminalSettingsEventsActions,
+  TerminalSettingsServicesActions
+} from "../../store/terminal-settings/terminal-settings.actions";
 
 @Injectable({
   providedIn: 'root'
@@ -23,20 +32,20 @@ export class TerminalSettingsService {
   updateSettings(updates: Partial<TerminalSettings>, freezeChanges = false, callback?: () => void): void {
     if (callback) {
       this.actions$.pipe(
-        ofType(TerminalSettingsActions.saveTerminalSettingsSuccess),
+        ofType(TerminalSettingsEventsActions.saveSuccess),
         take(1)
       ).subscribe(() => callback());
     }
 
-    this.store.dispatch(TerminalSettingsActions.updateTerminalSettings({updates, freezeChanges}));
+    this.store.dispatch(TerminalSettingsServicesActions.update({ updates, freezeChanges }));
   }
 
   reset(): void {
     this.actions$.pipe(
-      ofType(TerminalSettingsActions.resetSuccess),
+      ofType(TerminalSettingsEventsActions.resetSuccess),
       take(1)
     ).subscribe(() => window.location.reload());
 
-    this.store.dispatch(TerminalSettingsActions.reset());
+    this.store.dispatch(TerminalSettingsServicesActions.reset());
   }
 }

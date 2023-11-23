@@ -1,39 +1,34 @@
-import {createAction, props} from '@ngrx/store';
-import {TerminalSettings} from '../../shared/models/terminal-settings/terminal-settings.model';
+import {
+  createActionGroup,
+  emptyProps,
+  props
+} from '@ngrx/store';
+import { TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
 
-export class TerminalSettingsActions {
-  static initTerminalSettings = createAction(
-    '[TerminalSettings] Init Settings',
-    props<{ settings: TerminalSettings | null }>()
-  );
+export const TerminalSettingsInternalActions = createActionGroup({
+  source: 'TerminalSettings/Internal',
+  events: {
+    "Init": props<{ settings: TerminalSettings | null }>(),
+    "Init Success": props<{ settings: TerminalSettings }>()
+  }
+});
 
-  static updateTerminalSettings = createAction(
-    '[TerminalSettings] Update Settings',
-    props<{ updates: Partial<TerminalSettings>, freezeChanges: boolean }>()
-  );
+export const TerminalSettingsServicesActions = createActionGroup({
+  source: 'TerminalSettings/Services',
+  events: {
+    "Update": props<{ updates: Partial<TerminalSettings>, freezeChanges: boolean }>(),
+    "Reset": emptyProps()
+  }
+});
 
-  static saveTerminalSettingsSuccess = createAction(
-    '[TerminalSettings] Save Settings (SUCCESS)'
-  );
+export const TerminalSettingsEventsActions = createActionGroup({
+  source: 'TerminalSettings/Events',
+  events: {
+    "Save Success": emptyProps(),
+    "Reset Success": emptyProps()
+  }
+});
 
-  static reset = createAction(
-    '[TerminalSettings] Reset'
-  );
-
-  static resetSuccess = createAction(
-    '[TerminalSettings] Reset (SUCCESS)'
-  );
-}
-
-/**
- These actions can be dispatched only from store effects
- */
-export class InternalTerminalSettingsActions {
-  static initTerminalSettingsSuccess = createAction(
-    '[TerminalSettings] Init Settings (SUCCESS)',
-    props<{ settings: TerminalSettings }>()
-  );
-}
 
 
 

@@ -10,7 +10,6 @@ import {
 import { Store } from '@ngrx/store';
 import {Dashboard, DefaultDashboardConfig} from '../models/dashboard/dashboard.model';
 import { GuidGenerator } from '../utils/guid';
-import { ManageDashboardsActions } from '../../store/dashboards/dashboards-actions';
 import { DashboardContextService } from './dashboard-context.service';
 import {HttpClient} from "@angular/common/http";
 import {DashboardsStreams} from "../../store/dashboards/dashboards.streams";
@@ -19,6 +18,12 @@ import {
   filter,
   map
 } from "rxjs/operators";
+import {
+  DashboardFavoritesActions,
+  DashboardItemsActions,
+  DashboardsCurrentSelectionActions,
+  DashboardsManageActions
+} from "../../store/dashboards/dashboards-actions";
 
 @Injectable({
   providedIn: 'root',
@@ -41,7 +46,7 @@ export class ManageDashboardsService {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
     ).subscribe(d => {
-      this.store.dispatch(ManageDashboardsActions.addWidgets(
+      this.store.dispatch(DashboardItemsActions.addWidgets(
         {
           dashboardGuid: d.guid,
           widgets: [{
@@ -75,7 +80,7 @@ export class ManageDashboardsService {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
     ).subscribe(d => {
-      this.store.dispatch(ManageDashboardsActions.updateWidgetPositions(
+      this.store.dispatch(DashboardItemsActions.updateWidgetsPositions(
         {
           dashboardGuid: d.guid,
           updates
@@ -88,7 +93,7 @@ export class ManageDashboardsService {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
     ).subscribe(d => {
-      this.store.dispatch(ManageDashboardsActions.removeWidgets({
+      this.store.dispatch(DashboardItemsActions.removeWidgets({
           dashboardGuid: d.guid,
           widgetIds: [widgetGuid]
         }
@@ -100,20 +105,20 @@ export class ManageDashboardsService {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
     ).subscribe(d => {
-      this.store.dispatch(ManageDashboardsActions.resetDashboard({ dashboardGuid: d.guid }));
+      this.store.dispatch(DashboardsManageActions.reset({ dashboardGuid: d.guid }));
     });
   }
 
   removeDashboard(guid: string): void {
-    this.store.dispatch(ManageDashboardsActions.removeDashboard({ dashboardGuid: guid }));
+    this.store.dispatch(DashboardsManageActions.remove({ dashboardGuid: guid }));
   }
 
   copyDashboard(guid: string): void {
-    this.store.dispatch(ManageDashboardsActions.copyDashboard({ dashboardGuid: guid }));
+    this.store.dispatch(DashboardsManageActions.copy({ dashboardGuid: guid }));
   }
 
   addDashboard(title: string): void {
-    this.store.dispatch(ManageDashboardsActions.addDashboard({
+    this.store.dispatch(DashboardsManageActions.add({
       guid: GuidGenerator.newGuid(),
       title: title,
       isSelected: true,
@@ -122,23 +127,23 @@ export class ManageDashboardsService {
   }
 
   renameDashboard(guid: string, title: string): void {
-    this.store.dispatch(ManageDashboardsActions.renameDashboard({ dashboardGuid: guid, title }));
+    this.store.dispatch(DashboardsManageActions.rename({ dashboardGuid: guid, title }));
   }
 
   addDashboardToFavorites(dashboardGuid: string): void {
-    this.store.dispatch(ManageDashboardsActions.addDashboardToFavorites({ dashboardGuid }));
+    this.store.dispatch(DashboardFavoritesActions.add({ dashboardGuid }));
   }
 
   removeDashboardFromFavorites(dashboardGuid: string): void {
-    this.store.dispatch(ManageDashboardsActions.removeDashboardFromFavorites({ dashboardGuid }));
+    this.store.dispatch(DashboardFavoritesActions.remove({ dashboardGuid }));
   }
 
   changeFavoriteDashboardsOrder(dashboardGuid: string, newIndex: number): void {
-    this.store.dispatch(ManageDashboardsActions.changeFavoriteDashboardsOrder({ dashboardGuid, newIndex }));
+    this.store.dispatch(DashboardFavoritesActions.changeOrder({ dashboardGuid, newIndex }));
   }
 
   selectDashboard(guid: string): void {
-    this.store.dispatch(ManageDashboardsActions.selectDashboard({ dashboardGuid: guid }));
+    this.store.dispatch(DashboardsCurrentSelectionActions.select({ dashboardGuid: guid }));
   }
 
   getDefaultDashboardConfig(): Observable<DefaultDashboardConfig> {

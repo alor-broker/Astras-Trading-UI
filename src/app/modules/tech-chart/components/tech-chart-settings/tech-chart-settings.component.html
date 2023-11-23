@@ -13,13 +13,13 @@
           <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="!isSyntheticInstrument(form?.value?.instrument?.symbol ?? '')">
         <nz-form-control>
           <nz-form-label nzFor="exchange" nzRequired>{{t('techChartSettings.exchangeLabel')}}</nz-form-label>
           <input formControlName='exchange' nz-input>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="!isSyntheticInstrument(form?.value?.instrument?.symbol ?? '')">
         <nz-form-label nzFor="showTrades">
           {{t('techChartSettings.showTradesLabel')}}
         </nz-form-label>
@@ -27,7 +27,7 @@
           <nz-switch formControlName='showTrades'></nz-switch>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="!isSyntheticInstrument(form?.value?.instrument?.symbol ?? '')">
         <nz-collapse [nzBordered]="false" nzGhost>
           <nz-collapse-panel [nzHeader]="t('techChartSettings.advanced')">
             <nz-form-control [nzErrorTip]="t('techChartSettings.instrumentGroupError')">

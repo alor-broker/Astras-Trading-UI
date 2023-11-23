@@ -13,16 +13,23 @@ import {
 } from 'rxjs';
 import { DefaultDashboardName } from '../../shared/models/dashboard/dashboard.model';
 import { ManageDashboardsService } from '../../shared/services/manage-dashboards.service';
-import { getDashboardItems } from './dashboards.selectors';
-import { mapWith } from '../../shared/utils/observable-helper';
+import {  mapWith } from '../../shared/utils/observable-helper';
 import { MarketService } from '../../shared/services/market.service';
 import { getDefaultPortfolio, isPortfoliosEqual } from '../../shared/utils/portfolios';
-import { CurrentDashboardActions, InternalDashboardActions, ManageDashboardsActions } from './dashboards-actions';
+import {
+  DashboardFavoritesActions,
+  DashboardItemsActions,
+  DashboardsCurrentSelectionActions,
+  DashboardsEventsActions,
+  DashboardsInternalActions,
+  DashboardsManageActions
+} from './dashboards-actions';
 import { instrumentsBadges } from '../../shared/utils/instruments';
 import { UserPortfoliosService } from "../../shared/services/user-portfolios.service";
 import { DashboardsStreams } from "./dashboards.streams";
 import { WatchlistCollectionService } from "../../modules/instruments/services/watchlist-collection.service";
 import { ExchangeSettings } from "../../shared/models/market-settings.model";
+import { DashboardsFeature } from "./dashboards.reducer";
 
 
 @Injectable()
@@ -30,7 +37,7 @@ export class DashboardsEffects {
   initDashboards$ = createEffect(
     () => {
       return this.actions$.pipe(
-        ofType(ManageDashboardsActions.initDashboards),
+        ofType(DashboardsInternalActions.init),
         mapWith(
           () => this.marketService.getAllExchanges().pipe(take(1)),
           ({dashboards}, marketSettings) => ({dashboards, marketSettings})
@@ -58,7 +65,7 @@ export class DashboardsEffects {
             }
 
             // Push the action to replace old badges with new
-            instrumentsSelectionActions.push(CurrentDashboardActions.selectInstruments({
+            instrumentsSelectionActions.push(DashboardsCurrentSelectionActions.selectInstruments({
               dashboardGuid: d.guid,
               selection: instrumentsBadges.map(badge => ({
                 groupKey: badge,
@@ -71,7 +78,7 @@ export class DashboardsEffects {
           });
 
           // Replace old badges with new and then init dashboards
-          return of(...instrumentsSelectionActions, ManageDashboardsActions.initDashboardsSuccess());
+          return of(...instrumentsSelectionActions, DashboardsInternalActions.initSuccess());
         }),
       );
     }
@@ -79,14 +86,14 @@ export class DashboardsEffects {
 
   createDefaultDashboard$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ManageDashboardsActions.initDashboards),
+      ofType(DashboardsInternalActions.init),
       filter(action => action.dashboards.length === 0),
       mapWith(
         () => this.dashboardService.getDefaultDashboardConfig(),
         (source, defaultConfig) => defaultConfig
       ),
       switchMap(defaultConfig => {
-        const newDashboardAction = ManageDashboardsActions.addDashboard({
+        const newDashboardAction = DashboardsManageActions.add({
           guid: GuidGenerator.newGuid(),
           title: DefaultDashboardName,
           isSelected: true,
@@ -95,7 +102,7 @@ export class DashboardsEffects {
 
         return of(
           newDashboardAction,
-          ManageDashboardsActions.addWidgets({
+          DashboardItemsActions.addWidgets({
             dashboardGuid: newDashboardAction.guid,
             widgets: defaultConfig.desktop.widgets.map(w => ({
               widgetType: w.widgetTypeId,
@@ -103,7 +110,7 @@ export class DashboardsEffects {
               initialSettings: w.initialSettings
             }))
           }),
-          ManageDashboardsActions.initDashboardsSuccess()
+          DashboardsInternalActions.initSuccess()
         );
       })
     );
@@ -111,9 +118,9 @@ export class DashboardsEffects {
 
   resetDashboard$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ManageDashboardsActions.resetDashboard),
+      ofType(DashboardsManageActions.reset),
       mapWith(
-        action => this.store.select(getDashboardItems(action.dashboardGuid)).pipe(take(1)),
+        action => this.store.select(DashboardsFeature.getDashboardItems(action.dashboardGuid)).pipe(take(1)),
         (action, items) => ({dashboardGuid: action.dashboardGuid, items: items ?? []})
       ),
       mapWith(
@@ -121,8 +128,8 @@ export class DashboardsEffects {
         (source, defaultConfig) => ({...source, defaultConfig})
       ),
       switchMap(({dashboardGuid, items, defaultConfig}) => of(
-        ManageDashboardsActions.removeWidgets({dashboardGuid, widgetIds: items.map(i => i.guid)}),
-        ManageDashboardsActions.addWidgets({
+        DashboardItemsActions.removeWidgets({dashboardGuid, widgetIds: items.map(i => i.guid)}),
+        DashboardItemsActions.addWidgets({
             dashboardGuid,
             widgets: defaultConfig.desktop.widgets.map(w => ({
               widgetType: w.widgetTypeId,
@@ -137,14 +144,14 @@ export class DashboardsEffects {
 
   deleteDashboard$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ManageDashboardsActions.removeDashboard),
+      ofType(DashboardsManageActions.remove),
       mapWith(
-        action => this.store.select(getDashboardItems(action.dashboardGuid)).pipe(take(1)),
+        action => this.store.select(DashboardsFeature.getDashboardItems(action.dashboardGuid)).pipe(take(1)),
         (action, items) => ({dashboardGuid: action.dashboardGuid, items: items ?? []})
       ),
       switchMap(({dashboardGuid, items}) => of(
-        ManageDashboardsActions.removeWidgets({dashboardGuid, widgetIds: items.map(i => i.guid)}),
-        InternalDashboardActions.dropDashboardEntity({dashboardGuid})
+        DashboardItemsActions.removeWidgets({dashboardGuid, widgetIds: items.map(i => i.guid)}),
+        DashboardsInternalActions.drop({dashboardGuid})
       ))
     );
   });
@@ -152,22 +159,22 @@ export class DashboardsEffects {
   createSaveAction$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(
-        ManageDashboardsActions.addDashboard,
-        ManageDashboardsActions.renameDashboard,
-        ManageDashboardsActions.addWidgets,
-        ManageDashboardsActions.removeWidgets,
-        ManageDashboardsActions.updateWidgetPositions,
-        ManageDashboardsActions.selectDashboard,
-        ManageDashboardsActions.removeAllDashboards,
-        ManageDashboardsActions.addDashboardToFavorites,
-        ManageDashboardsActions.removeDashboardFromFavorites,
-        ManageDashboardsActions.changeFavoriteDashboardsOrder,
-        CurrentDashboardActions.selectPortfolio,
-        CurrentDashboardActions.selectInstruments,
-        InternalDashboardActions.dropDashboardEntity
+        DashboardsManageActions.add,
+        DashboardsManageActions.rename,
+        DashboardItemsActions.addWidgets,
+        DashboardItemsActions.removeWidgets,
+        DashboardItemsActions.updateWidgetsPositions,
+        DashboardsCurrentSelectionActions.select,
+        DashboardsManageActions.removeAll,
+        DashboardFavoritesActions.add,
+        DashboardFavoritesActions.remove,
+        DashboardFavoritesActions.changeOrder,
+        DashboardsCurrentSelectionActions.selectPortfolio,
+        DashboardsCurrentSelectionActions.selectInstruments,
+        DashboardsInternalActions.drop
       ),
       withLatestFrom(DashboardsStreams.getAllDashboards(this.store)),
-      map(([, dashboards]) => ManageDashboardsActions.dashboardsUpdated({dashboards}))
+      map(([, dashboards]) => DashboardsEventsActions.updated({dashboards}))
     );
   });
 
@@ -186,7 +193,7 @@ export class DashboardsEffects {
         () => this.marketService.getDefaultExchange(),
         (source, defaultExchange) => ({...source, defaultExchange})
       ),
-      map(({dashboard, allPortfolios, defaultExchange}) => CurrentDashboardActions.selectPortfolio({
+      map(({dashboard, allPortfolios, defaultExchange}) => DashboardsCurrentSelectionActions.selectPortfolio({
         dashboardGuid: dashboard.guid,
         portfolioKey: getDefaultPortfolio(allPortfolios, defaultExchange ?? null)
       }))
@@ -211,7 +218,7 @@ export class DashboardsEffects {
             return EMPTY;
           }
 
-          return of(CurrentDashboardActions.selectInstruments({
+          return of(DashboardsCurrentSelectionActions.selectInstruments({
               dashboardGuid: dashboard.guid,
               selection: instrumentsBadges.map(badge => ({
                 groupKey: badge,
@@ -228,7 +235,7 @@ export class DashboardsEffects {
 
   addInstrumentToHistory$ = createEffect(() => {
       return this.actions$.pipe(
-        ofType(CurrentDashboardActions.selectInstruments),
+        ofType(DashboardsCurrentSelectionActions.selectInstruments),
         tap(action => {
             this.watchlistCollectionService.addItemsToHistory(action.selection.map(x => x.instrumentKey));
           }

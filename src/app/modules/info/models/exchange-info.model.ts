@@ -5,7 +5,7 @@ export interface ExchangeInfo {
   shortName: string;
   exchange: string;
   description: string;
-  instrumentGroup?: string;
+  instrumentGroup?: string | null;
   isin: string;
   currency: string;
   type: string;

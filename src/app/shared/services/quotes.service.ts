@@ -25,7 +25,7 @@ export class QuotesService {
   ) {
   }
 
-  getQuotes(symbol: string, exchange: string, instrumentGroup?: string): Observable<Quote> {
+  getQuotes(symbol: string, exchange: string, instrumentGroup?: string | null): Observable<Quote> {
     const request: QuotesRequest = {
       opcode: "QuotesSubscribe",
       code: symbol,

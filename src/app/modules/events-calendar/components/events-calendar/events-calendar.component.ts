@@ -2,7 +2,6 @@ import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
 import { BehaviorSubject, Observable, switchMap, map } from "rxjs";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { Store } from "@ngrx/store";
-import { selectPortfoliosState } from "../../../../store/portfolios/portfolios.selectors";
 import { filter } from "rxjs/operators";
 import { EntityStatus } from "../../../../shared/models/enums/entity-status";
 import { PositionsService } from "../../../../shared/services/positions.service";
@@ -10,6 +9,7 @@ import { AuthService } from "../../../../shared/services/auth.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 
 @Component({
   selector: 'ats-events-calendar',
@@ -34,7 +34,7 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.select(selectPortfoliosState)
+    this.store.select(PortfoliosFeature.selectPortfoliosState)
       .pipe(
         filter(p => p.status === EntityStatus.Success),
         mapWith(

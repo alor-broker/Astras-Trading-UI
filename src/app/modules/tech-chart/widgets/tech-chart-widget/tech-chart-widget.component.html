@@ -22,7 +22,10 @@
         [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
       <ng-template #titleTemplate>
-        <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+        <ats-widget-header-instrument-switch
+          [widgetGuid]="widgetInstance.instance.guid"
+          [customTitle]="headerTitle$ | async"
+        ></ats-widget-header-instrument-switch>
       </ng-template>
     </ng-template>
 

@@ -10,7 +10,10 @@ import {
 } from '@ngrx/entity';
 import { WidgetStateRecord } from './widgets-local-state.model';
 import { EntityStatus } from "../../shared/models/enums/entity-status";
-import { WidgetsLocalStateActions } from "./widgets-local-state.actions";
+import {
+  WidgetsLocalStateInternalActions,
+  WidgetsLocalStateServicesActions
+} from "./widgets-local-state.actions";
 
 export interface State extends EntityState<WidgetStateRecord> {
   status: EntityStatus;
@@ -28,24 +31,24 @@ export const initialState: State = adapter.getInitialState({
   status: EntityStatus.Initial
 });
 
-export const reducer = createReducer(
+const reducer = createReducer(
   initialState,
-  on(WidgetsLocalStateActions.setRecord,
-    (state, action) => adapter.upsertOne(action.record, state)
-  ),
-  on(WidgetsLocalStateActions.init,
+  on(WidgetsLocalStateInternalActions.init,
     (state) => ({
       ...state,
       status: EntityStatus.Loading
     })
   ),
-  on(WidgetsLocalStateActions.load,
+  on(WidgetsLocalStateServicesActions.setRecord,
+    (state, action) => adapter.upsertOne(action.record, state)
+  ),
+  on(WidgetsLocalStateInternalActions.load,
     (state, action) => ({
       ...adapter.addMany(action.records, state),
       status: EntityStatus.Success
     })
   ),
-  on(WidgetsLocalStateActions.removeForWidgets,
+  on(WidgetsLocalStateInternalActions.removeForWidgets,
     (state, action) => {
 
       const allRecords = adapter.getSelectors()
@@ -64,8 +67,8 @@ export const reducer = createReducer(
   ),
 );
 
-export const widgetsLocalStatesFeature = createFeature({
-  name: 'widgetsLocalStates',
+export const WidgetsLocalStatesFeature = createFeature({
+  name: 'WidgetsLocalStates',
   reducer,
   extraSelectors: ({ selectWidgetsLocalStatesState }) => ({
     ...adapter.getSelectors(selectWidgetsLocalStatesState)

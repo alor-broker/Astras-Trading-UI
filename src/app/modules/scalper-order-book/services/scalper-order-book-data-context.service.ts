@@ -292,7 +292,6 @@ export class ScalperOrderBookDataContextService {
           priceRowsStore
         ) ?? [];
       }),
-      filter(x => x.length > 0),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
@@ -310,6 +309,10 @@ export class ScalperOrderBookDataContextService {
       || !isInstrumentEqual(settings.widgetSettings, orderBookData.instrumentKey)
     ) {
       this.regenerateRowsForHeight(null, settings, getters, actions, priceRowsStore);
+      return [];
+    }
+
+    if(rowsState.rows.length === 0 && rowsState.directionRowsCount === 0) {
       return [];
     }
 
@@ -362,7 +365,7 @@ export class ScalperOrderBookDataContextService {
   ): void {
     actions.priceRowsRegenerationStarted();
 
-    let priceBounds$: Observable<{ min: number, max: number }> | null = null;
+    let priceBounds$: Observable<{ min: number, max: number } | null> | null = null;
 
     if (orderBookData) {
       const bounds = this.getOrderBookBounds(orderBookData);
@@ -376,8 +379,13 @@ export class ScalperOrderBookDataContextService {
 
     if (!priceBounds$) {
       priceBounds$ = this.quotesService.getLastPrice(settings.widgetSettings).pipe(
-        filter((lastPrice): lastPrice is number => !!(lastPrice ?? 0)),
-        map(lp => ({ min: lp, max: lp }))
+        map(lp => {
+          if(lp != null) {
+            return { min: lp!, max: lp! };
+          }
+
+          return null;
+        })
       );
     }
 
@@ -386,10 +394,13 @@ export class ScalperOrderBookDataContextService {
     ).subscribe(x => {
       priceRowsStore.initWithPriceRange(
         settings.widgetSettings,
-        {
-          min: x.min,
-          max: x.max
-        },
+        !!x
+          ? {
+            min: x.min,
+            max: x.max
+
+          }
+          : null,
         settings.instrument.minstep,
         getters.getVisibleRowsCount(),
         () => {

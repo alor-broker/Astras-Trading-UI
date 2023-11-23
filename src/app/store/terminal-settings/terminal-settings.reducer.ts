@@ -1,9 +1,14 @@
-import {createReducer, on} from '@ngrx/store';
-import {EntityStatus} from '../../shared/models/enums/entity-status';
-import {TerminalSettings} from '../../shared/models/terminal-settings/terminal-settings.model';
-import {InternalTerminalSettingsActions, TerminalSettingsActions} from "./terminal-settings.actions";
-
-export const terminalSettingsFeatureKey = 'terminalSettings';
+import {
+  createFeature,
+  createReducer,
+  on
+} from '@ngrx/store';
+import { EntityStatus } from '../../shared/models/enums/entity-status';
+import { TerminalSettings } from '../../shared/models/terminal-settings/terminal-settings.model';
+import {
+  TerminalSettingsInternalActions,
+  TerminalSettingsServicesActions
+} from "./terminal-settings.actions";
 
 enum FrozenStatus {
   Frozen = 'Frozen'
@@ -13,23 +18,23 @@ type TerminalSettingsEntityStatus = EntityStatus | FrozenStatus;
 
 export interface State {
   status: TerminalSettingsEntityStatus;
-  settings?: TerminalSettings;
+  settings: TerminalSettings | null;
 }
 
 const initialState: State = {
   status: EntityStatus.Initial,
-  settings: undefined
+  settings: null
 };
 
-export const reducer = createReducer(
+const reducer = createReducer(
   initialState,
 
-  on(TerminalSettingsActions.initTerminalSettings, (state) => ({
+  on(TerminalSettingsInternalActions.init, (state) => ({
     ...state,
     status: EntityStatus.Loading
   })),
 
-  on(InternalTerminalSettingsActions.initTerminalSettingsSuccess, (state, {settings}) => ({
+  on(TerminalSettingsInternalActions.initSuccess, (state, { settings }) => ({
     ...state,
     status: EntityStatus.Success,
     settings: {
@@ -38,7 +43,7 @@ export const reducer = createReducer(
 
   })),
 
-  on(TerminalSettingsActions.updateTerminalSettings, (state, {updates, freezeChanges}) => ({
+  on(TerminalSettingsServicesActions.update, (state, { updates, freezeChanges }) => ({
     ...state,
     status: freezeChanges ? FrozenStatus.Frozen : EntityStatus.Success,
     settings: {
@@ -47,8 +52,13 @@ export const reducer = createReducer(
     }
   })),
 
-  on(TerminalSettingsActions.reset, (state) => ({
+  on(TerminalSettingsServicesActions.reset, (state) => ({
     ...state,
     status: FrozenStatus.Frozen
   }))
 );
+
+export const TerminalSettingsFeature = createFeature({
+  name: 'TerminalSettings',
+  reducer
+});

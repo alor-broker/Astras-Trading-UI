@@ -22,6 +22,7 @@ import { RepoSpecificFields, RepoTrade, Trade } from "../../../shared/models/tra
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { Order, StopOrder } from "../../../shared/models/orders/order.model";
+import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 
 @Injectable()
 export class BlotterService {
@@ -48,7 +49,7 @@ export class BlotterService {
       symbol = CurrencyCode.toInstrument(symbol);
       exchange = Exchanges.MOEX;
     }
-    const instrument = { symbol, exchange, instrumentGroup: undefined };
+    const instrument: InstrumentKey = { symbol, exchange };
     this.dashboardContextService.selectDashboardInstrument(instrument, badgeColor);
   }
 

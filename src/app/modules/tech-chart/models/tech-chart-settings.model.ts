@@ -1,7 +1,10 @@
 import { WidgetSettings } from '../../../shared/models/widget-settings.model';
-import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 
-export interface TechChartSettings extends WidgetSettings, InstrumentKey {
+export interface TechChartSettings extends WidgetSettings {
   chartLayout?: object;
   showTrades?: boolean;
+  symbol: string;
+  exchange?: string;
+  instrumentGroup?: string;
+  isin?: string;
 }

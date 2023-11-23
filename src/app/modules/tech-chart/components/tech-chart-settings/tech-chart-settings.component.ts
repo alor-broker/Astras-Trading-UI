@@ -16,6 +16,7 @@ import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
 
 @Component({
   selector: 'ats-tech-chart-settings',
@@ -24,6 +25,7 @@ import { WidgetSettingsBaseComponent } from "../../../../shared/components/widge
 })
 export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<TechChartSettings> implements OnInit {
   form?: UntypedFormGroup;
+  isSyntheticInstrument = SyntheticInstrumentsHelper.isSyntheticInstrument;
 
   protected settings$!: Observable<TechChartSettings>;
 
@@ -77,7 +79,7 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
 
     delete newSettings.instrument;
 
-    newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
+    newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings as InstrumentKey, newSettings as InstrumentKey);
 
     return newSettings;
   }

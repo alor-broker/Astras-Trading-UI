@@ -4,6 +4,8 @@
     "settings": {
       "hasIssue": true,
       "hasPayments": true,
+      "hasFinance": true,
+      "hasDividends": true,
       "currencyInstrument": "RUB",
       "isDefault": true,
       "market": {

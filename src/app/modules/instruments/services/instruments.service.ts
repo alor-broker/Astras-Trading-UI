@@ -25,8 +25,13 @@ export class InstrumentsService {
   }
 
   getInstrument(instrument: InstrumentKey): Observable<Instrument | null> {
+    const params: { [param: string]: string } = {};
+    if(instrument.instrumentGroup ?? '') {
+      params.instrumentGroup = instrument.instrumentGroup!;
+    }
+
     const stream$ = this.http.get<InstrumentSearchResponse>(`${this.url}/${instrument.exchange}/${instrument.symbol}`, {
-      params: { instrumentGroup: instrument.instrumentGroup ?? "" }
+      params
     }).pipe(
       map(r => {
         const selected: Instrument = {
@@ -50,7 +55,7 @@ export class InstrumentsService {
     );
 
     return this.cacheService.wrap(
-      () => `getInstrument_${instrument.exchange}_${instrument.symbol}_${instrument.instrumentGroup}`,
+      () => `getInstrument_${instrument.exchange}_${instrument.symbol}_${instrument.instrumentGroup ?? ''}`,
       () => stream$
     );
   }

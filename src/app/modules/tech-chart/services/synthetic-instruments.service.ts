@@ -48,9 +48,9 @@ export class SyntheticInstrumentsService {
 
   getHistory(data: {
     syntheticInstruments: SyntheticInstrumentPart[];
-    from?: number;
+    from: number;
     to: number;
-    tf?: string;
+    tf: string;
   }): Observable<HistoryResponse | null> {
     const instruments: InstrumentKey[] = <InstrumentKey[]>data.syntheticInstruments
       .filter(p => !p.isSpreadOperator)
@@ -66,7 +66,6 @@ export class SyntheticInstrumentsService {
         : this.historyService.getHistory({
           symbol: p.value.symbol,
           exchange: p.value.exchange,
-          instrumentGroup: p.value.instrumentGroup,
           from: data.from,
           to: data.to,
           tf: data.tf

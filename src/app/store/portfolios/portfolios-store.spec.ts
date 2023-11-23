@@ -15,8 +15,8 @@ import { AccountService } from '../../shared/services/account.service';
 import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.model';
 import { ErrorHandlerService } from '../../shared/services/handle-error/error-handler.service';
 import { MarketService } from "../../shared/services/market.service";
-import { PortfoliosActions } from './portfolios.actions';
-import {selectPortfoliosState} from "./portfolios.selectors";
+import { PortfoliosInternalActions } from './portfolios.actions';
+import { PortfoliosFeature } from "./portfolios.reducer";
 
 describe('Portfolios Store', () => {
   let store: Store;
@@ -94,10 +94,10 @@ describe('Portfolios Store', () => {
   it('should load portfolios on init', (done) => {
     loginPortfoliosMock.next(expectedPortfolios);
 
-    store.dispatch(PortfoliosActions.initPortfolios());
+    store.dispatch(PortfoliosInternalActions.init());
 
     expect(accountServiceSpy.getLoginPortfolios).toHaveBeenCalled();
-    store.select(selectPortfoliosState).pipe(
+    store.select(PortfoliosFeature.selectPortfoliosState).pipe(
       take(1)
     ).subscribe(portfoliosState => {
       done();

@@ -1,17 +1,21 @@
-import {Injectable} from '@angular/core';
-import {Actions, createEffect, ofType} from '@ngrx/effects';
+import { Injectable } from '@angular/core';
+import {
+  Actions,
+  createEffect,
+  ofType
+} from '@ngrx/effects';
 
-import {map} from 'rxjs/operators';
-import {TerminalSettingsHelper} from '../../shared/utils/terminal-settings-helper';
-import {InternalTerminalSettingsActions, TerminalSettingsActions} from "./terminal-settings.actions";
+import { map } from 'rxjs/operators';
+import { TerminalSettingsHelper } from '../../shared/utils/terminal-settings-helper';
+import { TerminalSettingsInternalActions } from "./terminal-settings.actions";
 
 @Injectable()
 export class TerminalSettingsEffects {
   initSettings$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(TerminalSettingsActions.initTerminalSettings),
+      ofType(TerminalSettingsInternalActions.init),
       map(action => {
-        return InternalTerminalSettingsActions.initTerminalSettingsSuccess({
+        return TerminalSettingsInternalActions.initSuccess({
             settings: {
               ...TerminalSettingsHelper.getDefaultSettings(),
               ...action.settings

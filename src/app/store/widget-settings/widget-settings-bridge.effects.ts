@@ -13,14 +13,9 @@ import {
 import { Store } from "@ngrx/store";
 import { map } from "rxjs/operators";
 import {
-  selectWidgetSettingsState
-} from "./widget-settings.selectors";
-import {
-  setDefaultBadges,
-  updateWidgetSettingsInstrument,
-  updateWidgetSettingsPortfolio
+  WidgetSettingsInternalActions,
+  WidgetSettingsServiceActions
 } from "./widget-settings.actions";
-import { EntityStatus } from "../../shared/models/enums/entity-status";
 import {
   PortfolioKey,
   PortfolioKeyEqualityComparer
@@ -60,7 +55,7 @@ export class WidgetSettingsBridgeEffects {
         };
       }),
       filter(changes => changes.settingsToUpdate.length > 0),
-      map(changes => updateWidgetSettingsInstrument({
+      map(changes => WidgetSettingsServiceActions.updateInstrument({
         updates: changes.settingsToUpdate.map(u => ({
           guid: u.guid,
           instrumentKey: changes.instrumentsSelection[u.groupKey]
@@ -68,8 +63,7 @@ export class WidgetSettingsBridgeEffects {
       }))
     );
 
-    return this.store.select(selectWidgetSettingsState).pipe(
-      filter(x => x.status === EntityStatus.Success),
+    return WidgetSettingsStreams.getState(this.store).pipe(
       take(1),
       switchMap(() => dashboardSettingsUpdate$),
     );
@@ -92,14 +86,13 @@ export class WidgetSettingsBridgeEffects {
         };
       }),
       filter(changes => changes.settingsToUpdate.length > 0),
-      map(changes => updateWidgetSettingsPortfolio({
+      map(changes => WidgetSettingsServiceActions.updatePortfolio({
         settingGuids: changes.settingsToUpdate.map(s => s.guid),
         newPortfolioKey: changes.portfolioKey
       }))
     );
 
-    return this.store.select(selectWidgetSettingsState).pipe(
-      filter(x => x.status === EntityStatus.Success),
+    return WidgetSettingsStreams.getState(this.store).pipe(
       take(1),
       switchMap(() => dashboardSettingsUpdate$),
     );
@@ -115,9 +108,9 @@ export class WidgetSettingsBridgeEffects {
         ),
         map(([ts, settingGuids]: [TerminalSettings, string[]]) => {
           if (!(ts.badgesBind ?? false)) {
-            return setDefaultBadges({ settingGuids });
+            return WidgetSettingsInternalActions.setDefaultBadges({ settingGuids });
           }
-          return setDefaultBadges({ settingGuids: [] });
+          return WidgetSettingsInternalActions.setDefaultBadges({ settingGuids: [] });
         }),
       );
   });
