@@ -11,6 +11,7 @@ export class CurrencyInstrument {
   static AMD = 'AMDRUB_TOM';
   static GLD = 'GLDRUB_TOM';
   static SLV = 'SLVRUB_TOM';
+  static KZT = 'KZTRUB_TOM';
 }
 
 export class CurrencyCode {
@@ -24,6 +25,7 @@ export class CurrencyCode {
   static AMD = 'AMD';
   static GLD = 'GLD';
   static SLV = 'SLV';
+  static KZT = 'KZT';
 
   static toInstrument(code: string): string {
     return (CurrencyInstrument)[code] as string;
