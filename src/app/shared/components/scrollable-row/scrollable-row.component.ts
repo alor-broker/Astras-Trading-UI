@@ -15,34 +15,30 @@ export class ScrollableRowComponent implements OnDestroy {
   hasScroll$ = new BehaviorSubject(false);
 
   @ViewChild(CdkScrollable)
-  scrollContainer!: CdkScrollable;
+  scrollContainer?: CdkScrollable;
 
   ngOnDestroy(): void {
     this.hasScroll$.complete();
   }
 
-  move($event: MouseEvent, dir: 'left' | 'right') {
+  move($event: MouseEvent, dir: 'left' | 'right'): void {
     $event.preventDefault();
     $event.stopPropagation();
 
     if (dir === "right") {
       this.moveRight();
-      return;
-    }
-
-    if (dir === "left") {
+    } else {
       this.moveLeft();
-      return;
     }
   }
 
-  moveRight() {
-    const rightScroll = this.scrollContainer.measureScrollOffset('right');
+  moveRight(): void {
+    const rightScroll = this.scrollContainer!.measureScrollOffset('right');
     if (rightScroll === 0) {
       return;
     }
 
-    const container = this.scrollContainer.getElementRef().nativeElement;
+    const container = this.scrollContainer!.getElementRef().nativeElement;
     const containerBounds = container.getBoundingClientRect();
     for (let child of this.items) {
       const item = child.getElementRef().nativeElement;
@@ -50,7 +46,7 @@ export class ScrollableRowComponent implements OnDestroy {
       const relativeRight = itemBounds.x - containerBounds.x + itemBounds.width;
 
       if (Math.floor(relativeRight) > containerBounds.width) {
-        this.scrollContainer.scrollTo({
+        this.scrollContainer!.scrollTo({
           right: Math.floor(rightScroll - (relativeRight - containerBounds.width)) - 1
         });
 
@@ -59,13 +55,13 @@ export class ScrollableRowComponent implements OnDestroy {
     }
   }
 
-  moveLeft() {
-    const leftScroll = this.scrollContainer.measureScrollOffset('left');
+  moveLeft(): void {
+    const leftScroll = this.scrollContainer!.measureScrollOffset('left');
     if (leftScroll === 0) {
       return;
     }
 
-    const container = this.scrollContainer.getElementRef().nativeElement;
+    const container = this.scrollContainer!.getElementRef().nativeElement;
     const containerBounds = container.getBoundingClientRect();
     for (let child of this.items.toArray().reverse()) {
       const item = child.getElementRef().nativeElement;
@@ -73,7 +69,7 @@ export class ScrollableRowComponent implements OnDestroy {
 
       if (itemBounds.x < containerBounds.x) {
         const relativeLeft = containerBounds.x - itemBounds.x;
-        this.scrollContainer.scrollTo({
+        this.scrollContainer!.scrollTo({
           left: leftScroll - Math.ceil(relativeLeft)
         });
 
@@ -82,14 +78,14 @@ export class ScrollableRowComponent implements OnDestroy {
     }
   }
 
-  checkScroll() {
+  checkScroll(): void {
     if (!this.scrollContainer) {
       this.hasScroll$.next(false);
+    } else {
+      this.hasScroll$.next(
+        this.scrollContainer.measureScrollOffset('right') > 0
+        || this.scrollContainer.measureScrollOffset('left') > 0
+      );
     }
-
-    this.hasScroll$.next(
-      this.scrollContainer.measureScrollOffset('right') > 0
-      || this.scrollContainer.measureScrollOffset('left') > 0
-    );
   }
 }

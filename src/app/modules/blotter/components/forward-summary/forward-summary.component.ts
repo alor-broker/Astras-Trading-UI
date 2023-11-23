@@ -27,7 +27,7 @@ export class ForwardSummaryComponent implements OnInit {
   guid!: string;
 
   summary$!: Observable<ForwardRisksView>;
-  columns: number = 1;
+  columns = 1;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -42,7 +42,7 @@ export class ForwardSummaryComponent implements OnInit {
     );
   }
 
-  containerSizeChanged(entries: ResizeObserverEntry[]) {
+  containerSizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       const width = Math.floor(x.contentRect.width);
       if (width <= 600) {

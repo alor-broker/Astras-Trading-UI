@@ -7,7 +7,7 @@ import { LocalStorageConstants } from "../../../shared/constants/local-storage.c
   providedIn: 'root'
 })
 export class OnboardingService {
-  private isCompleted = false;
+  protected isCompleted = false;
 
   constructor(
     private readonly joyride: JoyrideService,
@@ -16,11 +16,11 @@ export class OnboardingService {
     this.isCompleted = this.getIsCompleted();
   }
 
-  start() {
+  start(): void {
     if (!this.isCompleted) {
       const interval = setInterval(() => {
         this.joyride.startTour({
-          steps: Array(7).fill(1).map((_, i) => `step${i + 1}`),
+          steps: Array(7).fill(1).map((n, i) => `step${i + 1}`),
           themeColor: 'rgba(0, 155, 99, 1)'
         });
         this.setIsCompleted(true);
@@ -30,23 +30,23 @@ export class OnboardingService {
     }
   }
 
-  private getProfile() {
+  private getProfile(): any {
     return this.localStorage.getItem<any>(LocalStorageConstants.ProfileStorageKey);
   }
 
   private getIsCompleted(): boolean {
-    const profile = this.getProfile();
+    const profile = this.getProfile() as { isCompleted: boolean } | undefined;
     if (profile) {
       return profile.isCompleted;
     }
     return false;
   }
 
-  private setIsCompleted(isCompleted: boolean) {
+  private setIsCompleted(isCompleted: boolean): void {
     const profile = {
       ...this.getProfile(),
       isCompleted
-    };
+    } as { [propName: string]: any, isCompleted: boolean };
 
     this.localStorage.setItem(LocalStorageConstants.ProfileStorageKey, profile);
   }

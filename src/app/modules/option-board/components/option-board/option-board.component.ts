@@ -40,7 +40,7 @@ export class OptionBoardComponent implements OnInit, OnDestroy {
     this.dataContext = this.contextFactory.create(this.guid);
   }
 
-  selectTab(tab: ComponentTabs) {
+  selectTab(tab: ComponentTabs): void {
     this.selectedTab$.next(tab);
   }
 }

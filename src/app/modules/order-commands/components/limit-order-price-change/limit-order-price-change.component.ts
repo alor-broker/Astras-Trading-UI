@@ -45,7 +45,6 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.activeLimitOrders$ = this.getInstrumentWithPortfolio().pipe(
-      filter(x => !!x.instrument && !!x.portfolioKey),
       mapWith(
         x => this.portfolioSubscriptionsService.getOrdersSubscription(x.portfolioKey!.portfolio, x.instrument!.exchange),
         (source, orders) => ({instrument: source.instrument!, orders})
@@ -64,7 +63,7 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
     return !!orders.find(o => o.side === side);
   }
 
-  updateLimitOrdersPrice(step: number, side: Side) {
+  updateLimitOrdersPrice(step: number, side: Side): void {
     this.activeLimitOrders$.pipe(
       withLatestFrom(this.getInstrumentWithPortfolio()),
       take(1)

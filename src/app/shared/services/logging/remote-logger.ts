@@ -11,24 +11,24 @@ import { LocalStorageService } from '../local-storage.service';
 import { environment } from '../../../../environments/environment';
 
 interface LogEntry {
-  timestamp: string,
-  logLevel: LogLevel,
-  message: string,
-  stack?: string,
-  sessionId: string,
-  login: string,
-  environment: 'local' | 'dev' | 'prod'
+  timestamp: string;
+  logLevel: LogLevel;
+  message: string;
+  stack?: string;
+  sessionId: string;
+  login: string;
+  environment: 'local' | 'dev' | 'prod';
 }
 
 interface RemoteLoggerConfig {
-  minLevel: LogLevel,
-  environment: 'local' | 'dev' | 'prod',
+  minLevel: LogLevel;
+  environment: 'local' | 'dev' | 'prod';
 
-  loggingServerUrl: string,
+  loggingServerUrl: string;
   authorization: {
-    name: string,
-    password: string
-  }
+    name: string;
+    password: string;
+  };
 }
 
 @Injectable({
@@ -56,10 +56,10 @@ export class RemoteLogger extends LoggerBase {
       );
   }
 
-  public isLoggerRequest(url: string) {
+  public isLoggerRequest(url: string): boolean {
     const loggerUrl = this.getConfig()?.loggingServerUrl;
 
-    if (!loggerUrl) {
+    if (loggerUrl == null) {
       return false;
     }
 
@@ -97,12 +97,12 @@ export class RemoteLogger extends LoggerBase {
       message: message,
       stack: stack ?? '',
       sessionId: this.guid,
-      login: this.localStorageService.getItem<any>('user')?.login ?? '',
+      login: (this.localStorageService.getItem<any>('user')?.login ?? '') as string,
       environment: this.getConfig()!.environment
     };
   }
 
-  private flushBuffer() {
+  private flushBuffer(): void {
     try {
       const config = this.getConfig()!;
 
@@ -122,13 +122,13 @@ export class RemoteLogger extends LoggerBase {
               currentValue
             ];
           },
-          [] as any[]
+          [] as (LogEntry | { index: { _index: string} })[]
         );
 
 
         this.httpClient.post(
           `${config.loggingServerUrl}/_bulk`,
-          bulkData.map(x => JSON.stringify(x)).join('\n') + '\n',
+          bulkData.map(x => JSON.stringify(x)).join('\n') as string + '\n',
           {
             headers: {
               'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ export class RemoteLogger extends LoggerBase {
   }
   private getConfig(): RemoteLoggerConfig | null {
     if (this.config === undefined) {
-      this.config = (environment.logging as any)?.remote as RemoteLoggerConfig ?? null;
+      this.config = (environment.logging as any)?.remote as RemoteLoggerConfig | undefined ?? null;
     }
 
     return this.config;

@@ -46,7 +46,7 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
 
   gridTypes = GridType;
 
-  form!: UntypedFormGroup;
+  form?: UntypedFormGroup;
 
   constructor(private readonly destroyRef: DestroyRef) {
     super();
@@ -100,8 +100,8 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
       {
         this.checkIfTouched();
         this.emitValue(
-          this.form.valid
-            ? this.form.value as GeneralSettings
+          this.form!.valid
+            ? this.form!.value as GeneralSettings
             : null
         );
       }
@@ -121,22 +121,22 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
   }
 
   private setControlValueInGroup<T>(
-    group: UntypedFormGroup,
+    group: UntypedFormGroup | null | undefined,
     value: T | null,
     handler: (key: string, value: any, control: AbstractControl) => void
-  ) {
-    if (!group || !value) {
+  ): void {
+    if (!group || !(value ?? null)) {
       return;
     }
 
     for (const property in value) {
-      const control = group.controls[property];
+      const control = group.controls[property] as AbstractControl | undefined;
 
       if (!control) {
         continue;
       }
 
-      handler(property, value[property as keyof T], control);
+      handler(property, value![property as keyof T], control);
     }
   }
 

@@ -12,15 +12,15 @@ export interface CurrentOrder {
 }
 
 export interface OrderBookViewRow {
-  bidVolume?: number,
-  bid?: number,
-  yieldBid?: number,
-  yieldAsk?: number,
-  ask?: number,
-  askVolume?: number,
-  askOrderVolume?: number,
-  bidOrderVolume?: number,
+  bidVolume?: number;
+  bid?: number;
+  yieldBid?: number;
+  yieldAsk?: number;
+  ask?: number;
+  askVolume?: number;
+  askOrderVolume?: number;
+  bidOrderVolume?: number;
 
-  askOrders: CurrentOrder[],
-  bidOrders: CurrentOrder[]
+  askOrders: CurrentOrder[];
+  bidOrders: CurrentOrder[];
 }

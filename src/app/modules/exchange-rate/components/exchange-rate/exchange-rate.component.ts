@@ -25,7 +25,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.exchangeRateData$ = this.exchangeRateService.getCurrencies()
       .pipe(
         mapWith(
@@ -35,7 +35,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
             data: rates.reduce((acc, curr) => {
               acc[`${curr.firstCode}_${curr.secondCode}`] = curr.last_price;
               return acc;
-            }, {} as any)
+            }, {} as { [p: string]: number })
           })
         ),
       );
@@ -45,10 +45,10 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
     if (firstCode === secondCode || (!data[`${firstCode}_${secondCode}`] && !data[`${secondCode}_${firstCode}`])) {
       return '-';
     }
-    return (data[`${firstCode}_${secondCode}`] || 1 / data[`${secondCode}_${firstCode}`])?.toFixed(4);
+    return (data[`${firstCode}_${secondCode}`] || 1 / data[`${secondCode}_${firstCode}`]).toFixed(4);
   }
 
-  updateContainerSize(entries: ResizeObserverEntry[]) {
+  updateContainerSize(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       const width = Math.floor(x.contentRect.width);
       const height = Math.floor(x.contentRect.height);
@@ -67,10 +67,10 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
     this.tableScroll$.complete();
   }
 
-  private getExchangeRates = (exchangeRates: ExchangeRate[]): Observable<{
-    firstCode: string,
-    secondCode: string,
-    last_price: number
+  private readonly getExchangeRates = (exchangeRates: ExchangeRate[]): Observable<{
+    firstCode: string;
+    secondCode: string;
+    last_price: number;
   }[]> => {
     return combineLatest(
       exchangeRates.map(item => this.quotesService.getQuotes(

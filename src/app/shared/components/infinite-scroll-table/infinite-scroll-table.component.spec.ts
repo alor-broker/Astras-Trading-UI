@@ -27,7 +27,7 @@ import { BaseColumnSettings } from "../../models/settings/table-settings.model";
   `
 })
 class TestWrapperComponent implements OnInit {
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor(private readonly cdr: ChangeDetectorRef) {
   }
   tableContainerHeight = 50;
   tableContainerWidth = 50;
@@ -46,13 +46,13 @@ class TestWrapperComponent implements OnInit {
     {id1: 'testName1', id2: 'testName2', id: 3},
     {id1: 'testName1', id2: 'testName2', id: 4},
   ];
-  trackByFn = (e: any) => e.name;
+  trackByFn = (e: any): string => e.name as string;
 
-  applyFilter(e: any) {}
-  scrolled() {}
-  rowClick(e: any) {}
+  applyFilter(e: any): void { return; }
+  scrolled(): void { return; }
+  rowClick(e: any): void { return; }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.cdr.detectChanges();
   }
 }
@@ -118,7 +118,7 @@ describe('InfiniteScrollTableComponent', () => {
   });
 
   it('should return columns widhts', () => {
-    expect(component.getWidthArr()).toEqual(wrapperComp.tableConfig.columns.map((col: BaseColumnSettings<any>) => col.width ? col.width + 'px' : 'auto'));
+    expect(component.getWidthArr()).toEqual(wrapperComp.tableConfig.columns.map((col: BaseColumnSettings<any>) => (col.width ?? 0) ? `${col.width}px` : 'auto'));
   });
 
   it('should return filter control', () => {

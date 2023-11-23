@@ -42,7 +42,7 @@ export abstract class BaseEditOrderFormComponent implements OnDestroy {
     this.orderId$.complete();
   }
 
-  protected initFormInstrument(instrumentKey$: Observable<InstrumentKey>) {
+  protected initFormInstrument(instrumentKey$: Observable<InstrumentKey>): void {
     this.formInstrument$ = instrumentKey$.pipe(
       switchMap(instrumentKey => this.instrumentService.getInstrument(instrumentKey)),
       filter((i): i is Instrument => !!i),
@@ -55,20 +55,20 @@ export abstract class BaseEditOrderFormComponent implements OnDestroy {
       instrument: this.formInstrument$,
       portfolioKey: this.portfolioKey$
     }).pipe(
-      filter(x => !!x.instrument && !!x.portfolioKey),
+      filter(x => !!(x.instrument as Instrument | null) && !!x.portfolioKey),
       map(x => ({instrument: x.instrument!, portfolioKey: x.portfolioKey!})),
     );
   }
 
-  protected enableControl(target: AbstractControl) {
+  protected enableControl(target: AbstractControl): void {
     target.enable({emitEvent: false});
   }
 
-  protected disableControl(target: AbstractControl) {
+  protected disableControl(target: AbstractControl): void {
     target.disable({emitEvent: false});
   }
 
-  protected setPriceValidators(target: FormControl<number | null>, newInstrument: Instrument) {
+  protected setPriceValidators(target: FormControl<number | null>, newInstrument: Instrument): void {
     target.clearValidators();
     target.addValidators([
       Validators.required,

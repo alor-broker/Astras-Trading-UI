@@ -37,8 +37,8 @@ export class MarketService {
   private getSettings(): Observable<{ exchange: string, settings: ExchangeSettings }[]> {
     if (!this.settings$) {
       this.settings$ = this.http.get<{
-        exchange: string,
-        settings: ExchangeSettings
+        exchange: string;
+        settings: ExchangeSettings;
       }[]>(
         '../../../assets/marketSettings.json',
         {

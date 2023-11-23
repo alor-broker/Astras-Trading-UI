@@ -17,7 +17,7 @@ import {catchHttpError} from "../utils/observable-helper";
   providedIn: 'root'
 })
 export class OrderCancellerService {
-  private url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders';
+  private readonly url = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders';
 
   constructor(
     private readonly http: HttpClient,
@@ -34,7 +34,7 @@ export class OrderCancellerService {
     }).pipe(
       catchHttpError<CommandResponse | null>(null, this.errorHandlerService),
       tap(resp => {
-        if (resp?.orderNumber) {
+        if (resp?.orderNumber ?? '') {
           this.instantNotificationsService.showNotification(
             OrdersInstantNotificationType.OrderCancelled,
             'success',

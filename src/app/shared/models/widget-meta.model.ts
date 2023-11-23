@@ -2,7 +2,7 @@
   default: string;
   translations?: {
     [key: string]: string;
-  }
+  };
 }
 
 export interface ApplicationAdapterConfig {
@@ -11,8 +11,8 @@ export interface ApplicationAdapterConfig {
 }
 
 export interface WidgetDefinition {
-  adapter: 'application',
-  config: ApplicationAdapterConfig
+  adapter: 'application';
+  config: ApplicationAdapterConfig;
 }
 
 export interface WidgetMeta {
@@ -37,12 +37,12 @@ export interface WidgetMeta {
      * Options used when widget is adding to dashboard
      */
     addOptions: {
-      initialPosition?: 'auto' | 'top' | 'below'
-      isFullWidth: boolean
-      initialHeight?: number,
-      initialHeightPx?: number,
-      initialWidth?: number
-    },
+      initialPosition?: 'auto' | 'top' | 'below';
+      isFullWidth: boolean;
+      initialHeight?: number;
+      initialHeightPx?: number;
+      initialWidth?: number;
+    };
 
     /**
      * Used to sort widgets in gallery (widgets menu)
@@ -58,5 +58,5 @@ export interface WidgetMeta {
     ribbonIcon: string;
     enabled: boolean;
     widgetName?: WidgetName;
-  }
+  };
 }

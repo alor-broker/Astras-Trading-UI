@@ -27,7 +27,7 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
   styleUrls: ['./scalper-order-book-widget.component.less']
 })
 export class ScalperOrderBookWidgetComponent implements OnInit {
-  shouldShowSettings: boolean = false;
+  shouldShowSettings = false;
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
@@ -35,7 +35,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
   isBlockWidget!: boolean;
 
   @Input()
-  isActive: boolean = false;
+  isActive = false;
 
   settings$!: Observable<ScalperOrderBookWidgetSettings>;
   showBadge$!: Observable<boolean>;
@@ -50,7 +50,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
     return this.widgetInstance.instance.guid;
   }
 
-  onSettingsChange() {
+  onSettingsChange(): void {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 

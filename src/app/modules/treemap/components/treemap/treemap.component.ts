@@ -58,10 +58,10 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   // this widget works  with MOEX exchange only
   private readonly defaultExchange = 'MOEX';
   private chart?: Chart;
-  private selectedSector$ = new BehaviorSubject('');
-  private tilesCount$ = new BehaviorSubject(0);
-  private maxDayChange = 5;
-  private averageTileSize = 4000;
+  private readonly selectedSector$ = new BehaviorSubject('');
+  private readonly tilesCount$ = new BehaviorSubject(0);
+  private readonly maxDayChange = 5;
+  private readonly averageTileSize = 4000;
 
   constructor(
     private readonly treemapService: TreemapService,
@@ -74,11 +74,11 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     Chart.register(TreemapController, TreemapElement);
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.tilesCount$.next(
       Math.floor(this.treemapWrapperEl!.nativeElement.clientWidth * this.treemapWrapperEl!.nativeElement.clientHeight / this.averageTileSize)
     );
@@ -106,7 +106,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         })),
       )
       .subscribe(({ treemap, themeColors }) => {
-        const ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d')!;
+        const ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d');
 
         if (!ctx) {
           return;
@@ -132,7 +132,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                 },
                 labels: {
                   display: true,
-                  formatter: (t: any) => [t.raw._data.symbol, t.raw._data.children[0]?.dayChange + '%'],
+                  formatter: (t: any) => [t.raw._data.symbol, `${t.raw._data.children[0]?.dayChange}%`] as string[],
                   overflow: 'fit',
                   color: themeColors.textColor,
                   font: [{ weight: '600' }, { weight: '400' }]
@@ -157,10 +157,10 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
             ],
           },
           options: {
-            onResize: (chart: Chart, { width, height }) => {
+            onResize: (chart: Chart, { width, height }): void => {
               this.tilesCount$.next(Math.floor(width * height / this.averageTileSize));
             },
-            onHover: (event: ChartEvent, elements: ActiveElement[]) => {
+            onHover: (event: ChartEvent, elements: ActiveElement[]): void => {
               this.isCursorOnSector$.next(elements.length === 1);
             },
             color: themeColors.chartLabelsColor,
@@ -173,10 +173,10 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                 displayColors: false,
                 callbacks: {
                   label: this.getTooltipLabel,
-                  title(tooltipItems: TooltipItem<'treemap'>[]) {
-                    return tooltipItems.length > 1
+                  title(tooltipItems: TooltipItem<'treemap'>[]): string {
+                    return (tooltipItems.length > 1
                       ? (tooltipItems[1]!.raw as any)._data.label
-                      : (tooltipItems[0]!.raw as any)._data.label;
+                      : (tooltipItems[0]!.raw as any)._data.label) as string;
                   }
                 },
                 animation: {
@@ -184,7 +184,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                 }
               },
             },
-            onClick: (event: ChartEvent, elements: ActiveElement[]) => {
+            onClick: (event: ChartEvent, elements: ActiveElement[]): void => {
               if (elements.length === 1) {
                 this.selectedSector$
                   .pipe(
@@ -208,13 +208,13 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.selectedSector$.complete();
     this.isCursorOnSector$.complete();
   }
 
-  private getTooltipLabel = (tooltipItem: TooltipItem<'treemap'>): string | void => {
-    const treemapNode = (tooltipItem.raw as any)._data;
+  private readonly getTooltipLabel = (tooltipItem: TooltipItem<'treemap'>): string | void => {
+    const treemapNode = (tooltipItem.raw as any)._data as { label: string, sector: string, children: TreemapNode[]};
 
     if (treemapNode.label === treemapNode.sector) {
       return '';
@@ -263,7 +263,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
       );
   }
 
-  private selectInstrument(symbol: string) {
+  private selectInstrument(symbol: string): void {
     this.settingsService.getSettings(this.guid)
       .pipe(
         take(1),

@@ -17,17 +17,17 @@ export class ExportHelper {
     data: T[],
     columns: BaseColumnSettings<T>[],
     valueTranslators?: Map<string, (value: any) => string>,
-  ) {
+  ): void {
     const meta = columns.map(c => ({
         title: c.displayName,
         readFn: item => {
-          let value = (item as any)[c.id];
+          const value = (item as { [propName: string]: string})[c.id];
           const translator = valueTranslators?.get(c.id);
           if (translator && !!value) {
             return translator(value);
           }
           return value;
-        },
+        }
       } as ExportColumnMeta<T>)
     );
 

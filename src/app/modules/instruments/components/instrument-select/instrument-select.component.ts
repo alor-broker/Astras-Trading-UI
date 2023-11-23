@@ -60,7 +60,7 @@ export class InstrumentSelectComponent implements OnInit {
   settings$!: Observable<InstrumentSelectSettings>;
   currentWatchlist$!: Observable<Watchlist>;
   getTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
-  private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
+  private readonly filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
 
   constructor(
     private readonly service: InstrumentsService,
@@ -105,7 +105,7 @@ export class InstrumentSelectComponent implements OnInit {
     this.filter$.next(filter);
   }
 
-  onSelect(event: NzOptionSelectionChange, val: Instrument) {
+  onSelect(event: NzOptionSelectionChange, val: Instrument): void {
     if (event.isUserInput) {
       this.watch(val);
       setTimeout(() => {
@@ -153,7 +153,7 @@ export class InstrumentSelectComponent implements OnInit {
     });
   }
 
-  watch(instrument: InstrumentKey) {
+  watch(instrument: InstrumentKey): void {
     combineLatest({
       watchlist: this.currentWatchlist$,
       settings: this.settings$
@@ -166,11 +166,11 @@ export class InstrumentSelectComponent implements OnInit {
   }
 
 
-  selectCollection(listId: string) {
+  selectCollection(listId: string): void {
     this.settingsService.updateSettings(this.guid, { activeListId: listId });
   }
 
-  private setDefaultWatchList() {
+  private setDefaultWatchList(): void {
     combineLatest([
         this.settings$,
         this.collection$
@@ -178,7 +178,7 @@ export class InstrumentSelectComponent implements OnInit {
     ).pipe(
       take(1)
     ).subscribe(([settings, collection]) => {
-      if (!!settings.activeListId) {
+      if (!!(settings.activeListId ?? '')) {
         if (collection.collection.find(w => w.id === settings.activeListId)) {
           return;
         }

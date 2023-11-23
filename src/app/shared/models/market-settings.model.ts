@@ -1,7 +1,7 @@
 export interface ExchangeSettings {
   market: {
-    [marketName: string]: MarketSettings
-  },
+    [marketName: string]: MarketSettings;
+  };
   currencyInstrument: string;
   hasIssue?: boolean;
   hasPayments?: boolean;
@@ -12,7 +12,7 @@ export interface ExchangeSettings {
   defaultInstrument: {
     symbol: string;
     instrumentGroup?: string;
-  }
+  };
 }
 
 export interface MarketSettings {}

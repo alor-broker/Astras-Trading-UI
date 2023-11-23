@@ -22,16 +22,16 @@ import { mapWith } from '../utils/observable-helper';
   providedIn: 'root',
 })
 export class AccountService {
-  private accountUrl = environment.clientDataUrl + '/client/v1.0';
+  private readonly accountUrl = environment.clientDataUrl + '/client/v1.0';
 
   constructor(
-    private auth: AuthService,
-    private positionsService: PositionsService,
-    private http: HttpClient
+    private readonly auth: AuthService,
+    private readonly positionsService: PositionsService,
+    private readonly http: HttpClient
   ) {
   }
 
-  getFullName() {
+  getFullName(): Observable<FullName> {
     return this.auth.currentUser$.pipe(
       switchMap((u) =>
         this.http.get<FullName>(`${this.accountUrl}/users/${u.login}/full-name`)

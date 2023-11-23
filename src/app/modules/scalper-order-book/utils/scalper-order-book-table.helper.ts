@@ -5,8 +5,8 @@ export class ScalperOrderBookTableHelper {
     scrollViewport: CdkVirtualScrollViewport | null | undefined,
     tableRowHeight: number,
     index: number,
-    applyCenterCorrection: boolean = true,
-    withDelay: boolean = true) {
+    applyCenterCorrection = true,
+    withDelay = true): void {
     setTimeout(() => {
         if (!scrollViewport) {
           return;

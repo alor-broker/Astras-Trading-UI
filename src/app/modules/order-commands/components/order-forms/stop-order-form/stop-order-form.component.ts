@@ -44,9 +44,9 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     price?: number;
     quantity?: number;
     stopOrder?: {
-      condition?: LessMore,
-      limit?: boolean
-    }
+      condition?: LessMore;
+      limit?: boolean;
+    };
   } | null = null;
 
   form = this.formBuilder.group({
@@ -133,7 +133,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     this.initFieldDependencies();
   }
 
-  disabledDate = (date: Date) => {
+  disabledDate = (date: Date): boolean => {
     const today = startOfDay(new Date());
     return toUnixTime(date) < toUnixTime(today);
   };
@@ -193,8 +193,8 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       switchMap(tc => {
         const formValue = this.form.value;
 
-        if (formValue.allowLinkedOrder && !!formValue.linkedOrder) {
-          const baseOrder = formValue.withLimit
+        if ((formValue.allowLinkedOrder ?? false) && !!formValue.linkedOrder) {
+          const baseOrder = (formValue.withLimit ?? false)
             ? {
               ...this.getStopLimitOrder(instrument, side, formValue, tc),
               side,
@@ -206,7 +206,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
               type: 'Stop'
             };
 
-          const linkedOrder = formValue.linkedOrder.withLimit
+          const linkedOrder = (formValue.linkedOrder.withLimit ?? false)
             ? {
               ...this.getStopLimitOrder(instrument, side, formValue.linkedOrder, tc),
               side: formValue.linkedOrder.side,
@@ -243,7 +243,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     );
   }
 
-  private initCommonParametersUpdate() {
+  private initCommonParametersUpdate(): void {
     this.commonParametersService.parameters$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(p => {
@@ -287,10 +287,10 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     instrument: Instrument,
     side: Side,
     formValue: {
-      quantity?: number,
-      triggerPrice?: number | null,
-      condition?: LessMore,
-      stopEndUnixTime?: Date | null
+      quantity?: number;
+      triggerPrice?: number | null;
+      condition?: LessMore;
+      stopEndUnixTime?: Date | null;
     },
     timezoneConverter: TimezoneConverter
   ): NewStopMarketOrder {
@@ -310,15 +310,15 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     instrument: Instrument,
     side: Side,
     formValue: {
-      quantity?: number,
-      triggerPrice?: number | null,
-      condition?: LessMore,
-      stopEndUnixTime?: Date | null,
-      price?: number | null,
+      quantity?: number;
+      triggerPrice?: number | null;
+      condition?: LessMore;
+      stopEndUnixTime?: Date | null;
+      price?: number | null;
       icebergFixed?: number | null;
       icebergVariance?: number | null;
-      timeInForce?: TimeInForce | null,
-      isIceberg?: boolean
+      timeInForce?: TimeInForce | null;
+      isIceberg?: boolean;
     },
     timezoneConverter: TimezoneConverter
   ): NewStopLimitOrder {
@@ -331,18 +331,18 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       order.timeInForce = formValue.timeInForce;
     }
 
-    if (formValue.icebergFixed) {
+    if (formValue.icebergFixed ?? 0) {
       order.icebergFixed = Number(formValue.icebergFixed);
     }
 
-    if (formValue.icebergVariance) {
+    if (formValue.icebergVariance ?? 0) {
       order.icebergVariance = Number(formValue.icebergVariance);
     }
 
     return order;
   }
 
-  private checkFieldsAvailability() {
+  private checkFieldsAvailability(): void {
     if (this.form.value.withLimit === true) {
       this.enableControl(this.form.controls.price);
       this.enableControl(this.form.controls.timeInForce);
@@ -377,7 +377,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     this.form.updateValueAndValidity();
   }
 
-  private initPriceDiffCalculation() {
+  private initPriceDiffCalculation(): void {
     this.currentPriceDiffPercent$ = PriceDiffHelper.getPriceDiffCalculation(
       this.form.controls.price,
       this.getInstrumentWithPortfolio(),
@@ -385,14 +385,14 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     );
   }
 
-  private initFormFieldsCheck() {
+  private initFormFieldsCheck(): void {
     this.form.valueChanges.pipe(
       distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => this.checkFieldsAvailability());
   }
 
-  private initFieldDependencies() {
+  private initFieldDependencies(): void {
     this.form.controls.triggerPrice.valueChanges.pipe(
       distinctUntilChanged((prev, curr) => prev === curr),
       takeUntilDestroyed(this.destroyRef)
@@ -404,7 +404,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       this.isActivated$,
       this.form.controls.price.valueChanges
     ]).pipe(
-      filter(([isActivated, v]) => isActivated && this.form.controls.condition.untouched && !!v),
+      filter(([isActivated, v]) => isActivated && this.form.controls.condition.untouched && !!(v ?? 0)),
       map(([, price]) => price),
       distinctUntilChanged((prev, curr) => prev === curr),
       debounceTime(500),
@@ -419,7 +419,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
 
   }
 
-  private getCurrentPrice() {
+  private getCurrentPrice(): Observable<number | null> {
     return this.getInstrumentWithPortfolio()
       .pipe(
         take(1),
@@ -427,7 +427,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       );
   }
 
-  private checkNowTimeSelection(timezoneConverter: TimezoneConverter) {
+  private checkNowTimeSelection(timezoneConverter: TimezoneConverter): void {
     // nz-date-picker does not support timezones changing
     // now selection will be available only if time displayed in current timezone
     const now = new Date();

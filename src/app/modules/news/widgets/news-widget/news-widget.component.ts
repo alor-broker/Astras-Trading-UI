@@ -62,7 +62,7 @@ export class NewsWidgetComponent implements OnInit {
     this.titleText =  WidgetsHelper.getWidgetName(this.widgetInstance.widgetMeta.widgetName, this.translatorService.getActiveLang());
   }
 
-  sectionChange(section: NewsSection) {
+  sectionChange(section: NewsSection): void {
     switch (section) {
       case NewsSection.All:
         this.widgetTitle$ = of('');
@@ -81,7 +81,7 @@ export class NewsWidgetComponent implements OnInit {
               exchange: s.exchange,
               instrumentGroup: s.instrumentGroup
             })),
-            map(i => `${i!.symbol} ${i!.instrumentGroup ? '(' + i!.instrumentGroup + ')' : ''} ${i!.shortName}`)
+            map(i => `${i!.symbol} ${(i!.instrumentGroup ?? '') ? '(' + (i!.instrumentGroup as string) + ')' : ''} ${i!.shortName}`)
           );
         break;
     }

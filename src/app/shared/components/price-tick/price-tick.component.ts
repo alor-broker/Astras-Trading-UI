@@ -7,29 +7,27 @@ import { Component, OnInit, Input, OnChanges } from '@angular/core';
 })
 export class PriceTickComponent implements OnInit, OnChanges {
   @Input({required: true})
-  prevPrice: number = 0;
+  prevPrice = 0;
   @Input({required: true})
-  price: number = 0;
+  price = 0;
 
-  changingColorPart: string = '';
-  mainPart: string = '';
-  isUp: boolean = true;
-
-  constructor() { }
+  changingColorPart = '';
+  mainPart = '';
+  isUp = true;
 
   ngOnInit(): void {
     this.recolor();
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     this.recolor();
   }
 
-  private recolor() {
+  private recolor(): void {
     if (!this.price) {
       return;
     }
-    const parts = this.price.toString()?.split('.');
+    const parts = this.price.toString().split('.');
     this.mainPart = parts[0] + '.';
     this.changingColorPart = parts[1];
     if (!this.changingColorPart) {

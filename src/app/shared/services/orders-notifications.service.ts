@@ -9,10 +9,10 @@ import { OrdersInstantNotificationType } from '../models/terminal-settings/termi
 export class OrdersNotificationsService {
   prevNotifications = new Set();
 
-  constructor(private notification: InstantNotificationsService) {
+  constructor(private readonly notification: InstantNotificationsService) {
   }
 
-  notificateAboutNewOrder(order: Order) {
+  notificateAboutNewOrder(order: Order): void {
     let seccondsPassed = (new Date().getTime() - order.transTime.getTime()) / 1000;
     if (order.status == 'filled' && seccondsPassed < 5) {
       this.notify(`Заявка ${order.id} исполнилась`, OrdersInstantNotificationType.OrderFilled);
@@ -22,7 +22,7 @@ export class OrdersNotificationsService {
     }
   }
 
-  notificateOrderChange(newOrder: Order, oldOrder: Order) {
+  notificateOrderChange(newOrder: Order, oldOrder: Order): void {
     if (newOrder.status != oldOrder.status) {
       this.notify(`Статус заявки ${newOrder.id} изменился на ${newOrder.status}`, OrdersInstantNotificationType.OrderStatusChanged);
     }
@@ -31,7 +31,7 @@ export class OrdersNotificationsService {
     }
   }
 
-  private notify(message: string, notificationType: OrdersInstantNotificationType) {
+  private notify(message: string, notificationType: OrdersInstantNotificationType): void {
     if (this.prevNotifications.has(message)) {
       return;
     }

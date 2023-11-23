@@ -16,7 +16,7 @@ import { WidgetSettings } from '../../shared/models/widget-settings.model';
 export const widgetSettingsFeatureKey = 'widgetSettings';
 
 export interface State extends EntityState<WidgetSettings> {
-  status: EntityStatus
+  status: EntityStatus;
 }
 
 export const adapter: EntityAdapter<WidgetSettings> = createEntityAdapter<WidgetSettings>({

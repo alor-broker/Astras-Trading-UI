@@ -29,7 +29,7 @@ export class InstantNotificationsService {
     displayType: 'info' | 'success' | 'error',
     title: string,
     content: string
-  ) {
+  ): void {
     this.getSettings().pipe(
       take(1)
     ).subscribe(s => {

@@ -15,11 +15,11 @@ import { Quote } from "../../../shared/models/quotes/quote.model";
   providedIn: 'root'
 })
 export class ArbitrageSpreadService {
-  private spreadsKey = 'arbitration-spreads';
-  private spreads$ = new BehaviorSubject<ArbitrageSpread[]>([]);
+  private readonly spreadsKey = 'arbitration-spreads';
+  private readonly spreads$ = new BehaviorSubject<ArbitrageSpread[]>([]);
 
-  private shouldShowSpreadModal = new BehaviorSubject<boolean>(false);
-  private spreadParams = new BehaviorSubject<ArbitrageSpread | null>(null);
+  private readonly shouldShowSpreadModal = new BehaviorSubject<boolean>(false);
+  private readonly spreadParams = new BehaviorSubject<ArbitrageSpread | null>(null);
   shouldShowSpreadModal$ = this.shouldShowSpreadModal.asObservable();
   spreadParams$ = this.spreadParams.asObservable();
 
@@ -32,10 +32,10 @@ export class ArbitrageSpreadService {
   }
 
   getSpreadsSubscription(): Observable<ArbitrageSpread[]> {
-    const localStorageSpreads = this.localStorage.getItem(this.spreadsKey) as ArbitrageSpread[];
+    const localStorageSpreads = this.localStorage.getItem(this.spreadsKey) as ArbitrageSpread[] | undefined;
 
-    if (localStorageSpreads) {
-      this.spreads$.next(localStorageSpreads);
+    if ((localStorageSpreads ?? []).length) {
+      this.spreads$.next(localStorageSpreads!);
     }
 
     return this.spreads$.asObservable()
@@ -122,7 +122,7 @@ export class ArbitrageSpreadService {
 
                     sellSpread = sellSpread.replace(
                       /L3/g,
-                      ((spread.thirdLeg?.side === Side.Buy ? thirdLeg!.bid : thirdLeg!.ask) * spread.thirdLeg.quantity * spread.thirdLeg.ratio).toString()
+                      ((spread.thirdLeg!.side === Side.Buy ? thirdLeg!.bid : thirdLeg!.ask) * spread.thirdLeg!.quantity * spread.thirdLeg!.ratio).toString()
                     );
                   }
 
@@ -155,7 +155,7 @@ export class ArbitrageSpreadService {
       );
   }
 
-  addSpread(newSpread: ArbitrageSpread) {
+  addSpread(newSpread: ArbitrageSpread): void {
     this.spreads$
       .pipe(take(1))
       .subscribe(spreads => {
@@ -168,7 +168,7 @@ export class ArbitrageSpreadService {
       });
   }
 
-  editSpread(spread: ArbitrageSpread) {
+  editSpread(spread: ArbitrageSpread): void {
     this.spreads$
       .pipe(take(1))
       .subscribe(spreads => {
@@ -185,7 +185,7 @@ export class ArbitrageSpreadService {
       });
   }
 
-  removeSpread(spreadId: string) {
+  removeSpread(spreadId: string): void {
     this.spreads$
       .pipe(take(1))
       .subscribe(spreads => {
@@ -193,7 +193,7 @@ export class ArbitrageSpreadService {
       });
   }
 
-  private saveSpreads(spreads: Array<ArbitrageSpread>) {
+  private saveSpreads(spreads: ArbitrageSpread[]): void {
     this.localStorage.setItem(this.spreadsKey, spreads);
   }
 
@@ -208,7 +208,7 @@ export class ArbitrageSpreadService {
     )
       .pipe(
         switchMap((order) => {
-          if (!order) {
+          if (!order.isSuccess) {
             return of(null);
           }
 
@@ -244,12 +244,12 @@ export class ArbitrageSpreadService {
       );
   }
 
-  openSpreadModal(spread?: ArbitrageSpread | null) {
+  openSpreadModal(spread?: ArbitrageSpread | null): void {
     this.spreadParams.next(spread ?? null);
     this.shouldShowSpreadModal.next(true);
   }
 
-  closeSpreadModal() {
+  closeSpreadModal(): void {
     this.spreadParams.next(null);
     this.shouldShowSpreadModal.next(false);
   }

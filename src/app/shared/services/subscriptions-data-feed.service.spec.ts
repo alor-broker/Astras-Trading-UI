@@ -61,7 +61,7 @@ describe('SubscriptionsDataFeedService', () => {
       }
     ];
 
-    const getCode = (request: any) => `${request.key}_${request.opcode}`;
+    const getCode = (request: any): string => `${request.key}_${request.opcode}`;
 
     requests.forEach(request => {
       service.subscribe<any, any>(request, getCode)
@@ -88,7 +88,7 @@ describe('SubscriptionsDataFeedService', () => {
       }
     ];
 
-    const getCode = (request: any) => `${request.key}_${request.opcode}`;
+    const getCode = (request: any): string => `${request.key}_${request.opcode}`;
 
     requests.forEach(request => {
       service.subscribe<any, any>(request, getCode)

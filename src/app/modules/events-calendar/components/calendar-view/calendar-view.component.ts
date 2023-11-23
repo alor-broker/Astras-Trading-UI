@@ -13,7 +13,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   styleUrls: ['./calendar-view.component.less']
 })
 export class CalendarViewComponent implements AfterViewInit, OnDestroy {
-  private symbols$ = new BehaviorSubject<string[]>([]);
+  private readonly symbols$ = new BehaviorSubject<string[]>([]);
 
   @Input()
   set symbols(value: string[]) {
@@ -35,9 +35,9 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
 
   formatCurrencyFn = formatCurrency;
 
-  disable = () => true;
+  disable = (): boolean => true;
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.selectedDate$
       .pipe(
         distinctUntilChanged((prev, curr) => prev.toString() === curr.toString()),
@@ -56,36 +56,36 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
       });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.symbols$.complete();
     this.events$.complete();
     this.selectedDateEvents$.complete();
   }
 
-  onDateChange(e: Date) {
+  onDateChange(e: Date): void {
     this.selectedDate$.next(e);
   }
 
-  changeCalendarsDate(date: Date) {
-    this.startPeriodCalendarComp?.writeValue(date);
-    this.endPeriodCalendarComp?.writeValue(addMonths(date, 1));
+  changeCalendarsDate(date: Date): void {
+    (this.startPeriodCalendarComp as NzCalendarComponent | undefined)?.writeValue(date);
+    (this.endPeriodCalendarComp as NzCalendarComponent | undefined)?.writeValue(addMonths(date, 1));
   }
 
   getDateEvents(date: Date, events: CalendarEvents): CalendarEvent | null {
     return Object
       .values(events)
-      .find(event => startOfDay(event.date)?.toString() === startOfDay(date)?.toString()) ?? null;
+      .find(event => startOfDay(event.date).toString() === startOfDay(date).toString()) ?? null;
   }
 
   isShowDate(date: Date, isLeftCalendar = true): boolean {
     if (isLeftCalendar) {
-      return date.getMonth() === this.startPeriodCalendarComp?.activeDate.getMonth();
+      return date.getMonth() === (this.startPeriodCalendarComp as NzCalendarComponent | undefined)?.activeDate.getMonth();
     }
 
-    return date.getMonth() === this.endPeriodCalendarComp?.activeDate.getMonth();
+    return date.getMonth() === (this.endPeriodCalendarComp as NzCalendarComponent | undefined)?.activeDate.getMonth();
   }
 
-  selectEvent(date: Date, events: CalendarEvents) {
+  selectEvent(date: Date, events: CalendarEvents): void {
     const selectedDateEvents = this.getDateEvents(date, events);
 
     if (selectedDateEvents) {

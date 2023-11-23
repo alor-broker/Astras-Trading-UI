@@ -50,7 +50,7 @@ export class ApplicationMetaService {
     );
   }
 
-  updateCurrentVersion(version: string) {
+  updateCurrentVersion(version: string): void {
     this.localStorageService.setItem<string>(this.versionStorageKey, version);
     this.update$.next({});
   }

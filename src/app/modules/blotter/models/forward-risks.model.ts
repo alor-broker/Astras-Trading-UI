@@ -1,22 +1,22 @@
 export interface ForwardRisks {
   /** Свободные средства **/
-  moneyFree: number,
+  moneyFree: number;
   /** Средства, заблокированные под ГО **/
-  moneyBlocked: number,
+  moneyBlocked: number;
   /** Списанный сбор **/
-  fee: number,
+  fee: number;
   /** Общее количество рублей и дисконтированных в рубли залогов на начало сессии **/
-  moneyOld: number,
+  moneyOld: number;
   /** Общее количество рублей и дисконтированных в рубли залогов **/
-  moneyAmount: number,
+  moneyAmount: number;
   /** Сумма залогов, дисконтированных в рубли **/
-  moneyPledgeAmount: number,
+  moneyPledgeAmount: number;
   /** Вариационная маржа, списанная или полученная в пром. клиринг **/
-  vmInterCl: number,
+  vmInterCl: number;
   /** Сагрегированная вармаржа по текущим позициям **/
-  vmCurrentPositions: number,
+  vmCurrentPositions: number;
   /** VmCurrentPositions + VmInterCl **/
-  varMargin: number,
+  varMargin: number;
   /** Наличие установленных денежного и залогового лимитов **/
-  isLimitsSet: boolean
+  isLimitsSet: boolean;
 }

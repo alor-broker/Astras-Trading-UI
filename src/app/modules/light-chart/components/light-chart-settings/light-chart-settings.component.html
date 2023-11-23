@@ -7,7 +7,7 @@
 >
   <ng-container *transloco="let t; scope: 'light-chart/settings'">
     <ng-container *transloco="let tChart; scope: 'light-chart'">
-    <form nz-form [nzLayout]="'horizontal'" [formGroup]="form" *ngIf="deviceInfo$ | async as deviceInfo">
+    <form nz-form [nzLayout]="'horizontal'" [formGroup]="form!" *ngIf="deviceInfo$ | async as deviceInfo">
     <nz-form-item *ngIf="!deviceInfo.isMobile">
       <nz-form-control [nzErrorTip]="t('lightChartSettings.tickerError')">
         <nz-form-label nzRequired nzFor="instrument">{{t('lightChartSettings.tickerLabel')}}</nz-form-label>
@@ -43,7 +43,7 @@
         <nz-form-label nzRequired nzFor="timeFrame">{{t('lightChartSettings.timeframeLabel')}}</nz-form-label>
         <nz-select formControlName='timeFrame'>
           <nz-option
-            *ngFor='let tf of this.form.controls.availableTimeFrames.value ?? []'
+            *ngFor='let tf of this.form?.controls?.availableTimeFrames?.value ?? []'
             [nzValue]="tf"
             [nzLabel]="tChart('lightChart.timeframes.' + tf)">
           </nz-option>
@@ -66,7 +66,7 @@
           <nz-form-control [nzErrorTip]="t('lightChartSettings.instrumentGroupError')">
             <nz-form-label nzFor="instrumentGroup">{{t('lightChartSettings.instrumentGroupLabel')}}</nz-form-label>
             <ats-instrument-board-select
-              [instrument]="form.value?.instrument ?? null"
+              [instrument]="form?.value?.instrument ?? null"
               [placeholder]="t('lightChartSettings.instrumentGroupLabel')"
               formControlName="instrumentGroup">
             </ats-instrument-board-select>

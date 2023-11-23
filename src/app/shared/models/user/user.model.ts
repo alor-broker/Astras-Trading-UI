@@ -1,6 +1,6 @@
 export interface User {
   login: string;
-  portfolios: Array<string>;
+  portfolios: string[];
   clientId: string;
 }
 

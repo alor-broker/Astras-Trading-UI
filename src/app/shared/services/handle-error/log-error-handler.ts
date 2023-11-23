@@ -8,7 +8,7 @@ export class LogErrorHandler implements ApplicationErrorHandler {
   constructor(private readonly logger: LoggerService) {
   }
 
-  handleError(error: Error | HttpErrorResponse) {
+  handleError(error: Error | HttpErrorResponse): void {
     this.logger.error('[General Error]', error);
   }
 }

@@ -46,7 +46,7 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
   styleUrls: ['./blotter-settings.component.less']
 })
 export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<BlotterSettings> implements OnInit {
-  form!: UntypedFormGroup;
+  form?: UntypedFormGroup;
   allOrdersColumns: BaseColumnId[] = allOrdersColumns;
   allStopOrdersColumns: BaseColumnId[] = allStopOrdersColumns;
   allTradesColumns: BaseColumnId[] = allTradesColumns;
@@ -80,7 +80,7 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
     return this.form?.valid ?? false;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.initSettingsStream();
 
     this.deviceInfo$ = this.deviceService.deviceInfo$
@@ -91,33 +91,31 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
     this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
-      if (settings) {
-        this.prevSettings = settings;
+      this.prevSettings = settings;
 
-        this.form = new UntypedFormGroup({
-          portfolio: new UntypedFormControl(this.toPortfolioKey(settings), Validators.required),
-          exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
-          ordersColumns: new UntypedFormControl(this.toTableSettings(settings.ordersTable, settings.ordersColumns)?.columns?.map(c => c.columnId)),
-          stopOrdersColumns: new UntypedFormControl(this.toTableSettings(settings.stopOrdersTable, settings.stopOrdersColumns)?.columns?.map(c => c.columnId)),
-          tradesColumns: new UntypedFormControl(this.toTableSettings(settings.tradesTable, settings.tradesColumns)?.columns?.map(c => c.columnId)),
-          positionsColumns: new UntypedFormControl(this.toTableSettings(settings.positionsTable, settings.positionsColumns)?.columns?.map(c => c.columnId)),
-          notificationsColumns: new UntypedFormControl(
-            this.toTableSettings(
-              settings.notificationsTable,
-              allNotificationsColumns.filter(c => c.isDefault).map(x => x.id)
-            )?.columns?.map(c => c.columnId)
-          ),
-          isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden ?? false),
-          cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false),
-          showRepoTrades: new UntypedFormControl(settings.showRepoTrades ?? false),
-          repoTradesColumns: new UntypedFormControl(this.toTableSettings(settings.repoTradesTable)?.columns?.map(c => c.columnId)),
-          tradesHistoryColumns: new UntypedFormControl(this.toTableSettings(
-            settings.tradesHistoryTable,
-            this.allTradesHistoryColumns.filter(c=> c.isDefault).map(c => c.id)
-          )?.columns?.map(c => c.columnId)),
-          showPositionActions: new UntypedFormControl(settings.showPositionActions ?? false)
-        });
-      }
+      this.form = new UntypedFormGroup({
+        portfolio: new UntypedFormControl(this.toPortfolioKey(settings), Validators.required),
+        exchange: new UntypedFormControl({value: settings.exchange, disabled: true}, Validators.required),
+        ordersColumns: new UntypedFormControl(this.toTableSettings(settings.ordersTable, settings.ordersColumns)?.columns.map(c => c.columnId)),
+        stopOrdersColumns: new UntypedFormControl(this.toTableSettings(settings.stopOrdersTable, settings.stopOrdersColumns)?.columns.map(c => c.columnId)),
+        tradesColumns: new UntypedFormControl(this.toTableSettings(settings.tradesTable, settings.tradesColumns)?.columns.map(c => c.columnId)),
+        positionsColumns: new UntypedFormControl(this.toTableSettings(settings.positionsTable, settings.positionsColumns)?.columns.map(c => c.columnId)),
+        notificationsColumns: new UntypedFormControl(
+          this.toTableSettings(
+            settings.notificationsTable,
+            allNotificationsColumns.filter(c => c.isDefault).map(x => x.id)
+          )?.columns.map(c => c.columnId)
+        ),
+        isSoldPositionsHidden: new UntypedFormControl((settings.isSoldPositionsHidden as boolean | undefined) ?? false),
+        cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false),
+        showRepoTrades: new UntypedFormControl(settings.showRepoTrades ?? false),
+        repoTradesColumns: new UntypedFormControl(this.toTableSettings(settings.repoTradesTable)?.columns.map(c => c.columnId)),
+        tradesHistoryColumns: new UntypedFormControl(this.toTableSettings(
+          settings.tradesHistoryTable,
+          this.allTradesHistoryColumns.filter(c => c.isDefault).map(c => c.id)
+        )?.columns.map(c => c.columnId)),
+        showPositionActions: new UntypedFormControl(settings.showPositionActions ?? false)
+      });
     });
 
     this.availablePortfolios$ = this.store.select(selectPortfoliosState).pipe(
@@ -126,8 +124,8 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
     );
   }
 
-  portfolioChanged(portfolio: string) {
-    this.form.controls.exchange.setValue(this.getPortfolioKey(portfolio).exchange);
+  portfolioChanged(portfolio: string): void {
+    this.form!.controls.exchange.setValue(this.getPortfolioKey(portfolio).exchange);
   }
 
   toPortfolioKey(portfolio: {portfolio: string, exchange: string}): string {
@@ -135,36 +133,36 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
   }
 
   protected getUpdatedSettings(initialSettings: BlotterSettings): Partial<BlotterSettings> {
-    const portfolio = this.getPortfolioKey(this.form.value.portfolio);
+    const portfolio = this.getPortfolioKey(this.form!.value.portfolio);
 
     const newSettings = {
-      ...this.form.value,
+      ...this.form!.value,
       portfolio: portfolio.portfolio,
       exchange: portfolio.exchange
-    };
+    } as Partial<BlotterSettings & { tradesHistoryColumns?: string[], repoTradesColumns?: string[], notificationsColumns?: string[] }>;
 
-    newSettings.ordersTable = this.updateTableSettings(newSettings.ordersColumns, initialSettings.ordersTable);
+    newSettings.ordersTable = this.updateTableSettings(newSettings.ordersColumns ?? [], initialSettings.ordersTable);
     delete newSettings.ordersColumns;
-    newSettings.stopOrdersTable = this.updateTableSettings(newSettings.stopOrdersColumns, initialSettings.stopOrdersTable);
+    newSettings.stopOrdersTable = this.updateTableSettings(newSettings.stopOrdersColumns ?? [], initialSettings.stopOrdersTable);
     delete newSettings.stopOrdersColumns;
-    newSettings.tradesTable = this.updateTableSettings(newSettings.tradesColumns, initialSettings.tradesTable);
+    newSettings.tradesTable = this.updateTableSettings(newSettings.tradesColumns ?? [], initialSettings.tradesTable);
     delete newSettings.tradesColumns;
-    newSettings.tradesHistoryTable = this.updateTableSettings(newSettings.tradesHistoryColumns, initialSettings.tradesHistoryTable);
+    newSettings.tradesHistoryTable = this.updateTableSettings(newSettings.tradesHistoryColumns ?? [], initialSettings.tradesHistoryTable);
     delete newSettings.tradesHistoryColumns;
-    newSettings.repoTradesTable = this.updateTableSettings(newSettings.repoTradesColumns, initialSettings.repoTradesTable);
+    newSettings.repoTradesTable = this.updateTableSettings(newSettings.repoTradesColumns ?? [], initialSettings.repoTradesTable);
     delete newSettings.tradesColumns;
-    newSettings.positionsTable = this.updateTableSettings(newSettings.positionsColumns, initialSettings.positionsTable);
+    newSettings.positionsTable = this.updateTableSettings(newSettings.positionsColumns ?? [], initialSettings.positionsTable);
     delete newSettings.positionsColumns;
 
-    newSettings.notificationsTable = this.updateTableSettings(newSettings.notificationsColumns, initialSettings.notificationsTable);
+    newSettings.notificationsTable = this.updateTableSettings(newSettings.notificationsColumns ?? [], initialSettings.notificationsTable);
     delete newSettings.notificationsColumns;
 
-    newSettings.linkToActive = initialSettings.linkToActive && this.isPortfolioEqual(initialSettings, newSettings);
+    newSettings.linkToActive = (initialSettings.linkToActive ?? false) && this.isPortfolioEqual(initialSettings, newSettings as BlotterSettings);
 
     return newSettings;
   }
 
-  private isPortfolioEqual(settings1: BlotterSettings, settings2: BlotterSettings) {
+  private isPortfolioEqual(settings1: BlotterSettings, settings2: BlotterSettings): boolean {
     return settings1.portfolio === settings2.portfolio
       && settings1.exchange === settings2.exchange;
   }

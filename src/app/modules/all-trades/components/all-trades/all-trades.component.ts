@@ -26,7 +26,6 @@ import {
 } from '../../../../shared/models/all-trades.model';
 import { AllTradesService } from '../../../../shared/services/all-trades.service';
 import { TableConfig } from '../../../../shared/models/table-config.model';
-import { NzTableFilterList } from "ng-zorro-antd/table";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
@@ -43,12 +42,12 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   guid!: string;
 
   contentSize$ = new BehaviorSubject<ContentSize | null>(null);
-  private datePipe = new DatePipe('ru-RU');
-  private take = 50;
+  private readonly datePipe = new DatePipe('ru-RU');
+  private readonly take = 50;
   private settings$!: Observable<AllTradesSettings>;
 
-  public tableContainerHeight: number = 0;
-  public tableContainerWidth: number = 0;
+  public tableContainerHeight = 0;
+  public tableContainerWidth = 0;
 
   public readonly isLoading$ = new BehaviorSubject<boolean>(false);
   public readonly tradesList$ = new BehaviorSubject<AllTradesItem[]>([]);
@@ -65,7 +64,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     {
       id: 'qty',
       displayName: 'Кол-во',
-      classFn: data => data.side,
+      classFn: (data): string => data.side,
       sortChangeFn: this.getSortFn('qty'),
       filterData: {
         filterName: 'qty',
@@ -88,7 +87,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     {
       id: 'timestamp',
       displayName: 'Время',
-      transformFn: (data: AllTradesItem) => {
+      transformFn: (data: AllTradesItem): string | null => {
         const timezone = this.timezoneConverter?.getTimezone();
         const timezoneName = !!timezone ? `UTC${timezone.utcOffset < 0 ? '+' : '-'}${timezone.formattedOffset}` : null;
         return this.datePipe.transform(
@@ -101,7 +100,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     {
       id: 'side',
       displayName: 'Сторона',
-      classFn: data => data.side,
+      classFn: (data): string => data.side,
       sortChangeFn: this.getSortFn('side'),
       filterData: {
         filterName: 'side',
@@ -113,19 +112,19 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       }
     },
     {id: 'oi', displayName: 'Откр. интерес'},
-    {id: 'existing', displayName: 'Новое событие', transformFn: (data: AllTradesItem) => data.existing ? 'Да' : 'Нет'},
+    {id: 'existing', displayName: 'Новое событие', transformFn: (data: AllTradesItem): string => data.existing ? 'Да' : 'Нет'},
   ];
   private readonly fixedColumns: BaseColumnSettings<AllTradesItem>[] = [
     {
       id: 'side_indicator',
       displayName: '',
       width: 5,
-      classFn: data => `side-indicator bg-${data.side} ${data.side}`,
-      transformFn: () => '.'
+      classFn: (data): string => `side-indicator bg-${data.side} ${data.side}`,
+      transformFn: (): string => '.'
     }
   ];
   private timezoneConverter?: TimezoneConverter;
-  private NEW_TRADES_PERIOD = 50;
+  private readonly NEW_TRADES_PERIOD = 50;
 
   tableConfig$!: Observable<TableConfig<AllTradesItem>>;
 
@@ -179,31 +178,31 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     });
   }
 
-  applyFilter(filters: any) {
+  applyFilter(filters: any): void {
     this.updateFilters(curr => {
       const allFilters = {
         ...curr,
         ...filters
-      };
+      } as { [filterKey: string]: string | string[] | null };
 
-      const cleanedFilters = Object.keys(allFilters)
-        .filter(key => !!allFilters[key])
+      const cleanedFilters: { [filterKey: string]: string | string[] | null } = Object.keys(allFilters)
+        .filter(key => !!(allFilters[key] ?? '').length)
         .reduce((acc, curr) => {
           if (Array.isArray(allFilters[curr])) {
-            acc[curr] = allFilters[curr].join(';');
+            acc[curr] = (allFilters[curr] as string[]).join(';');
           }
           else {
             acc[curr] = allFilters[curr];
           }
           return acc;
-        }, {} as any);
+        }, {} as { [filterName: string]: string | string[] | null });
 
       return {
         ...cleanedFilters,
-        descending: cleanedFilters.orderBy ? cleanedFilters.descending || false : true,
+        descending: (cleanedFilters.orderBy as string) ? cleanedFilters.descending ?? false : true,
         to: toUnixTimestampSeconds(new Date()),
         offset: 0
-      };
+      } as AllTradesFilters;
     });
   }
 
@@ -214,7 +213,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     this.contentSize$.complete();
   }
 
-  containerSizeChanged(entries: ResizeObserverEntry[]) {
+  containerSizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.contentSize$.next({
         width: Math.floor(x.contentRect.width),
@@ -223,7 +222,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initTableConfig() {
+  private initTableConfig(): void {
     this.tableConfig$ = this.settings$.pipe(
       mapWith(
         () => this.translatorService.getTranslator('all-trades/all-trades'),
@@ -245,19 +244,19 @@ export class AllTradesComponent implements OnInit, OnDestroy {
                     ),
                     filterData: col.filterData && {
                       ...col.filterData,
-                      filters: (<NzTableFilterList>col.filterData?.filters)?.map(f => ({
+                      filters: col.filterData.filters?.map(f => ({
                         text: translate(
                           ['columns', col.id, 'filters', f.value],
                           { fallback: f.text }
                         ),
-                        value: f.value
+                        value: f.value as string
                       }))
                     }
                   })
                 )
             ],
             rowConfig: {
-              rowClass: data => {
+              rowClass: (data): string | null => {
                 if (!highlightRows) {
                   return null;
                 }
@@ -276,7 +275,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     );
   }
 
-  private updateFilters(update: (curr: AllTradesFilters) => AllTradesFilters) {
+  private updateFilters(update: (curr: AllTradesFilters) => AllTradesFilters): void {
     this.filters$.pipe(
       take(1)
     ).subscribe(curr => {
@@ -284,7 +283,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initTrades() {
+  private initTrades(): void {
     combineLatest([
       this.filters$,
       this.timezoneConverterService.getConverter()
@@ -301,7 +300,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       ),
       withLatestFrom(this.tradesList$),
       map(([s, currentList]) => {
-        if ((s.filters.offset || 0) > 0) {
+        if ((s.filters.offset ?? 0) > 0) {
           this.tradesList$.next([...currentList, ...s.res]);
         } else {
           this.tradesList$.next(s.res);
@@ -324,35 +323,35 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     });
   }
 
-  private filterNewTrades(filters: AllTradesFilters, newTrades: AllTradesItem[]) {
+  private filterNewTrades(filters: AllTradesFilters, newTrades: AllTradesItem[]): void {
     const filteredNewTrades = newTrades.filter(trade =>
-      (!filters.qtyFrom || trade.qty > filters.qtyFrom) &&
-      (!filters.qtyTo || trade.qty < filters.qtyTo) &&
-      (!filters.priceFrom || trade.price > filters.priceFrom) &&
-      (!filters.priceTo || trade.price < filters.priceTo) &&
-      (!filters.side || trade.side === filters.side)
+      (!(filters.qtyFrom ?? 0) || trade.qty > filters.qtyFrom!) &&
+      (!(filters.qtyTo ?? 0) || trade.qty < filters.qtyTo!) &&
+      (!(filters.priceFrom ?? 0) || trade.price > filters.priceFrom!) &&
+      (!(filters.priceTo ?? 0) || trade.price < filters.priceTo!) &&
+      (!(filters.side ?? '') || trade.side === filters.side!)
     );
     if (!filteredNewTrades.length) {
       return;
     }
 
-    let tradesListCopy: AllTradesItem[] = JSON.parse(JSON.stringify(this.tradesList$.getValue()));
+    let tradesListCopy = JSON.parse(JSON.stringify(this.tradesList$.getValue())) as AllTradesItem[];
 
     tradesListCopy.unshift(...filteredNewTrades);
     tradesListCopy.sort((a, b) => {
       switch (filters.orderBy) {
         case 'side':
           if (a.side !== b.side) {
-            if (filters.descending) {
-              return a.side === Side.Buy ? 1 : -1;
+            if ((filters.descending ?? false)) {
+              return a.side as Side === Side.Buy ? 1 : -1;
             }
-            return a.side === Side.Buy ? -1 : 1;
+            return a.side as Side === Side.Buy ? -1 : 1;
           }
           return 0;
         case 'price':
-          return filters.descending ? b.price - a.price : a.price - b.price;
+          return (filters.descending ?? false) ? b.price - a.price : a.price - b.price;
         case 'qty':
-          return filters.descending ? b.qty - a.qty : a.qty - b.qty;
+          return (filters.descending ?? false) ? b.qty - a.qty : a.qty - b.qty;
         default:
           return 0;
       }
@@ -374,7 +373,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         delete filter.descending;
         delete filter.orderBy;
 
-        if (dir) {
+        if (dir ?? '') {
           filter.descending = dir === 'descend';
           filter.orderBy = orderBy;
         } else {

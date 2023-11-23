@@ -21,7 +21,7 @@ export class PresetsComponent {
   @Input({ required: true })
   presets: DataPreset[] = [];
   @Input()
-  canAddPreset: boolean = false;
+  canAddPreset = false;
   inputVisible = false;
   inputValue = '';
   @Output()

@@ -8,13 +8,13 @@ export enum MarketType {
 }
 
 export interface PortfolioKey {
-  portfolio: string,
-  exchange: string,
-  marketType?: MarketType
+  portfolio: string;
+  exchange: string;
+  marketType?: MarketType;
 }
 
 export class PortfolioKeyEqualityComparer {
-  public static equals(a?: PortfolioKey | null, b?: PortfolioKey | null) {
+  public static equals(a?: PortfolioKey | null, b?: PortfolioKey | null): boolean {
     return a?.portfolio === b?.portfolio && a?.exchange === b?.exchange;
   }
 }

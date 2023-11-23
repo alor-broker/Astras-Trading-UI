@@ -69,16 +69,16 @@ export class ExportWatchlistDialogComponent implements OnInit, OnDestroy {
     );
   }
 
-  closeDialog() {
+  closeDialog(): void {
     this.dialogParams = null;
   }
 
-  copyToClipboard(results: string) {
+  copyToClipboard(results: string): void {
     navigator.clipboard.writeText(results);
   }
 
-  saveToFile(result: ExportResult) {
-    if (!result.content) {
+  saveToFile(result: ExportResult): void {
+    if (!(result.content ?? '')) {
       return;
     }
 
@@ -122,8 +122,8 @@ export class ExportWatchlistDialogComponent implements OnInit, OnDestroy {
         i.symbol
       ];
 
-      if (!!i.instrumentGroup) {
-        tickerParts.push(i.instrumentGroup);
+      if (!!(i.instrumentGroup ?? '')) {
+        tickerParts.push(i.instrumentGroup as string);
       }
 
       return tickerParts.join(":");

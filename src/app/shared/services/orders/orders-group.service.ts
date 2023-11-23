@@ -15,7 +15,7 @@ import { OrdersInstantNotificationType } from "../../models/terminal-settings/te
 export class OrdersGroupService {
   private readonly orderGroupsUrl = environment.apiUrl + '/commandapi/api/orderGroups';
 
-  private refresh$ = new BehaviorSubject(null);
+  private readonly refresh$ = new BehaviorSubject(null);
   private orderGroups$?: Observable<OrdersGroup[]>;
 
   constructor(

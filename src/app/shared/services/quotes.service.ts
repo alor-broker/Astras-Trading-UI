@@ -35,7 +35,7 @@ export class QuotesService {
     };
 
     return this.subscriptionsDataFeedService.subscribe<QuotesRequest, Quote>(request, ChartSubscriptionIdHelper.getQuotesSubscriptionId).pipe(
-      filter((q): q is Quote => !!q)
+      filter((q: Quote | null): q is Quote => !!q)
     );
   }
 

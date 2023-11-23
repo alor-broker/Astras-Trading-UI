@@ -52,15 +52,15 @@ export class ResizeColumnDirective implements OnInit {
     private readonly documentRef: Document,
     private readonly ngZone: NgZone,
     private readonly destroyRef: DestroyRef) {
-    this.column = this.el.nativeElement;
+    this.column = this.el.nativeElement as HTMLElement;
   }
 
   ngOnInit(): void {
-    if (!this.atsResizeColumn) {
+    if (!(this.atsResizeColumn ?? false)) {
       return;
     }
 
-    const resizer = this.renderer.createElement("span");
+    const resizer = this.renderer.createElement("span") as HTMLElement;
     this.renderer.addClass(resizer, "resize-holder");
     this.renderer.appendChild(this.column, resizer);
 
@@ -108,8 +108,8 @@ export class ResizeColumnDirective implements OnInit {
 
             this.atsWidthChanging.emit({
               columnWidth: w,
-              delta: !!prev
-                ? (w -  Number(prev.replace('px', '')))
+              delta: !!(prev ?? '')
+                ? (w -  Number((prev as string).replace('px', '')))
                 : null
             });
           });

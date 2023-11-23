@@ -1,20 +1,20 @@
 export interface CommonSummaryView {
     /** покупательная способности на утро **/
-    buyingPowerAtMorning: string,
+    buyingPowerAtMorning: string;
     /** покупательная способность **/
-    buyingPower: string,
+    buyingPower: string;
     /** прибыль **/
-    profit: string,
+    profit: string;
     /** % прибыли **/
-    profitRate: number,
+    profitRate: number;
     /** оценка ликвидного портфеля **/
-    portfolioEvaluation: string,
+    portfolioEvaluation: string;
     /**  оценка ликвидационной стоймости портфеля **/
-    portfolioLiquidationValue: string,
+    portfolioLiquidationValue: string;
     /** начальная маржа **/
-    initialMargin: string,
+    initialMargin: string;
     /** НПР2 **/
-    riskBeforeForcePositionClosing: string,
+    riskBeforeForcePositionClosing: string;
     /** Комиссия **/
-    commission: string
+    commission: string;
 }

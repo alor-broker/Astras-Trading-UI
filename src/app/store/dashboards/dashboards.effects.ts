@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {Actions, createEffect, ofType} from '@ngrx/effects';
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import {filter, map, switchMap} from 'rxjs/operators';
-import {GuidGenerator} from '../../shared/utils/guid';
+import { filter, map, switchMap } from 'rxjs/operators';
+import { GuidGenerator } from '../../shared/utils/guid';
 import {
   distinctUntilChanged,
   EMPTY,
@@ -11,17 +11,18 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs';
-import {Dashboard, DefaultDashboardName} from '../../shared/models/dashboard/dashboard.model';
-import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
+import { DefaultDashboardName } from '../../shared/models/dashboard/dashboard.model';
+import { ManageDashboardsService } from '../../shared/services/manage-dashboards.service';
 import { getDashboardItems } from './dashboards.selectors';
-import {mapWith} from '../../shared/utils/observable-helper';
-import {MarketService} from '../../shared/services/market.service';
-import {getDefaultPortfolio, isPortfoliosEqual} from '../../shared/utils/portfolios';
-import {CurrentDashboardActions, InternalDashboardActions, ManageDashboardsActions} from './dashboards-actions';
-import {instrumentsBadges} from '../../shared/utils/instruments';
-import {UserPortfoliosService} from "../../shared/services/user-portfolios.service";
-import {DashboardsStreams} from "./dashboards.streams";
+import { mapWith } from '../../shared/utils/observable-helper';
+import { MarketService } from '../../shared/services/market.service';
+import { getDefaultPortfolio, isPortfoliosEqual } from '../../shared/utils/portfolios';
+import { CurrentDashboardActions, InternalDashboardActions, ManageDashboardsActions } from './dashboards-actions';
+import { instrumentsBadges } from '../../shared/utils/instruments';
+import { UserPortfoliosService } from "../../shared/services/user-portfolios.service";
+import { DashboardsStreams } from "./dashboards.streams";
 import { WatchlistCollectionService } from "../../modules/instruments/services/watchlist-collection.service";
+import { ExchangeSettings } from "../../shared/models/market-settings.model";
 
 
 @Injectable()
@@ -45,14 +46,14 @@ export class DashboardsEffects {
           const instrumentsSelectionActions: Action[] = [];  // Array with actions to replace dashboard old badges with new
 
           dashboards.forEach(d => {
-            let exchangeSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
+            let exchangeSettingsCopy = JSON.parse(JSON.stringify(defaultSettings)) as { exchange: string, settings: ExchangeSettings } | undefined;
 
             // If portfolio selected, find default settings of selected portfolio exchange
             if (d.selectedPortfolio) {
               exchangeSettingsCopy = marketSettings.find(x => x.exchange === d.selectedPortfolio!.exchange) ?? exchangeSettingsCopy;
             }
 
-            if (!exchangeSettingsCopy || !exchangeSettingsCopy.settings.defaultInstrument) {
+            if (exchangeSettingsCopy?.settings.defaultInstrument == null) {
               return;
             }
 
@@ -172,7 +173,6 @@ export class DashboardsEffects {
 
   setDefaultPortfolioForCurrentDashboard$ = createEffect(() => {
     return DashboardsStreams.getSelectedDashboard(this.store).pipe(
-      filter(d => !!d),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),
       mapWith(
         () => this.userPortfoliosService.getPortfolios(),
@@ -195,7 +195,6 @@ export class DashboardsEffects {
 
   setDefaultInstrumentsSelectionForCurrentDashboard$ = createEffect(() => {
     return DashboardsStreams.getSelectedDashboard(this.store).pipe(
-      filter((d): d is Dashboard => !!d),
       filter(d => instrumentsBadges.some(badge => !d.instrumentsSelection?.[badge])),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),
       mapWith(
@@ -208,7 +207,7 @@ export class DashboardsEffects {
             exchangeSettings = marketSettings.find(x => x.exchange === dashboard.selectedPortfolio!.exchange) ?? exchangeSettings;
           }
 
-          if (!exchangeSettings || !exchangeSettings.settings.defaultInstrument) {
+          if (!exchangeSettings?.settings.defaultInstrument) {
             return EMPTY;
           }
 

@@ -22,7 +22,6 @@ import { debounceTime, map, mergeMap, startWith } from "rxjs/operators";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { RepoTrade } from "../../../../shared/models/trades/trade.model";
 import { BaseTableComponent } from "../base-table/base-table.component";
@@ -42,7 +41,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'id',
       displayName: 'Id',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => Number(a.id) - Number(b.id),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => Number(a.id) - Number(b.id),
       filterData: {
         filterName: 'id',
         isDefaultFilter: false
@@ -53,7 +52,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'orderno',
       displayName: 'Заявка',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => Number(a.orderno) - Number(b.orderno),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => Number(a.orderno) - Number(b.orderno),
       filterData: {
         filterName: 'orderno',
         isDefaultFilter: false
@@ -65,7 +64,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'symbol',
       displayName: 'Тикер',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => a.symbol.localeCompare(b.symbol),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => a.symbol.localeCompare(b.symbol),
       filterData: {
         filterName: 'symbol',
         isDefaultFilter: false
@@ -77,7 +76,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'side',
       displayName: 'Сторона',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => a.side.toString().localeCompare(b.side.toString()),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => a.side.toString().localeCompare(b.side.toString()),
       filterData: {
         filterName: 'side',
         isDefaultFilter: true,
@@ -93,7 +92,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'qty',
       displayName: 'Кол-во',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => Number(a.qty) - Number(b.qty),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => Number(a.qty) - Number(b.qty),
       tooltip: 'Количество сделок',
       minWidth: 65
     },
@@ -101,14 +100,14 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'price',
       displayName: 'Цена',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => Number(a.price) - Number(b.price),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => Number(a.price) - Number(b.price),
       tooltip: 'Цена'
     },
     {
       id: 'date',
       displayName: 'Время',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => Number(a.date) - Number(b.date),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => Number(a.date) - Number(b.date),
       tooltip: 'Время совершения сделки',
       minWidth: 60
     },
@@ -116,7 +115,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'value',
       displayName: 'Объем',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => Number(b.repoSpecificFields.value) - Number(a.repoSpecificFields.value),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => Number(b.repoSpecificFields.value) - Number(a.repoSpecificFields.value),
       filterData: {
         filterName: 'repoSpecificFields.value',
         isDefaultFilter: false
@@ -128,7 +127,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'repoRate',
       displayName: '% годовых',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => Number(b.repoSpecificFields.repoRate) - Number(a.repoSpecificFields.repoRate),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => Number(b.repoSpecificFields.repoRate) - Number(a.repoSpecificFields.repoRate),
       filterData: {
         filterName: 'repoSpecificFields.repoRate',
         isDefaultFilter: false
@@ -140,7 +139,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'extRef',
       displayName: 'Пользователь внеш. системы',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => a.repoSpecificFields.extRef.toString().localeCompare(b.repoSpecificFields.extRef.toString()),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => a.repoSpecificFields.extRef.toString().localeCompare(b.repoSpecificFields.extRef.toString()),
       filterData: {
         filterName: 'repoSpecificFields.extRef',
         isDefaultFilter: false
@@ -152,7 +151,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'repoTerm',
       displayName: 'Срок',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => Number(b.repoSpecificFields.repoTerm) - Number(a.repoSpecificFields.repoTerm),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => Number(b.repoSpecificFields.repoTerm) - Number(a.repoSpecificFields.repoTerm),
       filterData: {
         filterName: 'repoSpecificFields.repoTerm',
         isDefaultFilter: false
@@ -164,7 +163,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'account',
       displayName: 'Торговый счёт',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => a.repoSpecificFields.account.toString().localeCompare(b.repoSpecificFields.account.toString()),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => a.repoSpecificFields.account.toString().localeCompare(b.repoSpecificFields.account.toString()),
       filterData: {
         filterName: 'repoSpecificFields.account',
         isDefaultFilter: false
@@ -176,7 +175,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'tradeTypeInfo',
       displayName: 'Тип',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => a.repoSpecificFields.tradeTypeInfo.toString().localeCompare(b.repoSpecificFields.tradeTypeInfo.toString()),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => a.repoSpecificFields.tradeTypeInfo.toString().localeCompare(b.repoSpecificFields.tradeTypeInfo.toString()),
       filterData: {
         filterName: 'repoSpecificFields.tradeTypeInfo',
         isDefaultFilter: false
@@ -188,7 +187,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       id: 'yield',
       displayName: 'Доход',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade) => Number(b.repoSpecificFields.yield) - Number(a.repoSpecificFields.yield),
+      sortFn: (a: RepoTrade, b: RepoTrade): number => Number(b.repoSpecificFields.yield) - Number(a.repoSpecificFields.yield),
       filterData: {
         filterName: 'repoSpecificFields.yield',
         isDefaultFilter: false
@@ -216,7 +215,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
 
     this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
-        TableSettingHelper.isTableSettingsEqual(previous?.repoTradesTable, current.repoTradesTable)
+        TableSettingHelper.isTableSettingsEqual(previous.repoTradesTable, current.repoTradesTable)
         && previous.badgeColor === current.badgeColor
       ),
       mapWith(
@@ -258,8 +257,8 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
                     fallback: tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
                   }
                 ),
-                filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
-                  value: f.value,
+                filters: (column.column.filterData.filters ?? []).map(f => ({
+                  value: f.value as unknown,
                   text: tTrades(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
                 }))
               }
@@ -295,11 +294,11 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
     );
   }
 
-  searchInItem(trade: RepoTrade, key: keyof RepoTrade, value?: string): boolean {
-    if (!value) {
+  searchInItem(trade: RepoTrade, key: keyof RepoTrade | keyof RepoTrade['repoSpecificFields'], value?: string): boolean {
+    if (!(value ?? '')) {
       return true;
     }
 
-    return (trade[key] ?? trade.repoSpecificFields[<keyof RepoTrade['repoSpecificFields']>key])!.toString().toLowerCase().includes(value.toLowerCase());
+    return ((trade[key as keyof RepoTrade] as unknown) ?? trade.repoSpecificFields[<keyof RepoTrade['repoSpecificFields']>key])!.toString().toLowerCase().includes((value as string).toLowerCase());
   }
 }

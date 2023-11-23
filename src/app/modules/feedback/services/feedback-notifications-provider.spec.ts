@@ -33,7 +33,7 @@ describe('FeedbackNotificationsProvider', () => {
   const oneHourPlusDelay = 3600 * 1000 + 60 * 1000;
   const initialDelayMinutes = 3 * 60 * 1000 + 10 * 1000;
 
-  const readNotification = (notifications$: Observable<NotificationMeta[]>, read: (notifications: NotificationMeta[]) => void) => {
+  const readNotification = (notifications$: Observable<NotificationMeta[]>, read: (notifications: NotificationMeta[]) => void): void => {
     notifications$.pipe(
       take(1)
     ).subscribe(x => read(x));

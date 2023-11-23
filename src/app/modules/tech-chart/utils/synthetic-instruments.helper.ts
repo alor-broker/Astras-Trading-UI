@@ -13,19 +13,19 @@ export class SyntheticInstrumentsHelper {
           symbol: acc.symbol + curr.value,
           description: acc.description + curr.value,
           exchange: acc.exchange + curr.value,
-          type: acc.type + curr.value ?? '',
+          type: (acc.type ?? '') + curr.value,
           shortName: acc.shortName + curr.value,
         } as Instrument;
       } else {
         return {
           symbol:
             acc.symbol +
-            `[${curr.value!.exchange}:${curr.value!.symbol}${curr.value!.instrumentGroup ? ':' + curr.value!.instrumentGroup : ''}]`,
+            `[${curr.value!.exchange}:${curr.value!.symbol}${(curr.value!.instrumentGroup ?? '') ? ':' + (curr.value!.instrumentGroup as string) : ''}]`,
           description: acc.description + curr.value!.symbol,
           exchange: acc.exchange + curr.value!.exchange,
           currency: acc.currency || curr.value!.currency,
-          type: acc.type + (curr.value!.type ?? ''),
-          shortName: acc.shortName + `[${curr.value!.exchange}:${curr.value!.symbol}${curr.value!.instrumentGroup ? ':' + curr.value!.instrumentGroup : ''}]`,
+          type: (acc.type ?? '') + (curr.value!.type ?? ''),
+          shortName: acc.shortName + `[${curr.value!.exchange}:${curr.value!.symbol}${(curr.value!.instrumentGroup ?? '') ? ':' + (curr.value!.instrumentGroup as string) : ''}]`,
           minstep: Math.min(acc.minstep, curr.value!.minstep),
         } as Instrument;
       }
@@ -52,10 +52,10 @@ export class SyntheticInstrumentsHelper {
           };
       } else {
         return {
-          close: acc.close + curr.value.close,
-          open: acc.open + curr.value.open,
-          high: acc.high + curr.value.high,
-          low: acc.low + curr.value.low,
+          close: acc.close + curr.value.close.toString(),
+          open: acc.open + curr.value.open.toString(),
+          high: acc.high + curr.value.high.toString(),
+          low: acc.low + curr.value.low.toString(),
           time: Math.max(acc.time, curr.value.time),
         };
       }
@@ -69,10 +69,10 @@ export class SyntheticInstrumentsHelper {
 
     return {
       ...candle,
-      close: eval(candle.close),
-      open: eval(candle.open),
-      high: eval(candle.high),
-      low: eval(candle.low),
+      close: eval(candle.close) as number,
+      open: eval(candle.open) as number,
+      high: eval(candle.high) as number,
+      low: eval(candle.low) as number,
       volume: 0,
     } as Candle;
   }

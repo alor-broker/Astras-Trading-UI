@@ -10,7 +10,7 @@
       <nz-tabset>
         <nz-tab [nzTitle]="t('instrumentsSettings.displaySettingsTab')">
           <div>
-            <form [formGroup]="settingsForm" [nzLayout]="'horizontal'" nz-form>
+            <form [formGroup]="settingsForm!" [nzLayout]="'horizontal'" nz-form>
               <nz-form-item class="compact">
                 <nz-form-control [nzErrorTip]="t('instrumentsSettings.selectColumnsError')">
                   <nz-form-label nzRequired nzFor="instrumentColumns">{{t('instrumentsSettings.selectColumnsLabel')}}</nz-form-label>
@@ -22,7 +22,7 @@
                     [nzPlaceHolder]="t('instrumentsSettings.selectColumnsPlaceholder')"
                     formControlName="instrumentColumns"
                     atsRemoveSelectTitles
-                    [valueChanges]="settingsForm.get('instrumentColumns')?.valueChanges"
+                    [valueChanges]="settingsForm!.get('instrumentColumns')?.valueChanges"
                   >
                     <nz-option
                       *ngFor="let item of allInstrumentColumns"

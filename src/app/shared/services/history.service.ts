@@ -15,7 +15,7 @@ import { ErrorHandlerService } from "./handle-error/error-handler.service";
   providedIn: 'root'
 })
 export class HistoryService {
-  private url = environment.apiUrl + '/md/v2/history';
+  private readonly url = environment.apiUrl + '/md/v2/history';
 
   constructor(
     private readonly http: HttpClient,

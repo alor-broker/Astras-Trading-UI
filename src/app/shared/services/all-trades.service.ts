@@ -16,7 +16,7 @@ import { catchHttpError } from '../utils/observable-helper';
   providedIn: 'root'
 })
 export class AllTradesService {
-  private allTradesUrl = environment.apiUrl + '/md/v2/Securities';
+  private readonly allTradesUrl = environment.apiUrl + '/md/v2/Securities';
 
   constructor(
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
@@ -24,14 +24,14 @@ export class AllTradesService {
     private readonly errorHandlerService: ErrorHandlerService) {
   }
 
-  public getTradesList(req: AllTradesFilters): Observable<Array<AllTradesItem>> {
+  public getTradesList(req: AllTradesFilters): Observable<AllTradesItem[]> {
     const { exchange, symbol } = req;
 
-    return this.http.get<Array<AllTradesItem>>(`${this.allTradesUrl}/${exchange}/${symbol}/alltrades`, {
+    return this.http.get<AllTradesItem[]>(`${this.allTradesUrl}/${exchange}/${symbol}/alltrades`, {
       params: { ...req }
     })
       .pipe(
-        catchHttpError<Array<AllTradesItem>>([], this.errorHandlerService),
+        catchHttpError<AllTradesItem[]>([], this.errorHandlerService),
       );
   }
 

@@ -16,7 +16,7 @@ import {
   take,
   tap
 } from "rxjs";
-import {filter, map, startWith, switchMap} from "rxjs/operators";
+import { filter, map, startWith, switchMap } from "rxjs/operators";
 import {
   OrderExecuteSubscription,
   PriceSparkSubscription,
@@ -27,23 +27,22 @@ import {
   allNotificationsColumns,
   TableNames
 } from "../../models/blotter-settings.model";
-import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
-import {BlotterService} from "../../services/blotter.service";
-import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
-import {isArrayEqual} from "../../../../shared/utils/collections";
-import {PushNotificationsService} from "../../../push-notifications/services/push-notifications.service";
-import {BaseColumnSettings} from "../../../../shared/models/settings/table-settings.model";
-import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper";
-import {mapWith} from "../../../../shared/utils/observable-helper";
-import {NzTableFilterList} from "ng-zorro-antd/table/src/table.types";
-import {TranslatorService} from "../../../../shared/services/translator.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { BlotterService } from "../../services/blotter.service";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { isArrayEqual } from "../../../../shared/utils/collections";
+import { PushNotificationsService } from "../../../push-notifications/services/push-notifications.service";
+import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
+import { mapWith } from "../../../../shared/utils/observable-helper";
+import { TranslatorService } from "../../../../shared/services/translator.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BaseTableComponent } from "../base-table/base-table.component";
 
 interface NotificationFilter {
-  id?: string,
-  subscriptionType?: string[],
-  instrument?: string
+  id?: string;
+  subscriptionType?: string[];
+  instrument?: string;
 }
 
 type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSparkSubscription> & { id: string };
@@ -96,7 +95,7 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
     {
       id: 'price',
       displayName: 'price',
-      sortFn: (a, b) => {
+      sortFn: (a, b): number => {
         return (a.price ?? -1) - (b.price ?? -1);
       }
     },
@@ -131,7 +130,7 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
     this.initDisplayNotifications();
   }
 
-  selectNotificationInstrument(notification: SubscriptionBase) {
+  selectNotificationInstrument(notification: SubscriptionBase): void {
     if (notification.subscriptionType !== PushSubscriptionType.PriceSpark) {
       return;
     }
@@ -141,17 +140,17 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
     super.selectInstrument(priceSparkSubscription.instrument, priceSparkSubscription.exchange);
   }
 
-  cancelSubscription(id: string) {
+  cancelSubscription(id: string): void {
     this.isLoading$.next(true);
     this.pushNotificationsService.cancelSubscription(id).pipe(
       take(1)
     ).subscribe();
   }
 
-  private initColumns() {
+  private initColumns(): void {
     this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
-        TableSettingHelper.isTableSettingsEqual(previous?.notificationsTable, current.notificationsTable)
+        TableSettingHelper.isTableSettingsEqual(previous.notificationsTable, current.notificationsTable)
         && previous.badgeColor === current.badgeColor
       ),
       mapWith(
@@ -174,8 +173,8 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
               ? {
                 ...column.column.filterData,
                 filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-                filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
-                  value: f.value,
+                filters: (column.column.filterData.filters ?? []).map(f => ({
+                  value: f.value as unknown,
                   text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
                 }))
               }
@@ -192,7 +191,7 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
     });
   }
 
-  private initDisplayNotifications() {
+  private initDisplayNotifications(): void {
     const currentPositions$ = this.settings$.pipe(
       switchMap(s => this.blotterService.getPositions(s)),
       map(p => p.map(p => ({
@@ -233,14 +232,14 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
              filter
            ]) => {
 
-        const blotterSubscriptions = (subscriptions ?? []).filter(s => {
+        const blotterSubscriptions = ((subscriptions as SubscriptionBase[] | null) ?? []).filter(s => {
           if (s.subscriptionType === PushSubscriptionType.OrderExecute) {
             const orderSubscription = <OrderExecuteSubscription>s;
             return orderSubscription.exchange === settings.exchange
               && orderSubscription.portfolio === settings.portfolio;
           }
 
-          if (s.subscriptionType === PushSubscriptionType.PriceSpark) {
+          if ((s.subscriptionType as PushSubscriptionType) === PushSubscriptionType.PriceSpark) {
             const priceSparkSubscription = <PriceSparkSubscription>s;
             return !!positions.find(p => p.symbol === priceSparkSubscription.instrument && p.exchange === priceSparkSubscription.exchange);
           }
@@ -264,7 +263,7 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
     );
   }
 
-  private initNotificationStatusCheck() {
+  private initNotificationStatusCheck(): void {
     this.isNotificationsAllowed$ = this.pushNotificationsService.getBrowserNotificationsStatus().pipe(
       map(s => s === "granted"),
       shareReplay(1)

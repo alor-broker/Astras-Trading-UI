@@ -30,7 +30,7 @@ import { FormControl, Validators } from "@angular/forms";
 
 interface SelectedWorkingVolumeState extends RecordContent {
   lastSelectedVolume?: {
-    [key: string]: number
+    [key: string]: number;
   };
 }
 
@@ -41,7 +41,7 @@ interface SelectedWorkingVolumeState extends RecordContent {
 })
 export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   @Input()
-  isActive: boolean = false;
+  isActive = false;
   @Input({ required: true })
   guid!: string;
   workingVolumes$!: Observable<number[]>;
@@ -87,7 +87,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
       const workingVolumes = settings.workingVolumes;
       const lastSelectedVolume = lastSelectedVolumeState?.lastSelectedVolume?.[ScalperSettingsHelper.getInstrumentKey(settings)];
 
-      if (!!lastSelectedVolume) {
+      if (!!(lastSelectedVolume ?? 0)) {
         const targetVolumeIndex = workingVolumes.findIndex(v => v === lastSelectedVolume);
         if (targetVolumeIndex >= 0) {
           this.selectVolume(targetVolumeIndex);
@@ -113,7 +113,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     this.selectedVolume$.complete();
   }
 
-  selectVolume(index: number) {
+  selectVolume(index: number): void {
     this.workingVolumes$.pipe(
       take(1)
     ).subscribe(v => {
@@ -122,7 +122,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeVolume(index: number) {
+  changeVolume(index: number): void {
     this.settings$
       .pipe(take(1))
       .subscribe(s => {
@@ -147,16 +147,16 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
       });
   }
 
-  openChangeVolumeConfirm(i: number, currentVolume: number) {
+  openChangeVolumeConfirm(i: number, currentVolume: number): void {
     this.changeVolumeControl.setValue(currentVolume);
     this.changeVolumeConfirmVisibleIndex = i;
   }
 
-  closeChangeVolumeConfirm() {
+  closeChangeVolumeConfirm(): void {
     this.changeVolumeConfirmVisibleIndex = null;
   }
 
-  private updateLastSelectedVolumeState(currentVolume: number) {
+  private updateLastSelectedVolumeState(currentVolume: number): void {
     combineLatest({
       settings: this.settings$,
       currentState: this.lastSelectedVolumeState$
@@ -176,13 +176,13 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initVolumeSwitchByHotKey() {
+  private initVolumeSwitchByHotKey(): void {
     this.hotKeyCommandService.commands$.pipe(
       filter(x => x.type === 'workingVolumes' && x.index != null && this.isActive),
       withLatestFrom(this.workingVolumes$),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(([command, workingVolumes]) => {
-      const volume = workingVolumes[command.index];
+      const volume = workingVolumes[command.index] as number | undefined;
       if (volume != null) {
         this.selectVolume(command.index);
       }

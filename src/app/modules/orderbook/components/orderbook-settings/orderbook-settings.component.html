@@ -7,7 +7,7 @@
 >
   <ng-container *transloco="let t; scope: 'orderbook/settings'">
     <div *ngIf="deviceInfo$ | async as deviceInfo">
-      <form nz-form [nzLayout]="'vertical'" [formGroup]="form">
+      <form nz-form [nzLayout]="'vertical'" [formGroup]="form!">
         <nz-form-item>
           <nz-collapse [nzBordered]="false" nzGhost>
             <nz-collapse-panel [nzHeader]="t('orderbookSettings.instrumentHeader')" nzActive="true" *ngIf="!deviceInfo.isMobile">
@@ -27,7 +27,7 @@
                 <nz-form-label nzFor="instrumentGroup">{{t('orderbookSettings.instrumentGroupLabel')}}</nz-form-label>
                 <nz-form-control [nzErrorTip]="t('orderbookSettings.instrumentGroupError')">
                   <ats-instrument-board-select
-                    [instrument]="form.value?.instrument ?? null"
+                    [instrument]="form?.value?.instrument ?? null"
                     [placeholder]="t('orderbookSettings.instrumentGroupLabel')"
                     formControlName="instrumentGroup">
                   </ats-instrument-board-select>

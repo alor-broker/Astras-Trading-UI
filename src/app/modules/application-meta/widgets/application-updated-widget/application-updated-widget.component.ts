@@ -27,7 +27,7 @@ export class ApplicationUpdatedWidgetComponent implements OnInit {
     this.currentVersion$ = this.modalService.applicationUpdatedParams$;
   }
 
-  handleClose() {
+  handleClose(): void {
     this.currentVersion$.pipe(
       take(1),
       filter(x => !!x)

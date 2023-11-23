@@ -31,30 +31,30 @@ export class ArbitrageSpreadTableComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.items$ = this.service.getSpreadsSubscription();
   }
 
-  addSpread() {
+  addSpread(): void {
     this.service.openSpreadModal();
   }
 
-  editSpread(spread: ArbitrageSpread) {
+  editSpread(spread: ArbitrageSpread): void {
     this.service.openSpreadModal(spread);
   }
 
-  removeSpread(spreadId: string) {
+  removeSpread(spreadId: string): void {
     this.service.removeSpread(spreadId);
   }
 
-  buySpread(spread: ArbitrageSpread) {
+  buySpread(spread: ArbitrageSpread): void {
     let volume = this.volumes[spread.id!];
 
     this.service.buySpread(spread, volume)
       .subscribe();
   }
 
-  sellSpread(spread: ArbitrageSpread) {
+  sellSpread(spread: ArbitrageSpread): void {
     let volume = this.volumes[spread.id!];
 
     this.service.buySpread(spread, volume, Side.Sell)
@@ -67,7 +67,7 @@ export class ArbitrageSpreadTableComponent implements OnInit {
 
   getAbs = Math.abs;
 
-  volumeChange(value: number, spreadId: string) {
+  volumeChange(value: number, spreadId: string): void {
     this.volumes[spreadId] = value;
   }
 

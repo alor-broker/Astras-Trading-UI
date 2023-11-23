@@ -15,7 +15,6 @@ import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { OptionBoardSettings } from "../../models/option-board-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 @Component({
@@ -24,7 +23,7 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
   styleUrls: ['./option-board-settings.component.less']
 })
 export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<OptionBoardSettings> implements OnInit {
-  form!: UntypedFormGroup;
+  form?: UntypedFormGroup;
   protected settings$!: Observable<OptionBoardSettings>;
 
   constructor(
@@ -61,23 +60,23 @@ export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<Op
     });
   }
 
-  instrumentSelected(instrument: InstrumentKey | null) {
-    this.form.controls.exchange.setValue(instrument?.exchange ?? null);
-    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+  instrumentSelected(instrument: InstrumentKey | null): void {
+    this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
+    this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
-  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<TechChartSettings> {
-    const formValue = this.form.value;
+  protected getUpdatedSettings(initialSettings: OptionBoardSettings): Partial<OptionBoardSettings> {
+    const formValue = this.form!.value as Partial<OptionBoardSettings & { instrument: InstrumentKey }>;
 
     const newSettings = {
       ...formValue,
-      symbol: formValue.instrument.symbol,
-      exchange: formValue.instrument.exchange,
-    };
+      symbol: formValue.instrument?.symbol,
+      exchange: formValue.instrument?.exchange,
+    } as OptionBoardSettings;
 
     delete newSettings.instrument;
-    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+    newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
 
-    return newSettings;
+    return newSettings as Partial<OptionBoardSettings>;
   }
 }

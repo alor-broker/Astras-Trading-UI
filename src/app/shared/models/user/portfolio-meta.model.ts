@@ -1,6 +1,6 @@
 export interface PortfolioMeta {
-  portfolio: string,
-  tks: string,
-  market: string,
-  agreement: string
+  portfolio: string;
+  tks: string;
+  market: string;
+  agreement: string;
 }

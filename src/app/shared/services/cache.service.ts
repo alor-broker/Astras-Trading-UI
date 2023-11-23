@@ -8,7 +8,7 @@ import {
 } from 'rxjs';
 
 export interface CacheOptions {
-  expirationTimeoutSec: number
+  expirationTimeoutSec: number;
 }
 
 interface CachedData {
@@ -22,13 +22,10 @@ interface CachedData {
 export class CacheService {
   private readonly loadedData = new Map<string, CachedData>();
 
-  constructor() {
-  }
-
   wrap<T>(
     getKey: () => string,
     loadData: () => Observable<T>,
-    options: CacheOptions = {
+    options: CacheOptions | null = {
       expirationTimeoutSec: 30
     }
   ): Observable<T> {
@@ -36,7 +33,7 @@ export class CacheService {
     const loadedData = this.loadedData.get(key);
     if (loadedData) {
       if (!loadedData.expirationTime || loadedData.expirationTime > (new Date())) {
-        return loadedData.data$;
+        return loadedData.data$ as Observable<T>;
       }
     }
 
@@ -50,7 +47,7 @@ export class CacheService {
         const data = this.loadedData.get(key);
         if (data) {
           const expirationTime = new Date();
-          expirationTime.setSeconds(expirationTime.getSeconds() + options?.expirationTimeoutSec ?? 30);
+          expirationTime.setSeconds(expirationTime.getSeconds() + (options?.expirationTimeoutSec ?? 30));
 
           data.expirationTime = expirationTime;
         }

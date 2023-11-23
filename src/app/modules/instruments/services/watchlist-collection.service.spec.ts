@@ -46,7 +46,7 @@ describe('WatchListCollectionService', () => {
     ]
   } as WatchlistCollection;
 
-  const setupGetItemMock = (returnValue: WatchlistCollection | null = null) => {
+  const setupGetItemMock = (returnValue: WatchlistCollection | null = null): void => {
     watchlistCollectionBrokerServiceSpy.getCollection.and.returnValue(new BehaviorSubject(JSON.parse(JSON.stringify(returnValue?.collection))));
   };
 

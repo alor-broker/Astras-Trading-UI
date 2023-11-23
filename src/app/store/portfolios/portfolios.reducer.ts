@@ -17,7 +17,7 @@ import {
 export const portfoliosFeatureKey = 'portfolios';
 
 export interface PortfoliosState extends EntityState<PortfolioExtended> {
-  status: EntityStatus
+  status: EntityStatus;
 }
 
 export const adapter: EntityAdapter<PortfolioExtended> = createEntityAdapter<PortfolioExtended>({

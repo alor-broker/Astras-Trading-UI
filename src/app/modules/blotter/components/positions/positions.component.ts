@@ -33,7 +33,6 @@ import {
   TableNames
 } from '../../models/blotter-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BaseTableComponent } from "../base-table/base-table.component";
 import { OrderService } from "../../../../shared/services/orders/order.service";
@@ -58,7 +57,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'symbol',
       displayName: 'Тикер',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.symbol.localeCompare(b.symbol),
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.symbol.localeCompare(b.symbol),
       filterData: {
         filterName: 'symbol',
         isDefaultFilter: false
@@ -70,7 +69,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'shortName',
       displayName: 'Имя',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.shortName.localeCompare(b.shortName),
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.shortName.localeCompare(b.shortName),
       filterData: {
         filterName: 'shortName',
         isDefaultFilter: false
@@ -82,7 +81,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'avgPrice',
       displayName: 'Средняя',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.avgPrice) - Number(b.avgPrice),
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => Number(a.avgPrice) - Number(b.avgPrice),
       tooltip: 'Средняя цена',
       minWidth: 70
     },
@@ -90,7 +89,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'qtyT0',
       displayName: 'Кол-во Т0',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyT0) - Number(b.qtyT0),
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => Number(a.qtyT0) - Number(b.qtyT0),
       tooltip: 'Количество позиций с учётом сегодняшних расчётов',
       minWidth: 65
     },
@@ -98,7 +97,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'qtyT1',
       displayName: 'Кол-во Т1',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyT1) - Number(b.qtyT1),
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => Number(a.qtyT1) - Number(b.qtyT1),
       tooltip: 'Количество позиций с учётом завтрашних расчётов',
       minWidth: 65
     },
@@ -106,7 +105,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'qtyT2',
       displayName: 'Кол-во Т2',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyT2) - Number(b.qtyT2),
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => Number(a.qtyT2) - Number(b.qtyT2),
       tooltip: 'Количество позиций с учётом послезавтрашних расчётов',
       minWidth: 65
     },
@@ -114,7 +113,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'qtyTFuture',
       displayName: 'Кол-во ТFuture',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => Number(a.qtyTFuture) - Number(b.qtyTFuture),
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => Number(a.qtyTFuture) - Number(b.qtyTFuture),
       tooltip: 'Количество позиций с учётом всех заявок',
       minWidth: 65
     },
@@ -122,7 +121,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'volume',
       displayName: 'Ср. объём',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.volume - b.volume,
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.volume - b.volume,
       tooltip: 'Объём по позиции, рассчитанный по средней цене',
       minWidth: 60
     },
@@ -130,7 +129,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'currentVolume',
       displayName: 'Тек. объём',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.currentVolume - b.currentVolume,
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.currentVolume - b.currentVolume,
       tooltip: 'Объём по позиции рассчитанный по текущей цене',
       minWidth: 60
     },
@@ -138,7 +137,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'unrealisedPl',
       displayName: 'P/L всего',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.unrealisedPl - b.unrealisedPl,
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.unrealisedPl - b.unrealisedPl,
       tooltip: 'Соотношение прибыли и убытка',
       minWidth: 60
     },
@@ -146,7 +145,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'dailyUnrealisedPl',
       displayName: 'P/L дн.',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay) => a.dailyUnrealisedPl - b.dailyUnrealisedPl,
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.dailyUnrealisedPl - b.dailyUnrealisedPl,
       tooltip: 'Соотношение прибыли и убытка за сегодня',
       minWidth: 60
     },
@@ -173,7 +172,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
 
     this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
-        TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)
+        TableSettingHelper.isTableSettingsEqual(previous.positionsTable, current.positionsTable)
         && previous.badgeColor === current.badgeColor
       ),
       mapWith(
@@ -198,8 +197,8 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
                 ? {
                   ...column.column.filterData,
                   filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-                  filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
-                    value: f.value,
+                  filters: (column.column.filterData.filters ?? []).map(f => ({
+                    value: f.value as unknown,
                     text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
                   }))
                 }
@@ -229,25 +228,25 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
     );
   }
 
-  round(number: number) {
+  round(number: number): number {
     return MathHelper.round(number, 2);
   }
 
-  roundPrice(price: number) {
+  roundPrice(price: number): number {
     return price > 10
       ? MathHelper.round(price, 2)
       : MathHelper.round(price, 6);
   }
 
-  closePosition(position: PositionDisplay) {
+  closePosition(position: PositionDisplay): void {
     CommonOrderCommands.closePositionByMarket(position, undefined, this.ordersService);
   }
 
-  reversePosition(position: PositionDisplay) {
+  reversePosition(position: PositionDisplay): void {
     CommonOrderCommands.reversePositionsByMarket(position, undefined, this.ordersService);
   }
 
-  closeAllPositions(positions: readonly PositionDisplay[]){
+  closeAllPositions(positions: readonly PositionDisplay[]): void {
     positions
       .filter(p => !!p.qtyTFutureBatch)
       .forEach(p => {

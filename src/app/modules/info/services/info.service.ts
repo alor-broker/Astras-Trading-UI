@@ -26,14 +26,14 @@ import { RisksInfo } from "../models/risks.model";
 import { InstrumentsService } from "../../instruments/services/instruments.service";
 
 interface SettingsWithExchangeInfo {
-  settings: InfoSettings,
-  info: ExchangeInfo
+  settings: InfoSettings;
+  info: ExchangeInfo;
 }
 
 @Injectable()
 export class InfoService {
-  private instrumentUrl = environment.apiUrl + '/instruments/v1';
-  private clientsRiskUrl = environment.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/clientsRisk';
+  private readonly instrumentUrl = environment.apiUrl + '/instruments/v1';
+  private readonly clientsRiskUrl = environment.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/clientsRisk';
 
   private settings$?: Observable<SettingsWithExchangeInfo>;
 
@@ -47,12 +47,12 @@ export class InfoService {
   ) {
   }
 
-  init(guid: string) {
+  init(guid: string): void {
     if (this.settings$) {
       return;
     }
 
-    const getExchangeInfo = (settings: InfoSettings) => {
+    const getExchangeInfo = (settings: InfoSettings): Observable<{settings: InfoSettings, info: ExchangeInfo}> => {
       return this.getExchangeInfoReq({
         symbol: settings.symbol,
         exchange: settings.exchange,
@@ -117,8 +117,8 @@ export class InfoService {
         if(d.securityType !== 'stock' && d.securityType !== 'bond') {
           return {
             ...d,
-            marginbuy: exchangeInfo?.marginbuy,
-            marginsell: exchangeInfo?.marginsell
+            marginbuy: exchangeInfo.marginbuy,
+            marginsell: exchangeInfo.marginsell
           };
         }
 
@@ -165,7 +165,7 @@ export class InfoService {
           let identifier = exchangeInfo.symbol;
           return this.http.get<T>(
             this.instrumentUrl +
-            (exchangeSettings.isInternational ? "/international/" : "/") +
+            ((exchangeSettings.isInternational ?? false) ? "/international/" : "/") +
             `${identifier}/` +
             path);
         })

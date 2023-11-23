@@ -15,15 +15,15 @@ import {
 } from "../../../shared/services/subscriptions-data-feed.service";
 
 interface HistoryResponse {
-  clusters: TradesCluster[]
+  clusters: TradesCluster[];
 }
 
 interface ClustersSubscriptionRequest extends SubscriptionRequest {
-  code: string,
-  exchange: string,
-  tf: ClusterTimeframe,
-  format: string,
-  from: number
+  code: string;
+  exchange: string;
+  tf: ClusterTimeframe;
+  format: string;
+  from: number;
 }
 
 @Injectable({

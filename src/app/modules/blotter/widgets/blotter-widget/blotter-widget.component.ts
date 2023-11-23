@@ -45,7 +45,7 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 })
 export class BlotterWidgetComponent implements OnInit, OnDestroy {
   readonly marketTypes = MarketType;
-  shouldShowSettings: boolean = false;
+  shouldShowSettings = false;
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
@@ -132,19 +132,19 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
       );
   }
 
-  onSettingsChange() {
+  onSettingsChange(): void {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 
-  onIndexChange(event: NzTabChangeEvent) {
+  onIndexChange(event: NzTabChangeEvent): void {
     this.widgetSettingsService.updateSettings(this.widgetInstance.instance.guid, { activeTabIndex: event.index ?? 0 });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.contentSize$.complete();
   }
 
-  containerSizeChanged(entries: ResizeObserverEntry[]) {
+  containerSizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.contentSize$.next({
         width: Math.floor(x.contentRect.width),

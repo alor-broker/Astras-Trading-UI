@@ -32,13 +32,13 @@ describe('MarketOrderFormComponent', () => {
   let orderServiceSpy: any;
   let lastPrice = 25;
 
-  const getFormInputs = () => {
+  const getFormInputs = (): { [fieldName: string]: HTMLInputElement } => {
     return {
       quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement
     };
   };
 
-  const getValidationErrorElement = (element: HTMLElement) => {
+  const getValidationErrorElement = (element: HTMLElement): Element | null => {
     const inputContainer = element.parentElement?.parentElement?.parentElement?.parentElement?.parentElement;
     if (!inputContainer) {
       return null;
@@ -185,7 +185,7 @@ describe('MarketOrderFormComponent', () => {
 
         expect(errorElement).not.toBeNull();
 
-        if (testCase.expectedError) {
+        if ((testCase.expectedError ?? '')) {
           expect(errorElement?.textContent).toEqual(testCase.expectedError);
         }
       });

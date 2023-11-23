@@ -20,7 +20,7 @@ export class TerminalSettingsService {
     return TerminalSettingsStreams.getSettings(this.store, ignoreStatus);
   }
 
-  updateSettings(updates: Partial<TerminalSettings>, freezeChanges = false, callback?: () => void) {
+  updateSettings(updates: Partial<TerminalSettings>, freezeChanges = false, callback?: () => void): void {
     if (callback) {
       this.actions$.pipe(
         ofType(TerminalSettingsActions.saveTerminalSettingsSuccess),
@@ -31,7 +31,7 @@ export class TerminalSettingsService {
     this.store.dispatch(TerminalSettingsActions.updateTerminalSettings({updates, freezeChanges}));
   }
 
-  reset() {
+  reset(): void {
     this.actions$.pipe(
       ofType(TerminalSettingsActions.resetSuccess),
       take(1)

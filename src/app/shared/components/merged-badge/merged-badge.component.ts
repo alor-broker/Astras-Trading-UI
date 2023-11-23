@@ -9,7 +9,7 @@ export class MergedBadgeComponent {
   @Input()
   colors: string[] = [];
   @Input()
-  width: number = 10;
+  width = 10;
 
   private readonly colorOverrides = new Map<string, string>([
     ["#FFFF00", "#FFFF00"],

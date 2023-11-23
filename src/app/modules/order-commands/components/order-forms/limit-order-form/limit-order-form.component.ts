@@ -97,7 +97,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       topOrderSide?: Side | null;
       bottomOrderPrice?: number | null;
       bottomOrderSide?: Side | null;
-    }
+    };
   } | null = null;
 
   constructor(
@@ -121,7 +121,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     this.initFormFieldsCheck();
   }
 
-  setQuantity(value: number) {
+  setQuantity(value: number): void {
     this.commonParametersService.setParameters({
       quantity: value
     });
@@ -132,7 +132,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     this.evaluationRequest$.complete();
   }
 
-  protected changeInstrument(newInstrument: Instrument) {
+  protected changeInstrument(newInstrument: Instrument): void {
     this.form.reset(undefined, {emitEvent: true});
 
     this.setPriceValidators(this.form.controls.price, newInstrument);
@@ -148,16 +148,16 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
 
       if (this.initialValues.bracket) {
         this.expandAdvancedOptions = true;
-        if (this.initialValues.bracket.topOrderPrice) {
-          this.form.controls.topOrderPrice.setValue(this.initialValues.bracket.topOrderPrice);
+        if (this.initialValues.bracket.topOrderPrice ?? 0) {
+          this.form.controls.topOrderPrice.setValue(this.initialValues.bracket.topOrderPrice as number);
         }
 
         if (this.initialValues.bracket.topOrderSide) {
           this.form.controls.topOrderSide.setValue(this.initialValues.bracket.topOrderSide);
         }
 
-        if (this.initialValues.bracket.bottomOrderPrice) {
-          this.form.controls.bottomOrderPrice.setValue(this.initialValues.bracket.bottomOrderPrice);
+        if (this.initialValues.bracket.bottomOrderPrice ?? 0) {
+          this.form.controls.bottomOrderPrice.setValue(this.initialValues.bracket.bottomOrderPrice as number);
         }
 
         if (this.initialValues.bracket.bottomOrderSide) {
@@ -198,7 +198,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     }
   }
 
-  private initCommonParametersUpdate() {
+  private initCommonParametersUpdate(): void {
     this.commonParametersService.parameters$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(p => {
@@ -236,11 +236,11 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       limitOrder.timeInForce = formValue.timeInForce;
     }
 
-    if (formValue.icebergFixed) {
+    if (formValue.icebergFixed ?? 0) {
       limitOrder.icebergFixed = Number(formValue.icebergFixed);
     }
 
-    if (formValue.icebergVariance) {
+    if (formValue.icebergVariance ?? 0) {
       limitOrder.icebergVariance = Number(formValue.icebergVariance);
     }
 
@@ -252,7 +252,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
 
     const bracketOrders: NewStopLimitOrder[] = [];
 
-    if (!!formValue.topOrderPrice) {
+    if (!!(formValue.topOrderPrice ?? 0)) {
       bracketOrders.push({
         instrument: limitOrder.instrument,
         quantity: limitOrder.quantity,
@@ -264,7 +264,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       });
     }
 
-    if (!!formValue.bottomOrderPrice) {
+    if (!!(formValue.bottomOrderPrice ?? 0)) {
       bracketOrders.push({
         instrument: limitOrder.instrument,
         quantity: limitOrder.quantity,
@@ -279,7 +279,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     return bracketOrders;
   }
 
-  private initPriceDiffCalculation() {
+  private initPriceDiffCalculation(): void {
     this.currentPriceDiffPercent$ = PriceDiffHelper.getPriceDiffCalculation(
       this.form.controls.price,
       this.getInstrumentWithPortfolio(),
@@ -287,7 +287,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     );
   }
 
-  private initEvaluationUpdate() {
+  private initEvaluationUpdate(): void {
     const formChanges$ = this.form.valueChanges.pipe(
       map(v => ({quantity: v.quantity, price: v.price})),
       distinctUntilChanged((prev, curr) => prev.price === curr.price && prev.quantity === curr.quantity),
@@ -312,16 +312,12 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     ).subscribe(() => this.updateEvaluation());
   }
 
-  private updateEvaluation() {
+  private updateEvaluation(): void {
     this.getInstrumentWithPortfolio().pipe(
       take(1)
     ).subscribe(x => {
-      if (!x.instrument || !x.portfolioKey) {
-        return;
-      }
-
       const formValue = this.form.value;
-      if (!formValue.price || !formValue.quantity) {
+      if (!(formValue.price ?? 0) || !(formValue.quantity ?? 0)) {
         this.evaluationRequest$.next(null);
         return;
       }
@@ -333,20 +329,20 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
           instrumentGroup: formValue.instrumentGroup ?? x.instrument.instrumentGroup
         },
         instrumentCurrency: x.instrument.currency,
-        price: formValue.price,
-        lotQuantity: formValue.quantity
+        price: formValue.price as number,
+        lotQuantity: formValue.quantity as number
       });
     });
   }
 
-  private initFormFieldsCheck() {
+  private initFormFieldsCheck(): void {
     this.form.valueChanges.pipe(
       distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => this.checkFieldsAvailability());
   }
 
-  private checkFieldsAvailability() {
+  private checkFieldsAvailability(): void {
     if (this.form.controls.isIceberg.enabled && this.form.controls.isIceberg.value) {
       this.enableControl(this.form.controls.icebergFixed);
       this.enableControl(this.form.controls.icebergVariance);

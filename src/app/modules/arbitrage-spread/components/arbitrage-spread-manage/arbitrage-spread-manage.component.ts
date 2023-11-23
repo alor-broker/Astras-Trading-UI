@@ -69,7 +69,7 @@ export class ArbitrageSpreadManageComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.portfolios$ = this.userPortfoliosService.getPortfolios()
       .pipe(
         map(portfolios => portfolios.map(p => ({ portfolio: p.portfolio, exchange: p.exchange }))),

@@ -10,7 +10,7 @@ import {toInstrumentKey} from '../../shared/utils/instruments';
 export const dashboardsFeatureKey = 'dashboards';
 
 export interface State extends EntityState<Dashboard> {
-  status: EntityStatus
+  status: EntityStatus;
 }
 
 export const adapter: EntityAdapter<Dashboard> = createEntityAdapter<Dashboard>({
@@ -91,7 +91,7 @@ export const reducer = createReducer(
 
   on(ManageDashboardsActions.removeDashboardFromFavorites, (state, props) => {
     const cahnges = Object.values(state.entities)
-      .filter(d => d!.isFavorite && d!.guid !== props.dashboardGuid)
+      .filter(d => (d!.isFavorite ?? false) && d!.guid !== props.dashboardGuid)
       .sort((a, b) => a!.favoritesOrder! - b!.favoritesOrder!)
       .map((d, i) => ({ id: d!.guid, order: i }));
 
@@ -124,7 +124,7 @@ export const reducer = createReducer(
 
     const oldIndex = dashboards.findIndex(d => d.id === props.dashboardGuid);
 
-    if (oldIndex == null) {
+    if (oldIndex === -1) {
       return state;
     }
 
@@ -239,7 +239,7 @@ export const reducer = createReducer(
       return updatedState;
     }
 
-    if (targetDashboard.isSelected) {
+    if (targetDashboard.isSelected ?? false) {
       const otherDashboardGuids = (state.ids as string[]).filter(x => x !== targetDashboard.guid);
       if (otherDashboardGuids.length === 0) {
         return updatedState;

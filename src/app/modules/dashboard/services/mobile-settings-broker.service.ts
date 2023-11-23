@@ -1,19 +1,18 @@
-import {DestroyRef, Injectable} from '@angular/core';
-import {LocalStorageService} from "../../../shared/services/local-storage.service";
-import {ActionCreator} from "@ngrx/store/src/models";
-import {Actions, ofType} from "@ngrx/effects";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {Store} from "@ngrx/store";
+import { DestroyRef, Injectable } from '@angular/core';
+import { LocalStorageService } from "../../../shared/services/local-storage.service";
+import { ActionCreator } from "@ngrx/store/src/models";
+import { Actions, ofType } from "@ngrx/effects";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Store } from "@ngrx/store";
 import * as WidgetSettingsActions from "../../../store/widget-settings/widget-settings.actions";
-import {WidgetSettings} from "../../../shared/models/widget-settings.model";
-import {MobileDashboardActions} from "../../../store/mobile-dashboard/mobile-dashboard-actions";
-import {Dashboard} from "../../../shared/models/dashboard/dashboard.model";
-import {InstrumentKey} from "../../../shared/models/instruments/instrument-key.model";
-import {TerminalSettingsActions} from "../../../store/terminal-settings/terminal-settings.actions";
-import {take} from "rxjs";
-import {filter} from "rxjs/operators";
-import {TerminalSettings} from "../../../shared/models/terminal-settings/terminal-settings.model";
-import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
+import { WidgetSettings } from "../../../shared/models/widget-settings.model";
+import { MobileDashboardActions } from "../../../store/mobile-dashboard/mobile-dashboard-actions";
+import { Dashboard } from "../../../shared/models/dashboard/dashboard.model";
+import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
+import { TerminalSettingsActions } from "../../../store/terminal-settings/terminal-settings.actions";
+import { take } from "rxjs";
+import { TerminalSettings } from "../../../shared/models/terminal-settings/terminal-settings.model";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 
 @Injectable({
   providedIn: 'root'
@@ -33,13 +32,13 @@ export class MobileSettingsBrokerService {
   ) {
   }
 
-  initSettingsBrokers() {
+  initSettingsBrokers(): void {
     this.initTerminalSettingsBroker();
     this.initWidgetSettingsBroker();
     this.initDashboardSettingsBroker();
   }
 
-  private initWidgetSettingsBroker() {
+  private initWidgetSettingsBroker(): void {
     this.addActionSubscription(
       WidgetSettingsActions.settingsUpdated,
       action => {
@@ -51,7 +50,7 @@ export class MobileSettingsBrokerService {
     this.store.dispatch(WidgetSettingsActions.initWidgetSettings({settings: settingItems.map(x => x[1])}));
   }
 
-  private initDashboardSettingsBroker() {
+  private initDashboardSettingsBroker(): void {
     this.addActionSubscription(
       MobileDashboardActions.mobileDashboardUpdated,
       action => {
@@ -75,13 +74,12 @@ export class MobileSettingsBrokerService {
     }));
   }
 
-  private initTerminalSettingsBroker() {
+  private initTerminalSettingsBroker(): void {
     this.addActionSubscription(
       TerminalSettingsActions.updateTerminalSettings,
       () => {
         this.terminalSettingsService.getSettings(true).pipe(
           take(1),
-          filter((x): x is TerminalSettings => !!x)
         ).subscribe(settings => {
           this.localStorageService.setItem(this.terminalSettingsStorageKey, settings);
           this.store.dispatch(TerminalSettingsActions.saveTerminalSettingsSuccess());
@@ -105,7 +103,7 @@ export class MobileSettingsBrokerService {
     this.store.dispatch(TerminalSettingsActions.initTerminalSettings({settings: terminalSettings ?? null}));
   }
 
-  private addActionSubscription<AC extends ActionCreator, U = ReturnType<AC>>(actionCreator: AC, callback: (action: U) => void) {
+  private addActionSubscription<AC extends ActionCreator, U = ReturnType<AC>>(actionCreator: AC, callback: (action: U) => void): void {
     this.actions$.pipe(
       ofType(actionCreator),
       takeUntilDestroyed(this.destroyRef)

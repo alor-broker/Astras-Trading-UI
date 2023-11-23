@@ -20,24 +20,21 @@ export class BroadcastService {
   private channel: BroadcastChannel | null = null;
   private messageSub$: Subject<MessageEvent> | null = null;
 
-  constructor() {
-  }
-
-  publish<T>(message: BroadcastMessage<T>) {
+  publish<T>(message: BroadcastMessage<T>): void {
     this.getOrCreateChannel().postMessage(message);
   }
 
   subscribe<T>(messageType: string): Observable<BroadcastMessage<T>> {
     if (!this.messageSub$) {
       this.messageSub$ = new Subject<MessageEvent>();
-      this.getOrCreateChannel().onmessage = (message) => {
+      this.getOrCreateChannel().onmessage = (message): void => {
         this.messageSub$?.next(message);
       };
     }
 
     return this.messageSub$.pipe(
-      map(x => x.data as BroadcastMessage<any>),
-      filter(x => !!x && x.messageType === messageType),
+      map(x => x.data as BroadcastMessage<any> | undefined),
+      filter(x => x?.messageType === messageType),
       map(x => x as BroadcastMessage<T>)
     );
   }

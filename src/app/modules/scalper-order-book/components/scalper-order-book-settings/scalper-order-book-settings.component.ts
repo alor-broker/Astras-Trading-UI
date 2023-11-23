@@ -18,7 +18,6 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 
@@ -60,7 +59,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
 
-  form!: UntypedFormGroup;
+  form?: UntypedFormGroup;
   orderPriceUnits = PriceUnits;
   exchanges: string[] = exchangesList;
   readonly availableVolumeHighlightModes: string[] = [
@@ -88,11 +87,11 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
   }
 
   get volumeHighlightOptions(): UntypedFormArray {
-    return this.form.controls.volumeHighlightOptions as UntypedFormArray;
+    return this.form!.controls.volumeHighlightOptions as UntypedFormArray;
   }
 
   get workingVolumes(): UntypedFormArray {
-    return this.form.controls.workingVolumes as UntypedFormArray;
+    return this.form!.controls.workingVolumes as UntypedFormArray;
   }
 
   get canRemoveVolumeHighlightOption(): boolean {
@@ -103,7 +102,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     return this.workingVolumes.at(index) as UntypedFormControl;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.initSettingsStream();
 
     this.settings$.pipe(
@@ -117,12 +116,12 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     return control as UntypedFormGroup;
   }
 
-  setVolumeHighlightOptionColor(index: number, color: string) {
+  setVolumeHighlightOptionColor(index: number, color: string): void {
     const formGroup = this.volumeHighlightOptions.controls[index] as UntypedFormGroup;
     formGroup.controls.color.setValue(color);
   }
 
-  addVolumeHighlightOption($event: MouseEvent) {
+  addVolumeHighlightOption($event: MouseEvent): void {
     $event.preventDefault();
     $event.stopPropagation();
 
@@ -130,44 +129,44 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.volumeHighlightOptions.push(this.createVolumeHighlightOptionsControl(defaultValue));
   }
 
-  removeVolumeHighlightOption($event: MouseEvent, index: number) {
+  removeVolumeHighlightOption($event: MouseEvent, index: number): void {
     $event.preventDefault();
     $event.stopPropagation();
 
     this.volumeHighlightOptions.removeAt(index);
   }
 
-  showVolumeHighlightOptions() {
-    return this.form?.value.volumeHighlightMode === VolumeHighlightMode.VolumeBoundsWithFixedValue;
+  showVolumeHighlightOptions(): boolean {
+    return this.form?.value!.volumeHighlightMode === VolumeHighlightMode.VolumeBoundsWithFixedValue;
   }
 
-  showRulerOptions() {
-    return this.form?.value.showRuler === true;
+  showRulerOptions(): boolean {
+    return this.form?.value!.showRuler === true;
   }
 
-  hasVolumeHighlightOptionsErrors() {
-    return !this.form?.controls?.volumeHighlightOptions?.valid || !this.form?.controls?.volumeHighlightFullness?.valid;
+  hasVolumeHighlightOptionsErrors(): boolean {
+    return !(this.form?.controls.volumeHighlightOptions?.valid ?? false) || !(this.form?.controls.volumeHighlightFullness?.valid ?? false);
   }
 
-  instrumentSelected(instrument: InstrumentKey | null) {
-    this.form.controls.exchange.setValue(instrument?.exchange ?? null);
-    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+  instrumentSelected(instrument: InstrumentKey | null): void {
+    this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
+    this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
-  removeWorkingVolume($event: MouseEvent, index: number) {
+  removeWorkingVolume($event: MouseEvent, index: number): void {
     $event.preventDefault();
     $event.stopPropagation();
 
-    this.asFormArray(this.form.controls.workingVolumes).removeAt(index);
+    this.asFormArray(this.form!.controls.workingVolumes).removeAt(index);
   }
 
-  addWorkingVolume($event: MouseEvent) {
+  addWorkingVolume($event: MouseEvent): void {
     $event.preventDefault();
     $event.stopPropagation();
 
-    const workingVolumeControl = this.asFormArray(this.form.controls.workingVolumes);
-    const defaultValue = workingVolumeControl?.controls[workingVolumeControl.length - 1]?.value as number;
-    workingVolumeControl.push(this.createWorkingVolumeControl((defaultValue * 10) ?? 1));
+    const workingVolumeControl = this.asFormArray(this.form!.controls.workingVolumes);
+    const defaultValue = workingVolumeControl.controls[workingVolumeControl.length - 1]?.value as number | undefined;
+    workingVolumeControl.push(this.createWorkingVolumeControl((defaultValue ?? 0) ? defaultValue! * 10 : 1));
   }
 
   asFormArray(control: AbstractControl): UntypedFormArray {
@@ -178,32 +177,40 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     return this.asFormGroup(this.volumeHighlightOptions.at(i)).controls.color as UntypedFormControl;
   }
 
-  protected initSettingsStream(){
+  protected initSettingsStream(): void {
     this.settings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.settingsService);
   }
 
-  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<ScalperOrderBookWidgetSettings> {
-    const formValue = this.form.value;
+  protected getUpdatedSettings(initialSettings: ScalperOrderBookWidgetSettings): Partial<ScalperOrderBookWidgetSettings> {
+    const formValue = this.form!.value as Partial<
+      ScalperOrderBookWidgetSettings &
+      {
+        instrument: InstrumentKey;
+        volumeHighlightOptions: VolumeHighlightOption[];
+        topOrderPriceRatio: string;
+        bottomOrderPriceRatio: string;
+      }
+      >;
 
     const newSettings = {
       ...formValue,
-      symbol: formValue.instrument.symbol,
-      exchange: formValue.instrument.exchange,
+      symbol: formValue.instrument?.symbol,
+      exchange: formValue.instrument?.exchange,
       depth: Number(formValue.depth),
-      volumeHighlightOptions: formValue.volumeHighlightOptions.map((x: VolumeHighlightOption) => ({
+      volumeHighlightOptions: formValue.volumeHighlightOptions?.map((x: VolumeHighlightOption) => ({
           ...x,
           boundary: Number(x.boundary)
         } as VolumeHighlightOption)
       ),
       volumeHighlightFullness: Number(formValue.volumeHighlightFullness),
-      workingVolumes: formValue.workingVolumes.map((wv: string) => Number(wv)),
-      autoAlignIntervalSec: !!(+formValue.autoAlignIntervalSec) ? Number(formValue.autoAlignIntervalSec) : null,
-      topOrderPriceRatio: !!(+formValue.topOrderPriceRatio) ? Number(formValue.topOrderPriceRatio) : null,
-      bottomOrderPriceRatio: !!(+formValue.bottomOrderPriceRatio) ? Number(formValue.bottomOrderPriceRatio) : null
-    };
+      workingVolumes: formValue.workingVolumes?.map(wv => Number(wv)),
+      autoAlignIntervalSec: !!(+formValue.autoAlignIntervalSec!) ? Number(formValue.autoAlignIntervalSec) : null,
+      topOrderPriceRatio: !!(+formValue.topOrderPriceRatio!) ? Number(formValue.topOrderPriceRatio) : null,
+      bottomOrderPriceRatio: !!(+formValue.bottomOrderPriceRatio!) ? Number(formValue.bottomOrderPriceRatio) : null
+    } as ScalperOrderBookWidgetSettings;
 
     delete newSettings.instrument;
-    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+    newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
 
     newSettings.instrumentLinkedSettings = {
       ...initialSettings.instrumentLinkedSettings,
@@ -218,12 +225,12 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         tradesClusterPanelSettings: initialSettings.tradesClusterPanelSettings,
         bracketsSettings: newSettings.bracketsSettings,
       } as InstrumentLinkedSettings
-    };
+    } as { [key: string]: InstrumentLinkedSettings };
 
-    return newSettings;
+    return newSettings as Partial<ScalperOrderBookWidgetSettings>;
   }
 
-  private buildForm(settings: ScalperOrderBookWidgetSettings) {
+  private buildForm(settings: ScalperOrderBookWidgetSettings): void {
     const stepsPriceStepValidatorFn = AtsValidators.priceStepMultiplicity(this.validationOptions.bracket.price.stepsStep);
     const percentsPriceStepValidatorFn = AtsValidators.priceStepMultiplicity(this.validationOptions.bracket.price.percentsStep);
 
@@ -303,8 +310,8 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.form.get('bracketsSettings')!.get('orderPriceUnits')!.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value: PriceUnits) => {
-        const topOrderPriceRatioControl = this.form.get('bracketsSettings')!.get('topOrderPriceRatio');
-        const bottomOrderPriceRatioControl = this.form.get('bracketsSettings')!.get('bottomOrderPriceRatio');
+        const topOrderPriceRatioControl = this.form!.get('bracketsSettings')!.get('topOrderPriceRatio');
+        const bottomOrderPriceRatioControl = this.form!.get('bracketsSettings')!.get('bottomOrderPriceRatio');
 
         topOrderPriceRatioControl?.removeValidators([percentsPriceStepValidatorFn, stepsPriceStepValidatorFn]);
         bottomOrderPriceRatioControl?.removeValidators([percentsPriceStepValidatorFn, stepsPriceStepValidatorFn]);

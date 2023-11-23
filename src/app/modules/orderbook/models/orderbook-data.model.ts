@@ -1,35 +1,35 @@
 import { SubscriptionRequest } from '../../../shared/services/subscriptions-data-feed.service';
 
 export interface OrderbookRequest extends SubscriptionRequest {
-  code: string,
-  exchange: string,
-  instrumentGroup?: string
-  depth: number,
-  format: string
+  code: string;
+  exchange: string;
+  instrumentGroup?: string;
+  depth: number;
+  format: string;
 }
 
 export interface OrderbookDataRow {
   /**
    * Volume
    */
-  v: number,
+  v: number;
   /**
    * price
    */
-  p: number,
+  p: number;
   /**
    * bond yield
    */
-  y: number,
+  y: number;
 }
 
 export interface OrderbookData {
   /**
    * asks
    */
-  a: OrderbookDataRow[],
+  a: OrderbookDataRow[];
   /**
    * bids
    */
-  b: OrderbookDataRow[]
+  b: OrderbookDataRow[];
 }

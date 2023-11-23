@@ -28,7 +28,7 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
     </div>
   `
 })
-class TestComponent extends BaseTableComponent<{ id: string }, {}> {
+class TestComponent extends BaseTableComponent<{ id: string }, object> {
   settingsTableName = TableNames.OrdersTable;
 
   containerHeight = 0;
@@ -97,7 +97,7 @@ describe('BaseTableComponent', () => {
   it('should detect table container height change', waitForAsync(() => {
     const expectedHeight = getRandomInt(150, 200);
 
-    hostFixture.debugElement.nativeElement.style.height = expectedHeight + 'px';
+    hostFixture.debugElement.nativeElement.style.height = `${expectedHeight}px`;
     hostFixture.detectChanges();
 
     setTimeout(() => {
@@ -202,7 +202,7 @@ describe('BaseTableComponent', () => {
 
   it('should recalculate table width', () => {
     const delta = getRandomInt(50, 100);
-    const expectedWidth = component.tableInnerWidth + delta;
+    const expectedWidth = +component.tableInnerWidth + delta;
     component.recalculateTableWidth({ columnWidth: 100, delta });
 
     expect(component.tableInnerWidth).toBe(expectedWidth);

@@ -2,24 +2,21 @@ import { ControlValueAccessor } from '@angular/forms';
 
 export abstract class ControlValueAccessorBaseComponent<T> implements ControlValueAccessor {
 
-  protected constructor() {
-  }
-
   registerOnChange(fn: (value: T | null) => void): void {
     this.onValueChanged = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: ((...args: any[]) => any)): void {
     this.onTouched = fn;
   }
 
   abstract writeValue(value: T | null): void;
 
-  protected emitValue(value: T | null) {
+  protected emitValue(value: T | null): void {
     this.onValueChanged(value);
   }
 
-  protected checkIfTouched() {
+  protected checkIfTouched(): void {
     if (this.needMarkTouched()) {
       this.onTouched();
     }
@@ -30,7 +27,7 @@ export abstract class ControlValueAccessorBaseComponent<T> implements ControlVal
   private onValueChanged: (value: T | null) => void = () => {
   };
 
-  private onTouched = () => {
+  private onTouched = (): void => {
   };
 
 }

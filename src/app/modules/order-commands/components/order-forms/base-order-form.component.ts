@@ -52,7 +52,7 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
     this.isActivated$.complete();
   }
 
-  submitOrder(side: Side) {
+  submitOrder(side: Side): void {
     if (!this.canSubmit) {
       return;
     }
@@ -66,7 +66,7 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
         this.requestProcessing$.next({});
       }),
     ).subscribe(r => {
-      if ((<SubmitOrderResult>r)?.isSuccess || (<SubmitGroupResult>r)?.message === 'success') {
+      if (((<SubmitOrderResult | null>r)?.isSuccess ?? false) || (<SubmitGroupResult | null>r)?.message === 'success') {
         this.submitted.emit();
       }
     });
@@ -84,7 +84,7 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
     );
   }
 
-  protected initInstrumentChange() {
+  protected initInstrumentChange(): void {
     this.formInstrument$.pipe(
       filter((x): x is Instrument => !!x),
       takeUntilDestroyed(this.destroyRef)
@@ -93,11 +93,11 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
 
   protected abstract changeInstrument(newInstrument: Instrument): void;
 
-  protected enableControl(target: AbstractControl) {
+  protected enableControl(target: AbstractControl): void {
     target.enable({emitEvent: false});
   }
 
-  protected disableControl(target: AbstractControl) {
+  protected disableControl(target: AbstractControl): void {
     target.disable({emitEvent: false});
   }
 
@@ -108,7 +108,7 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
     };
   }
 
-  protected setPriceValidators(target: FormControl<number | null>, newInstrument: Instrument) {
+  protected setPriceValidators(target: FormControl<number | null>, newInstrument: Instrument): void {
     target.clearValidators();
     target.addValidators([
       Validators.required,

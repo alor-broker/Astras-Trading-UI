@@ -24,7 +24,7 @@ export class ApplicationMetaService {
     return of(defaultMeta);
   }
 
-  updateLastReset() {
+  updateLastReset(): void {
     this.saveMeta({
       ...this.getSavedMeta(),
       lastResetTimestamp: Date.now()
@@ -35,7 +35,7 @@ export class ApplicationMetaService {
     return this.localStorage.getItem<ApplicationMeta>(this.applicationMetaStorageKey);
   }
 
-  private saveMeta(meta: ApplicationMeta) {
+  private saveMeta(meta: ApplicationMeta): void {
     this.localStorage.setItem(this.applicationMetaStorageKey, meta);
   }
 

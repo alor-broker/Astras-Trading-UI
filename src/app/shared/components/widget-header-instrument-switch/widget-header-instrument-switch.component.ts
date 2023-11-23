@@ -44,29 +44,29 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
     );
   }
 
-  triggerMenu(event: MouseEvent) {
+  triggerMenu(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
     event.target!.dispatchEvent(new Event('click'));
   }
 
   getTitle(instrument: Instrument): string {
-    return `${instrument.symbol}${instrument.instrumentGroup ? ' (' + instrument.instrumentGroup + ') ' : ' '}${instrument.shortName}`;
+    return `${instrument.symbol}${(instrument.instrumentGroup ?? '') ? ' (' + (instrument.instrumentGroup as string) + ') ' : ' '}${instrument.shortName}`;
   }
 
-  searchVisibilityChanged(isVisible: boolean) {
+  searchVisibilityChanged(isVisible: boolean): void {
     this.searchInput?.writeValue(null);
     if (isVisible) {
       this.searchInput?.setFocus();
     }
   }
 
-  close() {
+  close(): void {
     this.searchVisible = false;
     this.searchVisibilityChanged(false);
   }
 
-  instrumentSelected(instrument: InstrumentKey | null) {
+  instrumentSelected(instrument: InstrumentKey | null): void {
     this.close();
 
     if (!instrument) {
@@ -76,7 +76,7 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
-      if (settings.linkToActive) {
+      if (settings.linkToActive ?? false) {
         this.dashboardContextService.selectDashboardInstrument(instrument, settings.badgeColor ?? defaultBadgeColor);
         return;
       }

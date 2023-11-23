@@ -33,8 +33,8 @@ describe('OrderService', () => {
   const baseApiUrl = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
   const defaultPortfolio = 'D1234';
 
-  const isHeadersCorrect = (headers: { [header: string]: string | string[] }) => {
-    const hasRequestId = !!headers['X-ALOR-REQID'];
+  const isHeadersCorrect = (headers: { [header: string]: string | string[] | undefined }): boolean => {
+    const hasRequestId = !!((headers['X-ALOR-REQID'])?.length ?? 0);
     const hasOriginator = headers['X-ALOR-ORIGINATOR'] === 'astras';
 
     return hasRequestId && hasOriginator;
@@ -74,7 +74,7 @@ describe('OrderService', () => {
   });
 
   describe('#submitMarketOrder', () => {
-    const submitOrder = (order: NewMarketOrder, onResult?: (result: SubmitOrderResult) => void) => {
+    const submitOrder = (order: NewMarketOrder, onResult?: (result: SubmitOrderResult) => void): void => {
       service.submitMarketOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
@@ -188,7 +188,7 @@ describe('OrderService', () => {
   });
 
   describe('#submitLimitOrder', () => {
-    const submitOrder = (order: NewLimitOrder, onResult?: (result: SubmitOrderResult) => void) => {
+    const submitOrder = (order: NewLimitOrder, onResult?: (result: SubmitOrderResult) => void): void => {
       service.submitLimitOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
@@ -304,7 +304,7 @@ describe('OrderService', () => {
   });
 
   describe('#submitStopMarketOrder', () => {
-    const submitOrder = (order: NewStopMarketOrder, onResult?: (result: SubmitOrderResult) => void) => {
+    const submitOrder = (order: NewStopMarketOrder, onResult?: (result: SubmitOrderResult) => void): void => {
       service.submitStopMarketOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
@@ -424,7 +424,7 @@ describe('OrderService', () => {
   });
 
   describe('#submitStopLimitOrder', () => {
-    const submitOrder = (order: NewStopLimitOrder, onResult?: (result: SubmitOrderResult) => void) => {
+    const submitOrder = (order: NewStopLimitOrder, onResult?: (result: SubmitOrderResult) => void): void => {
       service.submitStopLimitOrder(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
@@ -548,7 +548,7 @@ describe('OrderService', () => {
   });
 
   describe('#submitLimitOrderEdit', () => {
-    const submitOrder = (order: LimitOrderEdit, onResult?: (result: SubmitOrderResult) => void) => {
+    const submitOrder = (order: LimitOrderEdit, onResult?: (result: SubmitOrderResult) => void): void => {
       service.submitLimitOrderEdit(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
@@ -671,7 +671,7 @@ describe('OrderService', () => {
   });
 
   describe('#submitStopMarketOrderEdit', () => {
-    const submitOrder = (order: StopMarketOrderEdit, onResult?: (result: SubmitOrderResult) => void) => {
+    const submitOrder = (order: StopMarketOrderEdit, onResult?: (result: SubmitOrderResult) => void): void => {
       service.submitStopMarketOrderEdit(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {
@@ -801,7 +801,7 @@ describe('OrderService', () => {
   });
 
   describe('#submitStopLimitOrderEdit', () => {
-    const submitOrder = (order: StopLimitOrderEdit, onResult?: (result: SubmitOrderResult) => void) => {
+    const submitOrder = (order: StopLimitOrderEdit, onResult?: (result: SubmitOrderResult) => void): void => {
       service.submitStopLimitOrderEdit(order, defaultPortfolio)
         .subscribe((result) => {
           if (onResult) {

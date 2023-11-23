@@ -26,8 +26,8 @@ export const defaultBadgeColor = '#FFFF00';
  * @param cfi cfi code
  * @returns InstrumentType
  */
-export function getTypeByCfi(cfi: string | undefined) {
-  if (!cfi) {
+export function getTypeByCfi(cfi: string | undefined): InstrumentType {
+  if (cfi == null) {
     return InstrumentType.Other;
   }
   if (cfi.startsWith('DB')) {
@@ -68,10 +68,6 @@ export class InstrumentEqualityComparer {
 }
 
 export function toInstrumentKey(instrument: Instrument | InstrumentKey): InstrumentKey {
-  if (!instrument) {
-    return instrument;
-  }
-
   return {
     symbol: instrument.symbol,
     instrumentGroup: instrument.instrumentGroup,

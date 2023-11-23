@@ -41,7 +41,7 @@ implements OnInit {
     super();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.portfolios$ = this.store.select(selectPortfoliosState).pipe(
       filter(p => p.status === EntityStatus.Success),
       map(ps => {
@@ -58,13 +58,13 @@ implements OnInit {
     this.editableNotificationTypes = Object.values(OrdersInstantNotificationType)
       .map(x => ({
         value: x,
-        enabled: !this.currentValue?.hiddenNotifications?.includes(x)
+        enabled: !(this.currentValue?.hiddenNotifications?.includes(x) ?? false)
       }));
 
     this.excludedPortfolios = value.hiddenPortfoliosForNotifications ?? [];
   }
 
-  toggleNotificationType(notificationType: OrdersInstantNotificationType) {
+  toggleNotificationType(notificationType: OrdersInstantNotificationType): void {
     const notification = this.editableNotificationTypes.find(x => x.value === notificationType);
     if (notification) {
       notification.enabled = !notification.enabled;
@@ -79,7 +79,7 @@ implements OnInit {
     this.emitValue(this.currentValue);
   }
 
-  excludedPortfoliosChange(portfolios: PortfolioKey[]) {
+  excludedPortfoliosChange(portfolios: PortfolioKey[]): void {
     this.currentValue = {
       ...this.currentValue,
       hiddenPortfoliosForNotifications: portfolios
@@ -89,7 +89,7 @@ implements OnInit {
     this.emitValue(this.currentValue);
   }
 
-  compareFn = (op1?: PortfolioKey, op2?: PortfolioKey) => {
+  compareFn = (op1?: PortfolioKey, op2?: PortfolioKey): boolean => {
     return !!op1 && !!op2 && isPortfoliosEqual(op1, op2);
   };
 

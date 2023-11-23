@@ -41,7 +41,7 @@ export class WidgetSettingsBridgeEffects {
       distinctUntilChanged((previous, current) =>
         previous.guid === current.guid
         && previous.items.length === current.items.length
-        && JSON.stringify(previous?.instrumentsSelection) === JSON.stringify(current.instrumentsSelection)
+        && JSON.stringify(previous.instrumentsSelection) === JSON.stringify(current.instrumentsSelection)
       ),
       mapWith(() => WidgetSettingsStreams.getInstrumentLinkedSettings(this.store), (d, settings) => ({ d, settings })),
       map(({ d, settings }) => {
@@ -78,7 +78,7 @@ export class WidgetSettingsBridgeEffects {
   newPortfolioSelected$ = createEffect(() => {
     const dashboardSettingsUpdate$ = this.dashboardContextService.selectedDashboard$.pipe(
       filter(d => !!d.selectedPortfolio),
-      distinctUntilChanged((previous, current) => PortfolioKeyEqualityComparer.equals(previous?.selectedPortfolio, current?.selectedPortfolio)),
+      distinctUntilChanged((previous, current) => PortfolioKeyEqualityComparer.equals(previous.selectedPortfolio, current.selectedPortfolio)),
       mapWith(() => WidgetSettingsStreams.getPortfolioLinkedSettings(this.store), (d, settings) => ({ d, settings })),
       map(({ d, settings }) => {
         const dashboardWidgetGuids = d.items.map(x => x.guid);
@@ -110,11 +110,11 @@ export class WidgetSettingsBridgeEffects {
       .pipe(
         withLatestFrom(
           WidgetSettingsStreams.getAllSettings(this.store).pipe(
-            map(ws => ws.filter(s => !!s.badgeColor).map(s => s.guid))
+            map(ws => ws.filter(s => !!(s.badgeColor ?? '')).map(s => s.guid))
           )
         ),
         map(([ts, settingGuids]: [TerminalSettings, string[]]) => {
-          if (!ts.badgesBind) {
+          if (!(ts.badgesBind ?? false)) {
             return setDefaultBadges({ settingGuids });
           }
           return setDefaultBadges({ settingGuids: [] });

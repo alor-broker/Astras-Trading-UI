@@ -16,7 +16,7 @@ export class EventsCalendarWidgetComponent implements OnInit {
   @Input({required: true})
   isBlockWidget!: boolean;
 
-  shouldShowSettings: boolean = false;
+  shouldShowSettings = false;
   settings$!: Observable<EventsCalendarSettings>;
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService

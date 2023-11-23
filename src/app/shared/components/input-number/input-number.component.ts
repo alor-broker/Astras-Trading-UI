@@ -28,11 +28,11 @@ import {MathHelper} from "../../utils/math-helper";
 export class InputNumberComponent extends ControlValueAccessorBaseComponent<number> {
   private readonly minus = '-';
   @Input()
-  step: number = 1;
+  step = 1;
   @Input()
-  placeholder: string = '';
+  placeholder = '';
   @Input()
-  readonly: boolean = false;
+  readonly = false;
   @Input()
   allowNegative = false;
   @Input()
@@ -66,7 +66,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     this.cdr.markForCheck();
   }
 
-  setValue(value: number | null) {
+  setValue(value: number | null): void {
     if (this.value !== value) {
       this.value = value;
       this.emitValue(value);
@@ -102,7 +102,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     this.setValue(newValue);
   }
 
-  processKeydown($event: KeyboardEvent) {
+  processKeydown($event: KeyboardEvent): void {
     if (['ArrowDown'].includes($event.code)) {
       $event.stopPropagation();
       $event.preventDefault();
@@ -118,7 +118,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     }
   }
 
-  processWheel($event: WheelEvent) {
+  processWheel($event: WheelEvent): void {
     $event.stopPropagation();
     $event.preventDefault();
 
@@ -134,13 +134,13 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     return true;
   }
 
-  private setDisplayValue(value: number | string | null) {
+  private setDisplayValue(value: number | string | null): void {
     this.displayValue = value?.toString() ?? '';
     this.inputElement.nativeElement.value = this.displayValue;
   }
 
-  private stepChange(multiplier: number) {
-    const valueStep = this.step ?? 1;
+  private stepChange(multiplier: number): void {
+    const valueStep = this.step || 1;
     const move = valueStep * multiplier;
     const currentValue = this.value ?? 0;
 

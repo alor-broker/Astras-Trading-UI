@@ -49,7 +49,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   constructor(
     private readonly accountService: AccountService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private modal: ModalService,
+    private readonly modal: ModalService,
     private readonly translatorService: TranslatorService,
     private readonly destroyRef: DestroyRef,
     private readonly elRef: ElementRef
@@ -61,23 +61,23 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     this.initForm();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.tabSetHeight$.complete();
   }
 
-  calculateTabSetHeight() {
-    const modalBodyContainerEl = this.elRef.nativeElement.parentElement;
+  calculateTabSetHeight(): void {
+    const modalBodyContainerEl = this.elRef.nativeElement.parentElement as HTMLElement;
     const containerHeight = window.innerHeight * 0.7 -
       parseFloat(window.getComputedStyle(modalBodyContainerEl).paddingTop) -
       parseFloat(window.getComputedStyle(modalBodyContainerEl).paddingBottom);
 
-    const profileNameEl = this.elRef.nativeElement.querySelector('.profile-name');
-    const profileNameHeight = profileNameEl.offsetHeight + parseFloat(window.getComputedStyle(profileNameEl).marginBottom);
+    const profileNameEl = this.elRef.nativeElement.querySelector('.profile-name') as HTMLElement;
+    const profileNameHeight = +profileNameEl.offsetHeight + parseFloat(window.getComputedStyle(profileNameEl).marginBottom);
 
     this.tabSetHeight$.next(containerHeight - profileNameHeight);
   }
 
-  clearDashboard() {
+  clearDashboard(): void {
     this.translatorService.getTranslator('terminal-settings')
       .pipe(
         take(1)
@@ -98,10 +98,10 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   }
 
   getFormControl(key: string): UntypedFormControl | null {
-    return this.settingsForm?.controls[key] as UntypedFormControl ?? null;
+    return this.settingsForm?.controls[key] as UntypedFormControl | undefined ?? null;
   }
 
-  private initForm() {
+  private initForm(): void {
     this.terminalSettingsService.getSettings()
       .pipe(
         take(1)
@@ -116,7 +116,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
         )
         .subscribe(() => {
           this.formChange.emit({
-              value: this.settingsForm?.valid
+              value: (this.settingsForm?.valid ?? false)
                 ? this.formToModel()!
                 : null,
               isInitial: false
@@ -127,7 +127,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   }
 
   private formToModel(): TerminalSettings | null {
-    const formValue = this.settingsForm?.value;
+    const formValue = this.settingsForm?.value as Partial<TerminalSettings & { generalSettings: GeneralSettings}> | undefined;
     if (!formValue) {
       return null;
     }
@@ -135,11 +135,11 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     const model = {
       ...formValue,
       ...formValue.generalSettings
-    };
+    } as Partial<TerminalSettings & { generalSettings: GeneralSettings}>;
 
     delete model.generalSettings;
 
-    return model;
+    return model as TerminalSettings;
   }
 
   private buildForm(currentSettings: TerminalSettings): UntypedFormGroup {

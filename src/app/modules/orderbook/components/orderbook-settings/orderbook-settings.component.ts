@@ -11,7 +11,6 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
 
 @Component({
   selector: 'ats-orderbook-settings',
@@ -32,8 +31,8 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
   @Input({required: true})
   guid!: string;
   @Output()
-  settingsChange: EventEmitter<void> = new EventEmitter();
-  form!: UntypedFormGroup;
+  settingsChange = new EventEmitter<void>();
+  form?: UntypedFormGroup;
   exchanges: string[] = exchangesList;
   deviceInfo$!: Observable<any>;
 
@@ -56,7 +55,7 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
     super(settingsService, manageDashboardsService);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.initSettingsStream();
 
     this.deviceInfo$ = this.deviceService.deviceInfo$
@@ -98,37 +97,37 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
-      const formValue = this.form.getRawValue();
+      const formValue = this.form!.getRawValue() as Partial<OrderbookSettings & { instrument: InstrumentKey}>;
 
       const newSettings = {
         ...formValue,
-        depth: Number(this.form.value.depth!),
-        symbol: formValue.instrument.symbol,
-        exchange: formValue.instrument.exchange
+        depth: Number(this.form!.value.depth!),
+        symbol: formValue.instrument?.symbol,
+        exchange: formValue.instrument?.exchange
       } as OrderbookSettings;
 
-      newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+      newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
       this.settingsService.updateSettings<OrderbookSettings>(this.guid, newSettings);
       this.settingsChange.emit();
     });
   }
 
-  instrumentSelected(instrument: InstrumentKey | null) {
-    this.form.controls.exchange.setValue(instrument?.exchange ?? null);
-    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+  instrumentSelected(instrument: InstrumentKey | null): void {
+    this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
+    this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
-  protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<TechChartSettings> {
-    const formValue = this.form.getRawValue();
+  protected getUpdatedSettings(initialSettings: OrderbookSettings): Partial<OrderbookSettings> {
+    const formValue = this.form!.getRawValue() as Partial<OrderbookSettings & { instrument: InstrumentKey}>;
 
     const newSettings = {
       ...formValue,
-      depth: Number(this.form.value.depth!),
-      symbol: formValue.instrument.symbol,
-      exchange: formValue.instrument.exchange
+      depth: Number(this.form!.value.depth!),
+      symbol: formValue.instrument?.symbol,
+      exchange: formValue.instrument?.exchange
     } as OrderbookSettings;
 
-    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+    newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
 
     return newSettings;
   }

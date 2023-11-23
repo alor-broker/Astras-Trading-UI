@@ -46,7 +46,7 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     const allDashboards$ = this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
       mapWith(
         () => this.manageDashboardsService.allDashboards$,
@@ -94,11 +94,11 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
         const selectedDashboard: Dashboard = dashboards.find((d: Dashboard) => d.isSelected)!;
         const updatedLastSelectedDashboard: Dashboard | undefined = dashboards.find(d => d.guid === lastSelectedDashboard?.guid);
 
-        if (!updatedLastSelectedDashboard || updatedLastSelectedDashboard.isFavorite) {
-          this.lastSelectedDashboard$.next(dashboards.find(d => !d.isFavorite) ?? null);
+        if (!updatedLastSelectedDashboard || (updatedLastSelectedDashboard.isFavorite ?? false)) {
+          this.lastSelectedDashboard$.next(dashboards.find(d => !(d.isFavorite ?? false)) ?? null);
         }
 
-        if (selectedDashboard.guid !== updatedLastSelectedDashboard?.guid && !selectedDashboard.isFavorite) {
+        if (selectedDashboard.guid !== updatedLastSelectedDashboard?.guid && !(selectedDashboard.isFavorite ?? false)) {
           this.lastSelectedDashboard$.next(selectedDashboard);
         }
 
@@ -112,22 +112,22 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
       .subscribe(i => this.selectedDashboardIndex$.next(i));
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.selectedDashboardIndex$.complete();
     this.isDashboardSelectionMenuVisible$.complete();
     this.lastSelectedDashboard$.complete();
     this.dropdownTrigger$.complete();
   }
 
-  changeDashboardSelectionMenuVisibility(value: boolean) {
+  changeDashboardSelectionMenuVisibility(value: boolean): void {
     setTimeout(() => this.isDashboardSelectionMenuVisible$.next(value));
   }
 
-  selectDashboard(guid: string) {
+  selectDashboard(guid: string): void {
     this.manageDashboardsService.selectDashboard(<string>guid);
   }
 
-  changeDashboardsOrder(e: CdkDragDrop<any>) {
+  changeDashboardsOrder(e: CdkDragDrop<any>): void {
     this.favoriteDashboards$
       .pipe(
         take(1)

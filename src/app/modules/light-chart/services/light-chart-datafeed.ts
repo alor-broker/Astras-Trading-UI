@@ -83,7 +83,7 @@ export class LightChartDatafeed {
       request,
       ChartSubscriptionIdHelper.getCandleSubscriptionId
     ).subscribe(candle => {
-      if (!this.lastHistoryPoint || candle.time < this.lastHistoryPoint) {
+      if (!(this.lastHistoryPoint ?? 0) || candle.time < this.lastHistoryPoint!) {
         return;
       }
 
@@ -96,7 +96,7 @@ export class LightChartDatafeed {
     });
   }
 
-  unsubscribe() {
+  unsubscribe(): void {
     this.lastBarSubscription?.unsubscribe();
   }
 

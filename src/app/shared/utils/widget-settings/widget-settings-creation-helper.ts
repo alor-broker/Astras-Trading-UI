@@ -19,7 +19,7 @@ export class WidgetSettingsCreationHelper {
     widgetInstance: WidgetInstance,
     settingsType: string,
     fill: (settings: T) => T,
-    widgetSettingsService: WidgetSettingsService) {
+    widgetSettingsService: WidgetSettingsService): void {
     widgetSettingsService.getSettingsOrNull(widgetInstance.instance.guid).pipe(
       take(1),
       filter(x => !x)
@@ -40,7 +40,7 @@ export class WidgetSettingsCreationHelper {
     fill: (settings: T) => T,
     dashboardContextService: DashboardContextService,
     widgetSettingsService: WidgetSettingsService
-  ) {
+  ): void {
     widgetSettingsService.getSettingsOrNull(widgetInstance.instance.guid).pipe(
       take(1),
       filter(x => !x),
@@ -67,7 +67,7 @@ export class WidgetSettingsCreationHelper {
     fill: (settings: T) => T,
     dashboardContextService: DashboardContextService,
     widgetSettingsService: WidgetSettingsService
-  ) {
+  ): void {
     widgetSettingsService.getSettingsOrNull(widgetInstance.instance.guid).pipe(
       take(1),
       filter(x => !x),

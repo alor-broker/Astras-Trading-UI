@@ -37,9 +37,9 @@ export class NewsComponent implements OnInit, OnDestroy {
   @Output() sectionChange = new EventEmitter<NewsSection>();
 
   readonly contentSize$ = new BehaviorSubject<ContentSize>({ height: 0, width: 0 });
-  public tableContainerHeight: number = 0;
-  public tableContainerWidth: number = 0;
-  public newsList: Array<NewsListItem> = [];
+  public tableContainerHeight = 0;
+  public tableContainerWidth = 0;
+  public newsList: NewsListItem[] = [];
   public isLoading = false;
   public tableConfig$?: Observable<TableConfig<NewsListItem>>;
   public newsSectionEnum = NewsSection;
@@ -47,13 +47,13 @@ export class NewsComponent implements OnInit, OnDestroy {
   private selectedSection = NewsSection.All;
   private newsSubscription?: Subscription;
   private newNewsSubscription?: Subscription;
-  private limit = 50;
+  private readonly limit = 50;
   private isEndOfList = false;
   private pageNumber = 1;
 
   constructor(
-    private newsService: NewsService,
-    private modalService: ModalService,
+    private readonly newsService: NewsService,
+    private readonly modalService: ModalService,
     private readonly translatorService: TranslatorService,
     private readonly cdr: ChangeDetectorRef,
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -66,8 +66,8 @@ export class NewsComponent implements OnInit, OnDestroy {
     this.contentSize$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
-        this.tableContainerHeight = data.height ?? 0;
-        this.tableContainerWidth = data.width ?? 0;
+        this.tableContainerHeight = (data.height as number | undefined) ?? 0;
+        this.tableContainerWidth = (data.width as number | undefined) ?? 0;
         this.cdr.markForCheck();
       });
 
@@ -78,7 +78,7 @@ export class NewsComponent implements OnInit, OnDestroy {
               id: 'header',
               name: 'header',
               displayName: translate(['newsColumn']),
-              transformFn: (data: NewsListItem) => {
+              transformFn: (data: NewsListItem): string => {
                 const date = new Date(data.publishDate);
                 const displayDate = date.toDateString() == new Date().toDateString()
                   ? date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
@@ -86,8 +86,6 @@ export class NewsComponent implements OnInit, OnDestroy {
 
                   return `[${displayDate}] ${data.header}`;
               }
-
-
             }
           ]
         })
@@ -99,7 +97,7 @@ export class NewsComponent implements OnInit, OnDestroy {
     this.modalService.openNewsModal(newsItem);
   }
 
-  public scrolled() {
+  public scrolled(): void {
     this.pageNumber++;
     this.loadNews();
   }
@@ -108,7 +106,7 @@ export class NewsComponent implements OnInit, OnDestroy {
     this.contentSize$.complete();
   }
 
-  containerSizeChanged(entries: ResizeObserverEntry[]) {
+  containerSizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.contentSize$.next({
         width: Math.floor(x.contentRect.width),
@@ -160,14 +158,14 @@ export class NewsComponent implements OnInit, OnDestroy {
       });
   }
 
-  newsSectionChange(section: NewsSection) {
+  newsSectionChange(section: NewsSection): void {
     this.selectedSection = section;
     this.sectionChange.emit(section);
     this.resetPosition();
     this.loadNews(true);
   }
 
-  private resetPosition(){
+  private resetPosition(): void {
     this.isEndOfList = false;
     this.pageNumber = 1;
     this.newsList = [];
@@ -188,7 +186,7 @@ export class NewsComponent implements OnInit, OnDestroy {
       case NewsSection.Symbol:
         return this.widgetSettingsService.getSettings<NewsSettings>(this.guid)
           .pipe(
-            filter(s => !!s && !!s.symbol),
+            filter(s => !!s.symbol),
             distinctUntilChanged((prev, curr) => prev.symbol === curr.symbol),
             switchMap(s => this.newsService.getNews({
               ...baseParams,
@@ -209,7 +207,7 @@ export class NewsComponent implements OnInit, OnDestroy {
       case NewsSection.Symbol:
         return this.widgetSettingsService.getSettings<NewsSettings>(this.guid)
           .pipe(
-            filter(s => !!s && !!s.symbol),
+            filter(s => !!s.symbol),
             distinctUntilChanged((prev, curr) => prev.symbol === curr.symbol),
             switchMap(s => this.newsService.getNewNews([s.symbol]))
           );

@@ -8,7 +8,7 @@ export class MathHelper {
    * @param decimals Number of decimals
    * @returns Rounded number
    */
-  static round(num: number, decimals: number) {
+  static round(num: number, decimals: number): number {
     const multiplier = Math.pow(10, decimals);
     return Math.round((num + Number.EPSILON) * multiplier) / multiplier;
   }
@@ -51,7 +51,7 @@ export class MathHelper {
    * @param minStep Instrument min step
    * @returns Rounded number
    */
-  static roundByMinStepMultiplicity(dirtyValue: number, minStep: number) {
+  static roundByMinStepMultiplicity(dirtyValue: number, minStep: number): number {
     const roundedValue = this.round(
       dirtyValue,
       MathHelper.getPrecision(minStep)

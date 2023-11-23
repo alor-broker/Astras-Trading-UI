@@ -20,14 +20,11 @@ export class WidgetSkeletonComponent {
   settings?: TemplateRef<any>;
 
   @Input()
-  showSettings: boolean = false;
+  showSettings = false;
 
   @Input({required: true})
   isBlockWidget!: boolean;
 
   @Input()
   showContentScroll = false;
-  constructor() {
-  }
-
 }

@@ -10,7 +10,7 @@ import { ErrorHandlerService } from "../../../shared/services/handle-error/error
   providedIn: 'root'
 })
 export class TreemapService {
-  private baseUrl = environment.apiUrl + '/instruments/v1/TreeMap';
+  private readonly baseUrl = environment.apiUrl + '/instruments/v1/TreeMap';
 
   constructor(
     private readonly http: HttpClient,

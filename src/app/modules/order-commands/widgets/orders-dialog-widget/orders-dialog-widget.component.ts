@@ -63,20 +63,20 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.tabSetHeight$.complete();
   }
 
-  closeDialog() {
+  closeDialog(): void {
     this.ordersDialogService.closeNewOrderDialog();
   }
 
-  setInitialTab() {
+  setInitialTab(): void {
     this.dialogParams$.pipe(
       filter((p): p is OrderDialogParams => !!p),
       take(1)
     ).subscribe(params => {
-      if (!params.initialValues?.orderType) {
+      if (!params.initialValues.orderType) {
         return;
       }
 
@@ -96,25 +96,26 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
     });
   }
 
-  setCommonParameters(params: Partial<CommonParameters>) {
+  setCommonParameters(params: Partial<CommonParameters>): void {
     this.commonParametersService.setParameters(params);
   }
 
-  calculateTabSetHeight(event: ResizeObserverEntry[]) {
-    const modalContentEl = event[0]?.target;
-    const containerHeight = window.innerHeight * 0.7 -
-      parseFloat(window.getComputedStyle(modalContentEl.parentElement!).paddingTop) -
-      parseFloat(window.getComputedStyle(modalContentEl.parentElement!).paddingBottom);
+  calculateTabSetHeight(event: ResizeObserverEntry[]): void {
+    const modalContentEl = event[0]?.target as Element | undefined;
 
     if (!modalContentEl) {
       return;
     }
 
+    const containerHeight = window.innerHeight * 0.7 -
+      parseFloat(window.getComputedStyle(modalContentEl.parentElement!).paddingTop) -
+      parseFloat(window.getComputedStyle(modalContentEl.parentElement!).paddingBottom);
+
     const instrumentInfoEl = modalContentEl.querySelector('.instrument-info');
     this.tabSetHeight$.next(containerHeight - instrumentInfoEl!.clientHeight);
   }
 
-  private activateCommandTab(targetTab?: NzTabComponent) {
+  private activateCommandTab(targetTab?: NzTabComponent): void {
     if (!targetTab || targetTab.position == null) {
       return;
     }

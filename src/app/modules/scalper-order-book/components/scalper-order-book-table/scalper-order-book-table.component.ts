@@ -32,8 +32,9 @@ import {
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {MathHelper} from "../../../../shared/utils/math-helper";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { MathHelper } from "../../../../shared/utils/math-helper";
+import { OrderbookData } from "../../../orderbook/models/orderbook-data.model";
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -64,7 +65,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
   dataContext!: ScalperOrderBookDataContext;
 
   @Input()
-  isActive: boolean = false;
+  isActive = false;
 
   readonly hoveredRow$ = new Subject<{ price: number } | null>();
 
@@ -80,7 +81,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
   getPriceCellClasses(row: BodyRow): any {
     return {
       ...this.getVolumeCellClasses(row),
-      'current-position-range-item': !!row.currentPositionRangeSign,
+      'current-position-range-item': !!(row.currentPositionRangeSign ?? 0),
       'positive': row.currentPositionRangeSign! > 0,
       'negative': row.currentPositionRangeSign! < 0
     };
@@ -113,8 +114,8 @@ export class ScalperOrderBookTableComponent implements OnInit {
   }
 
   getFilteredOrders(orders: CurrentOrderDisplay[], type: 'limit' | 'stoplimit' | 'stop'): {
-    orders: CurrentOrderDisplay[],
-    volume: number
+    orders: CurrentOrderDisplay[];
+    volume: number;
   } {
     const limitOrders = orders.filter(x => x.type === type);
 
@@ -124,16 +125,16 @@ export class ScalperOrderBookTableComponent implements OnInit {
     };
   }
 
-  cancelOrders(e: MouseEvent, orders: CurrentOrderDisplay[]) {
-    e?.preventDefault();
-    e?.stopPropagation();
+  cancelOrders(e: MouseEvent, orders: CurrentOrderDisplay[]): void {
+    e.preventDefault();
+    e.stopPropagation();
 
     if (orders.length > 0) {
       this.scalperOrdersService.cancelOrders(orders);
     }
   }
 
-  leftMouseClick(e: MouseEvent, row: DisplayRow) {
+  leftMouseClick(e: MouseEvent, row: DisplayRow): void {
     e.preventDefault();
     e.stopPropagation();
     document.getSelection()?.removeAllRanges();
@@ -141,7 +142,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
     this.commandProcessorService.processLeftMouseClick(e, row, this.dataContext);
   }
 
-  rightMouseClick(e: MouseEvent, row: DisplayRow) {
+  rightMouseClick(e: MouseEvent, row: DisplayRow): void {
     e.preventDefault();
     e.stopPropagation();
     document.getSelection()?.removeAllRanges();
@@ -149,11 +150,11 @@ export class ScalperOrderBookTableComponent implements OnInit {
     this.commandProcessorService.processRightMouseClick(e, row, this.dataContext);
   }
 
-  updateOrderPrice(orders: CurrentOrderDisplay[], row: DisplayRow) {
+  updateOrderPrice(orders: CurrentOrderDisplay[], row: DisplayRow): void {
     this.commandProcessorService.updateOrdersPrice(orders, row, this.dataContext);
   }
 
-  updateHoveredItem(hoveredItem: { price: number } | null) {
+  updateHoveredItem(hoveredItem: { price: number } | null): void {
     this.hoveredRow$.next(hoveredItem);
   }
 
@@ -167,7 +168,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
       : null;
   }
 
-  private initDisplayItems() {
+  private initDisplayItems(): void {
     this.displayItems$ = combineLatest([
       this.dataContext.extendedSettings$,
       this.dataContext.orderBookBody$,
@@ -176,7 +177,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
       this.dataContext.currentOrders$,
       this.themeService.getThemeSettings()
     ]).pipe(
-      filter(([, , displayRange, , ,]) => !!displayRange),
+      filter(([, , orderBookData, , ,]) => !!(orderBookData as OrderbookData | null)),
       map(([settings, body, orderBookData, displayRange, currentOrders, themeSettings]) => {
         const displayRows = body.slice(displayRange!.start, Math.min(displayRange!.end + 1, body.length));
         const minOrderPrice = Math.min(...currentOrders.map(x => x.linkedPrice));
@@ -194,7 +195,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
               rowType: row.rowType!,
               volume: row.volume ?? 0,
               maxVolume: maxOrderBookVolume
-            })
+            }) as VolumeHighlightStrategy
 
           } as DisplayRow;
 
@@ -208,7 +209,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
     );
   }
 
-  private subscribeToHotkeys() {
+  private subscribeToHotkeys(): void {
     this.dataContext.extendedSettings$.pipe(
       mapWith(
         () => this.hotkeysService.commands$,
@@ -265,8 +266,8 @@ export class ScalperOrderBookTableComponent implements OnInit {
         return null;
       }
 
-      if (!!settings.volumeHighlightFullness) {
-        size = 100 * (args.volume / settings.volumeHighlightFullness);
+      if (!!(settings.volumeHighlightFullness ?? 0)) {
+        size = 100 * (args.volume / settings.volumeHighlightFullness!);
         if (size > 100) {
           size = 100;
         }

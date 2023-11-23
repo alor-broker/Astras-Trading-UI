@@ -18,15 +18,16 @@ import { BlotterSettings } from '../models/blotter-settings.model';
 import {Position} from "../../../shared/models/positions/position.model";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
-import { RepoTrade } from "../../../shared/models/trades/trade.model";
+import { RepoSpecificFields, RepoTrade, Trade } from "../../../shared/models/trades/trade.model";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import { Order, StopOrder } from "../../../shared/models/orders/order.model";
 
 @Injectable()
 export class BlotterService {
 
-  private shouldShowOrderGroupModal = new BehaviorSubject<boolean>(false);
-  private orderGroupParams = new BehaviorSubject<string | null>(null);
+  private readonly shouldShowOrderGroupModal = new BehaviorSubject<boolean>(false);
+  private readonly orderGroupParams = new BehaviorSubject<string | null>(null);
   shouldShowOrderGroupModal$ = this.shouldShowOrderGroupModal.asObservable();
   orderGroupParams$ = this.orderGroupParams.asObservable();
 
@@ -39,7 +40,7 @@ export class BlotterService {
   ) {
   }
 
-  selectNewInstrument(symbol: string, exchange: string, badgeColor: string) {
+  selectNewInstrument(symbol: string, exchange: string, badgeColor: string): void {
     if (symbol == CurrencyCode.RUB) {
       return;
     }
@@ -57,7 +58,7 @@ export class BlotterService {
     );
   }
 
-  getTrades(settings: BlotterSettings) {
+  getTrades(settings: BlotterSettings): Observable<Trade[]> {
     return this.portfolioSubscriptionsService.getTradesSubscription(settings.portfolio, settings.exchange);
   }
 
@@ -70,12 +71,12 @@ export class BlotterService {
             withRepo: true
           }
         })),
-        map(trades => trades.filter(t => !!t.repoSpecificFields)),
+        map(trades => trades.filter(t => !!(t.repoSpecificFields as RepoSpecificFields | undefined))),
         catchHttpError<RepoTrade[]>([], this.errorHandler)
       );
   }
 
-  getOrders(settings: BlotterSettings) {
+  getOrders(settings: BlotterSettings): Observable<Order[]> {
     return this.portfolioSubscriptionsService.getOrdersSubscription(settings.portfolio, settings.exchange).pipe(
       tap(x => {
         if (!x.lastOrder) {
@@ -93,7 +94,7 @@ export class BlotterService {
     );
   }
 
-  getStopOrders(settings: BlotterSettings) {
+  getStopOrders(settings: BlotterSettings): Observable<StopOrder[]> {
     return this.portfolioSubscriptionsService.getStopOrdersSubscription(settings.portfolio, settings.exchange).pipe(
       tap(x => {
         if (!x.lastOrder) {
@@ -111,12 +112,12 @@ export class BlotterService {
     );
   }
 
-  openOrderGroupModal(groupId: string) {
+  openOrderGroupModal(groupId: string): void {
     this.orderGroupParams.next(groupId);
     this.shouldShowOrderGroupModal.next(true);
   }
 
-  closeOrderGroupModal() {
+  closeOrderGroupModal(): void {
     this.orderGroupParams.next(null);
     this.shouldShowOrderGroupModal.next(false);
   }

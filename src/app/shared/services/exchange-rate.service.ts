@@ -8,10 +8,10 @@ import { environment } from "../../../environments/environment";
   providedIn: 'root'
 })
 export class ExchangeRateService {
-  private baseUrl = environment.apiUrl + '/md/v2/Securities';
+  private readonly baseUrl = environment.apiUrl + '/md/v2/Securities';
 
   constructor(
-    private http: HttpClient
+    private readonly http: HttpClient
   ) {
   }
 

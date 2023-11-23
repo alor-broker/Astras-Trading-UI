@@ -57,7 +57,7 @@ export class PortfolioSummaryService {
             pc.portfolio.portfolio === portfolio && pc.portfolio.exchange === exchange
           );
 
-          const currency = portfolioCurrency?.currency || exchangeSettings.currencyInstrument;
+          const currency = portfolioCurrency?.currency ?? exchangeSettings.currencyInstrument;
 
           if (currency === CurrencyInstrument.RUB) {
             return of({currency, quote: 1});

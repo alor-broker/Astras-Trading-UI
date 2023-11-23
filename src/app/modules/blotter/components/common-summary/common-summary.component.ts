@@ -32,7 +32,7 @@ export class CommonSummaryComponent implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   summary$: Observable<CommonSummaryView> = of();
-  columns: number = 1;
+  columns = 1;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -47,7 +47,7 @@ export class CommonSummaryComponent implements OnInit {
     );
   }
 
-  containerSizeChanged(entries: ResizeObserverEntry[]) {
+  containerSizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       const width = Math.floor(x.contentRect.width);
       if (width <= 600) {
@@ -62,7 +62,6 @@ export class CommonSummaryComponent implements OnInit {
       else {
         this.columns = 4;
       }
-
     });
   }
 }

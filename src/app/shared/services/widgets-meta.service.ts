@@ -20,7 +20,7 @@ export class WidgetsMetaService {
     return this.meta$!;
   }
 
-  private readMeta() {
+  private readMeta(): void {
     this.meta$ = this.httpClient.get<WidgetMeta[]>(
       '../../../assets/widgets-meta.json',
       {

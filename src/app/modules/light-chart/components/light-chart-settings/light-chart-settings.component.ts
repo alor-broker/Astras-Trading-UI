@@ -31,7 +31,7 @@ import { TimeframeValue } from "../../models/light-chart.models";
   styleUrls: ['./light-chart-settings.component.less']
 })
 export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<LightChartSettings> implements OnInit {
-  form!: UntypedFormGroup;
+  form?: UntypedFormGroup;
   readonly allTimeFrames = Object.values(TimeframeValue);
   timeFrameDisplayModes = TimeFrameDisplayMode;
   deviceInfo$!: Observable<any>;
@@ -54,7 +54,7 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
     return this.form?.valid ?? false;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.initSettingsStream();
 
     this.deviceInfo$ = this.deviceService.deviceInfo$
@@ -83,31 +83,31 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
     });
   }
 
-  instrumentSelected(instrument: InstrumentKey | null) {
-    this.form.controls.exchange.setValue(instrument?.exchange ?? null);
-    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+  instrumentSelected(instrument: InstrumentKey | null): void {
+    this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
+    this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
-  checkCurrentTimeFrame() {
-    const availableTimeFrames = this.sortTimeFrames(this.form.controls.availableTimeFrames.value as TimeframeValue[]);
-    if (availableTimeFrames.length > 0 && !availableTimeFrames.includes(this.form.controls.timeFrame.value)) {
-      this.form.controls.timeFrame.setValue(availableTimeFrames[availableTimeFrames.length - 1]);
+  checkCurrentTimeFrame(): void {
+    const availableTimeFrames = this.sortTimeFrames(this.form!.controls.availableTimeFrames.value as TimeframeValue[]);
+    if (availableTimeFrames.length > 0 && !availableTimeFrames.includes(this.form!.controls.timeFrame.value)) {
+      this.form!.controls.timeFrame.setValue(availableTimeFrames[availableTimeFrames.length - 1]);
     }
   }
 
   protected getUpdatedSettings(initialSettings: LightChartSettings): Partial<LightChartSettings> {
-    const formValue = this.form.value;
+    const formValue = this.form!.value as Partial<LightChartSettings & { instrument: InstrumentKey}>;
     const newSettings = {
       ...formValue,
-      symbol: formValue.instrument.symbol,
-      exchange: formValue.instrument.exchange
+      symbol: formValue.instrument?.symbol,
+      exchange: formValue.instrument?.exchange
     } as LightChartSettings;
 
     newSettings.availableTimeFrames = this.sortTimeFrames(newSettings.availableTimeFrames ?? []);
 
     delete newSettings.instrument;
 
-    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+    newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
 
     return newSettings;
   }

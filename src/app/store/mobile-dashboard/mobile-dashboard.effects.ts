@@ -1,19 +1,19 @@
-import {Injectable} from '@angular/core';
-import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {filter, map, switchMap,} from 'rxjs/operators';
-import {GuidGenerator} from '../../shared/utils/guid';
-import {distinctUntilChanged, EMPTY, of, take, withLatestFrom} from 'rxjs';
-import {Dashboard,} from '../../shared/models/dashboard/dashboard.model';
-import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
-import {instrumentsHistory} from './mobile-dashboard.selectors';
-import {MobileDashboardActions} from './mobile-dashboard-actions';
-import {mapWith} from "../../shared/utils/observable-helper";
-import {getDefaultPortfolio, isPortfoliosEqual} from "../../shared/utils/portfolios";
-import {MarketService} from "../../shared/services/market.service";
-import {defaultBadgeColor} from "../../shared/utils/instruments";
-import {UserPortfoliosService} from "../../shared/services/user-portfolios.service";
-import {MobileDashboardStreams} from "./mobile-dashboard.streams";
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { filter, map, switchMap, } from 'rxjs/operators';
+import { GuidGenerator } from '../../shared/utils/guid';
+import { distinctUntilChanged, EMPTY, of, take, withLatestFrom } from 'rxjs';
+import { ManageDashboardsService } from '../../shared/services/manage-dashboards.service';
+import { instrumentsHistory } from './mobile-dashboard.selectors';
+import { MobileDashboardActions } from './mobile-dashboard-actions';
+import { mapWith } from "../../shared/utils/observable-helper";
+import { getDefaultPortfolio, isPortfoliosEqual } from "../../shared/utils/portfolios";
+import { MarketService } from "../../shared/services/market.service";
+import { defaultBadgeColor } from "../../shared/utils/instruments";
+import { UserPortfoliosService } from "../../shared/services/user-portfolios.service";
+import { MobileDashboardStreams } from "./mobile-dashboard.streams";
+import { InitialSettingsMap } from "../../../assets/charting_library";
 
 @Injectable()
 export class MobileDashboardEffects {
@@ -43,7 +43,7 @@ export class MobileDashboardEffects {
             items: defaultConfig.mobile.widgets.map(w => ({
               guid: GuidGenerator.newGuid(),
               widgetType: w.widgetTypeId,
-              initialSettings: w.initialSettings
+              initialSettings: w.initialSettings as InitialSettingsMap
             }))
           }),
           MobileDashboardActions.initMobileDashboardSuccess()
@@ -76,7 +76,6 @@ export class MobileDashboardEffects {
 
   setDefaultPortfolioForMobileDashboard$ = createEffect(() => {
     return MobileDashboardStreams.getMobileDashboard(this.store).pipe(
-      filter(d => !!d),
       mapWith(
         () => this.userPortfoliosService.getPortfolios(),
         (dashboard, allPortfolios) => ({dashboard, allPortfolios})
@@ -97,8 +96,7 @@ export class MobileDashboardEffects {
 
   setDefaultInstrumentsSelectionForMobileDashboard$ = createEffect(() => {
     return MobileDashboardStreams.getMobileDashboard(this.store).pipe(
-      filter((d): d is Dashboard => !!d),
-      filter(d => !d.instrumentsSelection),
+      filter(d => d.instrumentsSelection != null),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),
       mapWith(
         () => this.marketService.getAllExchanges().pipe(take(1)),
@@ -110,7 +108,7 @@ export class MobileDashboardEffects {
             exchangeSettings = marketSettings.find(x => x.exchange === dashboard.selectedPortfolio!.portfolio) ?? exchangeSettings;
           }
 
-          if (!exchangeSettings || !exchangeSettings.settings.defaultInstrument) {
+          if (!exchangeSettings?.settings.defaultInstrument) {
             return EMPTY;
           }
 

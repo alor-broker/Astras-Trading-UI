@@ -31,7 +31,7 @@ export class InstrumentBadgeDisplayComponent implements OnInit {
     ])
       .pipe(
         map(([badges, settings]) => {
-          if (settings.badgesBind) {
+          if (settings.badgesBind ?? false) {
             return badges;
           }
 

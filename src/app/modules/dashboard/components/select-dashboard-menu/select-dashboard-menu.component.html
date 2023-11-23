@@ -38,7 +38,7 @@
     <li nz-menu-divider></li>
     <li>
       <div class="new-dashboard-menu-item">
-        <form [formGroup]="newDashboardForm" [nzLayout]="'inline'" nz-form>
+        <form [formGroup]="newDashboardForm!" [nzLayout]="'inline'" nz-form>
           <nz-form-item>
             <nz-form-control [nzErrorTip]="titleError">
               <input (keyup)="checkInputComplete($event)"
@@ -60,7 +60,7 @@
           </nz-form-item>
         </form>
 
-        <button (click)="addDashboard()" [disabled]="!newDashboardForm.valid" nz-button nzSize='small' nzType="link">
+        <button (click)="addDashboard()" [disabled]="!newDashboardForm?.valid" nz-button nzSize='small' nzType="link">
           <span nz-icon nzType="plus"></span></button>
       </div>
     </li>

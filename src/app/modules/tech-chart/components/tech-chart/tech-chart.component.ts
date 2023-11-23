@@ -26,7 +26,7 @@ import {
   ResolutionString,
   SubscribeEventsMap,
   TimeFrameType,
-  TimeFrameValue,
+  TimeFrameValue, Timezone, TimezoneInfo,
   widget
 } from '../../../../../assets/charting_library';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
@@ -73,7 +73,7 @@ interface IRemovableChartItem {
 class PositionState {
   positionLine: IPositionLineAdapter | null = null;
 
-  constructor(private tearDown: Subscription) {
+  constructor(private readonly tearDown: Subscription) {
     tearDown.add(() => {
       try {
         this.positionLine?.remove();
@@ -82,7 +82,7 @@ class PositionState {
     });
   }
 
-  destroy() {
+  destroy(): void {
     this.tearDown.unsubscribe();
   }
 }
@@ -91,10 +91,10 @@ class OrdersState {
   readonly limitOrders = new Map<string, IOrderLineAdapter>();
   readonly stopOrders = new Map<string, IOrderLineAdapter>();
 
-  constructor(private tearDown: Subscription) {
+  constructor(private readonly tearDown: Subscription) {
   }
 
-  destroy() {
+  destroy(): void {
     this.tearDown.add(() => {
       this.clear();
     });
@@ -102,12 +102,12 @@ class OrdersState {
     this.tearDown.unsubscribe();
   }
 
-  clear() {
+  clear(): void {
     this.clearOrders(this.limitOrders);
     this.clearOrders(this.stopOrders);
   }
 
-  private clearOrders(orders: Map<string, IOrderLineAdapter>) {
+  private clearOrders(orders: Map<string, IOrderLineAdapter>): void {
     orders.forEach(value => {
       try {
         value.remove();
@@ -121,13 +121,13 @@ class OrdersState {
 
 class TradesState {
   private readonly drawnTrades = new Map<string, IRemovableChartItem>();
-  private loadedData = new Map<string, Trade>();
+  private readonly loadedData = new Map<string, Trade>();
   private oldestTrade: Trade | null = null;
 
-  constructor(private tearDown: Subscription, public readonly instrument: InstrumentKey) {
+  constructor(private readonly tearDown: Subscription, public readonly instrument: InstrumentKey) {
   }
 
-  addLoadedItem(item: Trade) {
+  addLoadedItem(item: Trade): void {
     this.loadedData.set(item.id, item);
 
     if(!this.oldestTrade || this.oldestTrade.date.getTime() > item.date.getTime()) {
@@ -139,7 +139,7 @@ class TradesState {
     return this.drawnTrades.has(trade.id);
   }
 
-  markTradeDrawn(trade: Trade, removableItem: IRemovableChartItem) {
+  markTradeDrawn(trade: Trade, removableItem: IRemovableChartItem): void {
     this.drawnTrades.set(trade.id, removableItem);
   }
 
@@ -147,7 +147,7 @@ class TradesState {
     return this.oldestTrade;
   }
 
-  getTradesForRange(fromSec: number, toSec: number) {
+  getTradesForRange(fromSec: number, toSec: number): Trade[] {
     return Array.from(this.loadedData.values())
       .filter(t => {
         const tradeTime = Math.round(t.date.getTime() / 1000);
@@ -155,7 +155,7 @@ class TradesState {
       });
   }
 
-  destroy() {
+  destroy(): void {
     this.tearDown.add(() => {
       this.clear();
     });
@@ -163,7 +163,7 @@ class TradesState {
     this.tearDown.unsubscribe();
   }
 
-  clear() {
+  clear(): void {
     this.drawnTrades.forEach(t => {
       try {
         t.remove();
@@ -231,7 +231,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.initPositionStream();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.chartState) {
       this.clearChartEventsSubscription(this.chartState.widget);
       this.chartState.ordersState?.destroy();
@@ -250,8 +250,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     const chartSettings$ = this.settings$!.pipe(
       distinctUntilChanged((previous, current) => {
         return (
-          previous?.widgetSettings?.symbol === current?.widgetSettings?.symbol &&
-          previous?.widgetSettings?.exchange === current?.widgetSettings?.exchange
+          previous.widgetSettings.symbol === current.widgetSettings.symbol &&
+          previous.widgetSettings.exchange === current.widgetSettings.exchange
         );
       }),
     );
@@ -264,7 +264,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         if (!prev) {
           return true;
         }
-        return !prev?.widgetSettings.linkToActive && !!curr?.widgetSettings?.linkToActive &&
+        return !(prev.widgetSettings.linkToActive ?? false) && !!(curr?.widgetSettings.linkToActive ?? false) &&
           (chartInstrument?.symbol !== curr?.instrument.symbol || chartInstrument?.exchange !== curr?.instrument.exchange);
       })
     );
@@ -305,8 +305,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private initSettingsStream() {
-    const getInstrumentInfo = (settings: TechChartSettings) => this.instrumentsService.getInstrument(settings).pipe(
+  private initSettingsStream(): void {
+    const getInstrumentInfo = (settings: TechChartSettings): Observable<Instrument> => this.instrumentsService.getInstrument(settings).pipe(
       filter((x): x is Instrument => !!x)
     );
 
@@ -323,7 +323,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private isEqualTechChartSettings(
     settings1?: TechChartSettings,
     settings2?: TechChartSettings
-  ) {
+  ): boolean {
     if (settings1 && settings2) {
       return (
         settings1.linkToActive == settings2.linkToActive &&
@@ -336,7 +336,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     } else return false;
   }
 
-  private initPositionStream() {
+  private initPositionStream(): void {
     this.allActivePositions$ = this.getCurrentPortfolio().pipe(
       switchMap(portfolio => this.portfolioSubscriptionsService.getAllPositionsSubscription(portfolio.portfolio, portfolio.exchange)),
       map((positions => positions.filter(p => p.avgPrice && p.qtyTFutureBatch))),
@@ -348,11 +348,11 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     settings: TechChartSettings,
     theme: ThemeSettings,
     timezoneConverter: TimezoneConverter,
-    forceRecreate: boolean = false) {
+    forceRecreate = false): void {
     if (this.chartState) {
       if (forceRecreate) {
         this.intervalChangeSub?.unsubscribe();
-        this.chartState.widget?.remove();
+        this.chartState.widget.remove();
       }
       else {
         this.chartState.widget.activeChart().setSymbol(
@@ -388,7 +388,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       // additional options
       fullscreen: false,
       autosize: true,
-      timezone: currentTimezone.name as any,
+      timezone: currentTimezone.name as Timezone,
       custom_timezones: [
         {
           id: currentTimezone.name as CustomTimezoneId,
@@ -450,10 +450,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           () => this.settings$!.pipe(take(1)),
           (instrument, settings) =>
             (instrument?.symbol !== settings.instrument.symbol ||
-            instrument?.exchange !== settings.instrument.exchange) &&
+            (instrument as InstrumentKey | null)?.exchange !== settings.instrument.exchange) &&
             settings.widgetSettings.linkToActive
         ),
-        filter(needUnlink => !!needUnlink)
+        filter(needUnlink => !!(needUnlink ?? false))
       )
         .subscribe(() => this.settingsService.updateIsLinked(this.guid, false));
 
@@ -466,7 +466,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private intervalChangeCallback: (interval: ResolutionString, timeFrameParameters: { timeframe?: TimeFrameValue }) => void =
+  private readonly intervalChangeCallback: (interval: ResolutionString, timeFrameParameters: { timeframe?: TimeFrameValue }) => void =
     (interval, timeframeObj) => {
       if (interval.includes('S')) {
         timeframeObj.timeframe = {
@@ -481,7 +481,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     return `[${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup ?? ''}]`;
   }
 
-  private subscribeToChartEvents(widget: IChartingLibraryWidget) {
+  private subscribeToChartEvents(widget: IChartingLibraryWidget): void {
     this.subscribeToChartEvent(
       widget,
       'onPlusClick',
@@ -495,7 +495,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  private saveChartLayout(widget: IChartingLibraryWidget) {
+  private saveChartLayout(widget: IChartingLibraryWidget): void {
     widget.save(state => {
       this.settingsService.updateSettings<TechChartSettings>(
         this.guid,
@@ -506,17 +506,17 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private subscribeToChartEvent(target: IChartingLibraryWidget, event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap]) {
+  private subscribeToChartEvent(target: IChartingLibraryWidget, event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap]): void {
     this.chartEventSubscriptions.push({ event: event, callback });
     target.subscribe(event, callback);
   }
 
-  private clearChartEventsSubscription(target: IChartingLibraryWidget) {
+  private clearChartEventsSubscription(target: IChartingLibraryWidget): void {
     this.chartEventSubscriptions.forEach(subscription => target.unsubscribe(subscription.event, subscription.callback));
     this.chartEventSubscriptions = [];
   }
 
-  private selectPrice(price: number) {
+  private selectPrice(price: number): void {
     this.settings$?.pipe(
       mapWith(
         settings => this.settingsService.getSettingsByColor(settings.widgetSettings.badgeColor ?? ''),
@@ -526,7 +526,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       const submitOrderWidgetSettings = relatedSettings.filter(x => x.settingsType === 'OrderSubmitSettings');
       const roundedPrice = MathHelper.roundByMinStepMultiplicity(price, widgetSettings.instrument.minstep);
 
-      if (submitOrderWidgetSettings.length === 0 || !widgetSettings.widgetSettings.badgeColor) {
+      if (submitOrderWidgetSettings.length === 0 || !(widgetSettings.widgetSettings.badgeColor ?? '')) {
         this.ordersDialogService.openNewOrderDialog({
           instrumentKey: toInstrumentKey(widgetSettings.widgetSettings),
           initialValues: {
@@ -539,7 +539,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       else {
         this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>(this.selectedPriceProviderName, {
           price: roundedPrice,
-          badgeColor: widgetSettings.widgetSettings.badgeColor
+          badgeColor: widgetSettings.widgetSettings.badgeColor!
         });
       }
     });
@@ -549,7 +549,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.currentDashboardService.selectedPortfolio$;
   }
 
-  private initPositionDisplay(instrument: InstrumentKey, themeColors: ThemeColors) {
+  private initPositionDisplay(instrument: InstrumentKey, themeColors: ThemeColors): void {
     this.chartState!.positionState?.destroy();
 
     const tearDown = new Subscription();
@@ -599,7 +599,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     tearDown.add(subscription);
   }
 
-  private initOrdersDisplay(instrument: InstrumentKey, themeColors: ThemeColors) {
+  private initOrdersDisplay(instrument: InstrumentKey, themeColors: ThemeColors): void {
     this.chartState!.ordersState?.destroy();
 
     const tearDown = new Subscription();
@@ -624,17 +624,17 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     ));
   }
 
-  private initTimezoneChangeStream(settings: TechChartSettings, themeColors: ThemeColors) {
+  private initTimezoneChangeStream(settings: TechChartSettings, themeColors: ThemeColors): void {
     this.timezoneChangeSub?.unsubscribe();
     this.timezoneChangeSub = new Subscription();
 
-    const timezoneChangeCallback = () => this.initTradesDisplay(settings, themeColors);
+    const timezoneChangeCallback = (): void => this.initTradesDisplay(settings, themeColors);
     this.chartState?.widget.activeChart().getTimezoneApi().onTimezoneChanged().subscribe(null, timezoneChangeCallback);
     this.timezoneChangeSub.add(() => this.chartState?.widget.activeChart().getTimezoneApi().onTimezoneChanged().unsubscribe(null, timezoneChangeCallback));
   }
 
-  private initTradesDisplay(settings: TechChartSettings, themeColors: ThemeColors) {
-    if(!settings.showTrades) {
+  private initTradesDisplay(settings: TechChartSettings, themeColors: ThemeColors): void {
+    if(!(settings.showTrades ?? false)) {
       return;
     }
 
@@ -667,11 +667,11 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     //setup history trades
     const visibleRangeChange$ = new Subject();
-    const checkHistoryCallback = () => visibleRangeChange$.next({});
+    const checkHistoryCallback = (): void => visibleRangeChange$.next({});
 
     this.chartState?.widget.activeChart().onVisibleRangeChanged().subscribe(null, checkHistoryCallback);
     tearDown.add(() => visibleRangeChange$.complete());
-    tearDown.add(() => this.chartState?.widget?.activeChart().onVisibleRangeChanged().unsubscribe(null, checkHistoryCallback));
+    tearDown.add(() => this.chartState?.widget.activeChart().onVisibleRangeChanged().unsubscribe(null, checkHistoryCallback));
 
     visibleRangeChange$.pipe(
       debounceTime(500),
@@ -683,17 +683,17 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.fillTradesHistoryCurrentRange(settings, currentPortfolio$, themeColors);
   }
 
-  private drawTrade(trade: Trade, themeColors: ThemeColors) {
+  private drawTrade(trade: Trade, themeColors: ThemeColors): void {
     if(!this.chartState?.tradesState) {
       return;
     }
 
-    if(this.chartState?.tradesState.instrument.exchange !== trade.exchange
-      || this.chartState?.tradesState.instrument.symbol !== trade.symbol) {
+    if(this.chartState.tradesState.instrument.exchange !== trade.exchange
+      || this.chartState.tradesState.instrument.symbol !== trade.symbol) {
       return;
     }
 
-    if(this.chartState?.tradesState?.isTradeDrawn(trade) === false) {
+    if(!(this.chartState.tradesState.isTradeDrawn(trade))) {
 
       const currentVisibleRange = this.chartState.widget.activeChart().getVisibleRange();
       const tradeTime = Math.round(trade.date.getTime() / 1000);
@@ -702,8 +702,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
 
-      let chartSelectedTimezone: string | undefined = this.chartState?.widget.activeChart().getTimezoneApi().getTimezone()?.id;
-      if (!chartSelectedTimezone || chartSelectedTimezone === 'exchange') {
+      let chartSelectedTimezone: string | undefined = (this.chartState.widget.activeChart().getTimezoneApi().getTimezone() as TimezoneInfo | undefined)?.id;
+      if ((chartSelectedTimezone ?? 'exchange') === 'exchange') {
         chartSelectedTimezone = TimezoneConverter.moscowTimezone;
       }
 
@@ -768,14 +768,14 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     instrument: InstrumentKey,
     portfolioKey$: Observable<PortfolioKey>,
     themeColors: ThemeColors
-  ) {
+  ): void {
     const visibleRange = this.chartState?.widget.activeChart().getVisibleRange();
     if(!visibleRange) {
       return;
     }
 
     let startTradeId: string | null = null;
-    const drawTrades = () => {
+    const drawTrades = (): void => {
       this.chartState?.tradesState?.getTradesForRange(visibleRange.from, visibleRange.to).forEach(t => {
         this.drawTrade(t, themeColors);
       });
@@ -829,7 +829,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     data$: Observable<T[]>,
     state: Map<string, IOrderLineAdapter>,
     fillOrderLine: (order: T, orderLineAdapter: IOrderLineAdapter) => void): Subscription {
-    const removeItem = (itemKey: string) => {
+    const removeItem = (itemKey: string): void => {
       try {
         state.get(itemKey)?.remove();
       } catch {
@@ -887,7 +887,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  private fillOrderBaseParameters(order: Order, orderLineAdapter: IOrderLineAdapter, themeColors: ThemeColors) {
+  private fillOrderBaseParameters(order: Order, orderLineAdapter: IOrderLineAdapter, themeColors: ThemeColors): void {
     orderLineAdapter
       .setQuantity((order.qtyBatch - (order.filledQtyBatch ?? 0)).toString())
       .setQuantityBackgroundColor(themeColors.componentBackground)
@@ -903,8 +903,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       .setBodyTextColor(order.side === Side.Buy ? themeColors.buyColor : themeColors.sellColor);
   }
 
-  private fillLimitOrder(order: Order, orderLineAdapter: IOrderLineAdapter) {
-    const getEditCommand = () => ({
+  private fillLimitOrder(order: Order, orderLineAdapter: IOrderLineAdapter): void {
+    const getEditCommand = (): EditOrderDialogParams => ({
       orderId: order.id,
       orderType: OrderType.Limit,
       instrumentKey: {
@@ -932,7 +932,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       .onMove(() => {
           const params = {
             ...getEditCommand(),
-            cancelCallback: () => orderLineAdapter.setPrice(order.price)
+            cancelCallback: (): IOrderLineAdapter => orderLineAdapter.setPrice(order.price)
           };
 
           params.initialValues = {
@@ -944,21 +944,21 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       );
   }
 
-  private fillStopOrder(order: StopOrder, orderLineAdapter: IOrderLineAdapter) {
+  private fillStopOrder(order: StopOrder, orderLineAdapter: IOrderLineAdapter): void {
     const conditionType: LessMore = getConditionTypeByString(order.conditionType)!;
     const orderText = 'S'
       + (order.type === 'stoplimit' ? 'L' : 'M')
       + ' '
-      + getConditionSign(conditionType);
+      + (getConditionSign(conditionType) as string);
 
     const orderTooltip = this.translateFn([order.side === Side.Buy ? 'buy' : 'sell'])
       + ' '
       + this.translateFn([order.type === 'stoplimit' ? 'stopLimit' : 'stopMarket'])
       + ' ('
-      + this.translateFn([conditionType ?? ''])
+      + this.translateFn([(conditionType as LessMore | null) ?? ''])
       + ')';
 
-    const getEditCommand = () => ({
+    const getEditCommand = (): EditOrderDialogParams => ({
       orderId: order.id,
       orderType: OrderType.Stop,
       instrumentKey: {
@@ -987,7 +987,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       .onMove(() => {
         const params = {
           ...getEditCommand(),
-          cancelCallback: () => orderLineAdapter.setPrice(order.triggerPrice)
+          cancelCallback: (): IOrderLineAdapter => orderLineAdapter.setPrice(order.triggerPrice)
         };
 
         params.initialValues = {

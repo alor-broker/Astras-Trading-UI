@@ -6,9 +6,9 @@ import {TranslatorService} from "../../services/translator.service";
 import {WidgetsHelper} from "../../utils/widgets";
 
 interface WidgetDisplay {
-  typeId: string,
-  icon: string,
-  name: string
+  typeId: string;
+  icon: string;
+  name: string;
 }
 
 @Component({
@@ -17,7 +17,7 @@ interface WidgetDisplay {
   styleUrls: ['./widget-menu.component.less']
 })
 export class WidgetMenuComponent implements OnInit {
-  @Input() public showResetItem: boolean = false;
+  @Input() public showResetItem = false;
   @Output() public selected = new EventEmitter<string>();
   @Output() public resetDashboard = new EventEmitter<void>();
 
@@ -29,7 +29,7 @@ export class WidgetMenuComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.widgetsMeta$ = combineLatest([
         this.widgetsMetaService.getWidgetsMeta(),
         this.translatorService.getLangChanges()
@@ -38,12 +38,12 @@ export class WidgetMenuComponent implements OnInit {
       map(([meta, lang]) => meta
         .filter(x => !!x.desktopMeta && x.desktopMeta.enabled)
         .sort((a, b) => {
-            return (a.desktopMeta!.galleryOrder ?? 0) - (b.desktopMeta!.galleryOrder ?? 0);
+            return (a.desktopMeta?.galleryOrder ?? 0) - (b.desktopMeta?.galleryOrder ?? 0);
           }
         )
         .map(x => ({
           typeId: x.typeId,
-          name: WidgetsHelper.getWidgetName(x.widgetName, lang) ?? x.typeId,
+          name: WidgetsHelper.getWidgetName(x.widgetName, lang),
           icon: x.desktopMeta?.galleryIcon ?? 'appstore'
         }))
       ),

@@ -12,7 +12,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 export class RisksComponent implements OnInit, OnDestroy {
   @Input({required: true})
   guid!: string;
-  private isActivated$ = new BehaviorSubject<boolean>(false);
+  private readonly isActivated$ = new BehaviorSubject<boolean>(false);
   risksInfo$?: Observable<RisksInfo>;
 
   @Input()
@@ -26,7 +26,7 @@ export class RisksComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.risksInfo$ = combineLatest([
       this.service.getRisksInfo(),
       this.isActivated$
@@ -38,7 +38,7 @@ export class RisksComponent implements OnInit, OnDestroy {
       );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.isActivated$.complete();
   }
 }

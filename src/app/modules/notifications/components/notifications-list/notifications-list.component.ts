@@ -19,7 +19,7 @@ export class NotificationsListComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.sortedNotifications$ = this.notificationsService.getNotifications()
       .pipe(
         map(n => [...n]),
@@ -27,7 +27,7 @@ export class NotificationsListComponent implements OnInit {
       );
   }
 
-  clickNotification(notification: NotificationMeta) {
+  clickNotification(notification: NotificationMeta): void {
     this.notificationClicked.emit();
     notification.markAsRead?.();
     notification.open?.();

@@ -76,8 +76,8 @@ describe('ApplicationReleaseNotificationProvider', () => {
     ];
 
     cases.forEach(testCase => {
-      versionMock.next(testCase.currentVersion ? {
-          id: testCase.currentVersion,
+      versionMock.next((testCase.currentVersion ?? '') ? {
+          id: testCase.currentVersion!,
           summary: 'summary',
           description: 'description',
           createdAt: new Date().getTime()

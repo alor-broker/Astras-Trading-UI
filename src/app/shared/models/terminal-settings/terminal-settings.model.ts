@@ -38,12 +38,12 @@ export enum ScalperOrderBookMouseAction {
 }
 
 export interface ScalperOrderBookMouseActionsMapItem {
-  button: 'left' | 'right',
+  button: 'left' | 'right';
 
-  orderBookRowType: 'ask' | 'bid' | 'spread' | 'any',
+  orderBookRowType: 'ask' | 'bid' | 'spread' | 'any';
 
-  modifier?: 'shift' | 'ctrl' | null,
-  action: ScalperOrderBookMouseAction
+  modifier?: 'shift' | 'ctrl' | null;
+  action: ScalperOrderBookMouseAction;
 }
 
 export interface ScalperOrderBookMouseActionsMap {

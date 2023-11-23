@@ -31,54 +31,54 @@ export class ManageDashboardsActions {
   static addDashboard = createAction(
     '[Dashboards] Add Dashboard',
     props<{
-      guid: string,
-      title: string,
-      isSelected: boolean,
-      existedItems: Widget[],
-      instrumentsSelection?: InstrumentGroups,
-      sourceGuid?: string
+      guid: string;
+      title: string;
+      isSelected: boolean;
+      existedItems: Widget[];
+      instrumentsSelection?: InstrumentGroups;
+      sourceGuid?: string;
     }>()
   );
 
   static addWidgets = createAction(
     '[Dashboards] Add Widgets',
     props<{
-      dashboardGuid: string,
-      widgets: Omit<Widget, 'guid'>[]
+      dashboardGuid: string;
+      widgets: Omit<Widget, 'guid'>[];
     }>()
   );
 
   static removeWidgets = createAction(
     '[Dashboards] Remove Widgets',
     props<{
-      dashboardGuid: string,
-      widgetIds: string[]
+      dashboardGuid: string;
+      widgetIds: string[];
     }>()
   );
 
   static updateWidgetPositions = createAction(
     '[Dashboards] Update Widget Positions',
     props<{
-      dashboardGuid: string,
+      dashboardGuid: string;
       updates: {
-        widgetGuid: string,
-        position: DashboardItemPosition
-      } []
+        widgetGuid: string;
+        position: DashboardItemPosition;
+      } [];
     }>()
   );
 
   static resetDashboard = createAction(
     '[Dashboards] Reset Dashboard',
     props<{
-      dashboardGuid: string
+      dashboardGuid: string;
     }>()
   );
 
   static renameDashboard = createAction(
     '[Dashboards] Rename Dashboard',
     props<{
-      dashboardGuid: string,
-      title: string
+      dashboardGuid: string;
+      title: string;
     }>()
   );
 
@@ -88,7 +88,7 @@ export class ManageDashboardsActions {
   static removeDashboard = createAction(
     '[Dashboards] Remove Dashboard',
     props<{
-      dashboardGuid: string
+      dashboardGuid: string;
     }>()
   );
 
@@ -102,7 +102,7 @@ export class ManageDashboardsActions {
   static copyDashboard = createAction(
     '[Dashboards] Copy Dashboard',
     props<{
-      dashboardGuid: string
+      dashboardGuid: string;
     }>()
   );
 
@@ -133,16 +133,16 @@ export class CurrentDashboardActions {
   static selectPortfolio = createAction(
     '[Dashboards] Select Portfolio',
     props<{
-      dashboardGuid: string,
-      portfolioKey: PortfolioKey | null
+      dashboardGuid: string;
+      portfolioKey: PortfolioKey | null;
     }>()
   );
 
   static selectInstruments = createAction(
     '[Dashboards] Select Instruments',
     props<{
-      dashboardGuid: string,
-      selection: { groupKey: string, instrumentKey: InstrumentKey }[]
+      dashboardGuid: string;
+      selection: { groupKey: string, instrumentKey: InstrumentKey }[];
     }>()
   );
 }
@@ -157,7 +157,7 @@ export class InternalDashboardActions {
   static dropDashboardEntity = createAction(
     '[Dashboards] Drop Dashboard Entity',
     props<{
-      dashboardGuid: string
+      dashboardGuid: string;
     }>()
   );
 }

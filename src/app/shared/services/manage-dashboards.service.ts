@@ -37,7 +37,7 @@ export class ManageDashboardsService {
     return DashboardsStreams.getAllDashboards(this.store);
   }
 
-  addWidget(widgetType: string, initialSettings?: any) {
+  addWidget(widgetType: string, initialSettings?: { [propName: string]: any }): void {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
     ).subscribe(d => {
@@ -54,7 +54,7 @@ export class ManageDashboardsService {
 
   }
 
-  copyWidget(sourceSettings: WidgetSettings) {
+  copyWidget(sourceSettings: WidgetSettings): void {
     DashboardsStreams.getSelectedDashboard(this.store).pipe(
       map(d => d.items.find(i => i.guid === sourceSettings.guid)),
       take(1),
@@ -71,7 +71,7 @@ export class ManageDashboardsService {
     });
   }
 
-  updateWidgetPositions(updates: { widgetGuid: string, position: DashboardItemPosition } []) {
+  updateWidgetPositions(updates: { widgetGuid: string, position: DashboardItemPosition } []): void {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
     ).subscribe(d => {
@@ -84,7 +84,7 @@ export class ManageDashboardsService {
     });
   }
 
-  removeWidget(widgetGuid: string) {
+  removeWidget(widgetGuid: string): void {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
     ).subscribe(d => {
@@ -96,7 +96,7 @@ export class ManageDashboardsService {
     });
   }
 
-  resetCurrentDashboard() {
+  resetCurrentDashboard(): void {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
     ).subscribe(d => {
@@ -104,15 +104,15 @@ export class ManageDashboardsService {
     });
   }
 
-  removeDashboard(guid: string) {
+  removeDashboard(guid: string): void {
     this.store.dispatch(ManageDashboardsActions.removeDashboard({ dashboardGuid: guid }));
   }
 
-  copyDashboard(guid: string) {
+  copyDashboard(guid: string): void {
     this.store.dispatch(ManageDashboardsActions.copyDashboard({ dashboardGuid: guid }));
   }
 
-  addDashboard(title: string) {
+  addDashboard(title: string): void {
     this.store.dispatch(ManageDashboardsActions.addDashboard({
       guid: GuidGenerator.newGuid(),
       title: title,
@@ -121,23 +121,23 @@ export class ManageDashboardsService {
     }));
   }
 
-  renameDashboard(guid: string, title: string) {
+  renameDashboard(guid: string, title: string): void {
     this.store.dispatch(ManageDashboardsActions.renameDashboard({ dashboardGuid: guid, title }));
   }
 
-  addDashboardToFavorites(dashboardGuid: string) {
+  addDashboardToFavorites(dashboardGuid: string): void {
     this.store.dispatch(ManageDashboardsActions.addDashboardToFavorites({ dashboardGuid }));
   }
 
-  removeDashboardFromFavorites(dashboardGuid: string) {
+  removeDashboardFromFavorites(dashboardGuid: string): void {
     this.store.dispatch(ManageDashboardsActions.removeDashboardFromFavorites({ dashboardGuid }));
   }
 
-  changeFavoriteDashboardsOrder(dashboardGuid: string, newIndex: number) {
+  changeFavoriteDashboardsOrder(dashboardGuid: string, newIndex: number): void {
     this.store.dispatch(ManageDashboardsActions.changeFavoriteDashboardsOrder({ dashboardGuid, newIndex }));
   }
 
-  selectDashboard(guid: string) {
+  selectDashboard(guid: string): void {
     this.store.dispatch(ManageDashboardsActions.selectDashboard({ dashboardGuid: guid }));
   }
 
@@ -149,7 +149,7 @@ export class ManageDashboardsService {
     return this.defaultConfig$!;
   }
 
-  private readDefaultConfig() {
+  private readDefaultConfig(): void {
     this.defaultConfig$ = this.httpClient.get<DefaultDashboardConfig>(
       '../../../assets/default-dashboard-config.json',
       {

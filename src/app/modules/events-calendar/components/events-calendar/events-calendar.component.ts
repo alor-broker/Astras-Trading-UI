@@ -33,7 +33,7 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.store.select(selectPortfoliosState)
       .pipe(
         filter(p => p.status === EntityStatus.Success),
@@ -66,15 +66,15 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.selectedPortfolio$.complete();
   }
 
-  selectPortfolio(portfolio: PortfolioKey | null) {
+  selectPortfolio(portfolio: PortfolioKey | null): void {
     this.selectedPortfolio$.next(portfolio);
   }
 
-  portfolioTrackByFn(index: number, portfolio: PortfolioKey) {
+  portfolioTrackByFn(index: number, portfolio: PortfolioKey): string {
     return portfolio.portfolio + portfolio.exchange;
   }
 }

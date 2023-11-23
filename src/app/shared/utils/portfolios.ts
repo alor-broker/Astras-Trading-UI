@@ -20,10 +20,10 @@ export function getMarketTypeByPortfolio(portfolio: string): MarketType | undefi
   return undefined;
 }
 
-export function formatMarket(market: string, exchange: string) {
+export function formatMarket(market: string, exchange: string): string {
   market = market.split(' ')[0];
   if (market.startsWith('Фондовый')) {
-    return `${market.slice(0, 4)} ${exchange}`;
+    return `Фонд ${exchange}`;
   }
   return `${market}`;
 }
@@ -52,7 +52,7 @@ export function groupPortfoliosByAgreement(portfolios: PortfolioExtended[]): Map
   return sortedPortfolios;
 }
 
-export function isPortfoliosEqual(portfolio1: PortfolioKey | null, portfolio2?: PortfolioKey | null) {
+export function isPortfoliosEqual(portfolio1: PortfolioKey | null, portfolio2?: PortfolioKey | null): boolean {
   return portfolio1?.portfolio === portfolio2?.portfolio
     && portfolio1?.exchange == portfolio2?.exchange
     && portfolio1?.marketType == portfolio2?.marketType;
@@ -60,7 +60,7 @@ export function isPortfoliosEqual(portfolio1: PortfolioKey | null, portfolio2?: 
 
 export function getDefaultPortfolio(allPortfolios: PortfolioKey[], defaultExchange: string | null): PortfolioKey | null {
   let suitablePortfolios = allPortfolios;
-  if (defaultExchange) {
+  if (defaultExchange ?? '') {
     let exchangeFilteredPortfolios = suitablePortfolios.filter(x => x.exchange === defaultExchange);
     if (exchangeFilteredPortfolios.length > 0) {
       suitablePortfolios = exchangeFilteredPortfolios;

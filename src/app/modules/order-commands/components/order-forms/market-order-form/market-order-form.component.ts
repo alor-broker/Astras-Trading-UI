@@ -92,7 +92,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
     this.evaluationRequest$.complete();
   }
 
-  setQuantity(value: number) {
+  setQuantity(value: number): void {
     this.commonParametersService.setParameters({
       quantity: value
     });
@@ -122,7 +122,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
     );
   }
 
-  private initCommonParametersUpdate() {
+  private initCommonParametersUpdate(): void {
     this.commonParametersService.parameters$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(p => {
@@ -142,7 +142,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
     });
   }
 
-  private initEvaluationUpdate() {
+  private initEvaluationUpdate(): void {
     const formChanges$ = this.form.valueChanges.pipe(
       map(v => ({quantity: v.quantity})),
       distinctUntilChanged((prev, curr) => prev.quantity === curr.quantity),
@@ -161,7 +161,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
     );
 
     const lastPrice$ = getInstrumentWithPortfolio$.pipe(
-      switchMap(x => this.quotesService.getQuotes(x.instrument.symbol, x.instrument.exchange, this.form.controls.instrumentGroup.value ?? x.instrument.instrumentGroup)),
+      switchMap(x => this.quotesService.getQuotes(x.instrument.symbol, x.instrument.exchange, (this.form.controls.instrumentGroup.value as string | undefined) ?? x.instrument.instrumentGroup)),
       map(q => q.last_price),
       distinctUntilChanged((prev, curr) => prev === curr),
       shareReplay(1)
@@ -179,16 +179,12 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
     ).subscribe(([, , lastPrice]) => this.updateEvaluation(lastPrice));
   }
 
-  private updateEvaluation(lastPrice: number) {
+  private updateEvaluation(lastPrice: number): void {
     this.getInstrumentWithPortfolio().pipe(
       take(1)
     ).subscribe(x => {
-      if (!x.instrument || !x.portfolioKey) {
-        return;
-      }
-
       const formValue = this.form.value;
-      if (!formValue.quantity) {
+      if (!(formValue.quantity ?? 0)) {
         this.evaluationRequest$.next(null);
         return;
       }
@@ -201,7 +197,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
         },
         instrumentCurrency: x.instrument.currency,
         price: lastPrice,
-        lotQuantity: formValue.quantity
+        lotQuantity: formValue.quantity!
       });
     });
   }

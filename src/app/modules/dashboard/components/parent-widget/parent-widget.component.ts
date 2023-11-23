@@ -17,10 +17,7 @@ export class ParentWidgetComponent implements OnDestroy {
   isBlockWidget!: boolean;
 
   @Input()
-  isVisible: boolean = true;
-
-  constructor() {
-  }
+  isVisible = true;
 
   ngOnDestroy(): void {
     this.isWidgetActivated$.complete();

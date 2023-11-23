@@ -12,8 +12,8 @@ enum FrozenStatus {
 type TerminalSettingsEntityStatus = EntityStatus | FrozenStatus;
 
 export interface State {
-  status: TerminalSettingsEntityStatus,
-  settings?: TerminalSettings
+  status: TerminalSettingsEntityStatus;
+  settings?: TerminalSettings;
 }
 
 const initialState: State = {

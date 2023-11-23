@@ -26,7 +26,7 @@ import {
   styleUrls: ['./instrument-select-settings.component.less']
 })
 export class InstrumentSelectSettingsComponent extends WidgetSettingsBaseComponent<InstrumentSelectSettings> implements OnInit {
-  settingsForm!: UntypedFormGroup;
+  settingsForm?: UntypedFormGroup;
   allInstrumentColumns: BaseColumnId[] = allInstrumentsColumns;
   protected settings$!: Observable<InstrumentSelectSettings>;
 
@@ -58,11 +58,11 @@ export class InstrumentSelectSettingsComponent extends WidgetSettingsBaseCompone
 
   protected getUpdatedSettings(): Partial<InstrumentSelectSettings> {
     return {
-      ...this.settingsForm.value
-    };
+      ...this.settingsForm!.value
+    } as Partial<InstrumentSelectSettings>;
   }
 
-  private buildSettingsForm(currentSettings: InstrumentSelectSettings) {
+  private buildSettingsForm(currentSettings: InstrumentSelectSettings): void {
     this.settingsForm = new UntypedFormGroup({
       instrumentColumns: new UntypedFormControl(currentSettings.instrumentColumns),
       showFavorites: new UntypedFormControl(currentSettings.showFavorites ?? false)

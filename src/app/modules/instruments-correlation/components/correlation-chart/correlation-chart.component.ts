@@ -143,7 +143,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
     return `f_${this.guid.replace(/-/g, '')}`;
   }
 
-  sizeChanged(entries: ResizeObserverEntry[]) {
+  sizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.contentSize$.next({
         width: Math.floor(x.contentRect.width),
@@ -283,7 +283,7 @@ ${correlationPercent}%`;
 
             g.selectAll('text')
               .text((d: any) => {
-                const symbol = d.split(':')[1];
+                const symbol = d.split(':')[1] as string;
 
                 let maxLength = 3;
                 const bandWidth = xScale.bandwidth();
@@ -304,7 +304,7 @@ ${correlationPercent}%`;
 
             g.selectAll('.tick')
               .append('title')
-              .text((d: any) => d);
+              .text(d => d as string);
           });
       }
 
@@ -316,7 +316,7 @@ ${correlationPercent}%`;
 
           g.selectAll('text')
             .text((d: any) => {
-              const symbol = d.split(':')[1];
+              const symbol = d.split(':')[1] as string;
               if (symbol.length > 4) {
                 return `${symbol.slice(0, 4)}...`;
               }
@@ -326,7 +326,7 @@ ${correlationPercent}%`;
 
           g.selectAll('.tick')
             .append('title')
-            .text((d: any) => d);
+            .text(d => d as string);
         });
       // end axis
 
@@ -372,7 +372,7 @@ ${correlationPercent}%`;
     });
   }
 
-  private setInitialRequestValues() {
+  private setInitialRequestValues(): void {
     combineLatest({
         settings: this.settings$,
         allLists: this.availableLists$
@@ -390,14 +390,14 @@ ${correlationPercent}%`;
         if (!!historyList) {
           currentListId = historyList.id;
         } else {
-          const defaultList = x.allLists.find(l => l.isDefault || l.type === WatchlistType.DefaultList);
+          const defaultList = x.allLists.find(l => (l.isDefault ?? false) || l.type === WatchlistType.DefaultList);
           if (!!defaultList) {
             currentListId = defaultList.id;
           }
         }
       }
 
-      if (!!currentListId) {
+      if (!!(currentListId ?? '')) {
         this.parametersForm.controls.targetListId.setValue(currentListId);
       }
 
@@ -406,7 +406,7 @@ ${correlationPercent}%`;
     });
   }
 
-  private saveCurrentParameters() {
+  private saveCurrentParameters(): void {
     if (!this.parametersForm.valid) {
       return;
     }
@@ -455,7 +455,7 @@ ${correlationPercent}%`;
   private drawLegend(
     color: ScaleDiverging<string>,
     params: {
-      width: number
+      width: number;
 
     }): SVGSVGElement | null {
     const svg = create("svg")

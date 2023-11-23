@@ -50,7 +50,7 @@ export class WatchlistCollectionService {
     );
   }
 
-  public createNewList(title: string, items: InstrumentKey[] | null = null) {
+  public createNewList(title: string, items: InstrumentKey[] | null = null): void {
     const newList = {
       id: GuidGenerator.newGuid(),
       title: title,
@@ -63,11 +63,11 @@ export class WatchlistCollectionService {
     this.watchlistCollectionBrokerService.addOrUpdateLists([newList]).subscribe();
   }
 
-  public removeList(listId: string) {
+  public removeList(listId: string): void {
     this.watchlistCollectionBrokerService.removeList(listId).subscribe();
   }
 
-  public updateListMeta(listId: string, meta: Partial<{ title: string }>) {
+  public updateListMeta(listId: string, meta: Partial<{ title: string }>): void {
     this.getCollection().pipe(
       take(1)
     ).subscribe(collection => {
@@ -85,7 +85,7 @@ export class WatchlistCollectionService {
     });
   }
 
-  public addItemsToList(listId: string, items: InstrumentKey[], rewriteDuplicates = true) {
+  public addItemsToList(listId: string, items: InstrumentKey[], rewriteDuplicates = true): void {
     this.getCollection().pipe(
       take(1)
     ).subscribe(collection => {
@@ -100,7 +100,7 @@ export class WatchlistCollectionService {
     });
   }
 
-  public addItemsToHistory(items: InstrumentKey[]) {
+  public addItemsToHistory(items: InstrumentKey[]): void {
     this.getCollection().pipe(
       take(1)
     ).subscribe(collection => {
@@ -111,7 +111,7 @@ export class WatchlistCollectionService {
 
       forkJoin(
         items.map(i => {
-          if (!!i.instrumentGroup) {
+          if (!!(i.instrumentGroup ?? '')) {
             return of(toInstrumentKey(i));
           }
           // get instrumentGroup if missing
@@ -131,7 +131,7 @@ export class WatchlistCollectionService {
         items.filter((i): i is InstrumentKey => !!i)
           .forEach(i => {
             const itemKey = this.getInstrumentKey(i);
-            if (!uniqueItems[itemKey]) {
+            if (!(uniqueItems[itemKey] as WatchlistItem | undefined)) {
               uniqueItems[itemKey] = {
                 ...i,
                 recordId: GuidGenerator.newGuid(),
@@ -142,7 +142,7 @@ export class WatchlistCollectionService {
             }
           });
 
-        if (!newItemsAdded) {
+        if (!(newItemsAdded as boolean)) {
           // performance optimization
           // prevent collection updating when no new items were added
           return;
@@ -158,7 +158,7 @@ export class WatchlistCollectionService {
     });
   }
 
-  public removeItemsFromList(listId: string, itemsToRemove: string[]) {
+  public removeItemsFromList(listId: string, itemsToRemove: string[]): void {
     this.getCollection().pipe(
       take(1)
     ).subscribe(collection => {
@@ -173,7 +173,7 @@ export class WatchlistCollectionService {
     });
   }
 
-  public updateListItem(listId: string, recordId: string, update: Partial<{ favoriteOrder: number | null }>) {
+  public updateListItem(listId: string, recordId: string, update: Partial<{ favoriteOrder: number | null }>): void {
     this.getCollection().pipe(
       take(1)
     ).subscribe(collection => {
@@ -202,7 +202,7 @@ export class WatchlistCollectionService {
     });
   }
 
-  public moveItem(recordId: string, fromListId: string, toListId: string) {
+  public moveItem(recordId: string, fromListId: string, toListId: string): void {
     this.getCollection().pipe(
       take(1)
     ).subscribe(collection => {
@@ -301,7 +301,7 @@ export class WatchlistCollectionService {
     allItems.forEach(item => {
       const itemKey = this.getInstrumentKey(item);
 
-      if(!uniqueItems[itemKey] || rewriteDuplicates) {
+      if(!(uniqueItems[itemKey] as WatchlistItem | undefined) || rewriteDuplicates) {
         uniqueItems[itemKey] = item;
       }
     });

@@ -34,7 +34,7 @@ import {
 import {LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit} from "../../models/orders/edit-order.model";
 
 export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketOrder) & {
-  type: 'Limit' | 'StopLimit' | 'Stop'
+  type: 'Limit' | 'StopLimit' | 'Stop';
 };
 
 @Injectable({
@@ -165,12 +165,12 @@ export class OrderService {
           }
 
           const orderIds = ordersRes
-            .filter(or => !!or.orderNumber)
+            .filter(or => !!(or.orderNumber ?? ''))
             .map(or => or.orderNumber!);
 
 
           if (orderIds.length !== orders.length) {
-            return forkJoin(ordersRes.map((ord, i) => ord.orderNumber
+            return forkJoin(ordersRes.map((ord, i) => (ord.orderNumber ?? '')
                 ? this.canceller.cancelOrder({
                   orderid: ord.orderNumber!,
                   portfolio,
@@ -207,8 +207,8 @@ export class OrderService {
   }
 
   private submitOrder(portfolio: string, prepareOrderRequest: () => {
-    url: string,
-    body: any
+    url: string;
+    body: any;
   }): Observable<SubmitOrderResult> {
     return this.submitRequest(
       portfolio,
@@ -236,8 +236,8 @@ export class OrderService {
   }
 
   private submitOrderEdit(portfolio: string, prepareOrderRequest: () => {
-    url: string,
-    body: any
+    url: string;
+    body: any;
   }): Observable<SubmitOrderResult> {
     return this.submitRequest(
       portfolio,
@@ -267,7 +267,7 @@ export class OrderService {
   private submitRequest(
     portfolio: string,
     method: 'post' | 'put',
-    prepareOrderRequest: () => { url: string, body: any },
+    prepareOrderRequest: () => { url: string, body: { [propName: string]: any } },
     onError: (error: Error | HttpErrorResponse) => void
   ): Observable<SubmitOrderResult> {
     const orderRequest = prepareOrderRequest();
@@ -294,14 +294,14 @@ export class OrderService {
         return of(null);
       }),
       map(response => ({
-        isSuccess: !!response?.orderNumber,
+        isSuccess: !!(response?.orderNumber ?? ''),
         orderNumber: response?.orderNumber
       } as SubmitOrderResult)),
       take(1)
     );
   }
 
-  private handleCommandError(notificationType: OrdersInstantNotificationType, error: HttpErrorResponse, errorTitle: string) {
+  private handleCommandError(notificationType: OrdersInstantNotificationType, error: HttpErrorResponse, errorTitle: string): void {
     const errorMessage = !!error.error.code && !!error.error.message
       ? `Ошибка ${error.error.code} <br/> ${error.error.message}`
       : error.message;
@@ -316,7 +316,7 @@ export class OrderService {
 
   private prepareErrorMessage(message: string): string {
     const links = new RegExp(httpLinkRegexp, 'im').exec(message);
-    if (!links?.length) {
+    if (!(links?.length ?? 0)) {
       return message;
     }
 

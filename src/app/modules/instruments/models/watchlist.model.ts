@@ -6,7 +6,7 @@ export enum WatchlistType {
 }
 
 export interface WatchlistCollection {
-  collection: Watchlist[]
+  collection: Watchlist[];
 }
 
 export interface WatchlistItem extends InstrumentKey {
@@ -16,24 +16,24 @@ export interface WatchlistItem extends InstrumentKey {
 }
 
 export interface Watchlist {
-  id: string,
-  title: string,
-  isDefault?: boolean,
-  type?: WatchlistType,
-  items: WatchlistItem[]
+  id: string;
+  title: string;
+  isDefault?: boolean;
+  type?: WatchlistType;
+  items: WatchlistItem[];
 }
 
 export interface PresetWatchlistCollection {
-  list: PresetWatchlist[]
+  list: PresetWatchlist[];
 }
 
 export interface PresetWatchlist {
-  name: string,
-  papers: PresetWatchlistItem[]
+  name: string;
+  papers: PresetWatchlistItem[];
 }
 
 export interface PresetWatchlistItem {
-  symbol: string,
-  exchange: string,
-  board?: string
+  symbol: string;
+  exchange: string;
+  board?: string;
 }

@@ -13,12 +13,13 @@ export class MobileHook implements AppHook {
   }
 
   onDestroy(): void {
+    return;
   }
 
   onInit(): void {
     this.deviceService.deviceInfo$.pipe(
       take(1),
-      filter(info => info.isMobile)
+      filter(info => info.isMobile as boolean)
     ).subscribe(() => {
       this.document.documentElement.classList.add('mobile');
     });

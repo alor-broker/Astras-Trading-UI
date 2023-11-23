@@ -34,6 +34,6 @@ export class ConsoleLogger extends LoggerBase {
   }
 
   getMinLevel(): LogLevel | null {
-    return (environment.logging as any)?.console?.minLevel as LogLevel ?? null;
+    return (environment.logging as any)?.console?.minLevel as LogLevel | undefined ?? null;
   }
 }

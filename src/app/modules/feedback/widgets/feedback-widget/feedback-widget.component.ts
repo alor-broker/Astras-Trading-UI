@@ -60,11 +60,11 @@ export class FeedbackWidgetComponent implements OnInit {
     });
   }
 
-  handleClose() {
+  handleClose(): void {
     this.modalService.closeVoteModal();
   }
 
-  initForm(params: NewFeedback) {
+  initForm(params: NewFeedback): void {
     this.askComment = false;
     this.form = new UntypedFormGroup({
       rating: new UntypedFormControl(null, Validators.required),
@@ -73,19 +73,19 @@ export class FeedbackWidgetComponent implements OnInit {
     });
   }
 
-  submitFeedback() {
-    if (!this.form?.valid) {
+  submitFeedback(): void {
+    if (!(this.form?.valid ?? false)) {
       return;
     }
 
     if (!this.askComment) {
       this.checkAskComment();
-      if (this.askComment) {
+      if (this.askComment as boolean) {
         return;
       }
     }
 
-    this.feedbackService.submitFeedback(this.form.value).pipe(
+    this.feedbackService.submitFeedback(this.form!.value!).pipe(
       finalize(() => {
         this.modalService.closeVoteModal();
       })
@@ -95,7 +95,7 @@ export class FeedbackWidgetComponent implements OnInit {
     });
   }
 
-  checkAskComment() {
+  checkAskComment(): void {
     this.askComment = this.form?.value.rating < this.maxStarsCount && (this.form?.value.comment ?? '').length === 0;
   }
 }

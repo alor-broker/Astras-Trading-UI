@@ -35,7 +35,7 @@ describe('StopOrderFormComponent', () => {
   const timezoneConverter = new TimezoneConverter(TimezoneDisplayOption.MskTime);
   let timezoneConverterServiceSpy: any;
 
-  const getFormInputs = () => {
+  const getFormInputs = (): { [fieldName: string]: HTMLInputElement | HTMLSelectElement } => {
     return {
       quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
       triggerPrice: fixture.nativeElement.querySelector('[formcontrolname="triggerPrice"]').querySelector('input') as HTMLInputElement,
@@ -44,7 +44,7 @@ describe('StopOrderFormComponent', () => {
     };
   };
 
-  const getValidationErrorElement = (element: HTMLElement) => {
+  const getValidationErrorElement = (element: HTMLElement): Element | null => {
     const inputContainer = element.parentElement?.parentElement?.parentElement?.parentElement?.parentElement;
     if (!inputContainer) {
       return null;
@@ -189,7 +189,7 @@ describe('StopOrderFormComponent', () => {
 
         expect(errorElement).not.toBeNull();
 
-        if (testCase.expectedError) {
+        if (testCase.expectedError ?? '') {
           expect(errorElement?.textContent).toEqual(testCase.expectedError);
         }
       });

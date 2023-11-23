@@ -4,10 +4,10 @@ import { TimeframeValue } from "../models/light-chart.models";
 
 export class TimeframesHelper {
   // LightCharts library throws errors, when bars is duplicating or too close to each other
-  static aggregateBars(existing: Candle[], history: Candle[], selectedTimeframe: TimeframeValue) {
-    const getDate = (p: any) => {
+  static aggregateBars(existing: Candle[], history: Candle[], selectedTimeframe: TimeframeValue): Candle[] {
+    const getDate = (p: any): string => {
       const d = new Date(p * 1000);
-      return d.getDate() + '.' + d.getMonth() + '.' + d.getFullYear();
+      return d.getDate().toString() + '.' + d.getMonth().toString() + '.' + d.getFullYear().toString();
     };
     switch (selectedTimeframe) {
       case TimeframeValue.Month:

@@ -26,13 +26,13 @@ export class WidgetSettingsStreams {
 
   static getInstrumentLinkedSettings(store: Store): Observable<WidgetSettings[]> {
     return this.getAllSettings(store).pipe(
-      map(settings => settings.filter(s => s.linkToActive && isInstrumentDependent(s)))
+      map(settings => settings.filter(s => (s.linkToActive ?? false) && isInstrumentDependent(s)))
     );
   }
 
   static getPortfolioLinkedSettings(store: Store): Observable<WidgetSettings[]> {
     return this.getAllSettings(store).pipe(
-      map(settings => settings.filter(s => s.linkToActive && isPortfolioDependent(s)))
+      map(settings => settings.filter(s => (s.linkToActive ?? false) && isPortfolioDependent(s)))
     );
   }
 

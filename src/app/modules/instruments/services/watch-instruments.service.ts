@@ -41,7 +41,7 @@ export class WatchInstrumentsService {
     destroyRef.onDestroy(() => this.watchlistUpdatesState.destroy());
   }
 
-  clear() {
+  clear(): void {
     this.watchlistUpdatesState.removeAll();
     this.instrumentsToWatchState.removeAll();
 
@@ -57,7 +57,7 @@ export class WatchInstrumentsService {
     ).subscribe(currentList => {
       this.refreshWatchItems(currentList!.items.map(item => ({
           ...item,
-          recordId: item.recordId ?? GuidGenerator.newGuid(),
+          recordId: (item.recordId as string | undefined) ?? GuidGenerator.newGuid(),
         })
       ));
     });
@@ -67,7 +67,7 @@ export class WatchInstrumentsService {
     );
   }
 
-  private refreshWatchItems(items: WatchlistItem[]) {
+  private refreshWatchItems(items: WatchlistItem[]): void {
     const previousIds = new Set(this.instrumentsToWatchState.getCurrentItemIds());
     const currentIds = new Set<string>();
 
@@ -99,7 +99,7 @@ export class WatchInstrumentsService {
 
   }
 
-  private initInstrumentWatch(instrument: WatchlistItem) {
+  private initInstrumentWatch(instrument: WatchlistItem): void {
     this.instrumentsService.getInstrument(instrument).pipe(
       take(1),
       filter((x): x is Instrument => !!x),
@@ -111,14 +111,14 @@ export class WatchInstrumentsService {
               addTime: instrument.addTime ?? Date.now(),
               favoriteOrder: instrument.favoriteOrder,
               instrument: i,
-              closePrice: candles?.prev?.close ?? 0,
+              closePrice: candles?.prev.close ?? 0,
               openPrice: candles?.cur.open ?? 0,
               prevTickPrice: 0,
               dayChange: 0,
               price: 0,
-              minPrice: candles?.cur?.low,
-              maxPrice: candles?.cur?.high,
-              volume: candles?.cur?.volume,
+              minPrice: candles?.cur.low,
+              maxPrice: candles?.cur.high,
+              volume: candles?.cur.volume,
               dayChangePerPrice: 0,
             }),
             take(1)
@@ -130,7 +130,7 @@ export class WatchInstrumentsService {
     });
   }
 
-  private setupInstrumentUpdatesSubscription(wi: WatchedInstrument) {
+  private setupInstrumentUpdatesSubscription(wi: WatchedInstrument): void {
     const sub = this.quotesService.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup).subscribe(q => {
       const update = <WatchedInstrument>{
         prevTickPrice: wi.price,

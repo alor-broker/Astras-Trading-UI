@@ -16,7 +16,7 @@ export class ModifiersIndicatorComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.modifierKeyPressed$ = this.hotkeysService.modifiers$;
   }
 }

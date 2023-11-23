@@ -29,7 +29,7 @@ export class OrdersBasketWidgetComponent implements OnInit {
   showBadge$!: Observable<boolean>;
   title$!: Observable<string>;
 
-  shouldShowSettings: boolean = false;
+  shouldShowSettings = false;
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -64,7 +64,7 @@ export class OrdersBasketWidgetComponent implements OnInit {
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
   }
 
-  onSettingsChange() {
+  onSettingsChange(): void {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 }

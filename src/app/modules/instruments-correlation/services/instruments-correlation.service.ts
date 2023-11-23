@@ -31,8 +31,8 @@ export class InstrumentsCorrelationService {
           i.symbol
         ];
 
-        if (i.instrumentGroup) {
-          parts.push(i.instrumentGroup);
+        if ((i.instrumentGroup ?? '')) {
+          parts.push(i.instrumentGroup as string);
         }
 
         return parts.join(':');

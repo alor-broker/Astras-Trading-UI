@@ -7,7 +7,7 @@ export interface SyntheticInstrumentKey {
 
 export interface RegularInstrumentKey {
   isSynthetic: false;
-  instrument: InstrumentKey
+  instrument: InstrumentKey;
 }
 
 export type RegularOrSyntheticInstrumentKey = SyntheticInstrumentKey | RegularInstrumentKey;

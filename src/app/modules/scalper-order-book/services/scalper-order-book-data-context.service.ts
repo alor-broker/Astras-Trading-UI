@@ -50,16 +50,17 @@ import { isInstrumentEqual } from '../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { QuotesService } from '../../../shared/services/quotes.service';
 import { ScalperSettingsHelper } from "../utils/scalper-settings.helper";
+import { Instrument } from "../../../shared/models/instruments/instrument.model";
 
 
 export interface ContextGetters {
-  getVisibleRowsCount: () => number,
-  isFillingByHeightNeeded: (currentRows: PriceRow[]) => boolean
+  getVisibleRowsCount: () => number;
+  isFillingByHeightNeeded: (currentRows: PriceRow[]) => boolean;
 }
 
 export interface ContextChangeActions {
-  priceRowsRegenerationStarted: () => void,
-  priceRowsRegenerationCompleted: () => void,
+  priceRowsRegenerationStarted: () => void;
+  priceRowsRegenerationCompleted: () => void;
 }
 
 @Injectable({
@@ -141,7 +142,7 @@ export class ScalperOrderBookDataContextService {
         settings => this.instrumentsService.getInstrument(settings),
         (widgetSettings, instrument) => ({ widgetSettings, instrument } as ScalperOrderBookExtendedSettings)
       ),
-      filter(x => !!x.instrument),
+      filter(x => !!(x.instrument as Instrument | null)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
@@ -157,14 +158,14 @@ export class ScalperOrderBookDataContextService {
         (source, positions) => ({ ...source, positions })
       ),
       map(s => s.positions.find(p => p.symbol === s.settings.widgetSettings.symbol && p.exchange === s.settings.widgetSettings.exchange)),
-      map(p => (!p || !p.avgPrice ? null as any : p)),
+      map(p => (!p || !p.avgPrice ? null : p as Position)),
       startWith(null),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
   public getOrderBookDataStream(settings$: Observable<ScalperOrderBookExtendedSettings>): Observable<{ instrumentKey: InstrumentKey, data: OrderbookData }> {
-    const getOrderBookData = (settings: ScalperOrderBookExtendedSettings) => this.subscriptionsDataFeedService.subscribe<OrderbookRequest, OrderbookData>(
+    const getOrderBookData = (settings: ScalperOrderBookExtendedSettings): Observable<OrderbookData> => this.subscriptionsDataFeedService.subscribe<OrderbookRequest, OrderbookData>(
       OrderBookDataFeedHelper.getRealtimeDateRequest(
         settings.widgetSettings.symbol,
         settings.widgetSettings.exchange,
@@ -192,7 +193,7 @@ export class ScalperOrderBookDataContextService {
     let results: AllTradesItem[] = [];
 
     return settings$.pipe(
-      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev?.widgetSettings, curr?.widgetSettings)),
+      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev.widgetSettings, curr.widgetSettings)),
       switchMap(x => this.allTradesService.getNewTradesSubscription(x.widgetSettings, 100)),
       map(trade => {
         results.push(trade);
@@ -358,7 +359,7 @@ export class ScalperOrderBookDataContextService {
     getters: ContextGetters,
     actions: ContextChangeActions,
     priceRowsStore: PriceRowsStore
-  ) {
+  ): void {
     actions.priceRowsRegenerationStarted();
 
     let priceBounds$: Observable<{ min: number, max: number }> | null = null;
@@ -375,7 +376,7 @@ export class ScalperOrderBookDataContextService {
 
     if (!priceBounds$) {
       priceBounds$ = this.quotesService.getLastPrice(settings.widgetSettings).pipe(
-        filter((lastPrice): lastPrice is number => !!lastPrice),
+        filter((lastPrice): lastPrice is number => !!(lastPrice ?? 0)),
         map(lp => ({ min: lp, max: lp }))
       );
     }
@@ -404,22 +405,22 @@ export class ScalperOrderBookDataContextService {
     getters: ContextGetters,
     actions: ContextChangeActions,
     priceRowsStore: PriceRowsStore
-  ) {
+  ): void {
     actions.priceRowsRegenerationStarted();
 
     const bounds = this.getOrderBookBounds(orderBookData);
     const expectedMaxPrice = bounds.asksRange?.max ?? bounds.bidsRange?.max;
     const expectedMinPrice = bounds.bidsRange?.min ?? bounds.asksRange?.min;
 
-    if (!expectedMaxPrice || !expectedMinPrice) {
+    if (!(expectedMaxPrice ?? 0) || !(expectedMinPrice ?? 0)) {
       return;
     }
 
     priceRowsStore.initWithPriceRange(
       settings.widgetSettings,
       {
-        min: expectedMinPrice,
-        max: expectedMaxPrice
+        min: expectedMinPrice!,
+        max: expectedMaxPrice!
       },
       settings.instrument.minstep,
       getters.getVisibleRowsCount(),
@@ -443,8 +444,8 @@ export class ScalperOrderBookDataContextService {
 
     const expectedMaxPrice = orderBookBounds.asksRange?.max ?? orderBookBounds.bidsRange?.max;
     const expectedMinPrice = orderBookBounds.bidsRange?.min ?? orderBookBounds.asksRange?.min;
-    if ((!!expectedMinPrice && expectedMinPrice < minRowPrice)
-      || (!!expectedMaxPrice && expectedMaxPrice > maxRowPrice)) {
+    if ((!!(expectedMinPrice ?? 0) && expectedMinPrice! < minRowPrice)
+      || (!!(expectedMaxPrice ?? 0) && expectedMaxPrice! > maxRowPrice)) {
       this.regeneratePriceRows(orderBookData, settings, getters, actions, priceRowsStore);
       return false;
     }
@@ -466,7 +467,7 @@ export class ScalperOrderBookDataContextService {
       return resultRow;
     }
 
-    const matchRow = (targetRow: BodyRow, source: OrderbookDataRow[]) => {
+    const matchRow = (targetRow: BodyRow, source: OrderbookDataRow[]): boolean => {
       const matchedRowIndex = source.findIndex(x => x.p === targetRow.price);
       if (matchedRowIndex >= 0) {
         const matchedRow = source[matchedRowIndex];
@@ -520,21 +521,21 @@ export class ScalperOrderBookDataContextService {
     targetRow: BodyRow,
     position: Position | null,
     orderBookBounds: { asksRange: Range | null, bidsRange: Range | null }
-  ) {
+  ): void {
     if (!!position && position.qtyTFuture !== 0) {
       const basePrice = position.qtyTFuture > 0
         ? orderBookBounds.bidsRange?.max ?? orderBookBounds.asksRange?.min
         : orderBookBounds.asksRange?.min ?? orderBookBounds.bidsRange?.max;
 
-      if (!basePrice) {
+      if (!(basePrice ?? 0)) {
         return;
       }
 
       const sign = position.qtyTFuture > 0 ? 1 : -1;
-      const currentPositionRangeSign = (basePrice - position.avgPrice) * sign;
+      const currentPositionRangeSign = (basePrice! - position.avgPrice) * sign;
 
-      const isCurrentPositionRange = targetRow.price <= basePrice && targetRow.price >= position.avgPrice
-        || (targetRow.price >= basePrice && targetRow.price <= position.avgPrice);
+      const isCurrentPositionRange = targetRow.price <= basePrice! && targetRow.price >= position.avgPrice
+        || (targetRow.price >= basePrice! && targetRow.price <= position.avgPrice);
 
       targetRow.currentPositionRangeSign = isCurrentPositionRange
         ? currentPositionRangeSign

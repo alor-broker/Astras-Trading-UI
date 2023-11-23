@@ -24,6 +24,4 @@ export class InfoHeaderComponent {
       }
     }
   }
-
-  constructor() { }
 }

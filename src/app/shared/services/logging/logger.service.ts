@@ -42,7 +42,7 @@ export class LoggerService {
     );
   }
 
-  private logMessage(logLevel: LogLevel, message: string, stack?: string) {
+  private logMessage(logLevel: LogLevel, message: string, stack?: string): void {
     this.loggers.forEach(l => l.logMessage(logLevel, message, stack));
   }
 }

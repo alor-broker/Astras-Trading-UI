@@ -137,7 +137,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  sizeChanged(entries: ResizeObserverEntry[]) {
+  sizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.contentSize$.next({
         width: Math.floor(x.contentRect.width),
@@ -169,7 +169,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     themeSettings: ThemeSettings,
     priceItems: number[],
     orderedTrades: AllTradesItem[]
-  ) {
+  ): void {
     const context = canvas.getContext('2d')!;
     const xScale = scaleLinear([0, canvas.width])
       .domain([0, canvas.width]);
@@ -312,7 +312,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   ): LayerDrawer {
     return {
       zIndex: this.zIndexes.itemsConnector,
-      draw: () => {
+      draw: (): void => {
         context.beginPath();
         context.moveTo(this.getMetaCenterX(item1Meta)!, this.getMetaCenterY(item1Meta)!);
         context.lineTo(this.getMetaCenterX(item2Meta)!, this.getMetaCenterY(item2Meta)!);
@@ -347,7 +347,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     const xCenter = itemMeasurements.xLeft + itemWidth / 2;
     const yCenter = itemMeasurements.yTop + (itemHeight / 2);
 
-    const draw = () => {
+    const draw = (): void => {
       context.fillStyle = item.color === 'green' ? themeColors.buyColor : themeColors.sellColor;
       this.drawRoundedRect(itemMeasurements.xLeft, itemMeasurements.yTop, itemWidth, itemHeight, 2, context);
       context.fill();
@@ -396,7 +396,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     const xCenter = itemMeasurements.xLeft + itemWidth / 2;
     const yCenter = itemMeasurements.yTop + (itemHeight / 2);
 
-    const draw = () => {
+    const draw = (): void => {
       context.strokeStyle = item.color === 'green' ? themeColors.buyColor : themeColors.sellColor;
       this.drawRoundedRect(itemMeasurements.xLeft, itemMeasurements.yTop, itemWidth, itemHeight, 2, context);
       context.stroke();
@@ -441,7 +441,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     const x = measurements.xLeft + (measurements.xRight - measurements.xLeft) / 2;
     const y = yScale(item.rowIndex);
 
-    const draw = () => {
+    const draw = (): void => {
       context.beginPath();
       context.arc(x, y, 2, 0, 2 * Math.PI, false);
       context.strokeStyle = item.color === 'green' ? themeColors.buyColor : themeColors.sellColor;
@@ -507,7 +507,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     yScale: ScaleLinear<number, number>,
     context: CanvasRenderingContext2D,
     themeColors: ThemeColors): LayerDrawer {
-    const draw = () => {
+    const draw = (): void => {
       for (let i = 5; i < rowsCount; i = i + 5) {
         context.beginPath();
         context.moveTo(xScale(0), yScale(i) - 0.5);
@@ -524,7 +524,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     };
   }
 
-  private drawRoundedRect(x: number, y: number, width: number, height: number, radius: number, context: CanvasRenderingContext2D) {
+  private drawRoundedRect(x: number, y: number, width: number, height: number, radius: number, context: CanvasRenderingContext2D): void {
     context.beginPath();
     context.moveTo(x + radius, y);
     context.arcTo(x + width, y, x + width, y + height, radius);

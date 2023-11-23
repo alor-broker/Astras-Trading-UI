@@ -15,7 +15,7 @@ import { CacheService } from '../../../shared/services/cache.service';
   providedIn: 'root'
 })
 export class InstrumentsService {
-  private url = environment.apiUrl + '/md/v2/Securities';
+  private readonly url = environment.apiUrl + '/md/v2/Securities';
 
   constructor(
     private readonly http: HttpClient,
@@ -34,7 +34,7 @@ export class InstrumentsService {
           shortName: r.shortname,
           exchange: r.exchange,
           description: r.description,
-          instrumentGroup: r.board ?? r.primary_board,
+          instrumentGroup: (r.board as string | undefined) ?? r.primary_board,
           isin: r.ISIN,
           currency: r.currency,
           minstep: r.minstep ?? 0.01,
@@ -62,13 +62,14 @@ export class InstrumentsService {
         IncludeUnknownBoards: false
       },
     }).pipe(
+      catchHttpError<InstrumentSearchResponse[]>([], this.errorHandlerService),
       map(resp => {
         const selects: Instrument[] = resp.map(r => ({
           symbol: r.symbol,
           shortName: r.shortname,
           exchange: r.exchange,
           description: r.description,
-          instrumentGroup: r.board ?? r.primary_board,
+          instrumentGroup: (r.board as string | undefined) ?? r.primary_board,
           isin: r.ISIN,
           currency: r.currency,
           minstep: r.minstep ?? 0.01

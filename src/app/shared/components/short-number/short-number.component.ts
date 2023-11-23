@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { getNumberAbbreviation, NumberAbbreviation } from "../../utils/number-abbreviation";
 
 @Component({
@@ -14,13 +14,11 @@ export class ShortNumberComponent implements OnChanges {
 
   displayData: NumberAbbreviation | null = null;
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes) {
-      this.displayData = getNumberAbbreviation(
-        this.value,
-        this.allowRounding,
-        this.roundPrecision
-      );
-    }
+  ngOnChanges(): void {
+    this.displayData = getNumberAbbreviation(
+      this.value,
+      this.allowRounding,
+      this.roundPrecision
+    );
   }
 }

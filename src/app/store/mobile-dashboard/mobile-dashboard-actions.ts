@@ -8,8 +8,8 @@ export class MobileDashboardActions {
   static initMobileDashboard = createAction(
     '[Mobile Dashboard] Init Mobile Dashboard',
     props<{
-      mobileDashboard: Dashboard | null,
-      instrumentsHistory: InstrumentKey[]
+      mobileDashboard: Dashboard | null;
+      instrumentsHistory: InstrumentKey[];
     }>()
   );
 
@@ -20,24 +20,24 @@ export class MobileDashboardActions {
   static addMobileDashboard = createAction(
     '[Mobile Dashboard] Add Mobile Dashboard',
     props<{
-      guid: string,
-      title: string,
-      items: Widget[],
-      instrumentsSelection?: InstrumentGroups
+      guid: string;
+      title: string;
+      items: Widget[];
+      instrumentsSelection?: InstrumentGroups;
     }>()
   );
 
   static selectPortfolio = createAction(
     '[Mobile Dashboard] Select Portfolio',
     props<{
-      portfolioKey: PortfolioKey | null
+      portfolioKey: PortfolioKey | null;
     }>()
   );
 
   static selectInstrument = createAction(
     '[Mobile Dashboard] Select Instrument',
     props<{
-      selection: { groupKey: string, instrumentKey: InstrumentKey }
+      selection: { groupKey: string, instrumentKey: InstrumentKey };
     }>()
   );
 

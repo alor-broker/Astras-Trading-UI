@@ -26,12 +26,8 @@ export class HotKeyInputComponent extends ControlValueAccessorBaseComponent<HotK
 
   value: HotKeyMeta | null = null;
 
-  constructor() {
-    super();
-  }
-
-  writeValue(value: HotKeyMeta | string | null) {
-    if (value) {
+  writeValue(value: HotKeyMeta | string | null): void {
+    if (value != null && value !== '') {
       if (typeof value === 'string') {
         this.control.setValue(value);
         this.value = {
@@ -48,7 +44,7 @@ export class HotKeyInputComponent extends ControlValueAccessorBaseComponent<HotK
     }
   }
 
-  hotkeyChange(e: KeyboardEvent) {
+  hotkeyChange(e: KeyboardEvent): void {
     if (e.code === 'Backspace') {
       this.value = null;
       this.control.reset();

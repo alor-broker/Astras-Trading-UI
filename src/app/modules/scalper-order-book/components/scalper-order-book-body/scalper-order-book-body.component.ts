@@ -69,7 +69,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   @Input({required: true})
   guid!: string;
   @Input()
-  isActive: boolean = false;
+  isActive = false;
   readonly isLoading$ = new BehaviorSubject(false);
   dataContext!: ScalperOrderBookDataContext;
   hiddenOrdersIndicators$!: Observable<{ up: boolean, down: boolean }>;
@@ -98,7 +98,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     return this.ref;
   }
 
-  updateContentSize(entries: ResizeObserverEntry[]) {
+  updateContentSize(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.contentSize$.next({
         width: Math.floor(x.contentRect.width),
@@ -134,7 +134,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.workingVolume$.complete();
   }
 
-  updatePanelWidth(panel: string, width: number) {
+  updatePanelWidth(panel: string, width: number): void {
     ScalperSettingsHelper.getSettingsStream(this.guid,this.widgetSettingsService).pipe(
       take(1)
     ).subscribe(settings => {
@@ -153,21 +153,21 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     });
   }
 
-  private subscribeToHotkeys() {
+  private subscribeToHotkeys(): void {
     this.hotkeysService.commands$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(command => {
-      if (command.type === ScalperOrderBookCommands.centerOrderBook) {
+      if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.centerOrderBook) {
         this.alignTable();
       }
     });
   }
 
-  private initAutoAlign() {
+  private initAutoAlign(): void {
     this.dataContext.extendedSettings$.pipe(
       map(x => x.widgetSettings),
       map(x => ({
-          enabled: (x.enableAutoAlign ?? true) && !!x.autoAlignIntervalSec && x.autoAlignIntervalSec > 0,
+          enabled: (x.enableAutoAlign ?? true) && !!(x.autoAlignIntervalSec ?? 0) && x.autoAlignIntervalSec! > 0,
           interval: x.autoAlignIntervalSec!
         })
       ),
@@ -178,7 +178,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     });
   }
 
-  private initHiddenOrdersIndicators() {
+  private initHiddenOrdersIndicators(): void {
     this.hiddenOrdersIndicators$ = combineLatest([
       this.dataContext.orderBookBody$,
       this.dataContext.currentOrders$,
@@ -199,15 +199,15 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
           : null;
 
         return {
-          up: !!upPrice && !!currentOrders.find(o => o.linkedPrice > upPrice),
-          down: !!downPrice && !!currentOrders.find(o => o.linkedPrice < downPrice),
+          up: !!(upPrice ?? 0) && !!currentOrders.find(o => o.linkedPrice > upPrice!),
+          down: !!(downPrice ?? 0) && !!currentOrders.find(o => o.linkedPrice < downPrice!),
         };
       }),
       shareReplay({ bufferSize: 1, refCount: true }),
     );
   }
 
-  private initLayout() {
+  private initLayout(): void {
     this.initialWidths$ = this.dataContext.extendedSettings$.pipe(
       take(1),
       map(x => x.widgetSettings.layout?.widths ?? {}),
@@ -215,7 +215,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     );
   }
 
-  private initContext() {
+  private initContext(): void {
     const context = this.scalperOrderBookDataContextService.createContext(
       this.guid,
       this.priceRowsStore,
@@ -239,7 +239,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       displayRange$: this.renderItemsRange$.asObservable(),
       workingVolume$: this.workingVolume$.asObservable()
         .pipe(
-          filter(x => !!x),
+          filter(x => !!(x ?? 0)),
           map(x => x!)
         )
     };
@@ -257,11 +257,11 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     return Math.ceil((this.getContainerHeight() * 2 / this.rowHeight));
   }
 
-  private getContainerHeight() {
+  private getContainerHeight(): number {
     return this.scrollContainer.measureViewportSize('vertical');
   }
 
-  private alignTable() {
+  private alignTable(): void {
     setTimeout(() => {
       this.dataContext.orderBookBody$.pipe(
         take(1)
@@ -286,19 +286,19 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         }
 
         setTimeout(() => {
-          if (!!targetIndex) {
+          if (!!(targetIndex ?? 0)) {
             const viewPortSize = this.getContainerHeight();
             const visibleItemsCount = viewPortSize / this.rowHeight;
             const centerCorrection = Math.floor(visibleItemsCount / 2) - 1;
 
-            this.scrollContainer.scrollToIndex(targetIndex - centerCorrection);
+            this.scrollContainer.scrollToIndex(targetIndex! - centerCorrection);
           }
         });
       });
     });
   }
 
-  private initTableScrolling() {
+  private initTableScrolling(): void {
     this.scrollContainer.scrolledIndexChange.pipe(
       withLatestFrom(this.isLoading$),
       filter(([, isLoading]) => !isLoading),

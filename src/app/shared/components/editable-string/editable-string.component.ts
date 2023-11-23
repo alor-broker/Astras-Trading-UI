@@ -35,12 +35,12 @@ export class EditableStringComponent implements OnInit, OnDestroy {
 
   @Input()
   lenghtRestrictions?: {
-    minLenght: number,
-    maxLength: number
+    minLenght: number;
+    maxLength: number;
   };
 
   @Input()
-  inputClass: string = '';
+  inputClass = '';
 
   @Output()
   contentChanged = new EventEmitter<string>();
@@ -60,7 +60,7 @@ export class EditableStringComponent implements OnInit, OnDestroy {
     });
   }
 
-  setEditMode(value: boolean) {
+  setEditMode(value: boolean): void {
     this.isEditMode$.next(value);
   }
 
@@ -68,7 +68,7 @@ export class EditableStringComponent implements OnInit, OnDestroy {
     this.isEditMode$.complete();
   }
 
-  checkInputCompleteOrCancel(event: KeyboardEvent) {
+  checkInputCompleteOrCancel(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.emitValueIfValid();
       event.stopPropagation();
@@ -82,15 +82,15 @@ export class EditableStringComponent implements OnInit, OnDestroy {
     }
   }
 
-  emitValueIfValid() {
-    if (this.editForm?.valid) {
-      this.contentChanged.emit(this.editForm.value.content);
+  emitValueIfValid(): void {
+    if (this.editForm?.valid ?? false) {
+      this.contentChanged.emit(this.editForm!.value.content);
     }
 
     this.setEditMode(false);
   }
 
-  private initForm() {
+  private initForm(): void {
     if (!this.editForm) {
       const validators = [];
       if (this.lenghtRestrictions) {
@@ -107,7 +107,9 @@ export class EditableStringComponent implements OnInit, OnDestroy {
       this.editForm.controls.content.setValue(this.content);
     }
 
-    const setFocus = (el: HTMLInputElement) => setTimeout(() => el.focus());
+    const setFocus = (el: HTMLInputElement): void => {
+      setTimeout(() => el.focus());
+    };
 
     if (this.editInput.length > 0) {
       setFocus(this.editInput.first.nativeElement);

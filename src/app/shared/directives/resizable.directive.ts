@@ -43,11 +43,11 @@ export class ResizableDirective implements OnInit {
     private readonly documentRef: Document,
     private readonly ngZone: NgZone,
     private readonly destroyRef: DestroyRef) {
-    this.targetElement = this.el.nativeElement;
+    this.targetElement = this.el.nativeElement as HTMLElement;
   }
 
   ngOnInit(): void {
-    const resizer = this.renderer.createElement("span");
+    const resizer = this.renderer.createElement("span") as HTMLElement;
     this.renderer.addClass(resizer, "resize-holder");
     this.renderer.appendChild(this.targetElement, resizer);
 

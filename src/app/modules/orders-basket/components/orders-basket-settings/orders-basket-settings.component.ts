@@ -23,7 +23,7 @@ export class OrdersBasketSettingsComponent extends WidgetSettingsBaseComponent<O
   @Input({ required: true })
   guid!: string;
   @Output()
-  settingsChange: EventEmitter<void> = new EventEmitter();
+  settingsChange = new EventEmitter<void>();
 
   readonly form = this.formBuilder.group({
     showPresetsPanel: this.formBuilder.nonNullable.control<boolean | null>(false)

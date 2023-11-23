@@ -12,7 +12,7 @@ export class DeviceService {
 
   deviceInfo$ = from(this.deviceInfoService.getDeviceInfo())
     .pipe(
-      map(info => ({...info, isMobile: info.isMobile || info.isTablet})),
+      map(info => ({...info, isMobile: (info.isMobile || info.isTablet) as boolean}) as { [propName: string]: any, isMobile: boolean }),
       shareReplay(1)
     );
 }

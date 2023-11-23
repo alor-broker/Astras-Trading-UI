@@ -29,14 +29,14 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     super(initialState);
   }
 
-  resetState() {
+  resetState(): void {
     this.patchState(initialState);
   }
 
-  extendTop(itemsToAdd: number, callback?: (addedItemsCount: number) => void) {
+  extendTop(itemsToAdd: number, callback?: (addedItemsCount: number) => void): void {
     this.select(state => state).pipe(
       take(1),
-      filter(s => !!s.rowStep)
+      filter(s => !!(s.rowStep ?? 0))
     ).subscribe(state => {
       const step = state.rowStep!;
       const topRows = this.generatePriceSequence(state.rows[0].price + step, step, itemsToAdd)
@@ -56,10 +56,10 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     });
   }
 
-  extendBottom(minItemsToAdd: number, callback?: (addedItemsCount: number) => void) {
+  extendBottom(minItemsToAdd: number, callback?: (addedItemsCount: number) => void): void {
     this.select(state => state).pipe(
       take(1),
-      filter(s => !!s.rowStep)
+      filter(s => !!(s.rowStep ?? 0))
     ).subscribe(state => {
       const step = state.rowStep!;
       const lastElement = state.rows[state.rows.length - 1];
@@ -79,7 +79,7 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     });
   }
 
-  public initWithPriceRange(instrumentKey: InstrumentKey, priceRange: Range, step: number, renderRowsCount: number, complete?: () => void) {
+  public initWithPriceRange(instrumentKey: InstrumentKey, priceRange: Range, step: number, renderRowsCount: number, complete?: () => void): void {
     const priceRowsCount = Math.ceil((priceRange.max - priceRange.min) / step);
     const startPrice = MathHelper.round(
       priceRange.min + Math.ceil(priceRowsCount / 2) * step,

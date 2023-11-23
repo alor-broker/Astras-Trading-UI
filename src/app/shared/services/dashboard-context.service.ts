@@ -46,7 +46,7 @@ export class DashboardContextService {
     );
   }
 
-  selectDashboardPortfolio(portfolioKey: PortfolioKey) {
+  selectDashboardPortfolio(portfolioKey: PortfolioKey): void {
     this.selectedDashboard$.pipe(
       mapWith(
         () => this.deviceService.deviceInfo$,
@@ -62,7 +62,7 @@ export class DashboardContextService {
     });
   }
 
-  selectDashboardInstrument(instrumentKey: InstrumentKey, groupKey: string) {
+  selectDashboardInstrument(instrumentKey: InstrumentKey, groupKey: string): void {
     this.selectedDashboard$.pipe(
       mapWith(
         () => this.deviceService.deviceInfo$,

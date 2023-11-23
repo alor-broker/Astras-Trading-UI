@@ -14,7 +14,7 @@ export class ArbitrageSpreadModalWidgetComponent implements OnInit {
   formData: { value: ArbitrageSpread, isValid: boolean } | null = null;
 
   constructor(
-    private service: ArbitrageSpreadService
+    private readonly service: ArbitrageSpreadService
   ) {
   }
 
@@ -23,16 +23,16 @@ export class ArbitrageSpreadModalWidgetComponent implements OnInit {
     this.spreadInfo$ = this.service.spreadParams$;
   }
 
-  handleCancel() {
+  handleCancel(): void {
     this.formData = null;
     this.service.closeSpreadModal();
   }
 
-  formChange(data: { value: ArbitrageSpread, isValid: boolean }) {
+  formChange(data: { value: ArbitrageSpread, isValid: boolean }): void {
     this.formData = data;
   }
 
-  addOrEdit() {
+  addOrEdit(): void {
     this.spreadInfo$
       .pipe(
         take(1)

@@ -14,9 +14,9 @@ export class CalendarComponent implements OnInit, OnDestroy {
   guid!: string;
   calendar$?: Observable<Calendar | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);
-  private isActivated$ = new Subject<boolean>();
+  private readonly isActivated$ = new Subject<boolean>();
 
-  constructor(private service: InfoService) {
+  constructor(private readonly service: InfoService) {
   }
 
   @Input()

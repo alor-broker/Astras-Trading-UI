@@ -14,7 +14,6 @@ import { TableSettingHelper } from '../../../../shared/utils/table-setting.helpe
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
-import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { DomHelper } from "../../../../shared/utils/dom-helper";
@@ -30,8 +29,8 @@ import {
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
 
 interface DisplayOrder extends StopOrder {
-  residue: string,
-  volume: number
+  residue: string;
+  volume: number;
 }
 
 @Component({
@@ -50,7 +49,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'id',
       displayName: 'Id',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(a.id) - Number(b.id),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => Number(a.id) - Number(b.id),
       filterData: {
         filterName: 'id',
         isDefaultFilter: false
@@ -61,7 +60,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'symbol',
       displayName: 'Тикер',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.symbol.localeCompare(b.symbol),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.symbol.localeCompare(b.symbol),
       filterData: {
         filterName: 'id',
         isDefaultFilter: false
@@ -73,7 +72,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'side',
       displayName: 'Сторона',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.side.toString().localeCompare(b.side.toString()),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.side.toString().localeCompare(b.side.toString()),
       filterData: {
         filterName: 'side',
         isDefaultFilter: true,
@@ -89,7 +88,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'residue',
       displayName: 'Остаток',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.filled - a.filled,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => (b.filled ?? 0) - (a.filled ?? 0),
       tooltip: 'Отношение невыполненных заявок к общему количеству',
       minWidth: 70
     },
@@ -97,7 +96,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'volume',
       displayName: 'Объем',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.volume - a.volume,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.volume - a.volume,
       tooltip: 'Объем',
       minWidth: 60
     },
@@ -105,7 +104,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'qty',
       displayName: 'Кол-во',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.qty - a.qty,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.qty - a.qty,
       tooltip: 'Количество заявок',
       minWidth: 65
     },
@@ -113,7 +112,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'price',
       displayName: 'Цена',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.price - a.price,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.price - a.price,
       tooltip: 'Цена',
       minWidth: 55
     },
@@ -121,14 +120,14 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'triggerPrice',
       displayName: 'Сигн. цена',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.triggerPrice - a.triggerPrice,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.triggerPrice - a.triggerPrice,
       tooltip: 'Сигнальная цена (заявка выставится, когда цена упадёт/поднимется до указанного значения)',
     },
     {
       id: 'status',
       displayName: 'Статус',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.status.localeCompare(b.status),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.status.localeCompare(b.status),
       filterData: {
         filterName: 'status',
         isDefaultFilter: true,
@@ -146,7 +145,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'conditionType',
       displayName: 'Условие',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.conditionType.localeCompare(b.conditionType),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.conditionType.localeCompare(b.conditionType),
       filterData: {
         filterName: 'conditionType',
         isDefaultFilter: true,
@@ -164,7 +163,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'transTime',
       displayName: 'Время',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(b.transTime) - Number(a.transTime),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => Number(b.transTime) - Number(a.transTime),
       tooltip: 'Время совершения заявки',
       minWidth: 60
     },
@@ -172,7 +171,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'exchange',
       displayName: 'Биржа',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.exchange.localeCompare(a.exchange),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.exchange.localeCompare(a.exchange),
       filterData: {
         filterName: 'exchange',
         isDefaultFilter: true,
@@ -188,7 +187,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'type',
       displayName: 'Тип',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.type.localeCompare(a.type),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.type.localeCompare(a.type),
       filterData: {
         filterName: 'exchange',
         isDefaultFilter: true,
@@ -204,14 +203,14 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'endTime',
       displayName: 'Действ. до.',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(b.endTime) - Number(a.endTime),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => Number(b.endTime) - Number(a.endTime),
       tooltip: 'Срок действия заявки',
       minWidth: 65
     },
   ];
 
-  private cancelCommands = new Subject<CancelCommand>();
-  private cancels$ = this.cancelCommands.asObservable();
+  private readonly cancelCommands = new Subject<CancelCommand>();
+  private readonly cancels$ = this.cancelCommands.asObservable();
   private orders: StopOrder[] = [];
 
   settingsTableName = TableNames.StopOrdersTable;
@@ -237,7 +236,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
 
     this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
-        TableSettingHelper.isTableSettingsEqual(previous?.positionsTable, current.positionsTable)
+        TableSettingHelper.isTableSettingsEqual(previous.positionsTable, current.positionsTable)
         && previous.badgeColor === current.badgeColor
       ),
       mapWith(
@@ -263,8 +262,8 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
               ? {
                 ...column.column.filterData,
                 filterName: tStopOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-                filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
-                  value: f.value,
+                filters: (column.column.filterData.filters ?? []).map(f => ({
+                  value: f.value as unknown,
                   text: tCommon([column.column.id + 'Filters', f.value], {fallback: f.text})
                 }))
               }
@@ -294,12 +293,12 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       this.ordersGroupService.getAllOrderGroups()
     ]).pipe(
       map(([orders, f, converter, groups]) => orders
-        .map(o => ({
+        .map((o: StopOrder) => ({
           ...o,
           residue: `${o.filled ?? 0}/${o.qty}`,
           volume: MathHelper.round(o.qtyUnits * o.price, 2),
           transTime: converter.toTerminalDate(o.transTime),
-          endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime,
+          endTime: !!(o.endTime as Date | undefined) ? converter.toTerminalDate(o.endTime) : o.endTime,
           groupId: groups.find(g => !!g.orders.find(go => go.orderId === o.id))?.id
         }))
         .filter(o => this.justifyFilter(o, f))
@@ -308,16 +307,16 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
 
     this.cancels$.pipe(
       mergeMap((command) => this.canceller.cancelOrder(command)),
-      catchError((_, caught) => caught),
+      catchError((e, caught) => caught),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
-  cancelOrder(orderId: string) {
+  cancelOrder(orderId: string): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
-      this.cancelCommands?.next({
+      this.cancelCommands.next({
         portfolio: settings.portfolio,
         exchange: settings.exchange,
         orderid: orderId,
@@ -326,7 +325,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
     });
   }
 
-  editOrder(order: StopOrder, event: MouseEvent) {
+  editOrder(order: StopOrder, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
@@ -349,22 +348,22 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
     });
   }
 
-  cancelAllOrders() {
+  cancelAllOrders(): void {
     const working = this.orders.filter(o => o.status == 'working').map(o => o.id);
     working.forEach(order => this.cancelOrder(order));
   }
 
-  openOrdersGroup(groupId: string, event: MouseEvent) {
+  openOrdersGroup(groupId: string, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
     this.service.openOrderGroupModal(groupId);
   }
 
   getConditionSign(condition: string): string {
-    return getConditionSign(getConditionTypeByString(condition)!) || '';
+    return getConditionSign(getConditionTypeByString(condition)!) ?? '';
   }
 
-  private sortOrders(a: DisplayOrder, b: DisplayOrder) {
+  private sortOrders(a: DisplayOrder, b: DisplayOrder): number {
     if (a.status == 'working' && b.status != 'working') {
       return -1;
     }

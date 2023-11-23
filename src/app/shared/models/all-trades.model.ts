@@ -10,9 +10,9 @@ export interface GetAllTradesRequest {
 
 export interface AllTradesSubRequest extends SubscriptionRequest {
   code: string;
-  format: string,
-  exchange: string,
-  depth?: number
+  format: string;
+  exchange: string;
+  depth?: number;
 }
 
 export interface AllTradesItem {

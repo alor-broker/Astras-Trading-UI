@@ -43,7 +43,7 @@ export class OrderSubmitWidgetComponent implements OnInit {
   currentPortfolio$!: Observable<PortfolioKey>;
   currentInstrument$!: Observable<Instrument>;
 
-  shouldShowSettings: boolean = false;
+  shouldShowSettings = false;
 
   @Input({ required: true })
   widgetInstance!: WidgetInstance;
@@ -69,7 +69,7 @@ export class OrderSubmitWidgetComponent implements OnInit {
     return this.widgetInstance.instance.guid;
   }
 
-  onSettingsChange() {
+  onSettingsChange(): void {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 
@@ -115,14 +115,14 @@ export class OrderSubmitWidgetComponent implements OnInit {
     }));
   }
 
-  setCommonParameters(params: Partial<CommonParameters>) {
+  setCommonParameters(params: Partial<CommonParameters>): void {
     this.commonParametersService.setParameters(params);
   }
 
   private isEqualOrderSubmitSettings(
     settings1?: OrderSubmitSettings,
     settings2?: OrderSubmitSettings
-  ) {
+  ): boolean {
     if (settings1 && settings2) {
       return (
         settings1.linkToActive == settings2.linkToActive &&

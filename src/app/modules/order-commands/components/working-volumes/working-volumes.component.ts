@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {BehaviorSubject, filter, Observable, shareReplay, switchMap} from "rxjs";
-import {OrderbookData, OrderbookRequest} from "../../../orderbook/models/orderbook-data.model";
+import { OrderbookData, OrderbookDataRow, OrderbookRequest } from "../../../orderbook/models/orderbook-data.model";
 import {OrderBookDataFeedHelper} from "../../../orderbook/utils/order-book-data-feed.helper";
 import {map, startWith} from "rxjs/operators";
 import {SubscriptionsDataFeedService} from "../../../../shared/services/subscriptions-data-feed.service";
@@ -14,8 +14,8 @@ import {SubscriptionsDataFeedService} from "../../../../shared/services/subscrip
 export class WorkingVolumesComponent implements OnInit {
   readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);
   currentAskBid$!: Observable<{
-    ask: { volume: number, price: number } | null,
-    bid: { volume: number, price: number } | null,
+    ask: { volume: number, price: number } | null;
+    bid: { volume: number, price: number } | null;
   } | null>;
 
   @Input()
@@ -35,7 +35,7 @@ export class WorkingVolumesComponent implements OnInit {
     return [...this.workingVolumes].sort((a, b) => a - b);
   }
 
-  emitItemSelected(volume: number, price?: number) {
+  emitItemSelected(volume: number, price?: number): void {
     this.itemSelected.emit({
       volume,
       price
@@ -54,10 +54,10 @@ export class WorkingVolumesComponent implements OnInit {
         ),
         OrderBookDataFeedHelper.getOrderbookSubscriptionId
       )),
-      filter(x => !!x),
+      filter(x => !!(x as OrderbookData | null)),
       map(orderbook => {
-          const bestAsk = orderbook.a[0];
-          const bestBid = orderbook.b[0];
+          const bestAsk = orderbook.a[0] as OrderbookDataRow | undefined;
+          const bestBid = orderbook.b[0] as OrderbookDataRow | undefined;
 
           return {
             ask: !!bestAsk

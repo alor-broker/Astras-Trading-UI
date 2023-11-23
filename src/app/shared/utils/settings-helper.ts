@@ -31,7 +31,6 @@ export function isInstrumentDependent(
   settings: WidgetSettings
 ): settings is InstrumentDependentSettings {
   return (
-    settings &&
     'linkToActive' in settings &&
     'symbol' in settings &&
     'exchange' in settings
@@ -46,7 +45,6 @@ export function isPortfolioDependent(
   settings: WidgetSettings
 ): settings is PortfolioDependentSettings {
   return (
-    settings &&
     'linkToActive' in settings &&
     'portfolio' in settings &&
     'exchange' in settings
@@ -59,7 +57,7 @@ export function isPortfolioDependent(
  * @param settings2 second settings
  * @returns true is equal, false if not
  */
-export function isEqualPortfolioDependedSettings(settings1?: PortfolioDependentSettings | null, settings2?: PortfolioDependentSettings | null) {
+export function isEqualPortfolioDependedSettings(settings1?: PortfolioDependentSettings | null, settings2?: PortfolioDependentSettings | null): boolean {
   return settings1?.portfolio === settings2?.portfolio
     && settings1?.exchange == settings2?.exchange
     && settings1?.linkToActive == settings2?.linkToActive
@@ -72,7 +70,7 @@ export function isEqualPortfolioDependedSettings(settings1?: PortfolioDependentS
  * @param settings2 second settings
  * @returns true is equal, false if not
  */
-export function isInstrumentEqual(settings1?: InstrumentKey | null, settings2?: InstrumentKey | null) {
+export function isInstrumentEqual(settings1?: InstrumentKey | null, settings2?: InstrumentKey | null): boolean {
   return settings1?.symbol === settings2?.symbol
     && settings1?.instrumentGroup === settings2?.instrumentGroup
     && settings1?.exchange == settings2?.exchange;
@@ -89,7 +87,7 @@ export class SettingsHelper {
     terminalSettingsService: TerminalSettingsService): Observable<boolean> {
     return widgetSettingsService.getSettings(widgetGuid).pipe(
       mapWith(() => terminalSettingsService.getSettings(), (ws, ts) => ({ ws, ts })),
-      map(({ ws, ts }) => ts.badgesBind === true && (ws.linkToActive ?? true) === true && !!ws.badgeColor)
+      map(({ ws, ts }) => ts.badgesBind === true && (ws.linkToActive ?? true) && !!(ws.badgeColor ?? ''))
     );
   }
 }

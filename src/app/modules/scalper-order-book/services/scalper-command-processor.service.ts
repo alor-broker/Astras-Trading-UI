@@ -45,15 +45,15 @@ export class ScalperCommandProcessorService {
     private readonly scalperOrdersService: ScalperOrdersService) {
   }
 
-  processLeftMouseClick(e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext) {
+  processLeftMouseClick(e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext): void {
     this.processClick('left', e, row, dataContext);
   }
 
-  processRightMouseClick(e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext) {
+  processRightMouseClick(e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext): void {
     this.processClick('right', e, row, dataContext);
   }
 
-  processHotkeyPress(command: TerminalCommand, isActive: boolean, dataContext: ScalperOrderBookDataContext) {
+  processHotkeyPress(command: TerminalCommand, isActive: boolean, dataContext: ScalperOrderBookDataContext): void {
     if (this.handleAllCommands(command, dataContext)) {
       return;
     }
@@ -102,12 +102,12 @@ export class ScalperCommandProcessorService {
   }
 
   private handleAllCommands(command: TerminalCommand, dataContext: ScalperOrderBookDataContext): boolean {
-    if (command.type === ScalperOrderBookCommands.cancelLimitOrdersAll) {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelLimitOrdersAll) {
       this.cancelLimitOrders(dataContext);
       return true;
     }
 
-    if (command.type === ScalperOrderBookCommands.closePositionsByMarketAll) {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.closePositionsByMarketAll) {
       this.closePositionsByMarket(dataContext);
       return true;
     }
@@ -115,28 +115,28 @@ export class ScalperCommandProcessorService {
     return false;
   }
 
-  private handleCurrentOrderBookCommands(command: TerminalCommand, dataContext: ScalperOrderBookDataContext) {
-    if (command.type === ScalperOrderBookCommands.cancelLimitOrdersCurrent) {
+  private handleCurrentOrderBookCommands(command: TerminalCommand, dataContext: ScalperOrderBookDataContext): void {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelLimitOrdersCurrent) {
       this.cancelLimitOrders(dataContext);
       return;
     }
 
-    if (command.type === ScalperOrderBookCommands.closePositionsByMarketCurrent) {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.closePositionsByMarketCurrent) {
       this.closePositionsByMarket(dataContext);
       return;
     }
 
-    if (command.type === ScalperOrderBookCommands.sellBestOrder) {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.sellBestOrder) {
       this.placeBestOrder(dataContext, Side.Sell);
       return;
     }
 
-    if (command.type === ScalperOrderBookCommands.buyBestOrder) {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.buyBestOrder) {
       this.placeBestOrder(dataContext, Side.Buy);
       return;
     }
 
-    if (command.type === ScalperOrderBookCommands.sellBestBid) {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.sellBestBid) {
       this.callWithSettings(
         dataContext,
         settings => {
@@ -163,7 +163,7 @@ export class ScalperCommandProcessorService {
       return;
     }
 
-    if (command.type === ScalperOrderBookCommands.buyBestAsk) {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.buyBestAsk) {
       this.callWithSettings(
         dataContext,
         settings => {
@@ -190,17 +190,17 @@ export class ScalperCommandProcessorService {
       return;
     }
 
-    if (command.type === ScalperOrderBookCommands.sellMarket) {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.sellMarket) {
       this.placeMarketOrderSilent(dataContext, Side.Sell);
       return;
     }
 
-    if (command.type === ScalperOrderBookCommands.buyMarket) {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.buyMarket) {
       this.placeMarketOrderSilent(dataContext, Side.Buy);
       return;
     }
 
-    if (command.type === ScalperOrderBookCommands.reversePositionsByMarketCurrent) {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.reversePositionsByMarketCurrent) {
       this.callWithSettings(
         dataContext,
         settings => {
@@ -217,7 +217,7 @@ export class ScalperCommandProcessorService {
     }
   }
 
-  private cancelLimitOrders(dataContext: ScalperOrderBookDataContext) {
+  private cancelLimitOrders(dataContext: ScalperOrderBookDataContext): void {
     this.callWithCurrentOrders(
       dataContext,
       orders => {
@@ -229,7 +229,7 @@ export class ScalperCommandProcessorService {
       });
   }
 
-  private closePositionsByMarket(dataContext: ScalperOrderBookDataContext) {
+  private closePositionsByMarket(dataContext: ScalperOrderBookDataContext): void {
     this.callWithSettings(
       dataContext,
       settings => {
@@ -241,7 +241,7 @@ export class ScalperCommandProcessorService {
     );
   }
 
-  private placeBestOrder(dataContext: ScalperOrderBookDataContext, side: Side) {
+  private placeBestOrder(dataContext: ScalperOrderBookDataContext, side: Side): void {
     this.callWithSettings(
       dataContext,
       settings => {
@@ -268,13 +268,13 @@ export class ScalperCommandProcessorService {
 
   private callWithCurrentOrders(
     dataContext: ScalperOrderBookDataContext,
-    action: (orders: CurrentOrderDisplay[]) => void) {
+    action: (orders: CurrentOrderDisplay[]) => void): void {
     dataContext.currentOrders$.pipe(
       take(1)
     ).subscribe(action);
   }
 
-  private placeMarketOrderSilent(dataContext: ScalperOrderBookDataContext, side: Side) {
+  private placeMarketOrderSilent(dataContext: ScalperOrderBookDataContext, side: Side): void {
     this.callWithSettings(
       dataContext,
       settings => {
@@ -291,7 +291,7 @@ export class ScalperCommandProcessorService {
 
   private callWithSettings(
     dataContext: ScalperOrderBookDataContext,
-    action: (settings: { widgetSettings: ScalperOrderBookWidgetSettings, instrument: Instrument }) => void) {
+    action: (settings: { widgetSettings: ScalperOrderBookWidgetSettings, instrument: Instrument }) => void): void {
     dataContext.extendedSettings$.pipe(
       take(1)
     ).subscribe(s => action(s));
@@ -299,7 +299,7 @@ export class ScalperCommandProcessorService {
 
   private callWithPortfolioKey(
     dataContext: ScalperOrderBookDataContext,
-    action: (portfolioKey: PortfolioKey) => void) {
+    action: (portfolioKey: PortfolioKey) => void): void {
     dataContext.currentPortfolio$.pipe(
       take(1)
     ).subscribe(p => action(p));
@@ -307,7 +307,7 @@ export class ScalperCommandProcessorService {
 
   private callWithPosition(
     dataContext: ScalperOrderBookDataContext,
-    action: (position: Position | null) => void) {
+    action: (position: Position | null) => void): void {
     dataContext.position$.pipe(
       take(1)
     ).subscribe(p => action(p));
@@ -315,7 +315,7 @@ export class ScalperCommandProcessorService {
 
   private callWithCurrentOrderBook(
     dataContext: ScalperOrderBookDataContext,
-    action: (orderBook: OrderbookData) => void) {
+    action: (orderBook: OrderbookData) => void): void {
     dataContext.orderBookData$.pipe(
       take(1)
     ).subscribe(action);
@@ -323,7 +323,7 @@ export class ScalperCommandProcessorService {
 
   private callWithSelectedVolume(
     dataContext: ScalperOrderBookDataContext,
-    action: (workingVolume: number) => void) {
+    action: (workingVolume: number) => void): void {
     this.hotkeysService.modifiers$
       .pipe(
         switchMap(
@@ -334,7 +334,7 @@ export class ScalperCommandProcessorService {
           )
         ),
         take(1),
-        filter(workingVolume => !!workingVolume),
+        filter(workingVolume => !!(workingVolume ?? 0)),
         map(x => Math.abs(x!))
       )
       .subscribe(workingVolume => action(workingVolume!));
@@ -351,7 +351,7 @@ export class ScalperCommandProcessorService {
     return this.mouseActionsMap$;
   }
 
-  private processClick(btn: 'left' | 'right', e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext) {
+  private processClick(btn: 'left' | 'right', e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext): void {
     this.getMouseActionsMap().pipe(
       take(1),
       map(map => {
@@ -395,7 +395,7 @@ export class ScalperCommandProcessorService {
     }
   }
 
-  private stopLimitAction(row: { price: number }, side: Side, dataContext: ScalperOrderBookDataContext) {
+  private stopLimitAction(row: { price: number }, side: Side, dataContext: ScalperOrderBookDataContext): void {
     this.callWithSettings(
       dataContext,
       settings => {
@@ -419,7 +419,7 @@ export class ScalperCommandProcessorService {
       });
   }
 
-  private stopLossAction(row: { price: number }, dataContext: ScalperOrderBookDataContext) {
+  private stopLossAction(row: { price: number }, dataContext: ScalperOrderBookDataContext): void {
     this.callWithSettings(
       dataContext,
       settings => {
@@ -444,7 +444,7 @@ export class ScalperCommandProcessorService {
     );
   }
 
-  private limitOrderAction(row: { price: number }, side: Side, dataContext: ScalperOrderBookDataContext) {
+  private limitOrderAction(row: { price: number }, side: Side, dataContext: ScalperOrderBookDataContext): void {
     this.callWithSettings(
       dataContext,
       settings => {
@@ -475,7 +475,7 @@ export class ScalperCommandProcessorService {
       });
   }
 
-  private marketOrderAction(side: Side, dataContext: ScalperOrderBookDataContext) {
+  private marketOrderAction(side: Side, dataContext: ScalperOrderBookDataContext): void {
     this.callWithSettings(
       dataContext,
       settings => {

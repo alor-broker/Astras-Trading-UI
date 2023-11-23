@@ -50,11 +50,7 @@ export class RemoteStorageService {
               value: <T>JSON.parse(r.UserSettings.Content)
             } as SettingsRecord<T>;
           } catch (e: any) {
-            this.errorHandlerService.handleError({
-              name: e.name,
-              message: e.message,
-              stack: e.stack
-            });
+            this.errorHandlerService.handleError(e);
 
             return null;
           }
@@ -87,11 +83,7 @@ export class RemoteStorageService {
             value: <T>JSON.parse(i.Content)
           } as SettingsRecord<T>));
         } catch (e: any) {
-          this.errorHandlerService.handleError({
-            name: e.name,
-            message: e.message,
-            stack: e.stack
-          });
+          this.errorHandlerService.handleError(e);
 
           return null;
         }

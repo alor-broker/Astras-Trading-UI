@@ -2,15 +2,12 @@ import {WidgetName} from "../models/widget-meta.model";
 
 export class WidgetsHelper {
   static getWidgetName(name: WidgetName, lang?: string): string {
-    if (!lang) {
+    if (!(lang ?? '')) {
       return name.default;
     }
 
-    const translation = name.translations?.[lang];
-    if (translation) {
-      return translation;
-    }
+    const translation = name.translations?.[lang as string];
 
-    return name.default;
+    return translation ?? name.default;
   }
 }

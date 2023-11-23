@@ -52,7 +52,7 @@ export class HoverItemsGroupDirective<T = any> implements HoverItemsGroup<T>, On
   }
 
   ngOnInit(): void {
-    if(!this.atsHoverItemsGroup) {
+    if(!(this.atsHoverItemsGroup ?? false)) {
       return;
     }
 

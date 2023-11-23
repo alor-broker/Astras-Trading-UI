@@ -17,6 +17,7 @@ export interface AllInstruments {
   tradingStatusInfo: string;
   yield: number;
   badges?: string[];
+  id: string;
 }
 
 export interface AllInstrumentsFilters {

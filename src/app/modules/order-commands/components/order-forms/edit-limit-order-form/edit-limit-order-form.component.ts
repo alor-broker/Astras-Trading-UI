@@ -16,6 +16,7 @@ import {EvaluationBaseProperties} from "../../../../../shared/models/evaluation-
 import {PriceDiffHelper} from "../../../utils/price-diff.helper";
 import {LimitOrderEdit} from "../../../../../shared/models/orders/edit-order.model";
 import {toInstrumentKey} from "../../../../../shared/utils/instruments";
+import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 
 @Component({
   selector: 'ats-edit-limit-order-form',
@@ -84,7 +85,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
       orderId: this.orderId$,
       portfolioKey: this.portfolioKey$
     }).pipe(
-      filter(x => !!x.orderId && !!x.portfolioKey),
+      filter(x => !!(x.orderId ?? '') && !!x.portfolioKey),
       switchMap(x => this.orderDetailsService.getLimitOrderDetails(x.orderId!, x.portfolioKey!)),
       filter((o): o is Order => !!o),
       shareReplay(1)
@@ -104,19 +105,19 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
     this.evaluationRequest$.complete();
   }
 
-  setQuantity(value: number) {
+  setQuantity(value: number): void {
     this.commonParametersService.setParameters({
       quantity: value
     });
   }
 
-  private initOrderChange() {
+  private initOrderChange(): void {
     combineLatest({
       currentOrder: this.currentOrder$,
       currentInstrument: this.formInstrument$
     }).pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => {
+    ).subscribe((x: { currentOrder: Order, currentInstrument: Instrument }) => {
       this.form.reset(undefined, {emitEvent: true});
 
       this.form.controls.price.clearValidators();
@@ -134,12 +135,12 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
 
       if (!!x.currentOrder.iceberg) {
         this.form.controls.isIceberg.setValue(true);
-        if (x.currentOrder.iceberg.creationFixedQuantity) {
-          this.form.controls.icebergFixed.setValue(x.currentOrder.iceberg.creationFixedQuantity);
+        if (x.currentOrder.iceberg.creationFixedQuantity ?? 0) {
+          this.form.controls.icebergFixed.setValue(x.currentOrder.iceberg.creationFixedQuantity!);
         }
 
-        if (x.currentOrder.iceberg.creationVarianceQuantity) {
-          this.form.controls.icebergVariance.setValue(x.currentOrder.iceberg.creationVarianceQuantity);
+        if (x.currentOrder.iceberg.creationVarianceQuantity ?? 0) {
+          this.form.controls.icebergVariance.setValue(x.currentOrder.iceberg.creationVarianceQuantity!);
         }
       }
 
@@ -152,7 +153,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
     });
   }
 
-  private initCommonParametersUpdate() {
+  private initCommonParametersUpdate(): void {
     this.commonParametersService.parameters$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(p => {
@@ -177,7 +178,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
     });
   }
 
-  private initEvaluationUpdate() {
+  private initEvaluationUpdate(): void {
     const formChanges$ = this.form.valueChanges.pipe(
       map(v => ({quantity: v.quantity, price: v.price})),
       distinctUntilChanged((prev, curr) => prev.price === curr.price && prev.quantity === curr.quantity),
@@ -200,12 +201,12 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
     ).subscribe(() => this.updateEvaluation());
   }
 
-  private updateEvaluation() {
+  private updateEvaluation(): void {
     this.getInstrumentWithPortfolio().pipe(
       take(1)
     ).subscribe(x => {
       const formValue = this.form.value;
-      if (!formValue.price || !formValue.quantity) {
+      if (!(formValue.price ?? 0) || !(formValue.quantity ?? 0)) {
         this.evaluationRequest$.next(null);
         return;
       }
@@ -217,20 +218,20 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
           instrumentGroup: x.instrument.instrumentGroup
         },
         instrumentCurrency: x.instrument.currency,
-        price: formValue.price,
-        lotQuantity: formValue.quantity
+        price: formValue.price as number,
+        lotQuantity: formValue.quantity as number
       });
     });
   }
 
-  private initFormFieldsCheck() {
+  private initFormFieldsCheck(): void {
     this.form.valueChanges.pipe(
       distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => this.checkFieldsAvailability());
   }
 
-  private checkFieldsAvailability() {
+  private checkFieldsAvailability(): void {
     if (this.form.controls.isIceberg.enabled && this.form.controls.isIceberg.value) {
       this.enableControl(this.form.controls.icebergFixed);
       this.enableControl(this.form.controls.icebergVariance);
@@ -242,7 +243,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
     this.form.updateValueAndValidity();
   }
 
-  private initPriceDiffCalculation() {
+  private initPriceDiffCalculation(): void {
     this.currentPriceDiffPercent$ = PriceDiffHelper.getPriceDiffCalculation(
       this.form.controls.price,
       this.getInstrumentWithPortfolio(),
@@ -250,7 +251,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
     );
   }
 
-  private initFormStateChangeNotification() {
+  private initFormStateChangeNotification(): void {
     this.form.valueChanges.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
@@ -272,7 +273,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
       currentOrder: this.currentOrder$,
       portfolioKey: this.portfolioKey$
     }).pipe(
-      filter(x => !!x.currentOrder && !!x.portfolioKey),
+      filter(x => !!(x.currentOrder as Order | null) && !!x.portfolioKey),
       filter(() => this.form.valid),
       map(x => {
         const formValue = this.form.value;
@@ -291,11 +292,11 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
           updatedOrder.timeInForce = formValue.timeInForce;
         }
 
-        if (formValue.icebergFixed) {
+        if (formValue.icebergFixed ?? 0) {
           updatedOrder.icebergFixed = Number(formValue.icebergFixed);
         }
 
-        if (formValue.icebergVariance) {
+        if (formValue.icebergVariance ?? 0) {
           updatedOrder.icebergVariance = Number(formValue.icebergVariance);
         }
 

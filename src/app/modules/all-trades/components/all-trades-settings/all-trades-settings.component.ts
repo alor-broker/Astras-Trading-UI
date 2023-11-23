@@ -18,7 +18,7 @@ import { TechChartSettings } from "../../../tech-chart/models/tech-chart-setting
   styleUrls: ['./all-trades-settings.component.less']
 })
 export class AllTradesSettingsComponent extends WidgetSettingsBaseComponent<AllTradesSettings> implements OnInit {
-  form!: UntypedFormGroup;
+  form?: UntypedFormGroup;
   allTradesColumns: BaseColumnId[] = allTradesWidgetColumns;
 
   protected settings$!: Observable<AllTradesSettings>;
@@ -44,18 +44,16 @@ export class AllTradesSettingsComponent extends WidgetSettingsBaseComponent<AllT
     this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
-      if (settings) {
-        this.form = new UntypedFormGroup({
-          allTradesColumns: new UntypedFormControl(settings.allTradesColumns, Validators.required),
-          highlightRowsBySide: new UntypedFormControl(settings.highlightRowsBySide ?? false, Validators.required)
-        });
-      }
+      this.form = new UntypedFormGroup({
+        allTradesColumns: new UntypedFormControl(settings.allTradesColumns, Validators.required),
+        highlightRowsBySide: new UntypedFormControl(settings.highlightRowsBySide ?? false, Validators.required)
+      });
     });
   }
 
   protected getUpdatedSettings(): Partial<TechChartSettings> {
     return {
-      ...this.form.value,
-    };
+      ...this.form!.value,
+    } as Partial<TechChartSettings>;
   }
 }

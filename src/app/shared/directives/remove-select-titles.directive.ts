@@ -20,7 +20,7 @@ export class RemoveSelectTitlesDirective implements AfterViewInit {
     private readonly elementRef: NzSelectComponent
   ) { }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.elementRef.nzOpenChange
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(isOpen => this.selectOpenStateChange(isOpen));
@@ -31,19 +31,19 @@ export class RemoveSelectTitlesDirective implements AfterViewInit {
     this.removeNativeTitles();
   }
 
-  selectOpenStateChange(isOpen: boolean) {
+  selectOpenStateChange(isOpen: boolean): void {
     if (isOpen) {
       setTimeout(
         () => {
           document.querySelectorAll('.ant-select-item-option')
-            ?.forEach(option => option.removeAttribute('title'));
+            .forEach(option => option.removeAttribute('title'));
         },
         0
       );
     }
   }
 
-  removeNativeTitles() {
+  removeNativeTitles(): void {
     setTimeout(
       () => {
         this.elementRef.nzSelectTopControlComponentElement.nativeElement.querySelectorAll('.ant-select-selection-item[title]')

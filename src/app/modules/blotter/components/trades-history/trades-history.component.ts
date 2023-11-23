@@ -41,7 +41,6 @@ import { TimezoneConverterService } from "../../../../shared/services/timezone-c
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import {
   filter,
   map,
@@ -171,13 +170,13 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
     );
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     super.ngAfterViewInit();
 
     const scrollViewport$ = this.dataTableQuery.changes.pipe(
-      map(x => x.first),
+      map(x => x.first as NzTableComponent<DisplayTrade>),
       startWith(this.dataTableQuery.first),
-      filter((x): x is NzTableComponent<any> => !!x),
+      filter((x): x is NzTableComponent<DisplayTrade> => !!(x as NzTableComponent<DisplayTrade> | undefined)),
       map(x => x.cdkVirtualScrollViewport),
       filter((x): x is CdkVirtualScrollViewport => !!x),
       shareReplay(1)
@@ -242,13 +241,13 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     super.ngOnDestroy();
     this.loadedHistory$.complete();
     this.isLoading$.complete();
   }
 
-  formatDate(date: Date) {
+  formatDate(date: Date): string {
     return date.toLocaleTimeString(
       [],
       {
@@ -262,7 +261,7 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
     );
   }
 
-  private loadMoreItems(from?: string | null, itemsCount?: number | null) {
+  private loadMoreItems(from?: string | null, itemsCount?: number | null): void {
     this.isLoading$.pipe(
       take(1),
       filter(isLoading => !isLoading),
@@ -299,10 +298,10 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
     });
   }
 
-  private initTableSettings() {
+  private initTableSettings(): void {
     const tableSettings$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
-        TableSettingHelper.isTableSettingsEqual(previous?.tradesHistoryTable, current.tradesHistoryTable)
+        TableSettingHelper.isTableSettingsEqual(previous.tradesHistoryTable, current.tradesHistoryTable)
         && previous.badgeColor === current.badgeColor),
       map(s => s[this.settingsTableName] ?? TableSettingHelper.toTableDisplaySettings(allTradesColumns.filter(c => c.isDefault).map(c => c.id))),
       filter((s): s is TableDisplaySettings => !!s)
@@ -314,31 +313,29 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
     }).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
-      if (x.tableSettings) {
-        this.listOfColumns = this.allColumns
-          .map(c => ({ column: c, columnSettings: x.tableSettings.columns.find(x => x.columnId === c.id) }))
-          .filter(c => !!c.columnSettings)
-          .map((column, index) => ({
-            ...column.column,
-            displayName: x.translator(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-            tooltip: x.translator(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
-            filterData: column.column.filterData
-              ? {
-                ...column.column.filterData,
-                filterName: x.translator(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-                filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
-                  value: f.value,
-                  text: x.translator(['columns', column.column.id, 'listOfFilter', f.value], { fallback: f.text })
-                }))
-              }
-              : undefined,
-            width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
-            order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-          }))
-          .sort((a, b) => a.order - b.order);
+      this.listOfColumns = this.allColumns
+        .map(c => ({column: c, columnSettings: x.tableSettings.columns.find(x => x.columnId === c.id)}))
+        .filter(c => !!c.columnSettings)
+        .map((column, index) => ({
+          ...column.column,
+          displayName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+          tooltip: x.translator(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
+          filterData: column.column.filterData
+            ? {
+              ...column.column.filterData,
+              filterName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+              filters: (column.column.filterData.filters ?? []).map(f => ({
+                value: f.value as unknown,
+                text: x.translator(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
+              }))
+            }
+            : undefined,
+          width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
+          order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+        }))
+        .sort((a, b) => a.order - b.order);
 
-        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) => prev + cur.width!, 0);
-      }
+      this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) => prev + cur.width!, 0);
     });
   }
 }

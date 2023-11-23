@@ -15,7 +15,7 @@ export class SsoCallbackComponent implements OnInit {
     private readonly authService: AuthService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.authService.setRefreshToken(params['refreshToken']?.trim());
       this.router.navigate(['/dashboard']);

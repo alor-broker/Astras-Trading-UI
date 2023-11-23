@@ -15,7 +15,7 @@ export class ErrorHandlerService extends ErrorHandler {
   }
 
   handleError(error: Error | HttpErrorResponse): void {
-    for (const handler of (this.handlers ?? [])) {
+    for (const handler of ((this.handlers as ApplicationErrorHandler[] | undefined) ?? [])) {
       handler.handleError(error);
     }
   }
