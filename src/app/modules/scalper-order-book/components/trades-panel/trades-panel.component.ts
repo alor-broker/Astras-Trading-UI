@@ -397,10 +397,12 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     const yCenter = itemMeasurements.yTop + (itemHeight / 2);
 
     const draw = () => {
-      context.strokeStyle = item.color === 'green' ? themeColors.buyColor : themeColors.sellColor;
       this.drawRoundedRect(itemMeasurements.xLeft, itemMeasurements.yTop, itemWidth, itemHeight, 2, context);
+      context.fillStyle = themeColors.componentBackground;
+      context.fill();
+      context.strokeStyle = item.color === 'green' ? themeColors.buyColor : themeColors.sellColor;
       context.stroke();
-      context.fillStyle = themeColors.buySellBtnTextColor;
+      context.fillStyle = themeColors.textColor;
       context.textAlign = 'center';
       context.textBaseline = 'middle';
       context.fillText(itemText, xCenter, yCenter);

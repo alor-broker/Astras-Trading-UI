@@ -41,12 +41,13 @@ export class AllTradesService {
       code: instrumentKey.symbol,
       exchange: instrumentKey.exchange,
       depth: depth,
-      format: 'simple'
+      format: 'simple',
+      repeatCount: depth
     };
 
     return this.subscriptionsDataFeedService.subscribe(
       request,
-      request => `${request.opcode}_${request.code}_${request.exchange}`
+      request => `${request.opcode}_${request.code}_${request.exchange}_${depth ?? 1}`
     );
   }
 

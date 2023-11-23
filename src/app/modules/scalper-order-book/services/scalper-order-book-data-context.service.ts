@@ -8,6 +8,7 @@ import {
   shareReplay,
   switchMap,
   take,
+  tap,
 } from 'rxjs';
 import {
   ScalperOrderBookDataContext,
@@ -193,6 +194,9 @@ export class ScalperOrderBookDataContextService {
 
     return settings$.pipe(
       distinctUntilChanged((prev, curr) => isInstrumentEqual(prev?.widgetSettings, curr?.widgetSettings)),
+      tap(() => {
+        results = [];
+      }),
       switchMap(x => this.allTradesService.getNewTradesSubscription(x.widgetSettings, 100)),
       map(trade => {
         results.push(trade);
@@ -377,7 +381,7 @@ export class ScalperOrderBookDataContextService {
     }
 
     if (!priceBounds$) {
-      priceBounds$ = this.quotesService.getLastPrice(settings.widgetSettings).pipe(
+      priceBounds$ = this.quotesService.getLastPrice(settings.widgetSettings, 1).pipe(
         map(lp => {
           if(lp != null) {
             return { min: lp!, max: lp! };

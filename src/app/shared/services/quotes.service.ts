@@ -13,6 +13,7 @@ import { environment } from '../../../environments/environment';
 import { catchHttpError } from '../utils/observable-helper';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { HttpClient } from '@angular/common/http';
+import { CacheService } from "./cache.service";
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,8 @@ export class QuotesService {
   constructor(
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly cacheService: CacheService
   ) {
   }
 
@@ -39,12 +41,24 @@ export class QuotesService {
     );
   }
 
-  getLastPrice(instrumentKey: InstrumentKey): Observable<number | null> {
-    return this.getLastQuoteInfo(instrumentKey.symbol, instrumentKey.exchange).pipe(
+  getLastPrice(instrumentKey: InstrumentKey, cacheTimeoutSec?: number): Observable<number | null> {
+    const stream$ = this.getLastQuoteInfo(instrumentKey.symbol, instrumentKey.exchange).pipe(
       catchHttpError<Quote | null>(null, this.errorHandlerService),
       map(quote => {
-          return quote?.last_price ?? null;
+        return quote?.last_price ?? null;
       })
+    );
+
+    if(cacheTimeoutSec == null || cacheTimeoutSec === 0) {
+      return stream$;
+    }
+
+    return this.cacheService.wrap(
+      () => `QuotesService_getLastPrice_${instrumentKey.exchange}_${instrumentKey.symbol}_${instrumentKey.instrumentGroup ?? ''}`,
+      () => stream$,
+      {
+        expirationTimeoutSec: cacheTimeoutSec
+      }
     );
   }
 
