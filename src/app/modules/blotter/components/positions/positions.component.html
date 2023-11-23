@@ -112,7 +112,7 @@
                 <ats-instrument-badge-display [instrumentKey]="pos"></ats-instrument-badge-display>
               </td>
               <td *ngIf='column.id === "shortName"'>{{ pos.shortName }}</td>
-              <td *ngIf='column.id === "avgPrice"'>{{ pos.avgPrice | number : '0.0-10' }}</td>
+              <td *ngIf='column.id === "avgPrice"'>{{ roundPrice(pos.avgPrice) | number : '0.0-10' }}</td>
               <td *ngIf='column.id === "qtyT0"'
                   [class]='pos.qtyT0 < 0 ? "sell" : "buy"'>{{ round(pos.qtyT0) | number }}</td>
               <td *ngIf='column.id === "qtyT1"'
