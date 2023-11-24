@@ -289,7 +289,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         const lastBarPointKey = this.getLastBarPointKey(symbolInfo.ticker!, resolution);
         const lastBarPoint = this.lastBarPoint.get(lastBarPointKey);
 
-        if (!(lastBarPoint ?? 0) || res.time < lastBarPoint!) {
+        if (lastBarPoint == null || res.time < lastBarPoint) {
           return;
         }
 

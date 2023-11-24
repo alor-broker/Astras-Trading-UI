@@ -20,7 +20,6 @@ import { AtsValidators } from "../../../../../shared/utils/form-validators";
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
 import { StopLimitOrderEdit, StopMarketOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
 import { getConditionTypeByString } from "../../../../../shared/utils/order-conditions-helper";
-import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 
 @Component({
   selector: 'ats-edit-stop-order-form',
@@ -124,7 +123,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       currentInstrument: this.formInstrument$
     }).pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe((x: { currentOrder: StopOrder, currentInstrument: Instrument }) => {
+    ).subscribe(x => {
       this.form.reset(undefined, {emitEvent: true});
 
       this.setPriceValidators(this.form.controls.triggerPrice, x.currentInstrument);

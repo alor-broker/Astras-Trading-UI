@@ -99,7 +99,7 @@ export class OrderBookComponent implements OnInit {
         const bestBid = ob?.rows[0]?.bid;
         const bestAsk = ob?.rows[0]?.ask;
 
-        if (!(bestBid ?? 0) || !(bestAsk ?? 0)) {
+        if (bestBid == null || bestAsk == null) {
           return null;
         }
 

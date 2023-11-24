@@ -20,8 +20,8 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
     this.symbols$.next(value);
   }
 
-  @ViewChild('startPeriodCalendar') startPeriodCalendarComp!: NzCalendarComponent;
-  @ViewChild('endPeriodCalendar') endPeriodCalendarComp!: NzCalendarComponent;
+  @ViewChild('startPeriodCalendar') startPeriodCalendarComp?: NzCalendarComponent;
+  @ViewChild('endPeriodCalendar') endPeriodCalendarComp?: NzCalendarComponent;
 
   events$ = new BehaviorSubject<CalendarEvents>({});
   selectedDate$ = new BehaviorSubject<Date>(new Date());
@@ -44,8 +44,8 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
         tap(date => this.changeCalendarsDate(date)),
         switchMap(() => this.symbols$),
         switchMap(symbols => this.service.getEvents({
-            dateFrom: getISOStringDate(startOfMonth(this.startPeriodCalendarComp.activeDate.nativeDate)),
-            dateTo: getISOStringDate(endOfMonth(this.endPeriodCalendarComp.activeDate.nativeDate)),
+            dateFrom: getISOStringDate(startOfMonth(this.startPeriodCalendarComp!.activeDate.nativeDate)),
+            dateTo: getISOStringDate(endOfMonth(this.endPeriodCalendarComp!.activeDate.nativeDate)),
             symbols
           })
         ),
@@ -67,8 +67,8 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
   }
 
   changeCalendarsDate(date: Date): void {
-    (this.startPeriodCalendarComp as NzCalendarComponent | undefined)?.writeValue(date);
-    (this.endPeriodCalendarComp as NzCalendarComponent | undefined)?.writeValue(addMonths(date, 1));
+    this.startPeriodCalendarComp?.writeValue(date);
+    this.endPeriodCalendarComp?.writeValue(addMonths(date, 1));
   }
 
   getDateEvents(date: Date, events: CalendarEvents): CalendarEvent | null {
@@ -79,10 +79,10 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
 
   isShowDate(date: Date, isLeftCalendar = true): boolean {
     if (isLeftCalendar) {
-      return date.getMonth() === (this.startPeriodCalendarComp as NzCalendarComponent | undefined)?.activeDate.getMonth();
+      return date.getMonth() === this.startPeriodCalendarComp?.activeDate.getMonth();
     }
 
-    return date.getMonth() === (this.endPeriodCalendarComp as NzCalendarComponent | undefined)?.activeDate.getMonth();
+    return date.getMonth() === this.endPeriodCalendarComp?.activeDate.getMonth();
   }
 
   selectEvent(date: Date, events: CalendarEvents): void {

@@ -95,7 +95,7 @@ export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
 
     this.marketService.getDefaultExchange().pipe(
       take(1),
-      filter(x => !!(x ?? ''))
+      filter(x => x != null)
     ).subscribe(defaultExchange => {
 
       const itemsToResolve = tickers.map(t => {
@@ -171,7 +171,7 @@ export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
     fromEvent(reader, 'load').pipe(
       take(1)
     ).subscribe(() => {
-      this.inputString = (reader.result as string | undefined) ?? '';
+      this.inputString = (reader.result as string | null) ?? '';
       this.parseInput();
       // ngModel doesn't work properly without explicit call of markForCheck
       this.cdr.markForCheck();

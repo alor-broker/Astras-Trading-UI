@@ -84,7 +84,7 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
       const leftSpace = elementBounds.x - containerBounds.x;
 
       this.markerPosition$.next(
-        leftSpace > +markerBounds.width + 5
+        leftSpace > markerBounds.width + 5
           ? 'left'
           : 'right'
       );

@@ -1,24 +1,28 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
-import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
-import {CommonParametersService} from "../../../services/common-parameters.service";
-import {FormBuilder, Validators} from "@angular/forms";
-import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
-import {AtsValidators} from "../../../../../shared/utils/form-validators";
-import {Side} from "../../../../../shared/models/enums/side.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {BehaviorSubject, combineLatest, distinctUntilChanged, Observable, switchMap, take} from "rxjs";
-import {debounceTime, filter, map, startWith} from "rxjs/operators";
-import {PriceDiffHelper} from "../../../utils/price-diff.helper";
-import {TimeInForce} from "../../../../../shared/models/orders/order.model";
-import {NewLimitOrder, NewStopLimitOrder, SubmitOrderResult} from "../../../../../shared/models/orders/new-order.model";
-import {LessMore} from "../../../../../shared/models/enums/less-more.model";
-import {NewLinkedOrder, OrderService} from "../../../../../shared/services/orders/order.service";
-import {ExecutionPolicy, SubmitGroupResult} from "../../../../../shared/models/orders/orders-group.model";
-import {BaseOrderFormComponent} from "../base-order-form.component";
-import {EvaluationBaseProperties} from "../../../../../shared/models/evaluation-base-properties.model";
-import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
-import {toInstrumentKey} from "../../../../../shared/utils/instruments";
+import { Component, DestroyRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
+import { CommonParametersService } from "../../../services/common-parameters.service";
+import { FormBuilder, Validators } from "@angular/forms";
+import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
+import { AtsValidators } from "../../../../../shared/utils/form-validators";
+import { Side } from "../../../../../shared/models/enums/side.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
+import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, switchMap, take } from "rxjs";
+import { debounceTime, filter, map, startWith } from "rxjs/operators";
+import { PriceDiffHelper } from "../../../utils/price-diff.helper";
+import { TimeInForce } from "../../../../../shared/models/orders/order.model";
+import {
+  NewLimitOrder,
+  NewStopLimitOrder,
+  SubmitOrderResult
+} from "../../../../../shared/models/orders/new-order.model";
+import { LessMore } from "../../../../../shared/models/enums/less-more.model";
+import { NewLinkedOrder, OrderService } from "../../../../../shared/services/orders/order.service";
+import { ExecutionPolicy, SubmitGroupResult } from "../../../../../shared/models/orders/orders-group.model";
+import { BaseOrderFormComponent } from "../base-order-form.component";
+import { EvaluationBaseProperties } from "../../../../../shared/models/evaluation-base-properties.model";
+import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
+import { toInstrumentKey } from "../../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-limit-order-form',
@@ -148,7 +152,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
 
       if (this.initialValues.bracket) {
         this.expandAdvancedOptions = true;
-        if (this.initialValues.bracket.topOrderPrice ?? 0) {
+        if (this.initialValues.bracket.topOrderPrice != null) {
           this.form.controls.topOrderPrice.setValue(this.initialValues.bracket.topOrderPrice as number);
         }
 
@@ -156,7 +160,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
           this.form.controls.topOrderSide.setValue(this.initialValues.bracket.topOrderSide);
         }
 
-        if (this.initialValues.bracket.bottomOrderPrice ?? 0) {
+        if (this.initialValues.bracket.bottomOrderPrice != null) {
           this.form.controls.bottomOrderPrice.setValue(this.initialValues.bracket.bottomOrderPrice as number);
         }
 
@@ -236,11 +240,11 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       limitOrder.timeInForce = formValue.timeInForce;
     }
 
-    if (formValue.icebergFixed ?? 0) {
+    if (formValue.icebergFixed != null) {
       limitOrder.icebergFixed = Number(formValue.icebergFixed);
     }
 
-    if (formValue.icebergVariance ?? 0) {
+    if (formValue.icebergVariance != null) {
       limitOrder.icebergVariance = Number(formValue.icebergVariance);
     }
 
@@ -252,7 +256,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
 
     const bracketOrders: NewStopLimitOrder[] = [];
 
-    if (!!(formValue.topOrderPrice ?? 0)) {
+    if (formValue.topOrderPrice != null) {
       bracketOrders.push({
         instrument: limitOrder.instrument,
         quantity: limitOrder.quantity,
@@ -264,7 +268,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       });
     }
 
-    if (!!(formValue.bottomOrderPrice ?? 0)) {
+    if (formValue.bottomOrderPrice != null) {
       bracketOrders.push({
         instrument: limitOrder.instrument,
         quantity: limitOrder.quantity,
@@ -317,7 +321,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       take(1)
     ).subscribe(x => {
       const formValue = this.form.value;
-      if (!(formValue.price ?? 0) || !(formValue.quantity ?? 0)) {
+      if (formValue.price == null || formValue.quantity == null) {
         this.evaluationRequest$.next(null);
         return;
       }

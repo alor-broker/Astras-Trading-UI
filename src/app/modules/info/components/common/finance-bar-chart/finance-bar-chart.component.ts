@@ -16,7 +16,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 })
 export class FinanceBarChartComponent implements OnInit {
   @Input({required: true})
-  finance?: Finance;
+  finance!: Finance;
 
   public yearChartOptions: ChartConfiguration['options'] = {
     responsive: true,
@@ -100,19 +100,19 @@ export class FinanceBarChartComponent implements OnInit {
 
   private getPlotData(period: 'year' | 'quorter', theme: ThemeSettings, t: (key: string[], params?: HashMap) => string): ChartData<'bar'> {
     let labels: string[] = [];
-    if (this.finance?.sales as DataOverTime | undefined) {
+    if (this.finance.sales as DataOverTime | undefined) {
       labels = period == 'quorter' ?
-        this.finance?.sales.quorter.map(q => `${q.year} q${q.quorterNumber}`) as string[] :
-        this.finance?.sales[period].map(y => y.year.toString()) as string[];
+        this.finance.sales.quorter.map(q => `${q.year} q${q.quorterNumber}`) as string[] :
+        this.finance.sales[period].map(y => y.year.toString()) as string[];
     }
     const datasets = [
       {
-        data: this.finance?.sales[period].map(y => y.value) as number[],
+        data: this.finance.sales[period].map(y => y.value) as number[],
         label: t(['salesLabel']),
         ...this.getSalesColors(theme)
       },
       {
-        data: this.finance?.netIncome[period].map(y => y.value) as number[],
+        data: this.finance.netIncome[period].map(y => y.value) as number[],
         label: t(['incomeLabel']),
         ...this.getIncomeColors(theme)
       }

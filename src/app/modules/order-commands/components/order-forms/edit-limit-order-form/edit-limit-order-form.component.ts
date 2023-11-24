@@ -1,22 +1,21 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
-import {BaseEditOrderFormComponent} from "../base-edit-order-form.component";
-import {FormBuilder, Validators} from "@angular/forms";
-import {CommonParametersService} from "../../../services/common-parameters.service";
-import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {OrderService} from "../../../../../shared/services/orders/order.service";
-import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
-import {Order, TimeInForce} from "../../../../../shared/models/orders/order.model";
-import {debounceTime, filter, map, startWith, switchMap} from "rxjs/operators";
-import {OrderDetailsService} from "../../../../../shared/services/orders/order-details.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {BehaviorSubject, combineLatest, distinctUntilChanged, Observable, shareReplay, take} from "rxjs";
-import {InstrumentsService} from "../../../../instruments/services/instruments.service";
-import {AtsValidators} from "../../../../../shared/utils/form-validators";
-import {EvaluationBaseProperties} from "../../../../../shared/models/evaluation-base-properties.model";
-import {PriceDiffHelper} from "../../../utils/price-diff.helper";
-import {LimitOrderEdit} from "../../../../../shared/models/orders/edit-order.model";
-import {toInstrumentKey} from "../../../../../shared/utils/instruments";
-import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
+import { Component, DestroyRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { BaseEditOrderFormComponent } from "../base-edit-order-form.component";
+import { FormBuilder, Validators } from "@angular/forms";
+import { CommonParametersService } from "../../../services/common-parameters.service";
+import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
+import { OrderService } from "../../../../../shared/services/orders/order.service";
+import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
+import { Order, TimeInForce } from "../../../../../shared/models/orders/order.model";
+import { debounceTime, filter, map, startWith, switchMap } from "rxjs/operators";
+import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, shareReplay, take } from "rxjs";
+import { InstrumentsService } from "../../../../instruments/services/instruments.service";
+import { AtsValidators } from "../../../../../shared/utils/form-validators";
+import { EvaluationBaseProperties } from "../../../../../shared/models/evaluation-base-properties.model";
+import { PriceDiffHelper } from "../../../utils/price-diff.helper";
+import { LimitOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
+import { toInstrumentKey } from "../../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-edit-limit-order-form',
@@ -85,7 +84,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
       orderId: this.orderId$,
       portfolioKey: this.portfolioKey$
     }).pipe(
-      filter(x => !!(x.orderId ?? '') && !!x.portfolioKey),
+      filter(x => x.orderId != null && x.portfolioKey != null),
       switchMap(x => this.orderDetailsService.getLimitOrderDetails(x.orderId!, x.portfolioKey!)),
       filter((o): o is Order => !!o),
       shareReplay(1)
@@ -117,7 +116,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
       currentInstrument: this.formInstrument$
     }).pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe((x: { currentOrder: Order, currentInstrument: Instrument }) => {
+    ).subscribe(x => {
       this.form.reset(undefined, {emitEvent: true});
 
       this.form.controls.price.clearValidators();

@@ -427,15 +427,15 @@ export class ScalperOrderBookDataContextService {
     const expectedMaxPrice = bounds.asksRange?.max ?? bounds.bidsRange?.max;
     const expectedMinPrice = bounds.bidsRange?.min ?? bounds.asksRange?.min;
 
-    if (!(expectedMaxPrice ?? 0) || !(expectedMinPrice ?? 0)) {
+    if (expectedMaxPrice == null || expectedMinPrice == null) {
       return;
     }
 
     priceRowsStore.initWithPriceRange(
       settings.widgetSettings,
       {
-        min: expectedMinPrice!,
-        max: expectedMaxPrice!
+        min: expectedMinPrice,
+        max: expectedMaxPrice
       },
       settings.instrument.minstep,
       getters.getVisibleRowsCount(),
@@ -459,8 +459,8 @@ export class ScalperOrderBookDataContextService {
 
     const expectedMaxPrice = orderBookBounds.asksRange?.max ?? orderBookBounds.bidsRange?.max;
     const expectedMinPrice = orderBookBounds.bidsRange?.min ?? orderBookBounds.asksRange?.min;
-    if ((!!(expectedMinPrice ?? 0) && expectedMinPrice! < minRowPrice)
-      || (!!(expectedMaxPrice ?? 0) && expectedMaxPrice! > maxRowPrice)) {
+    if ((expectedMinPrice != null && expectedMinPrice < minRowPrice)
+      || (expectedMaxPrice != null && expectedMaxPrice > maxRowPrice)) {
       this.regeneratePriceRows(orderBookData, settings, getters, actions, priceRowsStore);
       return false;
     }

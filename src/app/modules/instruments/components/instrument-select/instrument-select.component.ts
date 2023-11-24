@@ -178,7 +178,7 @@ export class InstrumentSelectComponent implements OnInit {
     ).pipe(
       take(1)
     ).subscribe(([settings, collection]) => {
-      if (!!(settings.activeListId ?? '')) {
+      if (settings.activeListId != null) {
         if (collection.collection.find(w => w.id === settings.activeListId)) {
           return;
         }

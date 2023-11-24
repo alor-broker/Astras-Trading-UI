@@ -8,20 +8,20 @@ import {
   of,
   shareReplay
 } from 'rxjs';
-import {ModalService} from '../../../../shared/services/modal.service';
+import { ModalService } from '../../../../shared/services/modal.service';
 import {
   UntypedFormControl,
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import {FeedbackService} from '../../services/feedback.service';
+import { FeedbackService } from '../../services/feedback.service';
 import {
   filter,
   finalize
 } from 'rxjs/operators';
-import {NewFeedback} from '../../models/feedback.model';
-import {NzNotificationService} from 'ng-zorro-antd/notification';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { NewFeedback } from '../../models/feedback.model';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-feedback-widget',
@@ -79,8 +79,7 @@ export class FeedbackWidgetComponent implements OnInit {
     }
 
     if (!this.askComment) {
-      this.checkAskComment();
-      if (this.askComment as boolean) {
+      if (this.checkAskComment()) {
         return;
       }
     }
@@ -95,7 +94,8 @@ export class FeedbackWidgetComponent implements OnInit {
     });
   }
 
-  checkAskComment(): void {
+  checkAskComment(): boolean {
     this.askComment = this.form?.value.rating < this.maxStarsCount && (this.form?.value.comment ?? '').length === 0;
+    return this.askComment;
   }
 }

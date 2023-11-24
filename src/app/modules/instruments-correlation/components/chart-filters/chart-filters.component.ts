@@ -153,7 +153,7 @@ export class ChartFiltersComponent implements OnInit {
         }
       }
 
-      if (!!(currentListId ?? '')) {
+      if (currentListId != null) {
         this.parametersForm.controls.targetListId.setValue(currentListId);
       }
 

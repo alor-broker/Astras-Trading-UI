@@ -36,7 +36,7 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
           return [];
         }
 
-        const feedbackDate = !!(feedback.date ?? 0) ? new Date(feedback.date!) : new Date();
+        const feedbackDate = feedback.date != null ? new Date(feedback.date!) : new Date();
 
         return [
           {
@@ -94,7 +94,7 @@ export class FeedbackNotificationsProvider implements NotificationsProvider {
           const feedbackMeta = this.feedbackService.getSavedFeedbackMeta();
           if (feedbackMeta?.lastUnansweredFeedback) {
             return of(feedbackMeta.lastUnansweredFeedback);
-          } else if (!(feedbackMeta?.lastCheck ?? 0) || (new Date().getTime() - feedbackMeta!.lastCheck!) >= checkIntervalMs) {
+          } else if (feedbackMeta?.lastCheck == null || (new Date().getTime() - feedbackMeta!.lastCheck!) >= checkIntervalMs) {
             return this.feedbackService.requestFeedback().pipe(
               map(x => !x ? null : ({...x, isRead: false, date: Date.now()})),
               tap(() => this.feedbackService.setLastFeedbackCheck()),

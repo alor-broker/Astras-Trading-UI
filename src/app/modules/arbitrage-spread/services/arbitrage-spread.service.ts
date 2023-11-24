@@ -105,7 +105,7 @@ export class ArbitrageSpreadService {
                     ((spread.secondLeg.side === Side.Buy ? secondLeg!.bid : secondLeg!.ask) * spread.secondLeg.quantity * spread.secondLeg.ratio).toString()
                   );
 
-                  if (spread.isThirdLeg) {
+                  if (spread.isThirdLeg && !!thirdLeg) {
                     thirdLegSpread.thirdLeg = {
                         ...spread.thirdLeg,
                         positionsCount: thirdLegPositions!.find(p =>
@@ -117,12 +117,12 @@ export class ArbitrageSpreadService {
 
                     buySpread = (buySpread).replace(
                       /L3/g,
-                      ((spread.thirdLeg!.side === Side.Buy ? thirdLeg!.ask : thirdLeg!.bid) * spread.thirdLeg!.quantity * spread.thirdLeg!.ratio).toString()
+                      ((spread.thirdLeg.side === Side.Buy ? thirdLeg.ask : thirdLeg.bid) * spread.thirdLeg.quantity * spread.thirdLeg.ratio).toString()
                     );
 
                     sellSpread = sellSpread.replace(
                       /L3/g,
-                      ((spread.thirdLeg!.side === Side.Buy ? thirdLeg!.bid : thirdLeg!.ask) * spread.thirdLeg!.quantity * spread.thirdLeg!.ratio).toString()
+                      ((spread.thirdLeg.side === Side.Buy ? thirdLeg.bid : thirdLeg.ask) * spread.thirdLeg.quantity * spread.thirdLeg.ratio).toString()
                     );
                   }
 

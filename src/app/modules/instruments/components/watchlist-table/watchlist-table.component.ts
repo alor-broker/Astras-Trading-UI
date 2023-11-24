@@ -185,7 +185,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
         .filter(x => !!x.desktopMeta && x.desktopMeta.enabled)
         .filter(x => x.hasInstrumentBind)
         .sort((a, b) => {
-            return (a.desktopMeta!.galleryOrder as number | undefined ?? 0) - (b.desktopMeta!.galleryOrder as number | undefined ?? 0);
+            return a.desktopMeta!.galleryOrder - b.desktopMeta!.galleryOrder;
           }
         )
         .map(x => ({
@@ -260,12 +260,12 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {
-      if (!(s.activeListId ?? '')) {
+      if (s.activeListId == null) {
         return;
       }
 
       this.watchlistCollectionService.updateListItem(
-        s.activeListId!,
+        s.activeListId,
         item.recordId,
         {
           favoriteOrder: item.favoriteOrder != null

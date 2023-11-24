@@ -176,7 +176,7 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
     const scrollViewport$ = this.dataTableQuery.changes.pipe(
       map(x => x.first as NzTableComponent<DisplayTrade>),
       startWith(this.dataTableQuery.first),
-      filter((x): x is NzTableComponent<DisplayTrade> => !!(x as NzTableComponent<DisplayTrade> | undefined)),
+      filter((x: NzTableComponent<DisplayTrade> | undefined): x is NzTableComponent<DisplayTrade> => !!x),
       map(x => x.cdkVirtualScrollViewport),
       filter((x): x is CdkVirtualScrollViewport => !!x),
       shareReplay(1)

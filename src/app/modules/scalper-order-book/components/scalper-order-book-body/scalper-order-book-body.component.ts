@@ -167,7 +167,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.dataContext.extendedSettings$.pipe(
       map(x => x.widgetSettings),
       map(x => ({
-          enabled: (x.enableAutoAlign ?? true) && !!(x.autoAlignIntervalSec ?? 0) && x.autoAlignIntervalSec! > 0,
+          enabled: (x.enableAutoAlign ?? true) && (x.autoAlignIntervalSec ?? 0) > 0,
           interval: x.autoAlignIntervalSec!
         })
       ),

@@ -53,7 +53,7 @@ export class WatchlistCollectionEditComponent implements OnInit {
     this.presetCollection$ = this.watchlistCollectionService.getPresetCollection()
       .pipe(
         filter((x): x is PresetWatchlistCollection => !!x),
-        filter(x => (x.list as PresetWatchlist[] | undefined ?? []).length > 0),
+        filter(x => x.list.length > 0),
         map(x => x.list),
         map(x => x.filter(list => (list.papers as PresetWatchlistItem[] | undefined ?? []).length > 0)),
         shareReplay()

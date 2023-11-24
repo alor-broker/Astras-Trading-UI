@@ -43,7 +43,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
 
   contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   private readonly datePipe = new DatePipe('ru-RU');
-  private readonly take = 50;
+  private readonly maxItemsInRequestWithPeriod = 50;
   private settings$!: Observable<AllTradesSettings>;
 
   public tableContainerHeight = 0;
@@ -52,7 +52,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   public readonly isLoading$ = new BehaviorSubject<boolean>(false);
   public readonly tradesList$ = new BehaviorSubject<AllTradesItem[]>([]);
   private readonly filters$ = new BehaviorSubject<AllTradesFilters>({
-    take: this.take,
+    take: this.maxItemsInRequestWithPeriod,
     exchange: '',
     symbol: '',
     to: 0,
@@ -154,7 +154,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         symbol: settings.symbol,
         from: toUnixTimestampSeconds(startOfDay(new Date())),
         to: toUnixTimestampSeconds(new Date()),
-        take: this.take
+        take: this.maxItemsInRequestWithPeriod
       });
     });
   }
@@ -357,7 +357,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       }
     });
 
-    tradesListCopy = tradesListCopy.slice(0, (filters.offset ?? 0) + (filters.limit ?? 50));
+    tradesListCopy = tradesListCopy.slice(0, (filters.offset ?? 0) + (filters.limit ?? this.maxItemsInRequestWithPeriod));
     this.tradesList$.next(tradesListCopy);
   }
 

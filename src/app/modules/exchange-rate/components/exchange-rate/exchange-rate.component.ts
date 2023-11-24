@@ -42,10 +42,13 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
   }
 
   getRateValue(firstCode: string, secondCode: string, data: { [key: string]: number }): string {
-    if (firstCode === secondCode || (!data[`${firstCode}_${secondCode}`] && !data[`${secondCode}_${firstCode}`])) {
+    const exchangeRatePropertyDirectOrder = `${firstCode}_${secondCode}`;
+    const exchangeRatePropertyReverseOrder = `${secondCode}_${firstCode}`;
+
+    if (firstCode === secondCode || (!data[exchangeRatePropertyDirectOrder] && !data[exchangeRatePropertyReverseOrder])) {
       return '-';
     }
-    return (data[`${firstCode}_${secondCode}`] || 1 / data[`${secondCode}_${firstCode}`]).toFixed(4);
+    return (data[exchangeRatePropertyDirectOrder] || 1 / data[exchangeRatePropertyReverseOrder]).toFixed(4);
   }
 
   updateContainerSize(entries: ResizeObserverEntry[]): void {

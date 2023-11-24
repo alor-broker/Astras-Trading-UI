@@ -161,7 +161,7 @@ export class LightChartWrapper {
       this.getHistoryEndTime() / 1000,
       true,
       (meta) => {
-        if (this.loadedHistoryPoints.length === 0 && (meta.prevTime ?? 0)) {
+        if (this.loadedHistoryPoints.length === 0 && meta.prevTime != null) {
           this.loadHistoryPeriod(
             meta.prevTime!,
             this.getHistoryEndTime() / 1000,
@@ -239,7 +239,7 @@ export class LightChartWrapper {
         this.loadedHistoryPoints = TimeframesHelper.aggregateBars(this.loadedHistoryPoints, bars, this.config.timeFrame);
         this.updateHistoryData();
 
-        this.isHistoryEnded = !(meta.prevTime ?? 0);
+        this.isHistoryEnded = meta.prevTime == null;
 
         complete(meta);
       }
