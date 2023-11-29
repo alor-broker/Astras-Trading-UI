@@ -1,6 +1,6 @@
 <ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
   <nz-header *transloco="let tDesktop; scope: 'dashboard/navbar/desktop'">
-    <div class="logo">
+    <div class="logo" [class.new-year]="showNewYearIcon()">
       <a [routerLink]="['/']"></a>
     </div>
     <div class="menu-item">
