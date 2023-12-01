@@ -9,6 +9,7 @@ import { debounceTime } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { LocalStorageService } from '../local-storage.service';
 import { environment } from '../../../../environments/environment';
+import { LocalStorageLoggingConstants } from "../../constants/local-storage.constants";
 
 interface LogEntry {
   timestamp: string,
@@ -17,6 +18,9 @@ interface LogEntry {
   stack?: string,
   sessionId: string,
   login: string,
+  device: string,
+  browser: string,
+  version: string,
   environment: 'local' | 'dev' | 'prod'
 }
 
@@ -97,7 +101,10 @@ export class RemoteLogger extends LoggerBase {
       message: message,
       stack: stack ?? '',
       sessionId: this.guid,
-      login: this.localStorageService.getItem<any>('user')?.login ?? '',
+      login: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.UserLoginStorageKey) ?? '',
+      version: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.AppVersionStorageKey) ?? '',
+      device: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.DeviceStorageKey) ?? '',
+      browser: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.BrowserStorageKey) ?? '',
       environment: this.getConfig()!.environment
     };
   }
