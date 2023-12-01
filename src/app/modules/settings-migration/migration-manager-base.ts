@@ -54,6 +54,7 @@ export abstract class MigrationManagerBase {
     for (let migration of this.migrations) {
       if (migration.applyOptions.strategy === ApplyStrategyType.ApplyOnce) {
         if (migration.applyOptions.expirationDate != null && migration.applyOptions.expirationDate.getTime() < Date.now()) {
+          console.warn(`${migration.migrationId} is expired and can be removed`);
           continue;
         }
 
