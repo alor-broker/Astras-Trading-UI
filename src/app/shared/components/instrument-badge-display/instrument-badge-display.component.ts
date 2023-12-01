@@ -35,7 +35,13 @@ export class InstrumentBadgeDisplayComponent implements OnInit {
             return badges;
           }
 
-          return {[defaultBadgeColor]: badges[defaultBadgeColor]};
+          const defaultInstrumentKey = badges[defaultBadgeColor];
+
+          if(defaultInstrumentKey != null) {
+            return {[defaultBadgeColor]: defaultInstrumentKey};
+          }
+
+          return {} as InstrumentGroups;
         }),
         shareReplay(1)
       );

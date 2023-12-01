@@ -1,10 +1,13 @@
-import {TestBed} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
-import {DashboardSettingsBrokerService} from './dashboard-settings-broker.service';
-import {RemoteStorageService} from "./remote-storage.service";
-import {Subject} from "rxjs";
-import {LocalStorageService} from "../local-storage.service";
-import {ApplicationMetaService} from "../application-meta.service";
+import { DashboardSettingsBrokerService } from './dashboard-settings-broker.service';
+import { RemoteStorageService } from "./remote-storage.service";
+import {
+  of,
+  Subject
+} from "rxjs";
+import { ApplicationMetaService } from "../application-meta.service";
+import { DashboardSettingsDesktopMigrationManager } from "../../../modules/settings-migration/dashboard-settings/dashboard-settings-desktop-migration-manager";
 
 describe('DashboardSettingsBrokerService', () => {
   let service: DashboardSettingsBrokerService;
@@ -20,16 +23,15 @@ describe('DashboardSettingsBrokerService', () => {
           }
         },
         {
-          provide: LocalStorageService,
-          useValue: {
-            getItem: jasmine.createSpy('getItem').and.returnValue(undefined),
-            removeItem: jasmine.createSpy('removeItem').and.callThrough()
-          }
-        },
-        {
           provide: ApplicationMetaService,
           useValue: {
             getMeta: jasmine.createSpy('getMeta').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: DashboardSettingsDesktopMigrationManager,
+          useValue: {
+            applyMigrations: jasmine.createSpy('applyMigrations').and.returnValue((input: any) => of(input))
           }
         }
       ]

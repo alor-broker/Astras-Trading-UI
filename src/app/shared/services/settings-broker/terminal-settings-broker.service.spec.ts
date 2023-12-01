@@ -1,9 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
 import { TerminalSettingsBrokerService } from './terminal-settings-broker.service';
-import {RemoteStorageService} from "./remote-storage.service";
-import {Subject} from "rxjs";
-import {LocalStorageService} from "../local-storage.service";
+import { RemoteStorageService } from "./remote-storage.service";
+import {
+  of,
+  Subject
+} from "rxjs";
+import { TerminalSettingsDesktopMigrationManager } from "../../../modules/settings-migration/terminal-settings/terminal-settings-desktop-migration-manager";
 
 describe('TerminalSettingsBrokerService', () => {
   let service: TerminalSettingsBrokerService;
@@ -19,10 +22,9 @@ describe('TerminalSettingsBrokerService', () => {
           }
         },
         {
-          provide: LocalStorageService,
+          provide: TerminalSettingsDesktopMigrationManager,
           useValue: {
-            getItem: jasmine.createSpy('getItem').and.returnValue(undefined),
-            removeItem: jasmine.createSpy('removeItem').and.callThrough()
+            applyMigrations: jasmine.createSpy('applyMigrations').and.returnValue((input: any) => of(input))
           }
         }
       ]
