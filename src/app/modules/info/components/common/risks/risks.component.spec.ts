@@ -2,8 +2,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RisksComponent } from './risks.component';
 import { InfoService } from "../../../services/info.service";
-import { of } from "rxjs";
-import { getTranslocoModule } from "../../../../../shared/utils/testing";
+import {
+  of,
+  Subject
+} from "rxjs";
+import {
+  getTranslocoModule,
+  mockComponent
+} from "../../../../../shared/utils/testing";
+import { DashboardContextService } from "../../../../../shared/services/dashboard-context.service";
+import { LetDirective } from "@ngrx/component";
 
 describe('RisksComponent', () => {
   let component: RisksComponent;
@@ -11,15 +19,28 @@ describe('RisksComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RisksComponent ],
+      declarations: [
+        RisksComponent,
+        mockComponent({
+          selector: 'ats-loading-indicator',
+          inputs: ['isLoading']
+        })
+      ],
       imports: [
-        getTranslocoModule()
+        getTranslocoModule(),
+        LetDirective
       ],
       providers: [
         {
           provide: InfoService,
           useValue: {
             getRisksInfo: jasmine.createSpy('getRisksInfo').and.returnValue(of({}))
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectedPortfolio$: new Subject()
           }
         }
       ]

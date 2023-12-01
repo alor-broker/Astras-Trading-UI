@@ -1,10 +1,33 @@
 <ng-container *transloco="let t; scope: 'info/risks'">
-    <nz-descriptions *ngIf="risksInfo$ | async as risksInfo" [nzColumn]="1" nzSize="small" nzBordered>
-    <nz-descriptions-item [nzTitle]="t('infoRisks.isMarginal')">{{t(risksInfo.isMarginal ? 'yes' : 'no') }}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('infoRisks.isShortSellPossible')">{{t(risksInfo.isShortSellPossible ? 'yes' : 'no') }}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('infoRisks.longMultiplier')">{{risksInfo.longMultiplier | number: '0.0-6'}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('infoRisks.shortMultiplier')">{{risksInfo.shortMultiplier | number: '0.0-6'}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('infoRisks.currencyLongMultiplier')">{{risksInfo.currencyLongMultiplier | number: '0.0-6'}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('infoRisks.currencyShortMultiplier')">{{risksInfo.currencyShortMultiplier | number: '0.0-6'}}</nz-descriptions-item>
-  </nz-descriptions>
+  <ng-container *ngrxLet="{risksInfo: risksInfo$, currentPortfolio: currentPortfolio$, isLoading: isLoading$} as vm">
+    <ng-container *ngIf="!vm.isLoading">
+      <nz-descriptions *ngIf="vm.risksInfo; else missingRisks" [nzColumn]="1" nzBordered nzSize="small">
+        <nz-descriptions-item [nzTitle]="t('infoRisks.isMarginal')">
+          {{t(vm.risksInfo.isMarginal ? 'yes' : 'no') }}
+        </nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('infoRisks.isShortSellPossible')">
+          {{t(vm.risksInfo.isShortSellPossible ? 'yes' : 'no') }}
+        </nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('infoRisks.longMultiplier')">
+          {{vm.risksInfo.longMultiplier | number: '0.0-6'}}
+        </nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('infoRisks.shortMultiplier')">
+          {{vm.risksInfo.shortMultiplier | number: '0.0-6'}}
+        </nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('infoRisks.currencyLongMultiplier')">
+          {{vm.risksInfo.currencyLongMultiplier | number: '0.0-6'}}
+        </nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('infoRisks.currencyShortMultiplier')">
+          {{vm.risksInfo.currencyShortMultiplier | number: '0.0-6'}}
+        </nz-descriptions-item>
+      </nz-descriptions>
+
+      <ng-template #missingRisks>
+      <span nz-typography
+            nzType="secondary">{{t('infoRisks.missingRiskInfoForPortfolio', { portfolio: vm.currentPortfolio.portfolio })}}</span>
+      </ng-template>
+    </ng-container>
+
+    <ats-loading-indicator [isLoading]="vm.isLoading"></ats-loading-indicator>
+  </ng-container>
 </ng-container>
