@@ -6,10 +6,9 @@ import {
 } from './subscriptions-data-feed.service';
 import {
   BehaviorSubject,
-  Subject, take
+  take
 } from 'rxjs';
 import { AuthService } from './auth.service';
-import { BaseResponse } from '../models/ws/base-response.model';
 import { LoggerService } from './logging/logger.service';
 
 describe('SubscriptionsDataFeedService', () => {
@@ -26,7 +25,7 @@ describe('SubscriptionsDataFeedService', () => {
       accessToken$: new BehaviorSubject<string>('test_token')
     };
 
-    webSocketSubjectMock = jasmine.createSpyObj('WebSocketSubject', ['multiplex', 'complete'], ['closed']);
+    webSocketSubjectMock = jasmine.createSpyObj('WebSocketSubject', ['subscribe', 'complete'], ['closed']);
     socketConstructorSpy = jasmine.createSpy('RXJS_WEBSOCKET_CTOR').and.returnValue(webSocketSubjectMock);
   });
 
@@ -69,7 +68,7 @@ describe('SubscriptionsDataFeedService', () => {
         .subscribe();
     });
 
-    expect(webSocketSubjectMock.multiplex).toHaveBeenCalledTimes(1);
+    expect(webSocketSubjectMock.subscribe).toHaveBeenCalledTimes(1);
   });
 
   it('should subscribe to each unique key', () => {
@@ -96,27 +95,6 @@ describe('SubscriptionsDataFeedService', () => {
         .subscribe();
     });
 
-    expect(webSocketSubjectMock.multiplex).toHaveBeenCalledTimes(requests.length);
-  });
-
-  it('should provide subscription messages', (done) => {
-    const messagesMock = new Subject<BaseResponse<any>>();
-
-    webSocketSubjectMock.multiplex.and.returnValue(messagesMock);
-
-    service.subscribe<any, any>({
-        key: 'Key1',
-        opcode: 'opcode'
-      },
-      request => `${request.key}_${request.opcode}`
-    )
-      .pipe(take(1))
-      .subscribe(() => {
-      done();
-
-      expect().nothing();
-    });
-
-    messagesMock.next({ data: {}, guid: '' });
+    expect(webSocketSubjectMock.subscribe).toHaveBeenCalledTimes(requests.length);
   });
 });

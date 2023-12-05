@@ -5,7 +5,9 @@ import {
   BehaviorSubject,
   filter,
   interval,
-  Observable, of, race,
+  Observable,
+  of,
+  race,
   shareReplay,
   Subject,
   Subscription,
@@ -155,27 +157,54 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   }
 
   private createSubscription(request: WsRequestMessage, state: SocketState, enableConfirmResponse = false): Observable<WsResponseMessage> {
-    return this.getCurrentAccessToken().pipe(
-      take(1),
-      filter(() => this.isStateValid(state)),
-      switchMap(token => {
-        return state.webSocketSubject!.multiplex(
-          () => ({
+    return  new Observable<WsResponseMessage>(observer => {
+      this.getCurrentAccessToken().pipe(
+        take(1),
+      ).subscribe(token => {
+        try {
+          state.webSocketSubject?.next(({
             ...request,
             token
-          }),
-          () => ({
-            opcode: 'unsubscribe',
-            guid: request.guid,
-            token: token
-          }),
-          (value) => (value.guid === request.guid && (!!value.data))
-            || (enableConfirmResponse && value.requestGuid === request.guid)
-        );
-      })
-    );
-  }
+          } as any));
+        } catch(err) {
+          observer.error(err);
+        }
+      });
 
+      const subscription = state.webSocketSubject?.subscribe({
+        next: (value: WsResponseMessage) => {
+          try {
+            if((value.guid === request.guid && value.data != null)
+              || (enableConfirmResponse && value.requestGuid === request.guid)) {
+              observer.next(value);
+            }
+          } catch (err) {
+            observer.error(err);
+          }
+        },
+        error: (err) => observer.error(err),
+        complete: () => observer.complete(),
+      });
+
+      return () => {
+        this.getCurrentAccessToken().pipe(
+          take(1),
+        ).subscribe(token => {
+          try {
+            state.webSocketSubject?.next(({
+              opcode: 'unsubscribe',
+              guid: request.guid,
+              token: token
+            } as any));
+          } catch (err) {
+            observer.error(err);
+          }
+        });
+
+        subscription?.unsubscribe();
+      };
+    });
+  }
 
   private getSocket(): SocketState {
     if (!!this.socketState && this.isStateValid(this.socketState)) {
