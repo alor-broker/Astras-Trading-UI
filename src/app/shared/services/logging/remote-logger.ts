@@ -1,14 +1,15 @@
-import {
-  LoggerBase,
-  LogLevel
-} from './logger-base';
+import { LoggerBase } from './logger-base';
 import { Injectable } from '@angular/core';
 import { GuidGenerator } from '../../utils/guid';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { LocalStorageService } from '../local-storage.service';
-import { environment } from '../../../../environments/environment';
+import {
+  EnvironmentService,
+  LogLevel,
+  RemoteLoggerConfig
+} from "../environment.service";
 
 interface LogEntry {
   timestamp: string,
@@ -19,20 +20,8 @@ interface LogEntry {
   login: string,
   environment: 'local' | 'dev' | 'prod'
 }
-
-interface RemoteLoggerConfig {
-  minLevel: LogLevel,
-  environment: 'local' | 'dev' | 'prod',
-
-  loggingServerUrl: string,
-  authorization: {
-    name: string,
-    password: string
-  }
-}
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class RemoteLogger extends LoggerBase {
   private readonly buffer: LogEntry[] = [];
@@ -42,7 +31,8 @@ export class RemoteLogger extends LoggerBase {
 
   constructor(
     private readonly localStorageService: LocalStorageService,
-    private readonly httpClient: HttpClient
+    private readonly httpClient: HttpClient,
+    private readonly environmentService: EnvironmentService
   ) {
     super();
 
@@ -143,7 +133,7 @@ export class RemoteLogger extends LoggerBase {
   }
   private getConfig(): RemoteLoggerConfig | null {
     if (this.config === undefined) {
-      this.config = (environment.logging as any)?.remote as RemoteLoggerConfig ?? null;
+      this.config = this.environmentService.logging.remote ?? null;
     }
 
     return this.config;

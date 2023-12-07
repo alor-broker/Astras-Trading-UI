@@ -8,6 +8,7 @@ import {
   HttpClientTestingModule,
   HttpTestingController
 } from '@angular/common/http/testing';
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('FeedbackService', () => {
   let service: FeedbackService;
@@ -31,6 +32,12 @@ describe('FeedbackService', () => {
           provide: ErrorHandlerService,
           useValue: {
             handleError: jasmine.createSpy('handleError').and.callThrough()
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
           }
         }
       ]

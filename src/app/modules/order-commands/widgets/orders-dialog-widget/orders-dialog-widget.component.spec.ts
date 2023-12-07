@@ -10,6 +10,7 @@ import {
   mockComponent
 } from "../../../../shared/utils/testing";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 describe('OrdersDialogWidgetComponent', () => {
   let component: OrdersDialogWidgetComponent;
@@ -53,6 +54,14 @@ describe('OrdersDialogWidgetComponent', () => {
           provide: InstrumentsService,
           useValue: {
             getInstrument: jasmine.createSpy('getInstrument').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            externalLinks: {
+              help: ''
+            }
           }
         }
       ]

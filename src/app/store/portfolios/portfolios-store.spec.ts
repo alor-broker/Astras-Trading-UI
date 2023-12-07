@@ -17,12 +17,12 @@ import { ErrorHandlerService } from '../../shared/services/handle-error/error-ha
 import { MarketService } from "../../shared/services/market.service";
 import { PortfoliosInternalActions } from './portfolios.actions';
 import { PortfoliosFeature } from "./portfolios.reducer";
+import { EnvironmentService } from "../../shared/services/environment.service";
 
 describe('Portfolios Store', () => {
   let store: Store;
 
   let accountServiceSpy: any;
-  let localStorageServiceSpy: any;
   let errorHandlerServiceSpy: any;
 
   let loginPortfoliosMock = new BehaviorSubject<PortfolioExtended[]>([]);
@@ -64,7 +64,6 @@ describe('Portfolios Store', () => {
     accountServiceSpy = jasmine.createSpyObj('AccountService', ['getLoginPortfolios']);
     accountServiceSpy.getLoginPortfolios.and.returnValue(loginPortfoliosMock);
 
-    localStorageServiceSpy = jasmine.createSpyObj('LocalStorageService', ['getItem', 'setItem']);
     errorHandlerServiceSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
   });
 
@@ -75,7 +74,12 @@ describe('Portfolios Store', () => {
       ],
       providers: [
         { provide: AccountService, useValue: accountServiceSpy },
-        { provide: LocalStorageService, useValue: localStorageServiceSpy },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            remoteSettingsStorageUrl : ''
+          }
+        },
         { provide: ErrorHandlerService, useValue: errorHandlerServiceSpy },
         {
           provide: MarketService,

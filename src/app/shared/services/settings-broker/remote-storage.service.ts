@@ -4,8 +4,8 @@ import {Observable, take} from "rxjs";
 import {map} from "rxjs/operators";
 import {ErrorHandlerService} from "../handle-error/error-handler.service";
 import {catchHttpError} from "../../utils/observable-helper";
-import {environment} from "../../../../environments/environment";
 import {SettingsMeta, SettingsRecord} from "../../models/settings-broker.model";
+import { EnvironmentService } from "../environment.service";
 
 interface UserSettings {
   Key: string;
@@ -22,10 +22,11 @@ interface RemoteStorageItem {
   providedIn: 'root'
 })
 export class RemoteStorageService {
-  private readonly baseUrl = environment.remoteSettingsStorageUrl;
+  private readonly baseUrl = this.environmentService.remoteSettingsStorageUrl;
   private readonly serviceName = 'Astras';
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly httpClient: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService
   ) {

@@ -5,11 +5,11 @@ import {
 import { WidgetHeaderComponent } from './widget-header.component';
 import { WidgetSettingsService } from '../../services/widget-settings.service';
 import { ManageDashboardsService } from '../../services/manage-dashboards.service';
-import { ModalService } from '../../services/modal.service';
 import { ngZorroMockComponents } from '../../utils/testing';
 import {TranslatorService} from "../../services/translator.service";
 import {DashboardContextService} from "../../services/dashboard-context.service";
 import {Subject} from "rxjs";
+import { EnvironmentService } from "../../services/environment.service";
 
 
 describe('WidgetHeaderComponent', () => {
@@ -43,15 +43,17 @@ describe('WidgetHeaderComponent', () => {
           }
         },
         {
-          provide: ModalService,
-          useValue: {
-            openHelpModal: jasmine.createSpy('openHelpModal').and.callThrough()
-          }
-        },
-        {
           provide: TranslatorService,
           useValue: {
             getActiveLang: jasmine.createSpy('getActiveLang').and.returnValue('ru')
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            externalLinks: {
+              help: ''
+            }
           }
         }
       ]

@@ -24,7 +24,6 @@ import {
 import { HistoryService } from "../../../shared/services/history.service";
 import { BarsRequest } from "../../light-chart/models/bars-request.model";
 import { Candle } from "../../../shared/models/history/candle.model";
-import { environment } from "../../../../environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { SearchFilter } from "../../instruments/models/search-filter.model";
@@ -38,6 +37,7 @@ import { InstrumentDataPart } from "../models/synthetic-instruments.model";
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
 import { HistoryResponse } from "../../../shared/models/history/history-response.model";
 import { SyntheticInstrumentsHelper } from "../utils/synthetic-instruments.helper";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 @Injectable()
 export class TechChartDatafeedService implements IBasicDataFeed {
@@ -50,6 +50,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   }
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly instrumentService: InstrumentsService,
     private readonly historyService: HistoryService,
@@ -340,7 +341,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   }
 
   getServerTime(callback: ServerTimeCallback): void {
-    this.http.get<number>(`${environment.apiUrl}//md/v2/time`).pipe(
+    this.http.get<number>(`${this.environmentService.apiUrl}/md/v2/time`).pipe(
       take(1)
     ).subscribe(time => {
       callback(time);

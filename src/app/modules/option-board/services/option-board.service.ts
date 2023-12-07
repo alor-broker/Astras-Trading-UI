@@ -1,18 +1,19 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {environment} from "../../../../environments/environment";
 import {InstrumentOptions, OptionDetails, OptionSide} from "../models/option-board.model";
 import {Observable, take} from "rxjs";
 import {ErrorHandlerService} from "../../../shared/services/handle-error/error-handler.service";
 import {catchHttpError} from "../../../shared/utils/observable-helper";
 import {map} from "rxjs/operators";
 import {CacheService} from "../../../shared/services/cache.service";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 @Injectable()
 export class OptionBoardService {
-  private readonly baseUrl = `${environment.apiUrl}/optionsapi/v1`;
+  private readonly baseUrl = `${this.environmentService.apiUrl}/optionsapi/v1`;
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly httpClient: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly cacheService: CacheService

@@ -8,6 +8,7 @@ import {
   commonTestProviders,
   sharedModuleImportForTests
 } from '../utils/testing';
+import { EnvironmentService } from "./environment.service";
 
 describe('ManageDashboardsService', () => {
   let service: ManageDashboardsService;
@@ -21,8 +22,10 @@ describe('ManageDashboardsService', () => {
         [
           ManageDashboardsService,
           {
-            provide: LocalStorageService,
-            useValue: jasmine.createSpyObj('LocalStorageService', ['getItem', 'setItem', 'removeItem'])
+            provide: EnvironmentService,
+            useValue: {
+              clientDataUrl: ''
+            }
           },
           {
             provide: DashboardContextService,

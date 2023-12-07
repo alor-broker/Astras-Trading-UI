@@ -5,7 +5,6 @@ import {
   take
 } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
 import { Candle } from '../models/history/candle.model';
 import { HistoryRequest } from '../models/history/history-request.model';
 import { HistoryResponse } from '../models/history/history-response.model';
@@ -13,14 +12,16 @@ import { addDaysUnix } from "src/app/shared/utils/datetime";
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { catchHttpError } from "../utils/observable-helper";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
+import { EnvironmentService } from "./environment.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class HistoryService {
-  private url = environment.apiUrl + '/md/v2/history';
+  private url = this.environmentService.apiUrl + '/md/v2/history';
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly errorHandler: ErrorHandlerService
   ) {

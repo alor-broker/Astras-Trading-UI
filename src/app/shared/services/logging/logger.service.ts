@@ -4,9 +4,9 @@ import {
 } from "@angular/core";
 import {
   LOGGER,
-  LoggerBase,
-  LogLevel
+  LoggerBase
 } from './logger-base';
+import { LogLevel } from "../environment.service";
 
 @Injectable({
   providedIn: 'root'

@@ -9,7 +9,7 @@ import {NzTabComponent, NzTabSetComponent} from "ng-zorro-antd/tabs";
 import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {OrderDialogParams, OrderType} from "../../../../shared/models/orders/orders-dialog.model";
-import { environment } from "../../../../../environments/environment";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 @Component({
   selector: 'ats-orders-dialog-widget',
@@ -18,7 +18,7 @@ import { environment } from "../../../../../environments/environment";
   providers: [CommonParametersService]
 })
 export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
-  helpUrl = environment.externalLinks.help + '/new-order';
+  helpUrl = this.environmentService.externalLinks.help + '/new-order';
   dialogParams$!: Observable<OrderDialogParams | null>;
 
   currentPortfolio$!: Observable<PortfolioKey>;
@@ -37,6 +37,7 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   stopOrderTab?: NzTabComponent;
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly currentDashboardService: DashboardContextService,
     private readonly instrumentService: InstrumentsService,

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { environment } from "../../../../../environments/environment";
 import { Observable } from "rxjs";
 import { ModalService } from "../../../../shared/services/modal.service";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 @Component({
   selector: 'ats-empty-portfolios-warning-modal-widget',
@@ -9,12 +9,13 @@ import { ModalService } from "../../../../shared/services/modal.service";
   styleUrls: ['./empty-portfolios-warning-modal-widget.component.less']
 })
 export class EmptyPortfoliosWarningModalWidgetComponent implements OnInit {
-  supportLink = environment.externalLinks.support;
-  helpLink = environment.externalLinks.help;
+  supportLink = this.environmentService.externalLinks.support;
+  helpLink = this.environmentService.externalLinks.help;
 
   isVisible$!: Observable<boolean>;
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly modalService: ModalService
   ) {
   }

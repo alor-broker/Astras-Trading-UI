@@ -9,6 +9,7 @@ import {
   mockComponent,
   ngZorroMockComponents
 } from '../../../../shared/utils/testing';
+import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 describe('UsefulLinksComponent', () => {
   let component: UsefulLinksComponent;
@@ -21,6 +22,20 @@ describe('UsefulLinksComponent', () => {
         UsefulLinksComponent,
         ...ngZorroMockComponents,
         mockComponent({ selector: 'ats-external-link', inputs: ['href'] })
+      ],
+      providers:[
+        {
+          provide: EnvironmentService,
+          useValue: {
+            externalLinks: {
+              officialSite: '',
+              riskRate: '',
+              personalAccount: '',
+              bankroll: '',
+              services: ''
+            }
+          }
+        }
       ]
     })
       .compileComponents();

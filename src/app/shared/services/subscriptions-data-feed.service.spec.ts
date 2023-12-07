@@ -11,6 +11,7 @@ import {
 import { AuthService } from './auth.service';
 import { BaseResponse } from '../models/ws/base-response.model';
 import { LoggerService } from './logging/logger.service';
+import { EnvironmentService } from "./environment.service";
 
 describe('SubscriptionsDataFeedService', () => {
   let service: SubscriptionsDataFeedService;
@@ -39,6 +40,12 @@ describe('SubscriptionsDataFeedService', () => {
           provide: RXJS_WEBSOCKET_CTOR,
           useValue: socketConstructorSpy
         },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            wsUrl: ''
+          }
+        }
       ]
     });
 

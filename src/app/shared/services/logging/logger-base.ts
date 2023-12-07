@@ -1,11 +1,5 @@
 import { InjectionToken } from '@angular/core';
-
-export enum LogLevel {
-  trace = 'trace',
-  info = 'info',
-  warn = 'warn',
-  error = 'error'
-}
+import { LogLevel } from "../environment.service";
 
 export abstract class LoggerBase {
   private readonly levelPriorities = [

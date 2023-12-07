@@ -5,6 +5,7 @@ import {commonTestProviders, sharedModuleImportForTests} from "../../../shared/u
 import {LocalStorageService} from "../../../shared/services/local-storage.service";
 import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
 import {Subject} from "rxjs";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('MobileSettingsBrokerService', () => {
   let service: MobileSettingsBrokerService;
@@ -19,6 +20,12 @@ describe('MobileSettingsBrokerService', () => {
             setItem: jasmine.createSpy('setItem').and.callThrough(),
             getItem: jasmine.createSpy('getItem').and.returnValue(undefined),
             removeItem: jasmine.createSpy('removeItem').and.callThrough(),
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            clientDataUrl : ''
           }
         },
         {

@@ -25,6 +25,7 @@ import {
 } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -75,6 +76,17 @@ describe('NavbarComponent', () => {
           provide: OrdersDialogService,
           useValue: {
             openNewOrderDialog: jasmine.createSpy('openNewOrderDialog').and.callThrough()
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            externalLinks: {
+              reports: '',
+              releases: '',
+              support: '',
+              help: ''
+            }
           }
         }
       ],

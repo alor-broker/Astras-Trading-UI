@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
 import { InstrumentSearchResponse } from '../../../shared/models/instruments/instrument-search-response.model';
 import { SearchFilter } from '../models/search-filter.model';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
@@ -10,14 +9,16 @@ import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { CacheService } from '../../../shared/services/cache.service';
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class InstrumentsService {
-  private url = environment.apiUrl + '/md/v2/Securities';
+  private url = this.environmentService.apiUrl + '/md/v2/Securities';
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly cacheService: CacheService

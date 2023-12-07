@@ -15,11 +15,11 @@ import {
 } from 'rxjs';
 import {BaseResponse} from '../models/ws/base-response.model';
 import {ConfirmResponse} from '../models/ws/confirm-response.model';
-import {environment} from '../../../environments/environment';
 import {GuidGenerator} from '../utils/guid';
 import {finalize, map, takeWhile, tap} from 'rxjs/operators';
 import {isOnline$} from '../utils/network';
 import {LoggerService} from './logging/logger.service';
+import { EnvironmentService } from "./environment.service";
 
 export interface SubscriptionRequest {
   opcode: string;
@@ -74,6 +74,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   };
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private accountService: AuthService,
     private logger: LoggerService,
     @Inject(RXJS_WEBSOCKET_CTOR) private webSocketFactory: typeof webSocket
@@ -197,7 +198,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
 
   private createWebSocketSubject(socketState: SocketState): WebSocketSubject<WsResponseMessage> {
     return this.webSocketFactory<WsResponseMessage>({
-      url: environment.wsUrl,
+      url: this.environmentService.wsUrl,
       openObserver: {
         next: () => {
           this.logger.trace(this.toLoggerMessage('Connection open'));

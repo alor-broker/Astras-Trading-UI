@@ -4,6 +4,7 @@ import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service'
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import {Subject} from "rxjs";
+import { EnvironmentService } from "./environment.service";
 
 describe('QuotesService', () => {
   let service: QuotesService;
@@ -24,6 +25,12 @@ describe('QuotesService', () => {
           provide: ErrorHandlerService,
           useValue: {
             handleError: jasmine.createSpy('handleError').and.callThrough()
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
           }
         },
         QuotesService

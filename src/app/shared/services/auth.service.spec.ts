@@ -4,18 +4,19 @@ import {discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/test
 import {RouterTestingModule} from '@angular/router/testing';
 import {AuthService} from './auth.service';
 import {LocalStorageService} from "./local-storage.service";
-import {environment} from "../../../environments/environment";
 import {User} from "../models/user/user.model";
 import {Subject, take} from "rxjs";
 import {ErrorHandlerService} from './handle-error/error-handler.service';
 import {BroadcastService} from './broadcast.service';
+import { EnvironmentService } from "./environment.service";
 
 describe('AuthService', () => {
   let service: AuthService;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
 
-  const refreshUrl = environment.clientDataUrl + '/auth/actions/refresh';
+  const clientDataUrl = 'clientDataUrl';
+  const refreshUrl = clientDataUrl + '/auth/actions/refresh';
 
   let localStorageServiceSpy: any;
   let windowAssignSpy = jasmine.createSpy('assign').and.callThrough();
@@ -66,6 +67,13 @@ describe('AuthService', () => {
           useValue: {
             subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
           }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            clientDataUrl,
+            ssoUrl: ''
+          }
         }
       ]
     });
@@ -98,13 +106,13 @@ describe('AuthService', () => {
   });
 
   it('should correctly check auth request', () => {
-    let authUrl = environment.clientDataUrl + '/auth/actions/login';
+    let authUrl = clientDataUrl + '/auth/actions/login';
     expect(service.isAuthRequest(authUrl)).toBeTruthy();
 
     authUrl = refreshUrl;
     expect(service.isAuthRequest(authUrl)).toBeTruthy();
 
-    authUrl = environment.clientDataUrl + '/auth/actions/not-auth';
+    authUrl = clientDataUrl + '/auth/actions/not-auth';
     expect(service.isAuthRequest(authUrl)).toBeFalsy();
   });
 

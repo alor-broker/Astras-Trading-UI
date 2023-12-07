@@ -9,7 +9,6 @@ import { findUnique } from 'src/app/shared/utils/collections';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { FullName } from 'src/app/shared/models/user/full-name.model';
-import { environment } from 'src/environments/environment';
 import { PortfolioMeta } from 'src/app/shared/models/user/portfolio-meta.model';
 import { PortfolioExtended } from '../models/user/portfolio-extended.model';
 import {
@@ -17,17 +16,19 @@ import {
   getMarketTypeByPortfolio
 } from "../utils/portfolios";
 import { mapWith } from '../utils/observable-helper';
+import { EnvironmentService } from "./environment.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccountService {
-  private accountUrl = environment.clientDataUrl + '/client/v1.0';
+  private accountUrl = this.environmentService.clientDataUrl + '/client/v1.0';
 
   constructor(
-    private auth: AuthService,
-    private positionsService: PositionsService,
-    private http: HttpClient
+    private readonly environmentService: EnvironmentService,
+    private readonly auth: AuthService,
+    private readonly positionsService: PositionsService,
+    private readonly http: HttpClient
   ) {
   }
 

@@ -1,24 +1,25 @@
 import { Injectable } from '@angular/core';
 import { catchHttpError } from "../../utils/observable-helper";
 import { HttpClient } from "@angular/common/http";
-import { environment } from "../../../../environments/environment";
 import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import { BehaviorSubject, forkJoin, Observable, shareReplay, switchMap, tap } from "rxjs";
 import { CreateOrderGroupReq, OrdersGroup, SubmitGroupResult } from "../../models/orders/orders-group.model";
 import { OrderCancellerService } from "../order-canceller.service";
 import { InstantNotificationsService } from "../instant-notifications.service";
 import { OrdersInstantNotificationType } from "../../models/terminal-settings/terminal-settings.model";
+import { EnvironmentService } from "../environment.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrdersGroupService {
-  private readonly orderGroupsUrl = environment.apiUrl + '/commandapi/api/orderGroups';
+  private readonly orderGroupsUrl = this.environmentService.apiUrl + '/commandapi/api/orderGroups';
 
   private refresh$ = new BehaviorSubject(null);
   private orderGroups$?: Observable<OrdersGroup[]>;
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly canceller: OrderCancellerService,
