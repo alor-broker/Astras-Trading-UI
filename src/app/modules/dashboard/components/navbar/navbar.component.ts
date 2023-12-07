@@ -13,7 +13,7 @@ import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios'
 import { ManageDashboardsService } from '../../../../shared/services/manage-dashboards.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { TranslatorService } from '../../../../shared/services/translator.service';
-import { Dashboard, DefaultDashboardName } from '../../../../shared/models/dashboard/dashboard.model';
+import { Dashboard } from '../../../../shared/models/dashboard/dashboard.model';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { defaultBadgeColor, toInstrumentKey } from '../../../../shared/utils/instruments';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
@@ -22,6 +22,7 @@ import { OrdersDialogService } from "../../../../shared/services/orders/orders-d
 import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
+import { DashboardTitleHelper } from "../../utils/dashboard-title.helper";
 
 @Component({
   selector: 'ats-navbar',
@@ -60,7 +61,7 @@ export class NavbarComponent implements OnInit {
       mapWith(() => this.dashboardContextService.selectedDashboard$, (t, d) => ({ t, d })),
       map(({ t, d }) => ({
         ...d,
-        title: d.title.includes(DefaultDashboardName) ? d.title.replace(DefaultDashboardName, t(['defaultDashboardName']))  : d.title
+        title: DashboardTitleHelper.getDisplayTitle(d, t)
       })),
       shareReplay(1)
     );
