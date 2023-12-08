@@ -19,7 +19,6 @@ import {
   startWith
 } from 'rxjs/operators';
 import { BlotterService } from '../../services/blotter.service';
-import { MathHelper } from '../../../../shared/utils/math-helper';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
@@ -203,7 +202,6 @@ export class TradesComponent extends BaseTableComponent<DisplayTrade, TradeFilte
     ).pipe(
       map(([trades, converter]) => trades.map(t => <DisplayTrade>{
         ...t,
-        volume: MathHelper.round(t.qtyUnits * t.price, 2),
         date: converter.toTerminalDate(t.date)
       })),
       mergeMap(trades => this.filter$.pipe(
