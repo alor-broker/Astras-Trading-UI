@@ -13,10 +13,6 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApplicationErrorHandler } from "../services/handle-error/error-handler";
 
-export interface ErrorHandler {
-
-}
-
 /**
  *
  * @param valueToReturn
