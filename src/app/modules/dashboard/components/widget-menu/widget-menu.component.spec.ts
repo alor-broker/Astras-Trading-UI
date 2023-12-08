@@ -1,9 +1,13 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {WidgetMenuComponent} from './widget-menu.component';
-import {getTranslocoModule, ngZorroMockComponents} from "../../utils/testing";
-import {WidgetsMetaService} from "../../services/widgets-meta.service";
 import {of} from "rxjs";
+import {
+  getTranslocoModule,
+  ngZorroMockComponents
+} from "../../../../shared/utils/testing";
+import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
+import { LetDirective } from "@ngrx/component";
 
 describe('WidgetMenuComponent', () => {
   let component: WidgetMenuComponent;
@@ -15,7 +19,10 @@ describe('WidgetMenuComponent', () => {
         WidgetMenuComponent,
         ...ngZorroMockComponents
       ],
-      imports: [getTranslocoModule()],
+      imports: [
+        getTranslocoModule(),
+        LetDirective
+      ],
       providers: [
         {
           provide: WidgetsMetaService,

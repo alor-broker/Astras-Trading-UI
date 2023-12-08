@@ -1,0 +1,11 @@
+{
+  "standardView": "Standard View",
+
+  "categories": {
+    "all": "All",
+    "chartsAndOrderbooks": "Charts and Orderbooks",
+    "positionsTradesOrders": "Positions Trades and Orders",
+    "info": "Information Resources",
+    "details": "Detailed"
+  }
+}

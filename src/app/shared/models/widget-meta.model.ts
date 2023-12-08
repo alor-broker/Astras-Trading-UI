@@ -5,6 +5,14 @@
   }
 }
 
+export enum WidgetCategory {
+  All = 'all',
+  ChartsAndOrderbooks = 'chartsAndOrderbooks',
+  PositionsTradesOrders = 'positionsTradesOrders',
+  Info = 'info',
+  Details = 'details'
+}
+
 export interface ApplicationAdapterConfig {
   module: string;
   componentName: string;
@@ -48,6 +56,7 @@ export interface WidgetMeta {
      * Used to sort widgets in gallery (widgets menu)
      */
     galleryOrder: number;
+    category: WidgetCategory;
     enabled: boolean;
   };
 

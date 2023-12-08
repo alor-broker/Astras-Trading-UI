@@ -46,6 +46,8 @@ import { DashboardsPanelComponent } from './components/dashboards-panel/dashboar
 import {OrderCommandsModule} from "../order-commands/order-commands.module";
 import { EmptyPortfoliosWarningModalWidgetComponent } from './widgets/empty-portfolios-warning-modal-widget/empty-portfolios-warning-modal-widget.component';
 import { InstrumentsCorrelationModule } from "../instruments-correlation/instruments-correlation.module";
+import { WidgetMenuComponent } from "./components/widget-menu/widget-menu.component";
+import { LetDirective } from "@ngrx/component";
 
 @NgModule({
   declarations: [
@@ -60,43 +62,45 @@ import { InstrumentsCorrelationModule } from "../instruments-correlation/instrum
     MobileInstrumentsHistoryComponent,
     NetworkIndicatorComponent,
     DashboardsPanelComponent,
-    EmptyPortfoliosWarningModalWidgetComponent
+    EmptyPortfoliosWarningModalWidgetComponent,
+    WidgetMenuComponent
   ],
-    imports: [
-        DashboardRoutingModule,
-        SharedModule,
-        OrderbookModule,
-        LightChartModule,
-        InstrumentsModule,
-        BlotterModule,
-        InfoModule,
-        TerminalSettingsModule,
-        JoyrideModule.forRoot(),
-        AllTradesModule,
-        NewsModule,
-        ExchangeRateModule,
-        TechChartModule,
-        AllInstrumentsModule,
-        NotificationsModule,
-        FeedbackModule,
-        ApplicationMetaModule,
-        NzInputModule,
-        ExternalLinkModule,
-        OrdersBasketModule,
-        ScalperOrderBookModule,
-        NzDrawerModule,
-        TreemapModule,
-        RibbonModule,
-        EventsCalendarModule,
-        OptionBoardModule,
-        ArbitrageSpreadModule,
-        PortfolioSummaryModule,
-        NzSegmentedModule,
-        DragDropModule,
-        OrderCommandsModule,
-        InstrumentsCorrelationModule,
-        // components
-    ],
+  imports: [
+    DashboardRoutingModule,
+    SharedModule,
+    OrderbookModule,
+    LightChartModule,
+    InstrumentsModule,
+    BlotterModule,
+    InfoModule,
+    TerminalSettingsModule,
+    JoyrideModule.forRoot(),
+    AllTradesModule,
+    NewsModule,
+    ExchangeRateModule,
+    TechChartModule,
+    AllInstrumentsModule,
+    NotificationsModule,
+    FeedbackModule,
+    ApplicationMetaModule,
+    NzInputModule,
+    ExternalLinkModule,
+    OrdersBasketModule,
+    ScalperOrderBookModule,
+    NzDrawerModule,
+    TreemapModule,
+    RibbonModule,
+    EventsCalendarModule,
+    OptionBoardModule,
+    ArbitrageSpreadModule,
+    PortfolioSummaryModule,
+    NzSegmentedModule,
+    DragDropModule,
+    OrderCommandsModule,
+    InstrumentsCorrelationModule,
+    LetDirective,
+    // components
+  ],
   providers: [
     OnboardingService
   ]

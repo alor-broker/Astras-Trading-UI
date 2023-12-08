@@ -25,6 +25,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 1,
+      "category": "all",
       "enabled": true
     }
   },
@@ -55,6 +56,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 2,
+      "category": "chartsAndOrderbooks",
       "enabled": true
     },
     "mobileMeta": {
@@ -88,6 +90,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 3,
+      "category": "chartsAndOrderbooks",
       "enabled": true
     }
   },
@@ -118,6 +121,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 4,
+      "category": "chartsAndOrderbooks",
       "enabled": true
     },
     "mobileMeta": {
@@ -152,6 +156,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 5,
+      "category": "chartsAndOrderbooks",
       "enabled": true
     }
   },
@@ -181,6 +186,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 6,
+      "category": "positionsTradesOrders",
       "enabled": true
     },
     "mobileMeta": {
@@ -215,6 +221,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 7,
+      "category": "info",
       "enabled": true
     },
     "mobileMeta": {
@@ -248,6 +255,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 8,
+      "category": "info",
       "enabled": true
     },
     "mobileMeta": {
@@ -282,6 +290,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 9,
+      "category": "details",
       "enabled": true
     },
     "mobileMeta": {
@@ -315,6 +324,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 10,
+      "category": "info",
       "enabled": true
     },
     "mobileMeta": {
@@ -348,6 +358,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 11,
+      "category": "details",
       "enabled": true
     },
     "mobileMeta": {
@@ -382,6 +393,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 12,
+      "category": "positionsTradesOrders",
       "enabled": true
     },
     "mobileMeta": {
@@ -422,6 +434,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 13,
+      "category": "positionsTradesOrders",
       "enabled": true
     },
     "mobileMeta": {
@@ -455,6 +468,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 14,
+      "category": "info",
       "enabled": true
     },
     "mobileMeta": {
@@ -487,6 +501,7 @@
         "initialHeightPx": 25
       },
       "galleryOrder": 15,
+      "category": "info",
       "enabled": true
     }
   },
@@ -516,6 +531,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 16,
+      "category": "info",
       "enabled": true
     }
   },
@@ -545,6 +561,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 17,
+      "category": "details",
       "enabled": true
     }
   },
@@ -574,6 +591,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 18,
+      "category": "details",
       "enabled": true
     }
   },
@@ -602,6 +620,7 @@
         "initialHeightPx": 25
       },
       "galleryOrder": 19,
+      "category": "positionsTradesOrders",
       "enabled": true
     }
   },
@@ -631,6 +650,7 @@
         "initialWidth": 10
       },
       "galleryOrder": 20,
+      "category": "info",
       "enabled": true
     }
   }
