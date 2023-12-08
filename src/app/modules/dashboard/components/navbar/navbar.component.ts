@@ -22,6 +22,7 @@ import { OrdersDialogService } from "../../../../shared/services/orders/orders-d
 import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
+import { NewYearHelper } from "../../utils/new-year.helper";
 import { DashboardTitleHelper } from "../../utils/dashboard-title.helper";
 
 @Component({
@@ -177,4 +178,6 @@ export class NavbarComponent implements OnInit {
   closeSideMenu(): void {
     this.isSideMenuVisible = false;
   }
+
+  showNewYearIcon = NewYearHelper.showNewYearIcon;
 }

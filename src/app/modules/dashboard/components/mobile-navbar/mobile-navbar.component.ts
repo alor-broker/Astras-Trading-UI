@@ -14,6 +14,7 @@ import { EntityStatus } from "../../../../shared/models/enums/entity-status";
 import { groupPortfoliosByAgreement } from "../../../../shared/utils/portfolios";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
+import { NewYearHelper } from "../../utils/new-year.helper";
 
 @Component({
   selector: 'ats-mobile-navbar',
@@ -121,4 +122,6 @@ export class MobileNavbarComponent implements OnInit {
   closeSideMenu(): void {
     this.isSideMenuVisible = false;
   }
+
+  showNewYearIcon = NewYearHelper.showNewYearIcon;
 }
