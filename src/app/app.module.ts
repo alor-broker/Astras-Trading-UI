@@ -45,6 +45,7 @@ import { AngularFireMessagingModule } from "@angular/fire/compat/messaging";
 import { AngularFireModule } from "@angular/fire/compat";
 import {MobileHook} from "./shared/services/app-hook/mobile-hook";
 import { InitQueryParamsHook } from "./shared/services/app-hook/init-query-params-hook";
+import { LoggingHook } from "./shared/services/app-hook/logging-hook";
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: any) {
@@ -132,6 +133,11 @@ registerLocaleData(ru);
     {
       provide: APP_HOOK,
       useClass: InitQueryParamsHook,
+      multi: true
+    },
+    {
+      provide: APP_HOOK,
+      useClass: LoggingHook,
       multi: true
     }
   ]
