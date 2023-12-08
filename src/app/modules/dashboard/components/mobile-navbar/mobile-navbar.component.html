@@ -1,6 +1,6 @@
 <nz-header *transloco="let t; scope: 'dashboard/navbar/common'" class="d-flex flex-column">
   <div class="header-row d-flex align-items-center">
-    <div class="logo">
+    <div class="logo" [class.new-year]="showNewYearIcon()">
       <a [routerLink]="['/']"></a>
     </div>
 
