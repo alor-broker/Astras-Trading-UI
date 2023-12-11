@@ -35,6 +35,8 @@ export interface WidgetMeta {
 
   hasInstrumentBind?: boolean;
 
+  category: WidgetCategory;
+
   /**
    * Desktop specific meta information. Skip if widget is not applicable on desktop
    */
@@ -53,10 +55,9 @@ export interface WidgetMeta {
     },
 
     /**
-     * Used to sort widgets in gallery (widgets menu)
+     * Used to sort widgets in gallery
      */
     galleryOrder: number;
-    category: WidgetCategory;
     enabled: boolean;
   };
 
@@ -67,5 +68,6 @@ export interface WidgetMeta {
     ribbonIcon: string;
     enabled: boolean;
     widgetName?: WidgetName;
+    galleryOrder: number;
   }
 }

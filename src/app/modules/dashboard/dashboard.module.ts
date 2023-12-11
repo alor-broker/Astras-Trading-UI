@@ -46,8 +46,8 @@ import { DashboardsPanelComponent } from './components/dashboards-panel/dashboar
 import {OrderCommandsModule} from "../order-commands/order-commands.module";
 import { EmptyPortfoliosWarningModalWidgetComponent } from './widgets/empty-portfolios-warning-modal-widget/empty-portfolios-warning-modal-widget.component';
 import { InstrumentsCorrelationModule } from "../instruments-correlation/instruments-correlation.module";
-import { WidgetMenuComponent } from "./components/widget-menu/widget-menu.component";
 import { LetDirective } from "@ngrx/component";
+import { WidgetsGalleryComponent } from './components/widgets-gallery/widgets-gallery.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +63,7 @@ import { LetDirective } from "@ngrx/component";
     NetworkIndicatorComponent,
     DashboardsPanelComponent,
     EmptyPortfoliosWarningModalWidgetComponent,
-    WidgetMenuComponent
+    WidgetsGalleryComponent
   ],
   imports: [
     DashboardRoutingModule,

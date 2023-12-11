@@ -15,6 +15,7 @@
         "en": "Instrument Select"
       }
     },
+    "category": "all",
     "desktopMeta": {
       "headerIcon": "eye",
       "galleryIcon": "eye",
@@ -25,7 +26,6 @@
         "initialWidth": 10
       },
       "galleryOrder": 1,
-      "category": "all",
       "enabled": true
     }
   },
@@ -46,6 +46,7 @@
       }
     },
     "hasInstrumentBind": true,
+    "category": "chartsAndOrderbooks",
     "desktopMeta": {
       "headerIcon": "ordered-list",
       "galleryIcon": "ordered-list",
@@ -56,12 +57,12 @@
         "initialWidth": 10
       },
       "galleryOrder": 2,
-      "category": "chartsAndOrderbooks",
       "enabled": true
     },
     "mobileMeta": {
       "ribbonIcon": "ordered-list",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 2
     }
   },
   {
@@ -80,6 +81,7 @@
         "en": "Scalper Orderbook"
       }
     },
+    "category": "chartsAndOrderbooks",
     "desktopMeta": {
       "headerIcon": "ordered-list",
       "galleryIcon": "ordered-list",
@@ -90,7 +92,6 @@
         "initialWidth": 10
       },
       "galleryOrder": 3,
-      "category": "chartsAndOrderbooks",
       "enabled": true
     }
   },
@@ -110,6 +111,7 @@
         "en": "Chart"
       }
     },
+    "category": "chartsAndOrderbooks",
     "hasInstrumentBind": true,
     "desktopMeta": {
       "headerIcon": "sliders",
@@ -121,12 +123,12 @@
         "initialWidth": 10
       },
       "galleryOrder": 4,
-      "category": "chartsAndOrderbooks",
       "enabled": true
     },
     "mobileMeta": {
       "ribbonIcon": "sliders",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 4
     }
   },
   {
@@ -146,6 +148,7 @@
       }
     },
     "hasInstrumentBind": true,
+    "category": "chartsAndOrderbooks",
     "desktopMeta": {
       "headerIcon": "fund",
       "galleryIcon": "fund",
@@ -156,7 +159,6 @@
         "initialWidth": 10
       },
       "galleryOrder": 5,
-      "category": "chartsAndOrderbooks",
       "enabled": true
     }
   },
@@ -176,6 +178,7 @@
         "en": "Blotter"
       }
     },
+    "category": "positionsTradesOrders",
     "desktopMeta": {
       "headerIcon": "table",
       "galleryIcon": "table",
@@ -186,12 +189,12 @@
         "initialWidth": 10
       },
       "galleryOrder": 6,
-      "category": "positionsTradesOrders",
       "enabled": true
     },
     "mobileMeta": {
       "ribbonIcon": "table",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 6
     }
   },
   {
@@ -211,6 +214,7 @@
       }
     },
     "hasInstrumentBind": true,
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "info",
       "galleryIcon": "info",
@@ -221,12 +225,12 @@
         "initialWidth": 10
       },
       "galleryOrder": 7,
-      "category": "info",
       "enabled": true
     },
     "mobileMeta": {
       "ribbonIcon": "info",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 7
     }
   },
   {
@@ -245,6 +249,7 @@
         "en": "News"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "read",
       "galleryIcon": "read",
@@ -255,12 +260,12 @@
         "initialWidth": 10
       },
       "galleryOrder": 8,
-      "category": "info",
       "enabled": true
     },
     "mobileMeta": {
       "ribbonIcon": "read",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 8
     }
   },
   {
@@ -280,6 +285,7 @@
       }
     },
     "hasInstrumentBind": true,
+    "category": "details",
     "desktopMeta": {
       "headerIcon": "unordered-list",
       "galleryIcon": "unordered-list",
@@ -290,12 +296,12 @@
         "initialWidth": 10
       },
       "galleryOrder": 9,
-      "category": "details",
       "enabled": true
     },
     "mobileMeta": {
       "ribbonIcon": "unordered-list",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 9
     }
   },
   {
@@ -314,6 +320,7 @@
         "en": "Exchange Rate"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "line-chart",
       "galleryIcon": "line-chart",
@@ -324,12 +331,12 @@
         "initialWidth": 10
       },
       "galleryOrder": 10,
-      "category": "info",
       "enabled": true
     },
     "mobileMeta": {
       "ribbonIcon": "line-chart",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 10
     }
   },
   {
@@ -348,6 +355,7 @@
         "en": "All Instruments"
       }
     },
+    "category": "details",
     "desktopMeta": {
       "headerIcon": "profile",
       "galleryIcon": "profile",
@@ -358,12 +366,12 @@
         "initialWidth": 10
       },
       "galleryOrder": 11,
-      "category": "details",
       "enabled": true
     },
     "mobileMeta": {
       "ribbonIcon": "profile",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 11
     }
   },
   {
@@ -383,6 +391,7 @@
       }
     },
     "hasInstrumentBind": true,
+    "category": "positionsTradesOrders",
     "desktopMeta": {
       "headerIcon": "send",
       "galleryIcon": "send",
@@ -393,7 +402,6 @@
         "initialWidth": 10
       },
       "galleryOrder": 12,
-      "category": "positionsTradesOrders",
       "enabled": true
     },
     "mobileMeta": {
@@ -405,7 +413,8 @@
           "ru": "Заявка",
           "en": "Order"
         }
-      }
+      },
+      "galleryOrder": 12
     }
   },
   {
@@ -424,6 +433,7 @@
         "en": "Orders Basket"
       }
     },
+    "category": "positionsTradesOrders",
     "desktopMeta": {
       "headerIcon": "calculator",
       "galleryIcon": "calculator",
@@ -434,12 +444,12 @@
         "initialWidth": 10
       },
       "galleryOrder": 13,
-      "category": "positionsTradesOrders",
       "enabled": true
     },
     "mobileMeta": {
       "ribbonIcon": "calculator",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 13
     }
   },
   {
@@ -458,6 +468,7 @@
         "en": "Market Map"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "layout",
       "galleryIcon": "layout",
@@ -468,12 +479,12 @@
         "initialWidth": 10
       },
       "galleryOrder": 14,
-      "category": "info",
       "enabled": true
     },
     "mobileMeta": {
       "ribbonIcon": "layout",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 14
     }
   },
   {
@@ -492,6 +503,7 @@
         "en": "Ribbon"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "stock",
       "galleryIcon": "stock",
@@ -501,7 +513,6 @@
         "initialHeightPx": 25
       },
       "galleryOrder": 15,
-      "category": "info",
       "enabled": true
     }
   },
@@ -521,6 +532,7 @@
         "en": "Events Calendar"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "calendar",
       "galleryIcon": "calendar",
@@ -531,7 +543,6 @@
         "initialWidth": 10
       },
       "galleryOrder": 16,
-      "category": "info",
       "enabled": true
     }
   },
@@ -551,6 +562,7 @@
         "en": "Option Board"
       }
     },
+    "category": "details",
     "desktopMeta": {
       "headerIcon": "table",
       "galleryIcon": "table",
@@ -561,7 +573,6 @@
         "initialWidth": 10
       },
       "galleryOrder": 17,
-      "category": "details",
       "enabled": true
     }
   },
@@ -581,6 +592,7 @@
         "en": "Arbitrage Spread"
       }
     },
+    "category": "details",
     "desktopMeta": {
       "headerIcon": "fork",
       "galleryIcon": "fork",
@@ -591,7 +603,6 @@
         "initialWidth": 10
       },
       "galleryOrder": 18,
-      "category": "details",
       "enabled": true
     }
   },
@@ -611,6 +622,7 @@
         "en": "Portfolio Summary"
       }
     },
+    "category": "positionsTradesOrders",
     "desktopMeta": {
       "headerIcon": "wallet",
       "galleryIcon": "wallet",
@@ -620,7 +632,6 @@
         "initialHeightPx": 25
       },
       "galleryOrder": 19,
-      "category": "positionsTradesOrders",
       "enabled": true
     }
   },
@@ -640,6 +651,7 @@
         "en": "Instruments Correlation"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "node-index",
       "galleryIcon": "node-index",
@@ -650,7 +662,6 @@
         "initialWidth": 10
       },
       "galleryOrder": 20,
-      "category": "info",
       "enabled": true
     }
   }

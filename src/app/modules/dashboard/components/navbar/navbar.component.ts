@@ -1,5 +1,10 @@
 import { Component, DestroyRef, OnInit } from '@angular/core';
-import { Observable, shareReplay, take } from 'rxjs';
+import {
+  combineLatest,
+  Observable,
+  shareReplay,
+  take
+} from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from '@ngrx/store';
@@ -22,6 +27,14 @@ import { OrdersDialogService } from "../../../../shared/services/orders/orders-d
 import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
+import {
+  GalleryDisplay,
+  WidgetDisplay,
+  WidgetGroup
+} from "../widgets-gallery/widgets-gallery.component";
+import { WidgetCategory } from "../../../../shared/models/widget-meta.model";
+import { WidgetsHelper } from "../../../../shared/utils/widgets";
+import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
 
 @Component({
   selector: 'ats-navbar',
@@ -30,6 +43,7 @@ import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reduc
 })
 export class NavbarComponent implements OnInit {
   readonly externalLinks = environment.externalLinks;
+  galleryVisible = false;
 
   isSideMenuVisible = false;
 
@@ -39,6 +53,7 @@ export class NavbarComponent implements OnInit {
 
   themeColors$!: Observable<ThemeColors>;
   searchControl = new FormControl('');
+  widgetsGallery$!: Observable<GalleryDisplay>;
 
   private activeInstrument$!: Observable<InstrumentKey | null>;
 
@@ -51,6 +66,7 @@ export class NavbarComponent implements OnInit {
     private readonly ordersDialogService: OrdersDialogService,
     private readonly themeService: ThemeService,
     private readonly translatorService: TranslatorService,
+    private readonly widgetsMetaService: WidgetsMetaService,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -109,6 +125,8 @@ export class NavbarComponent implements OnInit {
     this.themeColors$ = this.themeService.getThemeSettings().pipe(
       map(x => x.themeColors)
     );
+
+    this.initWidgetsGallery();
   }
 
   isFindedPortfolio(portfolio: PortfolioExtended) {
@@ -175,5 +193,71 @@ export class NavbarComponent implements OnInit {
 
   closeSideMenu(): void {
     this.isSideMenuVisible = false;
+  }
+
+  private initWidgetsGallery(): void{
+    const orderedCategories = [
+      WidgetCategory.All,
+      WidgetCategory.ChartsAndOrderbooks,
+      WidgetCategory.PositionsTradesOrders,
+      WidgetCategory.Info,
+      WidgetCategory.Details
+    ];
+
+    this.widgetsGallery$ = combineLatest([
+        this.widgetsMetaService.getWidgetsMeta(),
+        this.translatorService.getLangChanges()
+      ]
+    ).pipe(
+      map(([meta, lang]) => {
+          const groups = new Map<WidgetCategory, WidgetDisplay[]>;
+
+          const widgets = meta
+            .filter(x => !!x.desktopMeta && x.desktopMeta.enabled)
+            .sort((a, b) => {
+                return (a.desktopMeta!.galleryOrder ?? 0) - (b.desktopMeta!.galleryOrder ?? 0);
+              }
+            );
+
+          widgets.forEach(widgetMeta => {
+            if (!groups.has(widgetMeta.category)) {
+              groups.set(widgetMeta.category, []);
+            }
+
+            const groupWidgets = groups.get(widgetMeta.category)!;
+
+            groupWidgets.push(({
+              typeId: widgetMeta.typeId,
+              name: WidgetsHelper.getWidgetName(widgetMeta.widgetName, lang) ?? widgetMeta.typeId,
+              icon: widgetMeta.desktopMeta?.galleryIcon ?? 'appstore'
+            }));
+          });
+
+          return Array.from(groups.entries())
+            .sort((a, b) => {
+              const aIndex = orderedCategories.indexOf(a[0]);
+              const bIndex = orderedCategories.indexOf(b[0]);
+
+              return aIndex - bIndex;
+            })
+            .map(value => ({
+              category: value[0],
+              widgets: value[1]
+            } as WidgetGroup));
+        }
+      ),
+      map(groups => {
+        const menu: GalleryDisplay = {
+          allCategory: groups.find(g => g.category === WidgetCategory.All) ?? {
+            category: WidgetCategory.All,
+            widgets: []
+          },
+          groups: groups.filter(g => g.category !== WidgetCategory.All)
+        };
+
+        return menu;
+      }),
+      shareReplay(1)
+    );
   }
 }

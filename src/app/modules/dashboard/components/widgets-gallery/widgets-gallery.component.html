@@ -1,0 +1,53 @@
+<ng-container *transloco="let t; scope: 'dashboard/widgets-gallery'">
+  <nz-drawer
+    (nzOnClose)="close()"
+    [nzClosable]="false"
+    [nzExtra]="extra"
+    [nzTitle]="t('dashboardWidgetsGallery.title')"
+    [nzVisible]="atsVisible"
+    [nzWidth]="250"
+    nzPlacement="left"
+    nzWrapClassName="widget-gallery"
+  >
+    <ng-container *nzDrawerContent>
+      <ng-container *ngIf="gallery">
+
+        <ng-container *ngFor="let widget of gallery.allCategory.widgets">
+          <ng-container [ngTemplateOutletContext]="{widget}" [ngTemplateOutlet]="widgetTemplate"></ng-container>
+        </ng-container>
+
+        <ng-container *ngFor="let group of gallery.groups">
+          <div>
+            <div class="divider">
+              <span
+                class="divider-text user-select-none">{{t('dashboardWidgetsGallery.categories.' + group.category, { fallback: group.category })}}</span>
+            </div>
+
+            <ng-container *ngFor="let widget of group.widgets">
+              <ng-container [ngTemplateOutletContext]="{widget}" [ngTemplateOutlet]="widgetTemplate"></ng-container>
+            </ng-container>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </nz-drawer>
+
+  <ng-template #extra>
+    <span
+      (click)="reset()"
+      class="cursor-pointer user-select-none"
+    >
+      <i nz-icon nzTheme="outline" nzType="appstore"></i>&nbsp;{{t('dashboardWidgetsGallery.standardView')}}
+    </span>
+  </ng-template>
+
+  <ng-template #widgetTemplate let-widget='widget'>
+    <div
+      (click)="selectWidget(widget)"
+      class="cursor-pointer user-select-none d-flex flex-row flex-nowrap align-items-center gallery-item"
+    >
+      <i [nzType]="widget.icon" class="fs-5 mr-10" nz-icon nzTheme="outline"></i>&nbsp;{{widget.name}}
+    </div>
+  </ng-template>
+</ng-container>
+
