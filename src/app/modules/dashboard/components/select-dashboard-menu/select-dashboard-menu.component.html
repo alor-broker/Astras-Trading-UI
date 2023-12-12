@@ -14,24 +14,32 @@
           ></ats-editable-string>
         </div>
         <span class="actions">
-          <button (click)="copyDashboard(dashboard); $event.stopPropagation();"
-                  nz-button
-                  nzSize='small'
-                  nzType="link">
-                <i nz-icon nzType="copy"></i>
+          <button
+            (click)="copyDashboard(dashboard); $event.stopPropagation();"
+            nz-button
+            nzSize='small'
+            nzType="link"
+          >
+            <i nz-icon nzType="copy"></i>
           </button>
-          <button (click)="changeFavoriteDashboard(dashboard);$event.stopPropagation(); "
-                  nz-button
-                  nzSize='small'
-                  nzType="link">
-                <i nz-icon nzType="star" [nzTheme]="dashboard.isFavorite ? 'fill' : 'outline'"></i>
+          <button
+            (click)="changeFavoriteDashboard(dashboard);$event.stopPropagation(); "
+            nz-button
+            nzSize='small'
+            nzType="link"
+            class="favorite-btn"
+          >
+            <i nz-icon nzType="star" nzTheme="outline" [class.active]="dashboard.isFavorite"></i>
           </button>
-          <button (click)="removeDashboard(dashboard); $event.stopPropagation();" *ngIf="allDashboards.length > 1"
-                  nz-button
-                  nzSize='small'
-                  nzType="link">
-                <i nz-icon nzType="close"></i>
-              </button>
+          <button
+            *ngIf="allDashboards.length > 1"
+            (click)="removeDashboard(dashboard); $event.stopPropagation();"
+            nz-button
+            nzSize='small'
+            nzType="link"
+          >
+            <i nz-icon nzType="close"></i>
+          </button>
         </span>
       </div>
     </li>
