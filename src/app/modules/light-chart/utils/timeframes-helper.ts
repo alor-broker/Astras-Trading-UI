@@ -11,10 +11,7 @@ export class TimeframesHelper {
     };
     switch (selectedTimeframe) {
       case TimeframeValue.Month:
-        return findUniqueElements(
-          [...existing, ...history],
-          (b1, b2) => b1.time - b2.time,
-          (b1, b2) => getDate(b1.time) == getDate(b2.time));
+      case TimeframeValue.W:
       case TimeframeValue.Day:
         return findUniqueElements(
           [...existing, ...history],

@@ -104,6 +104,7 @@ export class LightChartDatafeed {
 
     switch (timeFrame) {
       case TimeframeValue.Month:
+      case TimeframeValue.W:
       case TimeframeValue.Day:
         return (new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))).getTime() / 1000;
       case TimeframeValue.H4:
