@@ -14,6 +14,7 @@ export interface Trade {
   price: number; // 270,
   side: Side; // buy,
   existing: boolean; //true
+  volume: number;
 }
 
 export interface RepoTrade extends Trade {

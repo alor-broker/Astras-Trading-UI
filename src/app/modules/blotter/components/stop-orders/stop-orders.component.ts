@@ -4,7 +4,6 @@ import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/op
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
-import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { BlotterService } from '../../services/blotter.service';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -30,7 +29,7 @@ import { LessMore } from "../../../../shared/models/enums/less-more.model";
 
 interface DisplayOrder extends StopOrder {
   residue: string;
-  volume: number;
+  volume: number | null;
 }
 
 @Component({
@@ -96,7 +95,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       id: 'volume',
       displayName: 'Объем',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.volume - a.volume,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => (b.volume ?? 0) - (a.volume ?? 0),
       tooltip: 'Объем',
       minWidth: 60
     },
@@ -296,7 +295,6 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
         .map((o: StopOrder) => ({
           ...o,
           residue: `${o.filled ?? 0}/${o.qty}`,
-          volume: MathHelper.round(o.qtyUnits * o.price, 2),
           transTime: converter.toTerminalDate(o.transTime),
           endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime,
           groupId: groups.find(g => !!g.orders.find(go => go.orderId === o.id))?.id

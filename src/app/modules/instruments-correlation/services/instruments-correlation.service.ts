@@ -14,15 +14,16 @@ import {
   HttpClient,
   HttpErrorResponse
 } from "@angular/common/http";
-import { environment } from "../../../../environments/environment";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { map } from "rxjs/operators";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class InstrumentsCorrelationService {
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly httpClient: HttpClient
   ) {
   }
@@ -55,7 +56,7 @@ export class InstrumentsCorrelationService {
       }).join(',');
 
     return this.httpClient.get<CorrelationMatrix>(
-      `${environment.apiUrl}/timeseriesanalyser/tsa`,
+      `${this.environmentService.apiUrl}/timeseriesanalyser/tsa`,
       {
         params: {
           tickers,

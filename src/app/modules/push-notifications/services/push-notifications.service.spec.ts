@@ -9,6 +9,7 @@ import {TimezoneConverterService} from "../../../shared/services/timezone-conver
 import {TimezoneConverter} from "../../../shared/utils/timezone-converter";
 import {TimezoneDisplayOption} from "../../../shared/models/enums/timezone-display-option";
 import {LocalStorageService} from "../../../shared/services/local-storage.service";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('FirebaseNotificationsService', () => {
   let service: PushNotificationsService;
@@ -41,6 +42,12 @@ describe('FirebaseNotificationsService', () => {
           provide: TimezoneConverterService,
           useValue: {
             getConverter: jasmine.createSpy('getConverter').and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)))
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
           }
         }
       ]

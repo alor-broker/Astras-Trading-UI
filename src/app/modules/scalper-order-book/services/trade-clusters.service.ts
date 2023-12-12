@@ -5,7 +5,6 @@ import {ClusterTimeframe} from '../models/scalper-order-book-settings.model';
 import {Observable, take} from 'rxjs';
 import {TradesCluster} from '../models/trades-clusters.model';
 import {ErrorHandlerService} from '../../../shared/services/handle-error/error-handler.service';
-import {environment} from '../../../../environments/environment';
 import {addSeconds, toUnixTime} from '../../../shared/utils/datetime';
 import {catchHttpError} from '../../../shared/utils/observable-helper';
 import {map} from 'rxjs/operators';
@@ -13,6 +12,7 @@ import {
   SubscriptionRequest,
   SubscriptionsDataFeedService
 } from "../../../shared/services/subscriptions-data-feed.service";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 interface HistoryResponse {
   clusters: TradesCluster[];
@@ -31,6 +31,7 @@ interface ClustersSubscriptionRequest extends SubscriptionRequest {
 })
 export class TradeClustersService {
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly subscriptionsService: SubscriptionsDataFeedService,
     private readonly httpClient: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService) {
@@ -42,7 +43,7 @@ export class TradeClustersService {
     intervalsCount: number
   ): Observable<TradesCluster[] | null> {
     return this.httpClient.get<HistoryResponse>(
-      `${environment.apiUrl}/md/v2/history/cluster`,
+      `${this.environmentService.apiUrl}/md/v2/history/cluster`,
       {
         params: {
           symbol: instrumentKey.symbol,

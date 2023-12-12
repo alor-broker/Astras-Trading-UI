@@ -9,6 +9,7 @@ import { ErrorHandlerService } from '../../../shared/services/handle-error/error
 import { sharedModuleImportForTests } from '../../../shared/utils/testing';
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('InfoService', () => {
   let service: InfoService;
@@ -29,6 +30,12 @@ describe('InfoService', () => {
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})) }
         },
         { provide: ErrorHandlerService, useValue: errorHandlerSpy },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
+        },
         InfoService
       ]
     });

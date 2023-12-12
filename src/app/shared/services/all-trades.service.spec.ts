@@ -5,6 +5,7 @@ import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import {Subject} from "rxjs";
+import { EnvironmentService } from "./environment.service";
 
 describe('AllTradesService', () => {
   let service: AllTradesService;
@@ -28,6 +29,12 @@ describe('AllTradesService', () => {
             subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
           }
         },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
+        }
       ]
     });
     service = TestBed.inject(AllTradesService);

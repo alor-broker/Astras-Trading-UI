@@ -1,5 +1,9 @@
-﻿{
-  "desktop": {
+﻿[
+  {
+    "type": "desktop",
+    "isStandard": true,
+    "isFavorite": true,
+    "name": "Default Dashboard",
     "widgets": [
       {
         "widgetTypeId": "tech-chart",
@@ -63,7 +67,73 @@
       }
     ]
   },
-  "mobile": {
+  {
+    "type": "desktop",
+    "isStandard": false,
+    "isFavorite": true,
+    "name": "Lite Dashboard",
+    "widgets": [
+      {
+        "widgetTypeId": "portfolio-summary",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "cols": 50,
+          "rows": 1
+        }
+      },
+      {
+        "widgetTypeId": "light-chart",
+        "position": {
+          "x": 0,
+          "y": 1,
+          "cols": 24,
+          "rows": 15
+        }
+      },
+      {
+        "widgetTypeId": "all-instruments",
+        "position": {
+          "x": 24,
+          "y": 1,
+          "cols": 26,
+          "rows": 15
+        }
+      },
+      {
+        "widgetTypeId": "blotter",
+        "position": {
+          "x": 0,
+          "y": 16,
+          "cols": 24,
+          "rows": 14
+        },
+        "initialSettings": {
+          "activeTabIndex": 3
+        }
+      },
+      {
+        "widgetTypeId": "order-submit",
+        "position": {
+          "x": 24,
+          "y": 16,
+          "cols": 10,
+          "rows": 14
+        }
+      },
+      {
+        "widgetTypeId": "instrument-select",
+        "position": {
+          "x": 34,
+          "y": 16,
+          "cols": 16,
+          "rows": 14
+        }
+      }
+    ]
+  },
+  {
+    "type": "mobile",
     "widgets": [
       {
         "widgetTypeId": "order-submit"
@@ -100,4 +170,4 @@
       }
     ]
   }
-}
+]

@@ -1,8 +1,8 @@
-﻿export interface SettingsMeta {
+﻿export interface RecordMeta {
   timestamp: number;
 }
 
-export interface SettingsRecord<T> {
-  meta: SettingsMeta;
+export interface StorageRecord<T> {
+  meta: RecordMeta;
   value: T;
 }

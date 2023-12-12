@@ -3,12 +3,13 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { AllInstrumentsService } from './all-instruments.service';
 import { HttpClient } from "@angular/common/http";
 import { of } from "rxjs";
-import { environment } from "../../../../environments/environment";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('AllInstrumentsService', () => {
   let service: AllInstrumentsService;
   let httpSpy: HttpClient;
+  const apiUrl = 'apiUrl';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -22,6 +23,12 @@ describe('AllInstrumentsService', () => {
         {
           provide: ErrorHandlerService,
           useValue: {}
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl
+          }
         }
       ]
     });
@@ -40,6 +47,6 @@ describe('AllInstrumentsService', () => {
 
     tick();
 
-    expect(httpSpy.get).toHaveBeenCalledOnceWith(environment.apiUrl + '/md/v2/Securities/advanced', {params: filters});
+    expect(httpSpy.get).toHaveBeenCalledOnceWith(apiUrl + '/md/v2/Securities/advanced', {params: filters});
   }));
 });

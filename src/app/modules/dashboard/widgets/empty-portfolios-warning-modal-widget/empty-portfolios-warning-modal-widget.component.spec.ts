@@ -4,6 +4,7 @@ import { EmptyPortfoliosWarningModalWidgetComponent } from './empty-portfolios-w
 import { ModalService } from "../../../../shared/services/modal.service";
 import { BehaviorSubject } from "rxjs";
 import { getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 describe('EmptyPortfoliosWarningModalWidgetComponent', () => {
   let component: EmptyPortfoliosWarningModalWidgetComponent;
@@ -22,6 +23,15 @@ describe('EmptyPortfoliosWarningModalWidgetComponent', () => {
           useValue: {
             shouldShowEmptyPortfoliosWarningModal$: new BehaviorSubject(false),
             closeEmptyPortfoliosWarningModal: jasmine.createSpy('closeEmptyPortfoliosWarningModal').and.callThrough()
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            externalLinks: {
+              support: '',
+              help: ''
+            }
           }
         }
       ]

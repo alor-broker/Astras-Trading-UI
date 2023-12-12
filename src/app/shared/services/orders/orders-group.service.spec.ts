@@ -6,6 +6,7 @@ import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import { OrderCancellerService } from "../order-canceller.service";
 import { of } from "rxjs";
 import { InstantNotificationsService } from "../instant-notifications.service";
+import { EnvironmentService } from "../environment.service";
 
 describe('OrdersGroupService', () => {
   let service: OrdersGroupService;
@@ -28,6 +29,12 @@ describe('OrdersGroupService', () => {
           provide: InstantNotificationsService,
           useValue: {
             showNotification: jasmine.createSpy('showNotification').and.callThrough()
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
           }
         }
       ]

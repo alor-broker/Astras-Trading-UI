@@ -1,20 +1,21 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable, of, take} from 'rxjs';
-import {environment} from 'src/environments/environment';
 import {EvaluationBaseProperties, QuantityEvaluationProperties} from '../models/evaluation-base-properties.model';
 import {EvaluationRequest} from '../models/evaluation-request.model';
 import {Evaluation} from '../models/evaluation.model';
 import {ErrorHandlerService} from './handle-error/error-handler.service';
 import {catchHttpError} from '../utils/observable-helper';
+import { EnvironmentService } from "./environment.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class EvaluationService {
-  private readonly url = environment.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/estimate';
+  private readonly url = this.environmentService.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/estimate';
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService
   ) {

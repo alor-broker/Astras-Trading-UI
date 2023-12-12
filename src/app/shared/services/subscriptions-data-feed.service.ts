@@ -5,7 +5,9 @@ import {
   BehaviorSubject,
   filter,
   interval,
-  Observable, of, race,
+  Observable,
+  of,
+  race,
   shareReplay,
   Subject,
   Subscription,
@@ -13,13 +15,19 @@ import {
   take,
   timer
 } from 'rxjs';
-import { BaseResponse } from '../models/ws/base-response.model';
-import { ConfirmResponse } from '../models/ws/confirm-response.model';
-import { environment } from '../../../environments/environment';
-import { GuidGenerator } from '../utils/guid';
-import { finalize, map, takeWhile, tap } from 'rxjs/operators';
-import { isOnline$ } from '../utils/network';
-import { LoggerService } from './logging/logger.service';
+import {BaseResponse} from '../models/ws/base-response.model';
+import {ConfirmResponse} from '../models/ws/confirm-response.model';
+import {GuidGenerator} from '../utils/guid';
+import {
+  catchError,
+  finalize,
+  map,
+  takeWhile,
+  tap
+} from 'rxjs/operators';
+import {isOnline$} from '../utils/network';
+import {LoggerService} from './logging/logger.service';
+import { EnvironmentService } from "./environment.service";
 
 export interface SubscriptionRequest {
   opcode: string;
@@ -74,6 +82,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   };
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly accountService: AuthService,
     private readonly logger: LoggerService,
     @Inject(RXJS_WEBSOCKET_CTOR) private readonly webSocketFactory: typeof webSocket
@@ -149,26 +158,54 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   }
 
   private createSubscription(request: WsRequestMessage, state: SocketState, enableConfirmResponse = false): Observable<WsResponseMessage> {
-    return this.getCurrentAccessToken().pipe(
-      take(1),
-      switchMap(token => {
-        return state.webSocketSubject!.multiplex(
-          () => ({
+    return  new Observable<WsResponseMessage>(observer => {
+      this.getCurrentAccessToken().pipe(
+        take(1),
+      ).subscribe(token => {
+        try {
+          state.webSocketSubject?.next(({
             ...request,
             token
-          }),
-          () => ({
-            opcode: 'unsubscribe',
-            guid: request.guid,
-            token: token
-          }),
-          (value) => (value.guid === request.guid && (!!value.data))
-            || (enableConfirmResponse && value.requestGuid === request.guid)
-        );
-      })
-    );
-  }
+          } as any));
+        } catch(err) {
+          observer.error(err);
+        }
+      });
 
+      const subscription = state.webSocketSubject?.subscribe({
+        next: (value: WsResponseMessage) => {
+          try {
+            if((value.guid === request.guid && value.data != null)
+              || (enableConfirmResponse && value.requestGuid === request.guid)) {
+              observer.next(value);
+            }
+          } catch (err) {
+            observer.error(err);
+          }
+        },
+        error: (err) => observer.error(err),
+        complete: () => observer.complete(),
+      });
+
+      return () => {
+        this.getCurrentAccessToken().pipe(
+          take(1),
+        ).subscribe(token => {
+          try {
+            state.webSocketSubject?.next(({
+              opcode: 'unsubscribe',
+              guid: request.guid,
+              token: token
+            } as any));
+          } catch (err) {
+            observer.error(err);
+          }
+        });
+
+        subscription?.unsubscribe();
+      };
+    });
+  }
 
   private getSocket(): SocketState {
     if (!!this.socketState && this.isStateValid(this.socketState)) {
@@ -197,7 +234,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
 
   private createWebSocketSubject(socketState: SocketState): WebSocketSubject<WsResponseMessage> {
     return this.webSocketFactory<WsResponseMessage>({
-      url: environment.wsUrl,
+      url: this.environmentService.wsUrl,
       openObserver: {
         next: () => {
           this.logger.trace(this.toLoggerMessage('Connection open'));
@@ -205,11 +242,15 @@ export class SubscriptionsDataFeedService implements OnDestroy {
         }
       },
       closeObserver: {
-        next: (event) => {
+        next: (event: CloseEvent) => {
+
           if (socketState.subscriptionsMap.size > 0) {
             this.logger.warn(
               this.toLoggerMessage('Connection closed with active subscriptions'),
-              JSON.stringify(event)
+              JSON.stringify({
+                code: event.code,
+                reason: event.reason
+              })
             );
 
             socketState.webSocketSubject?.complete();
@@ -268,7 +309,9 @@ export class SubscriptionsDataFeedService implements OnDestroy {
     const readPong = (): Observable<WsResponseMessage | null> => race([
       sendPing(),
       timer(this.options.pingLatency).pipe(map(() => null)),
-    ]);
+    ]).pipe(
+      catchError(() => of(null))
+    );
 
     state.pingPongSub = timer(this.options.pingTimeout, this.options.pingTimeout).pipe(
       switchMap(() => readPong()),

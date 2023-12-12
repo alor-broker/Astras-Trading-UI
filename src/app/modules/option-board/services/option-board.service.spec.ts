@@ -5,6 +5,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {ErrorHandlerService} from "../../../shared/services/handle-error/error-handler.service";
 import {CacheService} from "../../../shared/services/cache.service";
 import {Subject} from "rxjs";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('OptionBoardService', () => {
   let service: OptionBoardService;
@@ -24,6 +25,12 @@ describe('OptionBoardService', () => {
           provide: CacheService,
           useValue: {
             wrap: jasmine.createSpy('wrap').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
           }
         }
       ]

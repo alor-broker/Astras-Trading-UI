@@ -1,5 +1,4 @@
 import { OrderService } from "./order.service";
-import { environment } from "../../../../environments/environment";
 import {
   HttpClient,
   HttpErrorResponse
@@ -21,6 +20,7 @@ import {
   SubmitOrderResult
 } from "../../models/orders/new-order.model";
 import {LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit} from "../../models/orders/edit-order.model";
+import { EnvironmentService } from "../environment.service";
 
 
 describe('OrderService', () => {
@@ -30,7 +30,8 @@ describe('OrderService', () => {
   let errorHandlerServiceSpy: any;
   let httpSpy: any;
 
-  const baseApiUrl = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
+  const apiUrl = 'apiUrl';
+  const baseApiUrl = apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
   const defaultPortfolio = 'D1234';
 
   const isHeadersCorrect = (headers: { [header: string]: string | string[] | undefined }): boolean => {
@@ -59,6 +60,12 @@ describe('OrderService', () => {
         {
           provide: ErrorHandlerService,
           useValue: errorHandlerServiceSpy
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl
+          }
         }
       ]
     });

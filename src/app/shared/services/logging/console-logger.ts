@@ -1,17 +1,26 @@
+import { LoggerBase } from './logger-base';
 import {
-  LoggerBase,
+  EnvironmentService,
   LogLevel
-} from './logger-base';
-import { environment } from '../../../../environments/environment';
+} from "../environment.service";
+import { Injectable } from "@angular/core";
 
+@Injectable({
+  providedIn: "root"
+})
 export class ConsoleLogger extends LoggerBase {
+  private readonly minLevel: LogLevel | null = this.environmentService.logging.console?.minLevel as LogLevel ?? null;
+
+  constructor(private readonly environmentService: EnvironmentService) {
+    super();
+  }
+
   logMessage(logLevel: LogLevel, message: string, stack?: string): void {
-    const minLevel = this.getMinLevel();
-    if (!minLevel) {
+    if (!this.minLevel) {
       return;
     }
 
-    if (!this.isLevelApplicable(minLevel, logLevel)) {
+    if (!this.isLevelApplicable(this.minLevel, logLevel)) {
       return;
     }
 
@@ -31,9 +40,5 @@ export class ConsoleLogger extends LoggerBase {
       default:
         console.log(message);
     }
-  }
-
-  getMinLevel(): LogLevel | null {
-    return (environment.logging as any)?.console?.minLevel as LogLevel | undefined ?? null;
   }
 }

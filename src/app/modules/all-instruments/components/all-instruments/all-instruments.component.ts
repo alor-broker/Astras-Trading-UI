@@ -366,10 +366,18 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   }
 
   private mapInstrumentsToBadges(instruments: AllInstruments[], badges: InstrumentGroups, terminalSettings: TerminalSettings): AllInstruments[] {
+    const defaultBadges: InstrumentGroups = badges[defaultBadgeColor] != null
+    ? { [defaultBadgeColor]: badges[defaultBadgeColor] }
+      : {};
+
+    const availableBadges = (terminalSettings.badgesBind ?? false)
+      ? badges
+      : defaultBadges;
+
     return instruments.map(instr => ({
       ...instr,
-      badges: Object.keys((terminalSettings.badgesBind ?? false) ? badges : { [defaultBadgeColor]: badges[defaultBadgeColor] })
-        .filter(key => instr.name === badges[key]!.symbol && instr.exchange === badges[key]!.exchange)
+      badges: Object.keys(availableBadges)
+        .filter(key => instr.name === availableBadges[key]!.symbol && instr.exchange === availableBadges[key]!.exchange)
     }));
   }
 

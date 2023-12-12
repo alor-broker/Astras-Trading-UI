@@ -4,5 +4,6 @@
   "longMultiplier":  "Ставка риска понижения",
   "shortMultiplier": "Ставка риска повышения",
   "currencyLongMultiplier":  "Ставка риска понижения валюты торгов",
-  "currencyShortMultiplier": "Ставка риска повышения валюты торгов"
+  "currencyShortMultiplier": "Ставка риска повышения валюты торгов",
+  "missingRiskInfoForPortfolio": "Для текущего портфеля ({{portfolio}}) риски по выбранному инструменту не доступны"
 }

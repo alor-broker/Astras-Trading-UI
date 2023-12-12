@@ -35,6 +35,7 @@ export interface Order {
   filled?: number; //0,
   price: number; // 270,
   existing: boolean; // true
+  volume: number | null;
   timeInForce?: TimeInForce;
   iceberg?: IcebergParameters | null;
 }

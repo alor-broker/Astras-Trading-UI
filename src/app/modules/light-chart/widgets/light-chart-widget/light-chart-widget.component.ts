@@ -56,6 +56,7 @@ export class LightChartWidgetComponent implements OnInit {
         ...settings,
         timeFrame: getValueOrDefault(settings.timeFrame, TimeframeValue.Day),
         timeFrameDisplayMode: getValueOrDefault(settings.timeFrameDisplayMode, TimeFrameDisplayMode.Buttons),
+        availableTimeFrames: [TimeframeValue.M1, TimeframeValue.M15, TimeframeValue.H, TimeframeValue.Day],
         width: 300,
         height: 300
       }),

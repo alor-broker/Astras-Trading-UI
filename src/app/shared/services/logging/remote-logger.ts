@@ -1,14 +1,16 @@
-import {
-  LoggerBase,
-  LogLevel
-} from './logger-base';
+import { LoggerBase } from './logger-base';
 import { Injectable } from '@angular/core';
 import { GuidGenerator } from '../../utils/guid';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { LocalStorageService } from '../local-storage.service';
-import { environment } from '../../../../environments/environment';
+import {
+  EnvironmentService,
+  LogLevel,
+  RemoteLoggerConfig
+} from "../environment.service";
+import { LocalStorageLoggingConstants } from "../../constants/local-storage.constants";
 
 interface LogEntry {
   timestamp: string;
@@ -17,20 +19,11 @@ interface LogEntry {
   stack?: string;
   sessionId: string;
   login: string;
+  device: string;
+  browser: string;
+  version: string;
   environment: 'local' | 'dev' | 'prod';
 }
-
-interface RemoteLoggerConfig {
-  minLevel: LogLevel;
-  environment: 'local' | 'dev' | 'prod';
-
-  loggingServerUrl: string;
-  authorization: {
-    name: string;
-    password: string;
-  };
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -42,7 +35,8 @@ export class RemoteLogger extends LoggerBase {
 
   constructor(
     private readonly localStorageService: LocalStorageService,
-    private readonly httpClient: HttpClient
+    private readonly httpClient: HttpClient,
+    private readonly environmentService: EnvironmentService
   ) {
     super();
 
@@ -97,7 +91,10 @@ export class RemoteLogger extends LoggerBase {
       message: message,
       stack: stack ?? '',
       sessionId: this.guid,
-      login: (this.localStorageService.getItem<any>('user')?.login ?? '') as string,
+      login: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.UserLoginStorageKey) ?? '',
+      version: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.AppVersionStorageKey) ?? '',
+      device: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.DeviceStorageKey) ?? '',
+      browser: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.BrowserStorageKey) ?? '',
       environment: this.getConfig()!.environment
     };
   }
@@ -143,7 +140,7 @@ export class RemoteLogger extends LoggerBase {
   }
   private getConfig(): RemoteLoggerConfig | null {
     if (this.config === undefined) {
-      this.config = (environment.logging as any)?.remote as RemoteLoggerConfig | undefined ?? null;
+      this.config = this.environmentService.logging.remote ?? null;
     }
 
     return this.config;

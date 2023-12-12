@@ -9,17 +9,18 @@ import { QuotesRequest } from '../models/quotes/quotes-request.model';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import { ChartSubscriptionIdHelper } from '../utils/subscription-id-helper';
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
-import { environment } from '../../../environments/environment';
 import { catchHttpError } from '../utils/observable-helper';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { HttpClient } from '@angular/common/http';
 import { CacheService } from "./cache.service";
+import { EnvironmentService } from "./environment.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class QuotesService {
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly httpClient: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
@@ -63,7 +64,7 @@ export class QuotesService {
   }
 
   getLastQuoteInfo(symbol: string, exchange: string): Observable<Quote | null> {
-    return this.httpClient.get<Quote[]>(`${environment.apiUrl}/md/v2/Securities/${exchange}:${symbol}/quotes`).pipe(
+    return this.httpClient.get<Quote[]>(`${this.environmentService.apiUrl}/md/v2/Securities/${exchange}:${symbol}/quotes`).pipe(
       catchHttpError<Quote[]>([], this.errorHandlerService),
       map(quotes => quotes[0] ?? null)
     );

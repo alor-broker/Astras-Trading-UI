@@ -9,10 +9,7 @@ import {
   Observable,
   take
 } from 'rxjs';
-import {
-  Dashboard,
-  DefaultDashboardName
-} from '../../../../shared/models/dashboard/dashboard.model';
+import { Dashboard } from '../../../../shared/models/dashboard/dashboard.model';
 import { ManageDashboardsService } from '../../../../shared/services/manage-dashboards.service';
 import {
   FormControl,
@@ -24,6 +21,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { TranslatorService } from '../../../../shared/services/translator.service';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { map } from 'rxjs/operators';
+import { DashboardTitleHelper } from "../../utils/dashboard-title.helper";
 
 @Component({
   selector: 'ats-select-dashboard-menu',
@@ -75,7 +73,7 @@ export class SelectDashboardMenuComponent implements OnInit {
       })),
       map(({ t, allDashboards }) => allDashboards.map(d => ({
         ...d,
-        title: d.title.includes(DefaultDashboardName) ? d.title.replace(DefaultDashboardName, t(['defaultDashboardName']))  : d.title
+        title: DashboardTitleHelper.getDisplayTitle(d, t)
       })))
     );
   }

@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MobileDashboardWidgetComponent } from './mobile-dashboard-widget.component';
-import { OnboardingService } from "../../services/onboarding.service";
 import {
   commonTestProviders,
   mockComponent,
@@ -28,7 +27,6 @@ describe('MobileDashboardWidgetComponent', () => {
         mockComponent({ selector: 'ats-edit-order-dialog-widget' }),
       ],
       providers: [
-        { provide: OnboardingService, useValue: { start: jasmine.createSpy('start').and.callThrough() } },
         ...commonTestProviders
       ]
     })

@@ -11,9 +11,9 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs';
-import { DefaultDashboardName } from '../../shared/models/dashboard/dashboard.model';
+import { DefaultDesktopDashboardConfig } from '../../shared/models/dashboard/dashboard.model';
 import { ManageDashboardsService } from '../../shared/services/manage-dashboards.service';
-import {  mapWith } from '../../shared/utils/observable-helper';
+import { mapWith } from '../../shared/utils/observable-helper';
 import { MarketService } from '../../shared/services/market.service';
 import { getDefaultPortfolio, isPortfoliosEqual } from '../../shared/utils/portfolios';
 import {
@@ -28,7 +28,6 @@ import { instrumentsBadges } from '../../shared/utils/instruments';
 import { UserPortfoliosService } from "../../shared/services/user-portfolios.service";
 import { DashboardsStreams } from "./dashboards.streams";
 import { WatchlistCollectionService } from "../../modules/instruments/services/watchlist-collection.service";
-import { ExchangeSettings } from "../../shared/models/market-settings.model";
 import { DashboardsFeature } from "./dashboards.reducer";
 
 
@@ -38,48 +37,13 @@ export class DashboardsEffects {
     () => {
       return this.actions$.pipe(
         ofType(DashboardsInternalActions.init),
-        mapWith(
-          () => this.marketService.getAllExchanges().pipe(take(1)),
-          ({dashboards}, marketSettings) => ({dashboards, marketSettings})
-        ),
-        switchMap(({dashboards, marketSettings}) => {
-          if (!dashboards.length) {
-            return EMPTY;
+        switchMap(action => {
+          if (action.dashboards.length > 0) {
+            return of(DashboardsInternalActions.initSuccess());
           }
 
-          // This logic needs to replace instruments selection with new badges colors before dashboards init
-          // to prevent widgets badges errors
-          const defaultSettings = marketSettings.find(x => x.settings.isDefault); // Find default market settings
-          const instrumentsSelectionActions: Action[] = [];  // Array with actions to replace dashboard old badges with new
-
-          dashboards.forEach(d => {
-            let exchangeSettingsCopy = JSON.parse(JSON.stringify(defaultSettings)) as { exchange: string, settings: ExchangeSettings } | undefined;
-
-            // If portfolio selected, find default settings of selected portfolio exchange
-            if (d.selectedPortfolio) {
-              exchangeSettingsCopy = marketSettings.find(x => x.exchange === d.selectedPortfolio!.exchange) ?? exchangeSettingsCopy;
-            }
-
-            if (exchangeSettingsCopy?.settings.defaultInstrument == null) {
-              return;
-            }
-
-            // Push the action to replace old badges with new
-            instrumentsSelectionActions.push(DashboardsCurrentSelectionActions.selectInstruments({
-              dashboardGuid: d.guid,
-              selection: instrumentsBadges.map(badge => ({
-                groupKey: badge,
-                instrumentKey: d.instrumentsSelection?.[badge] ?? {
-                  ...exchangeSettingsCopy!.settings.defaultInstrument,
-                  exchange: exchangeSettingsCopy!.exchange
-                }
-              }))
-            }));
-          });
-
-          // Replace old badges with new and then init dashboards
-          return of(...instrumentsSelectionActions, DashboardsInternalActions.initSuccess());
-        }),
+          return EMPTY;
+        })
       );
     }
   );
@@ -93,25 +57,38 @@ export class DashboardsEffects {
         (source, defaultConfig) => defaultConfig
       ),
       switchMap(defaultConfig => {
-        const newDashboardAction = DashboardsManageActions.add({
-          guid: GuidGenerator.newGuid(),
-          title: DefaultDashboardName,
-          isSelected: true,
-          existedItems: []
-        });
+        const defaultDashboardsConfig = defaultConfig
+          .filter(d => d.type === 'desktop')
+          .map(d => d as DefaultDesktopDashboardConfig);
 
-        return of(
-          newDashboardAction,
-          DashboardItemsActions.addWidgets({
-            dashboardGuid: newDashboardAction.guid,
-            widgets: defaultConfig.desktop.widgets.map(w => ({
+        if(defaultDashboardsConfig.length === 0) {
+          return EMPTY;
+        }
+
+        const actions: Action[] = [];
+        defaultDashboardsConfig.forEach((d, index) => {
+          const guid = GuidGenerator.newGuid();
+          actions.push(DashboardsManageActions.add({
+            guid,
+            title: d.name,
+            isSelected: index === 0,
+            existedItems: d.widgets.map(w => ({
+              guid: GuidGenerator.newGuid(),
               widgetType: w.widgetTypeId,
               position: w.position,
               initialSettings: w.initialSettings
             }))
-          }),
-          DashboardsInternalActions.initSuccess()
-        );
+          }));
+
+          if(d.isFavorite) {
+            actions.push(DashboardFavoritesActions.add({dashboardGuid: guid}));
+          }
+        });
+
+
+        actions.push(DashboardsInternalActions.initSuccess());
+
+        return of(...actions);
       })
     );
   });
@@ -127,18 +104,29 @@ export class DashboardsEffects {
         () => this.dashboardService.getDefaultDashboardConfig(),
         (source, defaultConfig) => ({...source, defaultConfig})
       ),
-      switchMap(({dashboardGuid, items, defaultConfig}) => of(
-        DashboardItemsActions.removeWidgets({dashboardGuid, widgetIds: items.map(i => i.guid)}),
-        DashboardItemsActions.addWidgets({
-            dashboardGuid,
-            widgets: defaultConfig.desktop.widgets.map(w => ({
-              widgetType: w.widgetTypeId,
-              position: w.position,
-              initialSettings: w.initialSettings
-            }))
-          }
-        )
-      ))
+      switchMap(({dashboardGuid, items, defaultConfig}) => {
+        const standardDashboard = defaultConfig
+          .filter(d => d.type === 'desktop')
+          .map(d => d as DefaultDesktopDashboardConfig)
+          .find(d => d.isStandard);
+
+        if(standardDashboard != null) {
+          return of(
+            DashboardItemsActions.removeWidgets({dashboardGuid, widgetIds: items.map(i => i.guid)}),
+            DashboardItemsActions.addWidgets({
+                dashboardGuid,
+                widgets: standardDashboard.widgets.map(w => ({
+                  widgetType: w.widgetTypeId,
+                  position: w.position,
+                  initialSettings: w.initialSettings
+                }))
+              }
+            )
+          );
+        }
+
+        return EMPTY;
+      })
     );
   });
 
@@ -202,7 +190,7 @@ export class DashboardsEffects {
 
   setDefaultInstrumentsSelectionForCurrentDashboard$ = createEffect(() => {
     return DashboardsStreams.getSelectedDashboard(this.store).pipe(
-      filter(d => instrumentsBadges.some(badge => !d.instrumentsSelection?.[badge])),
+      filter(d => instrumentsBadges.some(badge => d.instrumentsSelection?.[badge] == null)),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),
       mapWith(
         () => this.marketService.getAllExchanges().pipe(take(1)),
@@ -223,7 +211,7 @@ export class DashboardsEffects {
               selection: instrumentsBadges.map(badge => ({
                 groupKey: badge,
                 instrumentKey: dashboard.instrumentsSelection?.[badge] ?? {
-                  ...exchangeSettings!.settings.defaultInstrument,
+                  ...exchangeSettings!.settings.defaultInstrument!,
                   exchange: exchangeSettings!.exchange
                 }
               }))

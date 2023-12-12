@@ -8,6 +8,7 @@ import {
 } from '../../../shared/utils/testing';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { Subject } from 'rxjs';
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('BlotterService', () => {
   let service: BlotterService;
@@ -40,6 +41,12 @@ describe('BlotterService', () => {
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
         { provide: OrdersNotificationsService, useValue: notificationSpy },
         { provide: QuotesService, useValue: quotesSpy },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
+        },
         BlotterService,
         ...commonTestProviders
       ]

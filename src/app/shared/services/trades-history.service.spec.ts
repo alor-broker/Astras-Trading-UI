@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { TradesHistoryService } from './trades-history.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
+import { EnvironmentService } from "./environment.service";
 
 describe('TradesHistoryService', () => {
   let service: TradesHistoryService;
@@ -15,6 +16,12 @@ describe('TradesHistoryService', () => {
           provide: ErrorHandlerService,
           useValue: {
             handleError: jasmine.createSpy('handleError').and.callThrough()
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
           }
         }
       ]

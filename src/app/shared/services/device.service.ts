@@ -4,9 +4,10 @@ import { NgxDeviceInfoService } from "ngx-device-info";
 
 interface DeviceInfo {
   isMobile: boolean;
+  userAgent?: string;
 }
 
-interface NativeDeviceInfo extends DeviceInfo {
+interface NgxDeviceInfo extends DeviceInfo {
   isTablet: boolean;
 }
 
@@ -18,7 +19,7 @@ export class DeviceService {
   constructor(private readonly deviceInfoService: NgxDeviceInfoService) {
   }
 
-  deviceInfo$: Observable<DeviceInfo> = from<Promise<NativeDeviceInfo>>(this.deviceInfoService.getDeviceInfo())
+  deviceInfo$: Observable<DeviceInfo> = from<Promise<NgxDeviceInfo>>(this.deviceInfoService.getDeviceInfo())
     .pipe(
       map(info => ({ isMobile: info.isMobile || info.isTablet })),
       shareReplay(1)

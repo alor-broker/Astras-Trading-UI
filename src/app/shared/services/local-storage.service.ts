@@ -33,6 +33,10 @@ export class LocalStorageService implements OnDestroy {
     return JSON.parse(json) as T;
   }
 
+  public getStringItem(key: string): string | null {
+    return localStorage.getItem(key);
+  }
+
   public getItemStream<T>(key: string): Observable<T | undefined> {
     return this.changes.pipe(
       filter(changes => changes.key === key),

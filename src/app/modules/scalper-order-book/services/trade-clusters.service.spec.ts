@@ -5,6 +5,7 @@ import { ErrorHandlerService } from '../../../shared/services/handle-error/error
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import {SubscriptionsDataFeedService} from "../../../shared/services/subscriptions-data-feed.service";
 import {Subject} from "rxjs";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('TradeClustersService', () => {
   let service: TradeClustersService;
@@ -23,6 +24,12 @@ describe('TradeClustersService', () => {
           provide: SubscriptionsDataFeedService,
           useValue: {
             subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
           }
         }
       ]

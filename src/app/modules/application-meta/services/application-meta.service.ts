@@ -2,17 +2,17 @@ import { Injectable } from '@angular/core';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { merge, Observable, of, shareReplay, Subject, take } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { ReleaseMeta, ReleasesMeta } from '../models/application-release.model';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
+import { EnvironmentService } from 'src/app/shared/services/environment.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApplicationMetaService {
-  private readonly releasesApiBaseUrl = `${environment.warpUrl}/api/releases`;
+  private readonly releasesApiBaseUrl = `${this.environmentService.warpUrl}/api/releases`;
 
   private readonly update$ = new Subject();
   private readonly versionStorageKey = 'version';
@@ -25,6 +25,7 @@ export class ApplicationMetaService {
     );
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly localStorageService: LocalStorageService,
     private readonly httpClient: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService

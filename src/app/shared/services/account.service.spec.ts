@@ -4,8 +4,8 @@ import { PositionsService } from 'src/app/shared/services/positions.service';
 import { AuthService } from './auth.service';
 import { AccountService } from './account.service';
 import { of } from "rxjs";
-import { environment } from "../../../environments/environment";
 import { MarketType } from "../models/portfolio-key.model";
+import { EnvironmentService } from "./environment.service";
 
 describe('AccountService', () => {
   let service: AccountService;
@@ -28,6 +28,8 @@ describe('AccountService', () => {
   };
   let httpTestingController: HttpTestingController;
 
+  const clientDataUrl = 'clientDataUrl';
+
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -37,7 +39,13 @@ describe('AccountService', () => {
       providers: [
         AccountService,
         { provide: AuthService, useValue: spyAuth },
-        { provide: PositionsService, useValue: spyPositions }
+        { provide: PositionsService, useValue: spyPositions },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            clientDataUrl
+          }
+        }
       ]
     });
 
@@ -62,7 +70,7 @@ describe('AccountService', () => {
       .subscribe(res => expect(res).toEqual(fullNameRes));
     tick();
 
-    const req = httpTestingController.expectOne(`${environment.clientDataUrl}/client/v1.0/users/testLogin/full-name`);
+    const req = httpTestingController.expectOne(`${clientDataUrl}/client/v1.0/users/testLogin/full-name`);
 
     expect(req.request.method).toEqual('GET');
 
@@ -109,7 +117,7 @@ describe('AccountService', () => {
 
     tick();
 
-    const req = httpTestingController.expectOne(`${environment.clientDataUrl}/client/v1.0/users/testClientId/all-portfolios`);
+    const req = httpTestingController.expectOne(`${clientDataUrl}/client/v1.0/users/testClientId/all-portfolios`);
     expect(req.request.method).toEqual('GET');
     req.flush(portfoliosMetaRes);
   }));

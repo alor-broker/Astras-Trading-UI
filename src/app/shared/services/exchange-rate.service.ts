@@ -2,15 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { ExchangeRate } from "../../modules/exchange-rate/models/exchange-rate.model";
-import { environment } from "../../../environments/environment";
+import { EnvironmentService } from "./environment.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExchangeRateService {
-  private readonly baseUrl = environment.apiUrl + '/md/v2/Securities';
+  private readonly baseUrl = this.environmentService.apiUrl + '/md/v2/Securities';
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient
   ) {
   }

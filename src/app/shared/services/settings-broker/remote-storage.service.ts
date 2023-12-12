@@ -4,8 +4,11 @@ import {Observable, take} from "rxjs";
 import {map} from "rxjs/operators";
 import {ErrorHandlerService} from "../handle-error/error-handler.service";
 import {catchHttpError} from "../../utils/observable-helper";
-import {environment} from "../../../../environments/environment";
-import {SettingsMeta, SettingsRecord} from "../../models/settings-broker.model";
+import {
+  RecordMeta,
+  StorageRecord
+} from "../../models/settings-broker.model";
+import { EnvironmentService } from "../environment.service";
 
 interface UserSettings {
   Key: string;
@@ -22,16 +25,17 @@ interface RemoteStorageItem {
   providedIn: 'root'
 })
 export class RemoteStorageService {
-  private readonly baseUrl = environment.remoteSettingsStorageUrl;
+  private readonly baseUrl = this.environmentService.remoteSettingsStorageUrl;
   private readonly serviceName = 'Astras';
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly httpClient: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService
   ) {
   }
 
-  getRecord<T>(key: string): Observable<SettingsRecord<T> | null> {
+  getRecord<T = any>(key: string): Observable<StorageRecord<T> | null> {
     return this.httpClient.get<RemoteStorageItem>(
       this.baseUrl,
       {
@@ -46,9 +50,9 @@ export class RemoteStorageService {
         if (!!r && !!r.UserSettings) {
           try {
             return {
-              meta: <SettingsMeta>JSON.parse(r.UserSettings.Description),
-              value: <T>JSON.parse(r.UserSettings.Content)
-            } as SettingsRecord<T>;
+              meta: JSON.parse(r.UserSettings.Description) as RecordMeta,
+              value: JSON.parse(r.UserSettings.Content) as T
+            };
           } catch (e: any) {
             this.errorHandlerService.handleError(e);
 
@@ -62,7 +66,7 @@ export class RemoteStorageService {
     );
   }
 
-  getGroup<T>(groupKey: string): Observable<SettingsRecord<T>[] | null> {
+  getGroup<T = any>(groupKey: string): Observable<StorageRecord<T>[] | null> {
     return this.httpClient.get<UserSettings[]>(
       `${this.baseUrl}/group/${groupKey}`,
       {
@@ -79,9 +83,9 @@ export class RemoteStorageService {
 
         try {
           return r.map(i => ({
-            meta: <SettingsMeta>JSON.parse(i.Description),
-            value: <T>JSON.parse(i.Content)
-          } as SettingsRecord<T>));
+            meta: <RecordMeta>JSON.parse(i.Description),
+            value: JSON.parse(i.Content) as T
+          }));
         } catch (e: any) {
           this.errorHandlerService.handleError(e);
 
@@ -93,7 +97,7 @@ export class RemoteStorageService {
     );
   }
 
-  setRecord<T>(key: string, record: SettingsRecord<T>, groupKey?: string): Observable<boolean> {
+  setRecord(key: string, record: StorageRecord<any>, groupKey?: string): Observable<boolean> {
     return this.httpClient.put(
       this.baseUrl,
       {

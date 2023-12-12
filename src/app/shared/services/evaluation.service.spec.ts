@@ -8,6 +8,7 @@ import {
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { DashboardContextService } from './dashboard-context.service';
 import { Subject } from 'rxjs';
+import { EnvironmentService } from "./environment.service";
 
 describe('EvaluationService', () => {
   let service: EvaluationService;
@@ -20,6 +21,12 @@ describe('EvaluationService', () => {
         HttpClientTestingModule
       ],
       providers: [
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
+        },
         EvaluationService,
         ...commonTestProviders
       ]

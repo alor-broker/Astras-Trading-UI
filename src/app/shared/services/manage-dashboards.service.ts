@@ -29,7 +29,7 @@ import {
   providedIn: 'root',
 })
 export class ManageDashboardsService {
-  private defaultConfig$?: Observable<DefaultDashboardConfig>;
+  private defaultConfig$?: Observable<DefaultDashboardConfig[]>;
 
   constructor(
     private readonly httpClient: HttpClient,
@@ -146,7 +146,7 @@ export class ManageDashboardsService {
     this.store.dispatch(DashboardsCurrentSelectionActions.select({ dashboardGuid: guid }));
   }
 
-  getDefaultDashboardConfig(): Observable<DefaultDashboardConfig> {
+  getDefaultDashboardConfig(): Observable<DefaultDashboardConfig[]> {
     if (!this.defaultConfig$) {
       this.readDefaultConfig();
     }
@@ -155,8 +155,8 @@ export class ManageDashboardsService {
   }
 
   private readDefaultConfig(): void {
-    this.defaultConfig$ = this.httpClient.get<DefaultDashboardConfig>(
-      '../../../assets/default-dashboard-config.json',
+    this.defaultConfig$ = this.httpClient.get<DefaultDashboardConfig[]>(
+      '../../../assets/default-dashboards-config.json',
       {
         headers: {
           "Cache-Control": "no-cache",

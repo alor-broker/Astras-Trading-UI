@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {environment} from "../../../../../environments/environment";
+import { EnvironmentService } from 'src/app/shared/services/environment.service';
 
 @Component({
   selector: 'ats-useful-links',
@@ -7,5 +7,7 @@ import {environment} from "../../../../../environments/environment";
   styleUrls: ['./useful-links.component.less']
 })
 export class UsefulLinksComponent {
-  readonly externalLinks = environment.externalLinks;
+  readonly externalLinks = this.environmentService.externalLinks;
+  constructor(private readonly environmentService: EnvironmentService) {
+  }
 }

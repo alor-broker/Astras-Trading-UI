@@ -13,7 +13,10 @@ import { Store } from "@ngrx/store";
 import { WidgetSettings } from "../../../shared/models/widget-settings.model";
 import { Dashboard } from "../../../shared/models/dashboard/dashboard.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
-import { take } from "rxjs";
+import {
+  of,
+  take
+} from "rxjs";
 import { TerminalSettings } from "../../../shared/models/terminal-settings/terminal-settings.model";
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 import {
@@ -29,21 +32,23 @@ import {
   TerminalSettingsInternalActions,
   TerminalSettingsServicesActions
 } from "../../../store/terminal-settings/terminal-settings.actions";
+import { LocalStorageMobileConstants } from "../../../shared/constants/local-storage.constants";
+import { DashboardSettingsMobileMigrationManager } from "../../settings-migration/dashboard-settings/dashboard-settings-mobile-migration-manager";
+import { WidgetSettingsMobileMigrationManager } from "../../settings-migration/widget-settings/widget-settings-mobile-migration-manager";
+import { TerminalSettingsMobileMigrationManager } from "../../settings-migration/terminal-settings/terminal-settings-mobile-migration-manager";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MobileSettingsBrokerService {
-  private readonly widgetsSettingsStorageKey = 'settings';
-  private readonly dashboardsSettingsStorageKey = 'mobile-dashboard';
-  private readonly instrumentsHistoryStorageKey = 'instruments-history';
-  private readonly terminalSettingsStorageKey = 'terminalSettings';
-
   constructor(
     private readonly store: Store,
     private readonly actions$: Actions,
     private readonly localStorageService: LocalStorageService,
     private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly dashboardSettingsMobileMigrationManager: DashboardSettingsMobileMigrationManager,
+    private readonly widgetSettingsMobileMigrationManager: WidgetSettingsMobileMigrationManager,
+    private readonly terminalSettingsMobileMigrationManager: TerminalSettingsMobileMigrationManager,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -55,49 +60,86 @@ export class MobileSettingsBrokerService {
   }
 
   private initWidgetSettingsBroker(): void {
+    const saveSettings = (settings: WidgetSettings[]): void => {
+      this.localStorageService.setItem(LocalStorageMobileConstants.WidgetsSettingsStorageKey, settings.map(s => [s.guid, s]));
+    };
+
     this.addActionSubscription(
       WidgetSettingsEventsActions.updated,
       action => {
-        this.localStorageService.setItem(this.widgetsSettingsStorageKey, action.settings.map(s => [s.guid, s]));
+        saveSettings(action.settings);
       }
     );
 
-    const settingItems = this.localStorageService.getItem<[string, WidgetSettings][]>(this.widgetsSettingsStorageKey) ?? [];
-    this.store.dispatch(WidgetSettingsInternalActions.init({ settings: settingItems.map(x => x[1]) }));
+    const savedItems = this.localStorageService.getItem<[string, WidgetSettings][]>(LocalStorageMobileConstants.WidgetsSettingsStorageKey) ?? [];
+    const settings = savedItems.map(x => x[1]);
+
+    this.widgetSettingsMobileMigrationManager.applyMigrations<WidgetSettings[]>(
+      settings,
+      migrated => {
+        saveSettings(migrated);
+        return of(true);
+      }
+    ).pipe(
+      take(1)
+    ).subscribe(x => this.store.dispatch(WidgetSettingsInternalActions.init({ settings: x.updatedData })));
   }
 
   private initDashboardSettingsBroker(): void {
+    const saveDashboard = (settings: Dashboard): void => this.localStorageService.setItem(LocalStorageMobileConstants.DashboardsSettingsStorageKey, settings);
+
     this.addActionSubscription(
       MobileDashboardEventsActions.updated,
       action => {
-        this.localStorageService.setItem(this.dashboardsSettingsStorageKey, action.dashboard);
+        saveDashboard(action.dashboard);
       }
     );
 
     this.addActionSubscription(
       MobileDashboardEventsActions.instrumentsHistoryUpdated,
       action => {
-        this.localStorageService.setItem(this.instrumentsHistoryStorageKey, action.instruments);
+        this.localStorageService.setItem(LocalStorageMobileConstants.InstrumentsHistoryStorageKey, action.instruments);
       }
     );
 
-    const dashboard = this.localStorageService.getItem<Dashboard>(this.dashboardsSettingsStorageKey) ?? null;
-    const history = this.localStorageService.getItem<InstrumentKey[]>(this.instrumentsHistoryStorageKey) ?? [];
+    const dashboard = this.localStorageService.getItem<Dashboard>(LocalStorageMobileConstants.DashboardsSettingsStorageKey) ?? null;
+    const history = this.localStorageService.getItem<InstrumentKey[]>(LocalStorageMobileConstants.InstrumentsHistoryStorageKey) ?? [];
 
-    this.store.dispatch(MobileDashboardInternalActions.init({
-      mobileDashboard: dashboard,
-      instrumentsHistory: history
-    }));
+    if (!dashboard) {
+      this.store.dispatch(MobileDashboardInternalActions.init({
+        mobileDashboard: dashboard,
+        instrumentsHistory: history
+      }));
+
+      return;
+    }
+
+    this.dashboardSettingsMobileMigrationManager.applyMigrations<Dashboard>(
+      dashboard,
+      migrated => {
+        saveDashboard(migrated);
+        return of(true);
+      }
+    ).pipe(
+      take(1)
+    ).subscribe(x => {
+      this.store.dispatch(MobileDashboardInternalActions.init({
+        mobileDashboard: x.updatedData,
+        instrumentsHistory: history
+      }));
+    });
   }
 
   private initTerminalSettingsBroker(): void {
+    const saveSettings = (settings: TerminalSettings): void => this.localStorageService.setItem(LocalStorageMobileConstants.TerminalSettingsStorageKey, settings);
+
     this.addActionSubscription(
       TerminalSettingsServicesActions.update,
       () => {
         this.terminalSettingsService.getSettings(true).pipe(
           take(1),
         ).subscribe(settings => {
-          this.localStorageService.setItem(this.terminalSettingsStorageKey, settings);
+          saveSettings(settings);
           this.store.dispatch(TerminalSettingsEventsActions.saveSuccess());
         });
       }
@@ -106,17 +148,32 @@ export class MobileSettingsBrokerService {
     this.addActionSubscription(
       TerminalSettingsServicesActions.reset,
       () => {
-        this.localStorageService.removeItem(this.terminalSettingsStorageKey);
-        this.localStorageService.removeItem(this.widgetsSettingsStorageKey);
-        this.localStorageService.removeItem(this.dashboardsSettingsStorageKey);
-        this.localStorageService.removeItem(this.instrumentsHistoryStorageKey);
+        this.localStorageService.removeItem(LocalStorageMobileConstants.TerminalSettingsStorageKey);
+        this.localStorageService.removeItem(LocalStorageMobileConstants.WidgetsSettingsStorageKey);
+        this.localStorageService.removeItem(LocalStorageMobileConstants.DashboardsSettingsStorageKey);
+        this.localStorageService.removeItem(LocalStorageMobileConstants.InstrumentsHistoryStorageKey);
+        this.localStorageService.removeItem(LocalStorageMobileConstants.MigrationsSettingsStorageKey);
 
         this.store.dispatch(TerminalSettingsEventsActions.resetSuccess());
       }
     );
 
-    const terminalSettings = this.localStorageService.getItem<TerminalSettings>(this.terminalSettingsStorageKey) ?? null;
-    this.store.dispatch(TerminalSettingsInternalActions.init({ settings: terminalSettings ?? null }));
+    const terminalSettings = this.localStorageService.getItem<TerminalSettings>(LocalStorageMobileConstants.TerminalSettingsStorageKey) ?? null;
+
+    if (!terminalSettings) {
+      this.store.dispatch(TerminalSettingsInternalActions.init({ settings: terminalSettings ?? null }));
+      return;
+    }
+
+    this.terminalSettingsMobileMigrationManager.applyMigrations<TerminalSettings>(
+      terminalSettings,
+      migrated => {
+        saveSettings(migrated);
+        return of(true);
+      }
+    ).pipe(
+      take(1)
+    ).subscribe(x => this.store.dispatch(TerminalSettingsInternalActions.init({ settings: x.updatedData })));
   }
 
   private addActionSubscription<AC extends ActionCreator, U = ReturnType<AC>>(actionCreator: AC, callback: (action: U) => void): void {

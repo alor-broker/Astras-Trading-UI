@@ -46,7 +46,6 @@ import {
   map,
   startWith
 } from "rxjs/operators";
-import { MathHelper } from "../../../../shared/utils/math-helper";
 import { Trade } from "../../../../shared/models/trades/trade.model";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
@@ -159,7 +158,6 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
     ).pipe(
       map(([trades, converter]) => trades.map(t => <DisplayTrade>{
         ...t,
-        volume: MathHelper.round(t.qtyUnits * t.price, 2),
         date: converter.toTerminalDate(t.date)
       })),
       mapWith(

@@ -6,19 +6,20 @@ import {
   AllTradesSubRequest
 } from "../models/all-trades.model";
 import { Observable } from "rxjs";
-import { environment } from 'src/environments/environment';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { catchHttpError } from '../utils/observable-helper';
+import { EnvironmentService } from "./environment.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AllTradesService {
-  private readonly allTradesUrl = environment.apiUrl + '/md/v2/Securities';
+  private readonly allTradesUrl = this.environmentService.apiUrl + '/md/v2/Securities';
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService) {

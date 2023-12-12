@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { JoyrideService } from 'ngx-joyride';
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
-import { LocalStorageConstants } from "../../../shared/constants/local-storage.constants";
+import { LocalStorageDesktopConstants } from "../../../shared/constants/local-storage.constants";
 
 interface Profile {
   isCompleted: boolean;
@@ -32,7 +32,7 @@ export class OnboardingService {
   }
 
   private getProfile(): Profile | undefined {
-    return this.localStorage.getItem<Profile>(LocalStorageConstants.ProfileStorageKey);
+    return this.localStorage.getItem<Profile>(LocalStorageDesktopConstants.ProfileStorageKey);
   }
 
   private getIsCompleted(): boolean {
@@ -49,6 +49,6 @@ export class OnboardingService {
       isCompleted
     };
 
-    this.localStorage.setItem(LocalStorageConstants.ProfileStorageKey, profile);
+    this.localStorage.setItem(LocalStorageDesktopConstants.ProfileStorageKey, profile);
   }
 }

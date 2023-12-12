@@ -9,7 +9,7 @@ import {
 import { map } from 'rxjs/operators';
 import { LocalStorageService } from "../../shared/services/local-storage.service";
 import { WidgetStateRecord } from "./widgets-local-state.model";
-import { LocalStorageConstants } from "../../shared/constants/local-storage.constants";
+import { LocalStorageCommonConstants } from "../../shared/constants/local-storage.constants";
 import { Store } from "@ngrx/store";
 import { WidgetsLocalStatesFeature } from "./widgets-local-state.reducer";
 import { tap } from "rxjs";
@@ -24,7 +24,7 @@ export class WidgetsLocalStateEffects {
     return this.actions$.pipe(
       ofType(WidgetsLocalStateInternalActions.init),
       map(() => {
-        const savedRecords = this.localStorageService.getItem<WidgetStateRecord[]>(LocalStorageConstants.WidgetsLocalStateStorageKey) ?? [];
+        const savedRecords = this.localStorageService.getItem<WidgetStateRecord[]>(LocalStorageCommonConstants.WidgetsLocalStateStorageKey) ?? [];
         return WidgetsLocalStateInternalActions.load({ records: savedRecords });
       })
     );
@@ -39,7 +39,7 @@ export class WidgetsLocalStateEffects {
         concatLatestFrom(() => this.store.select(WidgetsLocalStatesFeature.selectAll)),
         tap(([, allRecords]) => {
           const recordsToSave = allRecords.filter(r => r.restorable);
-          this.localStorageService.setItem(LocalStorageConstants.WidgetsLocalStateStorageKey, recordsToSave);
+          this.localStorageService.setItem(LocalStorageCommonConstants.WidgetsLocalStateStorageKey, recordsToSave);
         })
       );
     },

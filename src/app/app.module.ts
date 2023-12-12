@@ -47,6 +47,7 @@ import {MobileHook} from "./shared/services/app-hook/mobile-hook";
 import { InitQueryParamsHook } from "./shared/services/app-hook/init-query-params-hook";
 import { NzI18nInterface } from "ng-zorro-antd/i18n/nz-i18n.interface";
 import { HashMap } from "@ngneat/transloco/lib/types";
+import { LoggingHook } from "./shared/services/app-hook/logging-hook";
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: HashMap): string {
@@ -134,6 +135,11 @@ registerLocaleData(ru);
     {
       provide: APP_HOOK,
       useClass: InitQueryParamsHook,
+      multi: true
+    },
+    {
+      provide: APP_HOOK,
+      useClass: LoggingHook,
       multi: true
     }
   ]

@@ -17,12 +17,12 @@ import { DashboardContextService } from '../../../shared/services/dashboard-cont
 import { BlotterSettings } from '../models/blotter-settings.model';
 import {Position} from "../../../shared/models/positions/position.model";
 import { HttpClient } from "@angular/common/http";
-import { environment } from "../../../../environments/environment";
 import { RepoSpecificFields, RepoTrade, Trade } from "../../../shared/models/trades/trade.model";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { Order, StopOrder } from "../../../shared/models/orders/order.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 @Injectable()
 export class BlotterService {
@@ -33,6 +33,7 @@ export class BlotterService {
   orderGroupParams$ = this.orderGroupParams.asObservable();
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly notification: OrdersNotificationsService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
@@ -67,7 +68,7 @@ export class BlotterService {
     return interval(10_000)
       .pipe(
         startWith(0),
-        switchMap(() => this.http.get<RepoTrade[]>(`${environment.apiUrl}/md/v2/Clients/${settings.exchange}/${settings.portfolio}/trades`, {
+        switchMap(() => this.http.get<RepoTrade[]>(`${this.environmentService.apiUrl}/md/v2/Clients/${settings.exchange}/${settings.portfolio}/trades`, {
           params: {
             withRepo: true
           }

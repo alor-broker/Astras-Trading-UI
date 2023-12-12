@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { environment } from "../../../../environments/environment";
 import { interval, Observable, switchMap } from "rxjs";
 import { NewsListItem } from "../models/news.model";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { PositionsService } from "../../../shared/services/positions.service";
 import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 interface GetNewsParams {
   limit: number;
@@ -18,9 +18,10 @@ interface GetNewsParams {
   providedIn: 'root'
 })
 export class NewsService {
-  private readonly newsUrl = environment.apiUrl + '/news/news';
+  private readonly newsUrl = this.environmentService.apiUrl + '/news/news';
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly dashboardContextService: DashboardContextService,

@@ -5,7 +5,10 @@ import {
 
 import { NavbarComponent } from './navbar.component';
 import { ManageDashboardsService } from 'src/app/shared/services/manage-dashboards.service';
-import { of } from 'rxjs';
+import {
+  of,
+  Subject
+} from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from "@ngrx/store";
@@ -25,6 +28,8 @@ import {
 } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
+import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -32,7 +37,7 @@ describe('NavbarComponent', () => {
   const spyDashboard = jasmine.createSpyObj('DashboardService', ['clearDashboard', 'addWidget']);
   const spyAuth = jasmine.createSpyObj('AuthService', ['logout']);
   const spyModal = jasmine.createSpyObj('ModalService', ['openTerminalSettingsModal', 'openCommandModal']);
-  const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
+  const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings', 'getLangChanges']);
   themeServiceSpy.getThemeSettings.and.returnValue(of({
     theme: ThemeType.dark,
     themeColors: {
@@ -47,6 +52,8 @@ describe('NavbarComponent', () => {
     } as ThemeColors
   } as ThemeSettings));
 
+  themeServiceSpy.getLangChanges.and.returnValue(of("ru"));
+
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -57,7 +64,8 @@ describe('NavbarComponent', () => {
         mockComponent({ selector: 'ats-notification-button' }),
         mockComponent({ selector: 'ats-select-dashboard-menu', inputs: ['visibilityChange']}),
         mockComponent({ selector: 'ats-network-indicator'}),
-        mockComponent({ selector: 'ats-dashboards-panel', inputs: ['selectedDashboard'] })
+        mockComponent({ selector: 'ats-dashboards-panel', inputs: ['selectedDashboard'] }),
+        mockComponent({ selector: 'ats-widgets-gallery', inputs: ['gallery', 'atsVisible'] })
       ],
       providers: [
         { provide: ManageDashboardsService, useValue: spyDashboard },
@@ -75,6 +83,23 @@ describe('NavbarComponent', () => {
           provide: OrdersDialogService,
           useValue: {
             openNewOrderDialog: jasmine.createSpy('openNewOrderDialog').and.callThrough()
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            externalLinks: {
+              reports: '',
+              releases: '',
+              support: '',
+              help: ''
+            }
+          }
+        },
+        {
+          provide: WidgetsMetaService,
+          useValue: {
+            getWidgetsMeta: jasmine.createSpy('getWidgetsMeta').and.returnValue(new Subject())
           }
         }
       ],

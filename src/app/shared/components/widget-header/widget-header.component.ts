@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
 import {WidgetSettingsService} from '../../services/widget-settings.service';
 import {ManageDashboardsService} from '../../services/manage-dashboards.service';
-import {ModalService} from '../../services/modal.service';
 import {instrumentsBadges} from '../../utils/instruments';
 import {WidgetMeta} from "../../models/widget-meta.model";
 import {TranslatorService} from "../../services/translator.service";
@@ -10,7 +9,7 @@ import {DashboardContextService} from "../../services/dashboard-context.service"
 import {Observable, shareReplay} from "rxjs";
 import {InstrumentKey} from "../../models/instruments/instrument-key.model";
 import {map} from "rxjs/operators";
-import { environment } from "../../../../environments/environment";
+import { EnvironmentService } from "../../services/environment.service";
 
 @Component({
   selector: 'ats-widget-header',
@@ -54,7 +53,7 @@ export class WidgetHeaderComponent implements OnInit {
 
   titleText!: string;
 
-  helpUrl = environment.externalLinks.help + '/';
+  helpUrl = this.environmentService.externalLinks.help + '/';
 
   badgeOptions$!: Observable<{
     color: string;
@@ -62,10 +61,10 @@ export class WidgetHeaderComponent implements OnInit {
   }[]>;
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly settingsService: WidgetSettingsService,
     private readonly manageDashboardService: ManageDashboardsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly modal: ModalService,
     private readonly translatorService: TranslatorService
   ) {
   }

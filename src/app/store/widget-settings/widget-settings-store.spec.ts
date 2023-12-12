@@ -9,7 +9,6 @@ import {
   sharedModuleImportForTests
 } from "../../shared/utils/testing";
 import { take } from "rxjs";
-import { LocalStorageService } from "../../shared/services/local-storage.service";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
 import { GuidGenerator } from "../../shared/utils/guid";
 import { InstrumentsService } from "../../modules/instruments/services/instruments.service";
@@ -20,13 +19,11 @@ import {
   WidgetSettingsServiceActions
 } from "./widget-settings.actions";
 import { WidgetSettingsFeature } from "./widget-settings.reducer";
+import { EnvironmentService } from "../../shared/services/environment.service";
 
 describe('Widget Settings Store', () => {
   let store: Store;
-  let localStorageServiceSpy: any;
   let instrumentsServiceSpy: any;
-
-  const settingsStorageKey = 'settings';
 
   const getTestSettings = (length: number): WidgetSettings[] => {
     const settings: WidgetSettings[] = [];
@@ -51,7 +48,6 @@ describe('Widget Settings Store', () => {
   beforeAll(() => TestBed.resetTestingModule());
 
   beforeEach(() => {
-    localStorageServiceSpy = jasmine.createSpyObj('LocalStorageService', ['getItem', 'setItem']);
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
 
     TestBed.configureTestingModule({
@@ -59,7 +55,12 @@ describe('Widget Settings Store', () => {
         ...sharedModuleImportForTests
       ],
       providers: [
-        { provide: LocalStorageService, useValue: localStorageServiceSpy },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            clientDataUrl : ''
+          }
+        },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         ...commonTestProviders
       ]
@@ -104,11 +105,6 @@ describe('Widget Settings Store', () => {
         newSettings
       ];
 
-      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, WidgetSettings][]) => {
-        expect(key).toEqual(settingsStorageKey);
-        expect(settings.map(x => x[1])).toEqual(expectedState);
-      });
-
       store.dispatch(WidgetSettingsServiceActions.add({ settings: [newSettings] }));
       tick();
 
@@ -130,11 +126,6 @@ describe('Widget Settings Store', () => {
         width: Math.random() * 100,
         height: Math.random() * 100
       };
-
-      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, WidgetSettings][]) => {
-        expect(key).toEqual(settingsStorageKey);
-        expect(settings.find(x => x[0] === updatedSettings.guid)![1]).toEqual(updatedSettings);
-      });
 
       store.dispatch(WidgetSettingsServiceActions.updateContent({
           settingGuid: updatedSettings.guid,
@@ -158,11 +149,6 @@ describe('Widget Settings Store', () => {
       tick();
 
       const settingsToRemove = expectedSettings[0];
-
-      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, WidgetSettings][]) => {
-        expect(key).toEqual(settingsStorageKey);
-        expect(settings.find(x => x[0] === settingsToRemove.guid)).toBeUndefined();
-      });
 
       store.dispatch(WidgetSettingsServiceActions.remove({ settingGuids: [settingsToRemove.guid] }));
 
@@ -188,11 +174,6 @@ describe('Widget Settings Store', () => {
       });
 
       tick();
-
-      localStorageServiceSpy.setItem.and.callFake((key: string, settings: [string, WidgetSettings][]) => {
-        expect(key).toEqual(settingsStorageKey);
-        expect(settings.length).toBe(0);
-      });
 
       store.dispatch(WidgetSettingsServiceActions.removeAll());
       tick();
