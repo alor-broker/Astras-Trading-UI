@@ -39,7 +39,6 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { InfiniteScrollTableComponent } from './components/infinite-scroll-table/infinite-scroll-table.component';
-import { WidgetMenuComponent } from './components/widget-menu/widget-menu.component';
 import { NzPopoverModule } from "ng-zorro-antd/popover";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { NzSpaceModule } from 'ng-zorro-antd/space';
@@ -78,7 +77,6 @@ import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
     PriceTickComponent,
     LoadingIndicatorComponent,
     InfiniteScrollTableComponent,
-    WidgetMenuComponent,
     InstrumentSearchComponent,
     ResizeColumnDirective,
     InstrumentBoardSelectComponent,
@@ -188,7 +186,6 @@ import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
     PriceTickComponent,
     LoadingIndicatorComponent,
     InfiniteScrollTableComponent,
-    WidgetMenuComponent,
     InstrumentSearchComponent,
     InstrumentBoardSelectComponent,
     WidgetHeaderComponent,

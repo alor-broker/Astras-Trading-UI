@@ -387,7 +387,8 @@ export class TechChartDatafeedService implements IBasicDataFeed {
       '15' as ResolutionString,
       '30' as ResolutionString,
       '1H' as ResolutionString,
-      '4h' as ResolutionString,
+      // disabled until https://github.com/tradingview/charting_library/issues/8310 will be resolved
+      //'4h' as ResolutionString,
       '1D' as ResolutionString,
       '1W' as ResolutionString,
       '2W' as ResolutionString,

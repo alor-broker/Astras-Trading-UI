@@ -6,8 +6,6 @@ import { InstrumentKey } from '../instruments/instrument-key.model';
 
 export const CurrentDashboardVersion = '1.0.0';
 
-export const DefaultDashboardName = 'Default Dashboard';
-
 export interface Dashboard {
   guid: string;
   title: string;
@@ -37,11 +35,16 @@ export interface DefaultDesktopDashboardItem extends DefaultDashboardItem{
 }
 
 export interface DefaultDashboardConfig {
-  desktop: {
-    widgets: DefaultDesktopDashboardItem[]
-  };
+  type: 'desktop' | 'mobile';
+}
 
-  mobile: {
-    widgets: DefaultDashboardItem[]
-  }
+export interface DefaultDesktopDashboardConfig extends DefaultDashboardConfig {
+  isStandard: boolean;
+  isFavorite: boolean;
+  name: string;
+  widgets: DefaultDesktopDashboardItem[];
+}
+
+export interface DefaultMobileDashboardConfig extends DefaultDashboardConfig {
+  widgets: DefaultDashboardItem[];
 }

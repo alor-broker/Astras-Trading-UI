@@ -1,16 +1,17 @@
 <ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
   <nz-header *transloco="let tDesktop; scope: 'dashboard/navbar/desktop'">
-    <div class="logo">
+    <div class="logo" [class.new-year]="showNewYearIcon()">
       <a [routerLink]="['/']"></a>
     </div>
     <div class="menu-item">
-      <button nz-button nz-dropdown
-              [nzDropdownMenu]="widgetsMenu"
+      <button nz-button
               nzSize='small'
               joyrideStep="step2"
               nzType="text"
               [title]="t('joyride.step2.title')"
-              [text]="t('joyride.step2.text')">
+              [text]="t('joyride.step2.text')"
+              (click)="galleryVisible = true"
+      >
         <i nz-icon nzType="appstore-add" nzTheme="outline" [nzRotate]="-90" class="left-side-icon"></i>
         {{tDesktop('dashboardNavbarDesktop.widgetsLabel')}}
       </button>
@@ -113,14 +114,6 @@
       </div>
     </div>
 
-    <nz-dropdown-menu #widgetsMenu="nzDropdownMenu">
-      <ats-widget-menu
-        [showResetItem]="true"
-        (selected)="addItem($event)"
-        (resetDashboard)="resetDashboard()"
-      ></ats-widget-menu>
-    </nz-dropdown-menu>
-
     <nz-dropdown-menu #rightMenu="nzDropdownMenu">
       <ng-container *ngTemplateOutlet="userMenu"></ng-container>
     </nz-dropdown-menu>
@@ -164,4 +157,10 @@
     </ng-template>
 
   </nz-header>
+  <ats-widgets-gallery
+    [gallery]="widgetsGallery$ | async"
+    [(atsVisible)]="galleryVisible"
+    (selected)="addItem($event)"
+    (resetDashboard)="resetDashboard()"
+  ></ats-widgets-gallery>
 </ng-container>

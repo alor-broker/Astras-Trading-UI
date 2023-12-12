@@ -10,6 +10,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { InfoHeaderComponent } from './components/common/info-header/info-header.component';
 import { FinanceBarChartComponent } from './components/common/finance-bar-chart/finance-bar-chart.component';
 import { RisksComponent } from './components/common/risks/risks.component';
+import { LetDirective } from "@ngrx/component";
 
 
 @NgModule({
@@ -24,10 +25,11 @@ import { RisksComponent } from './components/common/risks/risks.component';
     FinanceBarChartComponent,
     RisksComponent
   ],
-  imports: [
-    SharedModule,
-    InfoRoutingModule
-  ],
+    imports: [
+        SharedModule,
+        InfoRoutingModule,
+        LetDirective
+    ],
   exports: [
     InfoWidgetComponent
   ]

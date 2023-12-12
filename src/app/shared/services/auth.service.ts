@@ -205,9 +205,13 @@ export class AuthService {
   private checkTokenTime(token: string | undefined): boolean {
     if (token) {
       const expirationTime = this.decodeJwtBody(token).exp * 1000;
-      const now = Date.now() + 1000;
+
+      // need to refresh the token before it expires. See https://github.com/alor-broker/Astras-Trading-UI/issues/1367
+      const timeReserveMs = 1000 * 5;
+      const now = Date.now() + timeReserveMs;
       return now < expirationTime;
     }
+
     return false;
   }
 
