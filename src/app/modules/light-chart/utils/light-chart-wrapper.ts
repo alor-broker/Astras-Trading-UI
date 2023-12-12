@@ -323,12 +323,14 @@ export class LightChartWrapper {
     switch (this.config.timeFrame) {
       case TimeframeValue.Month:
         return (new Date(Date.UTC(fromDate.getUTCFullYear() - 1, 0))).getTime();
+      case TimeframeValue.W:
+        return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth() - 9))).getTime();
       case TimeframeValue.Day:
         return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth() - 6))).getTime();
       case TimeframeValue.H4:
         return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth() - 1))).getTime();
       case TimeframeValue.H:
-        return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth() - 7))).getTime();
+        return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(),  fromDate.getUTCDate() - 7))).getTime();
       case TimeframeValue.M15:
         return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate() - 4))).getTime();
       case TimeframeValue.M5:
