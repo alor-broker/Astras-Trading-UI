@@ -15,6 +15,7 @@
         "en": "Instrument Select"
       }
     },
+    "category": "all",
     "desktopMeta": {
       "headerIcon": "eye",
       "galleryIcon": "eye",
@@ -45,6 +46,7 @@
       }
     },
     "hasInstrumentBind": true,
+    "category": "chartsAndOrderbooks",
     "desktopMeta": {
       "headerIcon": "ordered-list",
       "galleryIcon": "ordered-list",
@@ -59,7 +61,8 @@
     },
     "mobileMeta": {
       "ribbonIcon": "ordered-list",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 2
     }
   },
   {
@@ -78,6 +81,7 @@
         "en": "Scalper Orderbook"
       }
     },
+    "category": "chartsAndOrderbooks",
     "desktopMeta": {
       "headerIcon": "ordered-list",
       "galleryIcon": "ordered-list",
@@ -107,6 +111,7 @@
         "en": "Chart"
       }
     },
+    "category": "chartsAndOrderbooks",
     "hasInstrumentBind": true,
     "desktopMeta": {
       "headerIcon": "sliders",
@@ -122,7 +127,8 @@
     },
     "mobileMeta": {
       "ribbonIcon": "sliders",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 4
     }
   },
   {
@@ -142,6 +148,7 @@
       }
     },
     "hasInstrumentBind": true,
+    "category": "chartsAndOrderbooks",
     "desktopMeta": {
       "headerIcon": "fund",
       "galleryIcon": "fund",
@@ -171,6 +178,7 @@
         "en": "Blotter"
       }
     },
+    "category": "positionsTradesOrders",
     "desktopMeta": {
       "headerIcon": "table",
       "galleryIcon": "table",
@@ -185,7 +193,8 @@
     },
     "mobileMeta": {
       "ribbonIcon": "table",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 6
     }
   },
   {
@@ -205,6 +214,7 @@
       }
     },
     "hasInstrumentBind": true,
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "info",
       "galleryIcon": "info",
@@ -219,7 +229,8 @@
     },
     "mobileMeta": {
       "ribbonIcon": "info",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 7
     }
   },
   {
@@ -238,6 +249,7 @@
         "en": "News"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "read",
       "galleryIcon": "read",
@@ -252,7 +264,8 @@
     },
     "mobileMeta": {
       "ribbonIcon": "read",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 8
     }
   },
   {
@@ -272,6 +285,7 @@
       }
     },
     "hasInstrumentBind": true,
+    "category": "details",
     "desktopMeta": {
       "headerIcon": "unordered-list",
       "galleryIcon": "unordered-list",
@@ -286,7 +300,8 @@
     },
     "mobileMeta": {
       "ribbonIcon": "unordered-list",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 9
     }
   },
   {
@@ -305,6 +320,7 @@
         "en": "Exchange Rate"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "line-chart",
       "galleryIcon": "line-chart",
@@ -319,7 +335,8 @@
     },
     "mobileMeta": {
       "ribbonIcon": "line-chart",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 10
     }
   },
   {
@@ -338,6 +355,7 @@
         "en": "All Instruments"
       }
     },
+    "category": "details",
     "desktopMeta": {
       "headerIcon": "profile",
       "galleryIcon": "profile",
@@ -352,7 +370,8 @@
     },
     "mobileMeta": {
       "ribbonIcon": "profile",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 11
     }
   },
   {
@@ -372,6 +391,7 @@
       }
     },
     "hasInstrumentBind": true,
+    "category": "positionsTradesOrders",
     "desktopMeta": {
       "headerIcon": "send",
       "galleryIcon": "send",
@@ -393,7 +413,8 @@
           "ru": "Заявка",
           "en": "Order"
         }
-      }
+      },
+      "galleryOrder": 12
     }
   },
   {
@@ -412,6 +433,7 @@
         "en": "Orders Basket"
       }
     },
+    "category": "positionsTradesOrders",
     "desktopMeta": {
       "headerIcon": "calculator",
       "galleryIcon": "calculator",
@@ -426,7 +448,8 @@
     },
     "mobileMeta": {
       "ribbonIcon": "calculator",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 13
     }
   },
   {
@@ -445,6 +468,7 @@
         "en": "Market Map"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "layout",
       "galleryIcon": "layout",
@@ -459,7 +483,8 @@
     },
     "mobileMeta": {
       "ribbonIcon": "layout",
-      "enabled": true
+      "enabled": true,
+      "galleryOrder": 14
     }
   },
   {
@@ -478,6 +503,7 @@
         "en": "Ribbon"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "stock",
       "galleryIcon": "stock",
@@ -506,6 +532,7 @@
         "en": "Events Calendar"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "calendar",
       "galleryIcon": "calendar",
@@ -535,6 +562,7 @@
         "en": "Option Board"
       }
     },
+    "category": "details",
     "desktopMeta": {
       "headerIcon": "table",
       "galleryIcon": "table",
@@ -564,6 +592,7 @@
         "en": "Arbitrage Spread"
       }
     },
+    "category": "details",
     "desktopMeta": {
       "headerIcon": "fork",
       "galleryIcon": "fork",
@@ -593,6 +622,7 @@
         "en": "Portfolio Summary"
       }
     },
+    "category": "positionsTradesOrders",
     "desktopMeta": {
       "headerIcon": "wallet",
       "galleryIcon": "wallet",
@@ -621,6 +651,7 @@
         "en": "Instruments Correlation"
       }
     },
+    "category": "info",
     "desktopMeta": {
       "headerIcon": "node-index",
       "galleryIcon": "node-index",
