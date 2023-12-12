@@ -7,7 +7,7 @@ import {
 
 import { map } from 'rxjs/operators';
 import { tap } from 'rxjs';
-import { LocalStorageConstants } from "../../shared/constants/local-storage.constants";
+import { LocalStorageCommonConstants } from "../../shared/constants/local-storage.constants";
 import { LocalStorageService } from "../../shared/services/local-storage.service";
 import {
   DashboardItemsActions,
@@ -22,7 +22,7 @@ export class WidgetsLocalStateBridgeEffects {
     return this.actions$.pipe(
       ofType(TerminalSettingsServicesActions.reset),
       tap(() => {
-        this.localStorageService.removeItem(LocalStorageConstants.WidgetsLocalStateStorageKey);
+        this.localStorageService.removeItem(LocalStorageCommonConstants.WidgetsLocalStateStorageKey);
       }),
       map(() => DashboardsManageActions.removeAll())
     );

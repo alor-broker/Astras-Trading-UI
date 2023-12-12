@@ -8,7 +8,10 @@ import { map } from "rxjs/operators";
 import { ApplicationMetaService } from "../../shared/services/application-meta.service";
 import { tap } from "rxjs";
 import { LocalStorageService } from "../../shared/services/local-storage.service";
-import { LocalStorageConstants } from "../../shared/constants/local-storage.constants";
+import {
+  LocalStorageCommonConstants,
+  LocalStorageDesktopConstants
+} from "../../shared/constants/local-storage.constants";
 import { DashboardsManageActions } from "../dashboards/dashboards-actions";
 import { TerminalSettingsServicesActions } from "./terminal-settings.actions";
 
@@ -20,8 +23,8 @@ export class TerminalSettingsBridgeEffects {
       tap(() => {
         this.applicationMetaService.updateLastReset();
 
-        this.localStorageService.removeItem(LocalStorageConstants.ProfileStorageKey);
-        this.localStorageService.removeItem(LocalStorageConstants.FeedbackStorageKey);
+        this.localStorageService.removeItem(LocalStorageDesktopConstants.ProfileStorageKey);
+        this.localStorageService.removeItem(LocalStorageCommonConstants.FeedbackStorageKey);
       }),
       map(() => DashboardsManageActions.removeAll())
     );
