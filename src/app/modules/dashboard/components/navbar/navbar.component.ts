@@ -35,6 +35,7 @@ import {
 import { WidgetCategory } from "../../../../shared/models/widget-meta.model";
 import { WidgetsHelper } from "../../../../shared/utils/widgets";
 import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
+import { NewYearHelper } from "../../utils/new-year.helper";
 
 @Component({
   selector: 'ats-navbar',
@@ -260,4 +261,6 @@ export class NavbarComponent implements OnInit {
       shareReplay(1)
     );
   }
+
+  showNewYearIcon = NewYearHelper.showNewYearIcon;
 }
