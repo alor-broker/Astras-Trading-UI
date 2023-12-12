@@ -23,15 +23,14 @@
           <button (click)="changeFavoriteDashboard(dashboard);$event.stopPropagation(); "
                   nz-button
                   nzSize='small'
-                  nzType="link">
+                  nzType="link"
+                  class="favorite-btn"
+          >
                 <i
                   nz-icon
                   nzType="star"
                   nzTheme="outline"
-                  [ngClass]="{
-                  'favorite-btn': true,
-                  'active': dashboard.isFavorite
-                  }"
+                  [class.active]="dashboard.isFavorite"
                 ></i>
           </button>
           <button (click)="removeDashboard(dashboard); $event.stopPropagation();" *ngIf="allDashboards.length > 1"
