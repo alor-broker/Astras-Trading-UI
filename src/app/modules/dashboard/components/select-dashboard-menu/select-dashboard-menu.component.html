@@ -32,7 +32,8 @@
             <i nz-icon nzType="star" nzTheme="outline" [class.active]="dashboard.isFavorite"></i>
           </button>
           <button
-            (click)="removeDashboard(dashboard); $event.stopPropagation();" *ngIf="allDashboards.length > 1"
+            *ngIf="allDashboards.length > 1"
+            (click)="removeDashboard(dashboard); $event.stopPropagation();"
             nz-button
             nzSize='small'
             nzType="link"
