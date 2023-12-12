@@ -57,7 +57,7 @@ export class WatchInstrumentsService {
     ).subscribe(currentList => {
       this.refreshWatchItems(currentList!.items.map(item => ({
           ...item,
-          recordId: (item.recordId as string | undefined) ?? GuidGenerator.newGuid(),
+          recordId: item.recordId ?? GuidGenerator.newGuid(),
         })
       ));
     });
@@ -72,7 +72,7 @@ export class WatchInstrumentsService {
     const currentIds = new Set<string>();
 
     items.forEach(item => {
-      const currentRecordId = item.recordId;
+      const currentRecordId = item.recordId!;
       currentIds.add(currentRecordId);
       if (!previousIds.has(currentRecordId)) {
         this.instrumentsToWatchState.addItem(

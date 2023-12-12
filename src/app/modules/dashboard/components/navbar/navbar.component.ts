@@ -103,7 +103,7 @@ export class NavbarComponent implements OnInit {
       });
 
     this.activeInstrument$ = this.dashboardContextService.instrumentsSelection$.pipe(
-      map(selection => selection[defaultBadgeColor])
+      map(selection => selection[defaultBadgeColor]!)
     );
 
     this.themeColors$ = this.themeService.getThemeSettings().pipe(
@@ -113,7 +113,7 @@ export class NavbarComponent implements OnInit {
 
   isFindedPortfolio(portfolio: PortfolioExtended): boolean {
     const { value } = this.searchControl;
-    return !(value ?? '') || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes((value as string).toUpperCase());
+    return value == null || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes((value).toUpperCase());
   }
 
   resetDashboard(): void {

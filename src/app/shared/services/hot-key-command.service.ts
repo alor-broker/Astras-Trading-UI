@@ -65,33 +65,35 @@ export class HotKeyCommandService {
         Object.keys(hotKeysSettings).forEach(command => {
           const key = hotKeysSettings[command as keyof HotKeysSettings] as HotKeyMeta | string | string[] | undefined | null;
 
-          if (Boolean(key) && (typeof key === 'string' || key instanceof String)) {
-            hotKeyMap.set(
-              key.toString(),
-              { commandType: HotKeyCommandService.mapToCommandType(command) }
-            );
-
-            return;
-          }
-
-          if (Boolean(key) && (key as HotKeyMeta).code && (key as HotKeyMeta).key) {
-            hotKeyMap.set(
-              key as HotKeyMeta,
-              { commandType: HotKeyCommandService.mapToCommandType(command) }
-            );
-          }
-
-          if (Boolean(key) && Array.isArray(key)) {
-            [...key].forEach((value, index) => {
+          if (key != null) {
+            if (typeof key === 'string' || key instanceof String) {
               hotKeyMap.set(
-                value.toString(),
-                {
-                  commandType: HotKeyCommandService.mapToCommandType(command),
-                  index
-                }
+                key.toString(),
+                { commandType: HotKeyCommandService.mapToCommandType(command) }
               );
-            });
-            return;
+
+              return;
+            }
+
+            if ((key as HotKeyMeta).code && (key as HotKeyMeta).key) {
+              hotKeyMap.set(
+                key as HotKeyMeta,
+                { commandType: HotKeyCommandService.mapToCommandType(command) }
+              );
+            }
+
+            if (Array.isArray(key)) {
+              [...key].forEach((value, index) => {
+                hotKeyMap.set(
+                  value.toString(),
+                  {
+                    commandType: HotKeyCommandService.mapToCommandType(command),
+                    index
+                  }
+                );
+              });
+              return;
+            }
           }
         });
 

@@ -55,7 +55,11 @@ export class AuthService {
 
   readonly accessToken$ = this.currentUserSub.pipe(
     switchMap((userState, index) => {
-      if(!!(userState?.ssoToken?.refreshToken ?? '') && !(userState?.ssoToken?.jwt ?? '')) {
+      if (
+        userState?.ssoToken?.refreshToken != null
+        && !!userState?.ssoToken?.refreshToken.length
+        && (userState?.ssoToken?.jwt == null || !userState.ssoToken.jwt.length)
+      ) {
         // refreshToken is set after login. Need to get jwt
         this.refreshToken(userState as UserState);
         return NEVER;
@@ -144,7 +148,7 @@ export class AuthService {
   }
 
   private isAuthorised(ssoToken?: SsoToken | null): boolean {
-    if (ssoToken?.jwt ?? '') {
+    if (ssoToken?.jwt != null && ssoToken.jwt.length) {
       return this.checkTokenTime((ssoToken as SsoToken).jwt);
     }
 
@@ -202,7 +206,7 @@ export class AuthService {
   }
 
   private checkTokenTime(token: string | undefined): boolean {
-    if (token ?? '') {
+    if (token != null && !!token.length) {
       const expirationTime = this.decodeJwtBody(token as string).exp * 1000;
       const now = Date.now() + 1000;
       return now < expirationTime;

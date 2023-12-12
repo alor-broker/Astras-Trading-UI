@@ -88,7 +88,7 @@ export class PushNotificationsProvider implements NotificationsProvider {
 
   private initNotificationsSync(): void {
     this.pushNotificationsService.getMessages().pipe(
-      filter(payload => !!(payload.data?.body ?? '')),
+      filter(payload => payload.data?.body != null),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(payload => {
       const messageData = JSON.parse(payload!.data!.body!).notification as { title: string, body: string } | undefined;

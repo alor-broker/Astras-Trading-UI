@@ -78,7 +78,7 @@ export class ExportWatchlistDialogComponent implements OnInit, OnDestroy {
   }
 
   saveToFile(result: ExportResult): void {
-    if (!(result.content ?? '')) {
+    if (result.content == null || !result.content.length) {
       return;
     }
 

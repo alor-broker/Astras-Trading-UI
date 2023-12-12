@@ -87,7 +87,7 @@ export class SettingsHelper {
     terminalSettingsService: TerminalSettingsService): Observable<boolean> {
     return widgetSettingsService.getSettings(widgetGuid).pipe(
       mapWith(() => terminalSettingsService.getSettings(), (ws, ts) => ({ ws, ts })),
-      map(({ ws, ts }) => ts.badgesBind === true && (ws.linkToActive ?? true) && !!(ws.badgeColor ?? ''))
+      map(({ ws, ts }) => ts.badgesBind === true && (ws.linkToActive ?? true) && ws.badgeColor != null)
     );
   }
 }

@@ -36,7 +36,7 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
   extendTop(itemsToAdd: number, callback?: (addedItemsCount: number) => void): void {
     this.select(state => state).pipe(
       take(1),
-      filter(s => !!(s.rowStep ?? 0))
+      filter(s => s.rowStep != null && !!s.rowStep)
     ).subscribe(state => {
       const step = state.rowStep!;
       const topRows = this.generatePriceSequence(state.rows[0].price + step, step, itemsToAdd)
@@ -59,7 +59,7 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
   extendBottom(minItemsToAdd: number, callback?: (addedItemsCount: number) => void): void {
     this.select(state => state).pipe(
       take(1),
-      filter(s => !!(s.rowStep ?? 0))
+      filter(s => s.rowStep != null && !!s.rowStep)
     ).subscribe(state => {
       const step = state.rowStep!;
       const lastElement = state.rows[state.rows.length - 1];

@@ -126,7 +126,7 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends obj
 
   protected isFilterApplied(column: BaseColumnSettings<T>): boolean {
     const filter = this.filter$.getValue();
-    return column.id in filter && !!(((filter[<keyof F>column.id] as string | undefined) ?? ''));
+    return column.id in filter && filter[column.id as keyof F] != null && !!(filter[column.id as keyof F] as string).length;
   }
 
   canExport(data: readonly T[] | undefined | null): boolean {
@@ -211,7 +211,7 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends obj
   protected justifyFilter(item: T, filter: F): boolean {
     let isFiltered = true;
     for (const key of Object.keys(filter)) {
-      if ((filter[<keyof F>key] as string | undefined) ?? '') {
+      if ((filter[key as keyof F] as string | undefined) != null && !!(filter[key as keyof F] as string).length) {
         const column = this.listOfColumns.find(o => o.id == key);
         if (
           !(column!.filterData!.isDefaultFilter ?? false) && !this.searchInItem(item, <keyof T>key, <string>filter[<keyof F>key]) ||
@@ -225,7 +225,7 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends obj
   }
 
   protected searchInItem(item: T, key: keyof T, value?: string): boolean {
-    if (!(value ?? '')) {
+    if (value == null || !value.length) {
       return true;
     }
     return item[key]!.toString().toLowerCase().includes((value as string).toLowerCase());

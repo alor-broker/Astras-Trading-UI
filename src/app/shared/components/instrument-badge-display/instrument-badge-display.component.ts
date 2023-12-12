@@ -44,7 +44,7 @@ export class InstrumentBadgeDisplayComponent implements OnInit {
   getApplicableBadges(selectedGroups: InstrumentGroups): string[] {
     return Object.entries(selectedGroups)
       .filter(([key]) => instrumentsBadges.includes(key))
-      .filter(([, value]) => this.isBadgeApplicable(value))
+      .filter(([, value]) => this.isBadgeApplicable(value!))
       .map(([key]) => key);
   }
 

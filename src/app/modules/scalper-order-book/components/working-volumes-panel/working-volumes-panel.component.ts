@@ -87,7 +87,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
       const workingVolumes = settings.workingVolumes;
       const lastSelectedVolume = lastSelectedVolumeState?.lastSelectedVolume?.[ScalperSettingsHelper.getInstrumentKey(settings)];
 
-      if (!!(lastSelectedVolume ?? 0)) {
+      if (lastSelectedVolume != null && !!lastSelectedVolume) {
         const targetVolumeIndex = workingVolumes.findIndex(v => v === lastSelectedVolume);
         if (targetVolumeIndex >= 0) {
           this.selectVolume(targetVolumeIndex);

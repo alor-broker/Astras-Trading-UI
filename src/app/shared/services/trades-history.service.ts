@@ -31,7 +31,7 @@ export class TradesHistoryService {
         params.limit = options.limit;
       }
 
-      if (options.from ?? '') {
+      if (options.from != null) {
         params.from = options.from;
       }
     }
@@ -68,7 +68,7 @@ export class TradesHistoryService {
         params.limit = options.limit;
       }
 
-      if (options.from ?? '') {
+      if (options.from != null) {
         params.from = options.from;
       }
     }

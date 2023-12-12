@@ -165,12 +165,12 @@ export class OrderService {
           }
 
           const orderIds = ordersRes
-            .filter(or => !!(or.orderNumber ?? ''))
+            .filter(or => or.orderNumber != null)
             .map(or => or.orderNumber!);
 
 
           if (orderIds.length !== orders.length) {
-            return forkJoin(ordersRes.map((ord, i) => (ord.orderNumber ?? '')
+            return forkJoin(ordersRes.map((ord, i) => ord.orderNumber != null
                 ? this.canceller.cancelOrder({
                   orderid: ord.orderNumber!,
                   portfolio,
@@ -294,7 +294,7 @@ export class OrderService {
         return of(null);
       }),
       map(response => ({
-        isSuccess: !!(response?.orderNumber ?? ''),
+        isSuccess: response?.orderNumber != null,
         orderNumber: response?.orderNumber
       } as SubmitOrderResult)),
       take(1)
@@ -316,7 +316,7 @@ export class OrderService {
 
   private prepareErrorMessage(message: string): string {
     const links = new RegExp(httpLinkRegexp, 'im').exec(message);
-    if (!(links?.length ?? 0)) {
+    if (links == null || !links.length) {
       return message;
     }
 

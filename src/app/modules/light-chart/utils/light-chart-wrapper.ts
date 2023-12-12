@@ -219,7 +219,7 @@ export class LightChartWrapper {
     const from = Math.min(prevHistoryTime ?? Number.MAX_VALUE, this.getTimeFrameHistoryPointMove(new Date(historyStart * 1000)) / 1000);
 
     this.loadHistoryPeriod(from, historyStart, false, (meta) => {
-      if ((meta.noData ?? false) || !(meta.prevTime ?? 0)) {
+      if ((meta.noData ?? false) || meta.prevTime == null) {
         complete?.();
         return;
       }

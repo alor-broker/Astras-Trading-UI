@@ -39,7 +39,7 @@ export class InstrumentsService {
           shortName: r.shortname,
           exchange: r.exchange,
           description: r.description,
-          instrumentGroup: (r.board as string | undefined) ?? r.primary_board,
+          instrumentGroup: r.board ?? r.primary_board,
           isin: r.ISIN,
           currency: r.currency,
           minstep: r.minstep ?? 0.01,
@@ -74,7 +74,7 @@ export class InstrumentsService {
           shortName: r.shortname,
           exchange: r.exchange,
           description: r.description,
-          instrumentGroup: (r.board as string | undefined) ?? r.primary_board,
+          instrumentGroup: r.board ?? r.primary_board,
           isin: r.ISIN,
           currency: r.currency,
           minstep: r.minstep ?? 0.01

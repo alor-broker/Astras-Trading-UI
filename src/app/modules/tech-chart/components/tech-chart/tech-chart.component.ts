@@ -575,7 +575,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
       const roundedPrice = MathHelper.roundByMinStepMultiplicity(price, x.settings.instrument.minstep);
 
-      if (relatedSettings.length === 0 || !(x.settings.widgetSettings.badgeColor ?? '')) {
+      if (relatedSettings.length === 0 || x.settings.widgetSettings.badgeColor == null || !x.settings.widgetSettings.badgeColor.length) {
         this.ordersDialogService.openNewOrderDialog({
           instrumentKey: toInstrumentKey(x.settings.widgetSettings as InstrumentKey),
           initialValues: {

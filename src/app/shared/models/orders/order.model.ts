@@ -26,7 +26,7 @@ export interface Order {
   side: Side; // buy,
   status: string; // working,
   transTime: Date; // 2021-12-28T06:40:46.0000000Z,
-  endTime: Date; // 2021-12-28T23:59:59.9990000,
+  endTime?: Date; // 2021-12-28T23:59:59.9990000,
   qtyUnits: number; //10,
   qtyBatch: number; // 1,
   qty: number; //1,
@@ -42,7 +42,6 @@ export interface Order {
 export interface StopOrder extends Order {
   triggerPrice: number;
   conditionType: string;
-  endTime: Date;
 }
 
 export interface StopOrderResponse extends Omit<StopOrder, ('conditionType' | 'triggerPrice')> {

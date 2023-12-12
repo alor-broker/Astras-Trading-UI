@@ -239,7 +239,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       displayRange$: this.renderItemsRange$.asObservable(),
       workingVolume$: this.workingVolume$.asObservable()
         .pipe(
-          filter(x => !!(x ?? 0)),
+          filter(x => x != null && !!x),
           map(x => x!)
         )
     };
@@ -286,7 +286,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         }
 
         setTimeout(() => {
-          if (!!(targetIndex ?? 0)) {
+          if (targetIndex != null && !!targetIndex) {
             const viewPortSize = this.getContainerHeight();
             const visibleItemsCount = viewPortSize / this.rowHeight;
             const centerCorrection = Math.floor(visibleItemsCount / 2) - 1;

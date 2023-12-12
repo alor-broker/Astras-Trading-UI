@@ -160,7 +160,7 @@ export class SessionTrackService {
   }
 
   private removeWarningMessage(): void {
-    if (!!(this.lastWarningId ?? '')) {
+    if (this.lastWarningId != null) {
       this.notificationService.remove(this.lastWarningId);
       this.lastWarningId = undefined;
     }

@@ -34,7 +34,7 @@ export class OrderCancellerService {
     }).pipe(
       catchHttpError<CommandResponse | null>(null, this.errorHandlerService),
       tap(resp => {
-        if (resp?.orderNumber ?? '') {
+        if (resp?.orderNumber != null) {
           this.instantNotificationsService.showNotification(
             OrdersInstantNotificationType.OrderCancelled,
             'success',

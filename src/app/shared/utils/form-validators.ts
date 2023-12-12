@@ -60,7 +60,7 @@ export class AtsValidators {
       return priceStep$.pipe(
         take(1),
         map(step => {
-          if (!(step ?? 0)) {
+          if (step == null || !step) {
             return null;
           }
 

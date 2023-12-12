@@ -99,7 +99,7 @@ export class OrdersGroupModalComponent implements AfterViewInit {
 
                 },
                 key: group.id,
-                expanded: !!((this.groupId ?? '') && (group.id === this.groupId)),
+                expanded: this.groupId != null && (group.id === this.groupId),
                 selectable: false,
                 status: group.status,
                 children: groupOrders

@@ -334,7 +334,7 @@ export class ScalperCommandProcessorService {
           )
         ),
         take(1),
-        filter(workingVolume => !!(workingVolume ?? 0)),
+        filter(workingVolume => workingVolume != null && !!workingVolume),
         map(x => Math.abs(x!))
       )
       .subscribe(workingVolume => action(workingVolume!));

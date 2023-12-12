@@ -80,7 +80,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
       const parts = value.split(':');
 
       let nextPartIndex = 0;
-      if (!(this.exchange ?? '')) {
+      if (this.exchange == null || !this.exchange.length) {
         filter.exchange = parts[nextPartIndex].toUpperCase();
         nextPartIndex++;
       }

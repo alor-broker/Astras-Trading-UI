@@ -222,7 +222,7 @@ export class WatchlistCollectionService {
         return;
       }
 
-      const fromListUpdated = this.removeItemsFromListInternal([targetItem.recordId], fromList);
+      const fromListUpdated = this.removeItemsFromListInternal([targetItem.recordId!], fromList);
       const toListUpdated = this.addItemsToListInternal([targetItem], toList, false);
 
       this.watchlistCollectionBrokerService.addOrUpdateLists([toListUpdated, fromListUpdated]).subscribe();
@@ -283,7 +283,7 @@ export class WatchlistCollectionService {
   private removeItemsFromListInternal(idsToRemove: string[], targetList: Watchlist): Watchlist {
     return {
       ...targetList,
-      items: targetList.items.filter(item => !idsToRemove.includes(item.recordId))
+      items: targetList.items.filter(item => !idsToRemove.includes(item.recordId!))
     } as Watchlist;
   }
 

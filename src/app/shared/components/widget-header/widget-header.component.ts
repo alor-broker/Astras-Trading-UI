@@ -76,20 +76,20 @@ export class WidgetHeaderComponent implements OnInit {
         const symbolGroups = Object.values(currentSelection)
           .reduce(
             (prev, cur) => {
-              prev[cur.symbol] = (prev[cur.symbol] ?? 0) + 1;
+              prev[cur!.symbol] = (prev[cur!.symbol] ?? 0) + 1;
               return prev;
             }
             , {} as { [key: string]: number | undefined }
           );
 
         return instrumentsBadges.map(b => {
-            const assignedInstrument = currentSelection[b] as InstrumentKey | undefined;
+            const assignedInstrument = currentSelection[b];
 
             return {
               color: b,
               assignedInstrument: !!assignedInstrument
                 ? {
-                  ...currentSelection[b],
+                  ...currentSelection[b]!,
                   instrumentGroup: symbolGroups[assignedInstrument.symbol]! > 1
                     ? assignedInstrument.instrumentGroup
                     : null
@@ -136,7 +136,7 @@ export class WidgetHeaderComponent implements OnInit {
   }
 
   get title(): string {
-    return !!(this.customTitle ?? '')
+    return this.customTitle != null && !!this.customTitle.length
       ? this.customTitle as string
       : this.titleText;
   }

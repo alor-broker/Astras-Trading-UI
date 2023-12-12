@@ -136,7 +136,7 @@ describe('WatchListCollectionService', () => {
     setupGetItemMock(testCollection);
     watchlistCollectionBrokerServiceSpy.addOrUpdateLists.and.returnValue(new Subject());
 
-    service.removeItemsFromList(testCollection.collection[0].id, testCollection.collection[0].items.map(x => x.recordId));
+    service.removeItemsFromList(testCollection.collection[0].id, testCollection.collection[0].items.map(x => x.recordId!));
 
     expect(watchlistCollectionBrokerServiceSpy.addOrUpdateLists).toHaveBeenCalled();
   });

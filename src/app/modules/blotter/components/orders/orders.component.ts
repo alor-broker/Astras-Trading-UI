@@ -284,7 +284,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
           residue: `${o.filled}/${o.qty}`,
           volume: MathHelper.round(o.qtyUnits * o.price, 2),
           transTime: converter.toTerminalDate(o.transTime),
-          endTime: !!(o.endTime as Date | undefined) ? converter.toTerminalDate(o.endTime) : o.endTime,
+          endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime,
           groupId: groups.find(g => !!g.orders.find(go => go.orderId === o.id))?.id
         }))
         .filter(o => this.justifyFilter(o, f))
@@ -367,10 +367,10 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
     else if (b.status == 'working' && a.status != 'working') {
       return 1;
     }
-    if (a.endTime < b.endTime) {
+    if ((a.endTime ?? 0) < (b.endTime ?? 0)) {
       return -1;
     }
-    else if (a.endTime > b.endTime) {
+    else if ((a.endTime ?? 0) > (b.endTime ?? 0)) {
       return 1;
     }
     return 0;

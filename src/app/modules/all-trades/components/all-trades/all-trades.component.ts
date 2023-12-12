@@ -186,7 +186,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       } as { [filterKey: string]: string | string[] | null };
 
       const cleanedFilters: { [filterKey: string]: string | string[] | null } = Object.keys(allFilters)
-        .filter(key => !!(allFilters[key] ?? '').length)
+        .filter(key => allFilters[key] != null && allFilters[key]!.length)
         .reduce((acc, curr) => {
           if (Array.isArray(allFilters[curr])) {
             acc[curr] = (allFilters[curr] as string[]).join(';');
@@ -325,11 +325,11 @@ export class AllTradesComponent implements OnInit, OnDestroy {
 
   private filterNewTrades(filters: AllTradesFilters, newTrades: AllTradesItem[]): void {
     const filteredNewTrades = newTrades.filter(trade =>
-      (!(filters.qtyFrom ?? 0) || trade.qty > filters.qtyFrom!) &&
-      (!(filters.qtyTo ?? 0) || trade.qty < filters.qtyTo!) &&
-      (!(filters.priceFrom ?? 0) || trade.price > filters.priceFrom!) &&
-      (!(filters.priceTo ?? 0) || trade.price < filters.priceTo!) &&
-      (!(filters.side ?? '') || trade.side === filters.side!)
+      (filters.qtyFrom == null || trade.qty > filters.qtyFrom) &&
+      (filters.qtyTo == null || trade.qty < filters.qtyTo) &&
+      (filters.priceFrom == null || trade.price > filters.priceFrom) &&
+      (filters.priceTo == null || trade.price < filters.priceTo) &&
+      (filters.side == null || trade.side === filters.side)
     );
     if (!filteredNewTrades.length) {
       return;
@@ -373,7 +373,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         delete filter.descending;
         delete filter.orderBy;
 
-        if (dir ?? '') {
+        if (dir != null && dir.length) {
           filter.descending = dir === 'descend';
           filter.orderBy = orderBy;
         } else {

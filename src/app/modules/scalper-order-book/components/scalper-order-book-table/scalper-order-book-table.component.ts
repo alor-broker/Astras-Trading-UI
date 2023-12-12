@@ -266,7 +266,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
         return null;
       }
 
-      if (!!(settings.volumeHighlightFullness ?? 0)) {
+      if (settings.volumeHighlightFullness != null && settings.volumeHighlightFullness) {
         size = 100 * (args.volume / settings.volumeHighlightFullness!);
         if (size > 100) {
           size = 100;

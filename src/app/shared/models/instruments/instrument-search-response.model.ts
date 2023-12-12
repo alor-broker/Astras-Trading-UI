@@ -3,7 +3,7 @@ export interface InstrumentSearchResponse {
   shortname: string;
   exchange: string;
   description: string;
-  board: string;
+  board?: string;
   primary_board: string;
   ISIN: string;
   currency: string;

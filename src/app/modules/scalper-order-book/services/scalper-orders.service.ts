@@ -442,7 +442,7 @@ export class ScalperOrdersService {
       type: 'Limit',
     }];
 
-    if (topOrderPrice ?? 0) {
+    if (topOrderPrice != null) {
       orders.push({
         ...baseOrder,
         condition: LessMore.MoreOrEqual,
@@ -453,7 +453,7 @@ export class ScalperOrdersService {
       } as NewStopLimitOrder & { type: 'StopLimit' });
     }
 
-    if (bottomOrderPrice ?? 0) {
+    if (bottomOrderPrice != null) {
       orders.push({
         ...baseOrder,
         condition: LessMore.LessOrEqual,
@@ -468,7 +468,7 @@ export class ScalperOrdersService {
   }
 
   private checkBracketNeeded(settings: ScalperOrderBookWidgetSettings, side: Side, quantity: number, position: Position | null): boolean {
-    if (!(settings.useBrackets ?? false) || (!(settings.bracketsSettings?.topOrderPriceRatio ?? 0) && !(settings.bracketsSettings?.bottomOrderPriceRatio ?? 0))) {
+    if (!(settings.useBrackets ?? false) || settings.bracketsSettings?.topOrderPriceRatio == null && settings.bracketsSettings?.bottomOrderPriceRatio == null) {
       return false;
     }
 
@@ -490,22 +490,26 @@ export class ScalperOrdersService {
 
     if (!settings.bracketsSettings!.orderPriceUnits || settings.bracketsSettings!.orderPriceUnits === PriceUnits.Points) {
       dirtyPrice = orderType === BracketOrderType.Top
-        ? (settings.bracketsSettings!.topOrderPriceRatio ?? 0)
+        ? settings.bracketsSettings!.topOrderPriceRatio != null
           ? price + (settings.bracketsSettings!.topOrderPriceRatio! * minStep)
           : null
-        : (settings.bracketsSettings!.bottomOrderPriceRatio ?? 0)
+        : settings.bracketsSettings!.bottomOrderPriceRatio != null
           ? price - (settings.bracketsSettings!.bottomOrderPriceRatio! * minStep)
           : null;
     } else {
       dirtyPrice = orderType === BracketOrderType.Top
-        ? (settings.bracketsSettings!.topOrderPriceRatio ?? 0)
+        ? settings.bracketsSettings!.topOrderPriceRatio != null
           ? (1 + settings.bracketsSettings!.topOrderPriceRatio! * 0.01) * price
           : null
-        : (settings.bracketsSettings!.bottomOrderPriceRatio ?? 0)
+        : settings.bracketsSettings!.bottomOrderPriceRatio != null
           ? (1 - settings.bracketsSettings!.bottomOrderPriceRatio! * 0.01) * price
           : null;
     }
 
-    return (dirtyPrice ?? 0) && MathHelper.roundPrice(dirtyPrice!, minStep);
+    if (dirtyPrice == null) {
+      return null;
+    }
+
+    return MathHelper.roundPrice(dirtyPrice!, minStep);
   }
 }

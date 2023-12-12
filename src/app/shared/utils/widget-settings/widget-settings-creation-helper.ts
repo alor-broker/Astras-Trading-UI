@@ -52,7 +52,7 @@ export class WidgetSettingsCreationHelper {
         guid: widgetInstance.instance.guid,
         settingsType,
         linkToActive: true,
-        ...toInstrumentKey(instrumentSelection[groupKey]),
+        ...toInstrumentKey(instrumentSelection[groupKey]!),
         badgeColor: groupKey,
         ...widgetInstance.instance.initialSettings
       } as T;

@@ -79,7 +79,8 @@ export class FeedbackWidgetComponent implements OnInit {
     }
 
     if (!this.askComment) {
-      if (this.checkAskComment()) {
+      this.checkAskComment();
+      if (this.askComment) {
         return;
       }
     }
@@ -94,8 +95,7 @@ export class FeedbackWidgetComponent implements OnInit {
     });
   }
 
-  checkAskComment(): boolean {
+  checkAskComment(): void {
     this.askComment = this.form?.value.rating < this.maxStarsCount && (this.form?.value.comment ?? '').length === 0;
-    return this.askComment;
   }
 }

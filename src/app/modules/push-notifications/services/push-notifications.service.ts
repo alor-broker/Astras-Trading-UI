@@ -78,7 +78,7 @@ export class PushNotificationsService implements OnDestroy {
   subscribeToOrderExecute(portfolio: PortfolioKey): Observable<BaseCommandResponse | null> {
     return this.getToken()
       .pipe(
-        filter(t => !!(t ?? '')),
+        filter(t => t != null && !!t.length),
         switchMap(() => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addOrderExecute', {
           exchange: portfolio.exchange,
           portfolio: portfolio.portfolio
@@ -129,7 +129,7 @@ export class PushNotificationsService implements OnDestroy {
 
   getCurrentSubscriptions(): Observable<SubscriptionBase[] | null> {
     return this.getToken().pipe(
-      filter(x => !!(x ?? '')),
+      filter(x => x != null && !!x.length),
       switchMap(() => this.http.get<SubscriptionBase[]>(this.baseUrl)),
       catchHttpError<SubscriptionBase[] | null>(null, this.errorHandlerService),
       map(s => {
@@ -175,7 +175,7 @@ export class PushNotificationsService implements OnDestroy {
 
     this.token$ = this.angularFireMessaging.requestToken
       .pipe(
-        filter(token => !!(token ?? '')),
+        filter(token => token != null && !!token.length),
         mapWith(
           token => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addToken', {token})
             .pipe(
@@ -188,7 +188,7 @@ export class PushNotificationsService implements OnDestroy {
               catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService)
             ),
           (token, res) => res ? token : null),
-        filter(token => !!(token ?? '')),
+        filter(token => token != null && !!token.length),
         shareReplay(1)
       );
 

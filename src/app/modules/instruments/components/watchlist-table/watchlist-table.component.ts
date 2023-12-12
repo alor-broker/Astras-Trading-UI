@@ -142,7 +142,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     );
 
     this.currentWatchlist$ = this.settings$.pipe(
-      filter(s => !!(s.activeListId ?? '')),
+      filter(s => s.activeListId != null && !!s.activeListId.length),
       tap(settings => {
         this.displayedColumns = this.allColumns.filter(c => settings.instrumentColumns.includes(c.id));
         this.badgeColor = settings.badgeColor!;
@@ -226,7 +226,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   remove(itemId: string): void {
     this.settings$.pipe(
       map(s => s.activeListId),
-      filter((id): id is string => !!(id ?? '')),
+      filter((id): id is string => id != null && !!id.length),
       take(1)
     ).subscribe(activeListId => {
       this.watchlistCollectionService.removeItemsFromList(activeListId, [itemId]);

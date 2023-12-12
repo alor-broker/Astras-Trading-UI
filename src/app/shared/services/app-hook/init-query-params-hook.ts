@@ -31,7 +31,7 @@ export class InitQueryParamsHook implements AppHook {
   onInit(): void {
     this.route.queryParams
       .pipe(
-        filter((params: RouterQueryParams) => !!(params.ticker ?? '')),
+        filter((params: RouterQueryParams) => params.ticker != null && !!params.ticker.length),
         switchMap((params: RouterQueryParams) => {
           const filter: SearchFilter = { limit: 1, query: '' };
 

@@ -48,7 +48,7 @@ export class WidgetSettingsBridgeEffects {
               groupKey: instrumentsBadges.includes(s.badgeColor!) ? s.badgeColor! : defaultBadgeColor,
               instrumentKey: (<any>s) as InstrumentKey
             }))
-          .filter(s => !InstrumentEqualityComparer.equals(d.instrumentsSelection![s.groupKey], s.instrumentKey));
+          .filter(s => !InstrumentEqualityComparer.equals(d.instrumentsSelection![s.groupKey]!, s.instrumentKey));
         return {
           settingsToUpdate,
           instrumentsSelection: d.instrumentsSelection!
@@ -58,7 +58,7 @@ export class WidgetSettingsBridgeEffects {
       map(changes => WidgetSettingsServiceActions.updateInstrument({
         updates: changes.settingsToUpdate.map(u => ({
           guid: u.guid,
-          instrumentKey: changes.instrumentsSelection[u.groupKey]
+          instrumentKey: changes.instrumentsSelection[u.groupKey]!
         }))
       }))
     );
@@ -103,7 +103,7 @@ export class WidgetSettingsBridgeEffects {
       .pipe(
         withLatestFrom(
           WidgetSettingsStreams.getAllSettings(this.store).pipe(
-            map(ws => ws.filter(s => !!(s.badgeColor ?? '')).map(s => s.guid))
+            map(ws => ws.filter(s => s.badgeColor != null).map(s => s.guid))
           )
         ),
         map(([ts, settingGuids]: [TerminalSettings, string[]]) => {

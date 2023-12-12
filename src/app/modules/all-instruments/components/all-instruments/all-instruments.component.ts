@@ -255,16 +255,16 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       const allFilters = {
         ...curr,
         ...filters
-      } as { [filterKey: string]: string | string[]};
+      } as { [filterKey: string]: string | string[] | null};
 
       const cleanedFilters = Object.keys(allFilters)
-        .filter(key => !!(allFilters[key] as string | undefined ?? '').length)
+        .filter(key => allFilters[key] != null && !!allFilters[key]!.length)
         .reduce((acc, curr) => {
           if (Array.isArray(allFilters[curr])) {
             acc[curr] = (allFilters[curr] as string[]).join(';');
           }
           else {
-            acc[curr] = allFilters[curr];
+            acc[curr] = allFilters[curr]!;
           }
           return acc;
         }, {} as { [filterName: string]: string | string[] });
@@ -369,7 +369,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     return instruments.map(instr => ({
       ...instr,
       badges: Object.keys((terminalSettings.badgesBind ?? false) ? badges : { [defaultBadgeColor]: badges[defaultBadgeColor] })
-        .filter(key => instr.name === badges[key].symbol && instr.exchange === badges[key].exchange)
+        .filter(key => instr.name === badges[key]!.symbol && instr.exchange === badges[key]!.exchange)
     }));
   }
 
@@ -403,7 +403,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         delete filter.descending;
         delete filter.orderBy;
 
-        if (dir ?? '') {
+        if (dir != null && dir.length) {
           filter.descending = dir === 'descend';
           filter.orderBy = orderBy;
         }

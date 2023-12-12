@@ -542,7 +542,7 @@ export class ScalperOrderBookDataContextService {
         ? orderBookBounds.bidsRange?.max ?? orderBookBounds.asksRange?.min
         : orderBookBounds.asksRange?.min ?? orderBookBounds.bidsRange?.max;
 
-      if (!(basePrice ?? 0)) {
+      if (basePrice == null) {
         return;
       }
 

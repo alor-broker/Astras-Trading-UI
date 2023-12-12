@@ -24,7 +24,7 @@ export interface Dashboard {
 }
 
 export interface InstrumentGroups {
-  [groupKey: string]: InstrumentKey;
+  [groupKey: string]: InstrumentKey | null | undefined;
 }
 
 export interface DefaultDashboardItem {

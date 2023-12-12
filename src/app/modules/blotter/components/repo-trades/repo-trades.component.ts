@@ -295,7 +295,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
   }
 
   searchInItem(trade: RepoTrade, key: keyof RepoTrade | keyof RepoTrade['repoSpecificFields'], value?: string): boolean {
-    if (!(value ?? '')) {
+    if (value == null || !value.length) {
       return true;
     }
 

@@ -139,17 +139,16 @@ export class SyntheticInstrumentsService {
 
           const defaultHistory = (<HistoryResponse>histories.find(h => !h.isSpreadOperator)!.value).history;
 
-          const history: any = {
-            history: new Array(defaultHistory.length).fill(null),
+          const history: HistoryResponse = {
+            history: new Array(defaultHistory.length).fill(null)
+              .map((item: any, i: number) => SyntheticInstrumentsHelper.assembleCandle(
+                histories.map(h => h.isSpreadOperator ? h : {isSpreadOperator: false, value: h.value!.history[i]}))
+              ),
             prev: defaultHistory[0]?.time - 60,
             next: defaultHistory[defaultHistory.length - 1]?.time + 60
           };
 
-          history.history = history.history.map((item: any, i: number) => SyntheticInstrumentsHelper.assembleCandle(
-            histories.map(h => h.isSpreadOperator ? h : { isSpreadOperator: false, value: h.value!.history[i] }))
-          ) as Candle[];
-
-          return history as HistoryResponse;
+          return history;
         })
       );
   }

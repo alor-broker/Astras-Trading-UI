@@ -106,7 +106,7 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
             allNotificationsColumns.filter(c => c.isDefault).map(x => x.id)
           )?.columns.map(c => c.columnId)
         ),
-        isSoldPositionsHidden: new UntypedFormControl((settings.isSoldPositionsHidden as boolean | undefined) ?? false),
+        isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden),
         cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false),
         showRepoTrades: new UntypedFormControl(settings.showRepoTrades ?? false),
         repoTradesColumns: new UntypedFormControl(this.toTableSettings(settings.repoTradesTable)?.columns.map(c => c.columnId)),

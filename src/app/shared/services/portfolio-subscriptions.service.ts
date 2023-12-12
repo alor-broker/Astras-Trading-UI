@@ -120,7 +120,9 @@ export class PortfolioSubscriptionsService {
           (allOrders, order) => ({ allOrders, order })),
         map(({ allOrders, order }) => {
           order.transTime = new Date(order.transTime);
-          order.endTime = new Date(order.endTime);
+          if (order.endTime) {
+            order.endTime = new Date(order.endTime);
+          }
 
           const lastOrder = order;
           const existingOrder = allOrders.get(order.id);
@@ -154,7 +156,7 @@ export class PortfolioSubscriptionsService {
           (allOrders, order) => ({ allOrders, order })),
         map(({ allOrders, order }) => {
           order.transTime = new Date(order.transTime);
-          order.endTime = new Date(order.endTime);
+          order.endTime = new Date(order.endTime!);
 
           const lastOrder = {
             ...order,

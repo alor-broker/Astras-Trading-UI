@@ -44,7 +44,7 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
     this.instrumentTitle$ = this.settings$.pipe(
       debounceTime(300), // to prevent error when settings changed but customTitle not yet
       switchMap(s => {
-        if (this.customTitle ?? '') {
+        if (this.customTitle != null && !!this.customTitle.length) {
           return of(this.customTitle!);
         }
 

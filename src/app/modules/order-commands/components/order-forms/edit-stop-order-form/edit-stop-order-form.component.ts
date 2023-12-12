@@ -98,7 +98,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       orderId: this.orderId$,
       portfolioKey: this.portfolioKey$
     }).pipe(
-      filter(x => !!(x.orderId ?? '') && !!x.portfolioKey),
+      filter(x => x.orderId != null && !!x.orderId.length && !!x.portfolioKey),
       switchMap(x => this.orderDetailsService.getStopOrderDetails(x.orderId!, x.portfolioKey!)),
       filter((o): o is StopOrder => !!o),
       shareReplay(1)
@@ -158,7 +158,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
         take(1)
       ).subscribe(tc => {
         if (x.currentOrder.endTime as Date | undefined) {
-          this.form.controls.stopEndUnixTime.setValue(tc.toTerminalDate(x.currentOrder.endTime));
+          this.form.controls.stopEndUnixTime.setValue(tc.toTerminalDate(x.currentOrder.endTime!));
         }
 
         this.checkNowTimeSelection(tc);

@@ -42,7 +42,7 @@ export class SyntheticInstrumentsHelper {
       ?? [];
 
     if (parts.length < 2) {
-      if ((parts[0] as InstrumentDataPart | undefined)?.value.symbol ?? '') {
+      if ((parts[0] as InstrumentDataPart | undefined)?.value.symbol != null) {
         return {
           isSynthetic: false,
           instrument: (<InstrumentDataPart>parts[0]).value,
