@@ -21,7 +21,8 @@ export const environment = {
   logging: {
     console: {
       minLevel: 'trace'
-    }
+    },
+    remote: null
   },
   firebase: {
     apiKey: "AIzaSyCI0yjnNuT8VWJG4ow38-iY231ZoTGxV-o",

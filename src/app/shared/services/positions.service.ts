@@ -6,10 +6,10 @@ import {
   take
 } from 'rxjs';
 import { Position } from '../models/positions/position.model';
-import { environment } from 'src/environments/environment';
 import { catchError } from 'rxjs/operators';
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { catchHttpError } from "../utils/observable-helper";
+import { EnvironmentService } from "./environment.service";
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +17,11 @@ import { catchHttpError } from "../utils/observable-helper";
 export class PositionsService {
   private readonly url: string;
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService
   ) {
-    this.url = environment.apiUrl + '/md/v2/clients';
+    this.url = this.environmentService.apiUrl + '/md/v2/clients';
   }
 
   getAllByLogin(login: string) : Observable<Position[]> {

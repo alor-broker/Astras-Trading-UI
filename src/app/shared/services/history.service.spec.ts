@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { HistoryService } from './history.service';
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
+import { EnvironmentService } from "./environment.service";
 
 describe('HistoryService', () => {
   let service: HistoryService;
@@ -19,6 +20,12 @@ describe('HistoryService', () => {
         {
           provide: ErrorHandlerService,
           useValue: errorHandlerServiceSpy
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
         }
       ]
     });

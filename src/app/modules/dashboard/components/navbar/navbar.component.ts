@@ -22,11 +22,11 @@ import { Dashboard } from '../../../../shared/models/dashboard/dashboard.model';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { defaultBadgeColor, toInstrumentKey } from '../../../../shared/utils/instruments';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { environment } from "../../../../../environments/environment";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
 import {
   GalleryDisplay,
   WidgetDisplay,
@@ -44,7 +44,7 @@ import { DashboardTitleHelper } from "../../utils/dashboard-title.helper";
   styleUrls: ['./navbar.component.less'],
 })
 export class NavbarComponent implements OnInit {
-  readonly externalLinks = environment.externalLinks;
+  readonly externalLinks = this.environmentService.externalLinks;
   galleryVisible = false;
 
   isSideMenuVisible = false;
@@ -60,6 +60,7 @@ export class NavbarComponent implements OnInit {
   private activeInstrument$!: Observable<InstrumentKey | null>;
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly manageDashboardsService: ManageDashboardsService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly store: Store,

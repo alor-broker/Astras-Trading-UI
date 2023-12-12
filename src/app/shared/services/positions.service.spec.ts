@@ -6,6 +6,7 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { PositionsService } from './positions.service';
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
+import { EnvironmentService } from "./environment.service";
 
 describe('PositionsService', () => {
   let service: PositionsService;
@@ -24,6 +25,12 @@ describe('PositionsService', () => {
           provide: ErrorHandlerService,
           useValue: {
             handleError: jasmine.createSpy('handleError').and.callThrough()
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
           }
         }
       ]

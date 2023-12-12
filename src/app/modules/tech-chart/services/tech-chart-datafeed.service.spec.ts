@@ -11,7 +11,6 @@ import {
   HttpClientTestingModule,
   HttpTestingController
 } from "@angular/common/http/testing";
-import { environment } from "../../../../environments/environment";
 import {
   DatafeedConfiguration,
   LibrarySymbolInfo,
@@ -31,6 +30,7 @@ import { TranslatorService } from "../../../shared/services/translator.service";
 import { SyntheticInstrumentsService } from "./synthetic-instruments.service";
 import { getRandomInt } from "../../../shared/utils/testing";
 import { BarsRequest } from "../../light-chart/models/bars-request.model";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('TechChartDatafeedService', () => {
   let service: TechChartDatafeedService;
@@ -40,6 +40,7 @@ describe('TechChartDatafeedService', () => {
   let syntheticInstrumentsServiceSpy: any;
   let historyServiceSpy: any;
   let httpTestingController: HttpTestingController;
+  const apiUrl = 'apiUrl';
 
   beforeEach(() => {
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument', 'getInstruments']);
@@ -71,6 +72,12 @@ describe('TechChartDatafeedService', () => {
         {
           provide: SyntheticInstrumentsService,
           useValue: syntheticInstrumentsServiceSpy
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl
+          }
         }
       ]
     });
@@ -133,7 +140,7 @@ describe('TechChartDatafeedService', () => {
       expect(serverTime).toBe(expectedTime);
     });
 
-    const request = httpTestingController.expectOne(`${environment.apiUrl}//md/v2/time`);
+    const request = httpTestingController.expectOne(`${apiUrl}/md/v2/time`);
     expect(request.request.method).toEqual('GET');
     request.flush(expectedTime);
   });

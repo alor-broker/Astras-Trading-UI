@@ -12,11 +12,11 @@ import {
   Subject,
   take
 } from 'rxjs';
-import { environment } from '../../../../environments/environment';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { map } from 'rxjs/operators';
+import { EnvironmentService } from "../../../shared/services/environment.service";
 import { LocalStorageCommonConstants } from "../../../shared/constants/local-storage.constants";
 
 @Injectable({
@@ -24,9 +24,10 @@ import { LocalStorageCommonConstants } from "../../../shared/constants/local-sto
 })
 export class FeedbackService {
   unansweredFeedbackRemoved$ = new Subject();
-  private readonly baseUrl = environment.apiUrl + '/astras';
+  private readonly baseUrl = this.environmentService.apiUrl + '/astras';
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly httpClient: HttpClient,
     private readonly localStorage: LocalStorageService,
     private readonly errorHandlerService: ErrorHandlerService

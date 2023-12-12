@@ -5,6 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { OrderCancellerService } from './order-canceller.service';
 import { InstantNotificationsService } from './instant-notifications.service';
 import {ErrorHandlerService} from "./handle-error/error-handler.service";
+import { EnvironmentService } from "./environment.service";
 
 describe('OrderCancellerService', () => {
   let service: OrderCancellerService;
@@ -26,6 +27,12 @@ describe('OrderCancellerService', () => {
           provide: ErrorHandlerService,
           useValue: {
             handleError: jasmine.createSpy('handleError').and.callThrough()
+          }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
           }
         },
         OrderCancellerService

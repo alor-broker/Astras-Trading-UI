@@ -6,6 +6,7 @@ import {
   commonTestProviders,
   sharedModuleImportForTests
 } from "../../../shared/utils/testing";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('NewsService', () => {
   let service: NewsService;
@@ -14,6 +15,12 @@ describe('NewsService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, ...sharedModuleImportForTests],
       providers: [
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
+        },
         ...commonTestProviders
       ]
     });

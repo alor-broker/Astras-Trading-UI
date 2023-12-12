@@ -8,7 +8,6 @@ import {
   shareReplay,
   take,
 } from 'rxjs';
-import { environment } from 'src/environments/environment';
 import { User } from '../models/user/user.model';
 import {
   distinct,
@@ -25,6 +24,7 @@ import {
 } from '../utils/observable-helper';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { BroadcastService } from './broadcast.service';
+import { EnvironmentService } from "./environment.service";
 
 export const ForceLogoutMessageType = 'forceLogout';
 
@@ -44,8 +44,8 @@ interface UserState {
 })
 export class AuthService {
   private readonly ssoTokenStorageKey = 'sso';
-  private readonly accountUrl = environment.clientDataUrl + '/auth/actions';
-  private readonly ssoUrl = environment.ssoUrl;
+  private readonly accountUrl = this.environmentService.clientDataUrl + '/auth/actions';
+  private readonly ssoUrl = this.environmentService.ssoUrl;
   private readonly currentUserSub = new BehaviorSubject<UserState | null>(null);
 
   readonly currentUser$ = this.currentUserSub.asObservable().pipe(
@@ -92,6 +92,7 @@ export class AuthService {
   );
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly localStorage: LocalStorageService,
     private readonly window: Window,

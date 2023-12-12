@@ -11,6 +11,7 @@ import {
   CacheService
 } from '../../../shared/services/cache.service';
 import { Observable } from 'rxjs';
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('InstrumentsService', () => {
   let service: InstrumentsService;
@@ -32,7 +33,13 @@ describe('InstrumentsService', () => {
       providers: [
         InstrumentsService,
         { provide: ErrorHandlerService, useValue: errorHandlerSpy },
-        { provide: CacheService, useValue: cacheServiceSpy }
+        { provide: CacheService, useValue: cacheServiceSpy },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
+        }
       ]
     });
     service = TestBed.inject(InstrumentsService);

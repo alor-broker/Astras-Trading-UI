@@ -5,6 +5,7 @@ import { LocalStorageService } from '../../../shared/services/local-storage.serv
 import { take } from 'rxjs';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 
 describe('ApplicationMetaService', () => {
@@ -13,6 +14,8 @@ describe('ApplicationMetaService', () => {
   let httpTestingController: HttpTestingController;
   let localStorageServiceSpy: any;
   let errorHandlerServiceSpy: any;
+
+  const warpUrl = 'warpUrl';
 
   beforeEach(() => {
     localStorageServiceSpy = jasmine.createSpyObj('LocalStorageService', ['setItem', 'getItem']);
@@ -32,6 +35,12 @@ describe('ApplicationMetaService', () => {
         {
           provide: ErrorHandlerService,
           useValue: errorHandlerServiceSpy
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            warpUrl
+          }
         }
       ]
     });
@@ -51,7 +60,7 @@ describe('ApplicationMetaService', () => {
   it('should read current version from server', () => {
     service.getCurrentVersion().subscribe();
 
-    const req = httpTestingController.expectOne('https://warp.alor.dev/api/releases?offset=0&limit=1&sortDesc=true&selectedService=astras&locale=ru');
+    const req = httpTestingController.expectOne(`${warpUrl}/api/releases?offset=0&limit=1&sortDesc=true&selectedService=astras&locale=ru`);
     expect(req.request.method).toEqual('GET');
   });
 

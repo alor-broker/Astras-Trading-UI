@@ -16,7 +16,6 @@ import {
   WatchlistItem,
   WatchlistType
 } from '../models/watchlist.model';
-import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
@@ -27,16 +26,18 @@ import {
   map
 } from "rxjs/operators";
 import { InstrumentsService } from "./instruments.service";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class WatchlistCollectionService {
   public static DefaultListName = 'Список по умолчанию';
-  private readonly url = environment.apiUrl + '/astras/watchlist';
+  private readonly url = this.environmentService.apiUrl + '/astras/watchlist';
   private collection$: Observable<WatchlistCollection> | null = null;
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService,

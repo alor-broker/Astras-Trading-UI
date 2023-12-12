@@ -16,6 +16,7 @@ import {
   Subject,
   take
 } from "rxjs";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('WatchListCollectionService', () => {
   const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
@@ -62,7 +63,13 @@ describe('WatchListCollectionService', () => {
       providers: [
         WatchlistCollectionService,
         { provide: WatchlistCollectionBrokerService, useValue: watchlistCollectionBrokerServiceSpy },
-        { provide: ErrorHandlerService, useValue: errorHandlerSpy }
+        { provide: ErrorHandlerService, useValue: errorHandlerSpy },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
+        }
       ]
     });
 

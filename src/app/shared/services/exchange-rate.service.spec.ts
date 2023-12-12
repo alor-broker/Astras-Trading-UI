@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ExchangeRateService } from './exchange-rate.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { EnvironmentService } from "./environment.service";
 
 describe('ExchangeRateService', () => {
   let service: ExchangeRateService;
@@ -11,6 +12,12 @@ describe('ExchangeRateService', () => {
         HttpClientTestingModule
       ],
       providers: [
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
+        },
         ExchangeRateService
       ]
     });

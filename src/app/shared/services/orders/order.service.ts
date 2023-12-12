@@ -15,7 +15,6 @@ import {
   catchError,
   map
 } from "rxjs/operators";
-import {environment} from "../../../../environments/environment";
 import {ErrorHandlerService} from "../handle-error/error-handler.service";
 import {toUnixTimestampSeconds} from "../../utils/datetime";
 import {GuidGenerator} from "../../utils/guid";
@@ -32,6 +31,7 @@ import {
   NewStopMarketOrder, SubmitOrderResponse, SubmitOrderResult
 } from "../../models/orders/new-order.model";
 import {LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit} from "../../models/orders/edit-order.model";
+import { EnvironmentService } from "../environment.service";
 
 export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketOrder) & {
   type: 'Limit' | 'StopLimit' | 'Stop'
@@ -41,9 +41,10 @@ export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketO
   providedIn: 'root'
 })
 export class OrderService {
-  private readonly baseApiUrl = environment.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
+  private readonly baseApiUrl =this.environmentService.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly httpService: HttpClient,
     private readonly instantNotificationsService: InstantNotificationsService,
     private readonly errorHandlerService: ErrorHandlerService,

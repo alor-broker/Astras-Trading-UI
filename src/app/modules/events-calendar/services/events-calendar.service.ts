@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { environment } from "../../../../environments/environment";
 import { Observable, map } from "rxjs";
 import { CalendarEvent, CalendarEvents } from "../models/events-calendar.model";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 interface AllEventsRequest {
   dateFrom: string;
@@ -17,9 +17,10 @@ interface AllEventsRequest {
 })
 export class EventsCalendarService {
 
-  baseUrl = environment.apiUrl + '/instruments/v1';
+  baseUrl = this.environmentService.apiUrl + '/instruments/v1';
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService
   ) {

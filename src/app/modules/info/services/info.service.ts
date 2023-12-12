@@ -10,7 +10,6 @@ import {
   switchMap
 } from 'rxjs';
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
-import { environment } from 'src/environments/environment';
 import { Calendar } from '../models/calendar.model';
 import { Description } from '../models/description.model';
 import { Dividend } from '../models/dividend.model';
@@ -26,6 +25,7 @@ import { MarketService } from "../../../shared/services/market.service";
 import { InfoSettings } from '../models/info-settings.model';
 import { RisksInfo } from "../models/risks.model";
 import { InstrumentsService } from "../../instruments/services/instruments.service";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { ApplicationErrorHandler } from "../../../shared/services/handle-error/error-handler";
 
@@ -36,12 +36,13 @@ interface SettingsWithExchangeInfo {
 
 @Injectable()
 export class InfoService {
-  private instrumentUrl = environment.apiUrl + '/instruments/v1';
-  private clientsRiskUrl = environment.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/clientsRisk';
+  private instrumentUrl = this.environmentService.apiUrl + '/instruments/v1';
+  private clientsRiskUrl = this.environmentService.apiUrl + '/commandapi/warptrans/FX1/v2/client/orders/clientsRisk';
 
   private settings$?: Observable<SettingsWithExchangeInfo>;
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly settingsService: WidgetSettingsService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,

@@ -1,6 +1,5 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {environment} from "../../../../environments/environment";
 import {forkJoin, Observable, of, shareReplay, Subject, switchMap, take, tap, throwError} from "rxjs";
 import {AngularFireMessaging} from "@angular/fire/compat/messaging";
 import {catchHttpError, mapWith} from "../../../shared/utils/observable-helper";
@@ -16,6 +15,7 @@ import {BaseCommandResponse} from "../../../shared/models/http-request-response.
 import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
 import {isPortfoliosEqual} from "../../../shared/utils/portfolios";
 import firebase from "firebase/compat";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 interface MessagePayload extends firebase.messaging.MessagePayload {
   data?: {
@@ -29,7 +29,7 @@ interface MessagePayload extends firebase.messaging.MessagePayload {
 })
 export class PushNotificationsService implements OnDestroy {
 
-  private readonly baseUrl = environment.apiUrl + '/commandapi/observatory/subscriptions';
+  private readonly baseUrl = this.environmentService.apiUrl + '/commandapi/observatory/subscriptions';
 
   private token$?: Observable<string | null>;
 
@@ -39,6 +39,7 @@ export class PushNotificationsService implements OnDestroy {
   private messages$?: Observable<MessagePayload>;
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly angularFireMessaging: AngularFireMessaging,
     private readonly errorHandlerService: ErrorHandlerService,
