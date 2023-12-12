@@ -7,20 +7,21 @@ import {
 } from '@angular/core';
 import {
   BehaviorSubject,
+  combineLatest,
   Observable,
   shareReplay,
   take,
   tap,
   withLatestFrom
 } from "rxjs";
-import { Dashboard, DefaultDashboardName } from "../../../../shared/models/dashboard/dashboard.model";
+import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
 import { NzSegmentedOption } from "ng-zorro-antd/segmented/types";
-import { mapWith } from "../../../../shared/utils/observable-helper";
 import { debounceTime, map } from "rxjs/operators";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import { DashboardTitleHelper } from "../../utils/dashboard-title.helper";
 
 interface DashboardSegmentedOption extends NzSegmentedOption {
   value: string;
@@ -47,14 +48,13 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const allDashboards$ = this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
-      mapWith(
-        () => this.manageDashboardsService.allDashboards$,
-        (t, dashboards) => ({ t, dashboards })
-      ),
-      map(data => data.dashboards.map(d => ({
+    const allDashboards$ = combineLatest({
+      translator: this.translatorService.getTranslator('dashboard/select-dashboard-menu'),
+      dashboards: this.manageDashboardsService.allDashboards$,
+    }).pipe(
+      map(x => x.dashboards.map(d => ({
         ...d,
-        title: d.title.includes(DefaultDashboardName) ? d.title.replace(DefaultDashboardName, data.t(['defaultDashboardName'])) : d.title
+        title: DashboardTitleHelper.getDisplayTitle(d, x.translator)
       }))),
       shareReplay(1)
     );
