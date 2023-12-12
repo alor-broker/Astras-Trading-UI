@@ -4,7 +4,10 @@ import {Store} from '@ngrx/store';
 import {filter, map, switchMap,} from 'rxjs/operators';
 import {GuidGenerator} from '../../shared/utils/guid';
 import {distinctUntilChanged, EMPTY, of, take, withLatestFrom} from 'rxjs';
-import {Dashboard,} from '../../shared/models/dashboard/dashboard.model';
+import {
+  Dashboard,
+  DefaultMobileDashboardConfig,
+} from '../../shared/models/dashboard/dashboard.model';
 import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
 import {mapWith} from "../../shared/utils/observable-helper";
 import {getDefaultPortfolio, isPortfoliosEqual} from "../../shared/utils/portfolios";
@@ -40,11 +43,12 @@ export class MobileDashboardEffects {
         (source, defaultConfig) => defaultConfig
       ),
       switchMap(defaultConfig => {
+        const defaultDashboardConfig = defaultConfig.find(x => x.type === "mobile") as DefaultMobileDashboardConfig;
         return of(
           MobileDashboardInternalActions.add({
             guid: GuidGenerator.newGuid(),
             title: 'Mobile dashboard',
-            items: defaultConfig.mobile.widgets.map(w => ({
+            items: defaultDashboardConfig.widgets.map(w => ({
               guid: GuidGenerator.newGuid(),
               widgetType: w.widgetTypeId,
               initialSettings: w.initialSettings

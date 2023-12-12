@@ -1,0 +1,12 @@
+﻿{
+  "title": "Виджеты",
+  "standardView": "Стандартный вид",
+
+  "categories": {
+    "all": "Все",
+    "chartsAndOrderbooks": "Графики и стаканы",
+    "positionsTradesOrders": "Позиции, сделки и заявки",
+    "info": "Информационные ресурсы",
+    "details": "Подробные"
+  }
+}

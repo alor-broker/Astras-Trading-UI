@@ -110,7 +110,7 @@
                 <td *ngIf='column.id === "side"'
                     [class]='ord.side.toString() === "sell" ? "sell" : "buy"'>{{ ord.side }}</td>
                 <td *ngIf='column.id === "residue"'>{{ ord.residue }}</td>
-                <td *ngIf='column.id === "volume"'>{{ isMarketOrder(ord) ? '' : (ord.volume | number) }}</td>
+                <td *ngIf='column.id === "volume"'>{{ (ord.volume | number) }}</td>
                 <td *ngIf='column.id === "qty"'>{{ ord.qty | number}}</td>
                 <td *ngIf='column.id === "price"'>{{ isMarketOrder(ord) ? '' : (ord.price | number : '0.0-10') }}</td>
                 <td *ngIf='column.id === "status"' [class]='ord.status.toString() === "filled"

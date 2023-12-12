@@ -14,3 +14,10 @@ export class LocalStorageMobileConstants {
   static TerminalSettingsStorageKey = 'terminalSettings';
   static MigrationsSettingsStorageKey = 'migrations';
 }
+
+export class LocalStorageLoggingConstants {
+  static UserLoginStorageKey = 'log.login';
+  static AppVersionStorageKey = 'log.version';
+  static DeviceStorageKey = 'log.device';
+  static BrowserStorageKey = 'log.browser';
+}

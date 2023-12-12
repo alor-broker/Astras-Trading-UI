@@ -2,7 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandler, Inject, Injectable } from '@angular/core';
 import { ApplicationErrorHandler, ERROR_HANDLER } from "./error-handler";
 
-
 @Injectable({
   providedIn: 'root',
 })
