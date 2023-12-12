@@ -16,8 +16,8 @@ import { LocalStorageService } from '../../../shared/services/local-storage.serv
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import { map } from 'rxjs/operators';
-import { LocalStorageConstants } from "../../../shared/constants/local-storage.constants";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { LocalStorageCommonConstants } from "../../../shared/constants/local-storage.constants";
 
 @Injectable({
   providedIn: 'root'
@@ -89,10 +89,10 @@ export class FeedbackService {
   }
 
   getSavedFeedbackMeta(): FeedbackMeta | null {
-    return this.localStorage.getItem<FeedbackMeta>(LocalStorageConstants.FeedbackStorageKey) ?? null;
+    return this.localStorage.getItem<FeedbackMeta>(LocalStorageCommonConstants.FeedbackStorageKey) ?? null;
   }
 
   private saveFeedbackMeta(meta: FeedbackMeta) {
-    this.localStorage.setItem(LocalStorageConstants.FeedbackStorageKey, meta);
+    this.localStorage.setItem(LocalStorageCommonConstants.FeedbackStorageKey, meta);
   }
 }

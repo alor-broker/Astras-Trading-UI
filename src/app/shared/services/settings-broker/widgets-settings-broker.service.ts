@@ -1,7 +1,6 @@
-import {Injectable} from '@angular/core';
-import {LocalStorageService} from "../local-storage.service";
-import {RemoteStorageService} from "./remote-storage.service";
-import {ApplicationMetaService} from "../application-meta.service";
+import { Injectable } from '@angular/core';
+import { RemoteStorageService } from "./remote-storage.service";
+import { ApplicationMetaService } from "../application-meta.service";
 import {
   BehaviorSubject,
   combineLatest,
@@ -10,23 +9,28 @@ import {
   of,
   shareReplay,
   switchMap,
-  take,
-  tap
+  take
 } from "rxjs";
-import {WidgetSettings} from "../../models/widget-settings.model";
-import {finalize, map} from "rxjs/operators";
+import { WidgetSettings } from "../../models/widget-settings.model";
+import {
+  finalize,
+  map
+} from "rxjs/operators";
+import { WidgetSettingsDesktopMigrationManager } from "../../../modules/settings-migration/widget-settings/widget-settings-desktop-migration-manager";
 
 @Injectable({
   providedIn: 'root'
 })
 export class WidgetsSettingsBrokerService {
-  private readonly widgetsStorageKey = 'settings';
-  private readonly saveRequests = new Map<string, { source: BehaviorSubject<WidgetSettings>, stream$: Observable<boolean> }>();
+  private readonly saveRequests = new Map<string, {
+    source: BehaviorSubject<WidgetSettings>,
+    stream$: Observable<boolean>
+  }>();
 
   constructor(
-    private readonly localStorageService: LocalStorageService,
     private readonly remoteStorageService: RemoteStorageService,
-    private readonly applicationMetaService: ApplicationMetaService
+    private readonly applicationMetaService: ApplicationMetaService,
+    private readonly widgetSettingsDesktopMigrationManager: WidgetSettingsDesktopMigrationManager
   ) {
   }
 
@@ -35,7 +39,7 @@ export class WidgetsSettingsBrokerService {
   }
 
   readSettings(): Observable<WidgetSettings[] | null> {
-    const settings$ = this.remoteStorageService.getGroup<WidgetSettings>(this.groupKey).pipe(
+    const settings$ = this.remoteStorageService.getGroup(this.groupKey).pipe(
       take(1)
     );
 
@@ -54,19 +58,11 @@ export class WidgetsSettingsBrokerService {
         }
 
         if (!!settings && settings.length > 0) {
-          return of(settings.map(s => s.value));
-        }
-
-        // move settings from local storage for backward compatibility
-        const localData = this.getLocalData();
-        if (!!localData) {
-          return this.setRemoteRecords(localData).pipe(
-            tap(r => {
-              if (r) {
-                this.localStorageService.removeItem(this.widgetsStorageKey);
-              }
-            }),
-            map(() => localData)
+          return this.widgetSettingsDesktopMigrationManager.applyMigrations<WidgetSettings[]>(
+            settings.map(x => x.value),
+            migrated => this.saveSettings(migrated)
+          ).pipe(
+            map(x => x.updatedData)
           );
         }
 
@@ -82,15 +78,6 @@ export class WidgetsSettingsBrokerService {
 
   saveSettings(settings: WidgetSettings[]): Observable<boolean> {
     return this.setRemoteRecords(settings);
-  }
-
-  private getLocalData(): WidgetSettings[] | undefined {
-    const localData = this.localStorageService.getItem<[string, WidgetSettings][]>(this.widgetsStorageKey);
-    if (!!localData) {
-      return localData.map(x => x[1]);
-    }
-
-    return localData;
   }
 
   private setRemoteRecords(settings: WidgetSettings[]): Observable<boolean> {

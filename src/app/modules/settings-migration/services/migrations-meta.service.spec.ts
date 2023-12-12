@@ -1,16 +1,19 @@
 import { TestBed } from '@angular/core/testing';
 
-import { WidgetsSettingsBrokerService } from './widgets-settings-broker.service';
-import { RemoteStorageService } from "./remote-storage.service";
+import { MigrationsMetaService } from './migrations-meta.service';
+import { RemoteStorageService } from "../../../shared/services/settings-broker/remote-storage.service";
 import {
-  of,
+  Observable,
   Subject
 } from "rxjs";
-import { ApplicationMetaService } from "../application-meta.service";
-import { WidgetSettingsDesktopMigrationManager } from "../../../modules/settings-migration/widget-settings/widget-settings-desktop-migration-manager";
+import { ApplicationMetaService } from "../../../shared/services/application-meta.service";
+import {
+  CacheOptions,
+  CacheService
+} from "../../../shared/services/cache.service";
 
-describe('WidgetsSettingsBrokerService', () => {
-  let service: WidgetsSettingsBrokerService;
+describe('MigrationsMetaService', () => {
+  let service: MigrationsMetaService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -21,7 +24,6 @@ describe('WidgetsSettingsBrokerService', () => {
             getGroup: jasmine.createSpy('getGroup').and.returnValue(new Subject()),
             removeGroup: jasmine.createSpy('removeGroup').and.returnValue(new Subject()),
             setRecord: jasmine.createSpy('setRecord').and.returnValue(new Subject()),
-            removeRecord: jasmine.createSpy('removeRecord').and.returnValue(new Subject()),
           }
         },
         {
@@ -31,14 +33,14 @@ describe('WidgetsSettingsBrokerService', () => {
           }
         },
         {
-          provide: WidgetSettingsDesktopMigrationManager,
+          provide: CacheService,
           useValue: {
-            applyMigrations: jasmine.createSpy('applyMigrations').and.returnValue((input: any) => of(input))
+            wrap: jasmine.createSpy('getMeta').and.returnValue((getKey: () => string, loadData: () => Observable<any>, options: CacheOptions) => loadData())
           }
         }
       ]
     });
-    service = TestBed.inject(WidgetsSettingsBrokerService);
+    service = TestBed.inject(MigrationsMetaService);
   });
 
   it('should be created', () => {

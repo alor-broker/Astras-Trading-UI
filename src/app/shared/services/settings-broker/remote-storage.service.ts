@@ -4,7 +4,10 @@ import {Observable, take} from "rxjs";
 import {map} from "rxjs/operators";
 import {ErrorHandlerService} from "../handle-error/error-handler.service";
 import {catchHttpError} from "../../utils/observable-helper";
-import {SettingsMeta, SettingsRecord} from "../../models/settings-broker.model";
+import {
+  RecordMeta,
+  StorageRecord
+} from "../../models/settings-broker.model";
 import { EnvironmentService } from "../environment.service";
 
 interface UserSettings {
@@ -32,7 +35,7 @@ export class RemoteStorageService {
   ) {
   }
 
-  getRecord<T>(key: string): Observable<SettingsRecord<T> | null> {
+  getRecord(key: string): Observable<StorageRecord | null> {
     return this.httpClient.get<RemoteStorageItem>(
       this.baseUrl,
       {
@@ -47,9 +50,9 @@ export class RemoteStorageService {
         if (!!r && !!r.UserSettings) {
           try {
             return {
-              meta: <SettingsMeta>JSON.parse(r.UserSettings.Description),
-              value: <T>JSON.parse(r.UserSettings.Content)
-            } as SettingsRecord<T>;
+              meta: <RecordMeta>JSON.parse(r.UserSettings.Description),
+              value: JSON.parse(r.UserSettings.Content)
+            };
           } catch (e: any) {
             this.errorHandlerService.handleError({
               name: e.name,
@@ -67,7 +70,7 @@ export class RemoteStorageService {
     );
   }
 
-  getGroup<T>(groupKey: string): Observable<SettingsRecord<T>[] | null> {
+  getGroup(groupKey: string): Observable<StorageRecord[] | null> {
     return this.httpClient.get<UserSettings[]>(
       `${this.baseUrl}/group/${groupKey}`,
       {
@@ -84,9 +87,9 @@ export class RemoteStorageService {
 
         try {
           return r.map(i => ({
-            meta: <SettingsMeta>JSON.parse(i.Description),
-            value: <T>JSON.parse(i.Content)
-          } as SettingsRecord<T>));
+            meta: <RecordMeta>JSON.parse(i.Description),
+            value: JSON.parse(i.Content)
+          }));
         } catch (e: any) {
           this.errorHandlerService.handleError({
             name: e.name,
@@ -102,7 +105,7 @@ export class RemoteStorageService {
     );
   }
 
-  setRecord<T>(key: string, record: SettingsRecord<T>, groupKey?: string): Observable<boolean> {
+  setRecord(key: string, record: StorageRecord, groupKey?: string): Observable<boolean> {
     return this.httpClient.put(
       this.baseUrl,
       {

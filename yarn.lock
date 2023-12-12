@@ -2804,6 +2804,11 @@
   resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-4.3.6.tgz#d9855fa9f808138488784610f888046bb9a59aff"
   integrity sha512-3N0FpQTeiWjm+Oo1WUYWguUS7E6JLceiGTriFrG8k5PU7zRLJCzLcWURU3wjMbZGS//a2/LgjsnO3QxIlwxt9g==
 
+"@types/json-patch@^0.0.33":
+  version "0.0.33"
+  resolved "https://registry.yarnpkg.com/@types/json-patch/-/json-patch-0.0.33.tgz#dafb56dd009d9790b39a790730fc0fdd499b3142"
+  integrity sha512-XQ9hIoJCtnvTCnIV+p+SWQbY8Bt1pe+RuTkPG7lQeRCa9sPwYbhb0aYzM2paVPk0SGvV70R33rxjPjBcJ4Kdxw==
+
 "@types/json-schema@*", "@types/json-schema@^7.0.8", "@types/json-schema@^7.0.9":
   version "7.0.14"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.14.tgz#74a97a5573980802f32c8e47b663530ab3b6b7d1"
@@ -6433,6 +6438,11 @@ json-parse-even-better-errors@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/json-parse-even-better-errors/-/json-parse-even-better-errors-3.0.0.tgz#2cb2ee33069a78870a0c7e3da560026b89669cf7"
   integrity sha512-iZbGHafX/59r39gPwVPRBGw0QQKnA7tte5pSMrhWOW7swGsVvVTjmfyAV9pNqk8YGT7tRCdxRu8uzcgZwoDooA==
+
+json-patch@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/json-patch/-/json-patch-0.7.0.tgz#2598958ea67fa3660dae8ee684d35407b37f4b98"
+  integrity sha512-9zaGTzsV6Hal5HVMC8kb4niXYQOOcq3tUp0P/GTw6HHZFPVwtCU2+mXE9q59MelL9uknALWnoKrUxnDpUX728g==
 
 json-schema-traverse@^0.4.1:
   version "0.4.1"

@@ -1,22 +1,33 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of, share, Subject, switchMap, take, tap} from "rxjs";
-import {TerminalSettings} from "../../models/terminal-settings/terminal-settings.model";
-import {LocalStorageService} from "../local-storage.service";
-import {RemoteStorageService} from "./remote-storage.service";
-import {debounceTime, filter, map} from "rxjs/operators";
+import { Injectable } from '@angular/core';
+import {
+  BehaviorSubject,
+  Observable,
+  of,
+  share,
+  Subject,
+  switchMap,
+  take
+} from "rxjs";
+import { TerminalSettings } from "../../models/terminal-settings/terminal-settings.model";
+import { RemoteStorageService } from "./remote-storage.service";
+import {
+  debounceTime,
+  filter,
+  map
+} from "rxjs/operators";
+import { TerminalSettingsDesktopMigrationManager } from "../../../modules/settings-migration/terminal-settings/terminal-settings-desktop-migration-manager";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TerminalSettingsBrokerService {
   private readonly saveRequestDelay = 10;
-  private readonly settingsStorageKey = 'terminalSettings';
   private readonly saveQuery$ = new Subject<TerminalSettings>();
   private saveStream$?: Observable<boolean>;
 
   constructor(
-    private readonly localStorageService: LocalStorageService,
-    private readonly remoteStorageService: RemoteStorageService
+    private readonly remoteStorageService: RemoteStorageService,
+    private readonly terminalSettingsDesktopMigrationManager: TerminalSettingsDesktopMigrationManager
   ) {
   }
 
@@ -25,23 +36,15 @@ export class TerminalSettingsBrokerService {
   }
 
   readSettings(): Observable<TerminalSettings | null> {
-    return this.remoteStorageService.getRecord<TerminalSettings>(this.settingsKey).pipe(
+    return this.remoteStorageService.getRecord(this.settingsKey).pipe(
       take(1),
       switchMap(settings => {
         if (!!settings) {
-          return of(settings.value);
-        }
-
-        // move settings from local storage for backward compatibility
-        const localData = this.localStorageService.getItem<TerminalSettings>(this.settingsStorageKey);
-        if (!!localData) {
-          return this.setRemoteRecord(localData).pipe(
-            tap(r => {
-              if (r) {
-                this.localStorageService.removeItem(this.settingsStorageKey);
-              }
-            }),
-            map(() => localData)
+          return this.terminalSettingsDesktopMigrationManager.applyMigrations<TerminalSettings>(
+            settings.value,
+            migrated => this.saveSettings(migrated)
+          ).pipe(
+            map(x => x.updatedData)
           );
         }
 

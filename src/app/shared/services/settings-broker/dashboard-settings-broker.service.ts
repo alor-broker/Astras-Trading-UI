@@ -1,33 +1,45 @@
-import {Injectable} from '@angular/core';
-import {LocalStorageService} from "../local-storage.service";
-import {RemoteStorageService} from "./remote-storage.service";
-import {BehaviorSubject, combineLatest, Observable, of, share, Subject, switchMap, take, tap} from "rxjs";
-import {Dashboard} from "../../models/dashboard/dashboard.model";
-import {debounceTime, filter, map} from "rxjs/operators";
-import {ApplicationMetaService} from "../application-meta.service";
+import { Injectable } from '@angular/core';
+import { RemoteStorageService } from "./remote-storage.service";
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of,
+  share,
+  Subject,
+  switchMap,
+  take
+} from "rxjs";
+import { Dashboard } from "../../models/dashboard/dashboard.model";
+import {
+  debounceTime,
+  filter,
+  map
+} from "rxjs/operators";
+import { ApplicationMetaService } from "../application-meta.service";
+import { DashboardSettingsDesktopMigrationManager } from "../../../modules/settings-migration/dashboard-settings/dashboard-settings-desktop-migration-manager";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardSettingsBrokerService {
   private readonly saveRequestDelay = 1000;
-  private readonly dashboardsStorageKey = 'dashboards-collection';
   private readonly saveQuery$ = new Subject<Dashboard[]>();
   private saveStream$?: Observable<boolean>;
 
   constructor(
-    private readonly localStorageService: LocalStorageService,
     private readonly remoteStorageService: RemoteStorageService,
-    private readonly applicationMetaService: ApplicationMetaService
+    private readonly applicationMetaService: ApplicationMetaService,
+    private readonly dashboardSettingsMigrationManager: DashboardSettingsDesktopMigrationManager
   ) {
   }
 
   private get settingsKey(): string {
-    return this.dashboardsStorageKey;
+    return 'dashboards-collection';
   }
 
   readSettings(): Observable<Dashboard[] | null> {
-    const settings$ = this.remoteStorageService.getRecord<Dashboard[]>(this.settingsKey).pipe(
+    const settings$ = this.remoteStorageService.getRecord(this.settingsKey).pipe(
       take(1)
     );
 
@@ -43,19 +55,11 @@ export class DashboardSettingsBrokerService {
         }
 
         if (!!settings) {
-          return of(settings.value);
-        }
-
-        // move settings from local storage for backward compatibility
-        const localData = this.localStorageService.getItem<Dashboard[]>(this.dashboardsStorageKey);
-        if (!!localData) {
-          return this.setRemoteRecord(localData).pipe(
-            tap(r => {
-              if (r) {
-                this.localStorageService.removeItem(this.dashboardsStorageKey);
-              }
-            }),
-            map(() => localData)
+          return this.dashboardSettingsMigrationManager.applyMigrations<Dashboard[]>(
+            settings.value,
+            migrated => this.saveSettings(migrated)
+          ).pipe(
+            map(x => x.updatedData)
           );
         }
 
