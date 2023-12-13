@@ -57,11 +57,11 @@ export class AuthService {
     switchMap((userState, index) => {
       if (
         userState?.ssoToken?.refreshToken != null
-        && !!userState?.ssoToken?.refreshToken.length
-        && (userState?.ssoToken?.jwt == null || !userState.ssoToken.jwt.length)
+        && !!userState.ssoToken.refreshToken.length
+        && (userState.ssoToken.jwt == null || !userState.ssoToken.jwt.length)
       ) {
         // refreshToken is set after login. Need to get jwt
-        this.refreshToken(userState as UserState);
+        this.refreshToken(userState);
         return NEVER;
       }
       else if (this.isAuthorised(userState?.ssoToken)) {
@@ -149,8 +149,8 @@ export class AuthService {
   }
 
   private isAuthorised(ssoToken?: SsoToken | null): boolean {
-    if (ssoToken?.jwt != null && ssoToken.jwt.length) {
-      return this.checkTokenTime((ssoToken as SsoToken).jwt);
+    if (ssoToken?.jwt != null && ssoToken.jwt.length > 0) {
+      return this.checkTokenTime((ssoToken).jwt);
     }
 
     return false;
@@ -207,7 +207,7 @@ export class AuthService {
   }
 
   private checkTokenTime(token: string | undefined): boolean {
-    if (token != null && !!token.length) {
+    if (token != null && token.length > 0) {
       const expirationTime = this.decodeJwtBody(token).exp * 1000;
 
       // need to refresh the token before it expires. See https://github.com/alor-broker/Astras-Trading-UI/issues/1367

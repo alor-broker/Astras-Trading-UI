@@ -186,7 +186,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       } as { [filterKey: string]: string | string[] | null };
 
       const cleanedFilters: { [filterKey: string]: string | string[] | null } = Object.keys(allFilters)
-        .filter(key => allFilters[key] != null && allFilters[key]!.length)
+        .filter(key => allFilters[key] != null && allFilters[key]!.length > 0)
         .reduce((acc, curr) => {
           if (Array.isArray(allFilters[curr])) {
             acc[curr] = (allFilters[curr] as string[]).join(';');
@@ -373,7 +373,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         delete filter.descending;
         delete filter.orderBy;
 
-        if (dir != null && dir.length) {
+        if (dir != null && dir.length > 0) {
           filter.descending = dir === 'descend';
           filter.orderBy = orderBy;
         } else {

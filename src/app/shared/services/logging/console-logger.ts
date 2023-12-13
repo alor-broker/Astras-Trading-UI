@@ -9,7 +9,7 @@ import { Injectable } from "@angular/core";
   providedIn: "root"
 })
 export class ConsoleLogger extends LoggerBase {
-  private readonly minLevel: LogLevel | null = this.environmentService.logging.console?.minLevel as LogLevel ?? null;
+  private readonly minLevel: LogLevel | null = this.environmentService.logging.console?.minLevel ?? null;
 
   constructor(private readonly environmentService: EnvironmentService) {
     super();

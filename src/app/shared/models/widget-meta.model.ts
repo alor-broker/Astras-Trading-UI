@@ -57,7 +57,7 @@ export interface WidgetMeta {
     /**
      * Used to sort widgets in gallery
      */
-    galleryOrder: number;
+    galleryOrder?: number;
     enabled: boolean;
   };
 

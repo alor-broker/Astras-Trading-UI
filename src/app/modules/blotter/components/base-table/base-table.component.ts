@@ -125,8 +125,10 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends obj
   }
 
   protected isFilterApplied(column: BaseColumnSettings<T>): boolean {
-    const filter = this.filter$.getValue();
-    return column.id in filter && filter[column.id as keyof F] != null && !!(filter[column.id as keyof F] as string).length;
+    const filter = this.filter$.getValue() as { [filterName: string]: string | string[] | null | undefined };
+    return column.id in filter
+      && filter[column.id] != null
+      && filter[column.id]!.length > 0;
   }
 
   canExport(data: readonly T[] | undefined | null): boolean {

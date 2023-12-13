@@ -231,7 +231,7 @@ export class NavbarComponent implements OnInit {
 
             groupWidgets.push(({
               typeId: widgetMeta.typeId,
-              name: WidgetsHelper.getWidgetName(widgetMeta.widgetName, lang) ?? widgetMeta.typeId,
+              name: WidgetsHelper.getWidgetName(widgetMeta.widgetName, lang),
               icon: widgetMeta.desktopMeta?.galleryIcon ?? 'appstore'
             }));
           });

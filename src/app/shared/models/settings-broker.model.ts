@@ -2,7 +2,7 @@
   timestamp: number;
 }
 
-export interface StorageRecord<T> {
+export interface StorageRecord {
   meta: RecordMeta;
-  value: T;
+  value: any;
 }

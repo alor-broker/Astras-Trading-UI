@@ -161,7 +161,7 @@ export class MobileSettingsBrokerService {
     const terminalSettings = this.localStorageService.getItem<TerminalSettings>(LocalStorageMobileConstants.TerminalSettingsStorageKey) ?? null;
 
     if (!terminalSettings) {
-      this.store.dispatch(TerminalSettingsInternalActions.init({ settings: terminalSettings ?? null }));
+      this.store.dispatch(TerminalSettingsInternalActions.init({ settings: null }));
       return;
     }
 

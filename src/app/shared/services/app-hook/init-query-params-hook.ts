@@ -46,7 +46,7 @@ export class InitQueryParamsHook implements AppHook {
 
           return this.instrumentsService.getInstruments(filter);
         }),
-        filter(i => !!i.length),
+        filter(i => i.length > 0),
         map(instruments => instruments[0]),
         takeUntil(this.destroy$)
       )

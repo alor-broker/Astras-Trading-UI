@@ -8,5 +8,6 @@ export interface ApplyOptions {
 }
 
 export enum ApplyStrategyType {
-  ApplyOnce = 'apply-once'
+  ApplyOnce = 'apply-once',
+  Other = 'other'
 }

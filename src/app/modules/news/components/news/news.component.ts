@@ -129,7 +129,7 @@ export class NewsComponent implements OnInit, OnDestroy {
           this.newsList = res;
         }
 
-        if (res.length) {
+        if (res.length > 0) {
           this.newsList = this.newsList.concat(res);
         }
         else {

@@ -27,8 +27,8 @@ export class InstrumentsService {
 
   getInstrument(instrument: InstrumentKey): Observable<Instrument | null> {
     const params: { [param: string]: string } = {};
-    if(instrument.instrumentGroup ?? '') {
-      params.instrumentGroup = instrument.instrumentGroup!;
+    if (instrument.instrumentGroup != null && instrument.instrumentGroup.length > 0) {
+      params.instrumentGroup = instrument.instrumentGroup;
     }
 
     const stream$ = this.http.get<InstrumentSearchResponse>(`${this.url}/${instrument.exchange}/${instrument.symbol}`, {

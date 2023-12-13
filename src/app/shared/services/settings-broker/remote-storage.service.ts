@@ -35,7 +35,7 @@ export class RemoteStorageService {
   ) {
   }
 
-  getRecord<T = any>(key: string): Observable<StorageRecord<T> | null> {
+  getRecord(key: string): Observable<StorageRecord | null> {
     return this.httpClient.get<RemoteStorageItem>(
       this.baseUrl,
       {
@@ -51,7 +51,7 @@ export class RemoteStorageService {
           try {
             return {
               meta: JSON.parse(r.UserSettings.Description) as RecordMeta,
-              value: JSON.parse(r.UserSettings.Content) as T
+              value: JSON.parse(r.UserSettings.Content) as unknown
             };
           } catch (e: any) {
             this.errorHandlerService.handleError(e);
@@ -66,7 +66,7 @@ export class RemoteStorageService {
     );
   }
 
-  getGroup<T = any>(groupKey: string): Observable<StorageRecord<T>[] | null> {
+  getGroup(groupKey: string): Observable<StorageRecord[] | null> {
     return this.httpClient.get<UserSettings[]>(
       `${this.baseUrl}/group/${groupKey}`,
       {
@@ -83,8 +83,8 @@ export class RemoteStorageService {
 
         try {
           return r.map(i => ({
-            meta: <RecordMeta>JSON.parse(i.Description),
-            value: JSON.parse(i.Content) as T
+            meta: JSON.parse(i.Description) as RecordMeta,
+            value: JSON.parse(i.Content) as unknown
           }));
         } catch (e: any) {
           this.errorHandlerService.handleError(e);
@@ -97,7 +97,7 @@ export class RemoteStorageService {
     );
   }
 
-  setRecord(key: string, record: StorageRecord<any>, groupKey?: string): Observable<boolean> {
+  setRecord(key: string, record: StorageRecord, groupKey?: string): Observable<boolean> {
     return this.httpClient.put(
       this.baseUrl,
       {

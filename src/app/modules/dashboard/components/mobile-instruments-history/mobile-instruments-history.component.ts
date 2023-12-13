@@ -31,7 +31,7 @@ export class MobileInstrumentsHistoryComponent implements OnInit {
   ngOnInit(): void {
     this.instruments$ = this.mobileDashboardService.getInstrumentsHistory()
       .pipe(
-        filter(instruments => !!(instruments ?? []).length),
+        filter(instruments => (instruments ?? []).length > 0),
         switchMap(instruments => {
           return forkJoin(
             instruments!.map(instrument =>

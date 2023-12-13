@@ -39,7 +39,7 @@ export class WidgetsSettingsBrokerService {
   }
 
   readSettings(): Observable<WidgetSettings[] | null> {
-    const settings$ = this.remoteStorageService.getGroup<WidgetSettings>(this.groupKey).pipe(
+    const settings$ = this.remoteStorageService.getGroup(this.groupKey).pipe(
       take(1)
     );
 
@@ -59,7 +59,7 @@ export class WidgetsSettingsBrokerService {
 
         if (!!settings && settings.length > 0) {
           return this.widgetSettingsDesktopMigrationManager.applyMigrations<WidgetSettings[]>(
-            settings.map(x => x.value),
+            settings.map(x => x.value as WidgetSettings[]),
             migrated => this.saveSettings(migrated)
           ).pipe(
             map(x => x.updatedData)

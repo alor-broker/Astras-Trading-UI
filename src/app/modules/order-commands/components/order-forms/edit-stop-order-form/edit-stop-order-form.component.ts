@@ -20,6 +20,7 @@ import { AtsValidators } from "../../../../../shared/utils/form-validators";
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
 import { StopLimitOrderEdit, StopMarketOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
 import { getConditionTypeByString } from "../../../../../shared/utils/order-conditions-helper";
+import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 
 @Component({
   selector: 'ats-edit-stop-order-form',
@@ -123,7 +124,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       currentInstrument: this.formInstrument$
     }).pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => {
+    ).subscribe((x: { currentOrder: StopOrder, currentInstrument: Instrument }) => {
       this.form.reset(undefined, {emitEvent: true});
 
       this.setPriceValidators(this.form.controls.triggerPrice, x.currentInstrument);
@@ -157,8 +158,8 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       this.timezoneConverterService.getConverter().pipe(
         take(1)
       ).subscribe(tc => {
-        if (x.currentOrder.endTime as Date | undefined) {
-          this.form.controls.stopEndUnixTime.setValue(tc.toTerminalDate(x.currentOrder.endTime!));
+        if (x.currentOrder.endTime != null) {
+          this.form.controls.stopEndUnixTime.setValue(tc.toTerminalDate(x.currentOrder.endTime));
         }
 
         this.checkNowTimeSelection(tc);
@@ -275,7 +276,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       portfolioKey: this.portfolioKey$,
       tc: this.timezoneConverterService.getConverter()
     }).pipe(
-      filter(x => !!(x.currentOrder as StopOrder | null) && !!x.portfolioKey),
+      filter(x => !!x.portfolioKey),
       filter(() => this.form.valid),
       switchMap(x => {
         const formValue = this.form.value;

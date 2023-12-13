@@ -478,7 +478,7 @@ export class ScalperOrdersService {
         : Math.abs(position.qtyTFutureBatch + quantity) < Math.abs(position.qtyTFutureBatch)
       : false;
 
-    return (settings.bracketsSettings?.useBracketsWhenClosingPosition ?? false) || !isClosingPosition;
+    return (settings.bracketsSettings.useBracketsWhenClosingPosition ?? false) || !isClosingPosition;
   }
 
   private getBracketOrderPrice(settings: ScalperOrderBookWidgetSettings, price: number, minStep: number, orderType: BracketOrderType): number | null {

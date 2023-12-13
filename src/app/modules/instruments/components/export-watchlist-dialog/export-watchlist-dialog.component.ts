@@ -122,8 +122,8 @@ export class ExportWatchlistDialogComponent implements OnInit, OnDestroy {
         i.symbol
       ];
 
-      if (!!(i.instrumentGroup ?? '')) {
-        tickerParts.push(i.instrumentGroup as string);
+      if (i.instrumentGroup != null && i.instrumentGroup.length > 0) {
+        tickerParts.push(i.instrumentGroup);
       }
 
       return tickerParts.join(":");

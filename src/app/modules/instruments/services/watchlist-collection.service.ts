@@ -112,7 +112,7 @@ export class WatchlistCollectionService {
 
       forkJoin(
         items.map(i => {
-          if (!!(i.instrumentGroup ?? '')) {
+          if (i.instrumentGroup != null && i.instrumentGroup.length > 0) {
             return of(toInstrumentKey(i));
           }
           // get instrumentGroup if missing
@@ -124,7 +124,7 @@ export class WatchlistCollectionService {
       ).pipe(
         take(1)
       ).subscribe(items => {
-        const uniqueItems: { [key: string]: WatchlistItem } = {};
+        const uniqueItems: { [key: string]: WatchlistItem | undefined } = {};
         list.items.forEach(item => uniqueItems[this.getInstrumentKey(item)] = item);
 
         let newItemsAdded = false;
@@ -132,7 +132,7 @@ export class WatchlistCollectionService {
         items.filter((i): i is InstrumentKey => !!i)
           .forEach(i => {
             const itemKey = this.getInstrumentKey(i);
-            if (!(uniqueItems[itemKey] as WatchlistItem | undefined)) {
+            if (!uniqueItems[itemKey]) {
               uniqueItems[itemKey] = {
                 ...i,
                 recordId: GuidGenerator.newGuid(),
@@ -143,7 +143,7 @@ export class WatchlistCollectionService {
             }
           });
 
-        if (!(newItemsAdded as boolean)) {
+        if (!newItemsAdded) {
           // performance optimization
           // prevent collection updating when no new items were added
           return;

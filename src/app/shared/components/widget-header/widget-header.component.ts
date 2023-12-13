@@ -82,7 +82,7 @@ export class WidgetHeaderComponent implements OnInit {
           );
 
         return instrumentsBadges.map(b => {
-            const assignedInstrument = currentSelection[b];
+            const assignedInstrument = currentSelection[b] as InstrumentKey | undefined;
 
             return {
               color: b,

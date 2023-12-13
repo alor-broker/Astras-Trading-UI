@@ -115,7 +115,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
           map(i => !!i
             ? {
               ...i,
-              symbol: `[${i.exchange}:${i.symbol}${(i.instrumentGroup ?? '') ? ':' + (i.instrumentGroup as string) : ''}]`
+              symbol: `[${i.exchange}:${i.symbol}${(i.instrumentGroup != null && i.instrumentGroup.length > 0) ? ':' + i.instrumentGroup : ''}]`
             }
             : i)
         );

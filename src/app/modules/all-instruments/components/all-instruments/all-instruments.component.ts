@@ -411,7 +411,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         delete filter.descending;
         delete filter.orderBy;
 
-        if (dir != null && dir.length) {
+        if (dir != null && dir.length > 0) {
           filter.descending = dir === 'descend';
           filter.orderBy = orderBy;
         }

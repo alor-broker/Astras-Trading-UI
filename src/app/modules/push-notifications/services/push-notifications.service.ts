@@ -79,7 +79,7 @@ export class PushNotificationsService implements OnDestroy {
   subscribeToOrderExecute(portfolio: PortfolioKey): Observable<BaseCommandResponse | null> {
     return this.getToken()
       .pipe(
-        filter(t => t != null && !!t.length),
+        filter(t => t != null && t.length > 0),
         switchMap(() => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addOrderExecute', {
           exchange: portfolio.exchange,
           portfolio: portfolio.portfolio
@@ -130,7 +130,7 @@ export class PushNotificationsService implements OnDestroy {
 
   getCurrentSubscriptions(): Observable<SubscriptionBase[] | null> {
     return this.getToken().pipe(
-      filter(x => x != null && !!x.length),
+      filter(x => x != null && x.length > 0),
       switchMap(() => this.http.get<SubscriptionBase[]>(this.baseUrl)),
       catchHttpError<SubscriptionBase[] | null>(null, this.errorHandlerService),
       map(s => {

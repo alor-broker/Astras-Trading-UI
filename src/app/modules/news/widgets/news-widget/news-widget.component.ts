@@ -81,7 +81,7 @@ export class NewsWidgetComponent implements OnInit {
               exchange: s.exchange,
               instrumentGroup: s.instrumentGroup
             })),
-            map(i => `${i!.symbol} ${(i!.instrumentGroup ?? '') ? '(' + (i!.instrumentGroup as string) + ')' : ''} ${i!.shortName}`)
+            map(i => `${i!.symbol} ${(i!.instrumentGroup != null && i!.instrumentGroup.length > 0) ? '(' + i!.instrumentGroup + ')' : ''} ${i!.shortName}`)
           );
         break;
     }
